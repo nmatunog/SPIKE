@@ -1,0 +1,5 @@
+# Applied when you deploy the `dist` folder (e.g. drag-and-drop). Same ideas as netlify.toml [[headers]].
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin

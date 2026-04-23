@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  INTERN
+  FACULTY
+  MENTOR
+  ADMIN
+}
+
+enum TractionLogStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id             Int            @id @default(autoincrement())
+  name           String
+  email          String         @unique
+  passwordHash   String
+  role           Role
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  internProgress InternProgress?
+  tractionLogs   TractionLog[]
+}
+
+model InternProgress {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  segment   Int      @default(1)
+  hours     Int      @default(0)
+  licensed  Boolean  @default(false)
+  squad     String?
+  university String?
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TractionLog {
+  id        Int                 @id @default(autoincrement())
+  userId    Int
+  task      String
+  hours     Int
+  status    TractionLogStatus   @default(PENDING)
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+  user      User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
