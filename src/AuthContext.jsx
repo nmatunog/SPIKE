@@ -12,6 +12,17 @@ import { isSupabaseConfigured, supabase } from './supabaseClient';
 const AuthContext = createContext(null);
 const STATIC_ONLY = import.meta.env.VITE_STATIC_ONLY === 'true';
 const USE_SUPABASE = isSupabaseConfigured && !STATIC_ONLY;
+const PROFILE_FETCH_TIMEOUT_MS = 5000;
+
+function mapAuthFallbackUser(authUser) {
+  return {
+    id: authUser?.id ?? null,
+    email: authUser?.email ?? '',
+    name: authUser?.user_metadata?.name || authUser?.email || 'User',
+    role: 'INTERN',
+    internProgress: null,
+  };
+}
 
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(() =>
@@ -58,6 +69,25 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
+  const fetchSupabaseUserSafe = useCallback(
+    async (authUser) => {
+      if (!authUser) return null;
+      const timedFetch = Promise.race([
+        fetchSupabaseUser(authUser),
+        new Promise((resolve) =>
+          setTimeout(() => resolve(mapAuthFallbackUser(authUser)), PROFILE_FETCH_TIMEOUT_MS),
+        ),
+      ]);
+      try {
+        const resolved = await timedFetch;
+        return resolved || mapAuthFallbackUser(authUser);
+      } catch {
+        return mapAuthFallbackUser(authUser);
+      }
+    },
+    [fetchSupabaseUser],
+  );
+
   useEffect(() => {
     let cancelled = false;
 
@@ -73,7 +103,7 @@ export function AuthProvider({ children }) {
           return;
         }
         try {
-          const currentUser = await fetchSupabaseUser(data.session.user);
+          const currentUser = await fetchSupabaseUserSafe(data.session.user);
           if (!cancelled) {
             setToken(null);
             setUser(currentUser);
@@ -99,7 +129,7 @@ export function AuthProvider({ children }) {
             return;
           }
           try {
-            const currentUser = await fetchSupabaseUser(session.user);
+            const currentUser = await fetchSupabaseUserSafe(session.user);
             if (!cancelled) {
               setToken(null);
               setUser(currentUser);
@@ -144,7 +174,7 @@ export function AuthProvider({ children }) {
     return () => {
       cancelled = true;
     };
-  }, [fetchSupabaseUser, token]);
+  }, [fetchSupabaseUserSafe, token]);
 
   const login = useCallback(async (email, password) => {
     if (USE_SUPABASE) {
@@ -153,7 +183,7 @@ export function AuthProvider({ children }) {
         password,
       });
       if (error) throw error;
-      const currentUser = await fetchSupabaseUser(data.user);
+      const currentUser = await fetchSupabaseUserSafe(data.user);
       setToken(null);
       setUser(currentUser);
       return currentUser;
@@ -167,7 +197,7 @@ export function AuthProvider({ children }) {
     setToken(data.token);
     setUser(data.user);
     return data.user;
-  }, [fetchSupabaseUser]);
+  }, [fetchSupabaseUserSafe]);
 
   /** First deploy only: creates the single bootstrap admin when the database has no users. */
   const completeBootstrapSetup = useCallback(async (body) => {
@@ -206,7 +236,7 @@ export function AuthProvider({ children }) {
         setUser(null);
         return null;
       }
-      const me = await fetchSupabaseUser(data.session.user);
+      const me = await fetchSupabaseUserSafe(data.session.user);
       setToken(null);
       setUser(me);
       return me;
@@ -217,7 +247,7 @@ export function AuthProvider({ children }) {
     const me = await apiFetch('/api/auth/me', { token: t });
     setUser(me);
     return me;
-  }, [fetchSupabaseUser]);
+  }, [fetchSupabaseUserSafe]);
 
   const value = useMemo(
     () => ({
