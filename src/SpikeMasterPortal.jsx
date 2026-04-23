@@ -1811,6 +1811,93 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
                   )}
                 </>
               )}
+              {usingSupabaseAuth && setupLoadState !== 'ok' && (
+                <div className="mt-4 w-full rounded-2xl border border-dashed border-gray-300 bg-white p-4">
+                  <div className="mb-3 flex items-center justify-between">
+                    <p className="text-xs font-bold uppercase tracking-wider text-gray-500">
+                      New intern?
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowSignup((prev) => !prev);
+                        setSignupError('');
+                      }}
+                      className="text-xs font-bold text-[#8B0000] underline"
+                    >
+                      {showSignup ? 'Hide signup' : 'Create intern account'}
+                    </button>
+                  </div>
+                  {showSignup && (
+                    <form className="space-y-3" onSubmit={handleSignupSubmit}>
+                      {signupError && (
+                        <p className="rounded-lg bg-red-50 p-2 text-center text-sm text-red-700">
+                          {signupError}
+                        </p>
+                      )}
+                      <input
+                        required
+                        value={signupName}
+                        onChange={(e) => setSignupName(e.target.value)}
+                        className="w-full rounded-lg border border-gray-300 p-2.5 text-sm outline-none focus:border-[#8B0000]"
+                        placeholder="Full name"
+                      />
+                      <input
+                        required
+                        type="email"
+                        value={signupEmail}
+                        onChange={(e) => setSignupEmail(e.target.value)}
+                        className="w-full rounded-lg border border-gray-300 p-2.5 text-sm outline-none focus:border-[#8B0000]"
+                        placeholder="Email"
+                      />
+                      <input
+                        required
+                        type="password"
+                        minLength={8}
+                        value={signupPassword}
+                        onChange={(e) => setSignupPassword(e.target.value)}
+                        className="w-full rounded-lg border border-gray-300 p-2.5 text-sm outline-none focus:border-[#8B0000]"
+                        placeholder="Password (min 8 chars)"
+                      />
+                      <input
+                        required
+                        type="password"
+                        minLength={8}
+                        value={signupPassword2}
+                        onChange={(e) => setSignupPassword2(e.target.value)}
+                        className="w-full rounded-lg border border-gray-300 p-2.5 text-sm outline-none focus:border-[#8B0000]"
+                        placeholder="Confirm password"
+                      />
+                      <input
+                        value={signupUniversity}
+                        onChange={(e) => setSignupUniversity(e.target.value)}
+                        className="w-full rounded-lg border border-gray-300 p-2.5 text-sm outline-none focus:border-[#8B0000]"
+                        placeholder="University / recruitment source (optional)"
+                      />
+                      <input
+                        value={signupSquad}
+                        onChange={(e) => setSignupSquad(e.target.value)}
+                        className="w-full rounded-lg border border-gray-300 p-2.5 text-sm outline-none focus:border-[#8B0000]"
+                        placeholder="Squad (optional)"
+                      />
+                      <input
+                        required
+                        value={signupCode}
+                        onChange={(e) => setSignupCode(e.target.value)}
+                        className="w-full rounded-lg border border-gray-300 p-2.5 text-sm uppercase outline-none focus:border-[#8B0000]"
+                        placeholder="Daily activation code"
+                      />
+                      <button
+                        type="submit"
+                        disabled={signupSubmitting}
+                        className="w-full rounded-lg bg-[#8B0000] py-2.5 text-sm font-bold text-white transition hover:bg-red-900 disabled:opacity-60"
+                      >
+                        {signupSubmitting ? 'Creating account…' : 'Sign up as intern'}
+                      </button>
+                    </form>
+                  )}
+                </div>
+              )}
             </div>
           )
         )}
