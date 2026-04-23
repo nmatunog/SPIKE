@@ -50,6 +50,7 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
     token,
     user,
     loading: authLoading,
+    usingSupabaseAuth,
     login,
     logout,
     refreshUser,
@@ -140,7 +141,7 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
   }, [token, user?.role]);
 
   const loadSetupInfo = useCallback(async () => {
-    if (STATIC_ONLY) {
+    if (STATIC_ONLY || usingSupabaseAuth) {
       setSetupMeta({ needsBootstrap: false, secretRequired: false });
       setSetupLoadError('');
       setSetupLoadState('ok');
@@ -160,7 +161,7 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
       setSetupLoadError(e.message || 'Could not reach the API.');
       setSetupMeta(null);
     }
-  }, [STATIC_ONLY]);
+  }, [STATIC_ONLY, usingSupabaseAuth]);
 
   useEffect(() => {
     if (userRole !== 'guest' || authLoading) return;
@@ -1361,9 +1362,9 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
                 Welcome to S.P.I.K.E.
               </h2>
               <p className="mb-6 text-center text-sm text-gray-600">
-                There is no public self-registration. The first person to access an empty database
-                creates the administrator account once. Everyone else must be created by an admin
-                after that.
+                {usingSupabaseAuth
+                  ? 'Sign in with your Supabase account. User roles are managed in the profiles table (ADMIN/FACULTY/MENTOR/INTERN).'
+                  : 'There is no public self-registration. The first person to access an empty database creates the administrator account once. Everyone else must be created by an admin after that.'}
               </p>
 
               {setupLoadState === 'loading' && (
