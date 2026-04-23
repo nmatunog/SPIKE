@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from './AuthContext.jsx';
 import { apiFetch } from './apiClient.js';
+import { supabase } from './supabaseClient.js';
 import { fullSyllabusData } from './fullSyllabusData.js';
 import { orientationSlides } from './orientationSlideContents.jsx';
 
@@ -98,6 +99,19 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
   const [bootSecret, setBootSecret] = useState('');
   const [bootSubmitting, setBootSubmitting] = useState(false);
   const [bootError, setBootError] = useState('');
+  const [showSignup, setShowSignup] = useState(false);
+  const [signupName, setSignupName] = useState('');
+  const [signupEmail, setSignupEmail] = useState('');
+  const [signupPassword, setSignupPassword] = useState('');
+  const [signupPassword2, setSignupPassword2] = useState('');
+  const [signupUniversity, setSignupUniversity] = useState('');
+  const [signupSquad, setSignupSquad] = useState('');
+  const [signupCode, setSignupCode] = useState('');
+  const [signupSubmitting, setSignupSubmitting] = useState(false);
+  const [signupError, setSignupError] = useState('');
+  const [activationCode, setActivationCode] = useState(null);
+  const [activationCodeLoading, setActivationCodeLoading] = useState(false);
+  const [activationCodeGenerating, setActivationCodeGenerating] = useState(false);
 
   const showToast = useCallback((message, type = 'success') => {
     setToast({ show: true, message, type });
@@ -106,6 +120,30 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
       3000,
     );
   }, []);
+
+  const getTodayKey = () => new Date().toISOString().slice(0, 10);
+  const generateActivationCode = () =>
+    Math.random().toString(36).toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+
+  const loadActivationCode = useCallback(async () => {
+    if (!usingSupabaseAuth || user?.role !== 'ADMIN' || !supabase) return;
+    setActivationCodeLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('activation_codes')
+        .select('date_key, code, expires_at, generated_at')
+        .eq('date_key', getTodayKey())
+        .order('generated_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (error) throw error;
+      setActivationCode(data || null);
+    } catch (e) {
+      showToast(e.message || 'Failed to load activation code', 'info');
+    } finally {
+      setActivationCodeLoading(false);
+    }
+  }, [showToast, usingSupabaseAuth, user?.role]);
 
   const loadInterns = useCallback(async () => {
     if (!token || !['FACULTY', 'MENTOR', 'ADMIN'].includes(user?.role)) return;
@@ -191,6 +229,14 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
       setPendingLogs([]);
     }
   }, [user, loadPendingLogs]);
+
+  useEffect(() => {
+    if (user?.role === 'ADMIN' && usingSupabaseAuth) {
+      loadActivationCode();
+    } else {
+      setActivationCode(null);
+    }
+  }, [user?.role, usingSupabaseAuth, loadActivationCode]);
 
   const internSummary = useMemo(() => {
     const list = interns;
@@ -336,6 +382,110 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
       setLoginError(err.message || 'Sign in failed.');
     } finally {
       setLoginSubmitting(false);
+    }
+  };
+
+  const handleSignupSubmit = async (e) => {
+    e.preventDefault();
+    setSignupError('');
+    if (!usingSupabaseAuth || !supabase) {
+      setSignupError('Signup is only available in Supabase mode.');
+      return;
+    }
+    if (signupPassword !== signupPassword2) {
+      setSignupError('Passwords do not match.');
+      return;
+    }
+    setSignupSubmitting(true);
+    try {
+      const todayKey = getTodayKey();
+      const { data: codeRow, error: codeError } = await supabase
+        .from('activation_codes')
+        .select('code, expires_at')
+        .eq('date_key', todayKey)
+        .order('generated_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (codeError) throw codeError;
+      if (!codeRow) throw new Error('No activation code is available for today.');
+      if (new Date(codeRow.expires_at).getTime() < Date.now()) {
+        throw new Error('Activation code has expired. Ask an admin for a new code.');
+      }
+      if (String(codeRow.code).toUpperCase() !== signupCode.trim().toUpperCase()) {
+        throw new Error('Invalid activation code.');
+      }
+
+      const { data, error } = await supabase.auth.signUp({
+        email: signupEmail.trim(),
+        password: signupPassword,
+        options: { data: { name: signupName.trim() } },
+      });
+      if (error) throw error;
+
+      if (data.user?.id) {
+        await supabase
+          .from('profiles')
+          .update({ name: signupName.trim(), role: 'INTERN' })
+          .eq('id', data.user.id);
+        await supabase.from('intern_progress').upsert(
+          {
+            user_id: data.user.id,
+            segment: 1,
+            hours: 0,
+            licensed: false,
+            university: signupUniversity.trim() || null,
+            squad: signupSquad.trim() || null,
+          },
+          { onConflict: 'user_id' },
+        );
+      }
+
+      setSignupName('');
+      setSignupEmail('');
+      setSignupPassword('');
+      setSignupPassword2('');
+      setSignupUniversity('');
+      setSignupSquad('');
+      setSignupCode('');
+      setShowSignup(false);
+      showToast('Account created. You can now sign in.', 'success');
+    } catch (err) {
+      setSignupError(err.message || 'Signup failed.');
+    } finally {
+      setSignupSubmitting(false);
+    }
+  };
+
+  const handleGenerateActivationCode = async () => {
+    if (!usingSupabaseAuth || user?.role !== 'ADMIN' || !supabase) return;
+    setActivationCodeGenerating(true);
+    try {
+      const todayKey = getTodayKey();
+      const nextCode = generateActivationCode();
+      const expiry = new Date();
+      expiry.setHours(23, 59, 59, 999);
+      const payload = {
+        date_key: todayKey,
+        code: nextCode,
+        expires_at: expiry.toISOString(),
+        generated_by: user.id,
+      };
+      const { data, error } = await supabase
+        .from('activation_codes')
+        .upsert(payload, { onConflict: 'date_key' })
+        .select('date_key, code, expires_at, generated_at')
+        .single();
+      if (error) throw error;
+      setActivationCode(data || null);
+      showToast(`Activation code generated: ${nextCode}`, 'success');
+    } catch (err) {
+      showToast(
+        err.message ||
+          'Failed to generate activation code. Ensure activation_codes table exists in Supabase.',
+        'info',
+      );
+    } finally {
+      setActivationCodeGenerating(false);
     }
   };
 
@@ -1251,6 +1401,40 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
               {regSubmitting ? 'Creating…' : 'Create account'}
             </button>
           </form>
+          {usingSupabaseAuth && (
+            <div className="mt-6 border-t border-gray-200 pt-6">
+              <div className="mb-2 flex items-center justify-between">
+                <h4 className="text-sm font-bold uppercase tracking-wider text-gray-700">
+                  Intern activation code
+                </h4>
+                <button
+                  type="button"
+                  onClick={handleGenerateActivationCode}
+                  disabled={activationCodeGenerating}
+                  className="rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-gray-800 disabled:opacity-60"
+                >
+                  {activationCodeGenerating ? 'Generating…' : 'Generate today code'}
+                </button>
+              </div>
+              {activationCodeLoading ? (
+                <p className="text-sm text-gray-500">Loading activation code…</p>
+              ) : activationCode ? (
+                <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                  <p className="text-xs text-gray-500">Current code</p>
+                  <p className="text-2xl font-black tracking-widest text-[#8B0000]">
+                    {activationCode.code}
+                  </p>
+                  <p className="mt-1 text-xs text-gray-500">
+                    Expires: {new Date(activationCode.expires_at).toLocaleString()}
+                  </p>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">
+                  No code generated yet. Click “Generate today code”.
+                </p>
+              )}
+            </div>
+          )}
         </div>
         <div className="rounded-xl border border-gray-200 bg-white py-12 text-center shadow-sm">
           <Settings size={40} className="mx-auto mb-4 text-gray-300" />
@@ -1538,6 +1722,93 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
                       {loginSubmitting ? 'Signing in…' : 'Sign in'}
                     </button>
                   </form>
+                  {usingSupabaseAuth && (
+                    <div className="mt-4 w-full rounded-2xl border border-dashed border-gray-300 bg-white p-4">
+                      <div className="mb-3 flex items-center justify-between">
+                        <p className="text-xs font-bold uppercase tracking-wider text-gray-500">
+                          New intern?
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowSignup((prev) => !prev);
+                            setSignupError('');
+                          }}
+                          className="text-xs font-bold text-[#8B0000] underline"
+                        >
+                          {showSignup ? 'Hide signup' : 'Create intern account'}
+                        </button>
+                      </div>
+                      {showSignup && (
+                        <form className="space-y-3" onSubmit={handleSignupSubmit}>
+                          {signupError && (
+                            <p className="rounded-lg bg-red-50 p-2 text-center text-sm text-red-700">
+                              {signupError}
+                            </p>
+                          )}
+                          <input
+                            required
+                            value={signupName}
+                            onChange={(e) => setSignupName(e.target.value)}
+                            className="w-full rounded-lg border border-gray-300 p-2.5 text-sm outline-none focus:border-[#8B0000]"
+                            placeholder="Full name"
+                          />
+                          <input
+                            required
+                            type="email"
+                            value={signupEmail}
+                            onChange={(e) => setSignupEmail(e.target.value)}
+                            className="w-full rounded-lg border border-gray-300 p-2.5 text-sm outline-none focus:border-[#8B0000]"
+                            placeholder="Email"
+                          />
+                          <input
+                            required
+                            type="password"
+                            minLength={8}
+                            value={signupPassword}
+                            onChange={(e) => setSignupPassword(e.target.value)}
+                            className="w-full rounded-lg border border-gray-300 p-2.5 text-sm outline-none focus:border-[#8B0000]"
+                            placeholder="Password (min 8 chars)"
+                          />
+                          <input
+                            required
+                            type="password"
+                            minLength={8}
+                            value={signupPassword2}
+                            onChange={(e) => setSignupPassword2(e.target.value)}
+                            className="w-full rounded-lg border border-gray-300 p-2.5 text-sm outline-none focus:border-[#8B0000]"
+                            placeholder="Confirm password"
+                          />
+                          <input
+                            value={signupUniversity}
+                            onChange={(e) => setSignupUniversity(e.target.value)}
+                            className="w-full rounded-lg border border-gray-300 p-2.5 text-sm outline-none focus:border-[#8B0000]"
+                            placeholder="University / recruitment source (optional)"
+                          />
+                          <input
+                            value={signupSquad}
+                            onChange={(e) => setSignupSquad(e.target.value)}
+                            className="w-full rounded-lg border border-gray-300 p-2.5 text-sm outline-none focus:border-[#8B0000]"
+                            placeholder="Squad (optional)"
+                          />
+                          <input
+                            required
+                            value={signupCode}
+                            onChange={(e) => setSignupCode(e.target.value)}
+                            className="w-full rounded-lg border border-gray-300 p-2.5 text-sm uppercase outline-none focus:border-[#8B0000]"
+                            placeholder="Daily activation code"
+                          />
+                          <button
+                            type="submit"
+                            disabled={signupSubmitting}
+                            className="w-full rounded-lg bg-[#8B0000] py-2.5 text-sm font-bold text-white transition hover:bg-red-900 disabled:opacity-60"
+                          >
+                            {signupSubmitting ? 'Creating account…' : 'Sign up as intern'}
+                          </button>
+                        </form>
+                      )}
+                    </div>
+                  )}
                 </>
               )}
             </div>
