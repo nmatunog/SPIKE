@@ -11,6 +11,16 @@ npm run build
 
 In development, run the API in another terminal (`cd api && npm run dev`). The Vite dev server proxies `/api` to `http://localhost:4000`.
 
+### Simplest deploy now (static only, no backend)
+
+If you only need the portal content online now, enable static mode:
+
+1. Netlify → Site settings → Environment variables
+2. Set `VITE_STATIC_ONLY=true`
+3. Clear cache and deploy site
+
+In static mode, the site skips API calls and shows the Orientation Deck + Master Blueprint as a public preview.
+
 ### End-to-end: Netlify shows the yellow “no API” box — do this in order
 
 You need **two** live URLs: **(1) API** on a Node host, **(2) frontend** on Netlify. The frontend only knows where the API is if **`VITE_API_URL`** is set **on Netlify** and the site is **rebuilt**.

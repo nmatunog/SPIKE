@@ -56,6 +56,8 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
     completeBootstrapSetup,
   } = useAuth();
   const userRole = user ? mapApiRoleToUi(user.role) : 'guest';
+  const STATIC_ONLY = import.meta.env.VITE_STATIC_ONLY === 'true';
+  const [publicTab, setPublicTab] = useState('orientation');
 
   const [activeTab, setActiveTab] = useState('dashboard');
   const [toast, setToast] = useState({
@@ -138,6 +140,12 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
   }, [token, user?.role]);
 
   const loadSetupInfo = useCallback(async () => {
+    if (STATIC_ONLY) {
+      setSetupMeta({ needsBootstrap: false, secretRequired: false });
+      setSetupLoadError('');
+      setSetupLoadState('ok');
+      return;
+    }
     setSetupLoadState('loading');
     setSetupLoadError('');
     try {
@@ -152,7 +160,7 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
       setSetupLoadError(e.message || 'Could not reach the API.');
       setSetupMeta(null);
     }
-  }, []);
+  }, [STATIC_ONLY]);
 
   useEffect(() => {
     if (userRole !== 'guest' || authLoading) return;
@@ -1325,7 +1333,23 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
 
       <main>
         {userRole === 'guest' && (
-          authLoading ? (
+          STATIC_ONLY ? (
+            <div className="container mx-auto px-6 py-8">
+              <div className="mb-6 rounded-xl border border-gray-200 bg-white p-5">
+                <h2 className="mb-2 text-2xl font-extrabold text-gray-900">Static preview mode</h2>
+                <p className="text-sm text-gray-600">Running without an API. Orientation and master blueprint are available.</p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <button type="button" onClick={() => setPublicTab('orientation')} className={`rounded-lg px-3 py-2 text-sm font-bold transition ${publicTab === 'orientation' ? 'bg-[#8B0000] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
+                    Orientation Deck
+                  </button>
+                  <button type="button" onClick={() => setPublicTab('syllabus')} className={`rounded-lg px-3 py-2 text-sm font-bold transition ${publicTab === 'syllabus' ? 'bg-[#8B0000] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
+                    Master Blueprint
+                  </button>
+                </div>
+              </div>
+              {publicTab === 'orientation' ? <OrientationModule /> : <MasterSyllabusView />}
+            </div>
+          ) : authLoading ? (
             <div className="flex flex-col items-center justify-center gap-3 py-24 text-gray-600">
               <Loader2 className="animate-spin text-[#8B0000]" size={40} />
               <p className="text-sm font-medium">Loading session…</p>
