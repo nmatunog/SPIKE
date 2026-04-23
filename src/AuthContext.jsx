@@ -7,6 +7,7 @@ import {
   useState,
 } from 'react';
 import { apiFetch } from './apiClient';
+import { isSupabaseConfigured } from './supabaseClient';
 
 const AuthContext = createContext(null);
 
@@ -85,12 +86,21 @@ export function AuthProvider({ children }) {
       token,
       user,
       loading,
+      isSupabaseConfigured,
       login,
       completeBootstrapSetup,
       logout,
       refreshUser,
     }),
-    [token, user, loading, login, completeBootstrapSetup, logout, refreshUser],
+    [
+      token,
+      user,
+      loading,
+      login,
+      completeBootstrapSetup,
+      logout,
+      refreshUser,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
