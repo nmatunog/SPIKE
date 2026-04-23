@@ -13,12 +13,13 @@ In development, run the API in another terminal (`cd api && npm run dev`). The V
 
 ### Deploy on Netlify (checklist)
 
-1. **New site → Import** this repo. Base directory: **repository root** (where `package.json` and `netlify.toml` live).
-2. **Build command:** `npm run build` (default from `netlify.toml`). **Publish directory:** `dist`.
-3. **Environment variables** (Site configuration → Environment variables):
-   - **`VITE_API_URL`** — full origin of your deployed API, **no trailing slash**, e.g. `https://spike-api.onrender.com`.  
-     **Important:** Vite inlines this at **build** time. After you add or change it, trigger **Clear cache and deploy site** (or an empty redeploy) so the bundle picks up the new value.
-4. Until the API is live and CORS allows your Netlify URL, logins and data fetches will fail in production (the UI still loads).
+**Git-connected (recommended)** — each `git push` to `main` can trigger a build.
+
+1. In Netlify: **Add new site → Import an existing project** → authorize **GitHub** → pick **`nmatunog/SPIKE`** (or your fork). Production branch: **`main`**.
+2. Leave **base directory** empty (repo root). Netlify reads **`netlify.toml`**: build **`npm run build`**, publish **`dist`**, Node **22**.
+3. **Site settings → Environment variables:** add **`VITE_API_URL`** = full origin of your deployed API (**no** trailing slash), e.g. `https://spike-api.onrender.com`. Vite inlines it at **build** time — after changing it, run **Deploys → Clear cache and deploy site**.
+4. **Deploys** should show a green build; open the site URL. Until the API is live, the UI loads but auth/API calls will fail.
+5. Optional: **Site settings → Build & deploy → Continuous deployment** — confirm **Production branch** is `main` and builds run on push.
 
 Files involved:
 
