@@ -11,6 +11,43 @@ npm run build
 
 In development, run the API in another terminal (`cd api && npm run dev`). The Vite dev server proxies `/api` to `http://localhost:4000`.
 
+### End-to-end: Netlify shows the yellow “no API” box — do this in order
+
+You need **two** live URLs: **(1) API** on a Node host, **(2) frontend** on Netlify. The frontend only knows where the API is if **`VITE_API_URL`** is set **on Netlify** and the site is **rebuilt**.
+
+#### Part A — Put the API on the internet (example: [Render](https://render.com))
+
+1. Sign up / log in at Render.
+2. **Dashboard → New + → Web Service** → connect **GitHub** → choose **`nmatunog/SPIKE`** (same repo as Netlify).
+3. Configure the service:
+   - **Name:** e.g. `spike-api` (your URL will be `https://spike-api.onrender.com`).
+   - **Root directory:** `api` (important: not the repo root).
+   - **Runtime:** Node.
+   - **Build command:**  
+     `npm install && npx prisma generate && npm run prisma:deploy`
+   - **Start command:**  
+     `npm start`
+4. **Environment** (Render → your service → **Environment**):
+   - **`DATABASE_URL`** — for a first working deploy with the current project, use SQLite on the service disk, e.g.  
+     `file:./prisma/render.db`  
+     (Fine for demos; for serious production, move to **PostgreSQL** and change Prisma later.)
+   - **`JWT_SECRET`** — any long random string (e.g. 32+ characters). Do not reuse a sample from the internet.
+   - **`PORT`** — Render sets this automatically; you can leave it unset (the app defaults to `4000`; Render injects `PORT` when present).
+5. Click **Create Web Service** and wait until the deploy is **Live**. Open the **URL** Render shows (e.g. `https://spike-api-xxxx.onrender.com`) and try **`/health`** in the browser — you should see JSON like `{"status":"ok"}`.
+
+#### Part B — Point Netlify at that API
+
+1. Netlify → your site (**cma-spike**) → **Site configuration → Environment variables**.
+2. Add **`VITE_API_URL`** = your Render API origin only, e.g. `https://spike-api-xxxx.onrender.com` (**no** trailing slash, **no** `/api` suffix).
+3. **Deploys → Trigger deploy → Clear cache and deploy site** (so Vite embeds the new value).
+4. Reload your Netlify URL. The yellow error should disappear; use **first-time setup** (empty DB) or **Sign in** if you seeded an admin locally and copied that DB (usually you use empty DB + first-time setup on first deploy).
+
+#### Part C — If something still fails
+
+- **404 / HTML on `/api/...` from Netlify:** `VITE_API_URL` is missing or the site was not rebuilt after setting it — repeat Part B step 3.
+- **CORS:** this API allows browser origins with `cors({ origin: true })`; if you still see CORS errors, check that the browser is calling the **Render** URL (from `VITE_API_URL`), not Netlify.
+- **Render build fails on Prisma:** confirm **Root directory** is **`api`** and the build command includes **`npx prisma generate`** and **`npm run prisma:deploy`**.
+
 ### Deploy on Netlify (checklist)
 
 **Git-connected (recommended)** — each `git push` to `main` can trigger a build.
