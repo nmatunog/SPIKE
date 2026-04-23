@@ -1442,8 +1442,8 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
           <p className="mx-auto mt-2 max-w-md text-sm text-gray-500">
             Manage user accounts, traction exports, and agency alignment settings. Deploy the API
             separately and set{' '}
-            <code className="rounded bg-gray-100 px-1">VITE_API_URL</code> on Netlify for production
-            builds.
+            <code className="rounded bg-gray-100 px-1">VITE_API_URL</code> in your hosting
+            environment for production builds.
           </p>
           <button
             type="button"

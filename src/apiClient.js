@@ -37,7 +37,7 @@ export async function apiFetch(path, { token, headers = {}, ...rest } = {}) {
   if (looksLikeHtml) {
     throw new ApiError(
       502,
-      'Received a web page instead of the API (often a missing VITE_API_URL on Netlify, or the API is not running). Set VITE_API_URL to your API origin, run npm run build, and redeploy.',
+      'Received a web page instead of the API (often a missing/misconfigured VITE_API_URL, or the API is not running). Set VITE_API_URL to your API origin in your hosting environment, then rebuild/redeploy.',
       null,
     );
   }
