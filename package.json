@@ -10,7 +10,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy:cf": "bash ./scripts/deploy-cloudflare.sh"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.104.0",
