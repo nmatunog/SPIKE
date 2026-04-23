@@ -1547,7 +1547,7 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
               </h2>
               <p className="mb-6 text-center text-sm text-gray-600">
                 {usingSupabaseAuth
-                  ? 'Sign in with your Supabase account. User roles are managed in the profiles table (ADMIN/FACULTY/MENTOR/INTERN).'
+                  ? 'Sign in with your registered account to continue. New interns can create an account using today’s activation code from an administrator.'
                   : 'There is no public self-registration. The first person to access an empty database creates the administrator account once. Everyone else must be created by an admin after that.'}
               </p>
 
