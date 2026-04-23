@@ -369,6 +369,7 @@ app.patch(
   },
 );
 
-app.listen(port, () => {
-  console.log(`SPIKE API listening on http://localhost:${port}`);
+const host = process.env.HOST || '0.0.0.0';
+app.listen(port, host, () => {
+  console.log(`SPIKE API listening on http://${host}:${port}`);
 });
