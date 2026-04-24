@@ -30,6 +30,10 @@ import { apiFetch } from './apiClient.js';
 import { supabase } from './supabaseClient.js';
 import { fullSyllabusData } from './fullSyllabusData.js';
 import { orientationSlides } from './orientationSlideContents.jsx';
+import { AdminRegisterForm } from './components/AdminRegisterForm.jsx';
+import { GuestBootstrapForm } from './components/GuestBootstrapForm.jsx';
+import { GuestLoginForm } from './components/GuestLoginForm.jsx';
+import { InternSignupPanel } from './components/InternSignupPanel.jsx';
 
 function mapApiRoleToUi(role) {
   switch (role) {
@@ -75,40 +79,10 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
   const [pendingLogs, setPendingLogs] = useState([]);
   const [myLogs, setMyLogs] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [loginEmail, setLoginEmail] = useState('');
-  const [loginPassword, setLoginPassword] = useState('');
-  const [loginError, setLoginError] = useState('');
-  const [loginSubmitting, setLoginSubmitting] = useState(false);
-
-  const [regName, setRegName] = useState('');
-  const [regEmail, setRegEmail] = useState('');
-  const [regPassword, setRegPassword] = useState('');
-  const [regRole, setRegRole] = useState('INTERN');
-  const [regUniversity, setRegUniversity] = useState('');
-  const [regSquad, setRegSquad] = useState('');
-  const [regSubmitting, setRegSubmitting] = useState(false);
 
   const [setupLoadState, setSetupLoadState] = useState('loading');
   const [setupLoadError, setSetupLoadError] = useState('');
   const [setupMeta, setSetupMeta] = useState(null);
-
-  const [bootName, setBootName] = useState('');
-  const [bootEmail, setBootEmail] = useState('');
-  const [bootPassword, setBootPassword] = useState('');
-  const [bootPassword2, setBootPassword2] = useState('');
-  const [bootSecret, setBootSecret] = useState('');
-  const [bootSubmitting, setBootSubmitting] = useState(false);
-  const [bootError, setBootError] = useState('');
-  const [showSignup, setShowSignup] = useState(false);
-  const [signupName, setSignupName] = useState('');
-  const [signupEmail, setSignupEmail] = useState('');
-  const [signupPassword, setSignupPassword] = useState('');
-  const [signupPassword2, setSignupPassword2] = useState('');
-  const [signupUniversity, setSignupUniversity] = useState('');
-  const [signupSquad, setSignupSquad] = useState('');
-  const [signupCode, setSignupCode] = useState('');
-  const [signupSubmitting, setSignupSubmitting] = useState(false);
-  const [signupError, setSignupError] = useState('');
   const [activationCode, setActivationCode] = useState(null);
   const [activationCodeLoading, setActivationCodeLoading] = useState(false);
   const [activationCodeGenerating, setActivationCodeGenerating] = useState(false);
@@ -369,35 +343,20 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
     }
   };
 
-  const handleLoginSubmit = async (e) => {
-    e.preventDefault();
-    setLoginError('');
-    setLoginSubmitting(true);
-    try {
-      await login(loginEmail.trim(), loginPassword);
-      setLoginPassword('');
+  const handleGuestLogin = useCallback(
+    async (email, password) => {
+      await login(email, password);
       setActiveTab('dashboard');
       showToast('Signed in successfully.');
-    } catch (err) {
-      setLoginError(err.message || 'Sign in failed.');
-    } finally {
-      setLoginSubmitting(false);
-    }
-  };
+    },
+    [login, showToast],
+  );
 
-  const handleSignupSubmit = async (e) => {
-    e.preventDefault();
-    setSignupError('');
-    if (!usingSupabaseAuth || !supabase) {
-      setSignupError('Signup is only available in Supabase mode.');
-      return;
-    }
-    if (signupPassword !== signupPassword2) {
-      setSignupError('Passwords do not match.');
-      return;
-    }
-    setSignupSubmitting(true);
-    try {
+  const handleInternSignup = useCallback(
+    async ({ name, email, password, university, squad, code }) => {
+      if (!usingSupabaseAuth || !supabase) {
+        throw new Error('Signup is only available in Supabase mode.');
+      }
       const todayKey = getTodayKey();
       const { data: codeRow, error: codeError } = await supabase
         .from('activation_codes')
@@ -411,21 +370,21 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
       if (new Date(codeRow.expires_at).getTime() < Date.now()) {
         throw new Error('Activation code has expired. Ask an admin for a new code.');
       }
-      if (String(codeRow.code).toUpperCase() !== signupCode.trim().toUpperCase()) {
+      if (String(codeRow.code).toUpperCase() !== code.toUpperCase()) {
         throw new Error('Invalid activation code.');
       }
 
       const { data, error } = await supabase.auth.signUp({
-        email: signupEmail.trim(),
-        password: signupPassword,
-        options: { data: { name: signupName.trim() } },
+        email,
+        password,
+        options: { data: { name } },
       });
       if (error) throw error;
 
       if (data.user?.id) {
         await supabase
           .from('profiles')
-          .update({ name: signupName.trim(), role: 'INTERN' })
+          .update({ name, role: 'INTERN' })
           .eq('id', data.user.id);
         await supabase.from('intern_progress').upsert(
           {
@@ -433,28 +392,17 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
             segment: 1,
             hours: 0,
             licensed: false,
-            university: signupUniversity.trim() || null,
-            squad: signupSquad.trim() || null,
+            university: university || null,
+            squad: squad || null,
           },
           { onConflict: 'user_id' },
         );
       }
 
-      setSignupName('');
-      setSignupEmail('');
-      setSignupPassword('');
-      setSignupPassword2('');
-      setSignupUniversity('');
-      setSignupSquad('');
-      setSignupCode('');
-      setShowSignup(false);
       showToast('Account created. You can now sign in.', 'success');
-    } catch (err) {
-      setSignupError(err.message || 'Signup failed.');
-    } finally {
-      setSignupSubmitting(false);
-    }
-  };
+    },
+    [usingSupabaseAuth, showToast],
+  );
 
   const handleGenerateActivationCode = async () => {
     if (!usingSupabaseAuth || user?.role !== 'ADMIN' || !supabase) return;
@@ -489,60 +437,34 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
     }
   };
 
-  const handleBootstrapSubmit = async (e) => {
-    e.preventDefault();
-    setBootError('');
-    if (bootPassword !== bootPassword2) {
-      setBootError('Passwords do not match.');
-      return;
-    }
-    setBootSubmitting(true);
-    try {
-      await completeBootstrapSetup({
-        name: bootName.trim(),
-        email: bootEmail.trim(),
-        password: bootPassword,
-        ...(setupMeta?.secretRequired ? { setupSecret: bootSecret } : {}),
-      });
-      setBootPassword('');
-      setBootPassword2('');
-      setBootSecret('');
+  const handleBootstrapComplete = useCallback(
+    async (payload) => {
+      await completeBootstrapSetup(payload);
       setActiveTab('dashboard');
       showToast('Administrator account created. You are signed in.');
       await loadSetupInfo();
-    } catch (err) {
-      setBootError(err.message || 'Setup failed.');
-    } finally {
-      setBootSubmitting(false);
-    }
-  };
+    },
+    [completeBootstrapSetup, showToast, loadSetupInfo],
+  );
 
-  const submitAdminRegister = async (e) => {
-    e.preventDefault();
-    if (!token) return;
-    setRegSubmitting(true);
-    try {
-      await apiFetch('/api/auth/register', {
-        token,
-        method: 'POST',
-        body: {
-          name: regName.trim(),
-          email: regEmail.trim(),
-          password: regPassword,
-          role: regRole,
-          university: regRole === 'INTERN' ? regUniversity.trim() || undefined : undefined,
-          squad: regRole === 'INTERN' ? regSquad.trim() || undefined : undefined,
-        },
-      });
-      setRegPassword('');
-      showToast('User created.');
-      await loadInterns();
-    } catch (err) {
-      showToast(err.message || 'Registration failed', 'info');
-    } finally {
-      setRegSubmitting(false);
-    }
-  };
+  const handleAdminRegister = useCallback(
+    async (body) => {
+      if (!token) throw new Error('Not signed in');
+      try {
+        await apiFetch('/api/auth/register', {
+          token,
+          method: 'POST',
+          body,
+        });
+        showToast('User created.');
+        await loadInterns();
+      } catch (err) {
+        showToast(err.message || 'Registration failed', 'info');
+        throw err;
+      }
+    },
+    [token, showToast, loadInterns],
+  );
 
   const Navigation = () => (
     <nav className="relative z-50 bg-[#8B0000] text-white shadow-md">
@@ -1342,65 +1264,7 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
             Team members cannot sign up on their own. Admins create interns, faculty,
             mentors, or other admins here. Interns receive a progress record automatically.
           </p>
-          <form className="space-y-3" onSubmit={submitAdminRegister}>
-            <input
-              required
-              value={regName}
-              onChange={(e) => setRegName(e.target.value)}
-              placeholder="Full name"
-              className="w-full rounded-lg border border-gray-300 p-2 text-sm outline-none focus:border-[#8B0000]"
-            />
-            <input
-              required
-              type="email"
-              value={regEmail}
-              onChange={(e) => setRegEmail(e.target.value)}
-              placeholder="Email"
-              className="w-full rounded-lg border border-gray-300 p-2 text-sm outline-none focus:border-[#8B0000]"
-            />
-            <input
-              required
-              type="password"
-              minLength={8}
-              value={regPassword}
-              onChange={(e) => setRegPassword(e.target.value)}
-              placeholder="Password (min 8 characters)"
-              className="w-full rounded-lg border border-gray-300 p-2 text-sm outline-none focus:border-[#8B0000]"
-            />
-            <select
-              value={regRole}
-              onChange={(e) => setRegRole(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 p-2 text-sm outline-none focus:border-[#8B0000]"
-            >
-              <option value="INTERN">Intern</option>
-              <option value="FACULTY">Faculty</option>
-              <option value="MENTOR">Mentor (Advisory Board)</option>
-              <option value="ADMIN">Admin</option>
-            </select>
-            {regRole === 'INTERN' && (
-              <>
-                <input
-                  value={regUniversity}
-                  onChange={(e) => setRegUniversity(e.target.value)}
-                  placeholder="University / recruitment source"
-                  className="w-full rounded-lg border border-gray-300 p-2 text-sm outline-none focus:border-[#8B0000]"
-                />
-                <input
-                  value={regSquad}
-                  onChange={(e) => setRegSquad(e.target.value)}
-                  placeholder="Squad (optional)"
-                  className="w-full rounded-lg border border-gray-300 p-2 text-sm outline-none focus:border-[#8B0000]"
-                />
-              </>
-            )}
-            <button
-              type="submit"
-              disabled={regSubmitting}
-              className="w-full rounded-lg bg-[#8B0000] py-2 text-sm font-bold text-white transition hover:bg-red-900 disabled:opacity-60"
-            >
-              {regSubmitting ? 'Creating…' : 'Create account'}
-            </button>
-          </form>
+          <AdminRegisterForm onRegister={handleAdminRegister} />
           {usingSupabaseAuth && (
             <div className="mt-6 border-t border-gray-200 pt-6">
               <div className="mb-2 flex items-center justify-between">
@@ -1572,103 +1436,10 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
               )}
 
               {setupLoadState === 'ok' && setupMeta?.needsBootstrap && (
-                <form
-                  className="mb-10 w-full space-y-4 rounded-2xl border-2 border-[#8B0000]/30 bg-red-50/50 p-6 shadow-sm"
-                  onSubmit={handleBootstrapSubmit}
-                >
-                  <h3 className="text-center text-lg font-bold text-gray-900">
-                    First-time setup: create administrator
-                  </h3>
-                  <p className="text-center text-xs text-gray-600">
-                    This form appears only when the database has no users. You will be signed in as
-                    an admin. No one else can use this shortcut after the first account exists.
-                  </p>
-                  {bootError && (
-                    <p className="rounded-lg bg-red-50 p-2 text-center text-sm text-red-700">
-                      {bootError}
-                    </p>
-                  )}
-                  <div>
-                    <label className="mb-1 block text-xs font-bold text-gray-700">
-                      Full name
-                    </label>
-                    <input
-                      required
-                      value={bootName}
-                      onChange={(e) => setBootName(e.target.value)}
-                      className="w-full rounded-lg border border-gray-300 bg-white p-2.5 text-sm outline-none focus:border-[#8B0000]"
-                      placeholder="Your name"
-                      autoComplete="name"
-                    />
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-xs font-bold text-gray-700">Email</label>
-                    <input
-                      type="email"
-                      required
-                      value={bootEmail}
-                      onChange={(e) => setBootEmail(e.target.value)}
-                      className="w-full rounded-lg border border-gray-300 bg-white p-2.5 text-sm outline-none focus:border-[#8B0000]"
-                      placeholder="you@agency.com"
-                      autoComplete="username"
-                    />
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-xs font-bold text-gray-700">Password</label>
-                    <input
-                      type="password"
-                      required
-                      minLength={8}
-                      value={bootPassword}
-                      onChange={(e) => setBootPassword(e.target.value)}
-                      className="w-full rounded-lg border border-gray-300 bg-white p-2.5 text-sm outline-none focus:border-[#8B0000]"
-                      placeholder="At least 8 characters"
-                      autoComplete="new-password"
-                    />
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-xs font-bold text-gray-700">
-                      Confirm password
-                    </label>
-                    <input
-                      type="password"
-                      required
-                      minLength={8}
-                      value={bootPassword2}
-                      onChange={(e) => setBootPassword2(e.target.value)}
-                      className="w-full rounded-lg border border-gray-300 bg-white p-2.5 text-sm outline-none focus:border-[#8B0000]"
-                      placeholder="Repeat password"
-                      autoComplete="new-password"
-                    />
-                  </div>
-                  {setupMeta.secretRequired && (
-                    <div>
-                      <label className="mb-1 block text-xs font-bold text-gray-700">
-                        Setup secret
-                      </label>
-                      <input
-                        type="password"
-                        required
-                        value={bootSecret}
-                        onChange={(e) => setBootSecret(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 bg-white p-2.5 text-sm outline-none focus:border-[#8B0000]"
-                        placeholder="Value from API SETUP_SECRET"
-                        autoComplete="off"
-                      />
-                      <p className="mt-1 text-xs text-gray-500">
-                        Your API host must define <code className="rounded bg-gray-100 px-1">SETUP_SECRET</code>{' '}
-                        for this field to appear.
-                      </p>
-                    </div>
-                  )}
-                  <button
-                    type="submit"
-                    disabled={bootSubmitting}
-                    className="w-full rounded-lg bg-[#8B0000] py-2.5 text-sm font-bold text-white transition hover:bg-red-900 disabled:opacity-60"
-                  >
-                    {bootSubmitting ? 'Creating account…' : 'Create administrator & sign in'}
-                  </button>
-                </form>
+                <GuestBootstrapForm
+                  secretRequired={!!setupMeta.secretRequired}
+                  onSubmit={handleBootstrapComplete}
+                />
               )}
 
               {setupLoadState === 'ok' && (
@@ -1678,225 +1449,17 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
                       Already set up this server?
                     </p>
                   )}
-                  <form
-                    className="w-full space-y-4 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"
-                    onSubmit={handleLoginSubmit}
-                  >
-                    <h3 className="text-center text-sm font-bold text-gray-800">
-                      {setupMeta?.needsBootstrap ? 'Sign in instead' : 'Sign in'}
-                    </h3>
-                    {loginError && (
-                      <p className="rounded-lg bg-red-50 p-2 text-center text-sm text-red-700">
-                        {loginError}
-                      </p>
-                    )}
-                    <div>
-                      <label className="mb-1 block text-xs font-bold text-gray-700">Email</label>
-                      <input
-                        type="email"
-                        required
-                        autoComplete="username"
-                        value={loginEmail}
-                        onChange={(e) => setLoginEmail(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 p-2.5 text-sm outline-none focus:border-[#8B0000]"
-                        placeholder="you@example.com"
-                      />
-                    </div>
-                    <div>
-                      <label className="mb-1 block text-xs font-bold text-gray-700">Password</label>
-                      <input
-                        type="password"
-                        required
-                        autoComplete="current-password"
-                        value={loginPassword}
-                        onChange={(e) => setLoginPassword(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 p-2.5 text-sm outline-none focus:border-[#8B0000]"
-                        placeholder="••••••••"
-                      />
-                    </div>
-                    <button
-                      type="submit"
-                      disabled={loginSubmitting}
-                      className="w-full rounded-lg bg-gray-900 py-2.5 text-sm font-bold text-white transition hover:bg-gray-800 disabled:opacity-60"
-                    >
-                      {loginSubmitting ? 'Signing in…' : 'Sign in'}
-                    </button>
-                  </form>
+                  <GuestLoginForm
+                    heading={setupMeta?.needsBootstrap ? 'Sign in instead' : 'Sign in'}
+                    onLogin={handleGuestLogin}
+                  />
                   {usingSupabaseAuth && (
-                    <div className="mt-4 w-full rounded-2xl border border-dashed border-gray-300 bg-white p-4">
-                      <div className="mb-3 flex items-center justify-between">
-                        <p className="text-xs font-bold uppercase tracking-wider text-gray-500">
-                          New intern?
-                        </p>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setShowSignup((prev) => !prev);
-                            setSignupError('');
-                          }}
-                          className="text-xs font-bold text-[#8B0000] underline"
-                        >
-                          {showSignup ? 'Hide signup' : 'Create intern account'}
-                        </button>
-                      </div>
-                      {showSignup && (
-                        <form className="space-y-3" onSubmit={handleSignupSubmit}>
-                          {signupError && (
-                            <p className="rounded-lg bg-red-50 p-2 text-center text-sm text-red-700">
-                              {signupError}
-                            </p>
-                          )}
-                          <input
-                            required
-                            value={signupName}
-                            onChange={(e) => setSignupName(e.target.value)}
-                            className="w-full rounded-lg border border-gray-300 p-2.5 text-sm outline-none focus:border-[#8B0000]"
-                            placeholder="Full name"
-                          />
-                          <input
-                            required
-                            type="email"
-                            value={signupEmail}
-                            onChange={(e) => setSignupEmail(e.target.value)}
-                            className="w-full rounded-lg border border-gray-300 p-2.5 text-sm outline-none focus:border-[#8B0000]"
-                            placeholder="Email"
-                          />
-                          <input
-                            required
-                            type="password"
-                            minLength={8}
-                            value={signupPassword}
-                            onChange={(e) => setSignupPassword(e.target.value)}
-                            className="w-full rounded-lg border border-gray-300 p-2.5 text-sm outline-none focus:border-[#8B0000]"
-                            placeholder="Password (min 8 chars)"
-                          />
-                          <input
-                            required
-                            type="password"
-                            minLength={8}
-                            value={signupPassword2}
-                            onChange={(e) => setSignupPassword2(e.target.value)}
-                            className="w-full rounded-lg border border-gray-300 p-2.5 text-sm outline-none focus:border-[#8B0000]"
-                            placeholder="Confirm password"
-                          />
-                          <input
-                            value={signupUniversity}
-                            onChange={(e) => setSignupUniversity(e.target.value)}
-                            className="w-full rounded-lg border border-gray-300 p-2.5 text-sm outline-none focus:border-[#8B0000]"
-                            placeholder="University / recruitment source (optional)"
-                          />
-                          <input
-                            value={signupSquad}
-                            onChange={(e) => setSignupSquad(e.target.value)}
-                            className="w-full rounded-lg border border-gray-300 p-2.5 text-sm outline-none focus:border-[#8B0000]"
-                            placeholder="Squad (optional)"
-                          />
-                          <input
-                            required
-                            value={signupCode}
-                            onChange={(e) => setSignupCode(e.target.value)}
-                            className="w-full rounded-lg border border-gray-300 p-2.5 text-sm uppercase outline-none focus:border-[#8B0000]"
-                            placeholder="Daily activation code"
-                          />
-                          <button
-                            type="submit"
-                            disabled={signupSubmitting}
-                            className="w-full rounded-lg bg-[#8B0000] py-2.5 text-sm font-bold text-white transition hover:bg-red-900 disabled:opacity-60"
-                          >
-                            {signupSubmitting ? 'Creating account…' : 'Sign up as intern'}
-                          </button>
-                        </form>
-                      )}
-                    </div>
+                    <InternSignupPanel onSignup={handleInternSignup} />
                   )}
                 </>
               )}
               {usingSupabaseAuth && setupLoadState !== 'ok' && (
-                <div className="mt-4 w-full rounded-2xl border border-dashed border-gray-300 bg-white p-4">
-                  <div className="mb-3 flex items-center justify-between">
-                    <p className="text-xs font-bold uppercase tracking-wider text-gray-500">
-                      New intern?
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowSignup((prev) => !prev);
-                        setSignupError('');
-                      }}
-                      className="text-xs font-bold text-[#8B0000] underline"
-                    >
-                      {showSignup ? 'Hide signup' : 'Create intern account'}
-                    </button>
-                  </div>
-                  {showSignup && (
-                    <form className="space-y-3" onSubmit={handleSignupSubmit}>
-                      {signupError && (
-                        <p className="rounded-lg bg-red-50 p-2 text-center text-sm text-red-700">
-                          {signupError}
-                        </p>
-                      )}
-                      <input
-                        required
-                        value={signupName}
-                        onChange={(e) => setSignupName(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 p-2.5 text-sm outline-none focus:border-[#8B0000]"
-                        placeholder="Full name"
-                      />
-                      <input
-                        required
-                        type="email"
-                        value={signupEmail}
-                        onChange={(e) => setSignupEmail(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 p-2.5 text-sm outline-none focus:border-[#8B0000]"
-                        placeholder="Email"
-                      />
-                      <input
-                        required
-                        type="password"
-                        minLength={8}
-                        value={signupPassword}
-                        onChange={(e) => setSignupPassword(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 p-2.5 text-sm outline-none focus:border-[#8B0000]"
-                        placeholder="Password (min 8 chars)"
-                      />
-                      <input
-                        required
-                        type="password"
-                        minLength={8}
-                        value={signupPassword2}
-                        onChange={(e) => setSignupPassword2(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 p-2.5 text-sm outline-none focus:border-[#8B0000]"
-                        placeholder="Confirm password"
-                      />
-                      <input
-                        value={signupUniversity}
-                        onChange={(e) => setSignupUniversity(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 p-2.5 text-sm outline-none focus:border-[#8B0000]"
-                        placeholder="University / recruitment source (optional)"
-                      />
-                      <input
-                        value={signupSquad}
-                        onChange={(e) => setSignupSquad(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 p-2.5 text-sm outline-none focus:border-[#8B0000]"
-                        placeholder="Squad (optional)"
-                      />
-                      <input
-                        required
-                        value={signupCode}
-                        onChange={(e) => setSignupCode(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 p-2.5 text-sm uppercase outline-none focus:border-[#8B0000]"
-                        placeholder="Daily activation code"
-                      />
-                      <button
-                        type="submit"
-                        disabled={signupSubmitting}
-                        className="w-full rounded-lg bg-[#8B0000] py-2.5 text-sm font-bold text-white transition hover:bg-red-900 disabled:opacity-60"
-                      >
-                        {signupSubmitting ? 'Creating account…' : 'Sign up as intern'}
-                      </button>
-                    </form>
-                  )}
-                </div>
+                <InternSignupPanel onSignup={handleInternSignup} />
               )}
             </div>
           )
