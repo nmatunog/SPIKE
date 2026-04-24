@@ -1,4 +1,5 @@
 import React, { memo, useState } from 'react';
+import { PasswordInput } from './PasswordInput.jsx';
 
 export const InternSignupPanel = memo(function InternSignupPanel({ onSignup }) {
   const [show, setShow] = useState(false);
@@ -81,23 +82,23 @@ export const InternSignupPanel = memo(function InternSignupPanel({ onSignup }) {
             className="w-full rounded-lg border border-gray-300 p-2.5 text-sm outline-none focus:border-[#8B0000]"
             placeholder="Email"
           />
-          <input
+          <PasswordInput
             required
-            type="password"
             minLength={8}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full rounded-lg border border-gray-300 p-2.5 text-sm outline-none focus:border-[#8B0000]"
             placeholder="Password (min 8 chars)"
+            autoComplete="new-password"
           />
-          <input
+          <PasswordInput
             required
-            type="password"
             minLength={8}
             value={password2}
             onChange={(e) => setPassword2(e.target.value)}
             className="w-full rounded-lg border border-gray-300 p-2.5 text-sm outline-none focus:border-[#8B0000]"
             placeholder="Confirm password"
+            autoComplete="new-password"
           />
           <input
             value={university}

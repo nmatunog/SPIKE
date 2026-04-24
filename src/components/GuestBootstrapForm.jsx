@@ -1,4 +1,5 @@
 import React, { memo, useState } from 'react';
+import { PasswordInput } from './PasswordInput.jsx';
 
 export const GuestBootstrapForm = memo(function GuestBootstrapForm({
   secretRequired,
@@ -79,8 +80,7 @@ export const GuestBootstrapForm = memo(function GuestBootstrapForm({
       </div>
       <div>
         <label className="mb-1 block text-xs font-bold text-gray-700">Password</label>
-        <input
-          type="password"
+        <PasswordInput
           required
           minLength={8}
           value={password}
@@ -92,8 +92,7 @@ export const GuestBootstrapForm = memo(function GuestBootstrapForm({
       </div>
       <div>
         <label className="mb-1 block text-xs font-bold text-gray-700">Confirm password</label>
-        <input
-          type="password"
+        <PasswordInput
           required
           minLength={8}
           value={password2}
@@ -106,14 +105,15 @@ export const GuestBootstrapForm = memo(function GuestBootstrapForm({
       {secretRequired && (
         <div>
           <label className="mb-1 block text-xs font-bold text-gray-700">Setup secret</label>
-          <input
-            type="password"
+          <PasswordInput
             required
             value={secret}
             onChange={(e) => setSecret(e.target.value)}
             className="w-full rounded-lg border border-gray-300 bg-white p-2.5 text-sm outline-none focus:border-[#8B0000]"
             placeholder="Value from API SETUP_SECRET"
             autoComplete="off"
+            showLabel="Show setup secret"
+            hideLabel="Hide setup secret"
           />
           <p className="mt-1 text-xs text-gray-500">
             Your API host must define{' '}

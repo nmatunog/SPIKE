@@ -1,4 +1,5 @@
 import React, { memo, useState } from 'react';
+import { PasswordInput } from './PasswordInput.jsx';
 
 export const AdminRegisterForm = memo(function AdminRegisterForm({ onRegister }) {
   const [name, setName] = useState('');
@@ -51,14 +52,14 @@ export const AdminRegisterForm = memo(function AdminRegisterForm({ onRegister })
         placeholder="Email"
         className="w-full rounded-lg border border-gray-300 p-2 text-sm outline-none focus:border-[#8B0000]"
       />
-      <input
+      <PasswordInput
         required
-        type="password"
         minLength={8}
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         placeholder="Password (min 8 characters)"
         className="w-full rounded-lg border border-gray-300 p-2 text-sm outline-none focus:border-[#8B0000]"
+        autoComplete="new-password"
       />
       <select
         value={role}

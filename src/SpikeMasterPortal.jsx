@@ -24,6 +24,7 @@ import {
   ArrowLeft,
   PlayCircle,
   Loader2,
+  Bell,
 } from 'lucide-react';
 import { useAuth } from './AuthContext.jsx';
 import { apiFetch } from './apiClient.js';
@@ -34,6 +35,7 @@ import { AdminRegisterForm } from './components/AdminRegisterForm.jsx';
 import { GuestBootstrapForm } from './components/GuestBootstrapForm.jsx';
 import { GuestLoginForm } from './components/GuestLoginForm.jsx';
 import { InternSignupPanel } from './components/InternSignupPanel.jsx';
+import { ForcePasswordChangeGate } from './components/ForcePasswordChangeGate.jsx';
 
 function mapApiRoleToUi(role) {
   switch (role) {
@@ -45,6 +47,9 @@ function mapApiRoleToUi(role) {
       return 'faculty';
     case 'MENTOR':
       return 'mentor';
+    case null:
+    case undefined:
+      return 'profile_error';
     default:
       return 'guest';
   }
@@ -61,7 +66,11 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
     refreshUser,
     completeBootstrapSetup,
   } = useAuth();
-  const userRole = user ? mapApiRoleToUi(user.role) : 'guest';
+  const userRole = !user
+    ? 'guest'
+    : user.profileIncomplete
+      ? 'profile_error'
+      : mapApiRoleToUi(user.role);
   const STATIC_ONLY = import.meta.env.VITE_STATIC_ONLY === 'true';
   const [publicTab, setPublicTab] = useState('orientation');
 
@@ -86,6 +95,8 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
   const [activationCode, setActivationCode] = useState(null);
   const [activationCodeLoading, setActivationCodeLoading] = useState(false);
   const [activationCodeGenerating, setActivationCodeGenerating] = useState(false);
+  const [passwordResetRequests, setPasswordResetRequests] = useState([]);
+  const [passwordResetLoading, setPasswordResetLoading] = useState(false);
 
   const showToast = useCallback((message, type = 'success') => {
     setToast({ show: true, message, type });
@@ -119,8 +130,111 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
     }
   }, [showToast, usingSupabaseAuth, user?.role]);
 
+  const loadPasswordResetRequests = useCallback(async () => {
+    if (!usingSupabaseAuth || user?.role !== 'ADMIN' || !supabase) return;
+    setPasswordResetLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('password_reset_requests')
+        .select('id, email, note, status, created_at')
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      setPasswordResetRequests(data || []);
+    } catch (e) {
+      showToast(e.message || 'Failed to load password help requests', 'info');
+    } finally {
+      setPasswordResetLoading(false);
+    }
+  }, [showToast, usingSupabaseAuth, user?.role]);
+
+  const submitPasswordResetRequest = useCallback(
+    async (requestEmail, note) => {
+      if (!usingSupabaseAuth || !supabase) {
+        throw new Error('Password help requests require Supabase.');
+      }
+      const { error } = await supabase.from('password_reset_requests').insert({
+        email: requestEmail.trim().toLowerCase(),
+        note: (note || '').trim() || null,
+      });
+      if (error) throw error;
+    },
+    [usingSupabaseAuth],
+  );
+
+  const requestPasswordHelpForGuest = useCallback(
+    async (em, note) => {
+      await submitPasswordResetRequest(em, note);
+      showToast('Administrators will see your request on their dashboard.', 'success');
+    },
+    [submitPasswordResetRequest, showToast],
+  );
+
+  const resolvePasswordResetRequest = useCallback(
+    async (id) => {
+      if (!usingSupabaseAuth || !supabase) return;
+      try {
+        const { error } = await supabase
+          .from('password_reset_requests')
+          .update({ status: 'resolved' })
+          .eq('id', id);
+        if (error) throw error;
+        await loadPasswordResetRequests();
+        showToast('Request marked resolved.');
+      } catch (e) {
+        showToast(e.message || 'Could not update request', 'info');
+      }
+    },
+    [usingSupabaseAuth, loadPasswordResetRequests, showToast],
+  );
+
   const loadInterns = useCallback(async () => {
-    if (!token || !['FACULTY', 'MENTOR', 'ADMIN'].includes(user?.role)) return;
+    if (!['FACULTY', 'MENTOR', 'ADMIN'].includes(user?.role)) return;
+
+    if (usingSupabaseAuth && supabase) {
+      setInternsLoading(true);
+      try {
+        const { data: profiles, error: profErr } = await supabase
+          .from('profiles')
+          .select('id, name, email, role')
+          .eq('role', 'INTERN')
+          .order('name');
+        if (profErr) throw profErr;
+        const list = profiles || [];
+        const ids = list.map((p) => p.id);
+        let progressByUser = {};
+        if (ids.length > 0) {
+          const { data: progRows, error: progErr } = await supabase
+            .from('intern_progress')
+            .select('user_id, segment, hours, licensed, squad, university')
+            .in('user_id', ids);
+          if (progErr) throw progErr;
+          progressByUser = Object.fromEntries((progRows || []).map((r) => [r.user_id, r]));
+        }
+        const rows = list.map((row) => {
+          const p = progressByUser[row.id];
+          return {
+            id: row.id,
+            name: row.name,
+            email: row.email,
+            role: row.role,
+            segment: p?.segment ?? 1,
+            hours: p?.hours ?? 0,
+            licensed: p?.licensed ?? false,
+            squad: p?.squad ?? null,
+            university: p?.university ?? null,
+          };
+        });
+        setInterns(rows);
+      } catch (e) {
+        showToast(e.message || 'Failed to load interns', 'info');
+      } finally {
+        setInternsLoading(false);
+      }
+      return;
+    }
+
+    if (!token) return;
     setInternsLoading(true);
     try {
       const rows = await apiFetch('/api/interns', { token });
@@ -130,7 +244,7 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
     } finally {
       setInternsLoading(false);
     }
-  }, [token, user?.role, showToast]);
+  }, [token, user?.role, usingSupabaseAuth, showToast]);
 
   const loadPendingLogs = useCallback(async () => {
     if (!token || !['FACULTY', 'MENTOR', 'ADMIN'].includes(user?.role)) return;
@@ -207,10 +321,12 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
   useEffect(() => {
     if (user?.role === 'ADMIN' && usingSupabaseAuth) {
       loadActivationCode();
+      loadPasswordResetRequests();
     } else {
       setActivationCode(null);
+      setPasswordResetRequests([]);
     }
-  }, [user?.role, usingSupabaseAuth, loadActivationCode]);
+  }, [user?.role, usingSupabaseAuth, loadActivationCode, loadPasswordResetRequests]);
 
   const internSummary = useMemo(() => {
     const list = interns;
@@ -377,7 +493,7 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { name } },
+        options: { data: { name, must_change_password: false } },
       });
       if (error) throw error;
 
@@ -404,7 +520,7 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
     [usingSupabaseAuth, showToast],
   );
 
-  const handleGenerateActivationCode = async () => {
+  const handleGenerateActivationCode = useCallback(async () => {
     if (!usingSupabaseAuth || user?.role !== 'ADMIN' || !supabase) return;
     setActivationCodeGenerating(true);
     try {
@@ -435,7 +551,7 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
     } finally {
       setActivationCodeGenerating(false);
     }
-  };
+  }, [usingSupabaseAuth, user, showToast]);
 
   const handleBootstrapComplete = useCallback(
     async (payload) => {
@@ -449,21 +565,101 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
 
   const handleAdminRegister = useCallback(
     async (body) => {
-      if (!token) throw new Error('Not signed in');
       try {
+        if (usingSupabaseAuth) {
+          if (!supabase) throw new Error('Supabase is not configured.');
+          if (user?.role !== 'ADMIN') {
+            throw new Error('Only administrators can create accounts.');
+          }
+
+          const { data: sessionData } = await supabase.auth.getSession();
+          const adminSession = sessionData.session;
+          if (!adminSession?.user?.id) {
+            throw new Error('Your session expired. Sign in again.');
+          }
+          const adminId = adminSession.user.id;
+
+          const { data: signData, error: signErr } = await supabase.auth.signUp({
+            email: body.email.trim(),
+            password: body.password,
+            options: { data: { name: body.name.trim(), must_change_password: true } },
+          });
+          if (signErr) throw signErr;
+
+          const newUser = signData.user;
+          if (!newUser?.id) {
+            throw new Error(
+              'Could not create this user. The email may already be registered.',
+            );
+          }
+          if (!newUser.identities?.length) {
+            throw new Error(
+              'This email is already registered in Supabase. Use a different address or manage the user in the Supabase Auth dashboard.',
+            );
+          }
+
+          if (signData.session && signData.session.user.id !== adminId) {
+            throw new Error(
+              'This project auto-confirms new sign-ups, which would log you in as the new user. In Supabase: Authentication → Providers → Email → enable "Confirm email", then try again (or create users in the Supabase Auth dashboard).',
+            );
+          }
+
+          const { error: profileErr } = await supabase
+            .from('profiles')
+            .update({
+              name: body.name.trim(),
+              role: body.role,
+            })
+            .eq('id', newUser.id);
+          if (profileErr) throw profileErr;
+
+          if (body.role === 'INTERN') {
+            const { error: progErr } = await supabase.from('intern_progress').upsert(
+              {
+                user_id: newUser.id,
+                segment: 1,
+                hours: 0,
+                licensed: false,
+                university: body.university ?? null,
+                squad: body.squad ?? null,
+              },
+              { onConflict: 'user_id' },
+            );
+            if (progErr) throw progErr;
+          }
+
+          const createdMsg =
+            body.role === 'ADMIN'
+              ? 'Added another administrator. They sign in with this email and the password you set (confirm email in Supabase first, if your project requires it).'
+              : 'Account created. They sign in with this email and the password you set (confirm email in Supabase first, if your project requires it).';
+          showToast(createdMsg);
+          await loadInterns();
+          try {
+            await refreshUser();
+          } catch {
+            /* session still valid; profile can load on next navigation */
+          }
+          return;
+        }
+
+        if (!token) throw new Error('Not signed in');
         await apiFetch('/api/auth/register', {
           token,
           method: 'POST',
           body,
         });
-        showToast('User created.');
+        showToast(
+          body.role === 'ADMIN'
+            ? 'Added another administrator. They can sign in with this email and the password you set.'
+            : 'User created.',
+        );
         await loadInterns();
       } catch (err) {
         showToast(err.message || 'Registration failed', 'info');
         throw err;
       }
     },
-    [token, showToast, loadInterns],
+    [token, usingSupabaseAuth, user, showToast, loadInterns, refreshUser],
   );
 
   const Navigation = () => (
@@ -496,13 +692,15 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
             </span>
             <span className="rounded-full bg-red-900 px-3 py-1 text-sm font-bold uppercase tracking-wider shadow-inner">
               Role:{' '}
-              {userRole === 'intern'
-                ? 'Intern'
-                : userRole === 'mentor'
-                  ? 'Advisor'
-                  : userRole === 'admin'
-                    ? 'Admin'
-                    : 'Faculty'}
+              {userRole === 'profile_error'
+                ? 'Profile pending'
+                : userRole === 'intern'
+                  ? 'Intern'
+                  : userRole === 'mentor'
+                    ? 'Advisor'
+                    : userRole === 'admin'
+                      ? 'Admin'
+                      : 'Faculty'}
             </span>
             <button
               type="button"
@@ -1228,97 +1426,174 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
     </div>
   );
 
-  const AdminDashboard = () => (
-    <div className="container mx-auto px-6 py-8">
-      <h2 className="mb-6 text-3xl font-bold text-gray-900">Admin overview</h2>
-      <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
-        <div className="rounded-xl border border-gray-200 border-l-4 border-l-[#8B0000] bg-white p-6 shadow-sm">
-          <p className="mb-1 text-sm font-bold uppercase tracking-wider text-gray-500">
-            Active interns
-          </p>
-          <p className="text-3xl font-black text-gray-900">{internSummary.n}</p>
-        </div>
-        <div className="rounded-xl border border-gray-200 border-l-4 border-l-green-600 bg-white p-6 shadow-sm">
-          <p className="mb-1 text-sm font-bold uppercase tracking-wider text-gray-500">
-            Partnership track (Seg 3)
-          </p>
-          <p className="text-3xl font-black text-gray-900">{internSummary.s3}</p>
-        </div>
-        <div className="rounded-xl border border-gray-200 border-l-4 border-l-blue-600 bg-white p-6 shadow-sm">
-          <p className="mb-1 text-sm font-bold uppercase tracking-wider text-gray-500">
-            Avg completion
-          </p>
-          <p className="text-3xl font-black text-gray-900">
-            {internSummary.n ? internSummary.avgHours : 0}
-            <span className="text-lg text-gray-500">/600 hrs</span>
-          </p>
-        </div>
-      </div>
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-          <div className="mb-4 flex items-center gap-2">
-            <Users className="text-[#8B0000]" size={22} />
-            <h3 className="text-lg font-bold text-gray-900">Create user account</h3>
+  const adminDashboard = useMemo(
+    () => (
+      <div className="container mx-auto px-6 py-8">
+        <h2 className="mb-6 text-3xl font-bold text-gray-900">Admin overview</h2>
+        <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div className="rounded-xl border border-gray-200 border-l-4 border-l-[#8B0000] bg-white p-6 shadow-sm">
+            <p className="mb-1 text-sm font-bold uppercase tracking-wider text-gray-500">
+              Active interns
+            </p>
+            <p className="text-3xl font-black text-gray-900">{internSummary.n}</p>
           </div>
-          <p className="mb-4 text-sm text-gray-600">
-            Team members cannot sign up on their own. Admins create interns, faculty,
-            mentors, or other admins here. Interns receive a progress record automatically.
-          </p>
-          <AdminRegisterForm onRegister={handleAdminRegister} />
-          {usingSupabaseAuth && (
-            <div className="mt-6 border-t border-gray-200 pt-6">
-              <div className="mb-2 flex items-center justify-between">
-                <h4 className="text-sm font-bold uppercase tracking-wider text-gray-700">
-                  Intern activation code
-                </h4>
-                <button
-                  type="button"
-                  onClick={handleGenerateActivationCode}
-                  disabled={activationCodeGenerating}
-                  className="rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-gray-800 disabled:opacity-60"
-                >
-                  {activationCodeGenerating ? 'Generating…' : 'Generate today code'}
-                </button>
-              </div>
-              {activationCodeLoading ? (
-                <p className="text-sm text-gray-500">Loading activation code…</p>
-              ) : activationCode ? (
-                <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
-                  <p className="text-xs text-gray-500">Current code</p>
-                  <p className="text-2xl font-black tracking-widest text-[#8B0000]">
-                    {activationCode.code}
-                  </p>
-                  <p className="mt-1 text-xs text-gray-500">
-                    Expires: {new Date(activationCode.expires_at).toLocaleString()}
-                  </p>
-                </div>
-              ) : (
-                <p className="text-sm text-gray-500">
-                  No code generated yet. Click “Generate today code”.
-                </p>
-              )}
+          <div className="rounded-xl border border-gray-200 border-l-4 border-l-green-600 bg-white p-6 shadow-sm">
+            <p className="mb-1 text-sm font-bold uppercase tracking-wider text-gray-500">
+              Partnership track (Seg 3)
+            </p>
+            <p className="text-3xl font-black text-gray-900">{internSummary.s3}</p>
+          </div>
+          <div className="rounded-xl border border-gray-200 border-l-4 border-l-blue-600 bg-white p-6 shadow-sm">
+            <p className="mb-1 text-sm font-bold uppercase tracking-wider text-gray-500">
+              Avg completion
+            </p>
+            <p className="text-3xl font-black text-gray-900">
+              {internSummary.n ? internSummary.avgHours : 0}
+              <span className="text-lg text-gray-500">/600 hrs</span>
+            </p>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="mb-4 flex items-center gap-2">
+              <Users className="text-[#8B0000]" size={22} />
+              <h3 className="text-lg font-bold text-gray-900">Create user account</h3>
             </div>
-          )}
+            <p className="mb-4 text-sm text-gray-600">
+            Add another person to the portal (intern, faculty, mentor, or an additional
+            administrator) using their own email. Set a temporary password and share it securely;
+            they sign in on the same welcome page as you. On first sign-in they are prompted to
+            choose their own password before using the portal. Interns receive a progress record
+            automatically.
+            {usingSupabaseAuth && (
+                <>
+                  {' '}
+                  With Supabase, if email confirmation is enabled, they must confirm before their
+                  first sign-in.
+                </>
+              )}
+            </p>
+            <AdminRegisterForm onRegister={handleAdminRegister} />
+            {usingSupabaseAuth && (
+              <div className="mt-6 border-t border-gray-200 pt-6">
+                <div className="mb-2 flex items-center justify-between">
+                  <h4 className="text-sm font-bold uppercase tracking-wider text-gray-700">
+                    Intern activation code
+                  </h4>
+                  <button
+                    type="button"
+                    onClick={handleGenerateActivationCode}
+                    disabled={activationCodeGenerating}
+                    className="rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-gray-800 disabled:opacity-60"
+                  >
+                    {activationCodeGenerating ? 'Generating…' : 'Generate today code'}
+                  </button>
+                </div>
+                {activationCodeLoading ? (
+                  <p className="text-sm text-gray-500">Loading activation code…</p>
+                ) : activationCode ? (
+                  <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                    <p className="text-xs text-gray-500">Current code</p>
+                    <p className="text-2xl font-black tracking-widest text-[#8B0000]">
+                      {activationCode.code}
+                    </p>
+                    <p className="mt-1 text-xs text-gray-500">
+                      Expires: {new Date(activationCode.expires_at).toLocaleString()}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">
+                    No code generated yet. Click “Generate today code”.
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+          <div className="rounded-xl border border-gray-200 bg-white py-12 text-center shadow-sm">
+            <Settings size={40} className="mx-auto mb-4 text-gray-300" />
+            <h3 className="text-lg font-bold text-gray-700">System configuration</h3>
+            <p className="mx-auto mt-2 max-w-md text-sm text-gray-500">
+              Manage user accounts, traction exports, and agency alignment settings. Deploy the API
+              separately and set{' '}
+              <code className="rounded bg-gray-100 px-1">VITE_API_URL</code> in your hosting
+              environment for production builds.
+            </p>
+            <button
+              type="button"
+              onClick={() => showToast('Loading system configuration settings...', 'info')}
+              className="mt-4 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-200"
+            >
+              Open settings
+            </button>
+          </div>
         </div>
-        <div className="rounded-xl border border-gray-200 bg-white py-12 text-center shadow-sm">
-          <Settings size={40} className="mx-auto mb-4 text-gray-300" />
-          <h3 className="text-lg font-bold text-gray-700">System configuration</h3>
-          <p className="mx-auto mt-2 max-w-md text-sm text-gray-500">
-            Manage user accounts, traction exports, and agency alignment settings. Deploy the API
-            separately and set{' '}
-            <code className="rounded bg-gray-100 px-1">VITE_API_URL</code> in your hosting
-            environment for production builds.
-          </p>
-          <button
-            type="button"
-            onClick={() => showToast('Loading system configuration settings...', 'info')}
-            className="mt-4 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-200"
-          >
-            Open settings
-          </button>
-        </div>
+        {usingSupabaseAuth && (
+          <div className="mt-8 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="mb-3 flex items-center gap-2">
+              <Bell className="text-[#8B0000]" size={22} />
+              <h3 className="text-lg font-bold text-gray-900">Password help requests</h3>
+            </div>
+            <p className="mb-4 text-sm text-gray-600">
+              When someone uses “Forgot password?” on the sign-in page, their request appears here.
+              Set a new password in Supabase (Authentication → Users), share it offline, and turn on{' '}
+              <code className="rounded bg-gray-100 px-1">must_change_password</code> in user metadata
+              if they should pick a new password after signing in. Mark the row resolved when done.
+            </p>
+            {passwordResetLoading ? (
+              <p className="text-sm text-gray-500">Loading requests…</p>
+            ) : passwordResetRequests.length === 0 ? (
+              <p className="text-sm text-gray-500">No pending requests.</p>
+            ) : (
+              <ul className="divide-y divide-gray-100 rounded-lg border border-gray-100">
+                {passwordResetRequests.map((row) => (
+                  <li key={row.id} className="flex flex-col gap-2 p-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="font-bold text-gray-900">{row.email}</p>
+                      {row.note ? (
+                        <p className="text-sm text-gray-600">{row.note}</p>
+                      ) : (
+                        <p className="text-xs text-gray-400">No note</p>
+                      )}
+                      <p className="text-xs text-gray-400">
+                        {new Date(row.created_at).toLocaleString()}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => resolvePasswordResetRequest(row.id)}
+                      className="shrink-0 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-bold text-gray-800 transition hover:bg-gray-50"
+                    >
+                      Mark resolved
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <button
+              type="button"
+              onClick={() => loadPasswordResetRequests()}
+              className="mt-3 text-xs font-bold text-[#8B0000] underline"
+            >
+              Refresh list
+            </button>
+          </div>
+        )}
       </div>
-    </div>
+    ),
+    [
+      internSummary,
+      handleAdminRegister,
+      usingSupabaseAuth,
+      activationCode,
+      activationCodeLoading,
+      activationCodeGenerating,
+      handleGenerateActivationCode,
+      showToast,
+      passwordResetRequests,
+      passwordResetLoading,
+      loadPasswordResetRequests,
+      resolvePasswordResetRequest,
+    ],
   );
 
   return (
@@ -1452,6 +1727,10 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
                   <GuestLoginForm
                     heading={setupMeta?.needsBootstrap ? 'Sign in instead' : 'Sign in'}
                     onLogin={handleGuestLogin}
+                    usingSupabaseAuth={usingSupabaseAuth}
+                    onRequestPasswordHelp={
+                      usingSupabaseAuth ? requestPasswordHelpForGuest : undefined
+                    }
                   />
                   {usingSupabaseAuth && (
                     <InternSignupPanel onSignup={handleInternSignup} />
@@ -1465,8 +1744,43 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
           )
         )}
 
+        {userRole === 'profile_error' && !authLoading && (
+          <div className="container mx-auto max-w-lg px-6 py-16 text-center">
+            <AlertCircle className="mx-auto mb-4 text-amber-600" size={48} />
+            <h2 className="mb-2 text-xl font-bold text-gray-900">Signed in, but your profile did not load</h2>
+            <p className="mb-6 text-sm text-gray-600">
+              Your session is valid, but the portal could not read your role from the database (for
+              example a row-level security policy, a missing row in public.profiles, or a network
+              error). You have not been downgraded to intern—load your profile again or sign out.
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+              <button
+                type="button"
+                onClick={async () => {
+                  await refreshUser();
+                  showToast('Profile refresh attempted.', 'info');
+                }}
+                className="rounded-lg bg-[#8B0000] px-4 py-2 text-sm font-bold text-white transition hover:bg-red-900"
+              >
+                Load profile again
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  logout();
+                  setActiveTab('dashboard');
+                  showToast('Signed out.');
+                }}
+                className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-bold text-gray-800 transition hover:bg-gray-50"
+              >
+                Sign out
+              </button>
+            </div>
+          </div>
+        )}
+
         {userRole === 'intern' && user?.internProgress && <InternDashboard />}
-        {userRole === 'intern' && user && !user.internProgress && (
+        {userRole === 'intern' && user && !user.profileIncomplete && !user.internProgress && (
           <div className="container mx-auto px-6 py-12 text-center text-gray-700">
             <p className="font-medium">
               Your account has no intern progress record. Contact an administrator.
@@ -1485,15 +1799,26 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
             {activeTab === 'dashboard' && userRole === 'mentor' && (
               <MentorDashboard />
             )}
-            {activeTab === 'dashboard' && userRole === 'admin' && (
-              <AdminDashboard />
-            )}
+            {activeTab === 'dashboard' && userRole === 'admin' && adminDashboard}
             {activeTab === 'orientation' && <OrientationModule />}
             {activeTab === 'syllabus' && <MasterSyllabusView />}
             {activeTab === 'reports' && <ProgressReportsView />}
           </>
         )}
       </main>
+
+      {user?.mustChangePassword &&
+        !authLoading &&
+        userRole !== 'guest' &&
+        userRole !== 'profile_error' && (
+          <ForcePasswordChangeGate
+            usingSupabaseAuth={usingSupabaseAuth}
+            token={token}
+            email={user.email || ''}
+            onDone={refreshUser}
+            showToast={showToast}
+          />
+        )}
 
       {toast.show && (
         <div className="animate-in slide-in-from-bottom-5 fade-in fixed bottom-6 right-6 z-50 duration-300">

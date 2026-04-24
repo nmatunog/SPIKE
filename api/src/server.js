@@ -88,6 +88,7 @@ app.post('/api/auth/setup', async (req, res) => {
       name: created.name,
       email: created.email,
       role: created.role,
+      mustChangePassword: created.mustChangePassword,
       internProgress: created.internProgress,
     },
   });
@@ -119,6 +120,7 @@ app.post('/api/auth/register', authRequired, requireRoles('ADMIN'), async (req, 
       email,
       passwordHash,
       role,
+      mustChangePassword: true,
       internProgress:
         role === 'INTERN'
           ? {
@@ -134,6 +136,7 @@ app.post('/api/auth/register', authRequired, requireRoles('ADMIN'), async (req, 
     name: created.name,
     email: created.email,
     role: created.role,
+    mustChangePassword: created.mustChangePassword,
     internProgress: created.internProgress,
   });
 });
@@ -167,9 +170,35 @@ app.post('/api/auth/login', async (req, res) => {
       name: user.name,
       email: user.email,
       role: user.role,
+      mustChangePassword: user.mustChangePassword,
       internProgress: user.internProgress,
     },
   });
+});
+
+const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1),
+  newPassword: z.string().min(8),
+});
+
+app.post('/api/auth/change-password', authRequired, async (req, res) => {
+  const parsed = changePasswordSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({ message: parsed.error.flatten() });
+  }
+  const userId = Number(req.auth.sub);
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) return res.status(404).json({ message: 'User not found.' });
+
+  const valid = await bcrypt.compare(parsed.data.currentPassword, user.passwordHash);
+  if (!valid) return res.status(401).json({ message: 'Current password is incorrect.' });
+
+  const passwordHash = await bcrypt.hash(parsed.data.newPassword, 10);
+  await prisma.user.update({
+    where: { id: userId },
+    data: { passwordHash, mustChangePassword: false },
+  });
+  return res.json({ ok: true });
 });
 
 app.get('/api/auth/me', authRequired, async (req, res) => {
@@ -185,6 +214,7 @@ app.get('/api/auth/me', authRequired, async (req, res) => {
     name: user.name,
     email: user.email,
     role: user.role,
+    mustChangePassword: user.mustChangePassword,
     internProgress: user.internProgress,
   });
 });

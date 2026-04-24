@@ -12,15 +12,21 @@ import { isSupabaseConfigured, supabase } from './supabaseClient';
 const AuthContext = createContext(null);
 const STATIC_ONLY = import.meta.env.VITE_STATIC_ONLY === 'true';
 const USE_SUPABASE = isSupabaseConfigured && !STATIC_ONLY;
-const PROFILE_FETCH_TIMEOUT_MS = 5000;
 
-function mapAuthFallbackUser(authUser) {
+/** When the DB profile cannot be read—never guess INTERN (that misroutes admins). */
+function readMustChangePassword(authUser) {
+  return authUser?.user_metadata?.must_change_password === true;
+}
+
+function mapProfileIncompleteUser(authUser) {
   return {
     id: authUser?.id ?? null,
     email: authUser?.email ?? '',
     name: authUser?.user_metadata?.name || authUser?.email || 'User',
-    role: 'INTERN',
+    role: null,
     internProgress: null,
+    profileIncomplete: true,
+    mustChangePassword: readMustChangePassword(authUser),
   };
 }
 
@@ -56,8 +62,10 @@ export function AuthProvider({ children }) {
         id: authUser.id,
         email: authUser.email,
         name: authUser.user_metadata?.name || authUser.email || 'User',
-        role: 'INTERN',
+        role: null,
         internProgress: internProgress || null,
+        profileIncomplete: true,
+        mustChangePassword: readMustChangePassword(authUser),
       };
     }
     return {
@@ -66,23 +74,17 @@ export function AuthProvider({ children }) {
       name: profile.name,
       role: profile.role,
       internProgress: internProgress || null,
+      mustChangePassword: readMustChangePassword(authUser),
     };
   }, []);
 
   const fetchSupabaseUserSafe = useCallback(
     async (authUser) => {
       if (!authUser) return null;
-      const timedFetch = Promise.race([
-        fetchSupabaseUser(authUser),
-        new Promise((resolve) =>
-          setTimeout(() => resolve(mapAuthFallbackUser(authUser)), PROFILE_FETCH_TIMEOUT_MS),
-        ),
-      ]);
       try {
-        const resolved = await timedFetch;
-        return resolved || mapAuthFallbackUser(authUser);
+        return await fetchSupabaseUser(authUser);
       } catch {
-        return mapAuthFallbackUser(authUser);
+        return mapProfileIncompleteUser(authUser);
       }
     },
     [fetchSupabaseUser],
