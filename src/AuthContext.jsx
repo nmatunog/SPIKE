@@ -12,6 +12,7 @@ import { isSupabaseConfigured, supabase } from './supabaseClient';
 const AuthContext = createContext(null);
 const STATIC_ONLY = import.meta.env.VITE_STATIC_ONLY === 'true';
 const USE_SUPABASE = isSupabaseConfigured && !STATIC_ONLY;
+const PROFILE_FETCH_TIMEOUT_MS = 7000;
 
 /** When the DB profile cannot be read—never guess INTERN (that misroutes admins). */
 function readMustChangePassword(authUser) {
@@ -82,7 +83,13 @@ export function AuthProvider({ children }) {
     async (authUser) => {
       if (!authUser) return null;
       try {
-        return await fetchSupabaseUser(authUser);
+        const profileOrTimeout = await Promise.race([
+          fetchSupabaseUser(authUser),
+          new Promise((resolve) => {
+            setTimeout(() => resolve(mapProfileIncompleteUser(authUser)), PROFILE_FETCH_TIMEOUT_MS);
+          }),
+        ]);
+        return profileOrTimeout || mapProfileIncompleteUser(authUser);
       } catch {
         return mapProfileIncompleteUser(authUser);
       }
