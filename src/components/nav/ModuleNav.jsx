@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   Settings,
 } from 'lucide-react';
+import { useCompactNav } from '../../hooks/useCompactNav.js';
 import { moduleNavForRole } from '../../routes/paths.js';
 
 const ICONS = {
@@ -50,29 +51,31 @@ function NavItems({ userRole, variant }) {
 }
 
 export function ModuleNav({ userRole }) {
+  const compact = useCompactNav();
   const items = moduleNavForRole(userRole);
   if (items.length === 0) return null;
 
-  return (
-    <>
-      {/* Tablet / desktop — sticky top bar */}
-      <div className="sticky top-0 z-40 hidden border-b border-gray-200 bg-white md:block">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="scrollbar-thin flex gap-1 overflow-x-auto whitespace-nowrap text-sm font-bold text-gray-600 sm:gap-4 lg:gap-6">
-            <NavItems userRole={userRole} variant="desktop" />
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile — fixed bottom tab bar */}
+  if (compact) {
+    return (
       <nav
         aria-label="Module navigation"
-        className="safe-bottom fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white/95 shadow-[0_-4px_12px_rgba(0,0,0,0.06)] backdrop-blur md:hidden"
+        className="safe-bottom fixed inset-x-0 bottom-0 z-50 border-t border-gray-200 bg-white shadow-[0_-4px_12px_rgba(0,0,0,0.08)] supports-[backdrop-filter]:bg-white/95 supports-[backdrop-filter]:backdrop-blur"
+        style={{ WebkitTransform: 'translateZ(0)' }}
       >
         <div className="flex items-stretch justify-around px-1">
           <NavItems userRole={userRole} variant="mobile" />
         </div>
       </nav>
-    </>
+    );
+  }
+
+  return (
+    <div className="sticky top-0 z-40 border-b border-gray-200 bg-white">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="scrollbar-thin flex gap-1 overflow-x-auto whitespace-nowrap text-sm font-bold text-gray-600 sm:gap-4 lg:gap-6">
+          <NavItems userRole={userRole} variant="desktop" />
+        </div>
+      </div>
+    </div>
   );
 }

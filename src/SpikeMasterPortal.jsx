@@ -25,6 +25,7 @@ import {
   Bell,
 } from 'lucide-react';
 import { ModuleNav } from './components/nav/ModuleNav.jsx';
+import { useCompactNav } from './hooks/useCompactNav.js';
 import { PortalHeader } from './layouts/PortalHeader.jsx';
 import { resolveUserRole } from './lib/roles.js';
 import { RoleDashboardCards } from './components/dashboard/RoleDashboardCards.jsx';
@@ -70,6 +71,7 @@ const SpikeMasterPortal = () => {
     completeBootstrapSetup,
   } = useAuth();
   const userRole = resolveUserRole(user);
+  const compactNav = useCompactNav();
   const STATIC_ONLY = import.meta.env.VITE_STATIC_ONLY === 'true';
   const [publicTab, setPublicTab] = useState('orientation');
   const [toast, setToast] = useState({
@@ -1712,7 +1714,11 @@ const SpikeMasterPortal = () => {
   };
 
   return (
-    <div className="relative min-h-screen bg-gray-50 pb-20 font-sans selection:bg-red-900 selection:text-white md:pb-12">
+    <div
+      className={`relative min-h-screen bg-gray-50 font-sans selection:bg-red-900 selection:text-white ${
+        compactNav ? 'pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))]' : 'pb-12'
+      }`}
+    >
       <PortalHeader
         userRole={userRole}
         user={user}
@@ -1868,7 +1874,13 @@ const SpikeMasterPortal = () => {
         )}
 
       {toast.show && (
-        <div className="animate-in slide-in-from-bottom-5 fade-in fixed bottom-20 left-4 right-4 z-50 duration-300 md:bottom-6 md:left-auto md:right-6 md:max-w-sm">
+        <div
+          className={`animate-in slide-in-from-bottom-5 fade-in fixed left-4 right-4 z-[60] duration-300 sm:max-w-sm ${
+            compactNav
+              ? 'bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))]'
+              : 'bottom-6 sm:left-auto sm:right-6'
+          }`}
+        >
           <div
             className={`flex items-center gap-3 rounded-lg border px-5 py-3 shadow-lg ${
               toast.type === 'success'
