@@ -1,0 +1,15 @@
+{
+  "id": "segment-1",
+  "title": "Segment 1: Proof of Concept",
+  "description": "200-hour venture incubator segment focused on vision, market understanding, operations, professional readiness, and proof-of-concept venture board presentation.",
+  "hours": 200,
+  "milestoneObjective": "Demonstrate a viable proof-of-concept venture with portfolio, business plan, and competency evidence ready for Hour 200 Venture Board review.",
+  "capstoneTitle": "Proof of Concept Venture Board",
+  "capstoneDescription": "Present your venture concept, market thesis, and 3-year blueprint to faculty and mentors for Segment 1 certification.",
+  "certificationAwarded": "SPIKE Segment 1 — Proof of Concept",
+  "exitRequirements": [
+    "Complete all five week integrations with submitted portfolio artifacts",
+    "Submit draft 3-Year Business Plan chapters 1–5",
+    "Pass Hour 200 Venture Board evaluation"
+  ]
+}

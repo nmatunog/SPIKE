@@ -1,0 +1,35 @@
+{
+  "survey": {
+    "id": "survey-day-1-orientation",
+    "dayId": "day-segment-1-week-1-day-1",
+    "title": "Orientation Pulse Survey",
+    "description": "Baseline confidence and expectations survey for research squad planning. Collection not enabled in Sprint 02 — definition only.",
+    "status": "draft"
+  },
+  "questions": [
+    {
+      "id": "sq-day-1-01",
+      "surveyId": "survey-day-1-orientation",
+      "prompt": "How confident are you in articulating your personal why?",
+      "type": "rating",
+      "required": true,
+      "sortOrder": 1
+    },
+    {
+      "id": "sq-day-1-02",
+      "surveyId": "survey-day-1-orientation",
+      "prompt": "What is your biggest question about the 200-hour Segment 1 journey?",
+      "type": "long_text",
+      "required": false,
+      "sortOrder": 2
+    },
+    {
+      "id": "sq-day-1-03",
+      "surveyId": "survey-day-1-orientation",
+      "prompt": "I understand how daily lessons connect to portfolio and business plan outputs.",
+      "type": "checkbox",
+      "required": true,
+      "sortOrder": 3
+    }
+  ]
+}

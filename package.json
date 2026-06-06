@@ -13,7 +13,9 @@
     "preview": "vite preview",
     "deploy:cf": "bash ./scripts/deploy-cloudflare.sh",
     "deploy:prod": "bash ./scripts/deploy-production.sh",
-    "push:dev": "bash ./scripts/auto-push-dev-revisions.sh"
+    "push:dev": "bash ./scripts/auto-push-dev-revisions.sh",
+    "smoke:content": "node scripts/smoke-content-files.mjs",
+    "smoke:content:loader": "node scripts/smoke-content-loader.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.104.0",

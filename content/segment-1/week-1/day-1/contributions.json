@@ -1,0 +1,13 @@
+{
+  "dayId": "day-segment-1-week-1-day-1",
+  "contributesToPortfolio": [
+    "portfolio-identity-purpose"
+  ],
+  "contributesToBusinessPlan": [
+    "bp-chapter-1"
+  ],
+  "contributesToCompetencies": [
+    "competency-visioning",
+    "competency-goal-setting"
+  ]
+}

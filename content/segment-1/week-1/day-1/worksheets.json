@@ -1,0 +1,49 @@
+{
+  "worksheets": [
+    {
+      "id": "worksheet-day-1-personal-why",
+      "dayId": "day-segment-1-week-1-day-1",
+      "title": "Personal Why Statement",
+      "questionIds": [
+        "wq-day-1-why-1",
+        "wq-day-1-why-2",
+        "wq-day-1-why-3",
+        "wq-day-1-why-4"
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "id": "wq-day-1-why-1",
+      "worksheetId": "worksheet-day-1-personal-why",
+      "prompt": "In one sentence, why are you choosing entrepreneurship over traditional employment?",
+      "type": "short_text",
+      "required": true,
+      "sortOrder": 1
+    },
+    {
+      "id": "wq-day-1-why-2",
+      "worksheetId": "worksheet-day-1-personal-why",
+      "prompt": "Describe the impact you want your financial venture to have in three years.",
+      "type": "long_text",
+      "required": true,
+      "sortOrder": 2
+    },
+    {
+      "id": "wq-day-1-why-3",
+      "worksheetId": "worksheet-day-1-personal-why",
+      "prompt": "Rate your current clarity of personal vision (1 = unclear, 5 = very clear).",
+      "type": "rating",
+      "required": true,
+      "sortOrder": 3
+    },
+    {
+      "id": "wq-day-1-why-4",
+      "worksheetId": "worksheet-day-1-personal-why",
+      "prompt": "I commit to completing my Week 1 portfolio and business plan drafts on schedule.",
+      "type": "checkbox",
+      "required": true,
+      "sortOrder": 4
+    }
+  ]
+}

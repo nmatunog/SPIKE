@@ -1,0 +1,61 @@
+{
+  "presentation": {
+    "id": "presentation-day-1-welcome",
+    "dayId": "day-segment-1-week-1-day-1",
+    "title": "Welcome to SPIKE — Venture Incubator Orientation",
+    "slideIds": [
+      "slide-day-1-01",
+      "slide-day-1-02",
+      "slide-day-1-03",
+      "slide-day-1-04"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-day-1-01",
+      "presentationId": "presentation-day-1-welcome",
+      "sortOrder": 1,
+      "title": "Welcome to S.P.I.K.E.",
+      "body": "SPIKE is a Startup Business Incubator — not a traditional internship. You are building a 3-Year business blueprint as a financial entrepreneur.\n\nStakeholders: Interns (venture builders), Advisory Board (coaches), Venture Partners (agency directors).",
+      "speakerNotes": "Open with energy. Emphasize incubator language — avoid 'classroom' framing. 5 minutes.",
+      "discussionQuestions": [
+        "What surprised you most about the incubator model?",
+        "How is this different from internships you have seen before?"
+      ]
+    },
+    {
+      "id": "slide-day-1-02",
+      "presentationId": "presentation-day-1-welcome",
+      "sortOrder": 2,
+      "title": "Program Architecture",
+      "body": "Segment 1 (200 hours) → Proof of Concept Venture Board.\n\nEvery day contributes to: Portfolio, Business Plan, Competencies, and Venture readiness.\n\nWeek 1 focus: Vision & Purpose — Identity & Purpose portfolio section.",
+      "speakerNotes": "Walk through the six venture-incubator dimensions. Point to Playbook navigation they will use daily.",
+      "discussionQuestions": [
+        "Which output system — portfolio or business plan — feels most unfamiliar today?"
+      ]
+    },
+    {
+      "id": "slide-day-1-03",
+      "presentationId": "presentation-day-1-welcome",
+      "sortOrder": 3,
+      "title": "Squad Dynamics",
+      "body": "Research Squads (3–4): market intelligence and collaborative problem solving.\n\nAdvisory Dyads: roleplay, mock client meetings, pitch refinement.\n\nFaculty coaches assign squads today.",
+      "speakerNotes": "Explain squad charter activity coming next. Dyads pair by complementary strengths.",
+      "discussionQuestions": [
+        "What strength will you bring to your research squad?",
+        "What do you want from your advisory dyad partner?"
+      ]
+    },
+    {
+      "id": "slide-day-1-04",
+      "presentationId": "presentation-day-1-welcome",
+      "sortOrder": 4,
+      "title": "Day 1 Outputs",
+      "body": "By end of day:\n• Personal why statement (worksheet)\n• Squad charter (activity)\n• Orientation reflection → Portfolio: Identity & Purpose\n• Vision narrative seed → Business Plan Chapter 1",
+      "speakerNotes": "Close with clear deliverables. Link to competency targets: Visioning and Goal Setting.",
+      "discussionQuestions": [
+        "What is one goal you will hold yourself accountable to before Day 2?"
+      ]
+    }
+  ]
+}

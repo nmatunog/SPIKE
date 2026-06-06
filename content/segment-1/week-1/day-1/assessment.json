@@ -1,0 +1,20 @@
+{
+  "assessment": {
+    "id": "assessment-day-1-participation",
+    "dayId": "day-segment-1-week-1-day-1",
+    "title": "Day 1 Participation & Engagement Check",
+    "description": "Faculty observation of squad participation, worksheet completion, and orientation engagement. Not a graded exam — evidence for competency tracking.",
+    "rubricId": "rubric-day-1-participation"
+  },
+  "rubric": {
+    "id": "rubric-day-1-participation",
+    "assessmentId": "assessment-day-1-participation",
+    "title": "Participation Rubric",
+    "criteria": [
+      "Active contribution in squad vision board activity",
+      "Personal why worksheet submitted with thoughtful responses",
+      "Squad charter completed with assigned roles",
+      "Demonstrates understanding of incubator vs employment mindset"
+    ]
+  }
+}

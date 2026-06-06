@@ -1,0 +1,54 @@
+{
+  "activities": [
+    {
+      "id": "activity-day-1-vision-board",
+      "dayId": "day-segment-1-week-1-day-1",
+      "title": "Vision Board Squad Activity",
+      "durationMinutes": 45,
+      "materials": [
+        "Poster boards or digital canvas link",
+        "Sticky notes and markers",
+        "SPIKE visioning prompt cards"
+      ],
+      "instructions": [
+        "Form research squads of 3–4 interns.",
+        "Each member shares a 2-minute personal why story.",
+        "Collaboratively build a squad vision board: images, words, and symbols representing your shared venture thesis.",
+        "Capture three measurable goals for Week 1 on the board footer."
+      ],
+      "outputs": [
+        "Photo or export of squad vision board",
+        "Three Week 1 goals listed in squad charter"
+      ],
+      "debriefQuestions": [
+        "Where did squad visions align or diverge?",
+        "Which goal is most challenging for your squad this week?",
+        "How does this connect to Business Plan Chapter 1?"
+      ]
+    },
+    {
+      "id": "activity-day-1-squad-charter",
+      "dayId": "day-segment-1-week-1-day-1",
+      "title": "Research Squad Charter & Role Assignment",
+      "durationMinutes": 30,
+      "materials": [
+        "Squad charter template (worksheet or digital form)",
+        "Role description handout: Lead, Scribe, Presenter, Analyst"
+      ],
+      "instructions": [
+        "Assign squad roles for Week 1 rotation.",
+        "Document meeting cadence and communication channel.",
+        "List accountability norms and how conflicts will be resolved.",
+        "Faculty coach signs off on charter before break."
+      ],
+      "outputs": [
+        "Signed squad charter",
+        "Role rotation schedule for Week 1"
+      ],
+      "debriefQuestions": [
+        "What norm will keep your squad effective under time pressure?",
+        "Who will present squad outputs at the Vision Review gate?"
+      ]
+    }
+  ]
+}
