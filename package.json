@@ -12,6 +12,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "deploy:cf": "bash ./scripts/deploy-cloudflare.sh",
+    "deploy:prod": "bash ./scripts/deploy-production.sh",
     "push:dev": "bash ./scripts/auto-push-dev-revisions.sh"
   },
   "dependencies": {

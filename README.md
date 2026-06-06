@@ -66,7 +66,14 @@ Put Supabase keys in `.env` before `npm run build` or `deploy:cf` so Vite bakes 
 | `CLOUDFLARE_API_TOKEN` | GitHub secret only |
 | `CLOUDFLARE_ACCOUNT_ID` | GitHub secret (`66e72ecb625c7e76d017a366156ec53f`) |
 
-Cloudflare Pages **Git** integration on project `spike` may be stale (no GitHub webhooks). GitHub Actions is the supported deploy path.
+**If GitHub Actions fails** (billing lock, missing `CLOUDFLARE_API_TOKEN`): build + deploy directly:
+
+```bash
+# .env must include VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY
+npm run deploy:prod
+```
+
+**Reconnect Cloudflare Git** (optional): Cloudflare Dashboard → Workers & Pages → **spike** → Settings → Builds & deployments → reconnect **nmatunog/SPIKE** / branch `main`. Ensure Production env vars include the `VITE_SUPABASE_*` keys so Cloudflare’s build step bakes them in.
 
 ## Create a test intern (admin)
 
