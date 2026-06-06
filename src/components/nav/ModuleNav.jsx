@@ -5,6 +5,7 @@ import {
   Briefcase,
   FlaskConical,
   LayoutDashboard,
+  Rocket,
   Settings,
 } from 'lucide-react';
 import { useCompactNav } from '../../hooks/useCompactNav.js';
@@ -12,6 +13,7 @@ import { moduleNavForRole } from '../../routes/paths.js';
 
 const ICONS = {
   dashboard: LayoutDashboard,
+  blueprint: Rocket,
   playbook: BookOpen,
   portfolio: Briefcase,
   research: FlaskConical,

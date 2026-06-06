@@ -12,7 +12,7 @@ import {
  */
 export function RoleRouteGuard({ userRole, pathname, children }) {
   if (pathname === ROUTES.home) {
-    return <Navigate to={ROUTES.dashboard} replace />;
+    return <Navigate to={defaultRouteForRole(userRole)} replace />;
   }
 
   const route = matchModulePath(pathname);

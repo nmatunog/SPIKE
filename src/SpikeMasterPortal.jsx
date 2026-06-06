@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import {
   BookOpen,
   Users,
@@ -36,7 +36,8 @@ import { ResearchPage } from './pages/ResearchPage.jsx';
 import { RoleRouteGuard } from './components/routing/RoleRouteGuard.jsx';
 import { InternReportCard } from './components/reports/InternReportCard.jsx';
 import { PendingLogCard } from './components/traction/PendingLogCard.jsx';
-import { ROUTES } from './routes/paths.js';
+import { ROUTES, defaultRouteForRole } from './routes/paths.js';
+import { VentureBlueprintShell } from './pages/VentureBlueprintShell.jsx';
 import { deriveReportRowMetrics } from './lib/sprint01Metrics.js';
 import { useAuth } from './AuthContext.jsx';
 import { apiFetch } from './apiClient.js';
@@ -109,7 +110,7 @@ const SpikeMasterPortal = () => {
     if (authLoading) return;
     if (userRole === 'guest' || userRole === 'profile_error') return;
     if (location.pathname === ROUTES.home) {
-      navigate(ROUTES.dashboard, { replace: true });
+      navigate(defaultRouteForRole(userRole), { replace: true });
     }
   }, [authLoading, userRole, location.pathname, navigate]);
 
@@ -1686,12 +1687,35 @@ const SpikeMasterPortal = () => {
     const path = location.pathname;
 
     if (userRole === 'intern') {
+      if (
+        path === ROUTES.ventureBlueprint
+        || path.startsWith(`${ROUTES.ventureBlueprint}/`)
+      ) {
+        if (!user?.internProgress) {
+          return (
+            <div className="container mx-auto px-6 py-12 text-center text-gray-700">
+              <p className="font-medium">
+                Your account has no intern progress record. Contact an administrator.
+              </p>
+            </div>
+          );
+        }
+        return (
+          <VentureBlueprintShell
+            user={user}
+            onLogTraction={() => navigate(ROUTES.dashboard)}
+          />
+        );
+      }
       if (path === ROUTES.playbook) return renderPlaybook();
       if (path === ROUTES.portfolio) {
-        return <PortfolioPage hours={user?.internProgress?.hours ?? 0} />;
+        return <Navigate to={ROUTES.ventureBlueprint} replace />;
       }
       if (path === ROUTES.research) return <ResearchPage />;
-      if (user?.internProgress) return <InternDashboard />;
+      if (path === ROUTES.dashboard && user?.internProgress) return <InternDashboard />;
+      if (user?.internProgress) {
+        return <Navigate to={defaultRouteForRole('intern')} replace />;
+      }
       return (
         <div className="container mx-auto px-6 py-12 text-center text-gray-700">
           <p className="font-medium">

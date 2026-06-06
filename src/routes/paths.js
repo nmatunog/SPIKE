@@ -1,6 +1,7 @@
 export const ROUTES = {
   home: '/',
   dashboard: '/dashboard',
+  ventureBlueprint: '/venture-blueprint',
   playbook: '/playbook',
   portfolio: '/portfolio',
   research: '/research',
@@ -10,9 +11,20 @@ export const ROUTES = {
 
 /** Module nav entries — filtered by role in ModuleNav. */
 export const MODULE_NAV = [
-  { path: ROUTES.dashboard, label: 'Dashboard', icon: 'dashboard', roles: ['intern', 'faculty', 'mentor', 'admin'] },
+  {
+    path: ROUTES.ventureBlueprint,
+    label: 'My Blueprint',
+    icon: 'blueprint',
+    roles: ['intern'],
+  },
+  {
+    path: ROUTES.dashboard,
+    label: 'Dashboard',
+    icon: 'dashboard',
+    roles: ['faculty', 'mentor', 'admin'],
+  },
   { path: ROUTES.playbook, label: 'Playbook', icon: 'playbook', roles: ['intern', 'faculty', 'mentor', 'admin'] },
-  { path: ROUTES.portfolio, label: 'Portfolio', icon: 'portfolio', roles: ['intern', 'faculty', 'mentor', 'admin'] },
+  { path: ROUTES.portfolio, label: 'Portfolio', icon: 'portfolio', roles: ['faculty', 'mentor', 'admin'] },
   { path: ROUTES.research, label: 'Research', icon: 'research', roles: ['intern', 'faculty', 'mentor', 'admin'] },
   { path: ROUTES.reports, label: 'Reports', icon: 'reports', roles: ['faculty', 'mentor', 'admin'] },
   { path: ROUTES.admin, label: 'Admin', icon: 'admin', roles: ['admin'] },
@@ -24,6 +36,13 @@ export function moduleNavForRole(userRole) {
 
 /** Resolve a URL to a canonical module route, or null if unknown. */
 export function matchModulePath(pathname) {
+  if (
+    pathname === ROUTES.ventureBlueprint
+    || pathname.startsWith(`${ROUTES.ventureBlueprint}/`)
+  ) {
+    return ROUTES.ventureBlueprint;
+  }
+
   for (const route of Object.values(ROUTES)) {
     if (route === ROUTES.home) continue;
     if (pathname === route || pathname.startsWith(`${route}/`)) {
@@ -44,6 +63,7 @@ export function rolesForRoute(pathname) {
   const route = matchModulePath(pathname);
   if (!route) return [];
   if (route === ROUTES.dashboard) return AUTHENTICATED_ROLES;
+  if (route === ROUTES.ventureBlueprint) return ['intern'];
   const item = MODULE_NAV.find((entry) => entry.path === route);
   return item?.roles ?? [];
 }
@@ -53,6 +73,8 @@ export function canAccessRoute(pathname, userRole) {
   return rolesForRoute(pathname).includes(userRole);
 }
 
-export function defaultRouteForRole() {
+/** @param {string} [userRole] */
+export function defaultRouteForRole(userRole) {
+  if (userRole === 'intern') return ROUTES.ventureBlueprint;
   return ROUTES.dashboard;
 }
