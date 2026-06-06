@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { apiFetch } from './apiClient';
@@ -12,7 +13,23 @@ import { isSupabaseConfigured, supabase } from './supabaseClient';
 const AuthContext = createContext(null);
 const STATIC_ONLY = import.meta.env.VITE_STATIC_ONLY === 'true';
 const USE_SUPABASE = isSupabaseConfigured && !STATIC_ONLY;
-const PROFILE_FETCH_TIMEOUT_MS = 7000;
+const PROFILE_FETCH_TIMEOUT_MS = 12000;
+const PROFILE_RETRY_INTERVAL_MS = 2500;
+const PROFILE_RETRY_MAX_ATTEMPTS = 8;
+
+function hasCompleteProfile(appUser) {
+  return Boolean(appUser?.id && appUser?.role && !appUser?.profileIncomplete);
+}
+
+/** Keep a working profile when a background refetch times out or flakes. */
+function preferExistingProfile(nextUser, existingUser, authUserId) {
+  if (hasCompleteProfile(existingUser) && existingUser.id === authUserId) {
+    if (!nextUser || nextUser.profileIncomplete) {
+      return existingUser;
+    }
+  }
+  return nextUser;
+}
 
 /** When the DB profile cannot be read—never guess INTERN (that misroutes admins). */
 function readMustChangePassword(authUser) {
@@ -36,9 +53,14 @@ export function AuthProvider({ children }) {
     USE_SUPABASE ? null : localStorage.getItem('spike_token'),
   );
   const [user, setUser] = useState(null);
+  const userRef = useRef(null);
   const [loading, setLoading] = useState(
     USE_SUPABASE ? true : !!localStorage.getItem('spike_token'),
   );
+
+  useEffect(() => {
+    userRef.current = user;
+  }, [user]);
 
   const fetchSupabaseUser = useCallback(async (authUser) => {
     if (!authUser || !supabase) return null;
@@ -80,18 +102,33 @@ export function AuthProvider({ children }) {
   }, []);
 
   const fetchSupabaseUserSafe = useCallback(
-    async (authUser) => {
+    async (authUser, { existingUser = null, useTimeout = true } = {}) => {
       if (!authUser) return null;
       try {
-        const profileOrTimeout = await Promise.race([
-          fetchSupabaseUser(authUser),
-          new Promise((resolve) => {
-            setTimeout(() => resolve(mapProfileIncompleteUser(authUser)), PROFILE_FETCH_TIMEOUT_MS);
-          }),
-        ]);
-        return profileOrTimeout || mapProfileIncompleteUser(authUser);
+        let result;
+        if (useTimeout) {
+          const profileOrTimeout = await Promise.race([
+            fetchSupabaseUser(authUser),
+            new Promise((resolve) => {
+              setTimeout(
+                () => resolve(mapProfileIncompleteUser(authUser)),
+                PROFILE_FETCH_TIMEOUT_MS,
+              );
+            }),
+          ]);
+          result = profileOrTimeout || mapProfileIncompleteUser(authUser);
+        } else {
+          result =
+            (await fetchSupabaseUser(authUser)) ||
+            mapProfileIncompleteUser(authUser);
+        }
+        return preferExistingProfile(result, existingUser, authUser.id);
       } catch {
-        return mapProfileIncompleteUser(authUser);
+        return preferExistingProfile(
+          mapProfileIncompleteUser(authUser),
+          existingUser,
+          authUser.id,
+        );
       }
     },
     [fetchSupabaseUser],
@@ -128,17 +165,31 @@ export function AuthProvider({ children }) {
       }
 
       bootstrapSupabase();
-      const { data: sub } = supabase.auth.onAuthStateChange(
-        async (_event, session) => {
+      const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+        if (cancelled) return;
+        if (!session?.user) {
+          setToken(null);
+          setUser(null);
+          setLoading(false);
+          return;
+        }
+
+        // Token refresh is frequent; do not re-query profiles when one is already loaded.
+        if (
+          _event === 'TOKEN_REFRESHED' &&
+          hasCompleteProfile(userRef.current) &&
+          userRef.current.id === session.user.id
+        ) {
+          return;
+        }
+
+        // Supabase recommends deferring async work out of this callback to avoid deadlocks.
+        setTimeout(async () => {
           if (cancelled) return;
-          if (!session?.user) {
-            setToken(null);
-            setUser(null);
-            setLoading(false);
-            return;
-          }
           try {
-            const currentUser = await fetchSupabaseUserSafe(session.user);
+            const currentUser = await fetchSupabaseUserSafe(session.user, {
+              existingUser: userRef.current,
+            });
             if (!cancelled) {
               setToken(null);
               setUser(currentUser);
@@ -146,13 +197,22 @@ export function AuthProvider({ children }) {
             }
           } catch {
             if (!cancelled) {
-              setToken(null);
-              setUser(null);
+              const kept = preferExistingProfile(
+                null,
+                userRef.current,
+                session.user.id,
+              );
+              if (kept) {
+                setUser(kept);
+              } else {
+                setToken(null);
+                setUser(null);
+              }
               setLoading(false);
             }
           }
-        },
-      );
+        }, 0);
+      });
       return () => {
         cancelled = true;
         sub.subscription.unsubscribe();
@@ -184,6 +244,42 @@ export function AuthProvider({ children }) {
       cancelled = true;
     };
   }, [fetchSupabaseUserSafe, token]);
+
+  useEffect(() => {
+    if (!USE_SUPABASE || !user?.profileIncomplete || !user?.id) return undefined;
+
+    let cancelled = false;
+    let attempts = 0;
+    let retryTimer;
+
+    const retryProfile = async () => {
+      if (cancelled || attempts >= PROFILE_RETRY_MAX_ATTEMPTS) return;
+      attempts += 1;
+
+      const { data } = await supabase.auth.getSession();
+      if (cancelled || !data.session?.user) return;
+
+      try {
+        const me = await fetchSupabaseUser(data.session.user);
+        if (!cancelled && me && !me.profileIncomplete) {
+          setUser(me);
+          return;
+        }
+      } catch {
+        /* try again */
+      }
+
+      if (!cancelled && attempts < PROFILE_RETRY_MAX_ATTEMPTS) {
+        retryTimer = setTimeout(retryProfile, PROFILE_RETRY_INTERVAL_MS);
+      }
+    };
+
+    retryTimer = setTimeout(retryProfile, PROFILE_RETRY_INTERVAL_MS);
+    return () => {
+      cancelled = true;
+      clearTimeout(retryTimer);
+    };
+  }, [user?.profileIncomplete, user?.id, fetchSupabaseUser]);
 
   const login = useCallback(async (email, password) => {
     if (USE_SUPABASE) {
@@ -245,7 +341,10 @@ export function AuthProvider({ children }) {
         setUser(null);
         return null;
       }
-      const me = await fetchSupabaseUserSafe(data.session.user);
+      const me = await fetchSupabaseUserSafe(data.session.user, {
+        existingUser: userRef.current,
+        useTimeout: false,
+      });
       setToken(null);
       setUser(me);
       return me;
