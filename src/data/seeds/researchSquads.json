@@ -1,0 +1,10 @@
+[
+  {
+    "id": "squad-segment-1-alpha",
+    "cohortId": "cohort-1",
+    "name": "Squad Alpha",
+    "marketSegment": "young_professionals",
+    "mentorId": null,
+    "memberIds": []
+  }
+]
