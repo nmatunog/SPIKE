@@ -20,10 +20,12 @@ export function PresentationViewer({ presentation, slides }) {
   }
 
   return (
-    <section className="space-y-4">
-      <div className="flex items-center gap-2">
-        <Presentation size={18} className="text-[#8B0000]" />
-        <h4 className="font-bold text-gray-900">{presentation.title}</h4>
+    <section className="space-y-4 rounded-xl border border-gray-200 bg-white p-4 sm:p-5">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <Presentation size={18} className="text-[#8B0000]" />
+          <h4 className="font-bold text-gray-900">{presentation.title}</h4>
+        </div>
       </div>
 
       <SlideNavigator
@@ -33,9 +35,15 @@ export function PresentationViewer({ presentation, slides }) {
         onNext={() => setCurrentIndex((i) => Math.min(slides.length - 1, i + 1))}
       />
 
-      <SlideViewer slide={slide} />
-      <SpeakerNotesPanel notes={slide.speakerNotes} />
-      <DiscussionPanel questions={slide.discussionQuestions} />
+      <div className="grid gap-4 lg:grid-cols-5">
+        <div className="lg:col-span-3">
+          <SlideViewer slide={slide} />
+        </div>
+        <div className="space-y-3 lg:col-span-2">
+          <SpeakerNotesPanel notes={slide.speakerNotes} />
+          <DiscussionPanel questions={slide.discussionQuestions} />
+        </div>
+      </div>
     </section>
   );
 }

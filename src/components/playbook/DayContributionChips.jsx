@@ -54,10 +54,10 @@ function safeCompetency(id) {
  */
 export function DayContributionChips({ contributions }) {
   return (
-    <div className="space-y-3">
+    <div className="grid gap-3 sm:grid-cols-1">
       <div>
-        <h5 className="mb-2 text-xs font-bold uppercase text-gray-500">Portfolio deliverables</h5>
-        <div className="flex flex-wrap gap-2">
+        <h5 className="mb-1.5 text-[11px] font-bold uppercase text-gray-500">Portfolio</h5>
+        <div className="flex flex-wrap gap-1.5">
           {contributions.contributesToPortfolio.map((id) => {
             const s = safePortfolio(id);
             return <Chip key={id} label={s.title} sub="Portfolio" tone="red" />;
@@ -65,20 +65,20 @@ export function DayContributionChips({ contributions }) {
         </div>
       </div>
       <div>
-        <h5 className="mb-2 text-xs font-bold uppercase text-gray-500">Business plan contributions</h5>
-        <div className="flex flex-wrap gap-2">
+        <h5 className="mb-1.5 text-[11px] font-bold uppercase text-gray-500">Business plan</h5>
+        <div className="flex flex-wrap gap-1.5">
           {contributions.contributesToBusinessPlan.map((id) => {
             const c = safeChapter(id);
-            return <Chip key={id} label={c.title} sub="Business Plan" tone="blue" />;
+            return <Chip key={id} label={c.title} sub="Chapter" tone="blue" />;
           })}
         </div>
       </div>
       <div>
-        <h5 className="mb-2 text-xs font-bold uppercase text-gray-500">Competency contributions</h5>
-        <div className="flex flex-wrap gap-2">
+        <h5 className="mb-1.5 text-[11px] font-bold uppercase text-gray-500">Competencies</h5>
+        <div className="flex flex-wrap gap-1.5">
           {contributions.contributesToCompetencies.map((id) => {
             const comp = safeCompetency(id);
-            return <Chip key={id} label={comp.title} sub="Competency" tone="green" />;
+            return <Chip key={id} label={comp.title} sub="Skill" tone="green" />;
           })}
         </div>
       </div>
