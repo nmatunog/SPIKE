@@ -1,13 +1,15 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, BookOpen, ChevronRight, Layers, PlayCircle } from 'lucide-react';
 import { PageContainer, PageTitle } from '../components/layout/PageContainer.jsx';
 import { DayView } from '../components/playbook/DayView.jsx';
 import {
+  getCurriculumDataSource,
   getDayContentBundle,
+  hydrateCurriculumFromSupabase,
   listDays,
   listSegments,
   listWeeks,
-} from '../lib/contentLoader.js';
+} from '../lib/curriculumService.js';
 
 const TABS = [
   { id: 'curriculum', label: 'Curriculum', icon: Layers },
@@ -35,6 +37,19 @@ function PathPill({ active, children, onClick, className = '' }) {
  * @param {{ participantId?: string }} props
  */
 function ContentCurriculum({ participantId }) {
+  const [dataSource, setDataSource] = useState(() => getCurriculumDataSource());
+
+  useEffect(() => {
+    let active = true;
+    hydrateCurriculumFromSupabase().then(() => {
+      if (!active) return;
+      setDataSource(getCurriculumDataSource());
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const segments = useMemo(() => listSegments(), []);
   const [segmentSlug, setSegmentSlug] = useState(segments[0]?.slug ?? 'segment-1');
   const weeks = useMemo(() => listWeeks(segmentSlug), [segmentSlug]);
@@ -48,13 +63,12 @@ function ContentCurriculum({ participantId }) {
   const selectedWeek = weeks.find((w) => w.slug === weekSlug);
   const selectedDay = days.find((d) => d.slug === daySlug);
 
-  const bundle = useMemo(() => {
-    try {
-      return getDayContentBundle(segmentSlug, weekSlug, daySlug);
-    } catch {
-      return null;
-    }
-  }, [segmentSlug, weekSlug, daySlug]);
+  let bundle = null;
+  try {
+    bundle = getDayContentBundle(segmentSlug, weekSlug, daySlug);
+  } catch {
+    bundle = null;
+  }
 
   const selectSegment = (slug) => {
     setSegmentSlug(slug);
@@ -151,6 +165,11 @@ function ContentCurriculum({ participantId }) {
         <PageTitle>Playbook</PageTitle>
         <p className="mt-1 text-sm text-gray-600 sm:text-base">
           Segment → Week → Day curriculum. Complete worksheets to update your Venture Blueprint.
+          {dataSource === 'hybrid' ? (
+            <span className="mt-1 block text-xs font-semibold text-emerald-700">
+              Linked to Supabase reference data (content from /content JSON).
+            </span>
+          ) : null}
         </p>
       </div>
 

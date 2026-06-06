@@ -63,11 +63,12 @@ After `20260620_sprint_02_instructional_architecture.sql`:
 | `research_squads`, `research_projects` | Research foundation |
 | `sessions`, `worksheet_questions`, `survey_questions`, `rubrics` | Curriculum extensions |
 
-App still falls back to `/content` JSON until curriculum rows are imported (PR8).
+App loads curriculum from `/content` JSON and hydrates `day_contributions` from Supabase when configured (PR8). Full DB curriculum import is a follow-on task.
 
 ## 7) App integration
 
 - Auth: `src/AuthContext.jsx`, `src/supabaseClient.js`
-- Data helpers: `src/lib/supabase/` (`interns.js`, `tractionLogs.js`)
+- Data helpers: `src/lib/supabase/` (`interns.js`, `tractionLogs.js`, `curriculum.js`, `blueprintArtifacts.js`)
+- Curriculum facade: `src/lib/curriculumService.js` (JSON tree + Supabase enrichment)
 
 The `api/` folder is for optional local JWT development only; production uses Supabase.

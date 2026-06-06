@@ -16,7 +16,7 @@ const server = await createServer({
 });
 
 try {
-  const mod = await server.ssrLoadModule('/src/lib/contentLoader.js');
+  const mod = await server.ssrLoadModule('/src/lib/curriculumService.js');
   const segments = mod.listSegments();
   if (segments.length === 0) {
     throw new Error('no segments loaded');

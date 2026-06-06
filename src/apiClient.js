@@ -1,3 +1,12 @@
+/**
+ * Production curriculum + blueprint artifacts use Supabase via `src/lib/curriculumService.js`
+ * and `src/lib/supabase/` (JSON `/content` fallback when DB rows are missing).
+ */
+export {
+  getCurriculumDataSource,
+  hydrateCurriculumFromSupabase,
+} from './lib/curriculumService.js';
+
 const API_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 
 export class ApiError extends Error {

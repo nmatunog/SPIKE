@@ -3,6 +3,7 @@ import {
   createBusinessPlanArtifactDraft,
   createPortfolioArtifactDraft,
 } from './blueprintArtifacts.js';
+import { syncBlueprintDraftsToSupabase } from './supabase/blueprintArtifacts.js';
 
 /**
  * @param {Array<{ id: string, prompt: string }>} questions
@@ -51,6 +52,8 @@ export function syncPlaybookWorksheet(participantId, worksheetId, answers, quest
     sourceType,
     sourceId,
   });
+
+  void syncBlueprintDraftsToSupabase(participantId, portfolio, businessPlan);
 
   return { portfolio, businessPlan, mapping };
 }

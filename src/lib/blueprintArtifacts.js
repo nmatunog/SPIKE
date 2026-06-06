@@ -1,5 +1,5 @@
 /**
- * Portfolio + Business Plan artifact drafts until Supabase persistence (PR7).
+ * Portfolio + Business Plan artifact drafts (localStorage) with Supabase sync on submit (PR8).
  */
 
 const STORAGE_KEY = 'spike_blueprint_artifacts';
