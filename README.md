@@ -106,6 +106,13 @@ See [`CURSOR_REFACTOR_SPRINT_01_EXECUTION_PLAN.md`](./CURSOR_REFACTOR_SPRINT_01_
 - Gap analysis: [`PLAYBOOK_SCHEMA_V1_GAP_ANALYSIS.md`](./PLAYBOOK_SCHEMA_V1_GAP_ANALYSIS.md)
 - Execution plan (8 PRs): [`PLAYBOOK_SCHEMA_V1_EXECUTION_PLAN.md`](./PLAYBOOK_SCHEMA_V1_EXECUTION_PLAN.md)
 
+## Venture Blueprint™ — product requirements
+
+The Venture Blueprint is the platform operating system (not an LMS page). Defines modules, platform engines, automation, and default intern experience.
+
+- PRD (V1.1): [`PRD_SPIKE_VENTURE_BLUEPRINT_V1.md`](./PRD_SPIKE_VENTURE_BLUEPRINT_V1.md)
+- Gap analysis: [`PRD_SPIKE_VENTURE_BLUEPRINT_V1_GAP_ANALYSIS.md`](./PRD_SPIKE_VENTURE_BLUEPRINT_V1_GAP_ANALYSIS.md)
+
 ## Files
 
 - `public/_redirects` — SPA fallback for Cloudflare Pages
