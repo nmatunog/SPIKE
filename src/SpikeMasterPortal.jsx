@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import {
   BookOpen,
   Users,
@@ -11,21 +12,25 @@ import {
   Shield,
   Briefcase,
   PlusCircle,
-  LogOut,
   Download,
   Search,
   AlertCircle,
-  LayoutDashboard,
   X,
   Info,
   Rocket,
   Presentation,
   ArrowRight,
   ArrowLeft,
-  PlayCircle,
   Loader2,
   Bell,
 } from 'lucide-react';
+import { ModuleNav } from './components/nav/ModuleNav.jsx';
+import { PortalHeader } from './layouts/PortalHeader.jsx';
+import { resolveUserRole } from './lib/roles.js';
+import { PlaybookShell } from './pages/PlaybookShell.jsx';
+import { PortfolioPage } from './pages/PortfolioPage.jsx';
+import { ResearchPage } from './pages/ResearchPage.jsx';
+import { ROUTES } from './routes/paths.js';
 import { useAuth } from './AuthContext.jsx';
 import { apiFetch } from './apiClient.js';
 import {
@@ -45,25 +50,9 @@ import { GuestLoginForm } from './components/GuestLoginForm.jsx';
 import { InternSignupPanel } from './components/InternSignupPanel.jsx';
 import { ForcePasswordChangeGate } from './components/ForcePasswordChangeGate.jsx';
 
-function mapApiRoleToUi(role) {
-  switch (role) {
-    case 'ADMIN':
-      return 'admin';
-    case 'INTERN':
-      return 'intern';
-    case 'FACULTY':
-      return 'faculty';
-    case 'MENTOR':
-      return 'mentor';
-    case null:
-    case undefined:
-      return 'profile_error';
-    default:
-      return 'guest';
-  }
-}
-
-const SpikeMasterPortal = ({ navigate } = {}) => {
+const SpikeMasterPortal = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const {
     token,
     user,
@@ -74,15 +63,9 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
     refreshUser,
     completeBootstrapSetup,
   } = useAuth();
-  const userRole = !user
-    ? 'guest'
-    : user.profileIncomplete
-      ? 'profile_error'
-      : mapApiRoleToUi(user.role);
+  const userRole = resolveUserRole(user);
   const STATIC_ONLY = import.meta.env.VITE_STATIC_ONLY === 'true';
   const [publicTab, setPublicTab] = useState('orientation');
-
-  const [activeTab, setActiveTab] = useState('dashboard');
   const [toast, setToast] = useState({
     show: false,
     message: '',
@@ -113,6 +96,20 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
       3000,
     );
   }, []);
+
+  useEffect(() => {
+    if (authLoading) return;
+    if (userRole === 'guest' || userRole === 'profile_error') return;
+    if (location.pathname === ROUTES.home) {
+      navigate(ROUTES.dashboard, { replace: true });
+    }
+  }, [authLoading, userRole, location.pathname, navigate]);
+
+  const handleLogout = useCallback(() => {
+    logout();
+    navigate(ROUTES.home);
+    showToast('Signed out.');
+  }, [logout, navigate, showToast]);
 
   const getTodayKey = () => new Date().toISOString().slice(0, 10);
   const generateActivationCode = () =>
@@ -414,8 +411,7 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
               <button
                 onClick={() => {
                   showToast('Orientation Completed!', 'success');
-                  setActiveTab('dashboard');
-                  if (typeof navigate === 'function') navigate();
+                  navigate(ROUTES.dashboard);
                 }}
                 className="flex items-center gap-2 rounded-lg bg-green-700 px-6 py-3 font-bold text-white shadow-md transition-all hover:bg-green-800"
               >
@@ -470,10 +466,10 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
   const handleGuestLogin = useCallback(
     async (email, password) => {
       await login(email, password);
-      setActiveTab('dashboard');
+      navigate(ROUTES.dashboard);
       showToast('Signed in successfully.');
     },
-    [login, showToast],
+    [login, navigate, showToast],
   );
 
   const handleInternSignup = useCallback(
@@ -564,11 +560,11 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
   const handleBootstrapComplete = useCallback(
     async (payload) => {
       await completeBootstrapSetup(payload);
-      setActiveTab('dashboard');
+      navigate(ROUTES.dashboard);
       showToast('Administrator account created. You are signed in.');
       await loadSetupInfo();
     },
-    [completeBootstrapSetup, showToast, loadSetupInfo],
+    [completeBootstrapSetup, navigate, showToast, loadSetupInfo],
   );
 
   const handleAdminRegister = useCallback(
@@ -668,63 +664,6 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
       }
     },
     [token, usingSupabaseAuth, user, showToast, loadInterns, refreshUser],
-  );
-
-  const Navigation = () => (
-    <nav className="relative z-50 bg-[#8B0000] text-white shadow-md">
-      <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-6 py-4 md:flex-row">
-        <div className="flex w-full items-center justify-between gap-3 md:w-auto md:justify-start">
-          <div className="flex items-center gap-3">
-            <div className="rounded bg-white p-1.5 text-xl font-bold leading-none text-[#8B0000]">
-              A
-            </div>
-            <div>
-              <h1 className="text-lg font-bold leading-tight tracking-wide">
-                S.P.I.K.E. PORTAL
-              </h1>
-              <p className="text-xs text-red-200">AIAPH 1Matunog District</p>
-            </div>
-          </div>
-        </div>
-
-        {userRole === 'guest' ? (
-          <p className="text-center text-sm text-red-100 md:text-right">
-            {setupMeta?.needsBootstrap
-              ? 'Create the first administrator account, or sign in if the database is already set up.'
-              : 'Sign in with an account your administrator created.'}
-          </p>
-        ) : (
-          <div className="flex flex-col items-center gap-3 md:flex-row md:gap-6">
-            <span className="hidden text-sm text-red-100 md:inline">
-              {user?.name}
-            </span>
-            <span className="rounded-full bg-red-900 px-3 py-1 text-sm font-bold uppercase tracking-wider shadow-inner">
-              Role:{' '}
-              {userRole === 'profile_error'
-                ? 'Profile pending'
-                : userRole === 'intern'
-                  ? 'Intern'
-                  : userRole === 'mentor'
-                    ? 'Advisor'
-                    : userRole === 'admin'
-                      ? 'Admin'
-                      : 'Faculty'}
-            </span>
-            <button
-              type="button"
-              onClick={() => {
-                logout();
-                setActiveTab('dashboard');
-                showToast('Signed out.');
-              }}
-              className="flex items-center gap-1 font-medium text-red-200 transition hover:text-white"
-            >
-              <LogOut size={18} /> Logout
-            </button>
-          </div>
-        )}
-      </div>
-    </nav>
   );
 
   const MasterSyllabusView = () => (
@@ -1629,63 +1568,73 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
     ],
   );
 
+  const renderPlaybook = () => (
+    <PlaybookShell
+      orientationView={<OrientationModule />}
+      syllabusView={<MasterSyllabusView />}
+    />
+  );
+
+  const renderStaffDashboard = () => {
+    if (userRole === 'faculty') {
+      return (
+        <>
+          <FacultyDashboard />
+          <MentorDashboard />
+        </>
+      );
+    }
+    if (userRole === 'mentor') return <MentorDashboard />;
+    if (userRole === 'admin') return adminDashboard;
+    return null;
+  };
+
+  const renderAuthenticatedModule = () => {
+    const path = location.pathname;
+
+    if (userRole === 'intern') {
+      if (path === ROUTES.reports || path === ROUTES.admin) {
+        return <Navigate to={ROUTES.dashboard} replace />;
+      }
+      if (path === ROUTES.playbook) return renderPlaybook();
+      if (path === ROUTES.portfolio) return <PortfolioPage />;
+      if (path === ROUTES.research) return <ResearchPage />;
+      if (user?.internProgress) return <InternDashboard />;
+      return (
+        <div className="container mx-auto px-6 py-12 text-center text-gray-700">
+          <p className="font-medium">
+            Your account has no intern progress record. Contact an administrator.
+          </p>
+        </div>
+      );
+    }
+
+    if (['faculty', 'mentor', 'admin'].includes(userRole)) {
+      if (path === ROUTES.admin && userRole !== 'admin') {
+        return <Navigate to={ROUTES.dashboard} replace />;
+      }
+      if (path === ROUTES.playbook) return renderPlaybook();
+      if (path === ROUTES.portfolio) return <PortfolioPage />;
+      if (path === ROUTES.research) return <ResearchPage />;
+      if (path === ROUTES.reports) return <ProgressReportsView />;
+      if (path === ROUTES.admin) return adminDashboard;
+      return renderStaffDashboard();
+    }
+
+    return null;
+  };
+
   return (
     <div className="relative min-h-screen bg-gray-50 pb-12 font-sans selection:bg-red-900 selection:text-white">
-      <Navigation />
+      <PortalHeader
+        userRole={userRole}
+        user={user}
+        setupMeta={setupMeta}
+        onLogout={handleLogout}
+      />
 
-      {['faculty', 'mentor', 'admin'].includes(userRole) && (
-        <div className="sticky top-0 z-40 border-b border-gray-200 bg-white px-6 py-1 shadow-sm">
-          <div className="container mx-auto flex gap-2 overflow-x-auto whitespace-nowrap text-sm font-bold text-gray-600 md:gap-6">
-            <button
-              className={`border-b-[3px] px-2 py-3 transition-colors ${
-                activeTab === 'dashboard'
-                  ? 'border-[#8B0000] text-[#8B0000]'
-                  : 'border-transparent hover:text-gray-900'
-              }`}
-              onClick={() => setActiveTab('dashboard')}
-            >
-              <span className="flex items-center gap-2">
-                <LayoutDashboard size={16} /> Role Dashboard
-              </span>
-            </button>
-            <button
-              className={`border-b-[3px] px-2 py-3 transition-colors ${
-                activeTab === 'orientation'
-                  ? 'border-[#8B0000] text-[#8B0000]'
-                  : 'border-transparent hover:text-gray-900'
-              }`}
-              onClick={() => setActiveTab('orientation')}
-            >
-              <span className="flex items-center gap-2">
-                <PlayCircle size={16} /> Orientation Deck
-              </span>
-            </button>
-            <button
-              className={`border-b-[3px] px-2 py-3 transition-colors ${
-                activeTab === 'syllabus'
-                  ? 'border-[#8B0000] text-[#8B0000]'
-                  : 'border-transparent hover:text-gray-900'
-              }`}
-              onClick={() => setActiveTab('syllabus')}
-            >
-              <span className="flex items-center gap-2">
-                <BookOpen size={16} /> Master Blueprint
-              </span>
-            </button>
-            <button
-              className={`border-b-[3px] px-2 py-3 transition-colors ${
-                activeTab === 'reports'
-                  ? 'border-[#8B0000] text-[#8B0000]'
-                  : 'border-transparent hover:text-gray-900'
-              }`}
-              onClick={() => setActiveTab('reports')}
-            >
-              <span className="flex items-center gap-2">
-                <BarChart size={16} /> Progress Reports
-              </span>
-            </button>
-          </div>
-        </div>
+      {userRole !== 'guest' && userRole !== 'profile_error' && !authLoading && (
+        <ModuleNav userRole={userRole} />
       )}
 
       <main>
@@ -1799,11 +1748,7 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  logout();
-                  setActiveTab('dashboard');
-                  showToast('Signed out.');
-                }}
+                onClick={handleLogout}
                 className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-bold text-gray-800 transition hover:bg-gray-50"
               >
                 Sign out
@@ -1812,32 +1757,9 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
           </div>
         )}
 
-        {userRole === 'intern' && user?.internProgress && <InternDashboard />}
-        {userRole === 'intern' && user && !user.profileIncomplete && !user.internProgress && (
-          <div className="container mx-auto px-6 py-12 text-center text-gray-700">
-            <p className="font-medium">
-              Your account has no intern progress record. Contact an administrator.
-            </p>
-          </div>
-        )}
-
-        {['faculty', 'mentor', 'admin'].includes(userRole) && (
-          <>
-            {activeTab === 'dashboard' && userRole === 'faculty' && (
-              <>
-                <FacultyDashboard />
-                <MentorDashboard />
-              </>
-            )}
-            {activeTab === 'dashboard' && userRole === 'mentor' && (
-              <MentorDashboard />
-            )}
-            {activeTab === 'dashboard' && userRole === 'admin' && adminDashboard}
-            {activeTab === 'orientation' && <OrientationModule />}
-            {activeTab === 'syllabus' && <MasterSyllabusView />}
-            {activeTab === 'reports' && <ProgressReportsView />}
-          </>
-        )}
+        {(userRole === 'intern' || ['faculty', 'mentor', 'admin'].includes(userRole)) &&
+          !authLoading &&
+          renderAuthenticatedModule()}
       </main>
 
       {user?.mustChangePassword &&

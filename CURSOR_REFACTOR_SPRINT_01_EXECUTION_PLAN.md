@@ -53,11 +53,14 @@ Sprint 01's **product vision** (LMS + portfolio + incubator) is sound. The **tec
 
 **As-built:** `src/lib/supabase/` centralizes queries; `SpikeMasterPortal.jsx` branches on `usingSupabaseAuth`. Legacy Express/JWT paths remain for local dev without Supabase env vars.
 
-### Phase 1 — App shell (3–4 days)
+### Phase 1 — App shell (3–4 days) ✅ **complete**
 
-- [ ] Add `react-router-dom`
-- [ ] Extract layout, nav, pages from monolith
-- [ ] Map routes; preserve existing dashboard JSX
+- [x] Add `react-router-dom`
+- [x] Extract `PortalHeader`, `ModuleNav`; placeholder `PortfolioPage`, `ResearchPage`, `PlaybookShell`
+- [x] Map routes: `/dashboard`, `/playbook`, `/portfolio`, `/research`, `/reports`, `/admin`
+- [x] Preserve existing dashboard JSX; role-based route guards; SPA `_redirects` for Cloudflare
+
+**As-built:** `SpikeMasterPortal` uses `useLocation`/`useNavigate`; interns get module nav; legacy orientation/syllabus live under Playbook tabs.
 
 ### Phase 2 — Module scaffolds (4–5 days)
 
