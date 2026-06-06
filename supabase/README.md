@@ -37,7 +37,9 @@ Keep `VITE_STATIC_ONLY=true` until Supabase-powered auth/data calls are wired in
 
 ## 5) Migration strategy (recommended)
 
-1. Wire auth to Supabase first.
-2. Replace `/api/interns` and `/api/interns/:id/progress` screens with Supabase queries.
-3. Replace traction log endpoints.
-4. Remove backend dependency once all flows are migrated.
+1. Wire auth to Supabase first. ✅
+2. Replace `/api/interns` and `/api/interns/:id/progress` screens with Supabase queries. ✅ (Phase 0 — `src/lib/supabase/interns.js`)
+3. Replace traction log endpoints. ✅ (Phase 0 — `src/lib/supabase/tractionLogs.js`)
+4. Remove backend dependency once all flows are migrated. (Express API kept for local JWT dev only.)
+
+Production Supabase mode no longer depends on `apiFetch` + JWT for intern list, progress updates, or traction logs.

@@ -28,6 +28,14 @@ import {
 } from 'lucide-react';
 import { useAuth } from './AuthContext.jsx';
 import { apiFetch } from './apiClient.js';
+import {
+  createTractionLog,
+  fetchInterns,
+  fetchMyTractionLogs,
+  fetchPendingTractionLogs,
+  reviewTractionLog,
+  updateInternProgress,
+} from './lib/supabase/index.js';
 import { supabase } from './supabaseClient.js';
 import { fullSyllabusData } from './fullSyllabusData.js';
 import { orientationSlides } from './orientationSlideContents.jsx';
@@ -194,38 +202,7 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
     if (usingSupabaseAuth && supabase) {
       setInternsLoading(true);
       try {
-        const { data: profiles, error: profErr } = await supabase
-          .from('profiles')
-          .select('id, name, email, role')
-          .eq('role', 'INTERN')
-          .order('name');
-        if (profErr) throw profErr;
-        const list = profiles || [];
-        const ids = list.map((p) => p.id);
-        let progressByUser = {};
-        if (ids.length > 0) {
-          const { data: progRows, error: progErr } = await supabase
-            .from('intern_progress')
-            .select('user_id, segment, hours, licensed, squad, university')
-            .in('user_id', ids);
-          if (progErr) throw progErr;
-          progressByUser = Object.fromEntries((progRows || []).map((r) => [r.user_id, r]));
-        }
-        const rows = list.map((row) => {
-          const p = progressByUser[row.id];
-          return {
-            id: row.id,
-            name: row.name,
-            email: row.email,
-            role: row.role,
-            segment: p?.segment ?? 1,
-            hours: p?.hours ?? 0,
-            licensed: p?.licensed ?? false,
-            squad: p?.squad ?? null,
-            university: p?.university ?? null,
-          };
-        });
-        setInterns(rows);
+        setInterns(await fetchInterns());
       } catch (e) {
         showToast(e.message || 'Failed to load interns', 'info');
       } finally {
@@ -247,24 +224,46 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
   }, [token, user?.role, usingSupabaseAuth, showToast]);
 
   const loadPendingLogs = useCallback(async () => {
-    if (!token || !['FACULTY', 'MENTOR', 'ADMIN'].includes(user?.role)) return;
+    if (!['FACULTY', 'MENTOR', 'ADMIN'].includes(user?.role)) return;
+
+    if (usingSupabaseAuth && supabase) {
+      try {
+        setPendingLogs(await fetchPendingTractionLogs());
+      } catch (e) {
+        showToast(e.message || 'Failed to load pending logs', 'info');
+      }
+      return;
+    }
+
+    if (!token) return;
     try {
       const rows = await apiFetch('/api/traction-logs/pending', { token });
       setPendingLogs(rows);
     } catch (e) {
       showToast(e.message || 'Failed to load pending logs', 'info');
     }
-  }, [token, user?.role, showToast]);
+  }, [token, user?.role, usingSupabaseAuth, showToast]);
 
   const loadMyLogs = useCallback(async () => {
-    if (!token || user?.role !== 'INTERN') return;
+    if (user?.role !== 'INTERN') return;
+
+    if (usingSupabaseAuth && supabase && user?.id) {
+      try {
+        setMyLogs(await fetchMyTractionLogs(user.id));
+      } catch {
+        setMyLogs([]);
+      }
+      return;
+    }
+
+    if (!token) return;
     try {
       const rows = await apiFetch('/api/traction-logs/my', { token });
       setMyLogs(rows);
     } catch {
       setMyLogs([]);
     }
-  }, [token, user?.role]);
+  }, [token, user, usingSupabaseAuth]);
 
   const loadSetupInfo = useCallback(async () => {
     if (STATIC_ONLY || usingSupabaseAuth) {
@@ -440,17 +439,26 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
   };
 
   const handleSaveChanges = async () => {
-    if (!token || !editData) return;
+    if (!editData) return;
     try {
-      await apiFetch(`/api/interns/${editData.id}/progress`, {
-        token,
-        method: 'PATCH',
-        body: {
+      if (usingSupabaseAuth && supabase) {
+        await updateInternProgress(editData.id, {
           segment: editData.segment,
           hours: editData.hours,
           licensed: editData.licensed,
-        },
-      });
+        });
+      } else {
+        if (!token) return;
+        await apiFetch(`/api/interns/${editData.id}/progress`, {
+          token,
+          method: 'PATCH',
+          body: {
+            segment: editData.segment,
+            hours: editData.hours,
+            licensed: editData.licensed,
+          },
+        });
+      }
       await loadInterns();
       handleCloseModal();
       showToast('Intern details updated successfully!');
@@ -987,11 +995,20 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
               const hoursVal = Number.parseInt(form.hours.value, 10);
               if (!task || !hoursVal) return;
               try {
-                await apiFetch('/api/traction-logs', {
-                  token,
-                  method: 'POST',
-                  body: { task, hours: hoursVal },
-                });
+                if (usingSupabaseAuth && supabase && user?.id) {
+                  await createTractionLog({
+                    userId: user.id,
+                    task,
+                    hours: hoursVal,
+                  });
+                } else {
+                  if (!token) return;
+                  await apiFetch('/api/traction-logs', {
+                    token,
+                    method: 'POST',
+                    body: { task, hours: hoursVal },
+                  });
+                }
                 form.reset();
                 await refreshUser();
                 await loadMyLogs();
@@ -1273,15 +1290,21 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
             className="space-y-4"
             onSubmit={async (e) => {
               e.preventDefault();
-              const internId = Number.parseInt(e.target.internId.value, 10);
+              const internId = e.target.internId.value;
               const hoursToAdd = Number.parseInt(e.target.hoursCompleted.value, 10);
-              if (!internId || !hoursToAdd || !token) return;
+              if (!internId || !hoursToAdd) return;
               try {
-                await apiFetch(`/api/interns/${internId}/progress`, {
-                  token,
-                  method: 'PATCH',
-                  body: { hoursAdd: hoursToAdd },
-                });
+                if (usingSupabaseAuth && supabase) {
+                  await updateInternProgress(internId, { hoursAdd: hoursToAdd });
+                } else {
+                  if (!token) return;
+                  const legacyId = Number.parseInt(internId, 10);
+                  await apiFetch(`/api/interns/${legacyId}/progress`, {
+                    token,
+                    method: 'PATCH',
+                    body: { hoursAdd: hoursToAdd },
+                  });
+                }
                 await loadInterns();
                 showToast(`Logged ${hoursToAdd} traction hours.`);
                 e.target.reset();
@@ -1378,11 +1401,16 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
                             type="button"
                             onClick={async () => {
                               try {
-                                await apiFetch(`/api/traction-logs/${log.id}`, {
-                                  token,
-                                  method: 'PATCH',
-                                  body: { action: 'approve' },
-                                });
+                                if (usingSupabaseAuth && supabase) {
+                                  await reviewTractionLog(log.id, 'approve');
+                                } else {
+                                  if (!token) return;
+                                  await apiFetch(`/api/traction-logs/${log.id}`, {
+                                    token,
+                                    method: 'PATCH',
+                                    body: { action: 'approve' },
+                                  });
+                                }
                                 await loadInterns();
                                 await loadPendingLogs();
                                 showToast(`Approved ${log.hours} hrs for ${log.user?.name}`);
@@ -1398,11 +1426,16 @@ const SpikeMasterPortal = ({ navigate } = {}) => {
                             type="button"
                             onClick={async () => {
                               try {
-                                await apiFetch(`/api/traction-logs/${log.id}`, {
-                                  token,
-                                  method: 'PATCH',
-                                  body: { action: 'reject' },
-                                });
+                                if (usingSupabaseAuth && supabase) {
+                                  await reviewTractionLog(log.id, 'reject');
+                                } else {
+                                  if (!token) return;
+                                  await apiFetch(`/api/traction-logs/${log.id}`, {
+                                    token,
+                                    method: 'PATCH',
+                                    body: { action: 'reject' },
+                                  });
+                                }
                                 await loadPendingLogs();
                                 showToast(`Rejected log for ${log.user?.name}`, 'info');
                               } catch (err) {
