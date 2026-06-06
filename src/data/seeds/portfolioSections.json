@@ -1,0 +1,32 @@
+[
+  {
+    "id": "portfolio-identity-purpose",
+    "title": "Identity & Purpose",
+    "description": "Personal why, venture identity, and purpose artifacts that anchor the portfolio."
+  },
+  {
+    "id": "portfolio-market-intelligence",
+    "title": "Market Intelligence",
+    "description": "Research outputs, market maps, and client discovery evidence."
+  },
+  {
+    "id": "portfolio-financial-blueprint",
+    "title": "Financial Blueprint",
+    "description": "Financial literacy exercises, needs analysis practice, and planning models."
+  },
+  {
+    "id": "portfolio-professional-development",
+    "title": "Professional Development",
+    "description": "Compliance, ethics, licensing preparation, and professional standards evidence."
+  },
+  {
+    "id": "portfolio-advisor-startup",
+    "title": "Advisor Startup Blueprint",
+    "description": "Operations, risk management, and client experience startup artifacts."
+  },
+  {
+    "id": "portfolio-three-year-blueprint",
+    "title": "3-Year Blueprint",
+    "description": "Growth plan synthesis, entrepreneurship outputs, and venture board materials."
+  }
+]

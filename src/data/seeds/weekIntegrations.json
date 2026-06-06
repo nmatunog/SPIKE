@@ -1,0 +1,37 @@
+[
+  {
+    "weekId": "week-segment-1-1",
+    "businessPlanChapter": "bp-chapter-1",
+    "portfolioSection": "portfolio-identity-purpose",
+    "competencyTargets": ["competency-visioning", "competency-goal-setting"],
+    "milestoneReview": "milestone-40-vision-review"
+  },
+  {
+    "weekId": "week-segment-1-2",
+    "businessPlanChapter": "bp-chapter-2",
+    "portfolioSection": "portfolio-market-intelligence",
+    "competencyTargets": ["competency-client-discovery", "competency-financial-literacy"],
+    "milestoneReview": "milestone-80-market-understanding"
+  },
+  {
+    "weekId": "week-segment-1-3",
+    "businessPlanChapter": "bp-chapter-3",
+    "portfolioSection": "portfolio-advisor-startup",
+    "competencyTargets": ["competency-risk-management"],
+    "milestoneReview": "milestone-120-business-operations"
+  },
+  {
+    "weekId": "week-segment-1-4",
+    "businessPlanChapter": "bp-chapter-4",
+    "portfolioSection": "portfolio-professional-development",
+    "competencyTargets": ["competency-leadership"],
+    "milestoneReview": "milestone-160-licensing-readiness"
+  },
+  {
+    "weekId": "week-segment-1-5",
+    "businessPlanChapter": "bp-chapter-5",
+    "portfolioSection": "portfolio-three-year-blueprint",
+    "competencyTargets": ["competency-presentation-skills", "competency-prospecting"],
+    "milestoneReview": "milestone-200-venture-board"
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "id": "bp-chapter-1",
+    "title": "Vision & Purpose",
+    "description": "Define venture vision, purpose, and the identity foundation of the 3-year business plan.",
+    "weekOwner": 1
+  },
+  {
+    "id": "bp-chapter-2",
+    "title": "Target Market Strategy",
+    "description": "Document target market segments, positioning, and market intelligence insights.",
+    "weekOwner": 2
+  },
+  {
+    "id": "bp-chapter-3",
+    "title": "Client Experience Strategy",
+    "description": "Outline client journey, service model, and advisor startup operating blueprint.",
+    "weekOwner": 3
+  },
+  {
+    "id": "bp-chapter-4",
+    "title": "Professional Standards",
+    "description": "Capture compliance, ethics, and professional development commitments.",
+    "weekOwner": 4
+  },
+  {
+    "id": "bp-chapter-5",
+    "title": "Growth Blueprint",
+    "description": "Synthesize the 3-year growth plan, entrepreneurship strategy, and scaling milestones.",
+    "weekOwner": 5
+  }
+]

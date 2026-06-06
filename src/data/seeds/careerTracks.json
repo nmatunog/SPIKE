@@ -1,0 +1,14 @@
+[
+  {
+    "id": "track-agency-builder",
+    "title": "Agency Builder",
+    "framework": ["Educate", "Expand", "Empower"],
+    "description": "Build and scale an agency through recruitment, unit development, and leadership systems."
+  },
+  {
+    "id": "track-specialist-consultant",
+    "title": "Specialist Consultant",
+    "framework": ["Educate", "Establish", "Elevate"],
+    "description": "Develop niche authority and a professional practice as a specialist consultant."
+  }
+]

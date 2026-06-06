@@ -1,0 +1,50 @@
+[
+  {
+    "id": "req-agency-recruitment-plan",
+    "trackId": "track-agency-builder",
+    "title": "Recruitment Plan",
+    "description": "Document sourcing, selection, and onboarding strategy for agency talent pipeline."
+  },
+  {
+    "id": "req-agency-unit-development",
+    "trackId": "track-agency-builder",
+    "title": "Unit Development Plan",
+    "description": "Outline unit structure, role clarity, and development milestones."
+  },
+  {
+    "id": "req-agency-leadership-blueprint",
+    "trackId": "track-agency-builder",
+    "title": "Leadership Blueprint",
+    "description": "Define leadership philosophy, coaching cadence, and accountability systems."
+  },
+  {
+    "id": "req-agency-growth-forecast",
+    "trackId": "track-agency-builder",
+    "title": "Growth Forecast",
+    "description": "Project agency growth metrics, capacity, and resource requirements over three years."
+  },
+  {
+    "id": "req-specialist-niche-strategy",
+    "trackId": "track-specialist-consultant",
+    "title": "Niche Strategy",
+    "description": "Define target niche, differentiation, and market positioning."
+  },
+  {
+    "id": "req-specialist-authority-building",
+    "trackId": "track-specialist-consultant",
+    "title": "Authority Building Plan",
+    "description": "Plan content, credentials, and visibility activities that establish authority."
+  },
+  {
+    "id": "req-specialist-practice-plan",
+    "trackId": "track-specialist-consultant",
+    "title": "Professional Practice Plan",
+    "description": "Document service model, client acquisition, and practice operations."
+  },
+  {
+    "id": "req-specialist-thought-leadership",
+    "trackId": "track-specialist-consultant",
+    "title": "Thought Leadership Plan",
+    "description": "Outline speaking, publishing, and community leadership initiatives."
+  }
+]

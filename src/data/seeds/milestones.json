@@ -1,0 +1,37 @@
+[
+  {
+    "id": "milestone-40-vision-review",
+    "segmentId": "segment-1",
+    "title": "Vision Review",
+    "targetHour": 40,
+    "description": "Review personal vision, goals, and early portfolio identity artifacts at the 40-hour gate."
+  },
+  {
+    "id": "milestone-80-market-understanding",
+    "segmentId": "segment-1",
+    "title": "Market Understanding Review",
+    "targetHour": 80,
+    "description": "Demonstrate market intelligence, client discovery progress, and financial literacy foundations."
+  },
+  {
+    "id": "milestone-120-business-operations",
+    "segmentId": "segment-1",
+    "title": "Business Operations Review",
+    "targetHour": 120,
+    "description": "Validate advisor startup blueprint, risk awareness, and operational readiness."
+  },
+  {
+    "id": "milestone-160-licensing-readiness",
+    "segmentId": "segment-1",
+    "title": "Licensing Readiness Review",
+    "targetHour": 160,
+    "description": "Confirm professional standards, compliance posture, and licensing preparation."
+  },
+  {
+    "id": "milestone-200-venture-board",
+    "segmentId": "segment-1",
+    "title": "Proof of Concept Venture Board",
+    "targetHour": 200,
+    "description": "Present proof-of-concept venture to faculty and mentors for Segment 1 capstone evaluation."
+  }
+]

@@ -1,0 +1,62 @@
+[
+  {
+    "id": "competency-visioning",
+    "title": "Visioning",
+    "category": "personal",
+    "description": "Articulate a clear personal and venture vision aligned with long-term agency goals."
+  },
+  {
+    "id": "competency-goal-setting",
+    "title": "Goal Setting",
+    "category": "personal",
+    "description": "Translate vision into measurable short- and long-term goals with accountability checkpoints."
+  },
+  {
+    "id": "competency-financial-literacy",
+    "title": "Financial Literacy",
+    "category": "business",
+    "description": "Apply foundational financial concepts to client conversations and personal practice planning."
+  },
+  {
+    "id": "competency-financial-needs-analysis",
+    "title": "Financial Needs Analysis",
+    "category": "technical",
+    "description": "Conduct structured needs analysis conversations using SPIKE advisory frameworks."
+  },
+  {
+    "id": "competency-client-discovery",
+    "title": "Client Discovery",
+    "category": "business",
+    "description": "Discover client motivations, constraints, and priorities through consultative dialogue."
+  },
+  {
+    "id": "competency-risk-management",
+    "title": "Risk Management",
+    "category": "business",
+    "description": "Identify, communicate, and mitigate financial and professional risks for clients and practice."
+  },
+  {
+    "id": "competency-prospecting",
+    "title": "Prospecting",
+    "category": "business",
+    "description": "Build and prioritize a natural market pipeline using ethical prospecting methods."
+  },
+  {
+    "id": "competency-presentation-skills",
+    "title": "Presentation Skills",
+    "category": "technical",
+    "description": "Deliver clear, persuasive presentations tailored to audience and venture board standards."
+  },
+  {
+    "id": "competency-leadership",
+    "title": "Leadership",
+    "category": "leadership",
+    "description": "Demonstrate squad leadership, coaching behaviors, and accountability for team outcomes."
+  },
+  {
+    "id": "competency-recruitment-awareness",
+    "title": "Recruitment Awareness",
+    "category": "leadership",
+    "description": "Understand agency-building recruitment principles and talent pipeline development."
+  }
+]

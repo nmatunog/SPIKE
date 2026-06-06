@@ -1,0 +1,32 @@
+[
+  {
+    "id": "vbc-vision-clarity",
+    "boardId": "venture-board-segment-1-200",
+    "title": "Vision Clarity",
+    "weight": 20
+  },
+  {
+    "id": "vbc-market-understanding",
+    "boardId": "venture-board-segment-1-200",
+    "title": "Market Understanding",
+    "weight": 20
+  },
+  {
+    "id": "vbc-business-feasibility",
+    "boardId": "venture-board-segment-1-200",
+    "title": "Business Feasibility",
+    "weight": 20
+  },
+  {
+    "id": "vbc-professional-readiness",
+    "boardId": "venture-board-segment-1-200",
+    "title": "Professional Readiness",
+    "weight": 20
+  },
+  {
+    "id": "vbc-presentation-quality",
+    "boardId": "venture-board-segment-1-200",
+    "title": "Presentation Quality",
+    "weight": 20
+  }
+]
