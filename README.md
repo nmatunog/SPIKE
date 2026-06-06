@@ -98,6 +98,14 @@ See [`supabase/README.md`](./supabase/README.md). Run SQL files in the Supabase 
 
 See [`CURSOR_REFACTOR_SPRINT_01_EXECUTION_PLAN.md`](./CURSOR_REFACTOR_SPRINT_01_EXECUTION_PLAN.md).
 
+## Sprint 02 — Playbook engine + instructional architecture
+
+15-phase platform foundation (portfolio, business plan, competencies, career tracks, venture board, research). Architecture only — not full curriculum or final LMS.
+
+- Spec: [`PLAYBOOK_SCHEMA_V1.md`](./PLAYBOOK_SCHEMA_V1.md)
+- Gap analysis: [`PLAYBOOK_SCHEMA_V1_GAP_ANALYSIS.md`](./PLAYBOOK_SCHEMA_V1_GAP_ANALYSIS.md)
+- Execution plan (8 PRs): [`PLAYBOOK_SCHEMA_V1_EXECUTION_PLAN.md`](./PLAYBOOK_SCHEMA_V1_EXECUTION_PLAN.md)
+
 ## Files
 
 - `public/_redirects` — SPA fallback for Cloudflare Pages
