@@ -10,7 +10,7 @@ export function RoleDashboardCards({ role, user, interns, internSummary }) {
   if (role === 'intern') {
     const m = deriveInternDashboardMetrics(user?.internProgress);
     return (
-      <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-7">
+      <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-7">
           <MetricCard label="Segment" value={`Seg ${m.segment}`} sub={m.segmentStatus} />
           <MetricCard label="Week" value={m.currentWeek} accent="blue" />
           <MetricCard label="Day" value={m.currentDay} accent="blue" />
@@ -22,7 +22,7 @@ export function RoleDashboardCards({ role, user, interns, internSummary }) {
             value="Active"
             accent="green"
             sub={m.mentorFeedback}
-            className="col-span-2 md:col-span-4 lg:col-span-1"
+            className="sm:col-span-2 lg:col-span-2 2xl:col-span-1"
           />
       </div>
     );

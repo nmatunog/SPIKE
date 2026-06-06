@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { BarChart, BookOpen, Settings, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { PageContainer, PageTitle } from '../components/layout/PageContainer.jsx';
 import { ROUTES } from '../routes/paths.js';
 
 const TABS = [
@@ -24,13 +25,15 @@ export function AdminPage({ usersPanel, settingsPanel, passwordHelpPanel }) {
   const [tab, setTab] = useState('users');
 
   return (
-    <div className="container mx-auto px-6 py-8">
+    <PageContainer>
       <div className="mb-6">
-        <h2 className="text-3xl font-bold text-gray-900">Admin</h2>
-        <p className="mt-1 text-gray-600">User management, cohorts, content, and system settings.</p>
+        <PageTitle>Admin</PageTitle>
+        <p className="mt-1 text-sm text-gray-600 sm:text-base">
+          User management, cohorts, content, and system settings.
+        </p>
       </div>
 
-      <div className="mb-6 flex flex-wrap gap-2 border-b border-gray-200 pb-3">
+      <div className="mb-6 flex gap-2 overflow-x-auto border-b border-gray-200 pb-3 scrollbar-thin">
         {TABS.map((item) => {
           const TabIcon = item.icon;
           return (
@@ -38,7 +41,7 @@ export function AdminPage({ usersPanel, settingsPanel, passwordHelpPanel }) {
               key={item.id}
               type="button"
               onClick={() => setTab(item.id)}
-              className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-bold transition ${
+              className={`flex min-h-[44px] shrink-0 items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-bold transition ${
                 tab === item.id ? 'bg-[#8B0000] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
@@ -79,12 +82,12 @@ export function AdminPage({ usersPanel, settingsPanel, passwordHelpPanel }) {
           </p>
           <Link
             to={ROUTES.reports}
-            className="inline-flex rounded-lg bg-[#8B0000] px-4 py-2 text-sm font-bold text-white transition hover:bg-red-900"
+            className="inline-flex min-h-[44px] items-center rounded-lg bg-[#8B0000] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-red-900"
           >
             Open progress reports
           </Link>
         </div>
       )}
-    </div>
+    </PageContainer>
   );
 }

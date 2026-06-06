@@ -42,7 +42,7 @@ export const AdminRegisterForm = memo(function AdminRegisterForm({ onRegister })
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="Full name"
-        className="w-full rounded-lg border border-gray-300 p-2 text-sm outline-none focus:border-[#8B0000]"
+        className="min-h-[44px] w-full rounded-lg border border-gray-300 p-2.5 text-base outline-none focus:border-[#8B0000] sm:text-sm"
       />
       <input
         required
@@ -50,7 +50,7 @@ export const AdminRegisterForm = memo(function AdminRegisterForm({ onRegister })
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="Email"
-        className="w-full rounded-lg border border-gray-300 p-2 text-sm outline-none focus:border-[#8B0000]"
+        className="min-h-[44px] w-full rounded-lg border border-gray-300 p-2.5 text-base outline-none focus:border-[#8B0000] sm:text-sm"
       />
       <PasswordInput
         required
@@ -58,13 +58,13 @@ export const AdminRegisterForm = memo(function AdminRegisterForm({ onRegister })
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         placeholder="Password (min 8 characters)"
-        className="w-full rounded-lg border border-gray-300 p-2 text-sm outline-none focus:border-[#8B0000]"
+        className="min-h-[44px] w-full rounded-lg border border-gray-300 p-2.5 text-base outline-none focus:border-[#8B0000] sm:text-sm"
         autoComplete="new-password"
       />
       <select
         value={role}
         onChange={(e) => setRole(e.target.value)}
-        className="w-full rounded-lg border border-gray-300 p-2 text-sm outline-none focus:border-[#8B0000]"
+        className="min-h-[44px] w-full rounded-lg border border-gray-300 p-2.5 text-base outline-none focus:border-[#8B0000] sm:text-sm"
       >
         <option value="INTERN">Intern</option>
         <option value="FACULTY">Faculty</option>
@@ -77,20 +77,20 @@ export const AdminRegisterForm = memo(function AdminRegisterForm({ onRegister })
             value={university}
             onChange={(e) => setUniversity(e.target.value)}
             placeholder="University / recruitment source"
-            className="w-full rounded-lg border border-gray-300 p-2 text-sm outline-none focus:border-[#8B0000]"
+            className="min-h-[44px] w-full rounded-lg border border-gray-300 p-2.5 text-base outline-none focus:border-[#8B0000] sm:text-sm"
           />
           <input
             value={squad}
             onChange={(e) => setSquad(e.target.value)}
             placeholder="Squad (optional)"
-            className="w-full rounded-lg border border-gray-300 p-2 text-sm outline-none focus:border-[#8B0000]"
+            className="min-h-[44px] w-full rounded-lg border border-gray-300 p-2.5 text-base outline-none focus:border-[#8B0000] sm:text-sm"
           />
         </>
       )}
       <button
         type="submit"
         disabled={submitting}
-        className="w-full rounded-lg bg-[#8B0000] py-2 text-sm font-bold text-white transition hover:bg-red-900 disabled:opacity-60"
+        className="min-h-[44px] w-full rounded-lg bg-[#8B0000] py-2.5 text-sm font-bold text-white transition hover:bg-red-900 disabled:opacity-60"
       >
         {submitting ? 'Creating…' : 'Create account'}
       </button>

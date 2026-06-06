@@ -1,4 +1,5 @@
 import { Briefcase } from 'lucide-react';
+import { PageContainer, PageTitle } from '../components/layout/PageContainer.jsx';
 import { portfolioSectionProgress } from '../lib/sprint01Metrics.js';
 
 const SECTIONS = [
@@ -12,22 +13,22 @@ const SECTIONS = [
 
 export function PortfolioPage({ hours = 0 }) {
   return (
-    <div className="container mx-auto px-6 py-8">
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-900">Venture Portfolio</h2>
-        <p className="mt-1 text-gray-600">
+    <PageContainer>
+      <div className="mb-6 sm:mb-8">
+        <PageTitle>Venture Portfolio</PageTitle>
+        <p className="mt-1 text-sm text-gray-600 sm:text-base">
           Participant venture portfolio — section progress uses traction hours until Phase 3 persistence.
         </p>
       </div>
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {SECTIONS.map((section, idx) => {
           const pct = portfolioSectionProgress(hours, idx);
           const completed = Math.floor(pct / 25);
           const pending = Math.max(3 - completed, 0);
           return (
-            <div key={section} className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-              <div className="mb-3 flex items-center gap-2">
-                <Briefcase size={18} className="text-[#8B0000]" />
+            <div key={section} className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
+              <div className="mb-3 flex items-start gap-2">
+                <Briefcase size={18} className="mt-0.5 shrink-0 text-[#8B0000]" />
                 <h3 className="font-bold text-gray-900">{section}</h3>
               </div>
               <div className="mb-2 h-2 w-full rounded-full bg-gray-200">
@@ -47,6 +48,6 @@ export function PortfolioPage({ hours = 0 }) {
           );
         })}
       </div>
-    </div>
+    </PageContainer>
   );
 }

@@ -33,6 +33,8 @@ import { PlaybookShell } from './pages/PlaybookShell.jsx';
 import { PortfolioPage } from './pages/PortfolioPage.jsx';
 import { ResearchPage } from './pages/ResearchPage.jsx';
 import { RoleRouteGuard } from './components/routing/RoleRouteGuard.jsx';
+import { InternReportCard } from './components/reports/InternReportCard.jsx';
+import { PendingLogCard } from './components/traction/PendingLogCard.jsx';
 import { ROUTES } from './routes/paths.js';
 import { deriveReportRowMetrics } from './lib/sprint01Metrics.js';
 import { useAuth } from './AuthContext.jsx';
@@ -344,9 +346,9 @@ const SpikeMasterPortal = () => {
     const [currentSlide, setCurrentSlide] = useState(0);
 
     return (
-      <div className="container mx-auto flex flex-col items-center px-6 py-8">
-        <div className="flex min-h-[600px] max-h-[85vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl">
-          <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-6 py-4">
+      <div className="container mx-auto flex flex-col items-center px-4 py-6 sm:px-6 sm:py-8">
+        <div className="flex min-h-[min(600px,75vh)] max-h-[85vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl sm:min-h-[600px]">
+          <div className="flex flex-col gap-2 border-b border-gray-200 bg-gray-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-4">
             <div className="flex items-center gap-2">
               <Presentation className="text-[#8B0000]" size={20} />
               <span className="text-sm font-bold uppercase tracking-wider text-gray-700">
@@ -376,10 +378,10 @@ const SpikeMasterPortal = () => {
                 <div className="flex justify-center">
                   {orientationSlides[currentSlide].icon}
                 </div>
-                <h2 className="mb-3 text-3xl font-black text-gray-900 md:text-4xl">
+                <h2 className="mb-3 text-2xl font-black text-gray-900 sm:text-3xl md:text-4xl">
                   {orientationSlides[currentSlide].title}
                 </h2>
-                <p className="text-lg italic text-gray-500">
+                <p className="text-base italic text-gray-500 sm:text-lg">
                   {orientationSlides[currentSlide].subtitle}
                 </p>
               </div>
@@ -387,11 +389,11 @@ const SpikeMasterPortal = () => {
             </div>
           </div>
 
-          <div className="mt-auto flex items-center justify-between border-t border-gray-200 bg-gray-50 p-4 md:p-6">
+          <div className="mt-auto flex flex-col gap-3 border-t border-gray-200 bg-gray-50 p-4 sm:flex-row sm:items-center sm:justify-between md:p-6">
             <button
               onClick={() => setCurrentSlide(Math.max(0, currentSlide - 1))}
               disabled={currentSlide === 0}
-              className={`flex items-center gap-2 rounded-lg px-6 py-3 font-bold transition-all ${
+              className={`flex min-h-[44px] items-center justify-center gap-2 rounded-lg px-4 py-2.5 font-bold transition-all sm:px-6 sm:py-3 ${
                 currentSlide === 0
                   ? 'cursor-not-allowed bg-gray-100 text-gray-400'
                   : 'border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100'
@@ -407,7 +409,7 @@ const SpikeMasterPortal = () => {
                     Math.min(orientationSlides.length - 1, currentSlide + 1),
                   )
                 }
-                className="flex items-center gap-2 rounded-lg bg-[#8B0000] px-6 py-3 font-bold text-white shadow-md transition-all hover:bg-red-900 hover:pr-4"
+                className="flex min-h-[44px] items-center justify-center gap-2 rounded-lg bg-[#8B0000] px-4 py-2.5 font-bold text-white shadow-md transition-all hover:bg-red-900 sm:px-6 sm:py-3 sm:hover:pr-4"
               >
                 Next <ArrowRight size={18} className="ml-1" />
               </button>
@@ -417,7 +419,7 @@ const SpikeMasterPortal = () => {
                   showToast('Orientation Completed!', 'success');
                   navigate(ROUTES.dashboard);
                 }}
-                className="flex items-center gap-2 rounded-lg bg-green-700 px-6 py-3 font-bold text-white shadow-md transition-all hover:bg-green-800"
+                className="flex min-h-[44px] items-center justify-center gap-2 rounded-lg bg-green-700 px-4 py-2.5 font-bold text-white shadow-md transition-all hover:bg-green-800 sm:px-6 sm:py-3"
               >
                 <CheckCircle size={18} /> Finish Orientation
               </button>
@@ -671,11 +673,11 @@ const SpikeMasterPortal = () => {
   );
 
   const MasterSyllabusView = () => (
-    <div className="container mx-auto px-6 py-8">
-      <div className="mb-8 flex items-end justify-between border-b pb-4">
+    <div className="container mx-auto px-4 py-6 sm:px-6 sm:py-8">
+      <div className="mb-6 flex flex-col gap-4 border-b pb-4 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 className="flex items-center gap-3 text-3xl font-bold text-gray-900">
-            <Rocket className="text-[#8B0000]" size={32} />
+          <h2 className="flex items-center gap-3 text-2xl font-bold text-gray-900 sm:text-3xl">
+            <Rocket className="text-[#8B0000]" size={28} />
             S.P.I.K.E. Master Syllabus
           </h2>
           <p className="mt-1 text-gray-600">
@@ -756,26 +758,38 @@ const SpikeMasterPortal = () => {
     </div>
   );
 
-  const ProgressReportsView = () => (
-    <div className="container mx-auto px-6 py-8">
-      <div className="mb-8 flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
+  const ProgressReportsView = () => {
+    const filteredInterns = interns.filter((intern) => {
+      const q = searchQuery.trim().toLowerCase();
+      if (!q) return true;
+      return (
+        intern.name.toLowerCase().includes(q) ||
+        (intern.email || '').toLowerCase().includes(q) ||
+        (intern.university || '').toLowerCase().includes(q) ||
+        (intern.squad || '').toLowerCase().includes(q)
+      );
+    });
+
+    return (
+    <div className="container mx-auto px-4 py-6 sm:px-6 sm:py-8">
+      <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:mb-8 md:flex-row md:items-end">
         <div>
-          <h2 className="text-3xl font-bold text-gray-900">
+          <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl">
             Intern Progress Reports
           </h2>
-          <p className="mt-1 text-gray-600">
+          <p className="mt-1 text-sm text-gray-600 sm:text-base">
             Track hours, segment status, portfolio progress, and licensing. Extended columns use
             Sprint 01 mock metrics until Phase 3 schema.
           </p>
         </div>
-        <div className="flex w-full items-center rounded-lg border border-gray-300 bg-white px-3 py-2 md:w-64">
-          <Search size={18} className="text-gray-400" />
+        <div className="flex min-h-[44px] w-full items-center rounded-lg border border-gray-300 bg-white px-3 py-2 md:w-64">
+          <Search size={18} className="shrink-0 text-gray-400" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search interns..."
-            className="ml-2 w-full text-sm outline-none"
+            className="ml-2 w-full text-base outline-none sm:text-sm"
           />
         </div>
       </div>
@@ -787,7 +801,22 @@ const SpikeMasterPortal = () => {
             Loading interns…
           </div>
         ) : (
-        <div className="overflow-x-auto">
+        <>
+        <div className="divide-y md:hidden">
+          {filteredInterns.length === 0 ? (
+            <p className="p-6 text-center text-sm text-gray-500">No interns match your search.</p>
+          ) : (
+            filteredInterns.map((intern) => (
+              <InternReportCard
+                key={intern.id}
+                intern={intern}
+                report={deriveReportRowMetrics(intern)}
+                onUpdate={handleOpenModal}
+              />
+            ))
+          )}
+        </div>
+        <div className="hidden overflow-x-auto md:block">
           <table className="w-full border-collapse text-left">
             <thead>
               <tr className="bg-gray-100 text-sm uppercase tracking-wide text-gray-700">
@@ -804,18 +833,7 @@ const SpikeMasterPortal = () => {
               </tr>
             </thead>
             <tbody>
-              {interns
-                .filter((intern) => {
-                  const q = searchQuery.trim().toLowerCase();
-                  if (!q) return true;
-                  return (
-                    intern.name.toLowerCase().includes(q) ||
-                    (intern.email || '').toLowerCase().includes(q) ||
-                    (intern.university || '').toLowerCase().includes(q) ||
-                    (intern.squad || '').toLowerCase().includes(q)
-                  );
-                })
-                .map((intern) => {
+              {filteredInterns.map((intern) => {
                   const report = deriveReportRowMetrics(intern);
                   return (
                 <tr
@@ -883,8 +901,9 @@ const SpikeMasterPortal = () => {
                   </td>
                   <td className="p-4 text-center">
                     <button
+                      type="button"
                       onClick={() => handleOpenModal(intern)}
-                      className="rounded px-3 py-1 text-sm font-bold text-[#8B0000] underline transition hover:bg-red-50 hover:text-red-900"
+                      className="min-h-[44px] rounded-lg px-3 py-2 text-sm font-bold text-[#8B0000] underline transition hover:bg-red-50 hover:text-red-900"
                     >
                       Update
                     </button>
@@ -895,10 +914,12 @@ const SpikeMasterPortal = () => {
             </tbody>
           </table>
         </div>
+        </>
         )}
       </div>
     </div>
-  );
+    );
+  };
 
   const InternDashboard = () => {
     const p = user?.internProgress;
@@ -907,7 +928,7 @@ const SpikeMasterPortal = () => {
     const licensed = p?.licensed ?? false;
 
     return (
-    <div className="container mx-auto px-6 py-8">
+    <div className="container mx-auto px-4 py-6 sm:px-6 sm:py-8">
       <RoleDashboardCards role="intern" user={user} interns={interns} internSummary={internSummary} />
       <div className="flex flex-col gap-8 lg:flex-row">
       <div className="space-y-6 lg:w-1/3">
@@ -1086,25 +1107,25 @@ const SpikeMasterPortal = () => {
         </div>
 
         <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-          <div className="mb-4 flex items-center justify-between border-b pb-4">
+          <div className="mb-4 flex flex-col gap-2 border-b pb-4 sm:flex-row sm:items-center sm:justify-between">
             <h3 className="text-lg font-bold">Current module focus</h3>
-            <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-bold text-[#8B0000]">
+            <span className="w-fit rounded-full bg-red-100 px-3 py-1 text-xs font-bold text-[#8B0000]">
               In progress
             </span>
           </div>
           {segment === 1 ? (
             <ul className="space-y-3 text-sm text-gray-700">
-              <li className="flex items-center justify-between rounded border bg-gray-50 p-3">
+              <li className="flex flex-col gap-1 rounded border bg-gray-50 p-3 sm:flex-row sm:items-center sm:justify-between">
                 <span>Module 4: Regulatory Compliance</span>
                 <span className="font-bold text-green-600">Done</span>
               </li>
-              <li className="flex items-center justify-between rounded border border-[#8B0000] bg-white p-3">
+              <li className="flex flex-col gap-1 rounded border border-[#8B0000] bg-white p-3 sm:flex-row sm:items-center sm:justify-between">
                 <span className="font-bold text-[#8B0000]">
                   Module 5: AIA Product Solutions & Sales
                 </span>
                 <span className="text-gray-500">Ongoing</span>
               </li>
-              <li className="flex items-center justify-between rounded border p-3 text-gray-400">
+              <li className="flex flex-col gap-1 rounded border p-3 text-gray-400 sm:flex-row sm:items-center sm:justify-between">
                 <span>Module 6: Insurance Entrepreneurship</span>
                 <span>Locked</span>
               </li>
@@ -1123,16 +1144,16 @@ const SpikeMasterPortal = () => {
   };
 
   const FacultyDashboard = () => (
-    <div className="container mx-auto px-6 py-8">
-      <div className="mb-8 flex flex-col items-end justify-between md:flex-row">
+    <div className="container mx-auto px-4 py-6 sm:px-6 sm:py-8">
+      <div className="mb-6 flex flex-col items-stretch justify-between gap-4 sm:mb-8 md:flex-row md:items-end">
         <div>
-          <h2 className="mb-2 text-3xl font-bold text-gray-900">S.P.I.K.E. Dev Studio</h2>
+          <h2 className="mb-2 text-2xl font-bold text-gray-900 sm:text-3xl">S.P.I.K.E. Dev Studio</h2>
           <p className="text-gray-600">Dynamic curriculum editor for the full 600-hour master plan.</p>
         </div>
         <button
           type="button"
           onClick={() => showToast('Opening New Module Builder...', 'info')}
-          className="mt-4 flex items-center gap-2 rounded-lg bg-[#8B0000] px-4 py-2 text-white transition hover:bg-red-900 md:mt-0"
+          className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-lg bg-[#8B0000] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-red-900 md:mt-0 md:w-auto"
         >
           <PlusCircle size={18} /> New Module Element
         </button>
@@ -1205,8 +1226,8 @@ const SpikeMasterPortal = () => {
   );
 
   const MentorDashboard = () => (
-    <div className="container mx-auto px-6 py-8">
-      <h2 className="mb-6 text-3xl font-bold text-gray-900">Advisory Board Control Center</h2>
+    <div className="container mx-auto px-4 py-6 sm:px-6 sm:py-8">
+      <h2 className="mb-6 text-2xl font-bold text-gray-900 sm:text-3xl">Advisory Board Control Center</h2>
       <div className="mb-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
         <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
           <h3 className="mb-4 flex items-center gap-2 text-lg font-bold">
@@ -1225,14 +1246,14 @@ const SpikeMasterPortal = () => {
                 <span className="font-bold text-blue-700">Segment 2 (Market Validation)</span>
                 <span className="text-xs text-gray-500">{internSummary.s2} interns</span>
               </div>
-              <div className="flex items-center justify-between border-t pt-2 text-sm">
+              <div className="flex flex-col gap-2 border-t pt-2 text-sm sm:flex-row sm:items-center sm:justify-between">
                 <span className="font-bold text-green-700">Segment 3 (Partnership Track)</span>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                   <span className="text-xs text-gray-500">{internSummary.s3} interns</span>
                   <button
                     type="button"
                     onClick={() => showToast('Final Board Pitch scheduled!', 'success')}
-                    className="rounded bg-green-100 px-2 py-1 text-xs font-bold text-green-800 transition hover:bg-green-200"
+                    className="min-h-[44px] rounded-lg bg-green-100 px-3 py-2 text-xs font-bold text-green-800 transition hover:bg-green-200 sm:py-1.5"
                   >
                     Schedule Board Pitch
                   </button>
@@ -1331,7 +1352,53 @@ const SpikeMasterPortal = () => {
               No pending traction logs.
             </p>
           ) : (
-            <div className="overflow-x-auto">
+            <>
+            <div className="space-y-3 md:hidden">
+              {pendingLogs.map((log) => (
+                <PendingLogCard
+                  key={log.id}
+                  log={log}
+                  onApprove={async () => {
+                    try {
+                      if (usingSupabaseAuth && supabase) {
+                        await reviewTractionLog(log.id, 'approve');
+                      } else {
+                        if (!token) return;
+                        await apiFetch(`/api/traction-logs/${log.id}`, {
+                          token,
+                          method: 'PATCH',
+                          body: { action: 'approve' },
+                        });
+                      }
+                      await loadInterns();
+                      await loadPendingLogs();
+                      showToast(`Approved ${log.hours} hrs for ${log.user?.name}`);
+                    } catch (err) {
+                      showToast(err.message || 'Approve failed', 'info');
+                    }
+                  }}
+                  onReject={async () => {
+                    try {
+                      if (usingSupabaseAuth && supabase) {
+                        await reviewTractionLog(log.id, 'reject');
+                      } else {
+                        if (!token) return;
+                        await apiFetch(`/api/traction-logs/${log.id}`, {
+                          token,
+                          method: 'PATCH',
+                          body: { action: 'reject' },
+                        });
+                      }
+                      await loadPendingLogs();
+                      showToast(`Rejected log for ${log.user?.name}`, 'info');
+                    } catch (err) {
+                      showToast(err.message || 'Reject failed', 'info');
+                    }
+                  }}
+                />
+              ))}
+            </div>
+            <div className="hidden overflow-x-auto md:block">
               <table className="w-full border-collapse text-left">
                 <thead>
                   <tr className="border-b bg-gray-50 text-xs uppercase tracking-wide text-gray-600">
@@ -1381,7 +1448,7 @@ const SpikeMasterPortal = () => {
                                 showToast(err.message || 'Approve failed', 'info');
                               }
                             }}
-                            className="rounded bg-green-100 px-3 py-1 text-xs font-bold text-green-700 transition hover:bg-green-200"
+                            className="min-h-[44px] rounded-lg bg-green-100 px-3 py-2 text-xs font-bold text-green-700 transition hover:bg-green-200"
                           >
                             Approve
                           </button>
@@ -1405,7 +1472,7 @@ const SpikeMasterPortal = () => {
                                 showToast(err.message || 'Reject failed', 'info');
                               }
                             }}
-                            className="rounded bg-red-50 px-3 py-1 text-xs font-bold text-red-700 transition hover:bg-red-100"
+                            className="min-h-[44px] rounded-lg bg-red-50 px-3 py-2 text-xs font-bold text-red-700 transition hover:bg-red-100"
                           >
                             Reject
                           </button>
@@ -1416,6 +1483,7 @@ const SpikeMasterPortal = () => {
                 </tbody>
               </table>
             </div>
+            </>
           )}
         </div>
       </div>
@@ -1449,7 +1517,7 @@ const SpikeMasterPortal = () => {
                     type="button"
                     onClick={handleGenerateActivationCode}
                     disabled={activationCodeGenerating}
-                    className="rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-gray-800 disabled:opacity-60"
+                    className="min-h-[44px] rounded-lg bg-gray-900 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-gray-800 disabled:opacity-60"
                   >
                     {activationCodeGenerating ? 'Generating…' : 'Generate today code'}
                   </button>
@@ -1528,7 +1596,7 @@ const SpikeMasterPortal = () => {
                       <button
                         type="button"
                         onClick={() => resolvePasswordResetRequest(row.id)}
-                        className="shrink-0 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-bold text-gray-800 transition hover:bg-gray-50"
+                        className="min-h-[44px] shrink-0 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-xs font-bold text-gray-800 transition hover:bg-gray-50"
                       >
                         Mark resolved
                       </button>
@@ -1539,7 +1607,7 @@ const SpikeMasterPortal = () => {
               <button
                 type="button"
                 onClick={() => loadPasswordResetRequests()}
-                className="mt-3 text-xs font-bold text-[#8B0000] underline"
+                className="mt-3 min-h-[44px] text-sm font-bold text-[#8B0000] underline"
               >
                 Refresh list
               </button>
@@ -1571,15 +1639,15 @@ const SpikeMasterPortal = () => {
   );
 
   const AdminDashboardHome = () => (
-    <div className="container mx-auto px-6 py-8">
+    <div className="container mx-auto px-4 py-6 sm:px-6 sm:py-8">
       <RoleDashboardCards role="admin" user={user} interns={interns} internSummary={internSummary} />
-      <h2 className="mb-4 text-2xl font-bold text-gray-900">Program overview</h2>
+      <h2 className="mb-4 text-xl font-bold text-gray-900 sm:text-2xl">Program overview</h2>
       <p className="mb-6 max-w-2xl text-sm text-gray-600">
         Use the Admin module for user accounts, activation codes, and password help requests.
       </p>
       <Link
         to={ROUTES.admin}
-        className="inline-flex rounded-lg bg-[#8B0000] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-red-900"
+        className="inline-flex min-h-[44px] items-center rounded-lg bg-[#8B0000] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-red-900"
       >
         Open admin console
       </Link>
@@ -1590,7 +1658,7 @@ const SpikeMasterPortal = () => {
     if (userRole === 'faculty') {
       return (
         <>
-          <div className="container mx-auto px-6 pt-8">
+          <div className="container mx-auto px-4 pt-6 sm:px-6 sm:pt-8">
             <RoleDashboardCards role="faculty" user={user} interns={interns} internSummary={internSummary} />
           </div>
           <FacultyDashboard />
@@ -1601,7 +1669,7 @@ const SpikeMasterPortal = () => {
     if (userRole === 'mentor') {
       return (
         <>
-          <div className="container mx-auto px-6 pt-8">
+          <div className="container mx-auto px-4 pt-6 sm:px-6 sm:pt-8">
             <RoleDashboardCards role="mentor" user={user} interns={interns} internSummary={internSummary} />
           </div>
           <MentorDashboard />
@@ -1644,7 +1712,7 @@ const SpikeMasterPortal = () => {
   };
 
   return (
-    <div className="relative min-h-screen bg-gray-50 pb-12 font-sans selection:bg-red-900 selection:text-white">
+    <div className="relative min-h-screen bg-gray-50 pb-20 font-sans selection:bg-red-900 selection:text-white md:pb-12">
       <PortalHeader
         userRole={userRole}
         user={user}
@@ -1684,7 +1752,7 @@ const SpikeMasterPortal = () => {
           ) : (
             <div className="mx-auto flex max-w-lg flex-col items-center px-6 py-16">
               <Shield size={56} className="mb-4 text-[#8B0000]" />
-              <h2 className="mb-2 text-center text-3xl font-extrabold text-gray-900">
+              <h2 className="mb-2 text-center text-2xl font-extrabold text-gray-900 sm:text-3xl">
                 Welcome to S.P.I.K.E.
               </h2>
               <p className="mb-6 text-center text-sm text-gray-600">
@@ -1800,7 +1868,7 @@ const SpikeMasterPortal = () => {
         )}
 
       {toast.show && (
-        <div className="animate-in slide-in-from-bottom-5 fade-in fixed bottom-6 right-6 z-50 duration-300">
+        <div className="animate-in slide-in-from-bottom-5 fade-in fixed bottom-20 left-4 right-4 z-50 duration-300 md:bottom-6 md:left-auto md:right-6 md:max-w-sm">
           <div
             className={`flex items-center gap-3 rounded-lg border px-5 py-3 shadow-lg ${
               toast.type === 'success'
@@ -1824,8 +1892,10 @@ const SpikeMasterPortal = () => {
             <div className="flex items-center justify-between bg-[#8B0000] p-4 text-white">
               <h3 className="text-lg font-bold">Edit Intern Progress</h3>
               <button
+                type="button"
                 onClick={handleCloseModal}
-                className="text-red-200 transition hover:text-white"
+                aria-label="Close"
+                className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-red-200 transition hover:bg-red-900/30 hover:text-white"
               >
                 <X size={20} />
               </button>
