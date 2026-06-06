@@ -15,7 +15,9 @@ dist-ssr
 api/.env
 api/prisma/*.db
 api/prisma/*.db-journal
-spike-portal/
+
+# Cursor hook logs (auto-push on session end)
+.cursor/logs/
 
 # Editor directories and files
 .vscode/*

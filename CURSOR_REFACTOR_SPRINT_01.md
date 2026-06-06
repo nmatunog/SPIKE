@@ -309,7 +309,7 @@ No UI logic required yet.
 
 Sprint 01 uses the **existing production stack** (see [`CURSOR_REFACTOR_SPRINT_01_EXECUTION_PLAN.md`](./CURSOR_REFACTOR_SPRINT_01_EXECUTION_PLAN.md)):
 
-* **Vite + React** (not a Next.js rewrite in this sprint)
+* **Vite + React**
 * **react-router-dom** for `/playbook`, `/portfolio`, etc.
 * **Supabase** as the single production data layer
 * **Tailwind** + Lucide (existing components)

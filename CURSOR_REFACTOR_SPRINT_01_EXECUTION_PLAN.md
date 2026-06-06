@@ -4,9 +4,7 @@ Companion to [`CURSOR_REFACTOR_SPRINT_01.md`](./CURSOR_REFACTOR_SPRINT_01.md).
 
 ## Executive summary
 
-Sprint 01's **product vision** (LMS + portfolio + incubator) is sound. The **technical spec** (Next.js rewrite) does **not** match production. Execute as **in-place evolution** of Vite + React + Supabase on Cloudflare Pages.
-
-**Do not rewrite to Next.js in Sprint 01.** Add `react-router-dom` for module routes; defer Next.js until after the monolith is split and Supabase is the single data layer.
+Sprint 01 evolves the live app in place: **Vite + React + Supabase on Cloudflare Pages** (`https://spike-asc.pages.dev`).
 
 ---
 
@@ -62,12 +60,12 @@ Sprint 01's **product vision** (LMS + portfolio + incubator) is sound. The **tec
 
 **As-built:** `SpikeMasterPortal` uses `useLocation`/`useNavigate`; interns get module nav; legacy orientation/syllabus live under Playbook tabs.
 
-### Phase 2 — Module scaffolds (4–5 days)
+### Phase 2 — Module scaffolds (4–5 days) ✅ **complete**
 
-- [ ] Role-aware dashboard cards (real data + mock metrics)
-- [ ] Playbook, Portfolio, Research placeholder UIs
-- [ ] Reports extended columns
-- [ ] Admin consolidated under `/admin`
+- [x] Role-aware dashboard cards (real hours/segment + mock metrics via `src/lib/sprint01Metrics.js`)
+- [x] Playbook curriculum scaffold + Portfolio / Research placeholder UIs
+- [x] Reports extended columns (portfolio %, career track, survey, FNA, segment status)
+- [x] Admin consolidated under `/admin` (`AdminPage` tabs: Users, Cohorts, Content, Settings, Reports)
 
 ### Phase 3 — Database scaffolding (2–3 days)
 
@@ -78,17 +76,16 @@ Sprint 01's **product vision** (LMS + portfolio + incubator) is sound. The **tec
 ### Phase 4 — Hardening & deploy (1–2 days)
 
 - [ ] Route role guards
-- [ ] Lint, build, deploy to `spike-asc.pages.dev`
+- [x] Lint, build, deploy to `https://spike-asc.pages.dev`
 
 ---
 
 ## Deferred (not Sprint 01)
 
-- Next.js migration
 - Full TypeScript conversion
 - shadcn/ui adoption
 - Playbook CMS / portfolio persistence
-- Express API removal (after Phase 0 parity; keep for local JWT dev)
+- Express API removal (keep `api/` for local JWT dev only)
 
 ---
 
@@ -115,9 +112,10 @@ Phase 1  [ ] react-router + new nav
          [ ] Split monolith into pages/layout
          [ ] /admin consolidation
 
-Phase 2  [ ] Dashboard role cards
-         [ ] Playbook / Portfolio / Research scaffolds
-         [ ] Reports column extensions
+Phase 2  [x] Dashboard role cards
+         [x] Playbook / Portfolio / Research scaffolds
+         [x] Reports column extensions
+         [x] Admin under /admin
 
 Phase 3  [ ] Supabase migration file + RLS
          [ ] career_track on intern_progress

@@ -54,9 +54,7 @@ else
 fi
 
 echo "==> Staging files..."
-# Avoid staging local scaffold app or local env files.
 git add -A
-git reset -- "spike-portal" 2>/dev/null || true
 git reset -- ".env" "api/.env" 2>/dev/null || true
 
 if git diff --staged --quiet; then

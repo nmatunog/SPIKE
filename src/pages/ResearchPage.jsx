@@ -1,6 +1,11 @@
-import { FlaskConical } from 'lucide-react';
+import { FlaskConical, Map, FileText, Users, ClipboardList } from 'lucide-react';
 
-const SUBSECTIONS = ['Surveys', 'Respondents', 'Research Reports', 'Opportunity Maps'];
+const SUBSECTIONS = [
+  { name: 'Surveys', icon: ClipboardList, count: 0, hint: 'Needs analysis & market surveys' },
+  { name: 'Respondents', icon: Users, count: 0, hint: 'Gen Z / millennial profiles' },
+  { name: 'Research Reports', icon: FileText, count: 0, hint: 'Squad debrief outputs' },
+  { name: 'Opportunity Maps', icon: Map, count: 0, hint: 'Market gap visualizations' },
+];
 
 export function ResearchPage() {
   return (
@@ -8,20 +13,41 @@ export function ResearchPage() {
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-gray-900">Research Squad</h2>
         <p className="mt-1 text-gray-600">
-          Research activities workspace — empty placeholder UI for Sprint 01. No backend logic yet.
+          Research activities workspace — Sprint 01 placeholder UI. Counts stay at zero until backend wiring.
         </p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {SUBSECTIONS.map((name) => (
+        {SUBSECTIONS.map((item) => {
+          const SubIcon = item.icon;
+          return (
           <div
-            key={name}
-            className="flex min-h-[140px] flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 bg-white p-6 text-center shadow-sm"
+            key={item.name}
+            className="flex min-h-[180px] flex-col rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
           >
-            <FlaskConical size={28} className="mb-3 text-[#8B0000]" />
-            <h3 className="font-bold text-gray-900">{name}</h3>
-            <p className="mt-2 text-xs text-gray-500">Coming soon</p>
+            <div className="mb-4 flex items-center justify-between">
+              <SubIcon size={24} className="text-[#8B0000]" />
+              <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-bold text-gray-600">
+                {item.count} items
+              </span>
+            </div>
+            <h3 className="font-bold text-gray-900">{item.name}</h3>
+            <p className="mt-2 flex-grow text-xs text-gray-500">{item.hint}</p>
+            <button
+              type="button"
+              disabled
+              className="mt-4 w-full rounded-lg border border-dashed border-gray-300 py-2 text-xs font-bold text-gray-400"
+            >
+              Add {item.name.slice(0, -1)} — coming soon
+            </button>
           </div>
-        ))}
+          );
+        })}
+      </div>
+      <div className="mt-8 rounded-xl border border-dashed border-gray-300 bg-white p-8 text-center">
+        <FlaskConical size={32} className="mx-auto mb-3 text-gray-300" />
+        <p className="text-sm font-medium text-gray-600">
+          No research squad data yet. Interns will log surveys and reports here in a future sprint.
+        </p>
       </div>
     </div>
   );

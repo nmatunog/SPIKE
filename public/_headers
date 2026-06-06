@@ -1,4 +1,4 @@
-# Applied when you deploy the `dist` folder (e.g. drag-and-drop). Same ideas as netlify.toml [[headers]].
+# Security headers copied into dist/ by Vite (Cloudflare Pages).
 /*
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff

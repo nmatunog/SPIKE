@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import {
   BookOpen,
   Users,
@@ -27,10 +27,13 @@ import {
 import { ModuleNav } from './components/nav/ModuleNav.jsx';
 import { PortalHeader } from './layouts/PortalHeader.jsx';
 import { resolveUserRole } from './lib/roles.js';
+import { RoleDashboardCards } from './components/dashboard/RoleDashboardCards.jsx';
+import { AdminPage } from './pages/AdminPage.jsx';
 import { PlaybookShell } from './pages/PlaybookShell.jsx';
 import { PortfolioPage } from './pages/PortfolioPage.jsx';
 import { ResearchPage } from './pages/ResearchPage.jsx';
 import { ROUTES } from './routes/paths.js';
+import { deriveReportRowMetrics } from './lib/sprint01Metrics.js';
 import { useAuth } from './AuthContext.jsx';
 import { apiFetch } from './apiClient.js';
 import {
@@ -760,8 +763,8 @@ const SpikeMasterPortal = () => {
             Intern Progress Reports
           </h2>
           <p className="mt-1 text-gray-600">
-            Track intern hours, 600-hour segment completion, and licensing
-            status.
+            Track hours, segment status, portfolio progress, and licensing. Extended columns use
+            Sprint 01 mock metrics until Phase 3 schema.
           </p>
         </div>
         <div className="flex w-full items-center rounded-lg border border-gray-300 bg-white px-3 py-2 md:w-64">
@@ -789,9 +792,13 @@ const SpikeMasterPortal = () => {
               <tr className="bg-gray-100 text-sm uppercase tracking-wide text-gray-700">
                 <th className="border-b p-4">Intern Name</th>
                 <th className="border-b p-4">Recruitment Source</th>
-                <th className="border-b p-4">Incubator Stage</th>
-                <th className="w-1/4 border-b p-4">Traction Hours Logged</th>
-                <th className="border-b p-4 text-center">Compliance</th>
+                <th className="border-b p-4">Segment Status</th>
+                <th className="border-b p-4">Career Track</th>
+                <th className="border-b p-4">Hours</th>
+                <th className="border-b p-4 text-center">Portfolio %</th>
+                <th className="border-b p-4 text-center">Survey</th>
+                <th className="border-b p-4 text-center">FNA</th>
+                <th className="border-b p-4 text-center">Licensing</th>
                 <th className="border-b p-4 text-center">Actions</th>
               </tr>
             </thead>
@@ -807,7 +814,9 @@ const SpikeMasterPortal = () => {
                     (intern.squad || '').toLowerCase().includes(q)
                   );
                 })
-                .map((intern) => (
+                .map((intern) => {
+                  const report = deriveReportRowMetrics(intern);
+                  return (
                 <tr
                   key={intern.id}
                   className="border-b border-gray-100 transition-colors last:border-0 hover:bg-gray-50"
@@ -832,11 +841,12 @@ const SpikeMasterPortal = () => {
                             : 'bg-green-100 text-green-800'
                       }`}
                     >
-                      Segment {intern.segment}
+                      {report.segmentStatus}
                     </span>
                   </td>
+                  <td className="p-4 text-xs text-gray-600">{report.careerTrack}</td>
                   <td className="p-4">
-                    <div className="flex items-center gap-2">
+                    <div className="flex min-w-[100px] items-center gap-2">
                       <div className="h-2 w-full rounded-full bg-gray-200">
                         <div
                           className="h-2 rounded-full bg-[#8B0000]"
@@ -850,14 +860,23 @@ const SpikeMasterPortal = () => {
                       </span>
                     </div>
                   </td>
+                  <td className="p-4 text-center text-sm font-bold text-gray-800">
+                    {report.portfolioPct}%
+                  </td>
+                  <td className="p-4 text-center text-sm text-gray-700">
+                    {report.surveyCompletion}%
+                  </td>
+                  <td className="p-4 text-center text-sm text-gray-700">
+                    {report.fnaCompletion}%
+                  </td>
                   <td className="p-4 text-center">
                     {intern.licensed ? (
                       <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-1 text-xs font-bold text-green-800">
-                        <CheckCircle size={12} /> Licensed
+                        <CheckCircle size={12} /> {report.licensingStatus}
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1 rounded-full bg-yellow-100 px-2.5 py-1 text-xs font-bold text-yellow-800">
-                        <Clock size={12} /> Target: Hr 110
+                        <Clock size={12} /> {report.licensingStatus}
                       </span>
                     )}
                   </td>
@@ -870,7 +889,8 @@ const SpikeMasterPortal = () => {
                     </button>
                   </td>
                 </tr>
-              ))}
+              );
+                })}
             </tbody>
           </table>
         </div>
@@ -886,7 +906,9 @@ const SpikeMasterPortal = () => {
     const licensed = p?.licensed ?? false;
 
     return (
-    <div className="container mx-auto flex flex-col gap-8 px-6 py-8 lg:flex-row">
+    <div className="container mx-auto px-6 py-8">
+      <RoleDashboardCards role="intern" user={user} interns={interns} internSummary={internSummary} />
+      <div className="flex flex-col gap-8 lg:flex-row">
       <div className="space-y-6 lg:w-1/3">
         <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
           <h3 className="mb-4 flex items-center gap-2 font-bold text-gray-900">
@@ -1093,6 +1115,7 @@ const SpikeMasterPortal = () => {
             </div>
           )}
         </div>
+      </div>
       </div>
     </div>
     );
@@ -1398,51 +1421,20 @@ const SpikeMasterPortal = () => {
     </div>
   );
 
-  const adminDashboard = useMemo(
+  const adminPage = useMemo(
     () => (
-      <div className="container mx-auto px-6 py-8">
-        <h2 className="mb-6 text-3xl font-bold text-gray-900">Admin overview</h2>
-        <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
-          <div className="rounded-xl border border-gray-200 border-l-4 border-l-[#8B0000] bg-white p-6 shadow-sm">
-            <p className="mb-1 text-sm font-bold uppercase tracking-wider text-gray-500">
-              Active interns
-            </p>
-            <p className="text-3xl font-black text-gray-900">{internSummary.n}</p>
-          </div>
-          <div className="rounded-xl border border-gray-200 border-l-4 border-l-green-600 bg-white p-6 shadow-sm">
-            <p className="mb-1 text-sm font-bold uppercase tracking-wider text-gray-500">
-              Partnership track (Seg 3)
-            </p>
-            <p className="text-3xl font-black text-gray-900">{internSummary.s3}</p>
-          </div>
-          <div className="rounded-xl border border-gray-200 border-l-4 border-l-blue-600 bg-white p-6 shadow-sm">
-            <p className="mb-1 text-sm font-bold uppercase tracking-wider text-gray-500">
-              Avg completion
-            </p>
-            <p className="text-3xl font-black text-gray-900">
-              {internSummary.n ? internSummary.avgHours : 0}
-              <span className="text-lg text-gray-500">/600 hrs</span>
-            </p>
-          </div>
-        </div>
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+      <AdminPage
+        usersPanel={
           <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
             <div className="mb-4 flex items-center gap-2">
               <Users className="text-[#8B0000]" size={22} />
               <h3 className="text-lg font-bold text-gray-900">Create user account</h3>
             </div>
             <p className="mb-4 text-sm text-gray-600">
-            Add another person to the portal (intern, faculty, mentor, or an additional
-            administrator) using their own email. Set a temporary password and share it securely;
-            they sign in on the same welcome page as you. On first sign-in they are prompted to
-            choose their own password before using the portal. Interns receive a progress record
-            automatically.
-            {usingSupabaseAuth && (
-                <>
-                  {' '}
-                  With Supabase, if email confirmation is enabled, they must confirm before their
-                  first sign-in.
-                </>
+              Add another person to the portal (intern, faculty, mentor, or administrator). Interns
+              receive a progress record automatically.
+              {usingSupabaseAuth && (
+                <> With Supabase email confirmation enabled, they must confirm before first sign-in.</>
               )}
             </p>
             <AdminRegisterForm onRegister={handleAdminRegister} />
@@ -1481,14 +1473,13 @@ const SpikeMasterPortal = () => {
               </div>
             )}
           </div>
-          <div className="rounded-xl border border-gray-200 bg-white py-12 text-center shadow-sm">
+        }
+        settingsPanel={
+          <div className="rounded-xl border border-gray-200 bg-white p-6 text-center shadow-sm">
             <Settings size={40} className="mx-auto mb-4 text-gray-300" />
             <h3 className="text-lg font-bold text-gray-700">System configuration</h3>
             <p className="mx-auto mt-2 max-w-md text-sm text-gray-500">
-              Manage user accounts, traction exports, and agency alignment settings. Deploy the API
-              separately and set{' '}
-              <code className="rounded bg-gray-100 px-1">VITE_API_URL</code> in your hosting
-              environment for production builds.
+              Production settings live in Supabase and Cloudflare Pages environment variables.
             </p>
             <button
               type="button"
@@ -1498,62 +1489,65 @@ const SpikeMasterPortal = () => {
               Open settings
             </button>
           </div>
-        </div>
-        {usingSupabaseAuth && (
-          <div className="mt-8 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-            <div className="mb-3 flex items-center gap-2">
-              <Bell className="text-[#8B0000]" size={22} />
-              <h3 className="text-lg font-bold text-gray-900">Password help requests</h3>
-            </div>
-            <p className="mb-4 text-sm text-gray-600">
-              When someone uses “Forgot password?” on the sign-in page, their request appears here.
-              Set a new password in Supabase (Authentication → Users), share it offline, and turn on{' '}
-              <code className="rounded bg-gray-100 px-1">must_change_password</code> in user metadata
-              if they should pick a new password after signing in. Mark the row resolved when done.
-            </p>
-            {passwordResetLoading ? (
-              <p className="text-sm text-gray-500">Loading requests…</p>
-            ) : passwordResetRequests.length === 0 ? (
-              <p className="text-sm text-gray-500">No pending requests.</p>
-            ) : (
-              <ul className="divide-y divide-gray-100 rounded-lg border border-gray-100">
-                {passwordResetRequests.map((row) => (
-                  <li key={row.id} className="flex flex-col gap-2 p-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <p className="font-bold text-gray-900">{row.email}</p>
-                      {row.note ? (
-                        <p className="text-sm text-gray-600">{row.note}</p>
-                      ) : (
-                        <p className="text-xs text-gray-400">No note</p>
-                      )}
-                      <p className="text-xs text-gray-400">
-                        {new Date(row.created_at).toLocaleString()}
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => resolvePasswordResetRequest(row.id)}
-                      className="shrink-0 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-bold text-gray-800 transition hover:bg-gray-50"
+        }
+        passwordHelpPanel={
+          usingSupabaseAuth ? (
+            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="mb-3 flex items-center gap-2">
+                <Bell className="text-[#8B0000]" size={22} />
+                <h3 className="text-lg font-bold text-gray-900">Password help requests</h3>
+              </div>
+              <p className="mb-4 text-sm text-gray-600">
+                Forgot-password requests from the sign-in page. Reset in Supabase Auth, share offline,
+                set <code className="rounded bg-gray-100 px-1">must_change_password</code> when needed,
+                then mark resolved.
+              </p>
+              {passwordResetLoading ? (
+                <p className="text-sm text-gray-500">Loading requests…</p>
+              ) : passwordResetRequests.length === 0 ? (
+                <p className="text-sm text-gray-500">No pending requests.</p>
+              ) : (
+                <ul className="divide-y divide-gray-100 rounded-lg border border-gray-100">
+                  {passwordResetRequests.map((row) => (
+                    <li
+                      key={row.id}
+                      className="flex flex-col gap-2 p-3 sm:flex-row sm:items-center sm:justify-between"
                     >
-                      Mark resolved
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-            <button
-              type="button"
-              onClick={() => loadPasswordResetRequests()}
-              className="mt-3 text-xs font-bold text-[#8B0000] underline"
-            >
-              Refresh list
-            </button>
-          </div>
-        )}
-      </div>
+                      <div>
+                        <p className="font-bold text-gray-900">{row.email}</p>
+                        {row.note ? (
+                          <p className="text-sm text-gray-600">{row.note}</p>
+                        ) : (
+                          <p className="text-xs text-gray-400">No note</p>
+                        )}
+                        <p className="text-xs text-gray-400">
+                          {new Date(row.created_at).toLocaleString()}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => resolvePasswordResetRequest(row.id)}
+                        className="shrink-0 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-bold text-gray-800 transition hover:bg-gray-50"
+                      >
+                        Mark resolved
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <button
+                type="button"
+                onClick={() => loadPasswordResetRequests()}
+                className="mt-3 text-xs font-bold text-[#8B0000] underline"
+              >
+                Refresh list
+              </button>
+            </div>
+          ) : null
+        }
+      />
     ),
     [
-      internSummary,
       handleAdminRegister,
       usingSupabaseAuth,
       activationCode,
@@ -1575,17 +1569,45 @@ const SpikeMasterPortal = () => {
     />
   );
 
+  const AdminDashboardHome = () => (
+    <div className="container mx-auto px-6 py-8">
+      <RoleDashboardCards role="admin" user={user} interns={interns} internSummary={internSummary} />
+      <h2 className="mb-4 text-2xl font-bold text-gray-900">Program overview</h2>
+      <p className="mb-6 max-w-2xl text-sm text-gray-600">
+        Use the Admin module for user accounts, activation codes, and password help requests.
+      </p>
+      <Link
+        to={ROUTES.admin}
+        className="inline-flex rounded-lg bg-[#8B0000] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-red-900"
+      >
+        Open admin console
+      </Link>
+    </div>
+  );
+
   const renderStaffDashboard = () => {
     if (userRole === 'faculty') {
       return (
         <>
+          <div className="container mx-auto px-6 pt-8">
+            <RoleDashboardCards role="faculty" user={user} interns={interns} internSummary={internSummary} />
+          </div>
           <FacultyDashboard />
           <MentorDashboard />
         </>
       );
     }
-    if (userRole === 'mentor') return <MentorDashboard />;
-    if (userRole === 'admin') return adminDashboard;
+    if (userRole === 'mentor') {
+      return (
+        <>
+          <div className="container mx-auto px-6 pt-8">
+            <RoleDashboardCards role="mentor" user={user} interns={interns} internSummary={internSummary} />
+          </div>
+          <MentorDashboard />
+        </>
+      );
+    }
+    if (userRole === 'admin') return <AdminDashboardHome />;
     return null;
   };
 
@@ -1597,7 +1619,9 @@ const SpikeMasterPortal = () => {
         return <Navigate to={ROUTES.dashboard} replace />;
       }
       if (path === ROUTES.playbook) return renderPlaybook();
-      if (path === ROUTES.portfolio) return <PortfolioPage />;
+      if (path === ROUTES.portfolio) {
+        return <PortfolioPage hours={user?.internProgress?.hours ?? 0} />;
+      }
       if (path === ROUTES.research) return <ResearchPage />;
       if (user?.internProgress) return <InternDashboard />;
       return (
@@ -1614,10 +1638,10 @@ const SpikeMasterPortal = () => {
         return <Navigate to={ROUTES.dashboard} replace />;
       }
       if (path === ROUTES.playbook) return renderPlaybook();
-      if (path === ROUTES.portfolio) return <PortfolioPage />;
+      if (path === ROUTES.portfolio) return <PortfolioPage hours={internSummary.avgHours} />;
       if (path === ROUTES.research) return <ResearchPage />;
       if (path === ROUTES.reports) return <ProgressReportsView />;
-      if (path === ROUTES.admin) return adminDashboard;
+      if (path === ROUTES.admin) return adminPage;
       return renderStaffDashboard();
     }
 
@@ -1643,7 +1667,9 @@ const SpikeMasterPortal = () => {
             <div className="container mx-auto px-6 py-8">
               <div className="mb-6 rounded-xl border border-gray-200 bg-white p-5">
                 <h2 className="mb-2 text-2xl font-extrabold text-gray-900">Static preview mode</h2>
-                <p className="text-sm text-gray-600">Running without an API. Orientation and master blueprint are available.</p>
+                <p className="text-sm text-gray-600">
+                  Preview without sign-in. Orientation and master blueprint are available.
+                </p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   <button type="button" onClick={() => setPublicTab('orientation')} className={`rounded-lg px-3 py-2 text-sm font-bold transition ${publicTab === 'orientation' ? 'bg-[#8B0000] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
                     Orientation Deck
