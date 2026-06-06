@@ -13,8 +13,9 @@ Run in order:
 
 1. `schema.sql` — `profiles`, `intern_progress`, `traction_logs`, RLS
 2. `migrations/20260606_sprint_01_scaffold.sql` — Sprint 01 Phase 3: `cohorts`, curriculum tables, `venture_portfolio_entries`, `career_track` on `intern_progress`
-3. `activation_codes.sql` — intern signup codes
-4. `password_reset_requests.sql` — admin-assisted password help queue
+3. `migrations/20260620_sprint_02_instructional_architecture.sql` — Sprint 02: competencies, milestones, artifacts, research squads, venture board, integration mappings
+4. `activation_codes.sql` — intern signup codes
+5. `password_reset_requests.sql` — admin-assisted password help queue
 
 ## 3) First admin
 
@@ -47,7 +48,24 @@ After the migration, these tables exist (scaffold only — app still uses mock/s
 
 Enums: `career_track` (`agency_builder`, `specialist_consultant`), `portfolio_section`, `portfolio_entry_status`, `survey_status`.
 
-## 6) App integration
+## 6) Sprint 02 tables (instructional architecture)
+
+After `20260620_sprint_02_instructional_architecture.sql`:
+
+| Table | Purpose |
+|-------|---------|
+| `programs` | SPIKE program definitions |
+| `competencies`, `milestones`, `week_integrations` | Instructional design reference |
+| `portfolio_sections`, `business_plan_chapters` | Blueprint section metadata |
+| `portfolio_artifacts`, `business_plan_artifacts` | Participant drafts (Supabase path) |
+| `career_tracks`, `track_requirements`, `venture_boards`, `venture_board_criteria` | Career + board reference |
+| `day_contributions`, `activity_blueprint_mappings` | Playbook → Blueprint routing |
+| `research_squads`, `research_projects` | Research foundation |
+| `sessions`, `worksheet_questions`, `survey_questions`, `rubrics` | Curriculum extensions |
+
+App still falls back to `/content` JSON until curriculum rows are imported (PR8).
+
+## 7) App integration
 
 - Auth: `src/AuthContext.jsx`, `src/supabaseClient.js`
 - Data helpers: `src/lib/supabase/` (`interns.js`, `tractionLogs.js`)
