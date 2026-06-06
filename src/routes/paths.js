@@ -9,6 +9,14 @@ export const ROUTES = {
   admin: '/admin',
 };
 
+/** Blueprint sub-routes (PR4) — Business Plan, Milestones, Venture Board live inside the OS. */
+export const BLUEPRINT_LINKS = {
+  businessPlan: '/venture-blueprint/canvas',
+  milestones: '/venture-blueprint/milestones',
+  ventureBoard: '/venture-blueprint/venture-board',
+  vision: '/venture-blueprint/vision',
+};
+
 /** Module nav entries — filtered by role in ModuleNav. */
 export const MODULE_NAV = [
   {
@@ -34,11 +42,14 @@ export function moduleNavForRole(userRole) {
   return MODULE_NAV.filter((item) => item.roles.includes(userRole));
 }
 
+const BLUEPRINT_ALIAS_PATHS = Object.values(BLUEPRINT_LINKS);
+
 /** Resolve a URL to a canonical module route, or null if unknown. */
 export function matchModulePath(pathname) {
   if (
     pathname === ROUTES.ventureBlueprint
     || pathname.startsWith(`${ROUTES.ventureBlueprint}/`)
+    || BLUEPRINT_ALIAS_PATHS.includes(pathname)
   ) {
     return ROUTES.ventureBlueprint;
   }

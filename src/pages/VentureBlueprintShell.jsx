@@ -11,13 +11,14 @@ import {
   CareerAcceleratorPanel,
   ClientGrowthPanel,
   ExportCenterPanel,
-  FinancialCanvasPanel,
   LeadershipPanel,
   RecruitmentPanel,
   SpecialistBlueprintPanel,
-  VentureBoardPanel,
   VisionPurposePanel,
 } from '../components/blueprint/modules/BlueprintModulePanels.jsx';
+import { BusinessPlanModule } from '../components/blueprint/modules/BusinessPlanModule.jsx';
+import { MilestonesModule } from '../components/blueprint/modules/MilestonesModule.jsx';
+import { VentureBoardModule } from '../components/blueprint/modules/VentureBoardModule.jsx';
 
 /**
  * @param {{ user: { id: string, internProgress?: object | null }, onLogTraction?: () => void }} props
@@ -44,7 +45,9 @@ export function VentureBlueprintShell({ user, onLogTraction }) {
       case 'vision':
         return <VisionPurposePanel participantId={user.id} />;
       case 'canvas':
-        return <FinancialCanvasPanel />;
+        return <BusinessPlanModule participantId={user.id} />;
+      case 'milestones':
+        return <MilestonesModule state={state} />;
       case 'client-growth':
         return <ClientGrowthPanel state={state} />;
       case 'recruitment':
@@ -56,7 +59,7 @@ export function VentureBlueprintShell({ user, onLogTraction }) {
       case 'specialist':
         return <SpecialistBlueprintPanel />;
       case 'venture-board':
-        return <VentureBoardPanel state={state} />;
+        return <VentureBoardModule state={state} participantId={user.id} />;
       case 'export':
         return <ExportCenterPanel />;
       case 'overview':

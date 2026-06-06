@@ -57,6 +57,13 @@ export const BLUEPRINT_MODULES = [
     tracks: ['agency_builder', 'specialist_consultant'],
   },
   {
+    slug: 'milestones',
+    label: 'Milestones',
+    shortLabel: 'Milestones',
+    description: 'Hour gates, week integrations, and milestone reviews.',
+    tracks: ['agency_builder', 'specialist_consultant'],
+  },
+  {
     slug: 'specialist',
     label: 'Specialist Blueprint',
     shortLabel: 'Specialist',

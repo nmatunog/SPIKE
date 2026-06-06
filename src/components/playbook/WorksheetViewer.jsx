@@ -4,6 +4,7 @@ import {
   isWorksheetCompleted,
   markWorksheetCompleted,
 } from '../../lib/playbookLocalProgress.js';
+import { syncPlaybookWorksheet } from '../../lib/playbookBlueprintSync.js';
 
 /**
  * @param {{
@@ -38,6 +39,7 @@ export function WorksheetViewer({ worksheet, questions, participantId, onComplet
     }
     if (participantId) {
       markWorksheetCompleted(participantId, worksheet.id, answers);
+      syncPlaybookWorksheet(participantId, worksheet.id, answers, sorted);
     }
     setSubmitted(true);
     setError('');

@@ -9,7 +9,9 @@ import {
   Users,
 } from 'lucide-react';
 import { MetricCard } from '../../dashboard/MetricCard.jsx';
-import { ROUTES } from '../../../routes/paths.js';
+import { BLUEPRINT_LINKS, ROUTES } from '../../../routes/paths.js';
+import { listPortfolioArtifacts } from '../../../lib/blueprintArtifacts.js';
+import { ArtifactDraftCard } from '../ArtifactDraftCard.jsx';
 import {
   getBusinessPlanChapters,
   getCareerTracks,
@@ -111,6 +113,24 @@ export function BlueprintOverviewPanel({ state, onLogTraction }) {
             >
               <Users size={16} /> Research Squad
             </Link>
+            <Link
+              to={BLUEPRINT_LINKS.milestones}
+              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-bold text-gray-800 hover:bg-gray-50"
+            >
+              Milestones
+            </Link>
+            <Link
+              to={BLUEPRINT_LINKS.businessPlan}
+              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-bold text-gray-800 hover:bg-gray-50"
+            >
+              Business Plan
+            </Link>
+            <Link
+              to={BLUEPRINT_LINKS.ventureBoard}
+              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-bold text-gray-800 hover:bg-gray-50"
+            >
+              Venture Board
+            </Link>
           </div>
         </SectionCard>
       </div>
@@ -163,6 +183,29 @@ export function VisionPurposePanel({ participantId }) {
           </SectionCard>
         ))}
       </div>
+
+      {participantId ? (
+        <SectionCard title="Portfolio drafts — Identity & Purpose">
+          {listPortfolioArtifacts(participantId, 'portfolio-identity-purpose').length > 0 ? (
+            <div className="space-y-3">
+              {listPortfolioArtifacts(participantId, 'portfolio-identity-purpose').map((a) => (
+                <ArtifactDraftCard
+                  key={a.id}
+                  title={a.title}
+                  content={a.content}
+                  status={a.status}
+                  sourceType={a.sourceType}
+                  updatedAt={a.updatedAt}
+                />
+              ))}
+            </div>
+          ) : (
+            <PlaceholderNotice>
+              Submit Playbook Day 1 worksheet to create your first portfolio draft.
+            </PlaceholderNotice>
+          )}
+        </SectionCard>
+      ) : null}
     </div>
   );
 }
