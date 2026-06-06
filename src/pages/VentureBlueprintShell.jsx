@@ -42,7 +42,7 @@ export function VentureBlueprintShell({ user, onLogTraction }) {
   function renderModulePanel() {
     switch (moduleSlug) {
       case 'vision':
-        return <VisionPurposePanel />;
+        return <VisionPurposePanel participantId={user.id} />;
       case 'canvas':
         return <FinancialCanvasPanel />;
       case 'client-growth':

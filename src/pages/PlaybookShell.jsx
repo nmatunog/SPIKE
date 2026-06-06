@@ -1,7 +1,13 @@
-import { useState } from 'react';
-import { ArrowLeft, BookOpen, Layers, PlayCircle, Target } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { ArrowLeft, BookOpen, Layers, PlayCircle } from 'lucide-react';
 import { PageContainer, PageTitle } from '../components/layout/PageContainer.jsx';
-import { PLAYBOOK_CURRICULUM } from '../data/playbookScaffold.js';
+import { DayView } from '../components/playbook/DayView.jsx';
+import {
+  getDayContentBundle,
+  listDays,
+  listSegments,
+  listWeeks,
+} from '../lib/contentLoader.js';
 
 const TABS = [
   { id: 'curriculum', label: 'Curriculum', icon: Layers },
@@ -9,54 +15,73 @@ const TABS = [
   { id: 'syllabus', label: 'Master Blueprint', icon: BookOpen },
 ];
 
-function CurriculumScaffold() {
-  const [segmentIdx, setSegmentIdx] = useState(0);
-  const [weekIdx, setWeekIdx] = useState(0);
-  const [dayIdx, setDayIdx] = useState(0);
+/**
+ * @param {{ participantId?: string }} props
+ */
+function ContentCurriculum({ participantId }) {
+  const segments = useMemo(() => listSegments(), []);
+  const [segmentSlug, setSegmentSlug] = useState(segments[0]?.slug ?? 'segment-1');
+  const weeks = useMemo(() => listWeeks(segmentSlug), [segmentSlug]);
+  const [weekSlug, setWeekSlug] = useState(weeks[0]?.slug ?? 'week-1');
+  const days = useMemo(() => listDays(segmentSlug, weekSlug), [segmentSlug, weekSlug]);
+  const [daySlug, setDaySlug] = useState(days[0]?.slug ?? 'day-1');
   const [mobilePanel, setMobilePanel] = useState('weeks');
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  const segment = PLAYBOOK_CURRICULUM[segmentIdx];
-  const week = segment?.weeks[weekIdx];
-  const day = week?.days[dayIdx];
+  const bundle = useMemo(() => {
+    try {
+      return getDayContentBundle(segmentSlug, weekSlug, daySlug);
+    } catch {
+      return null;
+    }
+  }, [segmentSlug, weekSlug, daySlug]);
 
-  const selectSegment = (idx) => {
-    setSegmentIdx(idx);
-    setWeekIdx(0);
-    setDayIdx(0);
+  const selectSegment = (slug) => {
+    setSegmentSlug(slug);
+    const nextWeeks = listWeeks(slug);
+    const w = nextWeeks[0]?.slug ?? '';
+    setWeekSlug(w);
+    const nextDays = w ? listDays(slug, w) : [];
+    setDaySlug(nextDays[0]?.slug ?? '');
     setMobilePanel('weeks');
   };
 
-  const selectWeek = (idx) => {
-    setWeekIdx(idx);
-    setDayIdx(0);
+  const selectWeek = (slug) => {
+    setWeekSlug(slug);
+    const nextDays = listDays(segmentSlug, slug);
+    setDaySlug(nextDays[0]?.slug ?? '');
     setMobilePanel('days');
   };
 
-  const selectDay = (idx) => {
-    setDayIdx(idx);
+  const selectDay = (slug) => {
+    setDaySlug(slug);
     setMobilePanel('detail');
   };
 
   const weeksPanel = (
     <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm lg:col-span-1">
       <h3 className="mb-3 text-sm font-bold uppercase tracking-wider text-gray-500">Weeks</h3>
-      <ul className="space-y-2">
-        {segment?.weeks.map((w, idx) => (
-          <li key={w.title}>
-            <button
-              type="button"
-              onClick={() => selectWeek(idx)}
-              className={`min-h-[44px] w-full rounded-lg px-3 py-2.5 text-left text-sm font-semibold transition ${
-                weekIdx === idx ? 'bg-red-50 text-[#8B0000]' : 'text-gray-700 hover:bg-gray-50'
-              }`}
-            >
-              <span className="line-clamp-2">
-                Week {w.week}: {w.title}
-              </span>
-            </button>
-          </li>
-        ))}
-      </ul>
+      {weeks.length === 0 ? (
+        <p className="text-sm text-gray-500">No weeks published for this segment.</p>
+      ) : (
+        <ul className="space-y-2">
+          {weeks.map(({ slug, week }) => (
+            <li key={slug}>
+              <button
+                type="button"
+                onClick={() => selectWeek(slug)}
+                className={`min-h-[44px] w-full rounded-lg px-3 py-2.5 text-left text-sm font-semibold transition ${
+                  weekSlug === slug ? 'bg-red-50 text-[#8B0000]' : 'text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                <span className="line-clamp-2">
+                  Week {week.weekNumber}: {week.title}
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 
@@ -70,21 +95,25 @@ function CurriculumScaffold() {
         <ArrowLeft size={16} /> Weeks
       </button>
       <h3 className="mb-3 text-sm font-bold uppercase tracking-wider text-gray-500">Days</h3>
-      <ul className="space-y-2">
-        {week?.days.map((d, idx) => (
-          <li key={d.day}>
-            <button
-              type="button"
-              onClick={() => selectDay(idx)}
-              className={`min-h-[44px] w-full rounded-lg px-3 py-2.5 text-left text-sm font-semibold transition ${
-                dayIdx === idx ? 'bg-red-50 text-[#8B0000]' : 'text-gray-700 hover:bg-gray-50'
-              }`}
-            >
-              Day {d.day}
-            </button>
-          </li>
-        ))}
-      </ul>
+      {days.length === 0 ? (
+        <p className="text-sm text-gray-500">No days published for this week.</p>
+      ) : (
+        <ul className="space-y-2">
+          {days.map(({ slug, day }) => (
+            <li key={slug}>
+              <button
+                type="button"
+                onClick={() => selectDay(slug)}
+                className={`min-h-[44px] w-full rounded-lg px-3 py-2.5 text-left text-sm font-semibold transition ${
+                  daySlug === slug ? 'bg-red-50 text-[#8B0000]' : 'text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                Day {day.dayNumber}: {day.title}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 
@@ -97,40 +126,17 @@ function CurriculumScaffold() {
       >
         <ArrowLeft size={16} /> Days
       </button>
-      {day ? (
-        <div className="space-y-5">
-          <div className="flex items-start gap-2">
-            <Target className="mt-0.5 shrink-0 text-[#8B0000]" size={20} />
-            <h3 className="text-base font-bold text-gray-900 sm:text-lg">
-              {segment.segment} · Week {week.week} · Day {day.day}
-            </h3>
-          </div>
-          {[
-            ['Learning objectives', day.objectives],
-            ['Presentations', day.presentations],
-            ['Activities', day.activities],
-            ['Worksheets', day.worksheets],
-            ['Assessments', day.assessments],
-            ['Portfolio deliverables', day.portfolioDeliverables],
-          ].map(([title, items]) => (
-            <div key={title}>
-              <h4 className="mb-2 text-xs font-bold uppercase tracking-wider text-gray-500">{title}</h4>
-              {items.length > 0 ? (
-                <ul className="space-y-1 text-sm text-gray-700">
-                  {items.map((item) => (
-                    <li key={item} className="rounded-lg border border-gray-100 bg-gray-50 px-3 py-2">
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-sm italic text-gray-400">None scheduled</p>
-              )}
-            </div>
-          ))}
-        </div>
+      {bundle ? (
+        <DayView
+          key={refreshKey}
+          bundle={bundle}
+          participantId={participantId}
+          onWorksheetCompleted={() => setRefreshKey((k) => k + 1)}
+        />
       ) : (
-        <p className="text-sm text-gray-500">Select a week and day.</p>
+        <p className="text-sm text-gray-500">
+          Select a day with published content, or complete the content bundle for this day.
+        </p>
       )}
     </div>
   );
@@ -140,44 +146,47 @@ function CurriculumScaffold() {
       <div className="mb-6">
         <PageTitle>Playbook</PageTitle>
         <p className="mt-1 text-sm text-gray-600 sm:text-base">
-          Future curriculum engine — mock segment / week / day structure for Sprint 01.
+          Segment → Week → Day curriculum from the content engine. Complete worksheets to update
+          your Venture Blueprint.
         </p>
       </div>
 
       <div className="mb-6 flex gap-2 overflow-x-auto pb-1 scrollbar-thin">
-        {PLAYBOOK_CURRICULUM.map((seg, idx) => (
+        {segments.map(({ slug, segment }) => (
           <button
-            key={seg.segment}
+            key={slug}
             type="button"
-            onClick={() => selectSegment(idx)}
+            onClick={() => selectSegment(slug)}
             className={`shrink-0 rounded-lg px-3 py-2.5 text-xs font-bold transition sm:text-sm ${
-              segmentIdx === idx
+              segmentSlug === slug
                 ? 'bg-[#8B0000] text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
-            {seg.segment}
+            {segment.title}
           </button>
         ))}
       </div>
 
-      {/* Mobile: one panel at a time */}
       <div className="space-y-4 lg:hidden">
         {mobilePanel === 'weeks' && weeksPanel}
         {mobilePanel === 'days' && daysPanel}
         {mobilePanel === 'detail' && detailPanel}
       </div>
 
-      {/* Desktop: three-column layout */}
-      <div className="hidden gap-6 lg:grid lg:grid-cols-4">{weeksPanel}{daysPanel}{detailPanel}</div>
+      <div className="hidden gap-6 lg:grid lg:grid-cols-4">
+        {weeksPanel}
+        {daysPanel}
+        {detailPanel}
+      </div>
     </PageContainer>
   );
 }
 
 /**
- * Playbook module — curriculum scaffold + legacy orientation / syllabus views.
+ * Playbook module — content tree + legacy orientation / syllabus views.
  */
-export function PlaybookShell({ orientationView, syllabusView }) {
+export function PlaybookShell({ orientationView, syllabusView, participantId }) {
   const [tab, setTab] = useState('curriculum');
 
   return (
@@ -192,7 +201,9 @@ export function PlaybookShell({ orientationView, syllabusView }) {
                 type="button"
                 onClick={() => setTab(item.id)}
                 className={`flex min-h-[44px] shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-bold transition ${
-                  tab === item.id ? 'bg-[#8B0000] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  tab === item.id
+                    ? 'bg-[#8B0000] text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
                 <TabIcon size={16} /> {item.label}
@@ -201,7 +212,7 @@ export function PlaybookShell({ orientationView, syllabusView }) {
           })}
         </div>
       </div>
-      {tab === 'curriculum' && <CurriculumScaffold />}
+      {tab === 'curriculum' && <ContentCurriculum participantId={participantId} />}
       {tab === 'orientation' && orientationView}
       {tab === 'syllabus' && syllabusView}
     </div>

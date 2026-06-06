@@ -1638,6 +1638,7 @@ const SpikeMasterPortal = () => {
     <PlaybookShell
       orientationView={<OrientationModule />}
       syllabusView={<MasterSyllabusView />}
+      participantId={user?.id}
     />
   );
 

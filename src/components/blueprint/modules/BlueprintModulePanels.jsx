@@ -19,6 +19,7 @@ import {
   getVentureBoardsForSegment,
   getWeekIntegrationByWeekId,
 } from '../../../lib/playbookSeeds.js';
+import { getVisionPurposeProgress } from '../../../lib/playbookLocalProgress.js';
 
 function SectionCard({ title, children, className = '' }) {
   return (
@@ -117,15 +118,23 @@ export function BlueprintOverviewPanel({ state, onLogTraction }) {
   );
 }
 
-export function VisionPurposePanel() {
+/**
+ * @param {{ participantId?: string }} props
+ */
+export function VisionPurposePanel({ participantId }) {
   const sections = getPortfolioSections().filter((s) => s.id === 'portfolio-identity-purpose');
   const section = sections[0];
+  const progress = getVisionPurposeProgress(participantId);
 
   const components = [
-    { key: 'mission_statement', label: 'Mission Statement Builder', pct: 0 },
-    { key: 'vision_statement', label: 'Vision Statement Builder', pct: 0 },
-    { key: 'future_self_narrative', label: 'Future Self Narrative (500+ words)', pct: 0 },
-    { key: 'dream_board', label: 'Dream Board', pct: 0 },
+    { key: 'mission_statement', label: 'Mission Statement Builder', pct: progress.mission_statement },
+    { key: 'vision_statement', label: 'Vision Statement Builder', pct: progress.vision_statement },
+    {
+      key: 'future_self_narrative',
+      label: 'Future Self Narrative (500+ words)',
+      pct: progress.future_self_narrative,
+    },
+    { key: 'dream_board', label: 'Dream Board', pct: progress.dream_board },
   ];
 
   return (
@@ -138,12 +147,19 @@ export function VisionPurposePanel() {
         {components.map((item) => (
           <SectionCard key={item.key} title={item.label}>
             <div className="mb-2 h-2 w-full rounded-full bg-gray-200">
-              <div className="h-2 w-0 rounded-full bg-[#8B0000]" style={{ width: `${item.pct}%` }} />
+              <div
+                className="h-2 rounded-full bg-[#8B0000] transition-all"
+                style={{ width: `${item.pct}%` }}
+              />
             </div>
             <p className="text-xs font-bold text-gray-500">{item.pct}% · weight 25%</p>
-            <PlaceholderNotice>
-              Awaiting first worksheet submission from Playbook integration.
-            </PlaceholderNotice>
+            {item.pct === 0 ? (
+              <PlaceholderNotice>
+                Complete Playbook Day 1 Personal Why worksheet to populate this section.
+              </PlaceholderNotice>
+            ) : (
+              <p className="text-xs text-green-700">Updated from Playbook worksheet submission.</p>
+            )}
           </SectionCard>
         ))}
       </div>

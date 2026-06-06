@@ -1,0 +1,68 @@
+import { Clock, Package } from 'lucide-react';
+
+/**
+ * @param {{ activity: {
+ *   title: string,
+ *   durationMinutes: number,
+ *   materials: string[],
+ *   instructions: string[],
+ *   outputs: string[],
+ *   debriefQuestions: string[],
+ * }}} props
+ */
+export function ActivityViewer({ activity }) {
+  return (
+    <article className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
+      <div className="mb-3 flex flex-wrap items-center gap-3">
+        <h4 className="font-bold text-gray-900">{activity.title}</h4>
+        <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-bold text-gray-600">
+          <Clock size={12} /> {activity.durationMinutes} min
+        </span>
+      </div>
+
+      {activity.materials?.length > 0 ? (
+        <div className="mb-4">
+          <h5 className="mb-2 flex items-center gap-1 text-xs font-bold uppercase text-gray-500">
+            <Package size={14} /> Materials
+          </h5>
+          <ul className="list-inside list-disc text-sm text-gray-700">
+            {activity.materials.map((m) => (
+              <li key={m}>{m}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
+      <div className="mb-4">
+        <h5 className="mb-2 text-xs font-bold uppercase text-gray-500">Instructions</h5>
+        <ol className="list-inside list-decimal space-y-1 text-sm text-gray-700">
+          {activity.instructions.map((step) => (
+            <li key={step}>{step}</li>
+          ))}
+        </ol>
+      </div>
+
+      <div className="mb-4">
+        <h5 className="mb-2 text-xs font-bold uppercase text-gray-500">Outputs</h5>
+        <ul className="space-y-1 text-sm text-gray-700">
+          {activity.outputs.map((o) => (
+            <li key={o} className="rounded-lg bg-gray-50 px-3 py-2">
+              {o}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {activity.debriefQuestions?.length > 0 ? (
+        <div>
+          <h5 className="mb-2 text-xs font-bold uppercase text-gray-500">Debrief questions</h5>
+          <ul className="space-y-1 text-sm text-gray-700">
+            {activity.debriefQuestions.map((q) => (
+              <li key={q}>• {q}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+    </article>
+  );
+}
