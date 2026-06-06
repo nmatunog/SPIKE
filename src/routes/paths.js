@@ -22,8 +22,37 @@ export function moduleNavForRole(userRole) {
   return MODULE_NAV.filter((item) => item.roles.includes(userRole));
 }
 
+/** Resolve a URL to a canonical module route, or null if unknown. */
+export function matchModulePath(pathname) {
+  for (const route of Object.values(ROUTES)) {
+    if (route === ROUTES.home) continue;
+    if (pathname === route || pathname.startsWith(`${route}/`)) {
+      return route;
+    }
+  }
+  return null;
+}
+
 export function isModulePath(pathname) {
-  return Object.values(ROUTES).some(
-    (route) => route !== ROUTES.home && (pathname === route || pathname.startsWith(`${route}/`)),
-  );
+  return matchModulePath(pathname) !== null;
+}
+
+const AUTHENTICATED_ROLES = ['intern', 'faculty', 'mentor', 'admin'];
+
+/** Roles allowed on a module route (single source of truth with MODULE_NAV). */
+export function rolesForRoute(pathname) {
+  const route = matchModulePath(pathname);
+  if (!route) return [];
+  if (route === ROUTES.dashboard) return AUTHENTICATED_ROLES;
+  const item = MODULE_NAV.find((entry) => entry.path === route);
+  return item?.roles ?? [];
+}
+
+export function canAccessRoute(pathname, userRole) {
+  if (!AUTHENTICATED_ROLES.includes(userRole)) return false;
+  return rolesForRoute(pathname).includes(userRole);
+}
+
+export function defaultRouteForRole() {
+  return ROUTES.dashboard;
 }

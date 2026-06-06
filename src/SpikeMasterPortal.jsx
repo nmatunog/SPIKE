@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   BookOpen,
   Users,
@@ -32,6 +32,7 @@ import { AdminPage } from './pages/AdminPage.jsx';
 import { PlaybookShell } from './pages/PlaybookShell.jsx';
 import { PortfolioPage } from './pages/PortfolioPage.jsx';
 import { ResearchPage } from './pages/ResearchPage.jsx';
+import { RoleRouteGuard } from './components/routing/RoleRouteGuard.jsx';
 import { ROUTES } from './routes/paths.js';
 import { deriveReportRowMetrics } from './lib/sprint01Metrics.js';
 import { useAuth } from './AuthContext.jsx';
@@ -1615,9 +1616,6 @@ const SpikeMasterPortal = () => {
     const path = location.pathname;
 
     if (userRole === 'intern') {
-      if (path === ROUTES.reports || path === ROUTES.admin) {
-        return <Navigate to={ROUTES.dashboard} replace />;
-      }
       if (path === ROUTES.playbook) return renderPlaybook();
       if (path === ROUTES.portfolio) {
         return <PortfolioPage hours={user?.internProgress?.hours ?? 0} />;
@@ -1634,9 +1632,6 @@ const SpikeMasterPortal = () => {
     }
 
     if (['faculty', 'mentor', 'admin'].includes(userRole)) {
-      if (path === ROUTES.admin && userRole !== 'admin') {
-        return <Navigate to={ROUTES.dashboard} replace />;
-      }
       if (path === ROUTES.playbook) return renderPlaybook();
       if (path === ROUTES.portfolio) return <PortfolioPage hours={internSummary.avgHours} />;
       if (path === ROUTES.research) return <ResearchPage />;
@@ -1784,8 +1779,11 @@ const SpikeMasterPortal = () => {
         )}
 
         {(userRole === 'intern' || ['faculty', 'mentor', 'admin'].includes(userRole)) &&
-          !authLoading &&
-          renderAuthenticatedModule()}
+          !authLoading && (
+            <RoleRouteGuard userRole={userRole} pathname={location.pathname}>
+              {renderAuthenticatedModule()}
+            </RoleRouteGuard>
+          )}
       </main>
 
       {user?.mustChangePassword &&

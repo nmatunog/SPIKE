@@ -67,15 +67,15 @@ Sprint 01 evolves the live app in place: **Vite + React + Supabase on Cloudflare
 - [x] Reports extended columns (portfolio %, career track, survey, FNA, segment status)
 - [x] Admin consolidated under `/admin` (`AdminPage` tabs: Users, Cohorts, Content, Settings, Reports)
 
-### Phase 3 — Database scaffolding (2–3 days)
+### Phase 3 — Database scaffolding (2–3 days) ✅ **complete**
 
-- [ ] `supabase/migrations/20260606_sprint_01_scaffold.sql`
-- [ ] RLS on every new table
-- [ ] `career_track` enum on `intern_progress`
+- [x] `supabase/migrations/20260606_sprint_01_scaffold.sql`
+- [x] RLS on every new table
+- [x] `career_track` enum on `intern_progress`
 
-### Phase 4 — Hardening & deploy (1–2 days)
+### Phase 4 — Hardening & deploy (1–2 days) ✅ **complete**
 
-- [ ] Route role guards
+- [x] Route role guards (`RoleRouteGuard`, `canAccessRoute` in `src/routes/paths.js`)
 - [x] Lint, build, deploy to `https://spike-asc.pages.dev`
 
 ---
@@ -117,7 +117,10 @@ Phase 2  [x] Dashboard role cards
          [x] Reports column extensions
          [x] Admin under /admin
 
-Phase 3  [ ] Supabase migration file + RLS
-         [ ] career_track on intern_progress
-         [ ] Deploy + smoke test
+Phase 3  [x] Supabase migration file + RLS
+         [x] career_track on intern_progress
+         [x] Apply migration in Supabase SQL Editor
+
+Phase 4  [x] Route role guards
+         [x] Lint, build, deploy
 ```
