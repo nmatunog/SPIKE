@@ -45,8 +45,32 @@ if [[ "$BRANCH" != "main" ]]; then
   exit 1
 fi
 
+load_build_env() {
+  if [[ -f .env ]]; then
+    set -a
+    # shellcheck disable=SC1091
+    source .env
+    set +a
+  fi
+}
+
+require_production_build_env() {
+  if [[ "${VITE_STATIC_ONLY:-false}" == "true" ]]; then
+    return 0
+  fi
+  if [[ -z "${VITE_SUPABASE_URL:-}" || -z "${VITE_SUPABASE_ANON_KEY:-}" ]]; then
+    echo "Error: production build needs VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY."
+    echo "  - Add them to .env locally, or"
+    echo "  - Rely on GitHub Actions (.github/workflows/deploy-cloudflare-pages.yml) after running:"
+    echo "      ./scripts/setup-github-deploy-secrets.sh"
+    exit 1
+  fi
+}
+
 if [[ "$SKIP_CHECKS" == "false" ]]; then
   echo "==> Running quality checks (lint + build)..."
+  load_build_env
+  require_production_build_env
   npm run lint
   npm run build
 else
@@ -65,7 +89,8 @@ fi
 echo "==> Creating commit..."
 git commit -m "$COMMIT_MESSAGE"
 
-echo "==> Pushing to origin/main (triggers Cloudflare auto-deploy)..."
+echo "==> Pushing to origin/main (triggers GitHub Actions deploy)..."
 git push origin main
 
-echo "Done. Check Cloudflare Pages Deployments for build status."
+echo "Done. Check GitHub → Actions → Deploy to Cloudflare Pages for build status."
+echo "      Live site: https://spike-asc.pages.dev"

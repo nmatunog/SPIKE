@@ -19,6 +19,9 @@ api/prisma/*.db-journal
 # Cursor hook logs (auto-push on session end)
 .cursor/logs/
 
+# Downloaded Cloudflare config (may contain secrets)
+wrangler.toml
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
