@@ -34,6 +34,9 @@ import { getNextBlueprintAction } from '../../../lib/blueprintRecommendations.js
 import { computeSectionCompletionPct } from '../../../lib/blueprintCompletion.js';
 import { FnaEngineModule } from '../../fna/FnaEngineModule.jsx';
 import { AutoSaveField } from '../AutoSaveField.jsx';
+import { Day1MissionControl } from '../../day1/Day1MissionControl.jsx';
+import { isDay1MissionActive } from '../../../lib/day1BuilderService.js';
+import { getDay1MissionProgress } from '../../../lib/day1BuilderStorage.js';
 
 function SectionCard({ title, children, className = '' }) {
   return (
@@ -64,6 +67,10 @@ export function BlueprintOverviewPanel({ state, participantId, onLogTraction }) 
 
   return (
     <div className="space-y-4">
+      {participantId && isDay1MissionActive(state.week, state.segment) ? (
+        <Day1MissionControl participantId={participantId} />
+      ) : null}
+
       {nextAction ? (
         <section className="rounded-2xl border border-spike/15 bg-gradient-to-br from-white to-spike-muted/50 p-5 shadow-card sm:p-6">
           <p className="spike-label text-spike">Recommended next step</p>
@@ -168,43 +175,57 @@ export function VisionPurposePanel({ participantId }) {
   const sections = getPortfolioSections().filter((s) => s.id === 'portfolio-identity-purpose');
   const section = sections[0];
   const progress = getVisionPurposeProgress(participantId);
+  const day1 = participantId ? getDay1MissionProgress(participantId) : null;
 
   const components = [
-    { key: 'mission_statement', label: 'Mission Statement Builder', pct: progress.mission_statement },
-    { key: 'vision_statement', label: 'Vision Statement Builder', pct: progress.vision_statement },
-    {
-      key: 'future_self_narrative',
-      label: 'Future Self Narrative (500+ words)',
-      pct: progress.future_self_narrative,
-    },
+    { key: 'mission_statement', label: 'Personal Why', pct: progress.mission_statement },
+    { key: 'vision_statement', label: 'Vision Statement', pct: progress.vision_statement },
+    { key: 'future_self_narrative', label: 'Future Self Narrative', pct: progress.future_self_narrative },
     { key: 'dream_board', label: 'Dream Board', pct: progress.dream_board },
+    { key: 'career_interest_explored', label: 'Career Interest', pct: day1?.builders.find((b) => b.id === 'future-venture')?.completed ? 100 : 0 },
+    { key: 'squad_charter', label: 'Squad Charter', pct: day1?.builders.find((b) => b.id === 'squad-charter')?.completed ? 100 : 0 },
   ];
 
   return (
     <div className="space-y-4">
       <p className="text-sm text-gray-600">
-        {section?.description ?? 'Establish participant identity and direction.'} Playbook Day 1
-        worksheets will auto-fill this module — no duplicate entry.
+        {section?.description ?? 'Establish participant identity and direction.'} Day 1 Venture
+        Blueprint Builders™ auto-fill this module — no duplicate entry.
       </p>
+      {day1 && day1.percent < 100 ? (
+        <Link to={BLUEPRINT_LINKS.day1Builders} className="spike-btn-primary inline-flex">
+          Continue Day 1 Builders ({day1.percent}%)
+        </Link>
+      ) : null}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {components.map((item) => (
-          <SectionCard key={item.key} title={item.label}>
-            <div className="mb-2 h-2 w-full rounded-full bg-gray-200">
-              <div
-                className="h-2 rounded-full bg-[#8B0000] transition-all"
-                style={{ width: `${item.pct}%` }}
-              />
-            </div>
-            <p className="text-xs font-bold text-gray-500">{item.pct}% · weight 25%</p>
-            {item.pct === 0 ? (
-              <PlaceholderNotice>
-                Complete Playbook Day 1 Personal Why worksheet to populate this section.
-              </PlaceholderNotice>
-            ) : (
-              <p className="text-xs text-green-700">Updated from Playbook worksheet submission.</p>
-            )}
-          </SectionCard>
-        ))}
+        {components.map((item) => {
+          let fieldValue = '';
+          if (participantId) {
+            if (item.key === 'career_interest_explored') {
+              fieldValue = getSectionField(participantId, 'career-accelerator', item.key);
+            } else {
+              fieldValue = getSectionField(participantId, 'vision-purpose', item.key);
+            }
+          }
+          return (
+            <SectionCard key={item.key} title={item.label}>
+              <div className="mb-2 h-2 w-full rounded-full bg-gray-200">
+                <div
+                  className="h-2 rounded-full bg-[#8B0000] transition-all"
+                  style={{ width: `${item.pct}%` }}
+                />
+              </div>
+              <p className="text-xs font-bold text-gray-500">{item.pct}% complete</p>
+              {fieldValue ? (
+                <p className="mt-2 line-clamp-4 whitespace-pre-wrap text-xs text-slate-700">{fieldValue}</p>
+              ) : (
+                <PlaceholderNotice>
+                  Complete the matching Day 1 Builder to populate this section.
+                </PlaceholderNotice>
+              )}
+            </SectionCard>
+          );
+        })}
       </div>
 
       {participantId ? (

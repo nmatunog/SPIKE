@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Users } from 'lucide-react';
 import { summarizeInternPlaybookProgress } from '../../lib/playbookProgress.js';
 import { saveMentorCoachingNote } from '../../lib/coachingService.js';
+import { MentorDay1Panel } from '../day1/MentorDay1Panel.jsx';
+import { getDay1MissionProgress } from '../../lib/day1BuilderStorage.js';
 
 /**
  * @typedef {import('../../lib/contentLoader.js').DayContentBundle} DayContentBundle
@@ -35,6 +37,11 @@ export function MentorPlaybookView({ bundle, interns, mentorId }) {
 
       {!bundle ? (
         <p className="text-sm text-gray-500">No content bundle loaded for the selected day.</p>
+      ) : bundle.day.id === 'day-segment-1-week-1-day-1' ? (
+        <MentorDay1Panel
+          interns={interns}
+          mentorId={mentorId}
+        />
       ) : summaries.length === 0 ? (
         <p className="text-sm text-gray-500">No interns in cohort yet.</p>
       ) : (
@@ -78,7 +85,7 @@ function MentorInternCard({ row, mentorId }) {
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <h4 className="font-bold text-gray-900">{row.participantName || row.participantId}</h4>
         <span className="rounded-full bg-sky-100 px-3 py-1 text-xs font-bold text-sky-800">
-          {row.completionPct}% complete
+          {getDay1MissionProgress(row.participantId).percent || row.completionPct}% complete
         </span>
       </div>
 

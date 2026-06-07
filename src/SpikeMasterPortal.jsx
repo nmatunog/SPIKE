@@ -35,6 +35,13 @@ import { WelcomePage } from './pages/WelcomePage.jsx';
 import { RoleRouteGuard } from './components/routing/RoleRouteGuard.jsx';
 import { ROUTES, defaultRouteForRole } from './routes/paths.js';
 import { VentureBlueprintShell } from './pages/VentureBlueprintShell.jsx';
+import { CohortIdentityPage } from './pages/cohort/CohortIdentityPage.jsx';
+import { SquadPreferencesPage } from './pages/cohort/SquadPreferencesPage.jsx';
+import { SquadDashboardPage } from './pages/cohort/SquadDashboardPage.jsx';
+import { SquadCharterPage } from './pages/cohort/SquadCharterPage.jsx';
+import { AdminCohortsPage } from './pages/admin/AdminCohortsPage.jsx';
+import { AdminSquadThemesPage } from './pages/admin/AdminSquadThemesPage.jsx';
+import { AdminSquadsPage } from './pages/admin/AdminSquadsPage.jsx';
 import { useAuth } from './AuthContext.jsx';
 import { apiFetch } from './apiClient.js';
 import {
@@ -1186,6 +1193,28 @@ const SpikeMasterPortal = () => {
     const path = location.pathname;
 
     if (userRole === 'intern') {
+      if (path === ROUTES.cohortIdentity) {
+        return <CohortIdentityPage participantId={user.id} />;
+      }
+      if (path === ROUTES.squadPreferences) {
+        return <SquadPreferencesPage participantId={user.id} />;
+      }
+      if (path === ROUTES.squad) {
+        return (
+          <SquadDashboardPage
+            participantId={user.id}
+            participantName={user.name || user.email || 'Participant'}
+          />
+        );
+      }
+      if (path === ROUTES.squadCharter) {
+        return (
+          <SquadCharterPage
+            participantId={user.id}
+            participantName={user.name || user.email || 'Participant'}
+          />
+        );
+      }
       if (
         path === ROUTES.ventureBlueprint
         || path.startsWith(`${ROUTES.ventureBlueprint}/`)
@@ -1241,6 +1270,15 @@ const SpikeMasterPortal = () => {
         );
       }
       if (path === ROUTES.admin) return adminPage;
+      if (path === ROUTES.adminCohorts) return <AdminCohortsPage />;
+      if (path === ROUTES.adminSquadThemes) return <AdminSquadThemesPage />;
+      if (path === ROUTES.adminSquads) {
+        return (
+          <AdminSquadsPage
+            interns={interns.map((i) => ({ id: i.id, name: i.name }))}
+          />
+        );
+      }
       return renderStaffDashboard();
     }
 

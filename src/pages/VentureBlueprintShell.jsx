@@ -24,6 +24,7 @@ import { CanvasEditorModule } from '../components/blueprint/modules/CanvasEditor
 import { ExecutiveCanvasSummary } from '../components/blueprint/modules/ExecutiveCanvasSummary.jsx';
 import { MilestonesModule } from '../components/blueprint/modules/MilestonesModule.jsx';
 import { VentureBoardModule } from '../components/blueprint/modules/VentureBoardModule.jsx';
+import { Day1BuildersShell } from '../components/day1/Day1BuildersShell.jsx';
 
 /**
  * @param {{ user: { id: string, internProgress?: object | null }, onLogTraction?: () => void, onProgressRefresh?: (progress: object) => void }} props
@@ -64,6 +65,7 @@ export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }
   }, [location.pathname]);
 
   const isExecutiveSummary = moduleSlug === 'canvas' && canvasSubRoute === 'summary';
+  const isDay1Builders = moduleSlug === 'day-1-builders';
 
   const activeModule = getBlueprintModule(moduleSlug) ?? getBlueprintModule('overview');
   const showTrackPicker = needsCareerTrackSelection(user.id, progress);
@@ -108,6 +110,14 @@ export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }
         return <VentureBoardModule state={state} participantId={user.id} />;
       case 'export':
         return <ExportCenterPanel />;
+      case 'day-1-builders':
+        return (
+          <Day1BuildersShell
+            participantId={user.id}
+            participantName={participantName}
+            squadName={progress?.squad ?? user.internProgress?.squad}
+          />
+        );
       case 'overview':
       default:
         return (
@@ -152,7 +162,7 @@ export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }
   }
 
   return (
-    <PageContainer presentation={isExecutiveSummary} wide={isExecutiveSummary}>
+    <PageContainer presentation={isExecutiveSummary || isDay1Builders} wide={isExecutiveSummary || isDay1Builders}>
       {showTrackPicker ? (
         <CareerTrackPicker
           userId={user.id}
@@ -167,6 +177,7 @@ export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }
         variant={headerVariant}
       />
 
+      {!isDay1Builders && !isExecutiveSummary ? (
       <div className="mb-4 space-y-3 lg:hidden">
         <BlueprintModuleNav
           careerTrack={state.career_track}
@@ -174,16 +185,25 @@ export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }
           variant="select"
         />
       </div>
+      ) : null}
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(200px,240px)_1fr] xl:grid-cols-[minmax(220px,260px)_1fr] 2xl:grid-cols-[minmax(260px,300px)_1fr] 2xl:gap-8">
+      <div
+        className={
+          isDay1Builders || isExecutiveSummary
+            ? 'min-w-0'
+            : 'grid grid-cols-1 gap-6 lg:grid-cols-[minmax(200px,240px)_1fr] xl:grid-cols-[minmax(220px,260px)_1fr] 2xl:grid-cols-[minmax(260px,300px)_1fr] 2xl:gap-8'
+        }
+      >
+        {!isDay1Builders && !isExecutiveSummary ? (
         <aside className="hidden lg:block">
           <div className="sticky top-[4.5rem] rounded-2xl border border-slate-200/80 bg-white p-3 shadow-card lg:top-24 xl:p-4 2xl:top-28">
             <BlueprintModuleNav careerTrack={state.career_track} activeSlug={moduleSlug} />
           </div>
         </aside>
+        ) : null}
 
         <div className="min-w-0">
-          {!isOverview && !isExecutiveSummary ? (
+          {!isOverview && !isExecutiveSummary && !isDay1Builders ? (
             <header className="mb-4 lg:mb-5">
               <h3 className="text-lg font-semibold text-slate-900 lg:text-xl 2xl:text-2xl">{activeModule?.label}</h3>
               <p className="mt-1 text-sm text-slate-600 lg:text-base 2xl:text-lg">{activeModule?.description}</p>

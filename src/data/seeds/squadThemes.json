@@ -1,0 +1,58 @@
+[
+  {
+    "id": "constellations",
+    "name": "Constellations",
+    "description": "Stars of leadership and initiative",
+    "icon": "🌟",
+    "items": [
+      { "id": "orion", "name": "Orion", "description": "Leadership and Initiative", "icon": "⭐" },
+      { "id": "phoenix", "name": "Phoenix", "description": "Resilience and Renewal", "icon": "🔥" },
+      { "id": "pegasus", "name": "Pegasus", "description": "Aspiration and Ambition", "icon": "🪽" },
+      { "id": "lyra", "name": "Lyra", "description": "Harmony and Collaboration", "icon": "🎵" },
+      { "id": "aquila", "name": "Aquila", "description": "Focus and Precision", "icon": "🦅" },
+      { "id": "draco", "name": "Draco", "description": "Strength and Strategy", "icon": "🐉" }
+    ]
+  },
+  {
+    "id": "explorers",
+    "name": "Explorers",
+    "description": "Pioneers who chart new paths",
+    "icon": "🧭",
+    "items": [
+      { "id": "magellan", "name": "Magellan", "description": "Navigation and Discovery", "icon": "🌊" },
+      { "id": "earhart", "name": "Earhart", "description": "Courage and Breakthrough", "icon": "✈️" },
+      { "id": "armstrong", "name": "Armstrong", "description": "Bold First Steps", "icon": "🌙" },
+      { "id": "polo", "name": "Polo", "description": "Global Perspective", "icon": "🌍" },
+      { "id": "dagama", "name": "Da Gama", "description": "Trade and Connection", "icon": "⚓" },
+      { "id": "shackleton", "name": "Shackleton", "description": "Endurance Under Pressure", "icon": "🏔️" }
+    ]
+  },
+  {
+    "id": "entrepreneurship",
+    "name": "Entrepreneurship",
+    "description": "Builders of ventures",
+    "icon": "🚀",
+    "items": [
+      { "id": "catalyst", "name": "Catalyst", "description": "Spark innovation", "icon": "⚡" },
+      { "id": "nexus", "name": "Nexus", "description": "Connect opportunities", "icon": "🔗" },
+      { "id": "ignite", "name": "Ignite", "description": "Launch momentum", "icon": "🔥" },
+      { "id": "venture", "name": "Venture", "description": "Build new paths", "icon": "💼" },
+      { "id": "momentum", "name": "Momentum", "description": "Sustain growth", "icon": "📈" },
+      { "id": "apex", "name": "Apex", "description": "Reach the summit", "icon": "🏆" }
+    ]
+  },
+  {
+    "id": "leadership",
+    "name": "Leadership",
+    "description": "Teams driven by purpose and impact",
+    "icon": "🎯",
+    "items": [
+      { "id": "vision", "name": "Vision", "description": "See the future clearly", "icon": "👁️" },
+      { "id": "purpose", "name": "Purpose", "description": "Lead with meaning", "icon": "🎯" },
+      { "id": "impact", "name": "Impact", "description": "Create lasting change", "icon": "💫" },
+      { "id": "integrity", "name": "Integrity", "description": "Trust and accountability", "icon": "🛡️" },
+      { "id": "excellence", "name": "Excellence", "description": "Pursue the highest standard", "icon": "✨" },
+      { "id": "resilience", "name": "Resilience", "description": "Rise through challenge", "icon": "💪" }
+    ]
+  }
+]

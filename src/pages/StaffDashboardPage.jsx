@@ -23,6 +23,7 @@ import { ROUTES } from '../routes/paths.js';
 import { apiFetch } from '../apiClient.js';
 import { reviewTractionLog, updateInternProgress } from '../lib/supabase/index.js';
 import { supabase } from '../supabaseClient.js';
+import { FacultyDay1Panel } from '../components/day1/FacultyDay1Panel.jsx';
 
 const FACULTY_TABS = [
   { id: 'overview', label: 'Overview', icon: BarChart3 },
@@ -317,6 +318,11 @@ export function StaffDashboardPage({
             interns={interns}
             internSummary={internSummary}
           />
+          {userRole === 'faculty' ? (
+            <FacultyDay1Panel
+              interns={interns.map((i) => ({ id: i.id, name: i.name }))}
+            />
+          ) : null}
           <SegmentSummary internSummary={internSummary} />
         </div>
       ) : null}

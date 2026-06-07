@@ -7,17 +7,36 @@ export const ROUTES = {
   research: '/research',
   reports: '/reports',
   admin: '/admin',
+  cohortIdentity: '/cohort-identity',
+  squadPreferences: '/squad-preferences',
+  squad: '/squad',
+  squadCharter: '/squad-charter',
+  adminCohorts: '/admin/cohorts',
+  adminSquadThemes: '/admin/squad-themes',
+  adminSquads: '/admin/squads',
 };
 
 /** Blueprint sub-routes (PR4) — Business Plan, Milestones, Venture Board live inside the OS. */
 export const BLUEPRINT_LINKS = {
   businessPlan: '/venture-blueprint/canvas',
   canvasSummary: '/venture-blueprint/canvas/summary',
+  day1Builders: '/venture-blueprint/day-1-builders',
+  cohortIdentity: '/cohort-identity',
+  squadPreferences: '/squad-preferences',
+  squad: '/squad',
+  squadCharter: '/squad-charter',
   marketIntelligence: '/venture-blueprint/market-intelligence',
   milestones: '/venture-blueprint/milestones',
   ventureBoard: '/venture-blueprint/venture-board',
   vision: '/venture-blueprint/vision',
 };
+
+const INTERN_FORMATION_ROUTES = [
+  ROUTES.cohortIdentity,
+  ROUTES.squadPreferences,
+  ROUTES.squad,
+  ROUTES.squadCharter,
+];
 
 /** Module nav entries — filtered by role in ModuleNav. */
 export const MODULE_NAV = [
@@ -26,6 +45,13 @@ export const MODULE_NAV = [
     label: 'Blueprint',
     shortLabel: 'Blueprint',
     icon: 'blueprint',
+    roles: ['intern'],
+  },
+  {
+    path: ROUTES.squad,
+    label: 'Squad',
+    shortLabel: 'Squad',
+    icon: 'research',
     roles: ['intern'],
   },
   {
@@ -88,6 +114,20 @@ export function matchModulePath(pathname) {
     return ROUTES.ventureBlueprint;
   }
 
+  if (INTERN_FORMATION_ROUTES.includes(pathname)) {
+    return pathname;
+  }
+
+  if (pathname === ROUTES.adminCohorts || pathname.startsWith(`${ROUTES.adminCohorts}/`)) {
+    return ROUTES.adminCohorts;
+  }
+  if (pathname === ROUTES.adminSquadThemes || pathname.startsWith(`${ROUTES.adminSquadThemes}/`)) {
+    return ROUTES.adminSquadThemes;
+  }
+  if (pathname === ROUTES.adminSquads || pathname.startsWith(`${ROUTES.adminSquads}/`)) {
+    return ROUTES.adminSquads;
+  }
+
   for (const route of Object.values(ROUTES)) {
     if (route === ROUTES.home) continue;
     if (pathname === route || pathname.startsWith(`${route}/`)) {
@@ -105,6 +145,10 @@ const AUTHENTICATED_ROLES = ['intern', 'faculty', 'mentor', 'admin'];
 
 /** Roles allowed on a module route (single source of truth with MODULE_NAV). */
 export function rolesForRoute(pathname) {
+  if (INTERN_FORMATION_ROUTES.includes(pathname)) return ['intern'];
+  if (pathname === ROUTES.adminCohorts || pathname === ROUTES.adminSquadThemes) return ['admin'];
+  if (pathname === ROUTES.adminSquads) return ['admin', 'faculty'];
+
   const route = matchModulePath(pathname);
   if (!route) return [];
   if (route === ROUTES.dashboard) return AUTHENTICATED_ROLES;

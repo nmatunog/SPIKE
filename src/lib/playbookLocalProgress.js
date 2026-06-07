@@ -1,5 +1,7 @@
 /** Local playbook completion until Automation Engine persists to Blueprint tables. */
 
+import { getDay1MissionProgress, isBuilderCompleted } from './day1BuilderStorage.js';
+
 const STORAGE_KEY = 'spike_playbook_local_progress';
 
 function readAll() {
@@ -47,6 +49,29 @@ export function getVisionPurposeProgress(participantId) {
     dream_board: 0,
   };
   if (!participantId) return base;
+
+  if (isBuilderCompleted(participantId, 'discover-why')) {
+    base.mission_statement = 25;
+  }
+  if (isBuilderCompleted(participantId, 'design-future')) {
+    base.future_self_narrative = 25;
+    base.vision_statement = 25;
+  }
+  if (isBuilderCompleted(participantId, 'dream-board')) {
+    base.dream_board = 25;
+  }
+
+  const mission = getDay1MissionProgress(participantId);
+  if (mission.percent >= 100) {
+    return {
+      mission_statement: 25,
+      vision_statement: 25,
+      future_self_narrative: 25,
+      dream_board: 25,
+    };
+  }
+
+  if (mission.percent > 0) return base;
 
   const entry = readAll()[participantId]?.worksheets?.['worksheet-day-1-personal-why'];
   if (!entry) return base;

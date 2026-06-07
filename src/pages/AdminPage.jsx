@@ -59,10 +59,24 @@ export function AdminPage({ usersPanel, settingsPanel, passwordHelpPanel }) {
       )}
 
       {tab === 'cohorts' && (
-        <PlaceholderPanel
-          title="Cohorts"
-          description="Cohort creation and assignment will connect to the Phase 3 `cohorts` table. Mock: 2 active cohorts on the dashboard."
-        />
+        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <h3 className="mb-2 text-lg font-bold text-gray-900">Cohort & squad formation</h3>
+          <p className="mb-4 text-sm text-gray-600">
+            Review participant cohort identity suggestions, approve the official cohort, and manage
+            squad themes and assignments.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Link to={ROUTES.adminCohorts} className="spike-btn-primary">
+              Open cohort admin
+            </Link>
+            <Link to={ROUTES.adminSquadThemes} className="spike-btn-secondary">
+              Squad themes
+            </Link>
+            <Link to={ROUTES.adminSquads} className="spike-btn-secondary">
+              Assign squads
+            </Link>
+          </div>
+        </div>
       )}
 
       {tab === 'content' && (

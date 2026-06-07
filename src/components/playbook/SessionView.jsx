@@ -4,6 +4,9 @@ import { WorksheetViewer } from './WorksheetViewer.jsx';
 import { AssessmentPanel } from './AssessmentPanel.jsx';
 import { ReflectionViewer } from './ReflectionViewer.jsx';
 import { SurveyViewer } from './SurveyViewer.jsx';
+import { Link } from 'react-router-dom';
+import { Rocket } from 'lucide-react';
+import { BLUEPRINT_LINKS } from '../../routes/paths.js';
 
 /**
  * @typedef {import('../../lib/contentLoader.js').DayContentBundle} DayContentBundle
@@ -17,6 +20,7 @@ import { SurveyViewer } from './SurveyViewer.jsx';
  *   participantId?: string,
  *   onProgress?: () => void,
  *   showSpeakerNotes?: boolean,
+ *   hideWorksheets?: boolean,
  * }} props
  */
 export function SessionView({
@@ -25,6 +29,7 @@ export function SessionView({
   participantId,
   onProgress,
   showSpeakerNotes = false,
+  hideWorksheets = false,
 }) {
   const { presentation, activities, worksheets, assessment, reflections, survey } = bundle;
 
@@ -93,7 +98,7 @@ export function SessionView({
         </section>
       ) : null}
 
-      {sessionWorksheets.length > 0 ? (
+      {sessionWorksheets.length > 0 && !hideWorksheets ? (
         <section>
           <h4 className="mb-2 text-xs font-bold uppercase tracking-wider text-gray-500">
             Worksheets
@@ -109,6 +114,19 @@ export function SessionView({
               />
             ))}
           </div>
+        </section>
+      ) : null}
+
+      {sessionWorksheets.length > 0 && hideWorksheets ? (
+        <section className="rounded-2xl border border-spike/20 bg-spike-muted/50 p-5">
+          <h4 className="mb-2 text-sm font-bold text-spike">Venture Blueprint Builders™</h4>
+          <p className="mb-4 text-sm text-slate-700">
+            Day 1 worksheets are replaced by interactive builders. Complete your mission in the
+            Blueprint Builders experience.
+          </p>
+          <Link to={BLUEPRINT_LINKS.day1Builders} className="spike-btn-primary inline-flex">
+            <Rocket size={16} /> Open Day 1 Builders
+          </Link>
         </section>
       ) : null}
 

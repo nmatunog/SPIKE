@@ -1,0 +1,156 @@
+import { useState } from 'react';
+import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { DAY1_BUILDERS } from '../../lib/day1BuilderConstants.js';
+import {
+  completeDay1Builder,
+  getBuilderData,
+  getDay1MissionProgress,
+  isBuilderCompleted,
+  saveBuilderDraft,
+} from '../../lib/day1BuilderService.js';
+import { Day1MissionControl } from './Day1MissionControl.jsx';
+import { DiscoverYourWhyBuilder } from './builders/DiscoverYourWhyBuilder.jsx';
+import { DesignYourFutureBuilder } from './builders/DesignYourFutureBuilder.jsx';
+import { DreamBoardStudio } from './builders/DreamBoardStudio.jsx';
+import { FutureVentureSnapshotBuilder } from './builders/FutureVentureSnapshotBuilder.jsx';
+import { SquadFormationBuilder } from './builders/SquadFormationBuilder.jsx';
+import { SquadCharterBuilder } from './builders/SquadCharterBuilder.jsx';
+import { ROUTES } from '../../routes/paths.js';
+
+const BUILDER_COMPONENTS = {
+  'discover-why': DiscoverYourWhyBuilder,
+  'design-future': DesignYourFutureBuilder,
+  'dream-board': DreamBoardStudio,
+  'future-venture': FutureVentureSnapshotBuilder,
+  'squad-formation': SquadFormationBuilder,
+  'squad-charter': SquadCharterBuilder,
+};
+
+/**
+ * @param {{
+ *   participantId: string,
+ *   participantName: string,
+ *   squadName?: string,
+ *   initialBuilder?: string,
+ * }} props
+ */
+export function Day1BuildersShell({
+  participantId,
+  participantName,
+  squadName,
+  initialBuilder,
+}) {
+  const firstIncompleteId = getDay1MissionProgress(participantId).builders.find((b) => !b.completed)?.id
+    ?? 'discover-why';
+  const [activeId, setActiveId] = useState(initialBuilder ?? firstIncompleteId);
+  const [draft, setDraft] = useState(() => getBuilderData(participantId, activeId) ?? {});
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const activeBuilder = DAY1_BUILDERS.find((b) => b.id === activeId) ?? DAY1_BUILDERS[0];
+  const activeIndex = DAY1_BUILDERS.findIndex((b) => b.id === activeId);
+  const BuilderComponent = BUILDER_COMPONENTS[activeId];
+  const completed = isBuilderCompleted(participantId, activeId);
+
+  function switchBuilder(id) {
+    setActiveId(id);
+    setDraft(getBuilderData(participantId, id) ?? {});
+  }
+
+  function handleDraftChange(next) {
+    setDraft(next);
+    saveBuilderDraft(participantId, activeId, next);
+  }
+
+  function handleComplete(next) {
+    completeDay1Builder(participantId, activeId, next);
+    setRefreshKey((k) => k + 1);
+    const nextBuilder = DAY1_BUILDERS[activeIndex + 1];
+    if (nextBuilder) {
+      switchBuilder(nextBuilder.id);
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      <Day1MissionControl participantId={participantId} key={refreshKey} />
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[240px_1fr]">
+        <nav className="spike-card space-y-1 p-3">
+          <p className="mb-2 px-2 spike-label">Venture Blueprint Builders™</p>
+          {DAY1_BUILDERS.map((builder, idx) => {
+            const done = isBuilderCompleted(participantId, builder.id);
+            const active = builder.id === activeId;
+            return (
+              <button
+                key={builder.id}
+                type="button"
+                onClick={() => switchBuilder(builder.id)}
+                className={`flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition ${
+                  active
+                    ? 'bg-spike text-white shadow-sm'
+                    : 'text-slate-700 hover:bg-slate-50'
+                }`}
+              >
+                <span
+                  className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                    active ? 'bg-white/20' : done ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100'
+                  }`}
+                >
+                  {done ? <Check size={14} /> : idx + 1}
+                </span>
+                <span className="font-medium">{builder.label}</span>
+              </button>
+            );
+          })}
+          <Link
+            to={ROUTES.ventureBlueprint}
+            className="mt-3 flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-500 hover:text-spike"
+          >
+            <ArrowLeft size={16} /> Back to Blueprint
+          </Link>
+        </nav>
+
+        <div className="min-w-0">
+          <header className="mb-4">
+            <p className="spike-label text-spike">Builder {activeIndex + 1} of {DAY1_BUILDERS.length}</p>
+            <h3 className="text-xl font-semibold text-slate-900 lg:text-2xl">{activeBuilder.label}</h3>
+            <p className="mt-1 text-sm text-slate-600">{activeBuilder.description}</p>
+            <p className="mt-1 text-xs text-slate-500">Feeds → {activeBuilder.feeds}</p>
+          </header>
+
+          {BuilderComponent ? (
+            <BuilderComponent
+              participantId={participantId}
+              participantName={participantName}
+              squadName={squadName}
+              draft={draft}
+              completed={completed}
+              onChange={handleDraftChange}
+              onComplete={handleComplete}
+            />
+          ) : null}
+
+          <div className="mt-6 flex justify-between gap-3">
+            <button
+              type="button"
+              disabled={activeIndex === 0}
+              onClick={() => switchBuilder(DAY1_BUILDERS[activeIndex - 1].id)}
+              className="spike-btn-secondary disabled:opacity-40"
+            >
+              <ArrowLeft size={16} /> Previous
+            </button>
+            <button
+              type="button"
+              disabled={activeIndex >= DAY1_BUILDERS.length - 1}
+              onClick={() => switchBuilder(DAY1_BUILDERS[activeIndex + 1].id)}
+              className="spike-btn-secondary disabled:opacity-40"
+            >
+              Next <ArrowRight size={16} />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
