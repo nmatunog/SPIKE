@@ -8,7 +8,6 @@ import {
   markWorksheetCompleted,
 } from './playbookProgress.js';
 import { syncPlaybookWorksheet } from './playbookBlueprintSync.js';
-import { generateSquadCharterPdf } from './squadCharterService.js';
 import {
   getAllDay1BuilderData,
   getDay1MissionProgress,
@@ -196,7 +195,9 @@ function syncSquadCharter(participantId, data) {
     outputs: ['Digital charter signature'],
   });
 
-  void generateSquadCharterPdf(participantId, data);
+  void import('./squadCharterService.js').then(({ generateSquadCharterPdf }) =>
+    generateSquadCharterPdf(participantId, data),
+  );
 }
 
 /** @param {number} week @param {number} segment */

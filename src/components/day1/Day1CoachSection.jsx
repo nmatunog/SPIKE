@@ -7,6 +7,7 @@ import {
   AmbitionCoachFlow,
   FutureSelfCoachFlow,
   PurposeCoachFlow,
+  TaglineCoachFlow,
   ValuesCoachFlow,
   VentureDirectionCoachFlow,
 } from '../ventureCoach/CoachSectionFlows.jsx';
@@ -15,6 +16,7 @@ const COACH_FLOWS = {
   ambition: AmbitionCoachFlow,
   purpose: PurposeCoachFlow,
   values: ValuesCoachFlow,
+  tagline: TaglineCoachFlow,
   'future-self': FutureSelfCoachFlow,
   'venture-direction': VentureDirectionCoachFlow,
 };

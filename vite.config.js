@@ -8,6 +8,36 @@ export default defineConfig({
   // Relative paths for native WebView; absolute `/` for Cloudflare Pages SPA routing.
   base: capacitorBuild ? './' : '/',
   plugins: [react()],
+  build: {
+    chunkSizeWarningLimit: 600,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return undefined
+          if (
+            id.includes('jspdf')
+            || id.includes('html2canvas')
+            || id.includes('pptxgenjs')
+            || id.includes('canvg')
+            || id.includes('dompurify')
+          ) {
+            return 'export-vendor'
+          }
+          if (id.includes('@supabase')) {
+            return 'supabase-vendor'
+          }
+          if (
+            id.includes('react-dom')
+            || id.includes('react-router')
+            || id.includes('/react/')
+          ) {
+            return 'react-vendor'
+          }
+          return undefined
+        },
+      },
+    },
+  },
   server: {
     proxy: {
       '/api': {

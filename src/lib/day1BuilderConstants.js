@@ -26,6 +26,14 @@ export const DAY1_BUILDERS = [
     coachSection: 'values',
   },
   {
+    id: 'tagline-builder',
+    label: 'My Tagline',
+    missionLabel: 'AI Coach — My Tagline',
+    description: 'Distill your identity into a memorable phrase for your profile and presentations.',
+    feeds: 'Ambition & Purpose',
+    coachSection: 'tagline',
+  },
+  {
     id: 'future-self',
     label: 'My Future Self',
     missionLabel: 'AI Coach — Future Self',

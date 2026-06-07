@@ -12,12 +12,6 @@ import {
   saveCanvasSummaryDebounced,
 } from '../../../lib/canvasSummaryService.js';
 import { computeCanvasCompletionPct } from '../../../lib/canvasService.js';
-import {
-  exportExecutiveCanvasPdf,
-  exportExecutiveCanvasPng,
-  exportExecutiveCanvasPpt,
-  exportVentureBoardCoverSheet,
-} from '../../../lib/canvasExportService.js';
 import { VENTURE_READINESS_WEIGHTS } from '../../../lib/ventureReadinessScore.js';
 import { ROUTES } from '../../../routes/paths.js';
 
@@ -84,6 +78,12 @@ export function ExecutiveCanvasSummary({ participantId, participantName, state }
     if (!exportRef.current) return;
     setExporting(kind);
     try {
+      const {
+        exportExecutiveCanvasPdf,
+        exportExecutiveCanvasPng,
+        exportExecutiveCanvasPpt,
+        exportVentureBoardCoverSheet,
+      } = await import('../../../lib/canvasExportService.js');
       if (kind === 'png') {
         await exportExecutiveCanvasPng(exportRef.current);
       } else if (kind === 'pdf') {

@@ -46,7 +46,9 @@ export function getVisionPurposeProgress(participantId) {
     vision_statement: 0,
     mission_statement: 0,
     my_values: 0,
+    personal_tagline: 0,
     future_self_narrative: 0,
+    future_self_summary: 0,
     dream_board: 0,
   };
   if (!participantId) return base;
@@ -59,6 +61,9 @@ export function getVisionPurposeProgress(participantId) {
   }
   if (isBuilderCompleted(participantId, 'values-builder')) {
     base.my_values = 20;
+  }
+  if (isBuilderCompleted(participantId, 'tagline-builder')) {
+    base.personal_tagline = 16;
   }
   if (isBuilderCompleted(participantId, 'future-self')) {
     base.future_self_narrative = 20;
@@ -73,7 +78,9 @@ export function getVisionPurposeProgress(participantId) {
       vision_statement: 20,
       mission_statement: 20,
       my_values: 20,
+      personal_tagline: 16,
       future_self_narrative: 20,
+      future_self_summary: 16,
       dream_board: 20,
     };
   }

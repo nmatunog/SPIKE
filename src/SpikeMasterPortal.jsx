@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import {
   BookOpen,
@@ -25,25 +25,28 @@ import { PortalHeader } from './layouts/PortalHeader.jsx';
 import { resolveUserRole } from './lib/roles.js';
 import { RoleDashboardCards } from './components/dashboard/RoleDashboardCards.jsx';
 import { BlueprintTimelineFeed } from './components/blueprint/BlueprintTimelineFeed.jsx';
-import { AdminPage } from './pages/AdminPage.jsx';
-import { PlaybookShell } from './pages/PlaybookShell.jsx';
-import { PortfolioPage } from './pages/PortfolioPage.jsx';
-import { ResearchPage } from './pages/ResearchPage.jsx';
-import { ProgressReportsPage } from './pages/ProgressReportsPage.jsx';
-import { StaffDashboardPage } from './pages/StaffDashboardPage.jsx';
-import { WelcomePage } from './pages/WelcomePage.jsx';
+import { PageLoader } from './components/ui/PageLoader.jsx';
 import { RoleRouteGuard } from './components/routing/RoleRouteGuard.jsx';
 import { ROUTES, defaultRouteForRole } from './routes/paths.js';
-import { VentureBlueprintShell } from './pages/VentureBlueprintShell.jsx';
-import { CohortIdentityPage } from './pages/cohort/CohortIdentityPage.jsx';
-import { SquadPreferencesPage } from './pages/cohort/SquadPreferencesPage.jsx';
-import { SquadDashboardPage } from './pages/cohort/SquadDashboardPage.jsx';
-import { SquadCharterPage } from './pages/cohort/SquadCharterPage.jsx';
-import { AdminCohortsPage } from './pages/admin/AdminCohortsPage.jsx';
-import { AdminSquadThemesPage } from './pages/admin/AdminSquadThemesPage.jsx';
-import { AdminSquadsPage } from './pages/admin/AdminSquadsPage.jsx';
-import { MentorVentureCoachPage } from './pages/mentor/MentorVentureCoachPage.jsx';
-import { CohortIdentityAnalyticsPage } from './pages/analytics/CohortIdentityAnalyticsPage.jsx';
+import {
+  AdminCohortsPage,
+  AdminPage,
+  AdminSquadsPage,
+  AdminSquadThemesPage,
+  CohortIdentityAnalyticsPage,
+  CohortIdentityPage,
+  MentorVentureCoachPage,
+  PlaybookShell,
+  PortfolioPage,
+  ProgressReportsPage,
+  ResearchPage,
+  SquadCharterPage,
+  SquadDashboardPage,
+  SquadPreferencesPage,
+  StaffDashboardPage,
+  VentureBlueprintShell,
+  WelcomePage,
+} from './routes/lazyPages.js';
 import { useAuth } from './AuthContext.jsx';
 import { apiFetch } from './apiClient.js';
 import {
@@ -59,6 +62,11 @@ import { orientationSlides } from './orientationSlideContents.jsx';
 import { AdminRegisterForm } from './components/AdminRegisterForm.jsx';
 import { isMockUser, shouldUseSupabaseForUser } from './lib/mockAuth.js';
 import { ForcePasswordChangeGate } from './components/ForcePasswordChangeGate.jsx';
+
+/** @param {{ children: import('react').ReactNode, label?: string }} props */
+function LazyRoute({ children, label }) {
+  return <Suspense fallback={<PageLoader label={label} />}>{children}</Suspense>;
+}
 
 const SpikeMasterPortal = () => {
   const navigate = useNavigate();
@@ -1145,13 +1153,15 @@ const SpikeMasterPortal = () => {
   );
 
   const renderPlaybook = () => (
-    <PlaybookShell
-      orientationView={<OrientationModule />}
-      syllabusView={<MasterSyllabusView />}
-      participantId={user?.id}
-      userRole={userRole}
-      interns={interns}
-    />
+    <LazyRoute label="Loading playbook…">
+      <PlaybookShell
+        orientationView={<OrientationModule />}
+        syllabusView={<MasterSyllabusView />}
+        participantId={user?.id}
+        userRole={userRole}
+        interns={interns}
+      />
+    </LazyRoute>
   );
 
   const AdminDashboardHome = () => (
@@ -1173,18 +1183,20 @@ const SpikeMasterPortal = () => {
   const renderStaffDashboard = () => {
     if (userRole === 'faculty' || userRole === 'mentor') {
       return (
-        <StaffDashboardPage
-          userRole={userRole}
-          user={user}
-          interns={interns}
-          internSummary={internSummary}
-          pendingLogs={pendingLogs}
-          token={token}
-          usingSupabaseAuth={usingSupabaseAuth}
-          showToast={showToast}
-          onLoadInterns={loadInterns}
-          onLoadPendingLogs={loadPendingLogs}
-        />
+        <LazyRoute label="Loading dashboard…">
+          <StaffDashboardPage
+            userRole={userRole}
+            user={user}
+            interns={interns}
+            internSummary={internSummary}
+            pendingLogs={pendingLogs}
+            token={token}
+            usingSupabaseAuth={usingSupabaseAuth}
+            showToast={showToast}
+            onLoadInterns={loadInterns}
+            onLoadPendingLogs={loadPendingLogs}
+          />
+        </LazyRoute>
       );
     }
     if (userRole === 'admin') return <AdminDashboardHome />;
@@ -1281,7 +1293,9 @@ const SpikeMasterPortal = () => {
           />
         );
       }
-      if (path === ROUTES.admin) return adminPage;
+      if (path === ROUTES.admin) {
+        return <LazyRoute label="Loading admin…">{adminPage}</LazyRoute>;
+      }
       if (path === ROUTES.adminCohorts) return <AdminCohortsPage />;
       if (path === ROUTES.adminSquadThemes) return <AdminSquadThemesPage />;
       if (path === ROUTES.adminSquads) {
@@ -1340,20 +1354,22 @@ const SpikeMasterPortal = () => {
               <p className="text-sm font-medium">Loading session…</p>
             </div>
           ) : (
-            <WelcomePage
-              usingSupabaseAuth={usingSupabaseAuth}
-              mockAuthEnabled={mockAuthEnabled}
-              setupLoadState={setupLoadState}
-              setupLoadError={setupLoadError}
-              setupMeta={setupMeta}
-              onRetrySetup={() => loadSetupInfo()}
-              onBootstrap={handleBootstrapComplete}
-              onLogin={handleGuestLogin}
-              onRequestPasswordHelp={
-                usingSupabaseAuth ? requestPasswordHelpForGuest : undefined
-              }
-              onInternSignup={handleInternSignup}
-            />
+            <LazyRoute label="Loading…">
+              <WelcomePage
+                usingSupabaseAuth={usingSupabaseAuth}
+                mockAuthEnabled={mockAuthEnabled}
+                setupLoadState={setupLoadState}
+                setupLoadError={setupLoadError}
+                setupMeta={setupMeta}
+                onRetrySetup={() => loadSetupInfo()}
+                onBootstrap={handleBootstrapComplete}
+                onLogin={handleGuestLogin}
+                onRequestPasswordHelp={
+                  usingSupabaseAuth ? requestPasswordHelpForGuest : undefined
+                }
+                onInternSignup={handleInternSignup}
+              />
+            </LazyRoute>
           )
         )}
 
@@ -1391,7 +1407,7 @@ const SpikeMasterPortal = () => {
         {(userRole === 'intern' || ['faculty', 'mentor', 'admin'].includes(userRole)) &&
           !authLoading && (
             <RoleRouteGuard userRole={userRole} pathname={location.pathname}>
-              {renderAuthenticatedModule()}
+              <LazyRoute label="Loading module…">{renderAuthenticatedModule()}</LazyRoute>
             </RoleRouteGuard>
           )}
       </main>
