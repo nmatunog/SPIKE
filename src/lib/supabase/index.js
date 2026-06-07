@@ -20,3 +20,9 @@ export { fetchFnaRecords, upsertFnaRecord } from './fnaRecords.js';
 export { fetchClientGrowthFunnel, upsertClientGrowthFunnel } from './clientGrowth.js';
 export { fetchTimelineEvents, insertTimelineEvent } from './timelineEvents.js';
 export { createCoachingSession } from './coachingSessions.js';
+export { fetchBlueprintEntries, upsertBlueprintEntry } from './blueprintEntries.js';
+export { fetchCanvasEntries, upsertCanvasEntry } from './canvasEntries.js';
+export {
+  fetchLeadershipJournal,
+  insertLeadershipJournalEntry,
+} from './leadershipJournal.js';

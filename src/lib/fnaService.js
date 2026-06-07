@@ -7,7 +7,7 @@
  */
 
 import { suggestFnaGaps } from './fnaGaps.js';
-import { runFnaAutomation } from './fnaAutomation.js';
+import { syncFnaCompletion } from './ventureBlueprintSync.js';
 import { upsertFnaRecord } from './supabase/fnaRecords.js';
 
 const STORAGE_KEY = 'spike_fna_records';
@@ -117,7 +117,7 @@ export function saveFna(participantId, fnaId, patch) {
 
   void upsertFnaRecord(participantId, merged, merged.recommendations);
 
-  const automation = runFnaAutomation(participantId, merged, list);
+  const automation = syncFnaCompletion(participantId, merged, list);
   return { record: merged, automation };
 }
 

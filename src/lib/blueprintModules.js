@@ -29,6 +29,13 @@ export const BLUEPRINT_MODULES = [
     tracks: ['agency_builder', 'specialist_consultant'],
   },
   {
+    slug: 'market-intelligence',
+    label: 'Market Intelligence',
+    shortLabel: 'Market',
+    description: 'Survey insights, segments, and opportunity research.',
+    tracks: ['agency_builder', 'specialist_consultant'],
+  },
+  {
     slug: 'client-growth',
     label: 'Client Growth Engine',
     shortLabel: 'Clients',
@@ -37,16 +44,16 @@ export const BLUEPRINT_MODULES = [
   },
   {
     slug: 'recruitment',
-    label: 'Recruitment Engine',
+    label: 'Recruitment Growth Engine',
     shortLabel: 'Recruitment',
     description: 'Talent pipeline for Agency Builder track.',
     tracks: ['agency_builder'],
   },
   {
     slug: 'leadership',
-    label: 'Leadership Engine',
+    label: 'Leadership Growth Engine',
     shortLabel: 'Leadership',
-    description: 'Team production and leadership pipeline.',
+    description: 'Culture, systems, and leadership journal.',
     tracks: ['agency_builder'],
   },
   {

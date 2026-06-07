@@ -1,0 +1,112 @@
+/**
+ * Financial Entrepreneurship Canvas — editable engines with auto-save (Sprint 05).
+ */
+import { CANVAS_ENGINES } from './blueprintSectionConstants.js';
+import { upsertCanvasEntry, fetchCanvasEntries } from './supabase/canvasEntries.js';
+import { setSectionField } from './blueprintSectionStore.js';
+
+const STORAGE_KEY = 'spike_canvas_entries';
+const debounceTimers = new Map();
+
+function readAll() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+  } catch {
+    return {};
+  }
+}
+
+function writeAll(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+/** @param {string} participantId @param {string} engineKey @param {string} fieldKey */
+export function getCanvasField(participantId, engineKey, fieldKey) {
+  return readAll()[participantId]?.[engineKey]?.[fieldKey] ?? '';
+}
+
+/** @param {string} participantId */
+export function getCanvasEngine(participantId, engineKey) {
+  return readAll()[participantId]?.[engineKey] ?? {};
+}
+
+/**
+ * @param {string} participantId
+ * @param {string} engineKey
+ * @param {string} fieldKey
+ * @param {string} value
+ */
+export function saveCanvasField(participantId, engineKey, fieldKey, value) {
+  const all = readAll();
+  const user = all[participantId] ?? {};
+  const engine = user[engineKey] ?? {};
+  engine[fieldKey] = value;
+  user[engineKey] = engine;
+  all[participantId] = user;
+  writeAll(all);
+
+  void upsertCanvasEntry(participantId, engineKey, fieldKey, value);
+
+  // Mirror talent/leadership fields into recruitment/leadership sections
+  if (engineKey === 'talent_growth') {
+    setSectionField(participantId, 'recruitment-growth', fieldKey, value, { sourceType: 'canvas' });
+  }
+  if (engineKey === 'leadership_growth') {
+    setSectionField(participantId, 'leadership-growth', fieldKey, value, { sourceType: 'canvas' });
+  }
+}
+
+/**
+ * Debounced save (2s) per field.
+ * @param {string} participantId
+ * @param {string} engineKey
+ * @param {string} fieldKey
+ * @param {string} value
+ */
+export function saveCanvasFieldDebounced(participantId, engineKey, fieldKey, value) {
+  const timerKey = `${participantId}:${engineKey}:${fieldKey}`;
+  const existing = debounceTimers.get(timerKey);
+  if (existing) clearTimeout(existing);
+  debounceTimers.set(
+    timerKey,
+    setTimeout(() => {
+      saveCanvasField(participantId, engineKey, fieldKey, value);
+      debounceTimers.delete(timerKey);
+    }, 2000),
+  );
+}
+
+/** @param {string} participantId */
+export async function hydrateCanvasFromSupabase(participantId) {
+  if (!participantId) return;
+  try {
+    const rows = await fetchCanvasEntries(participantId);
+    if (!rows.length) return;
+    const all = readAll();
+    const user = all[participantId] ?? {};
+    for (const row of rows) {
+      const engine = user[row.engine_key] ?? {};
+      if (!engine[row.field_key]) engine[row.field_key] = row.field_value ?? '';
+      user[row.engine_key] = engine;
+    }
+    all[participantId] = user;
+    writeAll(all);
+  } catch {
+    /* offline */
+  }
+}
+
+/** @param {string} participantId */
+export function computeCanvasCompletionPct(participantId) {
+  if (!participantId) return 0;
+  let filled = 0;
+  let total = 0;
+  for (const [engineKey, engine] of Object.entries(CANVAS_ENGINES)) {
+    for (const field of engine.fields) {
+      total += 1;
+      const val = getCanvasField(participantId, engineKey, field.key);
+      if (String(val).trim().length >= 10) filled += 1;
+    }
+  }
+  return total ? Math.round((filled / total) * 100) : 0;
+}

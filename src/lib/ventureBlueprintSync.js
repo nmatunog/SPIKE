@@ -1,0 +1,128 @@
+/**
+ * Venture Blueprint Integration Engine — unified sync facade (Sprint 05).
+ * Extends Sprint 04 playbookBlueprintSync + fnaAutomation.
+ */
+import {
+  syncPlaybookWorksheet,
+  syncPlaybookActivity,
+  syncPlaybookReflection,
+  syncPlaybookSurvey,
+} from './playbookBlueprintSync.js';
+import { runFnaAutomation } from './fnaAutomation.js';
+import { formatSurveyAnswersForDisplay } from './surveyService.js';
+import { syncSurveyToMarketIntelligence } from './marketIntelligenceService.js';
+import { setSectionField } from './blueprintSectionStore.js';
+import { appendLeadershipJournalEntry } from './leadershipJournalService.js';
+import {
+  hydrateBlueprintSectionsFromSupabase,
+} from './blueprintSectionStore.js';
+import { hydrateCanvasFromSupabase } from './canvasService.js';
+import { hydrateLeadershipJournalFromSupabase } from './leadershipJournalService.js';
+
+export {
+  syncPlaybookWorksheet,
+  syncPlaybookActivity,
+  syncPlaybookReflection,
+  syncPlaybookSurvey,
+  runFnaAutomation,
+};
+
+/**
+ * @param {string} participantId
+ */
+export async function hydrateVentureBlueprint(participantId) {
+  if (!participantId) return;
+  await Promise.all([
+    hydrateBlueprintSectionsFromSupabase(participantId),
+    hydrateCanvasFromSupabase(participantId),
+    hydrateLeadershipJournalFromSupabase(participantId),
+  ]);
+}
+
+/**
+ * Survey → Market Intelligence + legacy playbook sync.
+ * @param {string} participantId
+ * @param {string} surveyId
+ * @param {Record<string, unknown>} answers
+ * @param {import('../types/playbook').SurveyQuestion[]} questions
+ * @param {{ title?: string }} [survey]
+ */
+export function syncSurveyCompletion(participantId, surveyId, answers, questions, survey) {
+  const formatted = formatSurveyAnswersForDisplay(questions, answers);
+  syncSurveyToMarketIntelligence(participantId, surveyId, formatted, survey?.title);
+  return syncPlaybookSurvey(participantId, surveyId, answers, questions, survey);
+}
+
+/**
+ * Reflection → Vision & Purpose structured fields + legacy sync.
+ */
+export function syncReflectionCompletion(participantId, reflectionId, responses, reflection) {
+  const content = Object.entries(responses)
+    .map(([prompt, answer]) => `${prompt}\n${answer}`)
+    .join('\n\n');
+  setSectionField(participantId, 'vision-purpose', 'growth_reflections', content, {
+    append: true,
+    sourceType: 'reflection',
+    sourceId: reflectionId,
+  });
+  setSectionField(participantId, 'vision-purpose', 'lessons_learned', reflection.title, {
+    append: true,
+    sourceType: 'reflection',
+    sourceId: reflectionId,
+  });
+  return syncPlaybookReflection(participantId, reflectionId, responses, reflection);
+}
+
+/**
+ * FNA → Client Growth section + legacy automation.
+ */
+export function syncFnaCompletion(participantId, fna, allFnas) {
+  const completed = allFnas.filter((f) => f.status !== 'draft');
+  setSectionField(participantId, 'client-growth', 'completed_fnas', String(completed.length), {
+    sourceType: 'fna',
+    sourceId: fna.id,
+  });
+
+  const profiles = completed
+    .map((f) => `• ${f.clientName} (${f.status})`)
+    .join('\n');
+  setSectionField(participantId, 'client-growth', 'client_profiles_summary', profiles, {
+    sourceType: 'fna',
+    sourceId: fna.id,
+  });
+
+  const gaps = completed
+    .filter((f) => f.protectionGap || f.retirementGap)
+    .map((f) => `• ${f.clientName}: protection ${f.protectionGap ?? '—'}, retirement ${f.retirementGap ?? '—'}`)
+    .join('\n');
+  if (gaps) {
+    setSectionField(participantId, 'client-growth', 'protection_gaps_summary', gaps, {
+      sourceType: 'fna',
+      sourceId: fna.id,
+    });
+  }
+
+  const categories = [
+    ...new Set(
+      completed.flatMap((f) => (f.recommendations ?? []).map((r) => r.category || r.title)),
+    ),
+  ].filter(Boolean);
+  if (categories.length) {
+    setSectionField(
+      participantId,
+      'client-growth',
+      'recommendation_categories',
+      categories.map((c) => `• ${c}`).join('\n'),
+      { sourceType: 'fna', sourceId: fna.id },
+    );
+  }
+
+  return runFnaAutomation(participantId, fna, allFnas);
+}
+
+/**
+ * Coaching note → Leadership Journal + timeline (via coachingService caller).
+ */
+export async function syncCoachingNote(participantId, input) {
+  return appendLeadershipJournalEntry(participantId, input);
+}

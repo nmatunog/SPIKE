@@ -1,14 +1,19 @@
 /**
- * Playbook Integration Engine — routes completed items to Venture Blueprint (Sprint 04).
+ * Playbook Integration Engine — routes completed items to Venture Blueprint (Sprint 04/05).
  */
 import {
   syncPlaybookActivity,
-  syncPlaybookReflection,
-  syncPlaybookSurvey,
   syncPlaybookWorksheet,
-} from './playbookBlueprintSync.js';
+  syncReflectionCompletion,
+  syncSurveyCompletion,
+} from './ventureBlueprintSync.js';
 
-export { syncPlaybookWorksheet, syncPlaybookActivity, syncPlaybookReflection, syncPlaybookSurvey };
+export {
+  syncPlaybookWorksheet,
+  syncPlaybookActivity,
+  syncReflectionCompletion,
+  syncSurveyCompletion,
+};
 
 /**
  * @param {{
@@ -39,7 +44,7 @@ export function runPlaybookAutomation(input) {
       return syncPlaybookActivity(participantId, itemId, activity);
     case 'reflection':
       if (!reflection) return null;
-      return syncPlaybookReflection(
+      return syncReflectionCompletion(
         participantId,
         itemId,
         /** @type {Record<string, string>} */ (payload.responses ?? {}),
@@ -47,7 +52,7 @@ export function runPlaybookAutomation(input) {
       );
     case 'survey':
       if (!survey) return null;
-      return syncPlaybookSurvey(
+      return syncSurveyCompletion(
         participantId,
         itemId,
         /** @type {Record<string, unknown>} */ (payload.answers ?? {}),

@@ -1712,6 +1712,7 @@ const SpikeMasterPortal = () => {
           <VentureBlueprintShell
             user={user}
             onLogTraction={() => navigate(ROUTES.dashboard)}
+            onProgressRefresh={() => refreshUser()}
           />
         );
       }

@@ -25,8 +25,16 @@ import {
 import { getVisionPurposeProgress } from '../../../lib/playbookProgress.js';
 import { BlueprintTimelineFeed } from '../BlueprintTimelineFeed.jsx';
 import { getClientGrowthSummary } from '../../../lib/clientGrowthService.js';
-import { listFnas } from '../../../lib/fnaService.js';
+import { listFnas, countCompletedFnas } from '../../../lib/fnaService.js';
+import { countSubmittedSurveys } from '../../../lib/surveyService.js';
+import { getMarketIntelligenceSummary } from '../../../lib/marketIntelligenceService.js';
+import { getSectionField, setSectionField } from '../../../lib/blueprintSectionStore.js';
+import { RECRUITMENT_FIELDS, LEADERSHIP_FIELDS, CAREER_FIELDS } from '../../../lib/blueprintSectionConstants.js';
+import { listLeadershipJournal } from '../../../lib/leadershipJournalService.js';
+import { getNextBlueprintAction } from '../../../lib/blueprintRecommendations.js';
+import { computeSectionCompletionPct } from '../../../lib/blueprintCompletion.js';
 import { FnaEngineModule } from '../../fna/FnaEngineModule.jsx';
+import { AutoSaveField } from '../AutoSaveField.jsx';
 
 function SectionCard({ title, children, className = '' }) {
   return (
@@ -50,11 +58,57 @@ function PlaceholderNotice({ children, className = '' }) {
 /**
  * @param {{ state: object, onLogTraction?: () => void }} props
  */
-export function BlueprintOverviewPanel({ state, onLogTraction }) {
+export function BlueprintOverviewPanel({ state, participantId, onLogTraction }) {
   const integration = getWeekIntegrationByWeekId(`week-segment-1-${Math.min(state.week, 5)}`);
+  const nextAction = participantId ? getNextBlueprintAction(state, participantId) : null;
+  const surveyCount = participantId ? countSubmittedSurveys(participantId) : 0;
+  const fnaCount = participantId ? countCompletedFnas(participantId) : 0;
+  const sectionPct = state.blueprint_sections ?? {};
 
   return (
     <div className="space-y-4">
+      <SectionCard title="My Venture Blueprint™">
+        <p className="text-sm text-gray-600">
+          Your business plan, career plan, portfolio, and progress tracker — auto-filled from
+          Playbook, surveys, FNAs, and coaching.
+        </p>
+        <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <MetricCard label="Blueprint" value={`${state.blueprint_completion}%`} accent="red" />
+          <MetricCard label="Surveys" value={String(surveyCount)} sub="submitted" accent="blue" />
+          <MetricCard label="FNAs" value={String(fnaCount)} sub="completed" accent="green" />
+          <MetricCard
+            label="Career"
+            value={state.career_position.replace(/_/g, ' ')}
+            sub={state.career_track === 'agency_builder' ? 'Agency Builder' : 'Specialist'}
+            accent="amber"
+          />
+        </div>
+      </SectionCard>
+
+      {nextAction ? (
+        <SectionCard title="Next recommended action">
+          <p className="font-bold text-gray-900">{nextAction.title}</p>
+          <p className="mt-1 text-sm text-gray-600">{nextAction.detail}</p>
+          <Link
+            to={nextAction.href}
+            className="mt-3 inline-flex min-h-[44px] items-center gap-2 rounded-lg bg-[#8B0000] px-4 py-2 text-sm font-bold text-white hover:bg-[#6B0000]"
+          >
+            Go <ArrowRight size={16} />
+          </Link>
+        </SectionCard>
+      ) : null}
+
+      <SectionCard title="Section progress">
+        <div className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-3">
+          {Object.entries(sectionPct).map(([slug, pct]) => (
+            <div key={slug} className="rounded-lg border border-gray-100 bg-gray-50 px-2 py-2">
+              <p className="font-bold text-gray-800">{slug.replace(/-/g, ' ')}</p>
+              <p className="text-[#8B0000]">{pct}%</p>
+            </div>
+          ))}
+        </div>
+      </SectionCard>
+
       <SectionCard title="30-second check-in">
         <ul className="space-y-2 text-sm text-gray-700">
           <li>
@@ -342,37 +396,140 @@ export function ClientGrowthPanel({ state, participantId }) {
 
 const RECRUIT_FUNNEL = ['Leads', 'Interviews', 'Candidates', 'Licensed', 'Active Advisors'];
 
-export function RecruitmentPanel() {
+/** @param {{ participantId?: string }} props */
+export function MarketIntelligencePanel({ participantId }) {
+  const summary = participantId ? getMarketIntelligenceSummary(participantId) : null;
+  const pct = participantId ? computeSectionCompletionPct('market-intelligence', participantId) : 0;
+
   return (
-    <SectionCard title="Recruitment funnel (Agency Builder)">
-      <div className="mb-4 flex flex-wrap items-center gap-2">
-        {RECRUIT_FUNNEL.map((stage, idx) => (
-          <div key={stage} className="flex items-center gap-1">
-            <span className="rounded-lg border border-gray-200 px-3 py-2 text-xs font-bold">{stage}</span>
-            {idx < RECRUIT_FUNNEL.length - 1 ? <ArrowRight size={14} className="text-gray-400" /> : null}
-          </div>
-        ))}
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <MetricCard label="Surveys" value={String(summary?.surveyCount ?? 0)} accent="blue" />
+        <MetricCard label="Completion" value={`${pct}%`} accent="red" />
+        <MetricCard label="Artifacts" value={String(summary?.artifacts?.length ?? 0)} />
+        <MetricCard label="Source" value="Playbook" sub="auto-sync" accent="green" />
       </div>
-      <PlaceholderNotice>
-        recruitment_funnel table not wired. KPIs: conversion, licensing, activation, retention.
-      </PlaceholderNotice>
-    </SectionCard>
+
+      {participantId ? (
+        <SectionCard title="Market Intelligence fields">
+          <div className="grid gap-4">
+            <AutoSaveField
+              label="Market segment insights"
+              value={getSectionField(participantId, 'market-intelligence', 'market_segment_insights')}
+              onSave={(v) => setSectionField(participantId, 'market-intelligence', 'market_segment_insights', v)}
+            />
+            <AutoSaveField
+              label="Opportunity notes"
+              value={getSectionField(participantId, 'market-intelligence', 'opportunity_notes')}
+              onSave={(v) => setSectionField(participantId, 'market-intelligence', 'opportunity_notes', v)}
+            />
+          </div>
+        </SectionCard>
+      ) : null}
+
+      <SectionCard title="Research findings (from surveys)">
+        {summary?.researchFindings ? (
+          <pre className="whitespace-pre-wrap text-sm text-gray-700">{summary.researchFindings}</pre>
+        ) : (
+          <PlaceholderNotice>Complete a Playbook survey to populate Market Intelligence.</PlaceholderNotice>
+        )}
+      </SectionCard>
+
+      {summary?.artifacts?.length ? (
+        <SectionCard title="Portfolio drafts">
+          <div className="space-y-3">
+            {summary.artifacts.map((a) => (
+              <ArtifactDraftCard
+                key={a.id}
+                title={a.title}
+                content={a.content}
+                status={a.status}
+                sourceType={a.sourceType}
+                updatedAt={a.updatedAt}
+              />
+            ))}
+          </div>
+        </SectionCard>
+      ) : null}
+    </div>
   );
 }
 
-export function LeadershipPanel() {
+/** @param {{ participantId?: string }} props */
+export function RecruitmentPanel({ participantId }) {
   return (
-    <SectionCard title="Team dashboard">
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <MetricCard label="Advisors" value="0" />
-        <MetricCard label="Team cases" value="0" accent="blue" />
-        <MetricCard label="Recruitment activity" value="0" accent="amber" />
-        <MetricCard label="Leadership readiness" value="—" accent="green" />
-      </div>
-      <PlaceholderNotice className="mt-4">
-        leadership_pipeline table not wired.
-      </PlaceholderNotice>
-    </SectionCard>
+    <div className="space-y-4">
+      <SectionCard title="Recruitment funnel (Agency Builder)">
+        <div className="mb-4 flex flex-wrap items-center gap-2">
+          {RECRUIT_FUNNEL.map((stage, idx) => (
+            <div key={stage} className="flex items-center gap-1">
+              <span className="rounded-lg border border-gray-200 px-3 py-2 text-xs font-bold">{stage}</span>
+              {idx < RECRUIT_FUNNEL.length - 1 ? <ArrowRight size={14} className="text-gray-400" /> : null}
+            </div>
+          ))}
+        </div>
+      </SectionCard>
+      {participantId ? (
+        <SectionCard title="Talent Growth Engine">
+          <div className="grid gap-4">
+            {RECRUITMENT_FIELDS.map((field) => (
+              <AutoSaveField
+                key={field.key}
+                label={field.label}
+                value={getSectionField(participantId, 'recruitment-growth', field.key)}
+                onSave={(v) => setSectionField(participantId, 'recruitment-growth', field.key, v)}
+              />
+            ))}
+          </div>
+        </SectionCard>
+      ) : (
+        <PlaceholderNotice>Sign in to edit recruitment fields.</PlaceholderNotice>
+      )}
+    </div>
+  );
+}
+
+/** @param {{ participantId?: string }} props */
+export function LeadershipPanel({ participantId }) {
+  const journal = participantId ? listLeadershipJournal(participantId) : [];
+
+  return (
+    <div className="space-y-4">
+      <SectionCard title="Leadership Growth Engine">
+        {participantId ? (
+          <div className="grid gap-4">
+            {LEADERSHIP_FIELDS.map((field) => (
+              <AutoSaveField
+                key={field.key}
+                label={field.label}
+                value={getSectionField(participantId, 'leadership-growth', field.key)}
+                onSave={(v) => setSectionField(participantId, 'leadership-growth', field.key, v)}
+              />
+            ))}
+          </div>
+        ) : (
+          <PlaceholderNotice>Sign in to edit leadership fields.</PlaceholderNotice>
+        )}
+      </SectionCard>
+
+      <SectionCard title="Leadership Journal (coaching notes)">
+        {journal.length > 0 ? (
+          <ul className="space-y-3 text-sm text-gray-700">
+            {journal.map((entry) => (
+              <li key={entry.id} className="rounded-lg border border-gray-100 bg-gray-50 p-3">
+                <p className="font-bold text-gray-900">{entry.topic}</p>
+                <p className="mt-1 whitespace-pre-wrap">{entry.notes}</p>
+                {entry.themes ? (
+                  <p className="mt-2 text-xs text-gray-500">Themes: {entry.themes}</p>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <PlaceholderNotice>Mentor coaching notes appear here automatically.</PlaceholderNotice>
+        )}
+      </SectionCard>
+    </div>
   );
 }
 
@@ -406,7 +563,7 @@ export function CareerAcceleratorPanel({ state }) {
           ))}
         </div>
       </SectionCard>
-      <SectionCard title="Promotion readiness (mock)">
+      <SectionCard title="Promotion readiness">
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           <MetricCard label="Production" value={`${state.spike_readiness_dimensions.production}%`} />
           <MetricCard label="Recruitment" value={`${state.spike_readiness_dimensions.recruitment}%`} accent="blue" />
@@ -415,6 +572,20 @@ export function CareerAcceleratorPanel({ state }) {
         <p className="mt-3 text-sm font-bold text-gray-800">
           Overall readiness: {state.spike_readiness_score}%
         </p>
+        {state.participant_id ? (
+          <div className="mt-4 grid gap-3">
+            {CAREER_FIELDS.map((field) => (
+              <AutoSaveField
+                key={field.key}
+                label={field.label}
+                value={getSectionField(state.participant_id, 'career-accelerator', field.key)}
+                onSave={(v) =>
+                  setSectionField(state.participant_id, 'career-accelerator', field.key, v)
+                }
+              />
+            ))}
+          </div>
+        ) : null}
       </SectionCard>
       {track ? (
         <SectionCard title="Track requirements">
@@ -432,38 +603,38 @@ export function CareerAcceleratorPanel({ state }) {
   );
 }
 
-export function SpecialistBlueprintPanel() {
-  const fields = [
-    'Niche market',
-    'Authority plan',
-    'Content plan',
-    'Partnership plan',
-    'Practice growth plan',
-  ];
+const SPECIALIST_FIELDS = [
+  { key: 'niche_market', label: 'Niche market' },
+  { key: 'authority_plan', label: 'Authority plan' },
+  { key: 'content_plan', label: 'Content plan' },
+  { key: 'partnership_plan', label: 'Partnership plan' },
+  { key: 'practice_growth_plan', label: 'Practice growth plan' },
+];
 
+/** @param {{ participantId?: string }} props */
+export function SpecialistBlueprintPanel({ participantId }) {
   return (
     <div className="space-y-4">
-      <SectionCard title="Specialist dashboard">
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {['Clients', 'Referrals', 'Content', 'Speaking', 'Partnerships', 'Practice growth'].map(
-            (label) => (
-              <MetricCard key={label} label={label} value="0" />
-            ),
-          )}
-        </div>
-      </SectionCard>
-      <SectionCard title="specialist_blueprint fields">
-        <ul className="space-y-2 text-sm text-gray-700">
-          {fields.map((f) => (
-            <li key={f} className="flex items-center gap-2">
-              <Briefcase size={14} className="text-[#8B0000]" />
-              {f}
-            </li>
-          ))}
-        </ul>
-        <PlaceholderNotice className="mt-3">
-          specialist_blueprint persistence coming in a future sprint.
-        </PlaceholderNotice>
+      <SectionCard title="Specialist Consultant — Practice Growth">
+        <p className="mb-3 text-sm text-gray-600">
+          Authority building and client growth for the Specialist Consultant track.
+        </p>
+        {participantId ? (
+          <div className="grid gap-4">
+            {SPECIALIST_FIELDS.map((field) => (
+              <AutoSaveField
+                key={field.key}
+                label={field.label}
+                value={getSectionField(participantId, 'career-accelerator', `specialist_${field.key}`)}
+                onSave={(v) =>
+                  setSectionField(participantId, 'career-accelerator', `specialist_${field.key}`, v)
+                }
+              />
+            ))}
+          </div>
+        ) : (
+          <PlaceholderNotice>Sign in to edit specialist blueprint fields.</PlaceholderNotice>
+        )}
       </SectionCard>
     </div>
   );

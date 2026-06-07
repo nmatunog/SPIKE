@@ -3,6 +3,7 @@
  */
 import { appendTimelineEvent } from './timelineService.js';
 import { createCoachingSession } from './supabase/coachingSessions.js';
+import { syncCoachingNote } from './ventureBlueprintSync.js';
 
 const STORAGE_KEY = 'spike_coaching_sessions';
 const MAX_NOTES = 4000;
@@ -51,8 +52,15 @@ export async function saveMentorCoachingNote(mentorId, participantId, notes) {
   appendTimelineEvent(participantId, {
     type: 'coaching_note',
     title: 'Mentor coaching note saved',
-    module: 'professionalism',
+    module: 'leadership-growth',
     sourceType: 'coaching',
+    sourceId: entry.id,
+  });
+
+  void syncCoachingNote(participantId, {
+    mentorId,
+    topic: entry.topic,
+    notes: trimmed,
     sourceId: entry.id,
   });
 

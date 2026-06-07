@@ -1,34 +1,52 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { PageContainer } from '../components/layout/PageContainer.jsx';
 import { BlueprintStateHeader } from '../components/blueprint/BlueprintStateHeader.jsx';
 import { BlueprintModuleNav } from '../components/blueprint/BlueprintModuleNav.jsx';
+import { CareerTrackPicker } from '../components/blueprint/CareerTrackPicker.jsx';
 import { buildParticipantState } from '../lib/participantState.js';
 import { getBlueprintModule } from '../lib/blueprintModules.js';
 import { ROUTES } from '../routes/paths.js';
+import { hydrateVentureBlueprint } from '../lib/ventureBlueprintSync.js';
+import { needsCareerTrackSelection } from '../lib/careerTrackService.js';
 import {
   BlueprintOverviewPanel,
   CareerAcceleratorPanel,
   ClientGrowthPanel,
   ExportCenterPanel,
   LeadershipPanel,
+  MarketIntelligencePanel,
   RecruitmentPanel,
   SpecialistBlueprintPanel,
   VisionPurposePanel,
 } from '../components/blueprint/modules/BlueprintModulePanels.jsx';
-import { BusinessPlanModule } from '../components/blueprint/modules/BusinessPlanModule.jsx';
+import { CanvasEditorModule } from '../components/blueprint/modules/CanvasEditorModule.jsx';
 import { MilestonesModule } from '../components/blueprint/modules/MilestonesModule.jsx';
 import { VentureBoardModule } from '../components/blueprint/modules/VentureBoardModule.jsx';
 
 /**
- * @param {{ user: { id: string, internProgress?: object | null }, onLogTraction?: () => void }} props
+ * @param {{ user: { id: string, internProgress?: object | null }, onLogTraction?: () => void, onProgressRefresh?: (progress: object) => void }} props
  */
-export function VentureBlueprintShell({ user, onLogTraction }) {
+export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }) {
   const location = useLocation();
-  const state = useMemo(
-    () => buildParticipantState(user.id, user.internProgress),
-    [user.id, user.internProgress],
-  );
+  const [, setHydrateGeneration] = useState(0);
+  const [progress, setProgress] = useState(user.internProgress);
+
+  useEffect(() => {
+    setProgress(user.internProgress);
+  }, [user.internProgress]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void hydrateVentureBlueprint(user.id).then(() => {
+      if (!cancelled) setHydrateGeneration((g) => g + 1);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [user.id]);
+
+  const state = buildParticipantState(user.id, progress);
 
   const moduleSlug = useMemo(() => {
     const prefix = `${ROUTES.ventureBlueprint}/`;
@@ -39,32 +57,46 @@ export function VentureBlueprintShell({ user, onLogTraction }) {
   }, [location.pathname]);
 
   const activeModule = getBlueprintModule(moduleSlug) ?? getBlueprintModule('overview');
+  const showTrackPicker = needsCareerTrackSelection(user.id, progress);
+
+  function handleTrackComplete(nextProgress) {
+    setProgress(nextProgress);
+    onProgressRefresh?.(nextProgress);
+  }
 
   function renderModulePanel() {
     switch (moduleSlug) {
       case 'vision':
         return <VisionPurposePanel participantId={user.id} />;
       case 'canvas':
-        return <BusinessPlanModule participantId={user.id} />;
+        return <CanvasEditorModule participantId={user.id} />;
+      case 'market-intelligence':
+        return <MarketIntelligencePanel participantId={user.id} />;
       case 'milestones':
         return <MilestonesModule state={state} />;
       case 'client-growth':
         return <ClientGrowthPanel state={state} participantId={user.id} />;
       case 'recruitment':
-        return <RecruitmentPanel />;
+        return <RecruitmentPanel participantId={user.id} />;
       case 'leadership':
-        return <LeadershipPanel />;
+        return <LeadershipPanel participantId={user.id} />;
       case 'career':
         return <CareerAcceleratorPanel state={state} />;
       case 'specialist':
-        return <SpecialistBlueprintPanel />;
+        return <SpecialistBlueprintPanel participantId={user.id} />;
       case 'venture-board':
         return <VentureBoardModule state={state} participantId={user.id} />;
       case 'export':
         return <ExportCenterPanel />;
       case 'overview':
       default:
-        return <BlueprintOverviewPanel state={state} onLogTraction={onLogTraction} />;
+        return (
+          <BlueprintOverviewPanel
+            state={state}
+            participantId={user.id}
+            onLogTraction={onLogTraction}
+          />
+        );
     }
   }
 
@@ -82,6 +114,10 @@ export function VentureBlueprintShell({ user, onLogTraction }) {
 
   return (
     <PageContainer>
+      {showTrackPicker ? (
+        <CareerTrackPicker userId={user.id} onComplete={handleTrackComplete} />
+      ) : null}
+
       <BlueprintStateHeader state={state} participantId={user.id} />
 
       <div className="mb-4 lg:hidden">

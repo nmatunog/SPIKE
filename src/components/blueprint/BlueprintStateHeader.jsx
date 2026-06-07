@@ -19,7 +19,7 @@ export function BlueprintStateHeader({ state, participantId }) {
           <p className="text-[11px] font-bold uppercase tracking-wider text-[#8B0000] sm:text-xs">
             SPIKE Venture Blueprint™
           </p>
-          <h2 className="text-xl font-black text-gray-900 sm:text-2xl">My Venture Blueprint</h2>
+          <h2 className="text-xl font-black text-gray-900 sm:text-2xl">My Venture Blueprint™</h2>
           <p className="mt-1 text-sm text-gray-600">
             Segment {state.segment} · Week {state.week} · Day {state.day} ·{' '}
             {formatCareerTrackLabel(state)}

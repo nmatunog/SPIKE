@@ -463,4 +463,23 @@ npm run build
 
 ---
 
-*Last updated: 2026-06-07 — reflects `main` at `73d2d32` (Sprint 04 complete, CI deploy green).*
+---
+
+## Implementation status (Sprint 05 build)
+
+| Phase | Status | Notes |
+|-------|--------|-------|
+| 1 — Blueprint modules | **Shipped** | `market-intelligence` route + panel; nav labels updated |
+| 2 — Auto-population | **Shipped** | `ventureBlueprintSync.js` facade; survey/FNA/reflection/coaching sync |
+| 3 — Canvas editor | **Shipped** | `CanvasEditorModule` + 2s auto-save via `AutoSaveField` |
+| 4 — Progress engine | **Shipped** | Weighted `computeBlueprintCompletion()` in header + overview |
+| 5 — Home refactor | **Shipped** | `BlueprintOverviewPanel` = My Venture Blueprint™ command center |
+| 6 — Career track | **Shipped** | `CareerTrackPicker` + `career_track_selected_at` migration |
+| 7 — Database | **Shipped** | `20260625_sprint_05_blueprint_integration.sql` |
+| 8 — API layer | **Shipped** | `ventureBlueprintService.js` + `src/lib/supabase/*` clients |
+
+**Apply migration:** Run `supabase/migrations/20260625_sprint_05_blueprint_integration.sql` in Supabase SQL Editor.
+
+**Deferred (Sprint 05b):** Cohort research analytics, Express `/api` mirrors, PDF export, Venture Board workflow.
+
+*Last updated: 2026-06-07 — Sprint 05 implementation on `main`.*

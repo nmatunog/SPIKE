@@ -16,6 +16,11 @@ Run in order:
 3. `migrations/20260620_sprint_02_instructional_architecture.sql` — Sprint 02: competencies, milestones, artifacts, research squads, venture board, integration mappings
 4. `activation_codes.sql` — intern signup codes
 5. `password_reset_requests.sql` — admin-assisted password help queue
+6. `migrations/20260621_sprint_03_playbook_completions.sql` — playbook completions
+7. `migrations/20260622_sprint_04_survey_engine.sql` — survey responses
+8. `migrations/20260623_sprint_04_fna_engine.sql` — FNA + client growth
+9. `migrations/20260624_sprint_04_timeline_engine.sql` — timeline + coaching
+10. `migrations/20260625_sprint_05_blueprint_integration.sql` — Blueprint sections, canvas, leadership journal
 
 ## 3) First admin
 

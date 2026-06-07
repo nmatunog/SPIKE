@@ -1,6 +1,7 @@
 import { deriveWeekDay } from './sprint01Metrics.js';
 import { countCompletedFnas } from './fnaService.js';
 import { computeSpikeReadinessScore } from './spikeReadinessScore.js';
+import { computeBlueprintCompletion } from './blueprintCompletion.js';
 
 /**
  * Program State Engine (PRD Engine 1) — master state from intern_progress until DB view exists.
@@ -15,6 +16,7 @@ export function buildParticipantState(participantId, internProgress) {
   const readiness = computeSpikeReadinessScore(internProgress, {
     fnaCount: countCompletedFnas(participantId),
   });
+  const blueprint = computeBlueprintCompletion(participantId);
 
   return {
     participant_id: participantId,
@@ -24,7 +26,9 @@ export function buildParticipantState(participantId, internProgress) {
     hours,
     career_track: careerTrack,
     career_position: defaultCareerPosition(careerTrack),
-    blueprint_completion: estimateBlueprintCompletion(hours, readiness.composite),
+    career_track_selected: Boolean(internProgress?.career_track_selected_at),
+    blueprint_completion: blueprint.composite,
+    blueprint_sections: blueprint.sections,
     venture_board_status: ventureBoardStatus(hours, segment),
     spike_readiness_score: readiness.composite,
     spike_readiness_dimensions: readiness.dimensions,
@@ -40,12 +44,6 @@ function normalizeCareerTrack(value) {
 /** @param {string} careerTrack */
 function defaultCareerPosition(careerTrack) {
   return careerTrack === 'specialist_consultant' ? 'associate_advisor' : 'advisor';
-}
-
-/** @param {number} hours @param {number} readinessComposite */
-function estimateBlueprintCompletion(hours, readinessComposite) {
-  const hourPct = Math.min(100, Math.round((hours / 600) * 55));
-  return Math.min(100, Math.round(hourPct * 0.5 + readinessComposite * 0.5));
 }
 
 /** @param {number} hours @param {number} segment */

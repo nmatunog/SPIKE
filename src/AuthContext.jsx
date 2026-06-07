@@ -74,7 +74,7 @@ export function AuthProvider({ children }) {
           .maybeSingle(),
         supabase
           .from('intern_progress')
-          .select('segment, hours, licensed, squad, university, career_track, current_week, current_day')
+          .select('segment, hours, licensed, squad, university, career_track, career_track_selected_at, current_week, current_day')
           .eq('user_id', authUser.id)
           .maybeSingle(),
       ]);
