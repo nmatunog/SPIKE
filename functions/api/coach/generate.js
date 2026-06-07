@@ -41,6 +41,8 @@ export async function onRequestPost({ request, env }) {
     text: result.text,
     note: result.note,
     provider: result.provider,
+    variants: result.variants,
+    summary: result.summary,
   });
 }
 

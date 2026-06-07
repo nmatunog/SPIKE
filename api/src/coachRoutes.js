@@ -3,6 +3,11 @@ import { generateCoachText } from '../../shared/coachAi/generate.js';
 
 const coachGenerateSchema = z.object({
   task: z.enum([
+    'generate_ambition',
+    'generate_impact',
+    'generate_tagline',
+    'generate_values',
+    'generate_future_self',
     'regenerate_ambition',
     'regenerate_impact',
     'regenerate_purpose',
@@ -12,6 +17,10 @@ const coachGenerateSchema = z.object({
   variant: z.enum(['short', 'balanced', 'inspirational']).optional(),
   fields: z.record(z.string()).optional(),
   wordLimit: z.number().int().positive().optional(),
+  wordMin: z.number().int().nonnegative().optional(),
+  statementType: z
+    .enum(['ambition', 'impact', 'purpose', 'tagline', 'values', 'future-self'])
+    .optional(),
   currentDraft: z.string().optional(),
   refineAction: z.string().optional(),
 });
@@ -41,6 +50,8 @@ export function registerCoachRoutes(app) {
       text: result.text,
       note: result.note,
       provider: result.provider,
+      variants: result.variants,
+      summary: result.summary,
     });
   });
 }

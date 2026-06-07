@@ -32,12 +32,14 @@ export async function generateCoachText(payload, keys = {}) {
   for (const attempt of attempts) {
     try {
       const result = await attempt.run();
-      return {
-        ok: true,
-        provider: attempt.provider,
-        text: result.text,
-        note: result.note,
-      };
+    return {
+      ok: true,
+      provider: attempt.provider,
+      text: result.text,
+      note: result.note,
+      variants: result.variants,
+      summary: result.summary,
+    };
     } catch (err) {
       failures.push({
         provider: attempt.provider,

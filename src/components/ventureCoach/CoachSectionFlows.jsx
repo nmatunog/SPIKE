@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   AMBITION_MOTIVATOR_CARDS,
@@ -12,15 +12,16 @@ import {
 import {
   AMBITION_IMPACT_OVERLAP_WARNING,
   countWords,
-  generateAmbitionVariants,
-  generateFutureSelfNarrative,
   generateFutureSelfSummary,
-  generateImpactDraft,
-  generateTagline,
-  generateValuesProfile,
-  labelFor,
   statementsOverlapTooMuch,
 } from '../../lib/ventureCoachEngine.js';
+import {
+  generateAmbitionVariantsWithAi,
+  generateFutureSelfWithAi,
+  generateImpactDraftWithAi,
+  generateTaglineWithAi,
+  generateValuesProfileWithAi,
+} from '../../lib/ventureCoachAiService.js';
 import {
   acceptCoachSection,
   getCoachSection,
@@ -65,6 +66,7 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
   const [customFields, setCustomFields] = useState(
     /** @type {Record<string, string>} */ (stored.data.customFields ?? {}),
   );
+  const [generating, setGenerating] = useState(false);
 
   function persist(data) {
     saveCoachSectionDraft(participantId, 'ambition', { ...stored.data, ...data, step });
@@ -77,21 +79,26 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
     persist({ selectedMotivators: next });
   }
 
-  function handleGenerateDraft() {
+  async function handleGenerateDraft() {
     const order = ranked.length === AMBITION_EXACT ? ranked : selected;
-    const generated = generateAmbitionVariants({ rankedMotivators: order });
-    setVariants(generated);
-    setDraft(generated.balanced);
-    setSelectedVariant('balanced');
-    setStep(3);
-    saveCoachSectionDraft(participantId, 'ambition', {
-      selectedMotivators: selected,
-      rankedMotivators: order,
-      draftVariants: generated,
-      selectedVariant: 'balanced',
-      draft: generated.balanced,
-      step: 3,
-    });
+    setGenerating(true);
+    try {
+      const { variants: generated } = await generateAmbitionVariantsWithAi({ rankedMotivators: order });
+      setVariants(generated);
+      setDraft(generated.balanced);
+      setSelectedVariant('balanced');
+      setStep(3);
+      saveCoachSectionDraft(participantId, 'ambition', {
+        selectedMotivators: selected,
+        rankedMotivators: order,
+        draftVariants: generated,
+        selectedVariant: 'balanced',
+        draft: generated.balanced,
+        step: 3,
+      });
+    } finally {
+      setGenerating(false);
+    }
   }
 
   function handleAccept() {
@@ -161,8 +168,13 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
               persist({ rankedMotivators: next });
             }}
           />
-          <button type="button" onClick={handleGenerateDraft} className="spike-btn-primary">
-            Generate ambition statements
+          <button
+            type="button"
+            onClick={handleGenerateDraft}
+            disabled={generating}
+            className="spike-btn-primary disabled:opacity-50"
+          >
+            {generating ? 'Generating…' : 'Generate ambition statements'}
           </button>
         </>
       ) : null}
@@ -224,6 +236,7 @@ export function ImpactCoachFlow({ participantId, onProgress, onSectionComplete }
   const [customFields, setCustomFields] = useState(
     /** @type {Record<string, string>} */ (stored.data.customFields ?? {}),
   );
+  const [generating, setGenerating] = useState(false);
 
   const ambitionText = String(ambitionStored.data.finalText ?? ambitionStored.data.draft ?? '');
   const overlapWarning =
@@ -273,16 +286,21 @@ export function ImpactCoachFlow({ participantId, onProgress, onSectionComplete }
           />
           <button
             type="button"
-            disabled={audiences.length === 0}
-            onClick={() => {
-              const text = generateImpactDraft({ audiences });
-              setDraft(text);
-              persist({ draft: text, audiences, step: 2 });
-              setStep(2);
+            disabled={audiences.length === 0 || generating}
+            onClick={async () => {
+              setGenerating(true);
+              try {
+                const { text } = await generateImpactDraftWithAi({ audiences });
+                setDraft(text);
+                persist({ draft: text, audiences, step: 2 });
+                setStep(2);
+              } finally {
+                setGenerating(false);
+              }
             }}
             className="spike-btn-primary disabled:opacity-50"
           >
-            Generate my impact statement
+            {generating ? 'Generating…' : 'Generate my impact statement'}
           </button>
         </>
       ) : null}
@@ -338,6 +356,7 @@ export function ValuesCoachFlow({ participantId, onProgress, onSectionComplete }
     /** @type {string[]} */ (stored.data.topThree ?? stored.data.topFive?.slice(0, 3) ?? []),
   );
   const [profile, setProfile] = useState(String(stored.data.valuesProfile ?? ''));
+  const [generating, setGenerating] = useState(false);
 
   function persist(data) {
     saveCoachSectionDraft(participantId, 'values', { ...stored.data, ...data, step });
@@ -433,18 +452,21 @@ export function ValuesCoachFlow({ participantId, onProgress, onSectionComplete }
           />
           <button
             type="button"
-            disabled={topThree.length !== 3}
-            onClick={() => {
-              const narrative = generateValuesProfile(topThree);
-              const ranked = topThree.map((id, i) => `${i + 1}. ${labelFor(id, COACH_VALUE_CARDS)}`).join('\n');
-              const finalText = `${ranked}\n\n${narrative}`;
-              setProfile(finalText);
-              persist({ valuesProfile: finalText, topThree, step: 4 });
-              setStep(4);
+            disabled={topThree.length !== 3 || generating}
+            onClick={async () => {
+              setGenerating(true);
+              try {
+                const { profile: nextProfile } = await generateValuesProfileWithAi(topThree);
+                setProfile(nextProfile);
+                persist({ valuesProfile: nextProfile, topThree, step: 4 });
+                setStep(4);
+              } finally {
+                setGenerating(false);
+              }
             }}
             className="spike-btn-primary disabled:opacity-50"
           >
-            Generate values profile
+            {generating ? 'Generating…' : 'Generate values profile'}
           </button>
         </>
       ) : null}
@@ -482,17 +504,35 @@ export function TaglineCoachFlow({ participantId, onProgress, onSectionComplete 
   const impact = getCoachSection(participantId, 'impact').data;
   const values = getCoachSection(participantId, 'values').data;
 
-  const [draft, setDraft] = useState(() => {
-    if (stored.data.draft) return String(stored.data.draft);
-    return generateTagline({
-      ambition: ambition.finalText ?? ambition.draft,
-      impact: impact.finalText ?? impact.draft,
-      topThree: values.topThree ?? [],
-    });
-  });
+  const taglineContext = {
+    ambition: ambition.finalText ?? ambition.draft,
+    impact: impact.finalText ?? impact.draft,
+    topThree: values.topThree ?? [],
+  };
+
+  const [draft, setDraft] = useState(() => (stored.data.draft ? String(stored.data.draft) : ''));
+  const [draftLoading, setDraftLoading] = useState(!stored.data.draft && !stored.completedAt);
   const [customFields, setCustomFields] = useState(
     /** @type {Record<string, string>} */ (stored.data.customFields ?? {}),
   );
+
+  useEffect(() => {
+    if (stored.data.draft || stored.completedAt) return undefined;
+
+    let cancelled = false;
+    (async () => {
+      const { text } = await generateTaglineWithAi(taglineContext);
+      if (cancelled) return;
+      setDraft(text);
+      persist({ draft: text });
+      setDraftLoading(false);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- seed tagline once from identity triangle
+  }, []);
 
   function persist(data) {
     saveCoachSectionDraft(participantId, 'tagline', { ...stored.data, ...data, step: 1 });
@@ -522,27 +562,31 @@ export function TaglineCoachFlow({ participantId, onProgress, onSectionComplete 
           Generated from your ambition, impact, and values. Edit a few beats below, regenerate, then keep it memorable — 3–6 words is ideal.
         </p>
       </CoachMessage>
-      <CoachDraftPanel
-        title="Personal Tagline"
-        statementType="tagline"
-        draft={draft}
-        enableCustomization
-        savedCustomFields={customFields}
-        onCustomFieldsChange={(fields) => {
-          setCustomFields(fields);
-          persist({ customFields: fields });
-        }}
-        wordLimits={WORD_LIMITS.tagline}
-        maxWords={WORD_LIMITS.tagline.max}
-        acceptDisabled={countWords(draft) > WORD_LIMITS.tagline.max}
-        acceptLabel="Accept Tagline"
-        rows={2}
-        onDraftChange={(text) => {
-          setDraft(text);
-          persist({ draft: text });
-        }}
-        onAccept={handleAccept}
-      />
+      {draftLoading ? (
+        <CoachMessage>Generating your tagline from ambition, impact, and values…</CoachMessage>
+      ) : (
+        <CoachDraftPanel
+          title="Personal Tagline"
+          statementType="tagline"
+          draft={draft}
+          enableCustomization
+          savedCustomFields={customFields}
+          onCustomFieldsChange={(fields) => {
+            setCustomFields(fields);
+            persist({ customFields: fields });
+          }}
+          wordLimits={WORD_LIMITS.tagline}
+          maxWords={WORD_LIMITS.tagline.max}
+          acceptDisabled={countWords(draft) > WORD_LIMITS.tagline.max}
+          acceptLabel="Accept Tagline"
+          rows={2}
+          onDraftChange={(text) => {
+            setDraft(text);
+            persist({ draft: text });
+          }}
+          onAccept={handleAccept}
+        />
+      )}
     </div>
   );
 }
@@ -560,6 +604,7 @@ export function FutureSelfCoachFlow({ participantId, onProgress, onSectionComple
   const [successVision, setSuccessVision] = useState(String(stored.data.successVision ?? ''));
   const [draft, setDraft] = useState(String(stored.data.draft ?? ''));
   const [summary, setSummary] = useState(String(stored.data.futureSelfSummary ?? ''));
+  const [generating, setGenerating] = useState(false);
 
   function persist(data) {
     saveCoachSectionDraft(participantId, 'future-self', { ...stored.data, ...data, step });
@@ -665,18 +710,27 @@ export function FutureSelfCoachFlow({ participantId, onProgress, onSectionComple
           />
           <button
             type="button"
-            disabled={impact.trim().length < 5 || successVision.trim().length < 5}
-            onClick={() => {
-              const narrative = generateFutureSelfNarrative({ goals, incomeLevel, impact, successVision });
-              const oneLine = generateFutureSelfSummary(narrative, { goals });
-              setDraft(narrative);
-              setSummary(oneLine);
-              persist({ draft: narrative, futureSelfSummary: oneLine, step: 4 });
-              setStep(4);
+            disabled={impact.trim().length < 5 || successVision.trim().length < 5 || generating}
+            onClick={async () => {
+              setGenerating(true);
+              try {
+                const { text, summary: oneLine } = await generateFutureSelfWithAi({
+                  goals,
+                  incomeLevel,
+                  impact,
+                  successVision,
+                });
+                setDraft(text);
+                setSummary(oneLine);
+                persist({ draft: text, futureSelfSummary: oneLine, step: 4 });
+                setStep(4);
+              } finally {
+                setGenerating(false);
+              }
             }}
             className="spike-btn-primary disabled:opacity-50"
           >
-            Generate Future Self Narrative
+            {generating ? 'Generating…' : 'Generate Future Self Narrative'}
           </button>
         </>
       ) : null}

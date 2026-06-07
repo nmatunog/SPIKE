@@ -4,11 +4,11 @@ import {
   evaluateStatement,
   extractCustomizationFields,
   getWordGuidanceStatus,
-  refineTextWithFeedback,
   regenerateFromCustomization,
 } from '../../lib/ventureCoachEngine.js';
 import {
   coachAiTaskForStatementType,
+  refineStatementWithAi,
   requestCoachAiGeneration,
 } from '../../lib/ventureCoachAiService.js';
 import {
@@ -148,6 +148,7 @@ export function CoachDraftPanel({
   const [refineNote, setRefineNote] = useState('');
   const [undoDraft, setUndoDraft] = useState(null);
   const [regenerating, setRegenerating] = useState(false);
+  const [refining, setRefining] = useState(false);
   const [fieldDefs, setFieldDefs] = useState(() => extractCustomizationFields(draft, statementType));
   const [customFields, setCustomFields] = useState(() => savedCustomFields ?? {});
   const variantSeedRef = useRef(selectedVariant);
@@ -210,11 +211,27 @@ export function CoachDraftPanel({
     }
   }
 
-  function applyRefine(actionId) {
-    const { text, note } = refineTextWithFeedback(draft, actionId, maxWords, statementType);
-    setUndoDraft(draft);
-    setRefineNote(note);
-    onDraftChange(text);
+  async function applyRefine(actionId) {
+    const action = actions.find((item) => item.id === actionId);
+    if (!action) return;
+
+    setRefining(true);
+    try {
+      const wordMin = statementType === 'future-self' ? WORD_LIMITS.futureSelf.min : 0;
+      const result = await refineStatementWithAi(
+        draft,
+        actionId,
+        action,
+        maxWords,
+        statementType,
+        wordMin,
+      );
+      setUndoDraft(draft);
+      setRefineNote(result.note);
+      onDraftChange(result.text);
+    } finally {
+      setRefining(false);
+    }
   }
 
   function handleUndoRefine() {
@@ -306,8 +323,9 @@ export function CoachDraftPanel({
               key={action.id}
               type="button"
               title={action.tooltip ?? ''}
+              disabled={refining || regenerating}
               onClick={() => applyRefine(action.id)}
-              className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:border-spike/40 hover:text-spike"
+              className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:border-spike/40 hover:text-spike disabled:cursor-not-allowed disabled:opacity-50"
             >
               {action.label}
             </button>
