@@ -71,6 +71,132 @@ function firstPhrase(text, maxLen = 120) {
   return `${trimmed.slice(0, maxLen - 1).trim()}…`;
 }
 
+const DRAFT_STOP_WORDS = new Set([
+  'about',
+  'after',
+  'because',
+  'become',
+  'being',
+  'build',
+  'career',
+  'create',
+  'deeply',
+  'financial',
+  'future',
+  'help',
+  'helping',
+  'into',
+  'make',
+  'more',
+  'others',
+  'personal',
+  'reflects',
+  'serve',
+  'that',
+  'this',
+  'through',
+  'want',
+  'what',
+  'while',
+  'with',
+  'work',
+  'your',
+]);
+
+/**
+ * Pull reusable meaning from the participant's draft — not canned SPIKE phrases.
+ * @param {string} text
+ */
+function extractDraftSignals(text) {
+  const cleaned = stripCorporateLanguage(text);
+  const sentence = firstPhrase(cleaned, 220).replace(/[.!?]+$/, '').trim();
+
+  let lead = 'neutral';
+  if (/^I want to/i.test(sentence)) lead = 'i_want';
+  else if (/^I am|^I'm/i.test(sentence)) lead = 'i_am';
+  else if (/^Become/i.test(sentence)) lead = 'become';
+  else if (/^Help/i.test(sentence)) lead = 'help';
+  else if (/^(Create|Build|Develop|Serve|Champion|Inspire|Lead|My goal is to)/i.test(sentence)) lead = 'action';
+
+  let audience = '';
+  const audienceMatch =
+    sentence.match(/\b(?:help|serve|support|guide|champion|develop)\s+([^.—,;]+?)(?:\s+(?:achieve|make|build|to|with)|$)/i)
+    || sentence.match(/\bfor\s+([^.—,;]+)/i);
+  if (audienceMatch) {
+    audience = audienceMatch[1].trim().replace(/\b(to|who|that)\b.*$/i, '').trim();
+  }
+
+  let role = '';
+  const becomeMatch = sentence.match(/\b(?:become|be)\s+(?:a|an|the)?\s*([^.—,;]+)/i);
+  if (becomeMatch) {
+    role = becomeMatch[1].trim().replace(/\s+who\s+.*/i, '').trim();
+  }
+
+  const distinctive = [
+    ...new Set(
+      sentence
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, ' ')
+        .split(/\s+/)
+        .filter((word) => word.length >= 4 && !DRAFT_STOP_WORDS.has(word)),
+    ),
+  ].slice(0, 4);
+
+  const coreClause = sentence
+    .replace(/^I want to\s+/i, '')
+    .replace(/^My goal is to\s+/i, '')
+    .replace(/^Become\s+/i, '')
+    .replace(/^Help\s+/i, 'help ')
+    .trim();
+
+  return { cleaned, sentence, lead, audience, role, distinctive, coreClause };
+}
+
+/** @param {string[]} words */
+function joinNatural(words) {
+  if (!words.length) return 'your core idea';
+  if (words.length === 1) return words[0];
+  if (words.length === 2) return `${words[0]} and ${words[1]}`;
+  return `${words.slice(0, -1).join(', ')}, and ${words[words.length - 1]}`;
+}
+
+/** @param {string} source @param {string} phrase */
+function phraseFromSource(source, phrase) {
+  if (!phrase) return phrase;
+  const escaped = phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const match = source.match(new RegExp(escaped, 'i'));
+  return match?.[0] ?? phrase;
+}
+
+/** @param {string} role */
+function withArticle(role) {
+  const trimmed = String(role ?? '').trim();
+  if (!trimmed) return 'a leader';
+  if (/^(a|an|the)\s+/i.test(trimmed)) return trimmed;
+  return /^[aeiou]/i.test(trimmed) ? `an ${trimmed}` : `a ${trimmed}`;
+}
+
+/** @param {string} mode @param {string} before @param {string} after @param {ReturnType<typeof extractDraftSignals>} signals */
+function buildRefineNote(mode, before, after, signals) {
+  const anchor = joinNatural(signals.distinctive);
+  if (normalizeWhitespace(before) === normalizeWhitespace(after)) {
+    return 'This already reads clearly — I kept your wording and only tightened the format.';
+  }
+
+  const notes = {
+    simplify: `I shortened the sentence but kept your focus on ${anchor}.`,
+    core: `I distilled this to one idea centered on ${anchor}.`,
+    ambitious: `I kept ${anchor} and expanded the scale of your statement.`,
+    personal: `I shifted this into your voice while keeping ${anchor} front and center.`,
+    professional: `I elevated the tone without changing what you said about ${anchor}.`,
+    inspirational: `I made the tone more outward-facing while preserving ${anchor}.`,
+    rewrite: `I reordered your words — the core idea about ${anchor} stays the same.`,
+    realistic: `I grounded the language while keeping ${anchor} intact.`,
+  };
+
+  return notes[mode] ?? `I reworked the structure while keeping ${anchor} in your statement.`;
+}
+
 /** @param {string} text */
 function normalizeWhitespace(text) {
   return String(text ?? '').replace(/\s+/g, ' ').trim();
@@ -85,8 +211,6 @@ function stripCorporateLanguage(text) {
     .replace(/\bI aspire to\b/gi, '')
     .replace(/\bI aim to\b/gi, '')
     .replace(/\bsuccessful financial services business\b/gi, 'financial services business')
-    .replace(/\bthat helps families achieve financial security\b/gi, 'that helps families thrive')
-    .replace(/\bhelping families achieve financial security\b/gi, 'helping families thrive')
     .replace(/\bwhile creating opportunities for future leaders and entrepreneurs\b/gi, 'and creates opportunities for future leaders')
     .replace(/\bwhile creating opportunities for future leaders\b/gi, 'and creates opportunities for future leaders')
     .replace(/\band entrepreneurs\b/gi, '')
@@ -128,21 +252,25 @@ function simplifyFutureSelfNarrative(text) {
 
 /** @param {string} text @param {number} targetWords */
 function compressToTarget(text, targetWords) {
-  let result = stripCorporateLanguage(text);
-  result = removeRedundantClauses(result);
+  let result = removeRedundantClauses(stripCorporateLanguage(text));
 
-  const helpsFamilies = /help(s|ing)?\s+families/i.test(result);
-  const buildsLeaders = /leader|entrepreneur|opportunit/i.test(result);
-  const buildsBusiness = /build(s|ing)?\s+(a\s+)?(financial services\s+)?business/i.test(result);
-
-  if (helpsFamilies && buildsLeaders && countWords(result) > targetWords) {
-    result = 'Help families thrive while building future leaders.';
-  } else if (helpsFamilies && buildsBusiness && countWords(result) > targetWords) {
-    result = 'Build a financial services business that helps families thrive and creates opportunities for future leaders.';
-  } else if (helpsFamilies && countWords(result) > targetWords) {
-    result = result
-      .replace(/Build a financial services business that helps families thrive and creates opportunities for future leaders\.?/i, 'Help families thrive while building future leaders.')
-      .replace(/Build a .* business that helps families thrive\.?/i, 'Help families thrive through financial services.');
+  while (countWords(result) > targetWords + 2) {
+    if (/\s+[—–-]\s+/.test(result)) {
+      result = result.split(/\s+[—–-]\s+/)[0].trim();
+      continue;
+    }
+    if (/\s+while\s+/i.test(result)) {
+      result = result.split(/\s+while\s+/i)[0].trim();
+      continue;
+    }
+    if (/\s+and\s+/i.test(result) && countWords(result) > targetWords) {
+      result = result.split(/\s+and\s+/i)[0].trim();
+      continue;
+    }
+    const words = result.split(/\s+/).filter(Boolean);
+    if (words.length <= targetWords) break;
+    result = words.slice(0, targetWords).join(' ');
+    break;
   }
 
   if (countWords(result) > targetWords + 4) {
@@ -151,6 +279,39 @@ function compressToTarget(text, targetWords) {
   }
 
   return normalizeWhitespace(result);
+}
+
+/** @param {string} text @param {'ambition' | 'impact' | 'purpose' | 'tagline'} statementType */
+function distillCoreClause(text, statementType) {
+  const signals = extractDraftSignals(text);
+
+  if (statementType === 'impact' || statementType === 'purpose') {
+    if (signals.audience) {
+      return `Help ${signals.audience.replace(/^(the|a|an)\s+/i, '')}.`;
+    }
+    if (/^Help/i.test(signals.sentence)) {
+      return `${signals.sentence.split(/\s+while\s+/i)[0].replace(/[.!?]+$/, '')}.`;
+    }
+  }
+
+  if (statementType === 'ambition') {
+    if (signals.role) {
+      return `Become ${withArticle(signals.role)}.`;
+    }
+    if (signals.lead === 'become') {
+      return `${signals.sentence.split(/\s+who\s+/i)[0].replace(/[.!?]+$/, '')}.`;
+    }
+    if (signals.lead === 'i_want') {
+      return `${signals.sentence.replace(/[.!?]+$/, '')}.`;
+    }
+  }
+
+  if (statementType === 'tagline') {
+    const words = signals.sentence.replace(/[.!?]+$/, '').split(/\s+/).slice(0, 4);
+    return `${words.join(' ')}.`;
+  }
+
+  return `${firstPhrase(text, 72).replace(/[.!?]+$/, '')}.`;
 }
 
 /**
@@ -203,50 +364,9 @@ export function simplifyStatement(text, statementType = 'ambition') {
 function findCoreIdeaStatement(text, maxWords, statementType = 'ambition') {
   const cleaned = stripCorporateLanguage(text);
   const limits = resolveStatementLimits(statementType);
-
-  /** @type {Array<{ weight: number, idea: string }>} */
-  const themes = [];
-
-  if (/famil|thriv|financial security/i.test(cleaned)) {
-    themes.push({ weight: 4, idea: 'Help families thrive.' });
-  }
-  if (/leader|entrepreneur|opportunit/i.test(cleaned)) {
-    themes.push({ weight: 3, idea: 'Develop future leaders.' });
-  }
-  if (/business|venture|financial services/i.test(cleaned)) {
-    themes.push({ weight: 3, idea: 'Build a financial services business.' });
-  }
-  if (/impact|serve|service|community/i.test(cleaned)) {
-    themes.push({ weight: 2, idea: 'Create lasting impact.' });
-  }
-  if (/freedom|wealth|income/i.test(cleaned)) {
-    themes.push({ weight: 2, idea: 'Create financial freedom.' });
-  }
-  if (/grow|learning|expert|professional/i.test(cleaned)) {
-    themes.push({ weight: 1, idea: 'Become a trusted expert.' });
-  }
-
-  themes.sort((a, b) => b.weight - a.weight);
-
-  let result = themes[0]?.idea ?? firstPhrase(cleaned, 72);
-
-  if (statementType === 'impact' || statementType === 'purpose') {
-    if (/famil/i.test(cleaned)) result = 'Help families achieve financial security.';
-    else if (/professional|healthcare|young/i.test(cleaned)) result = 'Serve professionals with confident financial guidance.';
-    else if (/entrepreneur|leader|opportunit/i.test(cleaned)) result = 'Create opportunities for aspiring entrepreneurs.';
-    else if (/communit|student|ofw/i.test(cleaned)) result = 'Strengthen communities through financial opportunity.';
-    else result = themes[0]?.idea.replace(/^Build/, 'Help').replace(/^Become/, 'Serve') ?? result;
-  }
+  let result = distillCoreClause(cleaned, statementType);
 
   if (statementType === 'tagline') {
-    if (/famil/i.test(cleaned)) result = 'Helping Families Thrive.';
-    else if (/leader|opportunit/i.test(cleaned)) result = 'Building Future Leaders.';
-    else if (/freedom|wealth/i.test(cleaned)) result = 'Building Freedom.';
-    else if (/impact|service/i.test(cleaned)) result = 'Creating Lasting Impact.';
-    else {
-      const words = (themes[0]?.idea ?? 'Lead With Purpose.').replace(/[.!?]+$/, '').split(/\s+/).slice(0, 4);
-      result = `${words.join(' ')}.`;
-    }
     return capStatementWords(result, limits.max);
   }
 
@@ -259,24 +379,30 @@ function findCoreIdeaStatement(text, maxWords, statementType = 'ambition') {
 
 /** @param {string} text @param {number} maxWords */
 function personalizeStatement(text, maxWords) {
-  const cleaned = stripCorporateLanguage(text);
+  const signals = extractDraftSignals(text);
   let result;
 
-  if (/\b(pursue inspire others|I want to pursue inspire)\b/i.test(cleaned)) {
-    result =
-      'I want to empower others to build brighter financial futures because this work feels deeply personal to me.';
-  } else if (/inspire others|brighter financial futures|bold financial futures|empower others/i.test(cleaned)) {
-    result =
-      'I want to empower others to build brighter financial futures because this work feels deeply personal to me.';
-  } else if (/help.*famil|famil.*thriv|financial security/i.test(cleaned)) {
-    result =
-      'I want to build a career that helps families thrive while creating financial security for my own family.';
-  } else if (/leader|entrepreneur|opportunit/i.test(cleaned)) {
-    result = 'I want to grow into a leader who creates opportunities for others while building a life my family is proud of.';
-  } else if (/business|venture|practice|financial services/i.test(cleaned)) {
-    result = 'I want to build a career that reflects what matters most to me and gives my family a stronger future.';
+  if (signals.lead === 'i_want' || signals.lead === 'i_am') {
+    const anchor = signals.distinctive[0] ?? 'this work';
+    result = `${signals.sentence.replace(/[.!?]+$/, '')} — because ${anchor} matters deeply to me.`;
+  } else if (signals.lead === 'become' && signals.role) {
+    result = `I want to become ${withArticle(signals.role)}.`;
+  } else if (signals.lead === 'help' || signals.audience) {
+    const who =
+      (signals.audience ? phraseFromSource(signals.cleaned, signals.audience) : null)
+      || signals.coreClause.replace(/^help\s+/i, '')
+      || 'the people I care about most';
+    result = `I want to build a career centered on helping ${who}.`;
+  } else if (/^Inspire|^Create|^Build|^Lead|^Champion|^Develop|^Serve/i.test(signals.sentence)) {
+    const rest = signals.sentence.replace(
+      /^(Inspire others to|Create|Build|Lead with purpose and|Champion|Develop|Serve)\s+/i,
+      '',
+    );
+    result = `I want to ${rest.charAt(0).toLowerCase()}${rest.slice(1).replace(/[.!?]+$/, '')} — because this reflects who I am becoming.`;
+  } else if (signals.coreClause) {
+    result = `I want to ${signals.coreClause.charAt(0).toLowerCase()}${signals.coreClause.slice(1).replace(/[.!?]+$/, '')} — this is personal to me.`;
   } else {
-    result = 'I want a career path that aligns with my values and the future I am working toward.';
+    result = `I want a career path shaped by ${joinNatural(signals.distinctive)}.`;
   }
 
   return polishStatement(result, maxWords, 2);
@@ -284,22 +410,20 @@ function personalizeStatement(text, maxWords) {
 
 /** @param {string} text @param {number} maxWords */
 function thinkBiggerStatement(text, maxWords) {
-  let result = stripCorporateLanguage(text);
+  const signals = extractDraftSignals(text);
+  let result = signals.sentence;
 
-  if (/at a scale|lasting community impact|hundreds of families|high-impact|scalable business/i.test(result)) {
+  if (/at a scale|lasting community impact|hundreds of|high-impact|scalable|across my (organization|market|community)/i.test(result)) {
     return polishStatement(result, maxWords, 2);
   }
 
-  if (/help.*famil|financial security|financially secure/i.test(result) && !/hundreds|many families|at scale/i.test(result)) {
-    result = result.replace(/\bhelp(s|ing)? families\b/gi, 'help hundreds of families achieve financial security');
-    if (!/build/i.test(result)) {
-      result = `Build a business that ${result.charAt(0).toLowerCase()}${result.slice(1)}`;
-    }
-  } else if (/build.*business|venture/i.test(result)) {
-    result = result.replace(/\ba business\b/i, 'a scalable business').replace(/\bBuild a\b/, 'Build a high-impact');
-    if (!/leader|impact|community/i.test(result)) {
-      result = `${result.replace(/[.!?]+$/, '')} and develop leaders who expand that impact.`;
-    }
+  if (signals.lead === 'help' || signals.audience) {
+    const who = signals.audience || 'the people I serve';
+    result = `${result.replace(/[.!?]+$/, '')} — reaching many more ${who.toLowerCase()} over time.`;
+  } else if (signals.lead === 'become' || signals.role) {
+    result = `${result.replace(/[.!?]+$/, '')} — at a scale that multiplies impact across my organization.`;
+  } else if (/^I want to/i.test(result)) {
+    result = `${result.replace(/[.!?]+$/, '')} — and expand that impact well beyond where I am today.`;
   } else {
     result = `${result.replace(/[.!?]+$/, '')} — at a scale that creates lasting community impact.`;
   }
@@ -310,11 +434,10 @@ function thinkBiggerStatement(text, maxWords) {
 /** @param {string} text @param {number} maxWords */
 function professionalizeStatement(text, maxWords) {
   let result = stripCorporateLanguage(text)
-    .replace(/\bI want to help families make better money decisions\b/gi, 'Provide financial guidance that helps families make informed long-term financial decisions')
-    .replace(/\bhelp families thrive\b/gi, 'help families make informed long-term financial decisions')
-    .replace(/\bhelp families\b/gi, 'serve families with disciplined financial guidance')
+    .replace(/\bI want to\b/gi, 'I am committed to')
+    .replace(/\bhelp\b/gi, 'serve')
     .replace(/\bbuild a career\b/gi, 'build a professional practice')
-    .replace(/\bI want to\b/gi, '')
+    .replace(/\bgrow into\b/gi, 'develop into')
     .replace(/\bCreate opportunities\b/g, 'Deliver value through opportunities');
 
   if (!/^[A-Z]/.test(result)) {
@@ -324,31 +447,25 @@ function professionalizeStatement(text, maxWords) {
   return polishStatement(result, maxWords, 2);
 }
 
-const INSPIRATIONAL_REFINE_OUTPUTS = [
-  'Create a business that empowers people to build brighter financial futures.',
-  'Champion families so they can build confident, thriving financial lives.',
-  'Lead with purpose and unlock opportunities for the next generation of entrepreneurs.',
-  'Inspire others to pursue bold financial futures rooted in integrity and service.',
-];
-
 /** @param {string} text @param {number} maxWords */
 function inspireOthersStatement(text, maxWords) {
-  const cleaned = stripCorporateLanguage(text);
-  const normalized = cleaned.replace(/[.!?]+$/, '').trim();
-  if (INSPIRATIONAL_REFINE_OUTPUTS.some((line) => line.replace(/[.!?]+$/, '') === normalized)) {
-    return polishStatement(cleaned, maxWords, 2);
+  const signals = extractDraftSignals(text);
+
+  if (/^Inspire others|^Champion .+ so they|^Create opportunities for/i.test(signals.sentence)) {
+    return polishStatement(signals.sentence, maxWords, 2);
   }
 
   let result;
-
-  if (/build.*business|financial services|venture/i.test(cleaned)) {
-    result = 'Create a business that empowers people to build brighter financial futures.';
-  } else if (/help.*famil|serve.*famil/i.test(cleaned)) {
-    result = 'Champion families so they can build confident, thriving financial lives.';
-  } else if (/leader|entrepreneur/i.test(cleaned)) {
-    result = 'Lead with purpose and unlock opportunities for the next generation of entrepreneurs.';
+  if (signals.lead === 'become' && signals.role) {
+    result = `Inspire others by becoming ${withArticle(signals.role)} who lifts people up.`;
+  } else if (signals.audience) {
+    result = `Champion ${phraseFromSource(signals.cleaned, signals.audience)} so they can reach bolder financial futures.`;
+  } else if (signals.lead === 'i_want' && signals.coreClause) {
+    result = `Inspire others to ${signals.coreClause.replace(/[.!?]+$/, '')} — and show them what is possible.`;
+  } else if (signals.lead === 'help') {
+    result = `${signals.sentence.replace(/^Help/i, 'Champion')} — and invite others to do the same.`;
   } else {
-    result = 'Inspire others to pursue bold financial futures rooted in integrity and service.';
+    result = `Inspire others through ${joinNatural(signals.distinctive)} — starting with ${firstPhrase(signals.sentence, 48).replace(/[.!?]+$/, '').toLowerCase()}.`;
   }
 
   return polishStatement(result, maxWords, 2);
@@ -393,8 +510,8 @@ function repairRefinedStatement(text, maxWords) {
   let result = normalizeWhitespace(text);
 
   if (/\b(pursue inspire others|I want to pursue inspire)\b/i.test(result)) {
-    result =
-      'I want to empower others to build brighter financial futures because this work feels deeply personal to me.';
+    const signals = extractDraftSignals(text);
+    result = personalizeStatement(signals.sentence || text, maxWords);
   }
 
   if (countWords(result) > maxWords) {
@@ -465,7 +582,7 @@ export function polishStatement(text, maxWords, maxSentences = 2) {
   let refined = String(text ?? '')
     .replace(/\s+/g, ' ')
     .replace(/\bI aspire to build a successful financial services venture centered on\b/gi, 'I aim to build a venture focused on')
-    .replace(/\bhelping individuals and families achieve financial security\b/gi, 'helping families thrive')
+    .replace(/\bhelping individuals and families achieve financial security\b/gi, 'helping families achieve financial security')
     .replace(/\bwhile creating opportunities for future leaders and entrepreneurs\b/gi, 'and developing future leaders')
     .trim();
 
@@ -795,20 +912,27 @@ export function getAmbitionFollowUps() {
 }
 
 /** @param {string} text @param {string} mode @param {number} [maxWords] @param {'ambition' | 'impact' | 'purpose' | 'tagline' | 'future-self'} [statementType] */
-export function refineText(text, mode, maxWords = MAX_AMBITION_WORDS, statementType = 'ambition') {
+export function refineTextWithFeedback(
+  text,
+  mode,
+  maxWords = MAX_AMBITION_WORDS,
+  statementType = 'ambition',
+) {
   const base = String(text ?? '').trim();
-  if (!base) return base;
+  if (!base) return { text: base, note: '' };
 
   const resolvedMode = mode === 'shorten' ? 'simplify' : mode;
   const type = statementType === 'future-self' ? 'ambition' : statementType;
   const simplifyType =
     type === 'tagline' ? 'tagline' : type === 'impact' || type === 'purpose' ? 'impact' : 'ambition';
+  const signals = extractDraftSignals(base);
   let result = base;
 
   switch (resolvedMode) {
     case 'simplify':
       if (statementType === 'future-self') {
-        return simplifyFutureSelfNarrative(base);
+        result = simplifyFutureSelfNarrative(base);
+        return { text: result, note: 'I tightened your narrative while keeping your story intact.' };
       }
       result = simplifyStatement(base, simplifyType);
       break;
@@ -837,16 +961,27 @@ export function refineText(text, mode, maxWords = MAX_AMBITION_WORDS, statementT
       );
       break;
     case 'longer':
-      return capStatementWords(`${base} Each milestone builds confidence in this path.`, MAX_FUTURE_SELF_WORDS);
+      return {
+        text: capStatementWords(`${base} Each milestone builds confidence in this path.`, MAX_FUTURE_SELF_WORDS),
+        note: 'I added a concrete detail to strengthen your future-self story.',
+      };
     default:
-      return base;
+      return { text: base, note: '' };
   }
 
-  if (statementType === 'future-self') {
-    return result;
+  if (statementType !== 'future-self') {
+    result = repairRefinedStatement(result, maxWords);
   }
 
-  return repairRefinedStatement(result, maxWords);
+  return {
+    text: result,
+    note: buildRefineNote(resolvedMode, base, result, signals),
+  };
+}
+
+/** @param {string} text @param {string} mode @param {number} [maxWords] @param {'ambition' | 'impact' | 'purpose' | 'tagline' | 'future-self'} [statementType] */
+export function refineText(text, mode, maxWords = MAX_AMBITION_WORDS, statementType = 'ambition') {
+  return refineTextWithFeedback(text, mode, maxWords, statementType).text;
 }
 
 /** @param {string} trackId */

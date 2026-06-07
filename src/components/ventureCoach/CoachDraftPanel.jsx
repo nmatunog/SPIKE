@@ -1,8 +1,9 @@
+import { useState } from 'react';
 import {
   countWords,
   evaluateStatement,
   getWordGuidanceStatus,
-  refineText,
+  refineTextWithFeedback,
 } from '../../lib/ventureCoachEngine.js';
 import {
   AMBITION_VARIANTS,
@@ -124,9 +125,21 @@ export function CoachDraftPanel({
   showScores = true,
 }) {
   const actions = refineSet === 'future-self' ? FUTURE_SELF_REFINE_ACTIONS : IDENTITY_REFINE_ACTIONS;
+  const [refineNote, setRefineNote] = useState('');
+  const [undoDraft, setUndoDraft] = useState(null);
 
   function applyRefine(actionId) {
-    onDraftChange(refineText(draft, actionId, maxWords, statementType));
+    const { text, note } = refineTextWithFeedback(draft, actionId, maxWords, statementType);
+    setUndoDraft(draft);
+    setRefineNote(note);
+    onDraftChange(text);
+  }
+
+  function handleUndoRefine() {
+    if (undoDraft == null) return;
+    onDraftChange(undoDraft);
+    setUndoDraft(null);
+    setRefineNote('');
   }
 
   return (
@@ -162,13 +175,33 @@ export function CoachDraftPanel({
         className="block w-full min-w-0 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-relaxed focus:border-spike focus:outline-none focus:ring-2 focus:ring-spike/20"
         rows={rows}
         value={draft}
-        onChange={(e) => onDraftChange(e.target.value)}
+        onChange={(e) => {
+          setRefineNote('');
+          setUndoDraft(null);
+          onDraftChange(e.target.value);
+        }}
       />
 
       <CoachWordGuidance count={countWords(draft)} limits={wordLimits} />
 
       {showScores && refineSet === 'identity' ? (
         <CoachStatementScores draft={draft} wordLimits={wordLimits} onSuggestAction={applyRefine} />
+      ) : null}
+
+      {refineNote ? (
+        <div className="rounded-xl border border-spike/20 bg-spike-muted/20 px-4 py-3">
+          <p className="text-xs font-bold uppercase tracking-wide text-spike">Coach note</p>
+          <p className="mt-1 text-sm text-slate-700">{refineNote}</p>
+          {undoDraft != null ? (
+            <button
+              type="button"
+              onClick={handleUndoRefine}
+              className="mt-2 text-xs font-semibold text-spike underline hover:no-underline"
+            >
+              Undo last refine
+            </button>
+          ) : null}
+        </div>
       ) : null}
 
       <div>

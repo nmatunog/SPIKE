@@ -113,13 +113,13 @@ export const AMBITION_VARIANTS = [
 ];
 
 export const IDENTITY_REFINE_ACTIONS = [
-  { id: 'simplify', label: 'Make Simpler', tooltip: 'Say the same thing with fewer words.' },
-  { id: 'core', label: 'Find the Core Idea', tooltip: 'Distill to one central idea you can remember and repeat.' },
-  { id: 'ambitious', label: 'Think Bigger', tooltip: 'Increase scale, impact, and leadership scope.' },
-  { id: 'personal', label: 'Make It About Me', tooltip: 'Shift to personal motivation and why it matters.' },
-  { id: 'professional', label: 'Sound More Professional', tooltip: 'Increase credibility and executive tone.' },
-  { id: 'inspirational', label: 'Inspire Others', tooltip: 'Increase aspiration, meaning, and impact language.' },
-  { id: 'rewrite', label: 'Rewrite', tooltip: 'Restructure while keeping your core message.' },
+  { id: 'simplify', label: 'Make Simpler', tooltip: 'Shorten using your words — not a generic template.' },
+  { id: 'core', label: 'Find the Core Idea', tooltip: 'Distill your draft to one idea you can repeat from memory.' },
+  { id: 'ambitious', label: 'Think Bigger', tooltip: 'Expand scale while keeping your audience or role.' },
+  { id: 'personal', label: 'Make It About Me', tooltip: 'Shift into first person using what you already wrote.' },
+  { id: 'professional', label: 'Sound More Professional', tooltip: 'Elevate tone without swapping in canned phrases.' },
+  { id: 'inspirational', label: 'Inspire Others', tooltip: 'Reframe outward — still rooted in your draft.' },
+  { id: 'rewrite', label: 'Rewrite', tooltip: 'Reorder your sentence while preserving your meaning.' },
 ];
 
 /** @deprecated Use IDENTITY_REFINE_ACTIONS */
