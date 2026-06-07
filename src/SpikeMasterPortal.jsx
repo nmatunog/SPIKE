@@ -1720,7 +1720,7 @@ const SpikeMasterPortal = () => {
       if (path === ROUTES.portfolio) {
         return <Navigate to={ROUTES.ventureBlueprint} replace />;
       }
-      if (path === ROUTES.research) return <ResearchPage />;
+      if (path === ROUTES.research) return <ResearchPage user={user} />;
       if (path === ROUTES.dashboard && user?.internProgress) return <InternDashboard />;
       if (user?.internProgress) {
         return <Navigate to={defaultRouteForRole('intern')} replace />;
@@ -1737,7 +1737,7 @@ const SpikeMasterPortal = () => {
     if (['faculty', 'mentor', 'admin'].includes(userRole)) {
       if (path === ROUTES.playbook) return renderPlaybook();
       if (path === ROUTES.portfolio) return <PortfolioPage hours={internSummary.avgHours} />;
-      if (path === ROUTES.research) return <ResearchPage />;
+      if (path === ROUTES.research) return <ResearchPage user={user} />;
       if (path === ROUTES.reports) return <ProgressReportsView />;
       if (path === ROUTES.admin) return adminPage;
       return renderStaffDashboard();

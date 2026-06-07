@@ -48,3 +48,13 @@ export {
 } from './careerTrackService.js';
 
 export { getNextBlueprintAction } from './blueprintRecommendations.js';
+
+export { getSquadContextForUser, resolveSquadIdForUser } from './researchSquadService.js';
+export {
+  getSquadAnalytics,
+  extractTrends,
+  buildPersonasFromAnalytics,
+  buildOpportunityMap,
+  recordSurveyForSquadAnalytics,
+} from './researchAnalyticsService.js';
+export { generateResearchDeliverables } from './researchDeliverableService.js';

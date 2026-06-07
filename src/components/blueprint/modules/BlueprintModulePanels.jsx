@@ -410,6 +410,13 @@ export function MarketIntelligencePanel({ participantId }) {
         <MetricCard label="Source" value="Playbook" sub="auto-sync" accent="green" />
       </div>
 
+      <Link
+        to={ROUTES.research}
+        className="inline-flex min-h-[44px] items-center gap-2 rounded-lg border border-sky-300 bg-sky-50 px-4 py-2 text-sm font-bold text-sky-800 hover:bg-sky-100"
+      >
+        Research Squad dashboard <ArrowRight size={16} />
+      </Link>
+
       {participantId ? (
         <SectionCard title="Market Intelligence fields">
           <div className="grid gap-4">

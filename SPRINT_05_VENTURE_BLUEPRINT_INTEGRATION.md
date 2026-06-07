@@ -480,6 +480,8 @@ npm run build
 
 **Apply migration:** Run `supabase/migrations/20260625_sprint_05_blueprint_integration.sql` in Supabase SQL Editor.
 
-**Deferred (Sprint 05b):** Cohort research analytics, Express `/api` mirrors, PDF export, Venture Board workflow.
+**Sprint 05b (shipped):** Cohort research analytics on `/research` — squad trends, personas, opportunity maps, deliverable sync to Market Intelligence.
+
+**Still deferred:** Express `/api` mirrors, PDF export, Venture Board workflow.
 
 *Last updated: 2026-06-07 — Sprint 05 implementation on `main`.*

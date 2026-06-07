@@ -132,7 +132,7 @@ Complete Worksheet     → Vision & Purpose + Business Plan ch. (shipped)
 
 ---
 
-## Sprint 05b — Research Squad Intelligence System (planned)
+## Sprint 05b — Research Squad Intelligence System ✅
 
 **Theme:** *Learn at scale* — surveys from Sprint 04 power cohort research.
 

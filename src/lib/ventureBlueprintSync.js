@@ -11,6 +11,10 @@ import {
 import { runFnaAutomation } from './fnaAutomation.js';
 import { formatSurveyAnswersForDisplay } from './surveyService.js';
 import { syncSurveyToMarketIntelligence } from './marketIntelligenceService.js';
+import { recordSurveyForSquadAnalytics } from './researchAnalyticsService.js';
+import { generateResearchDeliverables } from './researchDeliverableService.js';
+import { resolveSquadIdForUser } from './researchSquadService.js';
+import { getMarketSegmentLabel } from './researchSeeds.js';
 import { setSectionField } from './blueprintSectionStore.js';
 import { appendLeadershipJournalEntry } from './leadershipJournalService.js';
 import {
@@ -50,6 +54,19 @@ export async function hydrateVentureBlueprint(participantId) {
 export function syncSurveyCompletion(participantId, surveyId, answers, questions, survey) {
   const formatted = formatSurveyAnswersForDisplay(questions, answers);
   syncSurveyToMarketIntelligence(participantId, surveyId, formatted, survey?.title);
+
+  const squadRef = resolveSquadIdForUser(participantId);
+  if (squadRef?.id) {
+    recordSurveyForSquadAnalytics(squadRef.id, surveyId, questions, answers);
+    void generateResearchDeliverables(
+      participantId,
+      squadRef.id,
+      surveyId,
+      survey?.title ?? surveyId,
+      getMarketSegmentLabel(squadRef.marketSegment),
+    );
+  }
+
   return syncPlaybookSurvey(participantId, surveyId, answers, questions, survey);
 }
 
