@@ -11,9 +11,17 @@ import {
   getCoachSection,
   markCoachStarted,
   patchCoachSection,
+  resetCoachSection,
 } from './ventureCoachStorage.js';
 
-export { getCoachProgress, getCoachProfile, getCoachSection, markCoachStarted, patchCoachSection };
+export {
+  getCoachProgress,
+  getCoachProfile,
+  getCoachSection,
+  markCoachStarted,
+  patchCoachSection,
+  resetCoachSection,
+};
 
 /** @param {string} participantId @param {string} sectionId @param {Record<string, unknown>} data */
 export function saveCoachSectionDraft(participantId, sectionId, data) {

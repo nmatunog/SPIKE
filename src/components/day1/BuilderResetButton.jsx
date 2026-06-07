@@ -1,19 +1,16 @@
 import { RotateCcw } from 'lucide-react';
 
 /**
- * @param {{ onReset: () => void, disabled?: boolean, label?: string }} props
+ * @param {{ onReset: () => void, disabled?: boolean, label?: string, confirmMessage?: string }} props
  */
 export function BuilderResetButton({
   onReset,
   disabled = false,
   label = 'Reset all fields',
+  confirmMessage = 'Clear all entries for this builder? You can fill them in again before saving to your Blueprint.',
 }) {
   function handleClick() {
-    if (
-      !window.confirm(
-        'Clear all entries for this builder? You can fill them in again before saving to your Blueprint.',
-      )
-    ) {
+    if (!window.confirm(confirmMessage)) {
       return;
     }
     onReset();

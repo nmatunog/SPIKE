@@ -5,7 +5,9 @@ import { COACH_WELCOME } from '../../lib/ventureCoachConstants.js';
 import {
   getCoachProgress,
   markCoachStarted,
+  resetCoachSection,
 } from '../../lib/ventureCoachService.js';
+import { BuilderResetButton } from '../day1/BuilderResetButton.jsx';
 import { CoachProgressSidebar } from './CoachProgressSidebar.jsx';
 import {
   AmbitionCoachFlow,
@@ -32,6 +34,7 @@ const SECTION_TITLES = {
 export function VentureCoachShell({ participantId, section }) {
   const navigate = useNavigate();
   const [refreshKey, setRefreshKey] = useState(0);
+  const [sectionKey, setSectionKey] = useState(0);
   const progress = getCoachProgress(participantId);
 
   function bumpProgress() {
@@ -77,20 +80,28 @@ export function VentureCoachShell({ participantId, section }) {
 
   const title = SECTION_TITLES[section] ?? 'AI Venture Coach';
 
+  function handleResetSection() {
+    resetCoachSection(participantId, section);
+    bumpProgress();
+    setSectionKey((k) => k + 1);
+  }
+
   function renderSection() {
     switch (section) {
       case 'ambition':
-        return <AmbitionCoachFlow participantId={participantId} onProgress={bumpProgress} />;
+        return <AmbitionCoachFlow key={sectionKey} participantId={participantId} onProgress={bumpProgress} />;
       case 'purpose':
-        return <PurposeCoachFlow participantId={participantId} onProgress={bumpProgress} />;
+        return <PurposeCoachFlow key={sectionKey} participantId={participantId} onProgress={bumpProgress} />;
       case 'values':
-        return <ValuesCoachFlow participantId={participantId} onProgress={bumpProgress} />;
+        return <ValuesCoachFlow key={sectionKey} participantId={participantId} onProgress={bumpProgress} />;
       case 'tagline':
-        return <TaglineCoachFlow participantId={participantId} onProgress={bumpProgress} />;
+        return <TaglineCoachFlow key={sectionKey} participantId={participantId} onProgress={bumpProgress} />;
       case 'future-self':
-        return <FutureSelfCoachFlow participantId={participantId} onProgress={bumpProgress} />;
+        return <FutureSelfCoachFlow key={sectionKey} participantId={participantId} onProgress={bumpProgress} />;
       case 'venture-direction':
-        return <VentureDirectionCoachFlow participantId={participantId} onProgress={bumpProgress} />;
+        return (
+          <VentureDirectionCoachFlow key={sectionKey} participantId={participantId} onProgress={bumpProgress} />
+        );
       default:
         return (
           <p className="text-sm text-slate-600">
@@ -115,9 +126,16 @@ export function VentureCoachShell({ participantId, section }) {
       <div className="grid w-full min-w-0 grid-cols-1 gap-6 lg:grid-cols-[minmax(220px,260px)_minmax(0,1fr)]">
         <CoachProgressSidebar progress={progress} activeSection={section} />
         <div className="min-w-0 w-full space-y-4">
-          <header>
-            <p className="spike-label text-spike">AI Venture Coach™</p>
-            <h3 className="text-xl font-semibold text-slate-900 lg:text-2xl">{title}</h3>
+          <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p className="spike-label text-spike">AI Venture Coach™</p>
+              <h3 className="text-xl font-semibold text-slate-900 lg:text-2xl">{title}</h3>
+            </div>
+            <BuilderResetButton
+              onReset={handleResetSection}
+              label="Start this section over"
+              confirmMessage="Clear this coach section and start over? Your saved draft for this step will be removed."
+            />
           </header>
           {renderSection()}
         </div>
