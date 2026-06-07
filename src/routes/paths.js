@@ -12,6 +12,7 @@ export const ROUTES = {
 /** Blueprint sub-routes (PR4) — Business Plan, Milestones, Venture Board live inside the OS. */
 export const BLUEPRINT_LINKS = {
   businessPlan: '/venture-blueprint/canvas',
+  canvasSummary: '/venture-blueprint/canvas/summary',
   marketIntelligence: '/venture-blueprint/market-intelligence',
   milestones: '/venture-blueprint/milestones',
   ventureBoard: '/venture-blueprint/venture-board',

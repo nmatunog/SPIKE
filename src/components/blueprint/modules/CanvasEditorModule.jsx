@@ -1,12 +1,17 @@
 import { useMemo } from 'react';
+import { Link } from 'react-router-dom';
+import { LayoutTemplate } from 'lucide-react';
 import { CANVAS_ENGINES } from '../../../lib/blueprintSectionConstants.js';
 import {
+  computeCanvasCompletionPct,
   getCanvasField,
   saveCanvasFieldDebounced,
 } from '../../../lib/canvasService.js';
 import { AutoSaveField } from '../AutoSaveField.jsx';
+import { CircularProgress } from '../CircularProgress.jsx';
 import { listBusinessPlanArtifacts } from '../../../lib/blueprintArtifacts.js';
 import { ArtifactDraftCard } from '../ArtifactDraftCard.jsx';
+import { ROUTES } from '../../../routes/paths.js';
 
 function SectionCard({ title, children }) {
   return (
@@ -18,17 +23,40 @@ function SectionCard({ title, children }) {
 }
 
 /**
- * @param {{ participantId: string }} props
+ * @param {{
+ *   participantId: string,
+ *   state?: ReturnType<import('../../../lib/participantState.js').buildParticipantState>,
+ * }} props
  */
-export function CanvasEditorModule({ participantId }) {
+export function CanvasEditorModule({ participantId, state }) {
   const artifacts = useMemo(() => listBusinessPlanArtifacts(participantId), [participantId]);
+  const canvasCompletion = computeCanvasCompletionPct(participantId);
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-gray-600">
-        Your Financial Entrepreneurship Canvas auto-saves every 2 seconds. Playbook and FNA work
-        also feed chapter drafts below.
-      </p>
+      <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-spike-muted/30 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-sm text-gray-600">
+            Your Financial Entrepreneurship Canvas auto-saves every 2 seconds. Playbook and FNA
+            work also feed chapter drafts below.
+          </p>
+          {state ? (
+            <p className="mt-2 text-xs text-slate-500">
+              Blueprint {state.blueprint_completion}% complete · Segment {state.segment}
+            </p>
+          ) : null}
+        </div>
+        <div className="flex flex-wrap items-center gap-4">
+          <CircularProgress value={canvasCompletion} />
+          <Link
+            to={`${ROUTES.ventureBlueprint}/canvas/summary`}
+            className="spike-btn-primary text-sm"
+          >
+            <LayoutTemplate size={16} />
+            Executive Summary
+          </Link>
+        </div>
+      </div>
 
       {Object.entries(CANVAS_ENGINES).map(([engineKey, engine]) => (
         <SectionCard key={engineKey} title={engine.label}>

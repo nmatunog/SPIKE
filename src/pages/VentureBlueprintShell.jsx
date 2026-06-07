@@ -21,6 +21,7 @@ import {
   VisionPurposePanel,
 } from '../components/blueprint/modules/BlueprintModulePanels.jsx';
 import { CanvasEditorModule } from '../components/blueprint/modules/CanvasEditorModule.jsx';
+import { ExecutiveCanvasSummary } from '../components/blueprint/modules/ExecutiveCanvasSummary.jsx';
 import { MilestonesModule } from '../components/blueprint/modules/MilestonesModule.jsx';
 import { VentureBoardModule } from '../components/blueprint/modules/VentureBoardModule.jsx';
 
@@ -28,6 +29,7 @@ import { VentureBoardModule } from '../components/blueprint/modules/VentureBoard
  * @param {{ user: { id: string, internProgress?: object | null }, onLogTraction?: () => void, onProgressRefresh?: (progress: object) => void }} props
  */
 export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }) {
+  const participantName = user.name || user.email || 'Participant';
   const location = useLocation();
   const [, setHydrateGeneration] = useState(0);
   const [progress, setProgress] = useState(user.internProgress);
@@ -48,13 +50,20 @@ export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }
 
   const state = buildParticipantState(user.id, progress);
 
-  const moduleSlug = useMemo(() => {
+  const { moduleSlug, canvasSubRoute } = useMemo(() => {
     const prefix = `${ROUTES.ventureBlueprint}/`;
     if (location.pathname.startsWith(prefix)) {
-      return location.pathname.slice(prefix.length).split('/')[0] || 'overview';
+      const rest = location.pathname.slice(prefix.length);
+      const segments = rest.split('/').filter(Boolean);
+      return {
+        moduleSlug: segments[0] || 'overview',
+        canvasSubRoute: segments[0] === 'canvas' ? segments.slice(1).join('/') : '',
+      };
     }
-    return 'overview';
+    return { moduleSlug: 'overview', canvasSubRoute: '' };
   }, [location.pathname]);
+
+  const isExecutiveSummary = moduleSlug === 'canvas' && canvasSubRoute === 'summary';
 
   const activeModule = getBlueprintModule(moduleSlug) ?? getBlueprintModule('overview');
   const showTrackPicker = needsCareerTrackSelection(user.id, progress);
@@ -71,7 +80,16 @@ export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }
       case 'vision':
         return <VisionPurposePanel participantId={user.id} />;
       case 'canvas':
-        return <CanvasEditorModule participantId={user.id} />;
+        if (canvasSubRoute === 'summary') {
+          return (
+            <ExecutiveCanvasSummary
+              participantId={user.id}
+              participantName={participantName}
+              state={state}
+            />
+          );
+        }
+        return <CanvasEditorModule participantId={user.id} state={state} />;
       case 'market-intelligence':
         return <MarketIntelligencePanel participantId={user.id} />;
       case 'milestones':
@@ -134,7 +152,7 @@ export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }
   }
 
   return (
-    <PageContainer>
+    <PageContainer presentation={isExecutiveSummary} wide={isExecutiveSummary}>
       {showTrackPicker ? (
         <CareerTrackPicker
           userId={user.id}
@@ -165,7 +183,7 @@ export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }
         </aside>
 
         <div className="min-w-0">
-          {!isOverview ? (
+          {!isOverview && !isExecutiveSummary ? (
             <header className="mb-4 lg:mb-5">
               <h3 className="text-lg font-semibold text-slate-900 lg:text-xl 2xl:text-2xl">{activeModule?.label}</h3>
               <p className="mt-1 text-sm text-slate-600 lg:text-base 2xl:text-lg">{activeModule?.description}</p>

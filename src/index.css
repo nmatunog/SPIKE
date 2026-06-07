@@ -80,6 +80,17 @@
     @apply bg-spike text-white shadow-sm;
   }
 
+  .executive-canvas-board {
+    font-feature-settings: 'kern' 1;
+  }
+
+  @media print {
+    .executive-canvas-board {
+      break-inside: avoid;
+      box-shadow: none;
+    }
+  }
+
   .spike-nav-pill-inactive {
     @apply text-slate-600 hover:bg-slate-100 hover:text-slate-900;
   }

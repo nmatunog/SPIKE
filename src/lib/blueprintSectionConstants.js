@@ -87,8 +87,8 @@ export const CANVAS_ENGINES = {
   foundation: {
     label: 'Foundation',
     fields: [
-      { key: 'resources', label: 'Resources' },
-      { key: 'partners', label: 'Partners' },
+      { key: 'resources', label: 'Key Resources' },
+      { key: 'partners', label: 'Key Partners' },
       { key: 'cost_structure', label: 'Cost Structure' },
     ],
   },
