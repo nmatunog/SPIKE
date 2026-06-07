@@ -61,3 +61,26 @@ export function isMockUser(user) {
 export function shouldUseSupabaseForUser(user) {
   return Boolean(user?.id) && !isMockUser(user);
 }
+
+/** @param {string} userId */
+export function isMockUserId(userId) {
+  return String(userId ?? '').startsWith('mock-');
+}
+
+/**
+ * @param {string} userId
+ * @param {object} progressPatch
+ */
+export function updateMockInternProgress(userId, progressPatch) {
+  if (!isMockUserId(userId)) return null;
+  const stored = getStoredMockUser();
+  if (!stored || stored.id !== userId) return null;
+
+  const internProgress = {
+    ...(stored.internProgress ?? {}),
+    ...progressPatch,
+  };
+  const nextUser = { ...stored, internProgress };
+  persistMockUser(nextUser);
+  return internProgress;
+}

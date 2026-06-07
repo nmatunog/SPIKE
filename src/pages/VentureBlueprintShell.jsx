@@ -115,7 +115,11 @@ export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }
   return (
     <PageContainer>
       {showTrackPicker ? (
-        <CareerTrackPicker userId={user.id} onComplete={handleTrackComplete} />
+        <CareerTrackPicker
+          userId={user.id}
+          internProgress={progress}
+          onComplete={handleTrackComplete}
+        />
       ) : null}
 
       <BlueprintStateHeader state={state} participantId={user.id} />

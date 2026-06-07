@@ -1,7 +1,12 @@
 /**
  * Career track selection — agency_builder | specialist_consultant (Sprint 05).
  */
-import { supabase } from '../supabaseClient.js';
+import { isSupabaseConfigured, supabase } from '../supabaseClient.js';
+import {
+  isMockUserId,
+  shouldUseSupabaseForUser,
+  updateMockInternProgress,
+} from './mockAuth.js';
 
 const STORAGE_KEY = 'spike_career_track_confirmed';
 
@@ -30,18 +35,42 @@ export function needsCareerTrackSelection(userId, internProgress) {
 /**
  * @param {string} userId
  * @param {'agency_builder' | 'specialist_consultant'} track
+ * @param {object | null | undefined} [existingProgress]
  */
-export async function saveCareerTrackSelection(userId, track) {
-  if (!userId || !supabase) return null;
+export async function saveCareerTrackSelection(userId, track, existingProgress) {
+  if (!userId) return null;
+
+  const now = new Date().toISOString();
+  const progressPatch = {
+    career_track: track,
+    career_track_selected_at: now,
+  };
+
+  if (isMockUserId(userId) || !shouldUseSupabaseForUser({ id: userId, isMockUser: isMockUserId(userId) })) {
+    const progress = updateMockInternProgress(userId, {
+      ...(existingProgress ?? {}),
+      ...progressPatch,
+    });
+    if (!progress) {
+      throw new Error('Demo session expired. Sign in again with john@example.com.');
+    }
+    const confirmed = readConfirmed();
+    confirmed[userId] = true;
+    writeConfirmed(confirmed);
+    return progress;
+  }
+
+  if (!isSupabaseConfigured || !supabase) {
+    throw new Error('Supabase is not configured.');
+  }
 
   const { data, error } = await supabase
     .from('intern_progress')
-    .update({
-      career_track: track,
-      career_track_selected_at: new Date().toISOString(),
-    })
+    .update(progressPatch)
     .eq('user_id', userId)
-    .select('career_track, career_track_selected_at, segment, hours, licensed, squad, university, current_week, current_day')
+    .select(
+      'career_track, career_track_selected_at, segment, hours, licensed, squad, university, current_week, current_day',
+    )
     .single();
 
   if (error) throw error;

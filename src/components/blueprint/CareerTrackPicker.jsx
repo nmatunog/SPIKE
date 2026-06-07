@@ -3,9 +3,9 @@ import { Briefcase, Stethoscope } from 'lucide-react';
 import { saveCareerTrackSelection } from '../../lib/careerTrackService.js';
 
 /**
- * @param {{ userId: string, onComplete: (progress: object) => void }} props
+ * @param {{ userId: string, internProgress?: object | null, onComplete: (progress: object) => void }} props
  */
-export function CareerTrackPicker({ userId, onComplete }) {
+export function CareerTrackPicker({ userId, internProgress, onComplete }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
@@ -13,7 +13,7 @@ export function CareerTrackPicker({ userId, onComplete }) {
     setSaving(true);
     setError('');
     try {
-      const progress = await saveCareerTrackSelection(userId, track);
+      const progress = await saveCareerTrackSelection(userId, track, internProgress);
       onComplete(progress);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not save career track.');
