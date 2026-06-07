@@ -15,8 +15,8 @@ export const COACH_SECTIONS = [
 ];
 
 export const WORD_LIMITS = {
-  ambition: { max: 25, targetMin: 12, targetMax: 20 },
-  purpose: { max: 20, targetMin: 10, targetMax: 15 },
+  ambition: { max: 25, targetMin: 12, targetMax: 18 },
+  purpose: { max: 20, targetMin: 8, targetMax: 15 },
   valuesProfile: { max: 40 },
   tagline: { max: 8, targetMin: 3, targetMax: 6 },
   futureSelf: { min: 250, max: 400 },
@@ -113,24 +113,24 @@ export const AMBITION_VARIANTS = [
 ];
 
 export const IDENTITY_REFINE_ACTIONS = [
-  { id: 'shorten', label: 'Shorter' },
-  { id: 'ambitious', label: 'More Ambitious' },
-  { id: 'personal', label: 'More Personal' },
-  { id: 'professional', label: 'More Professional' },
-  { id: 'inspirational', label: 'More Inspirational' },
-  { id: 'rewrite', label: 'Rewrite' },
+  { id: 'simplify', label: 'Make Simpler', tooltip: 'Say the same thing with fewer words.' },
+  { id: 'ambitious', label: 'Think Bigger', tooltip: 'Increase scale, impact, and leadership scope.' },
+  { id: 'personal', label: 'Make It About Me', tooltip: 'Shift to personal motivation and why it matters.' },
+  { id: 'professional', label: 'Sound More Professional', tooltip: 'Increase credibility and executive tone.' },
+  { id: 'inspirational', label: 'Inspire Others', tooltip: 'Increase aspiration, meaning, and impact language.' },
+  { id: 'rewrite', label: 'Rewrite', tooltip: 'Restructure while keeping your core message.' },
 ];
 
 /** @deprecated Use IDENTITY_REFINE_ACTIONS */
 export const REFINE_ACTIONS = IDENTITY_REFINE_ACTIONS;
 
 export const FUTURE_SELF_REFINE_ACTIONS = [
-  { id: 'ambitious', label: 'More Ambitious' },
-  { id: 'realistic', label: 'More Realistic' },
-  { id: 'inspirational', label: 'More Inspirational' },
-  { id: 'shorten', label: 'Shorter' },
-  { id: 'longer', label: 'Longer' },
-  { id: 'rewrite', label: 'Rewrite' },
+  { id: 'ambitious', label: 'Think Bigger', tooltip: 'Increase scale, impact, and leadership scope.' },
+  { id: 'realistic', label: 'More Realistic', tooltip: 'Ground the narrative in achievable milestones.' },
+  { id: 'inspirational', label: 'Inspire Others', tooltip: 'Increase aspiration and meaning.' },
+  { id: 'shorten', label: 'Make Simpler', tooltip: 'Tighten sentences without losing your core story.' },
+  { id: 'longer', label: 'Add Detail', tooltip: 'Expand with specific milestones and examples.' },
+  { id: 'rewrite', label: 'Rewrite', tooltip: 'Restructure while keeping your core message.' },
 ];
 
 export const COACH_WELCOME = `Hello, I am your SPIKE Venture Coach.

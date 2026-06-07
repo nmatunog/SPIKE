@@ -166,6 +166,7 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
           </CoachMessage>
           <CoachDraftPanel
             title="Draft Ambition Statement"
+            statementType="ambition"
             draft={draft}
             variants={variants}
             selectedVariant={selectedVariant}
@@ -262,6 +263,7 @@ export function PurposeCoachFlow({ participantId, onProgress, onSectionComplete 
           </CoachMessage>
           <CoachDraftPanel
             title="Purpose Statement"
+            statementType="purpose"
             draft={draft}
             wordLimits={WORD_LIMITS.purpose}
             maxWords={WORD_LIMITS.purpose.max}
@@ -471,6 +473,7 @@ export function TaglineCoachFlow({ participantId, onProgress, onSectionComplete 
       </CoachMessage>
       <CoachDraftPanel
         title="Personal Tagline"
+        statementType="tagline"
         draft={draft}
         wordLimits={WORD_LIMITS.tagline}
         maxWords={WORD_LIMITS.tagline.max}
@@ -628,6 +631,8 @@ export function FutureSelfCoachFlow({ participantId, onProgress, onSectionComple
           </CoachMessage>
           <CoachDraftPanel
             title="Future Self Narrative"
+            statementType="future-self"
+            showScores={false}
             draft={draft}
             refineSet="future-self"
             rows={12}

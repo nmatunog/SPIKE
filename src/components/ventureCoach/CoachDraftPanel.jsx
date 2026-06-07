@@ -1,4 +1,9 @@
-import { countWords, getWordGuidanceStatus, refineText } from '../../lib/ventureCoachEngine.js';
+import {
+  countWords,
+  evaluateStatement,
+  getWordGuidanceStatus,
+  refineText,
+} from '../../lib/ventureCoachEngine.js';
 import {
   AMBITION_VARIANTS,
   FUTURE_SELF_REFINE_ACTIONS,
@@ -33,11 +38,63 @@ export function CoachWordGuidance({ count, limits }) {
 
 /**
  * @param {{
+ *   draft: string,
+ *   wordLimits: { max: number, targetMin?: number, targetMax?: number, min?: number },
+ *   onSuggestAction?: (actionId: string) => void,
+ * }} props
+ */
+export function CoachStatementScores({ draft, wordLimits, onSuggestAction }) {
+  const evaluation = evaluateStatement(draft, wordLimits);
+
+  return (
+    <div className="space-y-3">
+      <div className="grid grid-cols-3 gap-2 rounded-xl border border-slate-200 bg-white p-3">
+        <ScoreCell label="Clarity" value={evaluation.clarity} numeric />
+        <ScoreCell label="Memorability" value={evaluation.memorability} numeric />
+        <ScoreCell label="Length" value={evaluation.lengthLabel} />
+      </div>
+
+      {evaluation.recommendation ? (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-3">
+          <p className="text-sm font-medium text-amber-950">{evaluation.recommendation.message}</p>
+          <p className="mt-1 text-xs text-amber-900">
+            Suggested action:{' '}
+            {onSuggestAction ? (
+              <button
+                type="button"
+                onClick={() => onSuggestAction(evaluation.recommendation.actionId)}
+                className="font-bold text-spike underline hover:no-underline"
+              >
+                {evaluation.recommendation.action}
+              </button>
+            ) : (
+              <span className="font-bold">{evaluation.recommendation.action}</span>
+            )}
+          </p>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+/** @param {{ label: string, value: number | string, numeric?: boolean }} props */
+function ScoreCell({ label, value, numeric = false }) {
+  return (
+    <div className="text-center">
+      <p className="text-2xs font-bold uppercase tracking-wide text-slate-500">{label}</p>
+      <p className="mt-1 text-sm font-bold text-slate-900">{numeric ? value : value}</p>
+    </div>
+  );
+}
+
+/**
+ * @param {{
  *   title: string,
  *   draft: string,
  *   onDraftChange: (text: string) => void,
  *   onAccept: () => void,
  *   refineSet?: 'identity' | 'future-self',
+ *   statementType?: 'ambition' | 'purpose' | 'tagline' | 'future-self',
  *   acceptLabel?: string,
  *   maxWords?: number,
  *   wordLimits?: { max: number, targetMin?: number, targetMax?: number, min?: number },
@@ -46,6 +103,7 @@ export function CoachWordGuidance({ count, limits }) {
  *   onVariantSelect?: (variantId: string, text: string) => void,
  *   rows?: number,
  *   acceptDisabled?: boolean,
+ *   showScores?: boolean,
  * }} props
  */
 export function CoachDraftPanel({
@@ -54,6 +112,7 @@ export function CoachDraftPanel({
   onDraftChange,
   onAccept,
   refineSet = 'identity',
+  statementType = 'ambition',
   acceptLabel = 'Accept Draft',
   maxWords = WORD_LIMITS.ambition.max,
   wordLimits = WORD_LIMITS.ambition,
@@ -62,14 +121,19 @@ export function CoachDraftPanel({
   onVariantSelect,
   rows = 4,
   acceptDisabled = false,
+  showScores = true,
 }) {
   const actions = refineSet === 'future-self' ? FUTURE_SELF_REFINE_ACTIONS : IDENTITY_REFINE_ACTIONS;
+
+  function applyRefine(actionId) {
+    onDraftChange(refineText(draft, actionId, maxWords, statementType));
+  }
 
   return (
     <section className="spike-card w-full min-w-0 space-y-4 border-spike/20 bg-gradient-to-br from-white to-spike-muted/20">
       <div>
         <p className="spike-label text-spike">AI Draft</p>
-        <h4 className="text-lg font-semibold text-slate-900">{title}</h4>
+        {title ? <h4 className="text-lg font-semibold text-slate-900">{title}</h4> : null}
       </div>
 
       {variants && onVariantSelect ? (
@@ -103,6 +167,10 @@ export function CoachDraftPanel({
 
       <CoachWordGuidance count={countWords(draft)} limits={wordLimits} />
 
+      {showScores && refineSet === 'identity' ? (
+        <CoachStatementScores draft={draft} wordLimits={wordLimits} onSuggestAction={applyRefine} />
+      ) : null}
+
       <div>
         <p className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">Refine</p>
         <div className="flex flex-wrap gap-2">
@@ -110,7 +178,8 @@ export function CoachDraftPanel({
             <button
               key={action.id}
               type="button"
-              onClick={() => onDraftChange(refineText(draft, action.id, maxWords))}
+              title={action.tooltip ?? ''}
+              onClick={() => applyRefine(action.id)}
               className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:border-spike/40 hover:text-spike"
             >
               {action.label}
