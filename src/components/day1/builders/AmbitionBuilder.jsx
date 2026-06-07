@@ -2,22 +2,11 @@ import { useState } from 'react';
 import {
   AMBITION_CARDS,
   AMBITION_EXAMPLES,
-  CAREER_TRACK_AMBITION_EXAMPLES,
 } from '../../../lib/day1BuilderConstants.js';
+import { composeAmbitionFromCards } from '../../../lib/ventureCoachEngine.js';
 
 function buildAmbitionDraft(selectedIds, pathPreference) {
-  const labels = selectedIds
-    .map((id) => AMBITION_CARDS.find((c) => c.id === id)?.label)
-    .filter(Boolean);
-  if (!labels.length) return '';
-
-  const trackExample =
-    pathPreference && CAREER_TRACK_AMBITION_EXAMPLES[pathPreference]
-      ? CAREER_TRACK_AMBITION_EXAMPLES[pathPreference]
-      : null;
-
-  const core = `My ambition is to pursue ${labels.join(', ').toLowerCase()} and build a venture that reflects who I want to become.`;
-  return trackExample ? `${core} ${trackExample}` : core;
+  return composeAmbitionFromCards(selectedIds, AMBITION_CARDS, pathPreference);
 }
 
 /**

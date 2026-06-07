@@ -1,13 +1,9 @@
 import { useState } from 'react';
 import { PURPOSE_PROMPTS } from '../../../lib/day1BuilderConstants.js';
+import { composePurposeFromPrompts } from '../../../lib/ventureCoachEngine.js';
 
 function buildPurposeDraft(answers) {
-  const parts = PURPOSE_PROMPTS.map((prompt) => {
-    const value = String(answers[prompt.key] ?? '').trim();
-    if (!value) return '';
-    return `${prompt.label} ${value}`;
-  }).filter(Boolean);
-  return parts.join(' ');
+  return composePurposeFromPrompts(answers);
 }
 
 /**

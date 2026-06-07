@@ -30,10 +30,11 @@ export function CoachDraftPanel({
 
       <textarea
         className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-relaxed focus:border-spike focus:outline-none focus:ring-2 focus:ring-spike/20"
-        rows={6}
+        rows={4}
         value={draft}
         onChange={(e) => onDraftChange(e.target.value)}
       />
+      <p className="text-xs text-slate-500">Aim for 1–2 concise sentences (~50 words). Use Shorten if needed.</p>
 
       <div>
         <p className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">Refine</p>
