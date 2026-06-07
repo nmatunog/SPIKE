@@ -1,0 +1,21 @@
+{
+  "appId": "com.asc.spike",
+  "appName": "SPIKE",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  },
+  "ios": {
+    "contentInset": "automatic"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": false,
+      "backgroundColor": "#8B0000",
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "style": "LIGHT"
+    }
+  }
+}

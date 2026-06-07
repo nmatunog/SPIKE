@@ -5,7 +5,7 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist', 'api']),
+  globalIgnores(['dist', 'api', 'ios', 'android']),
   {
     files: ['**/*.{js,jsx}'],
     extends: [
@@ -32,6 +32,12 @@ export default defineConfig([
     files: ['src/AuthContext.jsx'],
     rules: {
       'react-refresh/only-export-components': 'off',
+    },
+  },
+  {
+    files: ['vite.config.js'],
+    languageOptions: {
+      globals: globals.node,
     },
   },
 ])

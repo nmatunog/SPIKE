@@ -15,9 +15,20 @@
     "deploy:prod": "bash ./scripts/deploy-production.sh",
     "push:dev": "bash ./scripts/auto-push-dev-revisions.sh",
     "smoke:content": "node scripts/smoke-content-files.mjs",
-    "smoke:content:loader": "node scripts/smoke-content-loader.mjs"
+    "smoke:content:loader": "node scripts/smoke-content-loader.mjs",
+    "cap:sync": "CAPACITOR=true npm run build && npx cap sync",
+    "cap:ios": "npm run cap:sync && npx cap open ios",
+    "cap:android": "npm run cap:sync && npx cap open android",
+    "cap:run:ios": "npm run cap:sync && npx cap run ios",
+    "cap:run:android": "npm run cap:sync && npx cap run android"
   },
   "dependencies": {
+    "@capacitor/android": "^8.4.0",
+    "@capacitor/cli": "^8.4.0",
+    "@capacitor/core": "^8.4.0",
+    "@capacitor/ios": "^8.4.0",
+    "@capacitor/splash-screen": "^8.0.1",
+    "@capacitor/status-bar": "^8.0.2",
     "@supabase/supabase-js": "^2.104.0",
     "lucide-react": "^1.8.0",
     "react": "^19.2.5",

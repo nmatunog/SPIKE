@@ -7,6 +7,7 @@ Production: **https://spike-asc.pages.dev** (Cloudflare Pages + Supabase).
 - **Frontend:** Vite + React, deployed to Cloudflare Pages
 - **Auth + data:** Supabase (PostgreSQL + RLS)
 - **Local API (optional):** `api/` Express + Prisma + SQLite for JWT dev without Supabase
+- **Mobile:** Capacitor 7 (iOS + Android native shells around the Vite build)
 
 ## Local development
 
@@ -37,6 +38,31 @@ npm run dev
 ```
 
 The Vite dev server proxies `/api` to `http://localhost:4000`. Leave `VITE_SUPABASE_*` empty and do not set `VITE_STATIC_ONLY` to use JWT auth locally.
+
+## Mobile (Capacitor — iOS & Android)
+
+The web app is wrapped with [Capacitor](https://capacitorjs.com/). Native projects live in `ios/` and `android/` (open in **Xcode** / **Android Studio**).
+
+**Prerequisites:** Node 20+, Xcode (macOS), CocoaPods (`sudo gem install cocoapods`), Android Studio (for Android).
+
+```bash
+# .env must include VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY (baked into native build)
+cp .env.example .env
+
+npm run cap:ios       # build, sync, open Xcode
+npm run cap:android   # build, sync, open Android Studio
+```
+
+After UI changes: `npm run cap:sync` (rebuilds `dist` and copies into native projects).
+
+**Live reload on device** (optional): in `capacitor.config.json`, set `server.url` to your machine’s LAN address (e.g. `http://192.168.1.10:5173`), run `npm run dev`, then `npx cap run ios`. Remove `server.url` before store builds.
+
+**Supabase auth on mobile:** add redirect URLs in Supabase → Authentication → URL configuration:
+
+- `com.asc.spike://**` (custom scheme)
+- Your production URL `https://spike-asc.pages.dev/**`
+
+**Store assets:** replace default launcher icons/splash via `@capacitor/assets` before App Store / Play submission.
 
 ## Deploy (Cloudflare Pages)
 

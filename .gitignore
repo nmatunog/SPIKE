@@ -22,6 +22,17 @@ api/prisma/*.db-journal
 # Downloaded Cloudflare config (may contain secrets)
 wrangler.toml
 
+# Capacitor native build artifacts (commit ios/ and android/ project roots)
+ios/App/Pods/
+ios/App/App/public/
+ios/DerivedData/
+android/.gradle/
+android/app/build/
+android/build/
+android/.idea/
+android/local.properties
+*.xcuserdata
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
