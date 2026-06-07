@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   countWords,
   evaluateStatement,
+  extractCustomizationFields,
   getWordGuidanceStatus,
   refineTextWithFeedback,
+  regenerateFromCustomization,
 } from '../../lib/ventureCoachEngine.js';
 import {
   AMBITION_VARIANTS,
@@ -105,6 +107,14 @@ function ScoreCell({ label, value, numeric = false }) {
  *   rows?: number,
  *   acceptDisabled?: boolean,
  *   showScores?: boolean,
+ *   enableCustomization?: boolean,
+ *   savedCustomFields?: Record<string, string>,
+ *   onCustomFieldsChange?: (fields: Record<string, string>) => void,
+ *   onVariantsRegenerated?: (
+ *     variants: { short: string, balanced: string, inspirational: string },
+ *     variantId: string,
+ *     text: string,
+ *   ) => void,
  * }} props
  */
 export function CoachDraftPanel({
@@ -123,10 +133,52 @@ export function CoachDraftPanel({
   rows = 4,
   acceptDisabled = false,
   showScores = true,
+  enableCustomization = false,
+  savedCustomFields = null,
+  onCustomFieldsChange,
+  onVariantsRegenerated,
 }) {
   const actions = refineSet === 'future-self' ? FUTURE_SELF_REFINE_ACTIONS : IDENTITY_REFINE_ACTIONS;
   const [refineNote, setRefineNote] = useState('');
   const [undoDraft, setUndoDraft] = useState(null);
+  const [fieldDefs, setFieldDefs] = useState(() => extractCustomizationFields(draft, statementType));
+  const [customFields, setCustomFields] = useState(() => {
+    if (savedCustomFields && Object.keys(savedCustomFields).length) return savedCustomFields;
+    return Object.fromEntries(extractCustomizationFields(draft, statementType).map((field) => [field.id, field.value]));
+  });
+  const variantSeedRef = useRef(selectedVariant);
+
+  useEffect(() => {
+    if (!enableCustomization) return;
+    if (variantSeedRef.current === selectedVariant) return;
+    variantSeedRef.current = selectedVariant;
+    const defs = extractCustomizationFields(draft, statementType);
+    setFieldDefs(defs);
+    const next = Object.fromEntries(defs.map((field) => [field.id, field.value]));
+    setCustomFields(next);
+    onCustomFieldsChange?.(next);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only re-seed fields when style variant changes
+  }, [selectedVariant, draft, enableCustomization, statementType]);
+
+  function updateCustomField(id, value) {
+    const next = { ...customFields, [id]: value };
+    setCustomFields(next);
+    onCustomFieldsChange?.(next);
+  }
+
+  function handleRegenerate() {
+    const result = regenerateFromCustomization({
+      statementType,
+      variant: selectedVariant,
+      fields: customFields,
+    });
+    setUndoDraft(draft);
+    setRefineNote(result.note);
+    onDraftChange(result.text);
+    if (result.variants && onVariantsRegenerated) {
+      onVariantsRegenerated(result.variants, selectedVariant, result.text);
+    }
+  }
 
   function applyRefine(actionId) {
     const { text, note } = refineTextWithFeedback(draft, actionId, maxWords, statementType);
@@ -171,6 +223,36 @@ export function CoachDraftPanel({
         </div>
       ) : null}
 
+      {enableCustomization && fieldDefs.length ? (
+        <div className="rounded-xl border border-slate-200 bg-white p-4">
+          <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Customize a few words</p>
+          <p className="mt-1 text-xs text-slate-600">
+            Edit the phrases below, then regenerate — your statement rebuilds from your choices.
+          </p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            {fieldDefs.map((field) => (
+              <label key={field.id} className="block min-w-0">
+                <span className="text-xs font-semibold text-slate-700">{field.label}</span>
+                <input
+                  type="text"
+                  value={customFields[field.id] ?? ''}
+                  placeholder={field.placeholder}
+                  onChange={(e) => updateCustomField(field.id, e.target.value)}
+                  className="mt-1 block w-full min-w-0 rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-spike focus:outline-none focus:ring-2 focus:ring-spike/20"
+                />
+              </label>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={handleRegenerate}
+            className="mt-4 inline-flex items-center rounded-xl border border-spike bg-spike-muted/30 px-4 py-2 text-sm font-semibold text-spike transition hover:bg-spike hover:text-white"
+          >
+            Regenerate statement
+          </button>
+        </div>
+      ) : null}
+
       <textarea
         className="block w-full min-w-0 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-relaxed focus:border-spike focus:outline-none focus:ring-2 focus:ring-spike/20"
         rows={rows}
@@ -198,7 +280,7 @@ export function CoachDraftPanel({
               onClick={handleUndoRefine}
               className="mt-2 text-xs font-semibold text-spike underline hover:no-underline"
             >
-              Undo last refine
+              Undo last change
             </button>
           ) : null}
         </div>

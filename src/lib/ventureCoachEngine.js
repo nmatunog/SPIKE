@@ -173,7 +173,10 @@ function withArticle(role) {
   const trimmed = String(role ?? '').trim();
   if (!trimmed) return 'a leader';
   if (/^(a|an|the)\s+/i.test(trimmed)) return trimmed;
-  return /^[aeiou]/i.test(trimmed) ? `an ${trimmed}` : `a ${trimmed}`;
+  if (/^[aeiou]/i.test(trimmed) && !/^(uni|one|u[bcdefgjkpqstvwxyz])/i.test(trimmed)) {
+    return `an ${trimmed}`;
+  }
+  return `a ${trimmed}`;
 }
 
 /** @param {string} mode @param {string} before @param {string} after @param {ReturnType<typeof extractDraftSignals>} signals */
@@ -681,6 +684,181 @@ export function generateImpactDraft(data) {
   }
 
   return polishStatement('Help others achieve financial security and peace of mind.', MAX_IMPACT_WORDS, 1);
+}
+
+/**
+ * Editable keyword slots extracted from the current draft.
+ * @param {string} draft
+ * @param {'ambition' | 'impact' | 'purpose' | 'tagline'} statementType
+ * @returns {Array<{ id: string, label: string, placeholder: string, value: string }>}
+ */
+export function extractCustomizationFields(draft, statementType) {
+  const signals = extractDraftSignals(draft);
+
+  if (statementType === 'impact' || statementType === 'purpose') {
+    let outcome = '';
+    const outcomeMatch = String(draft ?? '').match(
+      /\b(?:achieve|make|build|create|reach|experience|prepare for)\s+([^.—,;]+)/i,
+    );
+    if (outcomeMatch) {
+      outcome = outcomeMatch[1].trim();
+    } else if (signals.distinctive.length) {
+      outcome = joinNatural(signals.distinctive.slice(0, 2));
+    }
+
+    const audience =
+      (signals.audience ? phraseFromSource(signals.cleaned, signals.audience) : '')
+      || signals.audience
+      || 'Filipino families';
+
+    return [
+      {
+        id: 'audience',
+        label: 'Who you help',
+        placeholder: 'Filipino families',
+        value: audience,
+      },
+      {
+        id: 'outcome',
+        label: 'Difference you create',
+        placeholder: 'financial security and peace of mind',
+        value: outcome || 'financial security and peace of mind',
+      },
+    ];
+  }
+
+  if (statementType === 'tagline') {
+    const cleaned = String(draft ?? '').replace(/[.!?]+$/, '').trim();
+    const segments = cleaned.split(/\.\s+/).filter(Boolean);
+    return [
+      { id: 'word1', label: 'First beat', placeholder: 'Building Leaders', value: segments[0] ?? 'Building Leaders' },
+      { id: 'word2', label: 'Second beat', placeholder: 'Creating Opportunities', value: segments[1] ?? 'Creating Opportunities' },
+      { id: 'word3', label: 'Third beat (optional)', placeholder: 'Grow. Serve. Lead.', value: segments[2] ?? '' },
+    ];
+  }
+
+  let role = signals.role ? phraseFromSource(signals.cleaned, signals.role) : 'respected leader';
+  let contribution = '';
+  let mark = '';
+
+  const whoMatch = String(draft ?? '').match(/\bwho\s+([^.—,;]+?)(?:\s+and\s+|$)/i);
+  if (whoMatch) {
+    contribution = whoMatch[1].trim();
+  }
+
+  const andMatch = String(draft ?? '').match(/\band\s+(builds|creates|develops|leads)\s+([^.—,;]+)/i);
+  if (andMatch) {
+    mark = `${andMatch[1]} ${andMatch[2]}`.trim();
+  }
+
+  if (!contribution && signals.distinctive[0]) {
+    contribution = `develops ${signals.distinctive[0]}`;
+  }
+  if (!mark && signals.distinctive[1]) {
+    mark = `builds ${signals.distinctive[1]}`;
+  }
+
+  return [
+    { id: 'role', label: 'Role you want', placeholder: 'Agency Director', value: role },
+    {
+      id: 'contribution',
+      label: 'What you will do',
+      placeholder: 'develops leaders',
+      value: contribution || 'develops leaders',
+    },
+    {
+      id: 'mark',
+      label: 'What you will build',
+      placeholder: 'a thriving organization',
+      value: mark || 'a thriving organization',
+    },
+  ];
+}
+
+/** @param {string} phrase */
+function normalizeContribution(phrase) {
+  return String(phrase ?? '')
+    .trim()
+    .replace(/^who\s+/i, '')
+    .replace(/[.!?]+$/, '');
+}
+
+/**
+ * Rebuild a statement from edited keyword fields.
+ * @param {{
+ *   statementType: 'ambition' | 'impact' | 'purpose' | 'tagline',
+ *   variant?: 'short' | 'balanced' | 'inspirational',
+ *   fields?: Record<string, string>,
+ * }} options
+ */
+export function regenerateFromCustomization({ statementType, variant = 'balanced', fields = {} }) {
+  if (statementType === 'ambition') {
+    const role = String(fields.role ?? '').trim() || 'respected leader';
+    const contribution = normalizeContribution(fields.contribution);
+    const mark = String(fields.mark ?? '').trim().replace(/[.!?]+$/, '');
+
+    const short = polishStatement(`Become ${withArticle(role)}.`, 15, 1);
+    const balanced = polishStatement(
+      contribution && mark
+        ? `Become ${withArticle(role)} who ${contribution} and ${mark}.`
+        : contribution
+          ? `Become ${withArticle(role)} who ${contribution}.`
+          : `Become ${withArticle(role)}.`,
+      MAX_AMBITION_WORDS,
+      1,
+    );
+    const inspirational = polishStatement(
+      contribution
+        ? `Become an influential ${role.replace(/^(a|an|the)\s+/i, '')} who ${contribution}${mark ? ` and ${mark}` : ''}.`
+        : `Become an influential ${role.replace(/^(a|an|the)\s+/i, '')} who creates meaningful impact.`,
+      MAX_AMBITION_WORDS,
+      1,
+    );
+
+    const variants = { short, balanced, inspirational };
+    const text = variants[variant] ?? variants.balanced;
+    const pieces = [role, contribution, mark].filter(Boolean).join(', ');
+
+    return {
+      text,
+      variants,
+      note: `I regenerated your statement using your words: ${pieces}.`,
+    };
+  }
+
+  if (statementType === 'impact' || statementType === 'purpose') {
+    const audience = String(fields.audience ?? '').trim() || 'others';
+    let outcome = String(fields.outcome ?? '').trim().replace(/[.!?]+$/, '');
+    if (outcome && !/^(achieve|make|build|create|reach|experience|prepare)/i.test(outcome)) {
+      outcome = `achieve ${outcome}`;
+    }
+
+    const text = polishStatement(
+      outcome ? `Help ${audience} ${outcome}.` : `Help ${audience} create meaningful financial progress.`,
+      MAX_IMPACT_WORDS,
+      1,
+    );
+
+    return {
+      text,
+      note: `I regenerated your impact statement for ${audience}${outcome ? ` — ${outcome}` : ''}.`,
+    };
+  }
+
+  if (statementType === 'tagline') {
+    const parts = [fields.word1, fields.word2, fields.word3].map((part) => String(part ?? '').trim()).filter(Boolean);
+    const text = capStatementWords(
+      parts.map((part) => part.replace(/[.!?]+$/, '')).join('. ') + (parts.length ? '.' : ''),
+      MAX_TAGLINE_WORDS,
+    );
+
+    return {
+      text,
+      note: 'I rebuilt your tagline from the words you chose.',
+    };
+  }
+
+  return { text: '', note: '' };
 }
 
 /** @deprecated Use generateImpactDraft */

@@ -62,6 +62,9 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
   );
   const [selectedVariant, setSelectedVariant] = useState(String(stored.data.selectedVariant ?? 'balanced'));
   const [draft, setDraft] = useState(String(stored.data.draft ?? ''));
+  const [customFields, setCustomFields] = useState(
+    /** @type {Record<string, string>} */ (stored.data.customFields ?? {}),
+  );
 
   function persist(data) {
     saveCoachSectionDraft(participantId, 'ambition', { ...stored.data, ...data, step });
@@ -167,12 +170,23 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
       {step === 3 && draft ? (
         <>
           <CoachMessage>
-            <p>Choose Short, Balanced, or Inspirational — then edit until it feels like yours.</p>
+            <p>Choose Short, Balanced, or Inspirational — customize a few words, regenerate, then refine until it feels like yours.</p>
           </CoachMessage>
           <CoachDraftPanel
             title="Draft Ambition Statement"
             statementType="ambition"
             draft={draft}
+            enableCustomization
+            savedCustomFields={customFields}
+            onCustomFieldsChange={(fields) => {
+              setCustomFields(fields);
+              persist({ customFields: fields });
+            }}
+            onVariantsRegenerated={(newVariants, variantId, text) => {
+              setVariants(newVariants);
+              setDraft(text);
+              persist({ draftVariants: newVariants, draft: text, selectedVariant: variantId });
+            }}
             variants={variants}
             selectedVariant={selectedVariant}
             onVariantSelect={(id, text) => {
@@ -207,6 +221,9 @@ export function ImpactCoachFlow({ participantId, onProgress, onSectionComplete }
     /** @type {string[]} */ (stored.data.audiences ?? stored.data.drivers ?? []),
   );
   const [draft, setDraft] = useState(String(stored.data.draft ?? ''));
+  const [customFields, setCustomFields] = useState(
+    /** @type {Record<string, string>} */ (stored.data.customFields ?? {}),
+  );
 
   const ambitionText = String(ambitionStored.data.finalText ?? ambitionStored.data.draft ?? '');
   const overlapWarning =
@@ -278,12 +295,18 @@ export function ImpactCoachFlow({ participantId, onProgress, onSectionComplete }
             </div>
           ) : null}
           <CoachMessage>
-            <p>Here is your impact statement. Refine until you can say it confidently in under 30 seconds.</p>
+            <p>Customize who you help and the difference you make, regenerate, then refine until you can say it confidently in under 30 seconds.</p>
           </CoachMessage>
           <CoachDraftPanel
             title="Impact Statement"
             statementType="impact"
             draft={draft}
+            enableCustomization
+            savedCustomFields={customFields}
+            onCustomFieldsChange={(fields) => {
+              setCustomFields(fields);
+              persist({ customFields: fields });
+            }}
             wordLimits={WORD_LIMITS.impact}
             maxWords={WORD_LIMITS.impact.max}
             acceptDisabled={countWords(draft) > WORD_LIMITS.impact.max}
@@ -467,6 +490,9 @@ export function TaglineCoachFlow({ participantId, onProgress, onSectionComplete 
       topThree: values.topThree ?? [],
     });
   });
+  const [customFields, setCustomFields] = useState(
+    /** @type {Record<string, string>} */ (stored.data.customFields ?? {}),
+  );
 
   function persist(data) {
     saveCoachSectionDraft(participantId, 'tagline', { ...stored.data, ...data, step: 1 });
@@ -493,13 +519,19 @@ export function TaglineCoachFlow({ participantId, onProgress, onSectionComplete 
       <CoachMessage>
         <p className="font-semibold">Your personal tagline</p>
         <p className="mt-2 text-slate-600">
-          Generated from your ambition, impact, and values. Keep it memorable — 3–6 words is ideal.
+          Generated from your ambition, impact, and values. Edit a few beats below, regenerate, then keep it memorable — 3–6 words is ideal.
         </p>
       </CoachMessage>
       <CoachDraftPanel
         title="Personal Tagline"
         statementType="tagline"
         draft={draft}
+        enableCustomization
+        savedCustomFields={customFields}
+        onCustomFieldsChange={(fields) => {
+          setCustomFields(fields);
+          persist({ customFields: fields });
+        }}
         wordLimits={WORD_LIMITS.tagline}
         maxWords={WORD_LIMITS.tagline.max}
         acceptDisabled={countWords(draft) > WORD_LIMITS.tagline.max}
