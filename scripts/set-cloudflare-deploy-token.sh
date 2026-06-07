@@ -38,7 +38,7 @@ if ! gh auth status >/dev/null 2>&1; then
 fi
 
 echo "==> Verifying Cloudflare token (Pages access)..."
-if ! CLOUDFLARE_API_TOKEN="$TOKEN" CLOUDFLARE_ACCOUNT_ID="$ACCOUNT_ID" npx wrangler pages project list --project-name spike >/dev/null 2>&1; then
+if ! CLOUDFLARE_API_TOKEN="$TOKEN" CLOUDFLARE_ACCOUNT_ID="$ACCOUNT_ID" npx wrangler pages project list >/dev/null 2>&1; then
   echo "Error: token could not list Cloudflare Pages projects."
   echo "  Ensure the token has Account → Cloudflare Pages → Edit for account $ACCOUNT_ID"
   exit 1
