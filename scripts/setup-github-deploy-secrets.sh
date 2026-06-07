@@ -40,6 +40,24 @@ if [[ -z "$SUPABASE_ANON" ]]; then
   read -r -p "VITE_SUPABASE_ANON_KEY (Supabase anon/publishable key): " SUPABASE_ANON
 fi
 
+if [[ -z "$CF_TOKEN" ]] && command -v npx >/dev/null 2>&1; then
+  CF_TOKEN="$(npx wrangler auth token --json 2>/dev/null | node -e "
+    const fs = require('fs');
+    let raw = '';
+    process.stdin.on('data', (c) => { raw += c; });
+    process.stdin.on('end', () => {
+      try {
+        const data = JSON.parse(raw);
+        if (data.token) process.stdout.write(data.token);
+      } catch {}
+    });
+  " || true)"
+  if [[ -n "$CF_TOKEN" ]]; then
+    echo "==> Using Cloudflare credentials from local wrangler login"
+    echo "    (OAuth tokens expire — create a long-lived API token for production CI)"
+  fi
+fi
+
 if [[ -z "$CF_TOKEN" ]]; then
   cat <<'EOF'
 

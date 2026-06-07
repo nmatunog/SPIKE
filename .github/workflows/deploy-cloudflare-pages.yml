@@ -29,6 +29,21 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Verify deploy secrets
+        run: |
+          missing=0
+          if [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ]; then
+            echo "::error::CLOUDFLARE_API_TOKEN is missing. Run: ./scripts/setup-github-deploy-secrets.sh"
+            missing=1
+          fi
+          if [ -z "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ]; then
+            echo "::error::CLOUDFLARE_ACCOUNT_ID is missing. Run: ./scripts/setup-github-deploy-secrets.sh"
+            missing=1
+          fi
+          if [ "$missing" -ne 0 ]; then
+            exit 1
+          fi
+
       - name: Build (Supabase env baked in)
         run: npm run build
         env:
@@ -41,4 +56,6 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: '4'
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           command: pages deploy dist --project-name spike
