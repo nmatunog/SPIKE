@@ -1,17 +1,16 @@
 {
   "version": 1,
   "hooks": {
+    "stop": [
+      {
+        "command": ".cursor/hooks/ship-on-agent-stop.sh",
+        "timeout": 600
+      }
+    ],
     "sessionEnd": [
       {
         "command": ".cursor/hooks/push-on-session-end.sh",
-        "timeout": 300
-      }
-    ],
-    "afterShellExecution": [
-      {
-        "command": ".cursor/hooks/ship-after-build-hook.sh",
-        "matcher": "npm run (build|ship)|vite build",
-        "timeout": 300
+        "timeout": 600
       }
     ]
   }

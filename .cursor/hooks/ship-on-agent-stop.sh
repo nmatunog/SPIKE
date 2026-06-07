@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
-# Cursor sessionEnd hook — lint, build, commit, push before the window closes.
+# Cursor stop hook — ship after agent completes when there are uncommitted changes.
 
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-cd "$ROOT"
 
 if [ -t 0 ]; then
   :
@@ -12,4 +11,5 @@ else
   cat >/dev/null || true
 fi
 
-exec "$ROOT/scripts/ship-if-dirty.sh"
+"$ROOT/scripts/ship-if-dirty.sh" || true
+exit 0

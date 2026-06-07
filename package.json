@@ -16,6 +16,7 @@
     "deploy:cf": "bash ./scripts/deploy-cloudflare.sh",
     "deploy:prod": "bash ./scripts/deploy-production.sh",
     "push:dev": "bash ./scripts/auto-push-dev-revisions.sh",
+    "ship:dirty": "bash scripts/ship-if-dirty.sh",
     "smoke:content": "node scripts/smoke-content-files.mjs",
     "smoke:content:loader": "node scripts/smoke-content-loader.mjs",
     "cap:sync": "CAPACITOR=true npm run build && npx cap sync",
