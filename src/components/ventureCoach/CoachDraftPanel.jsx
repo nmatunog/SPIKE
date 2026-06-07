@@ -22,14 +22,14 @@ export function CoachDraftPanel({
   const actions = refineSet === 'future-self' ? FUTURE_SELF_REFINE_ACTIONS : REFINE_ACTIONS;
 
   return (
-    <section className="spike-card space-y-4 border-spike/20 bg-gradient-to-br from-white to-spike-muted/20">
+    <section className="spike-card w-full min-w-0 space-y-4 border-spike/20 bg-gradient-to-br from-white to-spike-muted/20">
       <div>
         <p className="spike-label text-spike">AI Draft</p>
         <h4 className="text-lg font-semibold text-slate-900">{title}</h4>
       </div>
 
       <textarea
-        className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-relaxed focus:border-spike focus:outline-none focus:ring-2 focus:ring-spike/20"
+        className="block w-full min-w-0 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-relaxed focus:border-spike focus:outline-none focus:ring-2 focus:ring-spike/20"
         rows={4}
         value={draft}
         onChange={(e) => onDraftChange(e.target.value)}

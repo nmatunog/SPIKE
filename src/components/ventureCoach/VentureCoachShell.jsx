@@ -108,9 +108,9 @@ export function VentureCoachShell({ participantId, section }) {
         <ArrowLeft size={16} /> Coach home
       </Link>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[240px_1fr]">
+      <div className="grid w-full min-w-0 grid-cols-1 gap-6 lg:grid-cols-[minmax(220px,260px)_minmax(0,1fr)]">
         <CoachProgressSidebar progress={progress} activeSection={section} />
-        <div className="min-w-0 space-y-4">
+        <div className="min-w-0 w-full space-y-4">
           <header>
             <p className="spike-label text-spike">AI Venture Coach™</p>
             <h3 className="text-xl font-semibold text-slate-900 lg:text-2xl">{title}</h3>

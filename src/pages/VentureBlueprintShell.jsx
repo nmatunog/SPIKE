@@ -194,7 +194,7 @@ export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }
 
       <div
         className={
-          isDay1Builders || isExecutiveSummary
+          isDay1Builders || isExecutiveSummary || isCoach
             ? 'min-w-0'
             : 'grid grid-cols-1 gap-6 lg:grid-cols-[minmax(200px,240px)_1fr] xl:grid-cols-[minmax(220px,260px)_1fr] 2xl:grid-cols-[minmax(260px,300px)_1fr] 2xl:gap-8'
         }
