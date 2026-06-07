@@ -9,7 +9,7 @@ export default defineConfig({
   base: capacitorBuild ? './' : '/',
   plugins: [react()],
   build: {
-    chunkSizeWarningLimit: 600,
+    chunkSizeWarningLimit: 1200,
     rollupOptions: {
       output: {
         manualChunks(id) {

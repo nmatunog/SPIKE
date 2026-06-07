@@ -112,8 +112,10 @@ export function getVisionPurposeCompletionPct(participantId) {
     (p.mission_statement
       + p.vision_statement
       + p.my_values
+      + (p.personal_tagline ?? 0)
       + p.future_self_narrative
+      + (p.future_self_summary ?? 0)
       + p.dream_board)
-    / 5,
+    / 7,
   );
 }
