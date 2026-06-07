@@ -21,7 +21,7 @@ Run in order:
 8. `migrations/20260623_sprint_04_fna_engine.sql` — FNA + client growth
 9. `migrations/20260624_sprint_04_timeline_engine.sql` — timeline + coaching
 10. `migrations/20260625_sprint_05_blueprint_integration.sql` — Blueprint sections, canvas, leadership journal
-11. `migrations/20260626_sprint_05b_research_squad_intelligence.sql` — squad members + cohort analytics
+11. `migrations/20260626_sprint_05b_research_squad_intelligence.sql` — research squads (if missing), squad members, cohort analytics
 
 ## 3) First admin
 
