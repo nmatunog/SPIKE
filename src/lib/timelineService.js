@@ -38,7 +38,9 @@ export function listTimelineEvents(participantId, limit = 10) {
  * @param {string} participantId
  */
 export async function hydrateTimelineFromSupabase(participantId) {
-  if (!participantId || hydratedUsers.has(participantId)) return;
+  if (!participantId || String(participantId).startsWith('mock-') || hydratedUsers.has(participantId)) {
+    return;
+  }
 
   const local = listBlueprintTimelineEvents(participantId, 1);
   if (local.length > 0) {

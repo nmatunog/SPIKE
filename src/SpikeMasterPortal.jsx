@@ -56,6 +56,7 @@ import { orientationSlides } from './orientationSlideContents.jsx';
 import { AdminRegisterForm } from './components/AdminRegisterForm.jsx';
 import { GuestBootstrapForm } from './components/GuestBootstrapForm.jsx';
 import { GuestLoginForm } from './components/GuestLoginForm.jsx';
+import { isMockUser, shouldUseSupabaseForUser } from './lib/mockAuth.js';
 import { listMockAuthAccountHints } from './lib/mockAuthUsers.js';
 import { InternSignupPanel } from './components/InternSignupPanel.jsx';
 import { ForcePasswordChangeGate } from './components/ForcePasswordChangeGate.jsx';
@@ -75,6 +76,7 @@ const SpikeMasterPortal = () => {
     completeBootstrapSetup,
   } = useAuth();
   const userRole = resolveUserRole(user);
+  const userIsMock = isMockUser(user);
   const compactNav = useCompactNav();
   const STATIC_ONLY = import.meta.env.VITE_STATIC_ONLY === 'true';
   const [publicTab, setPublicTab] = useState('orientation');
@@ -256,6 +258,11 @@ const SpikeMasterPortal = () => {
   const loadMyLogs = useCallback(async () => {
     if (user?.role !== 'INTERN') return;
 
+    if (userIsMock) {
+      setMyLogs([]);
+      return;
+    }
+
     if (usingSupabaseAuth && supabase && user?.id) {
       try {
         setMyLogs(await fetchMyTractionLogs(user.id));
@@ -272,7 +279,7 @@ const SpikeMasterPortal = () => {
     } catch {
       setMyLogs([]);
     }
-  }, [token, user, usingSupabaseAuth]);
+  }, [token, user, userIsMock, usingSupabaseAuth]);
 
   const loadSetupInfo = useCallback(async () => {
     if (STATIC_ONLY || usingSupabaseAuth) {
@@ -316,7 +323,7 @@ const SpikeMasterPortal = () => {
     } else {
       setMyLogs([]);
     }
-  }, [user, loadMyLogs]);
+  }, [user?.role, userIsMock, loadMyLogs]);
 
   useEffect(() => {
     if (user && ['FACULTY', 'MENTOR', 'ADMIN'].includes(user.role)) {
@@ -477,8 +484,13 @@ const SpikeMasterPortal = () => {
 
   const handleGuestLogin = useCallback(
     async (email, password) => {
-      await login(email, password);
-      navigate(ROUTES.dashboard);
+      const signedIn = await login(email, password);
+      const role = resolveUserRole(signedIn);
+      navigate(
+        defaultRouteForRole(
+          role === 'guest' || role === 'profile_error' ? 'intern' : role,
+        ),
+      );
       showToast('Signed in successfully.');
     },
     [login, navigate, showToast],
@@ -988,12 +1000,14 @@ const SpikeMasterPortal = () => {
               const hoursVal = Number.parseInt(form.hours.value, 10);
               if (!task || !hoursVal) return;
               try {
-                if (usingSupabaseAuth && supabase && user?.id) {
+                if (usingSupabaseAuth && supabase && shouldUseSupabaseForUser(user)) {
                   await createTractionLog({
                     userId: user.id,
                     task,
                     hours: hoursVal,
                   });
+                } else if (isMockUser(user)) {
+                  showToast('Demo mode: traction logs are not saved to Supabase.', 'info');
                 } else {
                   if (!token) return;
                   await apiFetch('/api/traction-logs', {

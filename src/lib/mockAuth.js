@@ -51,3 +51,13 @@ export function getStoredMockUser() {
 export function clearMockUser() {
   localStorage.removeItem(STORAGE_KEY);
 }
+
+/** @param {object | null | undefined} user */
+export function isMockUser(user) {
+  return Boolean(user?.isMockUser);
+}
+
+/** Demo users use non-UUID ids — never send them to Supabase filters. */
+export function shouldUseSupabaseForUser(user) {
+  return Boolean(user?.id) && !isMockUser(user);
+}

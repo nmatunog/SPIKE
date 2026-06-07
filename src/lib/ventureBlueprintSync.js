@@ -35,7 +35,7 @@ export {
  * @param {string} participantId
  */
 export async function hydrateVentureBlueprint(participantId) {
-  if (!participantId) return;
+  if (!participantId || String(participantId).startsWith('mock-')) return;
   await Promise.all([
     hydrateBlueprintSectionsFromSupabase(participantId),
     hydrateCanvasFromSupabase(participantId),

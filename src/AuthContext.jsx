@@ -184,6 +184,13 @@ export function AuthProvider({ children }) {
       const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
         if (cancelled) return;
         if (!session?.user) {
+          const mockUser = getStoredMockUser();
+          if (mockUser) {
+            setToken('mock');
+            setUser(mockUser);
+            setLoading(false);
+            return;
+          }
           setToken(null);
           setUser(null);
           setLoading(false);
@@ -369,6 +376,13 @@ export function AuthProvider({ children }) {
   }, []);
 
   const refreshUser = useCallback(async () => {
+    const storedMock = getStoredMockUser();
+    if (storedMock) {
+      setToken('mock');
+      setUser(storedMock);
+      return storedMock;
+    }
+
     if (USE_SUPABASE) {
       const { data } = await supabase.auth.getSession();
       if (!data.session?.user) {

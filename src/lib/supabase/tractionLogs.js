@@ -1,5 +1,12 @@
-import { supabase } from '../../supabaseClient.js';
+import { isSupabaseConfigured, supabase } from '../../supabaseClient.js';
+import { shouldUseSupabaseForUser } from '../mockAuth.js';
 import { segmentFromHours } from '../segment.js';
+
+function assertSupabaseUser(userId) {
+  if (!isSupabaseConfigured || !supabase || !userId) {
+    throw new Error('Supabase is not configured.');
+  }
+}
 
 function mapLogRow(row, profile) {
   return {
@@ -37,6 +44,10 @@ export async function createTractionLog({ userId, task, hours }) {
 }
 
 export async function fetchMyTractionLogs(userId) {
+  if (!shouldUseSupabaseForUser({ id: userId, isMockUser: String(userId ?? '').startsWith('mock-') })) {
+    return [];
+  }
+  assertSupabaseUser(userId);
   const { data, error } = await supabase
     .from('traction_logs')
     .select('id, user_id, task, hours, status, created_at')
