@@ -71,7 +71,7 @@ export function VentureBlueprintShell({ user, onLogTraction }) {
   if (!activeModule?.tracks.includes(state.career_track)) {
     return (
       <PageContainer>
-        <BlueprintStateHeader state={state} />
+        <BlueprintStateHeader state={state} participantId={user.id} />
         <p className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
           This Blueprint module is not available on your current career track. Open Overview or
           Career Accelerator.
@@ -82,7 +82,7 @@ export function VentureBlueprintShell({ user, onLogTraction }) {
 
   return (
     <PageContainer>
-      <BlueprintStateHeader state={state} />
+      <BlueprintStateHeader state={state} participantId={user.id} />
 
       <div className="mb-4 lg:hidden">
         <BlueprintModuleNav careerTrack={state.career_track} variant="mobile" />

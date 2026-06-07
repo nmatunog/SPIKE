@@ -29,6 +29,7 @@ import { useCompactNav } from './hooks/useCompactNav.js';
 import { PortalHeader } from './layouts/PortalHeader.jsx';
 import { resolveUserRole } from './lib/roles.js';
 import { RoleDashboardCards } from './components/dashboard/RoleDashboardCards.jsx';
+import { BlueprintTimelineFeed } from './components/blueprint/BlueprintTimelineFeed.jsx';
 import { AdminPage } from './pages/AdminPage.jsx';
 import { PlaybookShell } from './pages/PlaybookShell.jsx';
 import { PortfolioPage } from './pages/PortfolioPage.jsx';
@@ -933,6 +934,10 @@ const SpikeMasterPortal = () => {
     return (
     <div className="container mx-auto px-4 py-6 sm:px-6 sm:py-8">
       <RoleDashboardCards role="intern" user={user} interns={interns} internSummary={internSummary} />
+      <div className="mb-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <h3 className="mb-3 text-lg font-bold text-gray-900">Activity timeline</h3>
+        <BlueprintTimelineFeed participantId={user?.id} limit={6} />
+      </div>
       <div className="flex flex-col gap-8 lg:flex-row">
       <div className="space-y-6 lg:w-1/3">
         <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">

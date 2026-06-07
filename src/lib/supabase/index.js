@@ -18,3 +18,5 @@ export { fetchPlaybookCompletions, upsertPlaybookCompletion } from './playbookPr
 export { fetchSurveyResponse, upsertSurveyResponse } from './surveyResponses.js';
 export { fetchFnaRecords, upsertFnaRecord } from './fnaRecords.js';
 export { fetchClientGrowthFunnel, upsertClientGrowthFunnel } from './clientGrowth.js';
+export { fetchTimelineEvents, insertTimelineEvent } from './timelineEvents.js';
+export { createCoachingSession } from './coachingSessions.js';

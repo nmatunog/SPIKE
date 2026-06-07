@@ -23,7 +23,7 @@ import {
   getWeekIntegrationByWeekId,
 } from '../../../lib/playbookSeeds.js';
 import { getVisionPurposeProgress } from '../../../lib/playbookProgress.js';
-import { listBlueprintTimelineEvents } from '../../../lib/blueprintTimeline.js';
+import { BlueprintTimelineFeed } from '../BlueprintTimelineFeed.jsx';
 import { getClientGrowthSummary } from '../../../lib/clientGrowthService.js';
 import { listFnas } from '../../../lib/fnaService.js';
 import { FnaEngineModule } from '../../fna/FnaEngineModule.jsx';
@@ -189,16 +189,9 @@ export function VisionPurposePanel({ participantId }) {
         ))}
       </div>
 
-      {participantId && listBlueprintTimelineEvents(participantId, 5).length > 0 ? (
-        <SectionCard title="Recent Playbook → Blueprint updates">
-          <ul className="space-y-2 text-sm text-gray-700">
-            {listBlueprintTimelineEvents(participantId, 5).map((evt) => (
-              <li key={evt.id} className="rounded-lg bg-gray-50 px-3 py-2">
-                <span className="font-semibold text-gray-900">{evt.title}</span>
-                <span className="text-gray-500"> · {evt.at?.slice(0, 10)}</span>
-              </li>
-            ))}
-          </ul>
+      {participantId ? (
+        <SectionCard title="Activity timeline">
+          <BlueprintTimelineFeed participantId={participantId} limit={5} />
         </SectionCard>
       ) : null}
 

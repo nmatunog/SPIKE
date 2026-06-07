@@ -3,7 +3,7 @@
  * @typedef {import('../types/fna').FinancialNeedsAnalysis} FinancialNeedsAnalysis
  */
 
-import { appendBlueprintTimelineEvent } from './blueprintTimeline.js';
+import { appendTimelineEvent } from './timelineService.js';
 import {
   createBusinessPlanArtifactDraft,
   createPortfolioArtifactDraft,
@@ -80,7 +80,7 @@ export function runFnaAutomation(participantId, fna, allFnas) {
 
   void syncBlueprintDraftsToSupabase(participantId, portfolio, businessPlan);
 
-  appendBlueprintTimelineEvent(participantId, {
+  appendTimelineEvent(participantId, {
     type: 'fna_save',
     title,
     module: FNA_BLUEPRINT_MAPPING.blueprintModule,

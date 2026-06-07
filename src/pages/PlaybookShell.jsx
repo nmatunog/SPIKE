@@ -109,7 +109,12 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [] })
     userRole === 'faculty' || userRole === 'admin' ? (
       <FacultyPlaybookView key={refreshKey} bundle={bundle} />
     ) : userRole === 'mentor' ? (
-      <MentorPlaybookView key={refreshKey} bundle={bundle} interns={interns} />
+      <MentorPlaybookView
+        key={refreshKey}
+        bundle={bundle}
+        interns={interns}
+        mentorId={userRole === 'mentor' || userRole === 'admin' ? participantId : undefined}
+      />
     ) : (
       <ParticipantDayView
         key={refreshKey}

@@ -5,7 +5,7 @@ import {
   getWorksheetMapping,
 } from './activityBlueprintMappings.js';
 import { formatSurveyAnswersForDisplay } from './surveyService.js';
-import { appendBlueprintTimelineEvent } from './blueprintTimeline.js';
+import { appendTimelineEvent } from './timelineService.js';
 import {
   createBusinessPlanArtifactDraft,
   createPortfolioArtifactDraft,
@@ -40,8 +40,17 @@ function syncFromMapping(mapping, participantId, sourceType, sourceId, content) 
 
   void syncBlueprintDraftsToSupabase(participantId, portfolio, businessPlan);
 
-  appendBlueprintTimelineEvent(participantId, {
-    type: 'blueprint_update',
+  const eventType =
+    sourceType === 'survey'
+      ? 'survey_submit'
+      : sourceType === 'fna'
+        ? 'fna_save'
+        : sourceType === 'worksheet' || sourceType === 'activity' || sourceType === 'reflection'
+          ? 'playbook_complete'
+          : 'blueprint_update';
+
+  appendTimelineEvent(participantId, {
+    type: eventType,
     title: mapping.artifactTitle,
     module: mapping.blueprintModule,
     sourceType,

@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { Users } from 'lucide-react';
 import { summarizeInternPlaybookProgress } from '../../lib/playbookProgress.js';
+import { saveMentorCoachingNote } from '../../lib/coachingService.js';
 
 /**
  * @typedef {import('../../lib/contentLoader.js').DayContentBundle} DayContentBundle
@@ -9,9 +11,10 @@ import { summarizeInternPlaybookProgress } from '../../lib/playbookProgress.js';
  * @param {{
  *   bundle: DayContentBundle | null,
  *   interns: Array<{ id: string, name: string }>,
+ *   mentorId?: string,
  * }} props
  */
-export function MentorPlaybookView({ bundle, interns }) {
+export function MentorPlaybookView({ bundle, interns, mentorId }) {
   const summaries = interns.map((intern) =>
     summarizeInternPlaybookProgress(intern.id, intern.name, bundle),
   );
@@ -37,7 +40,7 @@ export function MentorPlaybookView({ bundle, interns }) {
       ) : (
         <div className="space-y-4">
           {summaries.map((row) => (
-            <MentorInternCard key={row.participantId} row={row} />
+            <MentorInternCard key={row.participantId} row={row} mentorId={mentorId} />
           ))}
         </div>
       )}
@@ -45,10 +48,30 @@ export function MentorPlaybookView({ bundle, interns }) {
   );
 }
 
-/** @param {{ row: ReturnType<typeof summarizeInternPlaybookProgress> }} props */
-function MentorInternCard({ row }) {
+/**
+ * @param {{
+ *   row: ReturnType<typeof summarizeInternPlaybookProgress>,
+ *   mentorId?: string,
+ * }} props
+ */
+function MentorInternCard({ row, mentorId }) {
   const subs = row.submissions;
   const worksheetEntries = subs.worksheets ?? [];
+  const [notes, setNotes] = useState('');
+  const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  async function handleSaveCoaching() {
+    if (!mentorId) return;
+    setSaving(true);
+    try {
+      await saveMentorCoachingNote(mentorId, row.participantId, notes);
+      setSaved(true);
+      setNotes('');
+    } finally {
+      setSaving(false);
+    }
+  }
 
   return (
     <article className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
@@ -98,16 +121,39 @@ function MentorInternCard({ row }) {
         </p>
       ) : null}
 
-      <label className="mt-4 block">
-        <span className="mb-1 block text-xs font-bold uppercase text-gray-500">
-          Coaching notes (local)
-        </span>
-        <textarea
-          rows={2}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
-          placeholder="Notes for next coaching session…"
-        />
-      </label>
+      {mentorId ? (
+        <div className="mt-4">
+          <label className="block">
+            <span className="mb-1 block text-xs font-bold uppercase text-gray-500">
+              Coaching notes
+            </span>
+            <textarea
+              rows={2}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+              placeholder="Notes for next coaching session…"
+              value={notes}
+              onChange={(e) => {
+                setNotes(e.target.value);
+                setSaved(false);
+              }}
+              maxLength={4000}
+            />
+          </label>
+          <button
+            type="button"
+            disabled={saving || !notes.trim()}
+            onClick={handleSaveCoaching}
+            className="mt-2 min-h-[40px] rounded-lg bg-sky-700 px-4 py-2 text-xs font-bold text-white disabled:opacity-50"
+          >
+            {saving ? 'Saving…' : 'Save coaching note'}
+          </button>
+          {saved ? (
+            <p className="mt-2 text-xs font-semibold text-emerald-700">
+              Saved — appears on intern timeline.
+            </p>
+          ) : null}
+        </div>
+      ) : null}
     </article>
   );
 }

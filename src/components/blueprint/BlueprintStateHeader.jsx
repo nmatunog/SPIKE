@@ -1,13 +1,17 @@
 import { MetricCard } from '../dashboard/MetricCard.jsx';
+import { BlueprintTimelineFeed } from './BlueprintTimelineFeed.jsx';
 import {
   formatCareerTrackLabel,
   formatVentureBoardStatus,
 } from '../../lib/participantState.js';
 
 /**
- * @param {{ state: ReturnType<import('../../lib/participantState.js').buildParticipantState> }} props
+ * @param {{
+ *   state: ReturnType<import('../../lib/participantState.js').buildParticipantState>,
+ *   participantId?: string,
+ * }} props
  */
-export function BlueprintStateHeader({ state }) {
+export function BlueprintStateHeader({ state, participantId }) {
   return (
     <section className="mb-6 rounded-2xl border border-red-100 bg-gradient-to-br from-white to-red-50/40 p-4 shadow-sm sm:p-6">
       <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
@@ -65,6 +69,15 @@ export function BlueprintStateHeader({ state }) {
           accent="amber"
         />
       </div>
+
+      {participantId ? (
+        <div className="mt-4 border-t border-red-100 pt-4">
+          <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-gray-500">
+            Recent activity
+          </p>
+          <BlueprintTimelineFeed participantId={participantId} limit={4} compact />
+        </div>
+      ) : null}
     </section>
   );
 }
