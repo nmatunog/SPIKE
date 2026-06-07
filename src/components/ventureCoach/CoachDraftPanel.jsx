@@ -13,6 +13,8 @@ import {
   IDENTITY_REFINE_ACTIONS,
   WORD_LIMITS,
 } from '../../lib/ventureCoachConstants.js';
+import { CoachCustomizeChat } from './CoachCustomizeChat.jsx';
+import { CoachMessage } from './CoachMessage.jsx';
 
 /**
  * @param {{ count: number, limits: { max: number, targetMin?: number, targetMax?: number, min?: number } }} props
@@ -224,33 +226,13 @@ export function CoachDraftPanel({
       ) : null}
 
       {enableCustomization && fieldDefs.length ? (
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
-          <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Customize a few words</p>
-          <p className="mt-1 text-xs text-slate-600">
-            Edit the phrases below, then regenerate — your statement rebuilds from your choices.
-          </p>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            {fieldDefs.map((field) => (
-              <label key={field.id} className="block min-w-0">
-                <span className="text-xs font-semibold text-slate-700">{field.label}</span>
-                <input
-                  type="text"
-                  value={customFields[field.id] ?? ''}
-                  placeholder={field.placeholder}
-                  onChange={(e) => updateCustomField(field.id, e.target.value)}
-                  className="mt-1 block w-full min-w-0 rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-spike focus:outline-none focus:ring-2 focus:ring-spike/20"
-                />
-              </label>
-            ))}
-          </div>
-          <button
-            type="button"
-            onClick={handleRegenerate}
-            className="mt-4 inline-flex items-center rounded-xl border border-spike bg-spike-muted/30 px-4 py-2 text-sm font-semibold text-spike transition hover:bg-spike hover:text-white"
-          >
-            Regenerate statement
-          </button>
-        </div>
+        <CoachCustomizeChat
+          statementType={statementType}
+          fields={fieldDefs}
+          values={customFields}
+          onChange={updateCustomField}
+          onRegenerate={handleRegenerate}
+        />
       ) : null}
 
       <textarea
@@ -271,17 +253,18 @@ export function CoachDraftPanel({
       ) : null}
 
       {refineNote ? (
-        <div className="rounded-xl border border-spike/20 bg-spike-muted/20 px-4 py-3">
-          <p className="text-xs font-bold uppercase tracking-wide text-spike">Coach note</p>
-          <p className="mt-1 text-sm text-slate-700">{refineNote}</p>
+        <div className="space-y-2">
+          <CoachMessage>{refineNote}</CoachMessage>
           {undoDraft != null ? (
-            <button
-              type="button"
-              onClick={handleUndoRefine}
-              className="mt-2 text-xs font-semibold text-spike underline hover:no-underline"
-            >
-              Undo last change
-            </button>
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={handleUndoRefine}
+                className="text-xs font-semibold text-spike underline hover:no-underline"
+              >
+                Undo last change
+              </button>
+            </div>
           ) : null}
         </div>
       ) : null}

@@ -170,7 +170,7 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
       {step === 3 && draft ? (
         <>
           <CoachMessage>
-            <p>Choose Short, Balanced, or Inspirational — customize a few words, regenerate, then refine until it feels like yours.</p>
+            <p>Choose Short, Balanced, or Inspirational — chat your tweaks to the coach, regenerate, then refine until it feels like yours.</p>
           </CoachMessage>
           <CoachDraftPanel
             title="Draft Ambition Statement"
@@ -295,7 +295,7 @@ export function ImpactCoachFlow({ participantId, onProgress, onSectionComplete }
             </div>
           ) : null}
           <CoachMessage>
-            <p>Customize who you help and the difference you make, regenerate, then refine until you can say it confidently in under 30 seconds.</p>
+            <p>Reply to the coach in your own words, regenerate, then refine until you can say it confidently in under 30 seconds.</p>
           </CoachMessage>
           <CoachDraftPanel
             title="Impact Statement"

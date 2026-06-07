@@ -1,4 +1,4 @@
-import { Sparkles } from 'lucide-react';
+import { Send, Sparkles } from 'lucide-react';
 
 /**
  * @param {{ role?: 'coach' | 'user', children: import('react').ReactNode, className?: string }} props
@@ -21,6 +21,58 @@ export function CoachMessage({ role = 'coach', children, className = '' }) {
       </div>
       <div className="max-w-[90%] rounded-2xl rounded-tl-md border border-slate-200 bg-white px-4 py-3 text-sm leading-relaxed text-slate-800 shadow-card sm:max-w-xl">
         {children}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Editable intern reply styled like a chat message.
+ * @param {{
+ *   value: string,
+ *   onChange: (value: string) => void,
+ *   placeholder?: string,
+ *   rows?: number,
+ *   onSubmit?: () => void,
+ *   label?: string,
+ * }} props
+ */
+export function CoachUserReplyInput({
+  value,
+  onChange,
+  placeholder = 'Type your reply…',
+  rows = 2,
+  onSubmit,
+  label = 'Your reply',
+}) {
+  return (
+    <div className="flex flex-col items-end gap-1">
+      <span className="pr-1 text-2xs font-semibold uppercase tracking-wide text-slate-400">{label}</span>
+      <div className="flex w-full max-w-lg items-end gap-2">
+        <textarea
+          aria-label={label}
+          rows={rows}
+          value={value}
+          placeholder={placeholder}
+          onChange={(e) => onChange(e.target.value)}
+          onKeyDown={(e) => {
+            if (onSubmit && e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              onSubmit();
+            }
+          }}
+          className="min-h-[44px] w-full min-w-0 resize-y rounded-2xl rounded-br-md bg-spike px-4 py-3 text-sm leading-relaxed text-white shadow-sm placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white/40"
+        />
+        {onSubmit ? (
+          <button
+            type="button"
+            onClick={onSubmit}
+            aria-label="Send reply and regenerate"
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-spike text-white shadow-sm transition hover:bg-spike-light"
+          >
+            <Send size={18} />
+          </button>
+        ) : null}
       </div>
     </div>
   );
