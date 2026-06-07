@@ -249,18 +249,21 @@ function personalizeStatement(text, maxWords) {
   const cleaned = stripCorporateLanguage(text);
   let result;
 
-  if (/help.*famil|famil.*thriv|financial security/i.test(cleaned)) {
+  if (/\b(pursue inspire others|I want to pursue inspire)\b/i.test(cleaned)) {
+    result =
+      'I want to empower others to build brighter financial futures because this work feels deeply personal to me.';
+  } else if (/inspire others|brighter financial futures|bold financial futures|empower others/i.test(cleaned)) {
+    result =
+      'I want to empower others to build brighter financial futures because this work feels deeply personal to me.';
+  } else if (/help.*famil|famil.*thriv|financial security/i.test(cleaned)) {
     result =
       'I want to build a career that helps families thrive while creating financial security for my own family.';
   } else if (/leader|entrepreneur|opportunit/i.test(cleaned)) {
     result = 'I want to grow into a leader who creates opportunities for others while building a life my family is proud of.';
-  } else if (/business|venture|practice/i.test(cleaned)) {
+  } else if (/business|venture|practice|financial services/i.test(cleaned)) {
     result = 'I want to build a career that reflects what matters most to me and gives my family a stronger future.';
   } else {
-    const focus = firstPhrase(cleaned, 60).replace(/^[Bb]uild\s+/i, '').replace(/[.!?]+$/, '');
-    result = focus
-      ? `I want to pursue ${focus.toLowerCase()} because it connects deeply to who I am becoming.`
-      : 'I want a career path that aligns with my values and the future I am working toward.';
+    result = 'I want a career path that aligns with my values and the future I am working toward.';
   }
 
   return polishStatement(result, maxWords, 2);
@@ -269,6 +272,10 @@ function personalizeStatement(text, maxWords) {
 /** @param {string} text @param {number} maxWords */
 function thinkBiggerStatement(text, maxWords) {
   let result = stripCorporateLanguage(text);
+
+  if (/at a scale|lasting community impact|hundreds of families|high-impact|scalable business/i.test(result)) {
+    return polishStatement(result, maxWords, 2);
+  }
 
   if (/help.*famil|financial security|financially secure/i.test(result) && !/hundreds|many families|at scale/i.test(result)) {
     result = result.replace(/\bhelp(s|ing)? families\b/gi, 'help hundreds of families achieve financial security');
@@ -304,9 +311,21 @@ function professionalizeStatement(text, maxWords) {
   return polishStatement(result, maxWords, 2);
 }
 
+const INSPIRATIONAL_REFINE_OUTPUTS = [
+  'Create a business that empowers people to build brighter financial futures.',
+  'Champion families so they can build confident, thriving financial lives.',
+  'Lead with purpose and unlock opportunities for the next generation of entrepreneurs.',
+  'Inspire others to pursue bold financial futures rooted in integrity and service.',
+];
+
 /** @param {string} text @param {number} maxWords */
 function inspireOthersStatement(text, maxWords) {
   const cleaned = stripCorporateLanguage(text);
+  const normalized = cleaned.replace(/[.!?]+$/, '').trim();
+  if (INSPIRATIONAL_REFINE_OUTPUTS.some((line) => line.replace(/[.!?]+$/, '') === normalized)) {
+    return polishStatement(cleaned, maxWords, 2);
+  }
+
   let result;
 
   if (/build.*business|financial services|venture/i.test(cleaned)) {
@@ -330,13 +349,46 @@ function rewriteStatement(text, maxWords) {
     return polishStatement(sentences.reverse().join(' '), maxWords, 2);
   }
 
-  const words = cleaned.split(/\s+/).filter(Boolean);
-  if (words.length > 6) {
-    const pivot = Math.ceil(words.length / 2);
-    return polishStatement(`${words.slice(pivot).join(' ')} — ${words.slice(0, pivot).join(' ')}`, maxWords, 1);
+  const clauseSplit = cleaned.split(/\s*[—–-]\s+/);
+  if (clauseSplit.length > 1) {
+    return polishStatement(`${clauseSplit.slice(1).join(' — ')} — ${clauseSplit[0]}`, maxWords, 1);
+  }
+
+  const whileSplit = cleaned.split(/\s+while\s+/i);
+  if (whileSplit.length > 1) {
+    const tail = whileSplit[1].replace(/[.!?]+$/, '');
+    const head = whileSplit[0].replace(/[.!?]+$/, '');
+    return polishStatement(
+      `While ${tail.charAt(0).toLowerCase()}${tail.slice(1)}, ${head.charAt(0).toLowerCase()}${head.slice(1)}.`,
+      maxWords,
+      1,
+    );
+  }
+
+  const verbSwap = cleaned.match(/^(I want to|I aim to|Build|Create|Inspire others to|Lead with purpose and)\s+(.+)$/i);
+  if (verbSwap) {
+    const rest = verbSwap[2].replace(/[.!?]+$/, '');
+    const alt = /^I want to/i.test(verbSwap[1]) ? `My goal is to ${rest}` : `I aim to ${rest}`;
+    return polishStatement(alt, maxWords, 1);
   }
 
   return polishStatement(cleaned, maxWords, 1);
+}
+
+/** @param {string} text @param {number} maxWords */
+function repairRefinedStatement(text, maxWords) {
+  let result = normalizeWhitespace(text);
+
+  if (/\b(pursue inspire others|I want to pursue inspire)\b/i.test(result)) {
+    result =
+      'I want to empower others to build brighter financial futures because this work feels deeply personal to me.';
+  }
+
+  if (countWords(result) > maxWords) {
+    result = polishStatement(result, maxWords, 2);
+  }
+
+  return result;
 }
 
 /**
@@ -392,7 +444,7 @@ export function evaluateStatement(text, limits) {
 export function capStatementWords(text, maxWords) {
   const words = String(text ?? '').trim().split(/\s+/).filter(Boolean);
   if (words.length <= maxWords) return words.join(' ');
-  return `${words.slice(0, maxWords).join(' ')}…`;
+  return words.slice(0, maxWords).join(' ').replace(/[,;—–-]+$/, '');
 }
 
 /** @param {string} text @param {number} maxWords @param {number} [maxSentences] */
@@ -407,9 +459,7 @@ export function polishStatement(text, maxWords, maxSentences = 2) {
   const sentences = refined.split(/(?<=[.!?])\s+/).filter(Boolean).slice(0, maxSentences);
   refined = sentences.join(' ');
   refined = capStatementWords(refined, maxWords);
-  if (refined.endsWith('…') && !refined.endsWith('….') && !refined.endsWith('…!')) {
-    refined = `${refined.slice(0, -1)}.`;
-  } else if (refined && !/[.!?]$/.test(refined) && maxSentences <= 2) {
+  if (refined && !/[.!?]$/.test(refined) && maxSentences <= 2) {
     refined = `${refined}.`;
   }
   return refined;
@@ -637,39 +687,54 @@ export function refineText(text, mode, maxWords = MAX_AMBITION_WORDS, statementT
 
   const resolvedMode = mode === 'shorten' ? 'simplify' : mode;
   const type = statementType === 'future-self' ? 'ambition' : statementType;
+  let result = base;
 
   switch (resolvedMode) {
     case 'simplify':
       if (statementType === 'future-self') {
         return simplifyFutureSelfNarrative(base);
       }
-      return simplifyStatement(base, type === 'tagline' ? 'tagline' : type === 'purpose' ? 'purpose' : 'ambition');
+      result = simplifyStatement(base, type === 'tagline' ? 'tagline' : type === 'purpose' ? 'purpose' : 'ambition');
+      break;
     case 'core':
-      return findCoreIdeaStatement(
+      result = findCoreIdeaStatement(
         base,
         maxWords,
         type === 'tagline' ? 'tagline' : type === 'purpose' ? 'purpose' : 'ambition',
       );
+      break;
     case 'ambitious':
-      return thinkBiggerStatement(base, maxWords);
+      result = thinkBiggerStatement(base, maxWords);
+      break;
     case 'personal':
-      return personalizeStatement(base, maxWords);
+      result = personalizeStatement(base, maxWords);
+      break;
     case 'professional':
-      return professionalizeStatement(base, maxWords);
+      result = professionalizeStatement(base, maxWords);
+      break;
     case 'inspirational':
-      return inspireOthersStatement(base, maxWords);
+      result = inspireOthersStatement(base, maxWords);
+      break;
     case 'rewrite':
-      return rewriteStatement(base, maxWords);
+      result = rewriteStatement(base, maxWords);
+      break;
     case 'realistic':
-      return polishStatement(
+      result = polishStatement(
         base.replace(/bold/gi, 'consistent').replace(/at scale/gi, 'over time').replace(/hundreds of/gi, ''),
         maxWords,
       );
+      break;
     case 'longer':
       return capStatementWords(`${base} Each milestone builds confidence in this path.`, MAX_FUTURE_SELF_WORDS);
     default:
       return base;
   }
+
+  if (statementType === 'future-self') {
+    return result;
+  }
+
+  return repairRefinedStatement(result, maxWords);
 }
 
 /** @param {string} trackId */
