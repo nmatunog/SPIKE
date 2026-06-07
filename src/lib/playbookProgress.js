@@ -9,6 +9,12 @@ import {
   markWorksheetCompleted as markLegacyWorksheetCompleted,
 } from './playbookLocalProgress.js';
 import { upsertPlaybookCompletion } from './supabase/playbookProgress.js';
+import { runPlaybookAutomation } from './playbookAutomation.js';
+
+export {
+  getVisionPurposeProgress,
+  getVisionPurposeCompletionPct,
+} from './playbookLocalProgress.js';
 
 const STORAGE_KEY = 'spike_playbook_progress_v1';
 
@@ -49,6 +55,24 @@ export function markWorksheetCompleted(participantId, worksheetId, answers = {},
   void upsertPlaybookCompletion(participantId, 'worksheet', worksheetId, dayId, { answers });
 }
 
+/**
+ * @param {string} participantId
+ * @param {string} worksheetId
+ * @param {Record<string, unknown>} answers
+ * @param {string} [dayId]
+ * @param {Array<{ id: string, prompt: string }>} [questions]
+ */
+export function completeWorksheet(participantId, worksheetId, answers, dayId, questions = []) {
+  markWorksheetCompleted(participantId, worksheetId, answers, dayId);
+  return runPlaybookAutomation({
+    participantId,
+    itemType: 'worksheet',
+    itemId: worksheetId,
+    payload: { answers },
+    questions,
+  });
+}
+
 /** @param {string} participantId @param {string} worksheetId */
 export function isWorksheetCompleted(participantId, worksheetId) {
   return Boolean(
@@ -61,13 +85,27 @@ export function isWorksheetCompleted(participantId, worksheetId) {
  * @param {string} participantId
  * @param {string} activityId
  */
-export function markActivityCompleted(participantId, activityId, dayId) {
+/**
+ * @param {string} participantId
+ * @param {string} activityId
+ * @param {string} [dayId]
+ * @param {{ title: string, outputs: string[] }} [activity]
+ */
+export function markActivityCompleted(participantId, activityId, dayId, activity) {
   const all = ensureUser(participantId);
   all[participantId].activities[activityId] = {
     completedAt: new Date().toISOString(),
   };
   writeAll(all);
   void upsertPlaybookCompletion(participantId, 'activity', activityId, dayId);
+  if (activity) {
+    runPlaybookAutomation({
+      participantId,
+      itemType: 'activity',
+      itemId: activityId,
+      activity,
+    });
+  }
 }
 
 /** @param {string} participantId @param {string} activityId */
@@ -80,7 +118,14 @@ export function isActivityCompleted(participantId, activityId) {
  * @param {string} reflectionId
  * @param {Record<string, string>} responses
  */
-export function markReflectionCompleted(participantId, reflectionId, responses = {}, dayId) {
+/**
+ * @param {string} participantId
+ * @param {string} reflectionId
+ * @param {Record<string, string>} [responses]
+ * @param {string} [dayId]
+ * @param {{ title: string }} [reflection]
+ */
+export function markReflectionCompleted(participantId, reflectionId, responses = {}, dayId, reflection) {
   const all = ensureUser(participantId);
   all[participantId].reflections[reflectionId] = {
     completedAt: new Date().toISOString(),
@@ -88,6 +133,15 @@ export function markReflectionCompleted(participantId, reflectionId, responses =
   };
   writeAll(all);
   void upsertPlaybookCompletion(participantId, 'reflection', reflectionId, dayId, { responses });
+  if (reflection) {
+    runPlaybookAutomation({
+      participantId,
+      itemType: 'reflection',
+      itemId: reflectionId,
+      payload: { responses },
+      reflection,
+    });
+  }
 }
 
 /** @param {string} participantId @param {string} reflectionId */

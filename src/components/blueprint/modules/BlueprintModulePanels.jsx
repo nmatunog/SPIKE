@@ -21,7 +21,8 @@ import {
   getVentureBoardsForSegment,
   getWeekIntegrationByWeekId,
 } from '../../../lib/playbookSeeds.js';
-import { getVisionPurposeProgress } from '../../../lib/playbookLocalProgress.js';
+import { getVisionPurposeProgress } from '../../../lib/playbookProgress.js';
+import { listBlueprintTimelineEvents } from '../../../lib/blueprintTimeline.js';
 
 function SectionCard({ title, children, className = '' }) {
   return (
@@ -183,6 +184,19 @@ export function VisionPurposePanel({ participantId }) {
           </SectionCard>
         ))}
       </div>
+
+      {participantId && listBlueprintTimelineEvents(participantId, 5).length > 0 ? (
+        <SectionCard title="Recent Playbook → Blueprint updates">
+          <ul className="space-y-2 text-sm text-gray-700">
+            {listBlueprintTimelineEvents(participantId, 5).map((evt) => (
+              <li key={evt.id} className="rounded-lg bg-gray-50 px-3 py-2">
+                <span className="font-semibold text-gray-900">{evt.title}</span>
+                <span className="text-gray-500"> · {evt.at?.slice(0, 10)}</span>
+              </li>
+            ))}
+          </ul>
+        </SectionCard>
+      ) : null}
 
       {participantId ? (
         <SectionCard title="Portfolio drafts — Identity & Purpose">

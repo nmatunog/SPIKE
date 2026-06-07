@@ -1,10 +1,6 @@
 import { useMemo, useState } from 'react';
 import { CheckCircle } from 'lucide-react';
-import {
-  isWorksheetCompleted,
-  markWorksheetCompleted,
-} from '../../lib/playbookProgress.js';
-import { syncPlaybookWorksheet } from '../../lib/playbookBlueprintSync.js';
+import { completeWorksheet, isWorksheetCompleted } from '../../lib/playbookProgress.js';
 
 /**
  * @param {{
@@ -38,8 +34,7 @@ export function WorksheetViewer({ worksheet, questions, participantId, onComplet
       return;
     }
     if (participantId) {
-      markWorksheetCompleted(participantId, worksheet.id, answers, worksheet.dayId);
-      syncPlaybookWorksheet(participantId, worksheet.id, answers, sorted);
+      completeWorksheet(participantId, worksheet.id, answers, worksheet.dayId, sorted);
     }
     setSubmitted(true);
     setError('');

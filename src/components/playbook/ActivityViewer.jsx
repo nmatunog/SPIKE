@@ -23,7 +23,7 @@ export function ActivityViewer({ activity, participantId, onCompleted }) {
 
   function handleComplete() {
     if (!participantId) return;
-    markActivityCompleted(participantId, activity.id, activity.dayId);
+    markActivityCompleted(participantId, activity.id, activity.dayId, activity);
     onCompleted?.();
   }
 

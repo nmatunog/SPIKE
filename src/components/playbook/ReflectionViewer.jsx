@@ -31,7 +31,7 @@ export function ReflectionViewer({ reflection, participantId, onCompleted }) {
       return;
     }
     if (participantId) {
-      markReflectionCompleted(participantId, reflection.id, responses, reflection.dayId);
+      markReflectionCompleted(participantId, reflection.id, responses, reflection.dayId, reflection);
     }
     setSubmitted(true);
     setError('');
