@@ -25,10 +25,19 @@ import { CoachCardGrid, CoachMessage, CoachRadioList } from './CoachMessage.jsx'
 import { CoachDraftPanel } from './CoachDraftPanel.jsx';
 import { ROUTES } from '../../routes/paths.js';
 
+/** @param {(() => void) | undefined} onSectionComplete @param {ReturnType<typeof useNavigate>} navigate @param {string} nextPath */
+function afterSectionAccept(onSectionComplete, navigate, nextPath) {
+  if (onSectionComplete) {
+    onSectionComplete();
+  } else {
+    navigate(nextPath);
+  }
+}
+
 /**
- * @param {{ participantId: string, onProgress: () => void }} props
+ * @param {{ participantId: string, onProgress: () => void, onSectionComplete?: () => void }} props
  */
-export function AmbitionCoachFlow({ participantId, onProgress }) {
+export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete }) {
   const navigate = useNavigate();
   const stored = getCoachSection(participantId, 'ambition');
   const [step, setStep] = useState(stored.data.step ?? 1);
@@ -67,7 +76,7 @@ export function AmbitionCoachFlow({ participantId, onProgress }) {
   function handleAccept() {
     acceptCoachSection(participantId, 'ambition', draft.trim(), { selectedMotivators: selected, followUpAnswers });
     onProgress();
-    navigate(`${ROUTES.ventureBlueprint}/coach/purpose`);
+    afterSectionAccept(onSectionComplete, navigate, `${ROUTES.ventureBlueprint}/coach/purpose`);
   }
 
   if (stored.completedAt) {
@@ -155,9 +164,9 @@ export function AmbitionCoachFlow({ participantId, onProgress }) {
 }
 
 /**
- * @param {{ participantId: string, onProgress: () => void }} props
+ * @param {{ participantId: string, onProgress: () => void, onSectionComplete?: () => void }} props
  */
-export function PurposeCoachFlow({ participantId, onProgress }) {
+export function PurposeCoachFlow({ participantId, onProgress, onSectionComplete }) {
   const navigate = useNavigate();
   const stored = getCoachSection(participantId, 'purpose');
   const [step, setStep] = useState(stored.data.step ?? 1);
@@ -172,7 +181,7 @@ export function PurposeCoachFlow({ participantId, onProgress }) {
   function handleAccept() {
     acceptCoachSection(participantId, 'purpose', draft.trim(), { drivers, whyDetail });
     onProgress();
-    navigate(`${ROUTES.ventureBlueprint}/coach/values`);
+    afterSectionAccept(onSectionComplete, navigate, `${ROUTES.ventureBlueprint}/coach/values`);
   }
 
   if (stored.completedAt) {
@@ -265,9 +274,9 @@ export function PurposeCoachFlow({ participantId, onProgress }) {
 }
 
 /**
- * @param {{ participantId: string, onProgress: () => void }} props
+ * @param {{ participantId: string, onProgress: () => void, onSectionComplete?: () => void }} props
  */
-export function ValuesCoachFlow({ participantId, onProgress }) {
+export function ValuesCoachFlow({ participantId, onProgress, onSectionComplete }) {
   const navigate = useNavigate();
   const stored = getCoachSection(participantId, 'values');
   const [step, setStep] = useState(stored.data.step ?? 1);
@@ -414,7 +423,11 @@ export function ValuesCoachFlow({ participantId, onProgress }) {
             onClick={() => {
               acceptCoachSection(participantId, 'values', profile, { topFive, valuesProfile: profile });
               onProgress();
-              navigate(`${ROUTES.ventureBlueprint}/coach/future-self`);
+              afterSectionAccept(
+                onSectionComplete,
+                navigate,
+                `${ROUTES.ventureBlueprint}/coach/future-self`,
+              );
             }}
             className="spike-btn-primary"
           >
@@ -427,9 +440,9 @@ export function ValuesCoachFlow({ participantId, onProgress }) {
 }
 
 /**
- * @param {{ participantId: string, onProgress: () => void }} props
+ * @param {{ participantId: string, onProgress: () => void, onSectionComplete?: () => void }} props
  */
-export function FutureSelfCoachFlow({ participantId, onProgress }) {
+export function FutureSelfCoachFlow({ participantId, onProgress, onSectionComplete }) {
   const navigate = useNavigate();
   const stored = getCoachSection(participantId, 'future-self');
   const [step, setStep] = useState(stored.data.step ?? 1);
@@ -570,9 +583,18 @@ export function FutureSelfCoachFlow({ participantId, onProgress }) {
               persist({ draft: text });
             }}
             onAccept={() => {
-              acceptCoachSection(participantId, 'future-self', draft.trim(), { goals, incomeLevel, impact, successVision });
+              acceptCoachSection(participantId, 'future-self', draft.trim(), {
+                goals,
+                incomeLevel,
+                impact,
+                successVision,
+              });
               onProgress();
-              navigate(`${ROUTES.ventureBlueprint}/coach/venture-direction`);
+              afterSectionAccept(
+                onSectionComplete,
+                navigate,
+                `${ROUTES.ventureBlueprint}/coach/venture-direction`,
+              );
             }}
           />
         </>
@@ -582,9 +604,9 @@ export function FutureSelfCoachFlow({ participantId, onProgress }) {
 }
 
 /**
- * @param {{ participantId: string, onProgress: () => void }} props
+ * @param {{ participantId: string, onProgress: () => void, onSectionComplete?: () => void }} props
  */
-export function VentureDirectionCoachFlow({ participantId, onProgress }) {
+export function VentureDirectionCoachFlow({ participantId, onProgress, onSectionComplete }) {
   const stored = getCoachSection(participantId, 'venture-direction');
   const [track, setTrack] = useState(String(stored.data.track ?? ''));
 
@@ -633,6 +655,7 @@ export function VentureDirectionCoachFlow({ participantId, onProgress }) {
         onClick={() => {
           acceptCoachSection(participantId, 'venture-direction', track, { track });
           onProgress();
+          if (onSectionComplete) onSectionComplete();
         }}
         className="spike-btn-primary disabled:opacity-50"
       >

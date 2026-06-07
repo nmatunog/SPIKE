@@ -3,31 +3,35 @@
 export const DAY1_BUILDERS = [
   {
     id: 'ambition-builder',
-    label: 'Ambition Builder',
-    missionLabel: 'Define My Ambition',
-    description: 'Which future are you trying to create? Select ambitions and craft your statement.',
+    label: 'My Ambition',
+    missionLabel: 'AI Coach — My Ambition',
+    description: 'Your Venture Coach guides you through a conversation — no blank forms.',
     feeds: 'Ambition & Purpose',
+    coachSection: 'ambition',
   },
   {
     id: 'purpose-builder',
-    label: 'Purpose Builder',
-    missionLabel: 'Define My Purpose',
-    description: 'Why does your ambition matter to you? Guided prompts — no blank page.',
+    label: 'My Purpose',
+    missionLabel: 'AI Coach — My Purpose',
+    description: 'Discover why your ambition matters through guided reflection.',
     feeds: 'Ambition & Purpose',
+    coachSection: 'purpose',
   },
   {
     id: 'values-builder',
-    label: 'Values Builder',
-    missionLabel: 'Define My Values',
-    description: 'Select, narrow, and rank the principles that will guide your venture.',
+    label: 'My Values',
+    missionLabel: 'AI Coach — My Values',
+    description: 'Select, rank, and understand your guiding principles.',
     feeds: 'Ambition & Purpose',
+    coachSection: 'values',
   },
   {
     id: 'future-self',
-    label: 'Future Self',
-    missionLabel: 'Imagine Your Future Self',
-    description: 'Describe your life and career in 3 years if everything goes well.',
+    label: 'My Future Self',
+    missionLabel: 'AI Coach — Future Self',
+    description: 'Build your 3-year narrative through an interactive timeline.',
     feeds: 'Ambition & Purpose',
+    coachSection: 'future-self',
   },
   {
     id: 'dream-board',
@@ -38,10 +42,11 @@ export const DAY1_BUILDERS = [
   },
   {
     id: 'future-venture',
-    label: 'Future Venture Snapshot',
-    missionLabel: 'Explore Your Venture Path',
-    description: 'Share which ACS path interests you today — no commitment yet.',
+    label: 'My Venture Direction',
+    missionLabel: 'AI Coach — Venture Direction',
+    description: 'Explore which ACS path excites you — no commitment yet.',
     feeds: 'Career Track Explorer',
+    coachSection: 'venture-direction',
   },
   {
     id: 'squad-formation',
@@ -171,6 +176,21 @@ export const LEGACY_BUILDER_IDS = {
   'discover-why': 'purpose-builder',
   'design-future': 'future-self',
 };
+
+/** Maps Day 1 builder IDs → AI Venture Coach section IDs */
+export const DAY1_BUILDER_COACH_MAP = Object.fromEntries(
+  DAY1_BUILDERS.filter((b) => b.coachSection).map((b) => [b.id, b.coachSection]),
+);
+
+/** @param {string} builderId */
+export function getCoachSectionForBuilder(builderId) {
+  return DAY1_BUILDER_COACH_MAP[builderId] ?? null;
+}
+
+/** @param {string} builderId */
+export function isCoachBackedBuilder(builderId) {
+  return Boolean(DAY1_BUILDER_COACH_MAP[builderId]);
+}
 
 /** @param {string} builderId */
 export function getDay1Builder(builderId) {

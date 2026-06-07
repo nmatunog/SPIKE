@@ -175,4 +175,17 @@ function topEntries(map, limit) {
     .map(([id, count]) => ({ id, count }));
 }
 
+/** @param {string} participantId @param {string} sectionId */
+export function resetCoachSection(participantId, sectionId) {
+  const all = readAll();
+  const user = all[participantId];
+  if (!user?.sections?.[sectionId]) return;
+  user.sections[sectionId] = { step: 0, data: {}, draftVersions: [], completedAt: null };
+  user.badges = (user.badges ?? []).filter(
+    (badge) => !COACH_SECTIONS.find((s) => s.id === sectionId && s.badge === badge),
+  );
+  all[participantId] = user;
+  writeAll(all);
+}
+
 export { readAll as readCoachStore };

@@ -39,8 +39,8 @@ export function Day1MissionControl({ participantId, compact = false }) {
             Mission Control
           </h2>
           <p className="mt-2 max-w-xl text-sm text-slate-300">
-            Today&apos;s mission: build the foundation of your Venture Blueprint™ through eight
-            interactive builders — define your ambition, purpose, and values like a venture founder.
+            Today&apos;s mission: work with your <strong className="text-white">AI Venture Coach™</strong> through
+            guided conversations — then complete your Dream Board and squad builders.
           </p>
         </div>
         <div className="shrink-0 rounded-2xl bg-white/10 px-5 py-4 text-center backdrop-blur">

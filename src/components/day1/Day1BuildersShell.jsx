@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { DAY1_BUILDERS } from '../../lib/day1BuilderConstants.js';
+import { DAY1_BUILDERS, isCoachBackedBuilder } from '../../lib/day1BuilderConstants.js';
 import {
   completeDay1Builder,
   getBuilderData,
@@ -11,24 +11,15 @@ import {
   saveBuilderDraft,
 } from '../../lib/day1BuilderService.js';
 import { Day1MissionControl } from './Day1MissionControl.jsx';
+import { Day1CoachSection } from './Day1CoachSection.jsx';
 import { BuilderResetButton } from './BuilderResetButton.jsx';
-import { AmbitionBuilder } from './builders/AmbitionBuilder.jsx';
-import { PurposeBuilder } from './builders/PurposeBuilder.jsx';
-import { ValuesBuilder } from './builders/ValuesBuilder.jsx';
-import { FutureSelfBuilder } from './builders/FutureSelfBuilder.jsx';
 import { DreamBoardStudio } from './builders/DreamBoardStudio.jsx';
-import { FutureVentureSnapshotBuilder } from './builders/FutureVentureSnapshotBuilder.jsx';
 import { SquadFormationBuilder } from './builders/SquadFormationBuilder.jsx';
 import { SquadCharterBuilder } from './builders/SquadCharterBuilder.jsx';
 import { ROUTES } from '../../routes/paths.js';
 
-const BUILDER_COMPONENTS = {
-  'ambition-builder': AmbitionBuilder,
-  'purpose-builder': PurposeBuilder,
-  'values-builder': ValuesBuilder,
-  'future-self': FutureSelfBuilder,
+const CLASSIC_BUILDERS = {
   'dream-board': DreamBoardStudio,
-  'future-venture': FutureVentureSnapshotBuilder,
   'squad-formation': SquadFormationBuilder,
   'squad-charter': SquadCharterBuilder,
 };
@@ -56,7 +47,10 @@ export function Day1BuildersShell({
 
   const activeBuilder = DAY1_BUILDERS.find((b) => b.id === activeId) ?? DAY1_BUILDERS[0];
   const activeIndex = DAY1_BUILDERS.findIndex((b) => b.id === activeId);
-  const BuilderComponent = BUILDER_COMPONENTS[activeId];
+  const ClassicComponent = CLASSIC_BUILDERS[activeId];
+  const isCoach = isCoachBackedBuilder(activeId);
+  const coachConversationIndex = DAY1_BUILDERS.filter((b) => b.coachSection).findIndex((b) => b.id === activeId) + 1;
+  const coachConversationTotal = DAY1_BUILDERS.filter((b) => b.coachSection).length;
 
   function switchBuilder(id) {
     setActiveId(id);
@@ -68,13 +62,15 @@ export function Day1BuildersShell({
     saveBuilderDraft(participantId, activeId, next);
   }
 
-  function handleComplete(next) {
+  function handleClassicComplete(next) {
     completeDay1Builder(participantId, activeId, next);
+    advanceToNext();
+  }
+
+  function advanceToNext() {
     setRefreshKey((k) => k + 1);
     const nextBuilder = DAY1_BUILDERS[activeIndex + 1];
-    if (nextBuilder) {
-      switchBuilder(nextBuilder.id);
-    }
+    if (nextBuilder) switchBuilder(nextBuilder.id);
   }
 
   function handleReset() {
@@ -90,10 +86,11 @@ export function Day1BuildersShell({
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[240px_1fr]">
         <nav className="spike-card space-y-1 p-3">
-          <p className="mb-2 px-2 spike-label">Venture Blueprint Builders™</p>
+          <p className="mb-2 px-2 spike-label">AI Venture Coach™ · Day 1</p>
           {DAY1_BUILDERS.map((builder, idx) => {
             const done = isBuilderCompleted(participantId, builder.id);
             const active = builder.id === activeId;
+            const coachItem = Boolean(builder.coachSection);
             return (
               <button
                 key={builder.id}
@@ -110,15 +107,21 @@ export function Day1BuildersShell({
                     active ? 'bg-white/20' : done ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100'
                   }`}
                 >
-                  {done ? <Check size={14} /> : idx + 1}
+                  {done ? <Check size={14} /> : coachItem ? <Sparkles size={12} /> : idx + 1}
                 </span>
                 <span className="font-medium">{builder.label}</span>
               </button>
             );
           })}
           <Link
+            to={`${ROUTES.ventureBlueprint}/coach`}
+            className="mt-2 flex items-center gap-2 px-3 py-2 text-sm font-medium text-spike hover:underline"
+          >
+            <Sparkles size={14} /> Full coach experience
+          </Link>
+          <Link
             to={ROUTES.ventureBlueprint}
-            className="mt-3 flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-500 hover:text-spike"
+            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-500 hover:text-spike"
           >
             <ArrowLeft size={16} /> Back to Blueprint
           </Link>
@@ -127,16 +130,37 @@ export function Day1BuildersShell({
         <div className="min-w-0">
           <header className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <p className="spike-label text-spike">Builder {activeIndex + 1} of {DAY1_BUILDERS.length}</p>
-              <h3 className="text-xl font-semibold text-slate-900 lg:text-2xl">{activeBuilder.label}</h3>
+              {isCoach ? (
+                <>
+                  <p className="spike-label text-spike">
+                    AI Venture Coach™ · Conversation {coachConversationIndex} of {coachConversationTotal}
+                  </p>
+                  <h3 className="text-xl font-semibold text-slate-900 lg:text-2xl">{activeBuilder.label}</h3>
+                </>
+              ) : (
+                <>
+                  <p className="spike-label text-spike">
+                    Builder {activeIndex + 1} of {DAY1_BUILDERS.length}
+                  </p>
+                  <h3 className="text-xl font-semibold text-slate-900 lg:text-2xl">{activeBuilder.label}</h3>
+                </>
+              )}
               <p className="mt-1 text-sm text-slate-600">{activeBuilder.description}</p>
               <p className="mt-1 text-xs text-slate-500">Feeds → {activeBuilder.feeds}</p>
             </div>
-            <BuilderResetButton onReset={handleReset} />
+            <BuilderResetButton onReset={handleReset} label={isCoach ? 'Start conversation over' : 'Reset all fields'} />
           </header>
 
-          {BuilderComponent ? (
-            <BuilderComponent
+          {isCoach ? (
+            <Day1CoachSection
+              key={`${activeId}-${builderMountKey}`}
+              builderId={activeId}
+              participantId={participantId}
+              onProgress={() => setRefreshKey((k) => k + 1)}
+              onSectionComplete={advanceToNext}
+            />
+          ) : ClassicComponent ? (
+            <ClassicComponent
               key={`${activeId}-${builderMountKey}`}
               participantId={participantId}
               participantName={participantName}
@@ -144,7 +168,7 @@ export function Day1BuildersShell({
               draft={draft}
               completed={isBuilderCompleted(participantId, activeId)}
               onChange={handleDraftChange}
-              onComplete={handleComplete}
+              onComplete={handleClassicComplete}
             />
           ) : null}
 

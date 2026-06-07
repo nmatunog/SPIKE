@@ -1,7 +1,8 @@
 /**
  * Day 1 builder local storage — no playbook imports (avoids circular deps).
  */
-import { DAY1_BUILDERS, LEGACY_BUILDER_IDS } from './day1BuilderConstants.js';
+import { DAY1_BUILDERS, DAY1_BUILDER_COACH_MAP, LEGACY_BUILDER_IDS } from './day1BuilderConstants.js';
+import { isCoachSectionComplete, resetCoachSection } from './ventureCoachStorage.js';
 
 const STORAGE_KEY = 'spike_day1_builders';
 
@@ -39,7 +40,10 @@ export function readBuilderEntry(participantId, builderId) {
 
 /** @param {string} participantId @param {string} builderId */
 export function isBuilderCompleted(participantId, builderId) {
-  return Boolean(readBuilderEntry(participantId, builderId)?.completedAt);
+  if (readBuilderEntry(participantId, builderId)?.completedAt) return true;
+  const coachSection = DAY1_BUILDER_COACH_MAP[builderId];
+  if (coachSection && isCoachSectionComplete(participantId, coachSection)) return true;
+  return false;
 }
 
 /** @param {string} participantId */
@@ -91,6 +95,9 @@ export function clearBuilderEntry(participantId, builderId) {
 
   const legacyId = Object.entries(LEGACY_BUILDER_IDS).find(([, current]) => current === builderId)?.[0];
   if (legacyId) delete user.builders[legacyId];
+
+  const coachSection = DAY1_BUILDER_COACH_MAP[builderId];
+  if (coachSection) resetCoachSection(participantId, coachSection);
 
   writeAll(all);
 }
