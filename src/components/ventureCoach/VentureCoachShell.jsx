@@ -11,6 +11,7 @@ import {
   AmbitionCoachFlow,
   FutureSelfCoachFlow,
   PurposeCoachFlow,
+  TaglineCoachFlow,
   ValuesCoachFlow,
   VentureDirectionCoachFlow,
 } from './CoachSectionFlows.jsx';
@@ -20,6 +21,7 @@ const SECTION_TITLES = {
   ambition: 'My Ambition',
   purpose: 'My Purpose',
   values: 'My Values',
+  tagline: 'My Tagline',
   'future-self': 'My Future Self',
   'venture-direction': 'My Venture Direction',
 };
@@ -83,6 +85,8 @@ export function VentureCoachShell({ participantId, section }) {
         return <PurposeCoachFlow participantId={participantId} onProgress={bumpProgress} />;
       case 'values':
         return <ValuesCoachFlow participantId={participantId} onProgress={bumpProgress} />;
+      case 'tagline':
+        return <TaglineCoachFlow participantId={participantId} onProgress={bumpProgress} />;
       case 'future-self':
         return <FutureSelfCoachFlow participantId={participantId} onProgress={bumpProgress} />;
       case 'venture-direction':

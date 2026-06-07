@@ -31,8 +31,9 @@ export function CohortIdentityAnalyticsPage() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         <AnalyticsList title="Top Ambitions" items={analytics.topMotivators} options={AMBITION_MOTIVATOR_CARDS} />
-        <AnalyticsList title="Top Values" items={analytics.topValues} options={COACH_VALUE_CARDS} />
-        <AnalyticsList title="Common Motivations (Purpose)" items={analytics.topPurposeDrivers} options={PURPOSE_DRIVERS} />
+        <AnalyticsList title="Top Values (Public Top 3)" items={analytics.topValues} options={COACH_VALUE_CARDS} />
+        <AnalyticsList title="Top Purpose Drivers" items={analytics.topPurposeDrivers} options={PURPOSE_DRIVERS} />
+        <TaglineList title="Most Common Taglines" items={analytics.topTaglines} />
 
         <section className="spike-card lg:col-span-2">
           <h3 className="mb-4 text-sm font-semibold text-slate-900">Career Track Distribution</h3>
@@ -61,6 +62,27 @@ function AnalyticsList({ title, items, options }) {
           {items.map((item) => (
             <li key={item.id} className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm">
               <span>{options.find((o) => o.id === item.id)?.label ?? item.id}</span>
+              <span className="font-bold text-spike">{item.count}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+/** @param {{ title: string, items: Array<{ id: string, count: number }> }} props */
+function TaglineList({ title, items }) {
+  return (
+    <section className="spike-card">
+      <h3 className="mb-3 text-sm font-semibold text-slate-900">{title}</h3>
+      {items.length === 0 ? (
+        <p className="text-sm text-slate-500">No taglines saved yet.</p>
+      ) : (
+        <ul className="space-y-2">
+          {items.map((item) => (
+            <li key={item.id} className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm">
+              <span className="capitalize">{item.id}</span>
               <span className="font-bold text-spike">{item.count}</span>
             </li>
           ))}

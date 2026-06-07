@@ -177,6 +177,8 @@ export async function exportVentureBoardCoverSheet(
     ['Ambition', model.ambitionPurpose?.ambition ?? '—'],
     ['Purpose', model.ambitionPurpose?.purpose ?? '—'],
     ['Values', model.ambitionPurpose?.values ?? '—'],
+    ['Tagline', model.ambitionPurpose?.tagline ?? '—'],
+    ['Future Self Summary', model.ambitionPurpose?.futureSelfSummary ?? '—'],
     ['Future Self', model.ambitionPurpose?.futureSelf ?? '—'],
   ];
   for (const [label, value] of ambitionPurposeLines) {

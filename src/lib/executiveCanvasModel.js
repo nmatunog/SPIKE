@@ -205,8 +205,16 @@ export function buildExecutiveCanvasModel({ participantId, participantName, stat
       values: summarizeExecutiveField(
         getSectionField(participantId, 'vision-purpose', 'my_values'),
       ),
+      tagline: summarizeExecutiveField(
+        getSectionField(participantId, 'vision-purpose', 'personal_tagline'),
+        80,
+      ),
       futureSelf: summarizeExecutiveField(
         getSectionField(participantId, 'vision-purpose', 'future_self_narrative'),
+      ),
+      futureSelfSummary: summarizeExecutiveField(
+        getSectionField(participantId, 'vision-purpose', 'future_self_summary'),
+        120,
       ),
     },
     acsRoadmap:

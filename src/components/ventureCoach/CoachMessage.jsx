@@ -27,19 +27,30 @@ export function CoachMessage({ role = 'coach', children, className = '' }) {
 }
 
 /**
- * @param {{ options: Array<{ id: string, label: string }>, selected: string[], multi?: boolean, onToggle: (id: string) => void }} props
+ * @param {{
+ *   options: Array<{ id: string, label: string }>,
+ *   selected: string[],
+ *   onToggle: (id: string) => void,
+ *   maxSelections?: number,
+ *   exactSelections?: number,
+ * }} props
  */
-export function CoachCardGrid({ options, selected, onToggle }) {
+export function CoachCardGrid({ options, selected, onToggle, maxSelections, exactSelections }) {
+  const limit = exactSelections ?? maxSelections;
+
   return (
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
       {options.map((opt) => {
         const active = selected.includes(opt.id);
+        const atLimit = Boolean(limit && !active && selected.length >= limit);
+
         return (
           <button
             key={opt.id}
             type="button"
+            disabled={atLimit}
             onClick={() => onToggle(opt.id)}
-            className={`rounded-xl border-2 px-3 py-3 text-left text-sm font-medium transition hover:shadow-md ${
+            className={`rounded-xl border-2 px-3 py-3 text-left text-sm font-medium transition hover:shadow-md disabled:cursor-not-allowed disabled:opacity-45 ${
               active
                 ? 'border-spike bg-spike-muted text-spike shadow-sm ring-2 ring-spike/15'
                 : 'border-slate-200 bg-white text-slate-800 hover:border-spike/30'

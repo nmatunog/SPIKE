@@ -62,11 +62,23 @@ function syncSectionToBlueprint(participantId, sectionId, text, extra) {
         sourceId: 'values',
       });
       break;
+    case 'tagline':
+      setSectionField(participantId, 'vision-purpose', 'personal_tagline', text, {
+        sourceType: 'venture_coach',
+        sourceId: 'tagline',
+      });
+      break;
     case 'future-self':
       setSectionField(participantId, 'vision-purpose', 'future_self_narrative', text, {
         sourceType: 'venture_coach',
         sourceId: 'future-self',
       });
+      if (extra.futureSelfSummary) {
+        setSectionField(participantId, 'vision-purpose', 'future_self_summary', String(extra.futureSelfSummary), {
+          sourceType: 'venture_coach',
+          sourceId: 'future-self',
+        });
+      }
       break;
     case 'venture-direction': {
       const track = String(extra.track ?? 'undecided');
@@ -86,11 +98,16 @@ export function getCoachSummaryForMentor(participantId) {
   const profile = getCoachProfile(participantId);
   if (!profile) return null;
   const progress = getCoachProgress(participantId);
+  const valuesData = profile.sections?.values?.data ?? {};
+  const topThree = valuesData.topThree ?? [];
   return {
     progress,
     ambition: profile.sections?.ambition?.data?.finalText ?? '',
     purpose: profile.sections?.purpose?.data?.finalText ?? '',
-    valuesProfile: profile.sections?.values?.data?.valuesProfile ?? '',
+    topThreeValues: topThree,
+    valuesProfile: valuesData.valuesProfile ?? '',
+    tagline: profile.sections?.tagline?.data?.finalText ?? '',
+    futureSelfSummary: profile.sections?.['future-self']?.data?.futureSelfSummary ?? '',
     futureSelf: profile.sections?.['future-self']?.data?.finalText ?? '',
     ventureDirection: profile.sections?.['venture-direction']?.data?.track ?? '',
   };

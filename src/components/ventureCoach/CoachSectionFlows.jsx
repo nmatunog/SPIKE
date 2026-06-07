@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   AMBITION_MOTIVATOR_CARDS,
@@ -7,13 +7,16 @@ import {
   INCOME_SLIDER_LABELS,
   PURPOSE_DRIVERS,
   VENTURE_DIRECTION_CARDS,
+  WORD_LIMITS,
 } from '../../lib/ventureCoachConstants.js';
 import {
-  generateAmbitionDraft,
+  countWords,
+  generateAmbitionVariants,
   generateFutureSelfNarrative,
+  generateFutureSelfSummary,
   generatePurposeDraft,
+  generateTagline,
   generateValuesProfile,
-  getAmbitionFollowUps,
   labelFor,
 } from '../../lib/ventureCoachEngine.js';
 import {
@@ -21,9 +24,13 @@ import {
   getCoachSection,
   saveCoachSectionDraft,
 } from '../../lib/ventureCoachService.js';
-import { CoachCardGrid, CoachMessage, CoachRadioList } from './CoachMessage.jsx';
-import { CoachDraftPanel } from './CoachDraftPanel.jsx';
+import { CoachCardGrid, CoachMessage } from './CoachMessage.jsx';
+import { CoachDraftPanel, CoachWordGuidance } from './CoachDraftPanel.jsx';
+import { CoachRankList, CoachSelectionCounter } from './CoachRankList.jsx';
 import { ROUTES } from '../../routes/paths.js';
+
+const AMBITION_EXACT = 3;
+const PURPOSE_EXACT = 2;
 
 /** @param {(() => void) | undefined} onSectionComplete @param {ReturnType<typeof useNavigate>} navigate @param {string} nextPath */
 function afterSectionAccept(onSectionComplete, navigate, nextPath) {
@@ -42,39 +49,53 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
   const stored = getCoachSection(participantId, 'ambition');
   const [step, setStep] = useState(stored.data.step ?? 1);
   const [selected, setSelected] = useState(/** @type {string[]} */ (stored.data.selectedMotivators ?? []));
-  const [followUpAnswers, setFollowUpAnswers] = useState(
-    /** @type {Record<string, string>} */ (stored.data.followUpAnswers ?? {}),
+  const [ranked, setRanked] = useState(
+    /** @type {string[]} */ (stored.data.rankedMotivators ?? stored.data.selectedMotivators ?? []),
   );
+  const [variants, setVariants] = useState(
+    /** @type {{ short: string, balanced: string, inspirational: string } | null} */ (
+      stored.data.draftVariants ?? null
+    ),
+  );
+  const [selectedVariant, setSelectedVariant] = useState(String(stored.data.selectedVariant ?? 'balanced'));
   const [draft, setDraft] = useState(String(stored.data.draft ?? ''));
-
-  const followUps = useMemo(() => getAmbitionFollowUps(selected), [selected]);
-  const followUpIndex = step - 2;
 
   function persist(data) {
     saveCoachSectionDraft(participantId, 'ambition', { ...stored.data, ...data, step });
   }
 
   function toggleMotivator(id) {
-    const next = selected.includes(id) ? selected.filter((x) => x !== id) : [...selected, id];
+    let next = selected.includes(id) ? selected.filter((x) => x !== id) : [...selected, id];
+    if (next.length > AMBITION_EXACT) next = next.slice(-AMBITION_EXACT);
     setSelected(next);
     persist({ selectedMotivators: next });
   }
 
   function handleGenerateDraft() {
-    const text = generateAmbitionDraft({ selectedMotivators: selected, followUpAnswers });
-    const draftStep = 2 + followUps.length;
-    setDraft(text);
-    setStep(draftStep);
+    const order = ranked.length === AMBITION_EXACT ? ranked : selected;
+    const generated = generateAmbitionVariants({ rankedMotivators: order });
+    setVariants(generated);
+    setDraft(generated.balanced);
+    setSelectedVariant('balanced');
+    setStep(3);
     saveCoachSectionDraft(participantId, 'ambition', {
       selectedMotivators: selected,
-      followUpAnswers,
-      draft: text,
-      step: draftStep,
+      rankedMotivators: order,
+      draftVariants: generated,
+      selectedVariant: 'balanced',
+      draft: generated.balanced,
+      step: 3,
     });
   }
 
   function handleAccept() {
-    acceptCoachSection(participantId, 'ambition', draft.trim(), { selectedMotivators: selected, followUpAnswers });
+    if (countWords(draft) > WORD_LIMITS.ambition.max) return;
+    acceptCoachSection(participantId, 'ambition', draft.trim(), {
+      selectedMotivators: selected,
+      rankedMotivators: ranked,
+      draftVariants: variants,
+      selectedVariant,
+    });
     onProgress();
     afterSectionAccept(onSectionComplete, navigate, `${ROUTES.ventureBlueprint}/coach/purpose`);
   }
@@ -94,63 +115,68 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
         <>
           <CoachMessage>
             <p className="font-semibold">What excites you most about your future?</p>
-            <p className="mt-2 text-slate-600">Select everything that resonates — there are no wrong answers.</p>
+            <p className="mt-2 text-slate-600">Select exactly 3 — force yourself to prioritize what matters most.</p>
           </CoachMessage>
-          <CoachCardGrid options={AMBITION_MOTIVATOR_CARDS} selected={selected} onToggle={toggleMotivator} />
-          <button
-            type="button"
-            disabled={selected.length === 0}
-            onClick={() => {
-              if (followUps.length === 0) {
-                handleGenerateDraft();
-              } else {
-                setStep(2);
-                persist({ selectedMotivators: selected, step: 2 });
-              }
-            }}
-            className="spike-btn-primary disabled:opacity-50"
-          >
-            Continue
-          </button>
-        </>
-      ) : null}
-
-      {step >= 2 && followUpIndex >= 0 && followUpIndex < followUps.length ? (
-        <>
-          <CoachMessage>
-            <p className="whitespace-pre-wrap font-semibold">{followUps[followUpIndex].prompt}</p>
-          </CoachMessage>
-          <CoachRadioList
-            options={followUps[followUpIndex].options}
-            value={followUpAnswers[followUps[followUpIndex].id] ?? ''}
-            onChange={(id) => {
-              const next = { ...followUpAnswers, [followUps[followUpIndex].id]: id };
-              setFollowUpAnswers(next);
-              persist({ followUpAnswers: next });
-            }}
+          <CoachSelectionCounter count={selected.length} exact={AMBITION_EXACT} />
+          <CoachCardGrid
+            options={AMBITION_MOTIVATOR_CARDS}
+            selected={selected}
+            onToggle={toggleMotivator}
+            exactSelections={AMBITION_EXACT}
           />
           <button
             type="button"
-            disabled={!followUpAnswers[followUps[followUpIndex].id]}
+            disabled={selected.length !== AMBITION_EXACT}
             onClick={() => {
-              if (followUpIndex + 1 >= followUps.length) handleGenerateDraft();
-              else setStep(step + 1);
+              setRanked([...selected]);
+              persist({ rankedMotivators: [...selected], step: 2 });
+              setStep(2);
             }}
             className="spike-btn-primary disabled:opacity-50"
           >
-            Continue
+            Continue to ranking
           </button>
         </>
       ) : null}
 
-      {step >= 2 + followUps.length && draft ? (
+      {step === 2 ? (
         <>
           <CoachMessage>
-            <p>Based on what you shared, here is a draft ambition statement. Edit it until it feels like yours.</p>
+            <p className="font-semibold">Which one matters most?</p>
+            <p className="mt-2 text-slate-600">Rank your 3 choices — #1 is your primary driver.</p>
+          </CoachMessage>
+          <CoachRankList
+            items={ranked}
+            options={AMBITION_MOTIVATOR_CARDS}
+            onChange={(next) => {
+              setRanked(next);
+              persist({ rankedMotivators: next });
+            }}
+          />
+          <button type="button" onClick={handleGenerateDraft} className="spike-btn-primary">
+            Generate ambition statements
+          </button>
+        </>
+      ) : null}
+
+      {step === 3 && draft ? (
+        <>
+          <CoachMessage>
+            <p>Choose Short, Balanced, or Inspirational — then edit until it feels like yours.</p>
           </CoachMessage>
           <CoachDraftPanel
             title="Draft Ambition Statement"
             draft={draft}
+            variants={variants}
+            selectedVariant={selectedVariant}
+            onVariantSelect={(id, text) => {
+              setSelectedVariant(id);
+              setDraft(text);
+              persist({ selectedVariant: id, draft: text });
+            }}
+            wordLimits={WORD_LIMITS.ambition}
+            maxWords={WORD_LIMITS.ambition.max}
+            acceptDisabled={countWords(draft) > WORD_LIMITS.ambition.max}
             onDraftChange={(text) => {
               setDraft(text);
               persist({ draft: text });
@@ -171,7 +197,6 @@ export function PurposeCoachFlow({ participantId, onProgress, onSectionComplete 
   const stored = getCoachSection(participantId, 'purpose');
   const [step, setStep] = useState(stored.data.step ?? 1);
   const [drivers, setDrivers] = useState(/** @type {string[]} */ (stored.data.drivers ?? []));
-  const [whyDetail, setWhyDetail] = useState(String(stored.data.whyDetail ?? ''));
   const [draft, setDraft] = useState(String(stored.data.draft ?? ''));
 
   function persist(data) {
@@ -179,7 +204,8 @@ export function PurposeCoachFlow({ participantId, onProgress, onSectionComplete 
   }
 
   function handleAccept() {
-    acceptCoachSection(participantId, 'purpose', draft.trim(), { drivers, whyDetail });
+    if (countWords(draft) > WORD_LIMITS.purpose.max) return;
+    acceptCoachSection(participantId, 'purpose', draft.trim(), { drivers });
     onProgress();
     afterSectionAccept(onSectionComplete, navigate, `${ROUTES.ventureBlueprint}/coach/values`);
   }
@@ -198,53 +224,29 @@ export function PurposeCoachFlow({ participantId, onProgress, onSectionComplete 
       {step === 1 ? (
         <>
           <CoachMessage>
-            <p className="font-semibold">Why is achieving your ambition important?</p>
-            <p className="mt-2 text-slate-600">Choose all that apply.</p>
+            <p className="font-semibold">Why is this ambition important to you?</p>
+            <p className="mt-2 text-slate-600">Select exactly 2 drivers — less choice creates better clarity.</p>
           </CoachMessage>
+          <CoachSelectionCounter count={drivers.length} exact={PURPOSE_EXACT} />
           <CoachCardGrid
             options={PURPOSE_DRIVERS}
             selected={drivers}
             onToggle={(id) => {
-              const next = drivers.includes(id) ? drivers.filter((x) => x !== id) : [...drivers, id];
+              let next = drivers.includes(id) ? drivers.filter((x) => x !== id) : [...drivers, id];
+              if (next.length > PURPOSE_EXACT) next = next.slice(-PURPOSE_EXACT);
               setDrivers(next);
               persist({ drivers: next });
             }}
+            exactSelections={PURPOSE_EXACT}
           />
           <button
             type="button"
-            disabled={drivers.length === 0}
-            onClick={() => setStep(2)}
-            className="spike-btn-primary disabled:opacity-50"
-          >
-            Continue
-          </button>
-        </>
-      ) : null}
-
-      {step === 2 ? (
-        <>
-          <CoachMessage>
-            <p className="font-semibold">Tell me more about why this matters.</p>
-            <p className="mt-2 text-slate-600">A short, honest response is perfect.</p>
-          </CoachMessage>
-          <textarea
-            className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-spike focus:outline-none focus:ring-2 focus:ring-spike/20"
-            rows={4}
-            value={whyDetail}
-            placeholder="This matters to me because…"
-            onChange={(e) => {
-              setWhyDetail(e.target.value);
-              persist({ whyDetail: e.target.value });
-            }}
-          />
-          <button
-            type="button"
-            disabled={whyDetail.trim().length < 10}
+            disabled={drivers.length !== PURPOSE_EXACT}
             onClick={() => {
-              const text = generatePurposeDraft({ drivers, whyDetail });
+              const text = generatePurposeDraft({ drivers });
               setDraft(text);
-              persist({ draft: text, step: 3 });
-              setStep(3);
+              persist({ draft: text, step: 2 });
+              setStep(2);
             }}
             className="spike-btn-primary disabled:opacity-50"
           >
@@ -253,14 +255,17 @@ export function PurposeCoachFlow({ participantId, onProgress, onSectionComplete 
         </>
       ) : null}
 
-      {step === 3 && draft ? (
+      {step === 2 && draft ? (
         <>
           <CoachMessage>
-            <p>Here is your purpose statement draft. Refine it until it feels authentic.</p>
+            <p>Here is your purpose statement. Refine until you can say it confidently in under 30 seconds.</p>
           </CoachMessage>
           <CoachDraftPanel
             title="Purpose Statement"
             draft={draft}
+            wordLimits={WORD_LIMITS.purpose}
+            maxWords={WORD_LIMITS.purpose.max}
+            acceptDisabled={countWords(draft) > WORD_LIMITS.purpose.max}
             onDraftChange={(text) => {
               setDraft(text);
               persist({ draft: text });
@@ -282,6 +287,9 @@ export function ValuesCoachFlow({ participantId, onProgress, onSectionComplete }
   const [step, setStep] = useState(stored.data.step ?? 1);
   const [selected, setSelected] = useState(/** @type {string[]} */ (stored.data.selected ?? []));
   const [topFive, setTopFive] = useState(/** @type {string[]} */ (stored.data.topFive ?? []));
+  const [topThree, setTopThree] = useState(
+    /** @type {string[]} */ (stored.data.topThree ?? stored.data.topFive?.slice(0, 3) ?? []),
+  );
   const [profile, setProfile] = useState(String(stored.data.valuesProfile ?? ''));
 
   function persist(data) {
@@ -303,11 +311,13 @@ export function ValuesCoachFlow({ participantId, onProgress, onSectionComplete }
         <>
           <CoachMessage>
             <p className="font-semibold">What principles will guide your venture?</p>
-            <p className="mt-2 text-slate-600">Select up to 10 values.</p>
+            <p className="mt-2 text-slate-600">Select up to 10 values — choose at least 5 to continue.</p>
           </CoachMessage>
+          <CoachSelectionCounter count={selected.length} max={10} />
           <CoachCardGrid
             options={COACH_VALUE_CARDS}
             selected={selected}
+            maxSelections={10}
             onToggle={(id) => {
               let next = selected.includes(id) ? selected.filter((x) => x !== id) : [...selected, id];
               if (next.length > 10) next = next.slice(-10);
@@ -321,7 +331,7 @@ export function ValuesCoachFlow({ participantId, onProgress, onSectionComplete }
             onClick={() => setStep(2)}
             className="spike-btn-primary disabled:opacity-50"
           >
-            Narrow to Top 5 ({selected.length}/10)
+            Narrow to Top 5
           </button>
         </>
       ) : null}
@@ -329,11 +339,12 @@ export function ValuesCoachFlow({ participantId, onProgress, onSectionComplete }
       {step === 2 ? (
         <>
           <CoachMessage>
-            <p className="font-semibold">Choose your Top 5 values.</p>
+            <p className="font-semibold">Reduce to your Top 5 values.</p>
           </CoachMessage>
           <CoachCardGrid
             options={COACH_VALUE_CARDS.filter((c) => selected.includes(c.id))}
             selected={topFive}
+            exactSelections={5}
             onToggle={(id) => {
               let next = topFive.includes(id) ? topFive.filter((x) => x !== id) : [...topFive, id];
               if (next.length > 5) next = next.slice(-5);
@@ -344,10 +355,14 @@ export function ValuesCoachFlow({ participantId, onProgress, onSectionComplete }
           <button
             type="button"
             disabled={topFive.length !== 5}
-            onClick={() => setStep(3)}
+            onClick={() => {
+              setTopThree(topFive.slice(0, 3));
+              persist({ topThree: topFive.slice(0, 3), step: 3 });
+              setStep(3);
+            }}
             className="spike-btn-primary disabled:opacity-50"
           >
-            Rank Top 5
+            Rank Top 3
           </button>
         </>
       ) : null}
@@ -355,57 +370,29 @@ export function ValuesCoachFlow({ participantId, onProgress, onSectionComplete }
       {step === 3 ? (
         <>
           <CoachMessage>
-            <p className="font-semibold">Rank your Top 5 — #1 is most important.</p>
-            <p className="mt-2 text-slate-600">Use the arrows to reorder.</p>
+            <p className="font-semibold">Rank your Top 3 public-facing values.</p>
+            <p className="mt-2 text-slate-600">These three define how others experience your leadership.</p>
           </CoachMessage>
-          <ol className="space-y-2">
-            {topFive.map((id, idx) => (
-              <li key={id} className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3">
-                <span className="text-sm font-semibold">
-                  #{idx + 1} {labelFor(id, COACH_VALUE_CARDS)}
-                </span>
-                <div className="flex gap-1">
-                  <button
-                    type="button"
-                    disabled={idx === 0}
-                    onClick={() => {
-                      const next = [...topFive];
-                      [next[idx - 1], next[idx]] = [next[idx], next[idx - 1]];
-                      setTopFive(next);
-                      persist({ topFive: next });
-                    }}
-                    className="rounded px-2 py-1 text-xs disabled:opacity-30"
-                  >
-                    ↑
-                  </button>
-                  <button
-                    type="button"
-                    disabled={idx === topFive.length - 1}
-                    onClick={() => {
-                      const next = [...topFive];
-                      [next[idx], next[idx + 1]] = [next[idx + 1], next[idx]];
-                      setTopFive(next);
-                      persist({ topFive: next });
-                    }}
-                    className="rounded px-2 py-1 text-xs disabled:opacity-30"
-                  >
-                    ↓
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ol>
+          <CoachRankList
+            items={topThree}
+            options={COACH_VALUE_CARDS.filter((c) => topFive.includes(c.id))}
+            onChange={(next) => {
+              setTopThree(next);
+              persist({ topThree: next });
+            }}
+          />
           <button
             type="button"
+            disabled={topThree.length !== 3}
             onClick={() => {
-              const text = generateValuesProfile(topFive);
-              const ranked = topFive.map((id, i) => `${i + 1}. ${labelFor(id, COACH_VALUE_CARDS)}`).join('\n');
-              const finalText = `${ranked}\n\n${text}`;
+              const narrative = generateValuesProfile(topThree);
+              const ranked = topThree.map((id, i) => `${i + 1}. ${labelFor(id, COACH_VALUE_CARDS)}`).join('\n');
+              const finalText = `${ranked}\n\n${narrative}`;
               setProfile(finalText);
-              persist({ valuesProfile: finalText, step: 4 });
+              persist({ valuesProfile: finalText, topThree, step: 4 });
               setStep(4);
             }}
-            className="spike-btn-primary"
+            className="spike-btn-primary disabled:opacity-50"
           >
             Generate values profile
           </button>
@@ -421,20 +408,81 @@ export function ValuesCoachFlow({ participantId, onProgress, onSectionComplete }
           <button
             type="button"
             onClick={() => {
-              acceptCoachSection(participantId, 'values', profile, { topFive, valuesProfile: profile });
+              acceptCoachSection(participantId, 'values', profile, { topFive, topThree, valuesProfile: profile });
               onProgress();
-              afterSectionAccept(
-                onSectionComplete,
-                navigate,
-                `${ROUTES.ventureBlueprint}/coach/future-self`,
-              );
+              afterSectionAccept(onSectionComplete, navigate, `${ROUTES.ventureBlueprint}/coach/tagline`);
             }}
             className="spike-btn-primary"
           >
-            Accept & save to Blueprint
+            Accept &amp; continue to Tagline
           </button>
         </>
       ) : null}
+    </div>
+  );
+}
+
+/**
+ * @param {{ participantId: string, onProgress: () => void, onSectionComplete?: () => void }} props
+ */
+export function TaglineCoachFlow({ participantId, onProgress, onSectionComplete }) {
+  const navigate = useNavigate();
+  const stored = getCoachSection(participantId, 'tagline');
+  const ambition = getCoachSection(participantId, 'ambition').data;
+  const purpose = getCoachSection(participantId, 'purpose').data;
+  const values = getCoachSection(participantId, 'values').data;
+
+  const [draft, setDraft] = useState(() => {
+    if (stored.data.draft) return String(stored.data.draft);
+    return generateTagline({
+      ambition: ambition.finalText ?? ambition.draft,
+      purpose: purpose.finalText ?? purpose.draft,
+      topThree: values.topThree ?? [],
+    });
+  });
+
+  function persist(data) {
+    saveCoachSectionDraft(participantId, 'tagline', { ...stored.data, ...data, step: 1 });
+  }
+
+  function handleAccept() {
+    if (countWords(draft) > WORD_LIMITS.tagline.max) return;
+    acceptCoachSection(participantId, 'tagline', draft.trim(), {});
+    onProgress();
+    afterSectionAccept(onSectionComplete, navigate, `${ROUTES.ventureBlueprint}/coach/future-self`);
+  }
+
+  if (stored.completedAt) {
+    return (
+      <CoachMessage>
+        <p className="font-semibold">My Tagline — complete ✓</p>
+        <p className="mt-2 text-lg font-semibold text-spike">{stored.data.finalText}</p>
+      </CoachMessage>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <CoachMessage>
+        <p className="font-semibold">Your personal tagline</p>
+        <p className="mt-2 text-slate-600">
+          Generated from your ambition, purpose, and values. Keep it memorable — 3–6 words is ideal.
+        </p>
+      </CoachMessage>
+      <CoachDraftPanel
+        title="Personal Tagline"
+        draft={draft}
+        wordLimits={WORD_LIMITS.tagline}
+        maxWords={WORD_LIMITS.tagline.max}
+        acceptDisabled={countWords(draft) > WORD_LIMITS.tagline.max}
+        acceptLabel="Accept Tagline"
+        rows={2}
+        onDraftChange={(text) => {
+          setDraft(text);
+          persist({ draft: text });
+        }}
+        onAccept={handleAccept}
+      />
     </div>
   );
 }
@@ -451,6 +499,7 @@ export function FutureSelfCoachFlow({ participantId, onProgress, onSectionComple
   const [impact, setImpact] = useState(String(stored.data.impact ?? ''));
   const [successVision, setSuccessVision] = useState(String(stored.data.successVision ?? ''));
   const [draft, setDraft] = useState(String(stored.data.draft ?? ''));
+  const [summary, setSummary] = useState(String(stored.data.futureSelfSummary ?? ''));
 
   function persist(data) {
     saveCoachSectionDraft(participantId, 'future-self', { ...stored.data, ...data, step });
@@ -460,7 +509,8 @@ export function FutureSelfCoachFlow({ participantId, onProgress, onSectionComple
     return (
       <CoachMessage>
         <p className="font-semibold">My Future Self — complete ✓</p>
-        <p className="mt-2 whitespace-pre-wrap text-slate-600">{stored.data.finalText}</p>
+        <p className="mt-2 text-sm font-semibold text-spike">{stored.data.futureSelfSummary}</p>
+        <p className="mt-3 whitespace-pre-wrap text-slate-600">{stored.data.finalText}</p>
       </CoachMessage>
     );
   }
@@ -557,9 +607,11 @@ export function FutureSelfCoachFlow({ participantId, onProgress, onSectionComple
             type="button"
             disabled={impact.trim().length < 5 || successVision.trim().length < 5}
             onClick={() => {
-              const text = generateFutureSelfNarrative({ goals, incomeLevel, impact, successVision });
-              setDraft(text);
-              persist({ draft: text, step: 4 });
+              const narrative = generateFutureSelfNarrative({ goals, incomeLevel, impact, successVision });
+              const oneLine = generateFutureSelfSummary(narrative, { goals });
+              setDraft(narrative);
+              setSummary(oneLine);
+              persist({ draft: narrative, futureSelfSummary: oneLine, step: 4 });
               setStep(4);
             }}
             className="spike-btn-primary disabled:opacity-50"
@@ -572,15 +624,23 @@ export function FutureSelfCoachFlow({ participantId, onProgress, onSectionComple
       {step === 4 && draft ? (
         <>
           <CoachMessage>
-            <p>Here is your Future Self narrative — about 300–500 words. Edit and refine until it inspires you.</p>
+            <p>Your Future Self narrative (250–400 words) plus a one-sentence summary for mentors and presentations.</p>
           </CoachMessage>
           <CoachDraftPanel
             title="Future Self Narrative"
             draft={draft}
             refineSet="future-self"
+            rows={12}
+            wordLimits={WORD_LIMITS.futureSelf}
+            maxWords={WORD_LIMITS.futureSelf.max}
+            acceptDisabled={
+              countWords(draft) > WORD_LIMITS.futureSelf.max || countWords(draft) < WORD_LIMITS.futureSelf.min
+            }
             onDraftChange={(text) => {
               setDraft(text);
-              persist({ draft: text });
+              const nextSummary = generateFutureSelfSummary(text, { goals });
+              setSummary(nextSummary);
+              persist({ draft: text, futureSelfSummary: nextSummary });
             }}
             onAccept={() => {
               acceptCoachSection(participantId, 'future-self', draft.trim(), {
@@ -588,6 +648,7 @@ export function FutureSelfCoachFlow({ participantId, onProgress, onSectionComple
                 incomeLevel,
                 impact,
                 successVision,
+                futureSelfSummary: summary,
               });
               onProgress();
               afterSectionAccept(
@@ -597,6 +658,19 @@ export function FutureSelfCoachFlow({ participantId, onProgress, onSectionComple
               );
             }}
           />
+          <div className="spike-card space-y-3">
+            <p className="spike-label">One-Sentence Summary</p>
+            <textarea
+              rows={2}
+              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm"
+              value={summary}
+              onChange={(e) => {
+                setSummary(e.target.value);
+                persist({ futureSelfSummary: e.target.value });
+              }}
+            />
+            <CoachWordGuidance count={countWords(summary)} limits={WORD_LIMITS.futureSelfSummary} />
+          </div>
         </>
       ) : null}
     </div>

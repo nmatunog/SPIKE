@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, MessageSquare } from 'lucide-react';
+import { ArrowLeft, ChevronDown, ChevronUp, MessageSquare } from 'lucide-react';
 import { PageContainer } from '../../components/layout/PageContainer.jsx';
 import { getCoachSummaryForMentor } from '../../lib/ventureCoachService.js';
-import { VENTURE_DIRECTION_CARDS } from '../../lib/ventureCoachConstants.js';
+import { COACH_VALUE_CARDS, VENTURE_DIRECTION_CARDS } from '../../lib/ventureCoachConstants.js';
+import { labelFor } from '../../lib/ventureCoachEngine.js';
 import { ROUTES } from '../../routes/paths.js';
 
 /**
@@ -28,6 +29,8 @@ export function MentorVentureCoachPage({ interns = [] }) {
     ?? summary?.ventureDirection
     ?? '—';
 
+  const topThreeLabels = (summary?.topThreeValues ?? []).map((id) => labelFor(id, COACH_VALUE_CARDS));
+
   return (
     <PageContainer>
       <Link to={ROUTES.dashboard} className="mb-4 inline-flex items-center gap-2 text-sm text-slate-500 hover:text-spike">
@@ -39,15 +42,25 @@ export function MentorVentureCoachPage({ interns = [] }) {
         <h1 className="text-2xl font-bold text-slate-900">{intern?.name ?? 'Participant'}</h1>
         <p className="mt-1 text-sm text-slate-600">
           Progress: {summary?.progress?.percent ?? 0}% · {summary?.progress?.completed ?? 0}/
-          {summary?.progress?.total ?? 5} sections
+          {summary?.progress?.total ?? 6} sections
         </p>
       </header>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <SummaryCard title="Ambition Summary" text={summary?.ambition} />
-        <SummaryCard title="Purpose Summary" text={summary?.purpose} />
-        <SummaryCard title="Values Profile" text={summary?.valuesProfile} />
-        <SummaryCard title="Future Self Snapshot" text={summary?.futureSelf} />
+        <SummaryCard title="Ambition" text={summary?.ambition} />
+        <SummaryCard title="Purpose" text={summary?.purpose} />
+        <SummaryCard
+          title="Top 3 Values"
+          text={topThreeLabels.length ? topThreeLabels.join(' · ') : undefined}
+        />
+        <SummaryCard title="Tagline" text={summary?.tagline} highlight />
+        <SummaryCard title="Future Self Summary" text={summary?.futureSelfSummary} />
+        <SummaryCard
+          title="Full Future Self Narrative"
+          text={summary?.futureSelf}
+          collapsible
+          defaultCollapsed
+        />
         <SummaryCard title="Career Interest" text={trackLabel} className="lg:col-span-2" />
       </div>
 
@@ -89,14 +102,42 @@ export function MentorVentureCoachPage({ interns = [] }) {
   );
 }
 
-/** @param {{ title: string, text?: string, className?: string }} props */
-function SummaryCard({ title, text, className = '' }) {
+/**
+ * @param {{
+ *   title: string,
+ *   text?: string,
+ *   className?: string,
+ *   highlight?: boolean,
+ *   collapsible?: boolean,
+ *   defaultCollapsed?: boolean,
+ * }} props
+ */
+function SummaryCard({ title, text, className = '', highlight = false, collapsible = false, defaultCollapsed = false }) {
+  const [open, setOpen] = useState(!defaultCollapsed);
+  const hasText = Boolean(text?.trim());
+
   return (
     <div className={`spike-card ${className}`}>
-      <p className="spike-label">{title}</p>
-      <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-slate-700">
-        {text?.trim() ? text : 'Not completed yet.'}
-      </p>
+      <div className="flex items-start justify-between gap-2">
+        <p className="spike-label">{title}</p>
+        {collapsible && hasText ? (
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            className="text-slate-500 hover:text-spike"
+            aria-label={open ? 'Collapse' : 'Expand'}
+          >
+            {open ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          </button>
+        ) : null}
+      </div>
+      {hasText && (!collapsible || open) ? (
+        <p className={`mt-2 whitespace-pre-wrap text-sm leading-relaxed ${highlight ? 'text-lg font-semibold text-spike' : 'text-slate-700'}`}>
+          {text}
+        </p>
+      ) : (
+        <p className="mt-2 text-sm text-slate-500">{collapsible && hasText ? 'Tap to expand full narrative.' : 'Not completed yet.'}</p>
+      )}
     </div>
   );
 }

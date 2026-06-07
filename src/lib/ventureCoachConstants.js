@@ -4,6 +4,7 @@ export const COACH_SECTIONS = [
   { id: 'ambition', label: 'My Ambition', route: 'ambition', badge: 'Ambition Defined' },
   { id: 'purpose', label: 'My Purpose', route: 'purpose', badge: 'Purpose Discovered' },
   { id: 'values', label: 'My Values', route: 'values', badge: 'Values Identified' },
+  { id: 'tagline', label: 'My Tagline', route: 'tagline', badge: 'Tagline Created' },
   { id: 'future-self', label: 'My Future Self', route: 'future-self', badge: 'Future Self Designed' },
   {
     id: 'venture-direction',
@@ -13,45 +14,39 @@ export const COACH_SECTIONS = [
   },
 ];
 
+export const WORD_LIMITS = {
+  ambition: { max: 25, targetMin: 12, targetMax: 20 },
+  purpose: { max: 20, targetMin: 10, targetMax: 15 },
+  valuesProfile: { max: 40 },
+  tagline: { max: 8, targetMin: 3, targetMax: 6 },
+  futureSelf: { min: 250, max: 400 },
+  futureSelfSummary: { max: 25 },
+};
+
 export const AMBITION_MOTIVATOR_CARDS = [
   { id: 'financial_freedom', label: 'Financial Freedom' },
   { id: 'entrepreneurship', label: 'Entrepreneurship' },
   { id: 'leadership', label: 'Leadership' },
   { id: 'helping_others', label: 'Helping Others' },
   { id: 'building_wealth', label: 'Building Wealth' },
-  { id: 'creating_opportunities', label: 'Creating Opportunities' },
   { id: 'professional_expertise', label: 'Professional Expertise' },
   { id: 'flexibility', label: 'Flexibility' },
   { id: 'travel', label: 'Travel' },
   { id: 'impact', label: 'Impact' },
   { id: 'recognition', label: 'Recognition' },
   { id: 'legacy', label: 'Legacy' },
-];
-
-export const ENTREPRENEURSHIP_FOLLOWUP = [
-  { id: 'build_business', label: 'Build a business' },
-  { id: 'build_practice', label: 'Build a professional practice' },
-  { id: 'lead_team', label: 'Lead a team' },
-  { id: 'not_sure', label: 'Not sure yet' },
-];
-
-export const LEADERSHIP_FOLLOWUP = [
-  { id: 'leading_people', label: 'Leading people' },
-  { id: 'developing_others', label: 'Developing others' },
-  { id: 'creating_impact', label: 'Creating impact' },
-  { id: 'building_orgs', label: 'Building organizations' },
+  { id: 'innovation', label: 'Innovation' },
 ];
 
 export const PURPOSE_DRIVERS = [
   { id: 'family', label: 'Family' },
-  { id: 'freedom', label: 'Freedom' },
   { id: 'impact', label: 'Impact' },
   { id: 'service', label: 'Service' },
-  { id: 'security', label: 'Security' },
+  { id: 'freedom', label: 'Freedom' },
   { id: 'growth', label: 'Growth' },
   { id: 'leadership', label: 'Leadership' },
+  { id: 'security', label: 'Security' },
   { id: 'community', label: 'Community' },
-  { id: 'faith', label: 'Faith' },
   { id: 'success', label: 'Success' },
   { id: 'learning', label: 'Learning' },
 ];
@@ -111,14 +106,23 @@ export const VENTURE_DIRECTION_CARDS = [
   },
 ];
 
-export const REFINE_ACTIONS = [
-  { id: 'ambitious', label: 'Make More Ambitious' },
-  { id: 'personal', label: 'Make More Personal' },
-  { id: 'professional', label: 'Make More Professional' },
-  { id: 'shorten', label: 'Shorten' },
-  { id: 'expand', label: 'Expand' },
+export const AMBITION_VARIANTS = [
+  { id: 'short', label: 'Short' },
+  { id: 'balanced', label: 'Balanced' },
+  { id: 'inspirational', label: 'Inspirational' },
+];
+
+export const IDENTITY_REFINE_ACTIONS = [
+  { id: 'shorten', label: 'Shorter' },
+  { id: 'ambitious', label: 'More Ambitious' },
+  { id: 'personal', label: 'More Personal' },
+  { id: 'professional', label: 'More Professional' },
+  { id: 'inspirational', label: 'More Inspirational' },
   { id: 'rewrite', label: 'Rewrite' },
 ];
+
+/** @deprecated Use IDENTITY_REFINE_ACTIONS */
+export const REFINE_ACTIONS = IDENTITY_REFINE_ACTIONS;
 
 export const FUTURE_SELF_REFINE_ACTIONS = [
   { id: 'ambitious', label: 'More Ambitious' },
@@ -126,6 +130,7 @@ export const FUTURE_SELF_REFINE_ACTIONS = [
   { id: 'inspirational', label: 'More Inspirational' },
   { id: 'shorten', label: 'Shorter' },
   { id: 'longer', label: 'Longer' },
+  { id: 'rewrite', label: 'Rewrite' },
 ];
 
 export const COACH_WELCOME = `Hello, I am your SPIKE Venture Coach.
@@ -135,8 +140,8 @@ My role is to help you discover:
 • What future excites you
 • What motivates you
 • What values guide you
-• What kind of venture you want to build
+• A memorable tagline and future self story
 
-There are no right or wrong answers.
+There are no right or wrong answers — only clearer choices.
 
 Let's begin.`;

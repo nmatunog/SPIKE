@@ -30,8 +30,21 @@ export function ensureCoachUser(participantId) {
       sections: Object.fromEntries(COACH_SECTIONS.map((s) => [s.id, emptySection()])),
       badges: [],
     };
+    writeAll(all);
+  } else {
+    const user = all[participantId];
+    let changed = false;
+    for (const s of COACH_SECTIONS) {
+      if (!user.sections[s.id]) {
+        user.sections[s.id] = emptySection();
+        changed = true;
+      }
+    }
+    if (changed) {
+      all[participantId] = user;
+      writeAll(all);
+    }
   }
-  writeAll(all);
   return all[participantId];
 }
 
@@ -128,6 +141,7 @@ export function aggregateCoachAnalytics() {
   const profiles = Object.values(all);
   const motivators = {};
   const values = {};
+  const taglines = {};
   const tracks = { agency_builder: 0, specialist_consultant: 0, undecided: 0 };
   const purposeDrivers = {};
   let profileCount = 0;
@@ -136,16 +150,20 @@ export function aggregateCoachAnalytics() {
     if (!profile.startedAt) continue;
     profileCount += 1;
     const ambition = profile.sections?.ambition?.data ?? {};
-    for (const id of ambition.selectedMotivators ?? []) {
+    for (const id of ambition.rankedMotivators ?? ambition.selectedMotivators ?? []) {
       motivators[id] = (motivators[id] ?? 0) + 1;
     }
     const purpose = profile.sections?.purpose?.data ?? {};
     for (const id of purpose.drivers ?? []) {
       purposeDrivers[id] = (purposeDrivers[id] ?? 0) + 1;
     }
-    const vals = profile.sections?.values?.data?.topFive ?? [];
-    for (const id of vals) {
+    const vals = profile.sections?.values?.data?.topThree ?? profile.sections?.values?.data?.topFive ?? [];
+    for (const id of vals.slice(0, 3)) {
       values[id] = (values[id] ?? 0) + 1;
+    }
+    const tagline = String(profile.sections?.tagline?.data?.finalText ?? '').trim().toLowerCase();
+    if (tagline) {
+      taglines[tagline] = (taglines[tagline] ?? 0) + 1;
     }
     const track = profile.sections?.['venture-direction']?.data?.track;
     if (track && tracks[track] != null) tracks[track] += 1;
@@ -157,6 +175,7 @@ export function aggregateCoachAnalytics() {
     topMotivators: topEntries(motivators, 8),
     topValues: topEntries(values, 8),
     topPurposeDrivers: topEntries(purposeDrivers, 8),
+    topTaglines: topEntries(taglines, 8),
     trackDistribution: trackTotal
       ? {
           agency_builder: Math.round((tracks.agency_builder / trackTotal) * 100),
