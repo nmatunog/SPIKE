@@ -111,11 +111,32 @@ Complete Worksheet     → Vision & Purpose + Business Plan ch. (shipped)
 
 ---
 
-## Sprint 05 — Research Squad Intelligence System
+## Sprint 05 — Venture Blueprint Integration Engine
+
+> **Execution plan (current):** [`SPRINT_05_VENTURE_BLUEPRINT_INTEGRATION.md`](./SPRINT_05_VENTURE_BLUEPRINT_INTEGRATION.md) — Blueprint as primary workspace, auto-population from Survey/FNA/Timeline/Coaching, canvas editing, weighted completion %, career tracks.  
+> **Research Squad analytics** (cohort dashboards, personas) below remains planned; may ship as **5b** or fold into MI submodule after integration PRs 5.1–5.2.
+
+**Theme:** *Integrate* — execution data becomes the participant's Venture Blueprint™ without duplicate entry.
+
+**Prerequisite:** Sprint 04 engines (Survey, FNA, Timeline, automation matrix)
+
+### Build (see integration doc for phase detail)
+
+- Market Intelligence Blueprint module + survey sync UI
+- `ventureBlueprintSync` service facade (extends `playbookBlueprintSync` / `fnaAutomation`)
+- Editable Financial Entrepreneurship Canvas + auto-save
+- Weighted Blueprint completion engine (replaces hour-only estimate)
+- Participant home = My Venture Blueprint™ overview
+- Career track selection (`agency_builder` | `specialist_consultant`)
+- DB: `venture_blueprint_sections`, `venture_blueprint_entries`, `canvas_entries`, `leadership_journal`
+
+---
+
+## Sprint 05b — Research Squad Intelligence System (planned)
 
 **Theme:** *Learn at scale* — surveys from Sprint 04 power cohort research.
 
-**Prerequisite:** Survey Engine (04)
+**Prerequisite:** Survey Engine (04) + Market Intelligence module (Sprint 05)
 
 ### Build
 
