@@ -14,9 +14,9 @@ import {
 } from '../lib/curriculumService.js';
 
 const TABS = [
-  { id: 'curriculum', label: 'Curriculum', icon: Layers },
-  { id: 'orientation', label: 'Orientation', icon: PlayCircle },
-  { id: 'syllabus', label: 'Master Blueprint', icon: BookOpen },
+  { id: 'curriculum', label: 'Curriculum', icon: Layers, roles: ['intern', 'faculty', 'mentor', 'admin'] },
+  { id: 'orientation', label: 'Orientation', icon: PlayCircle, roles: ['faculty', 'mentor', 'admin'] },
+  { id: 'syllabus', label: 'Master Blueprint', icon: BookOpen, roles: ['faculty', 'mentor', 'admin'] },
 ];
 
 function PathPill({ active, children, onClick, className = '' }) {
@@ -283,12 +283,22 @@ export function PlaybookShell({
   interns = [],
 }) {
   const [tab, setTab] = useState('curriculum');
+  const visibleTabs = useMemo(
+    () => TABS.filter((item) => item.roles.includes(userRole)),
+    [userRole],
+  );
+
+  useEffect(() => {
+    if (!visibleTabs.some((item) => item.id === tab)) {
+      setTab('curriculum');
+    }
+  }, [tab, visibleTabs]);
 
   return (
     <div>
       <div className="border-b border-slate-200/80 bg-white px-4 py-2 sm:px-6">
-        <div className="mx-auto flex max-w-content gap-2 overflow-x-auto py-1 scrollbar-thin">
-          {TABS.map((item) => {
+        <div className="mx-auto flex max-w-projection gap-2 overflow-x-auto py-1 scrollbar-thin">
+          {visibleTabs.map((item) => {
             const TabIcon = item.icon;
             return (
               <button

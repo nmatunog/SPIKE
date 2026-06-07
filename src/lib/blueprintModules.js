@@ -34,7 +34,7 @@ export const BLUEPRINT_MODULES = [
   {
     slug: 'canvas',
     label: 'Financial Entrepreneurship Canvas',
-    shortLabel: 'Canvas',
+    shortLabel: 'Financial Canvas',
     description: 'Client, talent, and leadership engines.',
     navGroup: 'foundation',
     tracks: ['agency_builder', 'specialist_consultant'],

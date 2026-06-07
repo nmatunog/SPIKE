@@ -14,17 +14,16 @@ import { SlideNavigator } from './SlideNavigator.jsx';
  */
 export function PresentationViewer({ presentation, slides, facultyMode = false }) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [showNotes, setShowNotes] = useState(false);
-  const slide = slides[currentIndex];
+  const activeSlide = slides[currentIndex];
 
-  if (!slide) {
+  if (!activeSlide) {
     return <p className="text-sm text-slate-500 lg:text-base">No slides in this presentation.</p>;
   }
 
   const notesPanel = (
     <div className="space-y-3">
-      <SpeakerNotesPanel notes={slide.speakerNotes} />
-      <DiscussionPanel questions={slide.discussionQuestions} />
+      <SpeakerNotesPanel notes={activeSlide.speakerNotes} />
+      <DiscussionPanel questions={activeSlide.discussionQuestions} />
     </div>
   );
 
@@ -37,14 +36,10 @@ export function PresentationViewer({ presentation, slides, facultyMode = false }
             {presentation.title}
           </h4>
         </div>
-        {!facultyMode ? (
-          <button
-            type="button"
-            onClick={() => setShowNotes((v) => !v)}
-            className="spike-btn-secondary !min-h-[40px] lg:hidden"
-          >
-            {showNotes ? 'Hide notes' : 'Show notes'}
-          </button>
+        {facultyMode ? (
+          <span className="rounded-full bg-indigo-100 px-2.5 py-1 text-2xs font-semibold uppercase tracking-wide text-indigo-900">
+            Facilitator view
+          </span>
         ) : null}
       </div>
 
@@ -57,17 +52,17 @@ export function PresentationViewer({ presentation, slides, facultyMode = false }
 
       {facultyMode ? (
         <div className="grid gap-4 lg:grid-cols-2 2xl:gap-8">
-          <SlideViewer slide={slide} />
+          <SlideViewer slide={activeSlide} />
           {notesPanel}
         </div>
       ) : (
         <>
-          <SlideViewer slide={slide} />
-          <div className={`${showNotes ? 'block' : 'hidden'} lg:block`}>
-            <div className="grid gap-4 lg:grid-cols-2 2xl:grid-cols-1 2xl:max-w-projection">
-              {notesPanel}
-            </div>
-          </div>
+          <SlideViewer slide={activeSlide} />
+          <p className="rounded-xl border border-sky-200 bg-sky-50/80 px-3 py-2.5 text-sm text-sky-950">
+            Your facilitator leads live discussion in session. Complete the{' '}
+            <strong>activities, worksheets, and survey</strong> below — they auto-fill your Venture
+            Blueprint (Vision, Financial Canvas, Market Intelligence).
+          </p>
         </>
       )}
     </section>

@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { Target } from 'lucide-react';
+import { Target, LayoutGrid } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { SessionView } from './SessionView.jsx';
 import { DayCompletionBar } from './DayCompletionBar.jsx';
 import { DayContributionChips } from './DayContributionChips.jsx';
 import { getDayCompletionSummary } from '../../lib/playbookProgress.js';
+import { BLUEPRINT_LINKS } from '../../routes/paths.js';
 
 /**
  * @typedef {import('../../lib/contentLoader.js').DayContentBundle} DayContentBundle
@@ -73,11 +75,15 @@ export function ParticipantDayView({ bundle, participantId, onProgress }) {
         <p className="text-sm text-gray-500">No sessions published for this day.</p>
       )}
 
-      <div className="rounded-xl border border-gray-100 bg-gray-50/60 p-4">
-        <h4 className="mb-2 text-xs font-bold uppercase tracking-wider text-gray-500">
-          Blueprint mapping
+      <div className="rounded-xl border border-spike/15 bg-spike-muted/40 p-4">
+        <h4 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-spike">
+          <LayoutGrid size={14} aria-hidden />
+          Where this day goes in your Blueprint
         </h4>
         <DayContributionChips contributions={bundle.contributions} />
+        <Link to={BLUEPRINT_LINKS.businessPlan} className="spike-btn-secondary mt-3 inline-flex">
+          Open Financial Entrepreneurship Canvas
+        </Link>
       </div>
     </div>
   );

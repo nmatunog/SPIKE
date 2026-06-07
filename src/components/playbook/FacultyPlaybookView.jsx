@@ -50,7 +50,7 @@ export function FacultyPlaybookView({ bundle }) {
       ) : null}
 
       {activeSession ? (
-        <SessionView session={activeSession} bundle={bundle} showSpeakerNotes facultyMode />
+        <SessionView session={activeSession} bundle={bundle} showSpeakerNotes />
       ) : bundle.presentation ? (
         <PresentationViewer
           presentation={bundle.presentation.presentation}

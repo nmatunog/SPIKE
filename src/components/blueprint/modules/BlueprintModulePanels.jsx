@@ -145,6 +145,9 @@ export function BlueprintOverviewPanel({ state, participantId, onLogTraction }) 
                 <LineChart size={16} /> Log traction hours
               </button>
             ) : null}
+            <Link to={BLUEPRINT_LINKS.businessPlan} className="spike-btn-secondary">
+              <Briefcase size={16} /> Financial Entrepreneurship Canvas
+            </Link>
             <Link to={ROUTES.research} className="spike-btn-secondary">
               <Users size={16} /> Research squad
             </Link>
