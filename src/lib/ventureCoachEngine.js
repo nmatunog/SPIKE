@@ -182,6 +182,68 @@ export function simplifyStatement(text, statementType = 'ambition') {
   return polishStatement(result, limits.max, 1);
 }
 
+/**
+ * Distill to a single memorable central idea.
+ * @param {string} text
+ * @param {number} maxWords
+ * @param {'ambition' | 'purpose' | 'tagline'} statementType
+ */
+function findCoreIdeaStatement(text, maxWords, statementType = 'ambition') {
+  const cleaned = stripCorporateLanguage(text);
+  const limits = WORD_LIMITS[statementType] ?? WORD_LIMITS.ambition;
+
+  /** @type {Array<{ weight: number, idea: string }>} */
+  const themes = [];
+
+  if (/famil|thriv|financial security/i.test(cleaned)) {
+    themes.push({ weight: 4, idea: 'Help families thrive.' });
+  }
+  if (/leader|entrepreneur|opportunit/i.test(cleaned)) {
+    themes.push({ weight: 3, idea: 'Develop future leaders.' });
+  }
+  if (/business|venture|financial services/i.test(cleaned)) {
+    themes.push({ weight: 3, idea: 'Build a financial services business.' });
+  }
+  if (/impact|serve|service|community/i.test(cleaned)) {
+    themes.push({ weight: 2, idea: 'Create lasting impact.' });
+  }
+  if (/freedom|wealth|income/i.test(cleaned)) {
+    themes.push({ weight: 2, idea: 'Create financial freedom.' });
+  }
+  if (/grow|learning|expert|professional/i.test(cleaned)) {
+    themes.push({ weight: 1, idea: 'Become a trusted expert.' });
+  }
+
+  themes.sort((a, b) => b.weight - a.weight);
+
+  let result = themes[0]?.idea ?? firstPhrase(cleaned, 72);
+
+  if (statementType === 'purpose') {
+    if (/famil/i.test(cleaned)) result = 'Strengthen families and improve lives.';
+    else if (/impact|service/i.test(cleaned)) result = 'Create impact that improves lives.';
+    else if (/freedom|security/i.test(cleaned)) result = 'Build security and freedom for others.';
+    else result = themes[0]?.idea.replace(/^Build/, 'Enable').replace(/^Help/, 'Serve so families') ?? result;
+  }
+
+  if (statementType === 'tagline') {
+    if (/famil/i.test(cleaned)) result = 'Helping Families Thrive.';
+    else if (/leader|opportunit/i.test(cleaned)) result = 'Building Future Leaders.';
+    else if (/freedom|wealth/i.test(cleaned)) result = 'Building Freedom.';
+    else if (/impact|service/i.test(cleaned)) result = 'Creating Lasting Impact.';
+    else {
+      const words = (themes[0]?.idea ?? 'Lead With Purpose.').replace(/[.!?]+$/, '').split(/\s+/).slice(0, 4);
+      result = `${words.join(' ')}.`;
+    }
+    return capStatementWords(result, limits.max);
+  }
+
+  result = result.split(/\s+(while|and|—|,)\s+/i)[0].trim();
+  if (!/[.!?]$/.test(result)) result = `${result}.`;
+
+  const coreCap = Math.min(maxWords, limits.targetMin ?? Math.floor(limits.max * 0.5) + 4);
+  return polishStatement(result, coreCap, 1);
+}
+
 /** @param {string} text @param {number} maxWords */
 function personalizeStatement(text, maxWords) {
   const cleaned = stripCorporateLanguage(text);
@@ -582,6 +644,12 @@ export function refineText(text, mode, maxWords = MAX_AMBITION_WORDS, statementT
         return simplifyFutureSelfNarrative(base);
       }
       return simplifyStatement(base, type === 'tagline' ? 'tagline' : type === 'purpose' ? 'purpose' : 'ambition');
+    case 'core':
+      return findCoreIdeaStatement(
+        base,
+        maxWords,
+        type === 'tagline' ? 'tagline' : type === 'purpose' ? 'purpose' : 'ambition',
+      );
     case 'ambitious':
       return thinkBiggerStatement(base, maxWords);
     case 'personal':

@@ -114,6 +114,7 @@ export const AMBITION_VARIANTS = [
 
 export const IDENTITY_REFINE_ACTIONS = [
   { id: 'simplify', label: 'Make Simpler', tooltip: 'Say the same thing with fewer words.' },
+  { id: 'core', label: 'Find the Core Idea', tooltip: 'Distill to one central idea you can remember and repeat.' },
   { id: 'ambitious', label: 'Think Bigger', tooltip: 'Increase scale, impact, and leadership scope.' },
   { id: 'personal', label: 'Make It About Me', tooltip: 'Shift to personal motivation and why it matters.' },
   { id: 'professional', label: 'Sound More Professional', tooltip: 'Increase credibility and executive tone.' },
