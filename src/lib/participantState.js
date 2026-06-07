@@ -12,7 +12,10 @@ export function buildParticipantState(participantId, internProgress) {
   const hours = internProgress?.hours ?? 0;
   const segment = internProgress?.segment ?? 1;
   const derived = deriveWeekDay(hours);
-  const careerTrack = normalizeCareerTrack(internProgress?.career_track);
+  const trackSelected = Boolean(internProgress?.career_track_selected_at);
+  const careerTrack = trackSelected
+    ? normalizeCareerTrack(internProgress?.career_track)
+    : 'undecided';
   const readiness = computeSpikeReadinessScore(internProgress, {
     fnaCount: countCompletedFnas(participantId),
   });
@@ -25,8 +28,8 @@ export function buildParticipantState(participantId, internProgress) {
     day: internProgress?.current_day ?? derived.currentDay,
     hours,
     career_track: careerTrack,
-    career_position: defaultCareerPosition(careerTrack),
-    career_track_selected: Boolean(internProgress?.career_track_selected_at),
+    career_position: defaultCareerPosition(careerTrack, trackSelected),
+    career_track_selected: trackSelected,
     blueprint_completion: blueprint.composite,
     blueprint_sections: blueprint.sections,
     venture_board_status: ventureBoardStatus(hours, segment),
@@ -41,8 +44,9 @@ function normalizeCareerTrack(value) {
   return 'agency_builder';
 }
 
-/** @param {string} careerTrack */
-function defaultCareerPosition(careerTrack) {
+/** @param {string} careerTrack @param {boolean} trackSelected */
+function defaultCareerPosition(careerTrack, trackSelected) {
+  if (!trackSelected) return 'intern';
   return careerTrack === 'specialist_consultant' ? 'associate_advisor' : 'advisor';
 }
 
@@ -55,6 +59,9 @@ function ventureBoardStatus(hours, segment) {
 
 /** @param {ReturnType<typeof buildParticipantState>} state */
 export function formatCareerTrackLabel(state) {
+  if (!state.career_track_selected) {
+    return state.week >= 2 ? 'Choose your track' : 'Track — after Week 1';
+  }
   return state.career_track === 'specialist_consultant'
     ? 'Specialist Consultant'
     : 'Agency Builder';

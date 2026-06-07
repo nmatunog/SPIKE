@@ -79,11 +79,29 @@ export function BlueprintOverviewPanel({ state, participantId, onLogTraction }) 
           <MetricCard
             label="Career"
             value={state.career_position.replace(/_/g, ' ')}
-            sub={state.career_track === 'agency_builder' ? 'Agency Builder' : 'Specialist'}
+            sub={
+              state.career_track_selected
+                ? state.career_track === 'agency_builder'
+                  ? 'Agency Builder'
+                  : 'Specialist'
+                : state.week >= 2
+                  ? 'Choose your track'
+                  : 'After Week 1'
+            }
             accent="amber"
           />
         </div>
       </SectionCard>
+
+      {!state.career_track_selected && state.week < 2 ? (
+        <SectionCard title="Career track — coming after Week 1">
+          <p className="text-sm text-gray-700">
+            Week 1 is shared orientation: vision, market research, and client growth basics. After
+            you complete Week 1, you&apos;ll choose <strong>Agency Builder</strong> or{' '}
+            <strong>Specialist Consultant</strong> to unlock track-specific Blueprint modules.
+          </p>
+        </SectionCard>
+      ) : null}
 
       {nextAction ? (
         <SectionCard title="Next recommended action">
@@ -116,9 +134,14 @@ export function BlueprintOverviewPanel({ state, participantId, onLogTraction }) 
             {state.day} — {state.blueprint_completion}% Blueprint complete.
           </li>
           <li>
-            <strong>Where am I going?</strong> {state.career_track === 'agency_builder'
-              ? 'Agency Director path via ACS progression.'
-              : 'Practice Principal via Specialist Consultant track.'}
+            <strong>Where am I going?</strong>{' '}
+            {!state.career_track_selected
+              ? state.week >= 2
+                ? 'Choose Agency Builder or Specialist Consultant to set your ACS path.'
+                : 'Explore both paths during Week 1 — decide after orientation.'
+              : state.career_track === 'agency_builder'
+                ? 'Agency Director path via ACS progression.'
+                : 'Practice Principal via Specialist Consultant track.'}
           </li>
           <li>
             <strong>What must I do next?</strong> Continue Playbook Week {state.week} and complete

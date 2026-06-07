@@ -5,7 +5,7 @@ import { BlueprintStateHeader } from '../components/blueprint/BlueprintStateHead
 import { BlueprintModuleNav } from '../components/blueprint/BlueprintModuleNav.jsx';
 import { CareerTrackPicker } from '../components/blueprint/CareerTrackPicker.jsx';
 import { buildParticipantState } from '../lib/participantState.js';
-import { getBlueprintModule } from '../lib/blueprintModules.js';
+import { getBlueprintModule, isSharedBlueprintModule } from '../lib/blueprintModules.js';
 import { ROUTES } from '../routes/paths.js';
 import { hydrateVentureBlueprint } from '../lib/ventureBlueprintSync.js';
 import { needsCareerTrackSelection } from '../lib/careerTrackService.js';
@@ -100,7 +100,28 @@ export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }
     }
   }
 
-  if (!activeModule?.tracks.includes(state.career_track)) {
+  if (
+    activeModule
+    && !state.career_track_selected
+    && !isSharedBlueprintModule(activeModule)
+  ) {
+    return (
+      <PageContainer>
+        <BlueprintStateHeader state={state} participantId={user.id} />
+        <p className="rounded-xl border border-sky-200 bg-sky-50 p-4 text-sm text-sky-900">
+          Track-specific modules unlock after Week 1, when you choose Agency Builder or Specialist
+          Consultant. For now, focus on Overview, Vision, Canvas, Market Intelligence, and Client
+          Growth.
+        </p>
+      </PageContainer>
+    );
+  }
+
+  if (
+    state.career_track_selected
+    && activeModule
+    && !activeModule.tracks.includes(state.career_track)
+  ) {
     return (
       <PageContainer>
         <BlueprintStateHeader state={state} participantId={user.id} />

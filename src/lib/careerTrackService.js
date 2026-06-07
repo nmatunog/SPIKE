@@ -1,12 +1,17 @@
 /**
  * Career track selection — agency_builder | specialist_consultant (Sprint 05).
+ * Interns explore shared curriculum in Week 1; track choice gates from Week 2 onward.
  */
 import { isSupabaseConfigured, supabase } from '../supabaseClient.js';
+import { deriveWeekDay } from './sprint01Metrics.js';
 import {
   isMockUserId,
   shouldUseSupabaseForUser,
   updateMockInternProgress,
 } from './mockAuth.js';
+
+/** First week is orientation — track decision opens entering Week 2. */
+export const CAREER_TRACK_SELECTION_MIN_WEEK = 2;
 
 const STORAGE_KEY = 'spike_career_track_confirmed';
 
@@ -23,12 +28,31 @@ function writeConfirmed(data) {
 }
 
 /**
+ * @param {object | null | undefined} internProgress
+ */
+export function getProgramWeek(internProgress) {
+  if (!internProgress) return 1;
+  if (internProgress.current_week != null) {
+    return Math.max(1, Number(internProgress.current_week));
+  }
+  return deriveWeekDay(internProgress.hours ?? 0).currentWeek;
+}
+
+/**
+ * @param {object | null | undefined} internProgress
+ */
+export function canPromptCareerTrackSelection(internProgress) {
+  return getProgramWeek(internProgress) >= CAREER_TRACK_SELECTION_MIN_WEEK;
+}
+
+/**
  * @param {string} userId
  * @param {object | null | undefined} internProgress
  */
 export function needsCareerTrackSelection(userId, internProgress) {
   if (!userId || !internProgress) return false;
   if (internProgress.career_track_selected_at) return false;
+  if (!canPromptCareerTrackSelection(internProgress)) return false;
   return !readConfirmed()[userId];
 }
 

@@ -93,10 +93,19 @@ export const BLUEPRINT_MODULES = [
   },
 ];
 
+/** @param {{ slug: string, tracks: string[] }} mod */
+export function isSharedBlueprintModule(mod) {
+  return (
+    mod.tracks.includes('agency_builder') && mod.tracks.includes('specialist_consultant')
+  );
+}
+
 /** @param {string} careerTrack */
 export function blueprintModulesForTrack(careerTrack) {
-  const track = careerTrack || 'agency_builder';
-  return BLUEPRINT_MODULES.filter((mod) => mod.tracks.includes(track));
+  if (!careerTrack || careerTrack === 'undecided') {
+    return BLUEPRINT_MODULES.filter((mod) => isSharedBlueprintModule(mod));
+  }
+  return BLUEPRINT_MODULES.filter((mod) => mod.tracks.includes(careerTrack));
 }
 
 /** @param {string} slug */

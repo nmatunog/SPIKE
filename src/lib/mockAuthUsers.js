@@ -18,7 +18,7 @@ export const MOCK_AUTH_ACCOUNTS = {
         licensed: false,
         squad: 'Squad Alpha',
         university: 'Demo University',
-        career_track: 'agency_builder',
+        career_track: null,
         career_track_selected_at: null,
         current_week: 1,
         current_day: 1,

@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { Briefcase, Stethoscope } from 'lucide-react';
-import { saveCareerTrackSelection } from '../../lib/careerTrackService.js';
+import {
+  getProgramWeek,
+  saveCareerTrackSelection,
+} from '../../lib/careerTrackService.js';
 
 /**
  * @param {{ userId: string, internProgress?: object | null, onComplete: (progress: object) => void }} props
@@ -8,6 +11,7 @@ import { saveCareerTrackSelection } from '../../lib/careerTrackService.js';
 export function CareerTrackPicker({ userId, internProgress, onComplete }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const week = getProgramWeek(internProgress);
 
   async function choose(track) {
     setSaving(true);
@@ -27,7 +31,8 @@ export function CareerTrackPicker({ userId, internProgress, onComplete }) {
       <div className="w-full max-w-lg rounded-2xl border border-gray-200 bg-white p-6 shadow-xl">
         <h2 className="text-xl font-black text-gray-900">Choose your career track</h2>
         <p className="mt-2 text-sm text-gray-600">
-          This shapes your Venture Blueprint modules and ACS progression path.
+          You&apos;ve completed Week 1 orientation. Starting Week {week}, pick the ACS path that
+          fits how you want to build your practice — this unlocks track-specific Blueprint modules.
         </p>
         <div className="mt-6 grid gap-3 sm:grid-cols-2">
           <button

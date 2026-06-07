@@ -43,6 +43,9 @@ export {
 } from './blueprintCompletion.js';
 
 export {
+  CAREER_TRACK_SELECTION_MIN_WEEK,
+  canPromptCareerTrackSelection,
+  getProgramWeek,
   needsCareerTrackSelection,
   saveCareerTrackSelection,
 } from './careerTrackService.js';
