@@ -24,6 +24,8 @@ Set Supabase keys in `.env` to match production behavior:
 
 Without Supabase keys, you can run a read-only preview with `VITE_STATIC_ONLY=true` (orientation + master blueprint only).
 
+**Demo sign-in:** Allowlisted `@example.com` accounts on the welcome screen — e.g. `john@example.com` / `password123` (intern with Squad Alpha). Enabled by default; set `VITE_MOCK_AUTH=false` in env to turn off.
+
 ### Optional: local Express API
 
 In a second terminal:

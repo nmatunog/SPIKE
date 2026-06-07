@@ -8,6 +8,13 @@ import {
   useState,
 } from 'react';
 import { apiFetch } from './apiClient';
+import {
+  authenticateMockUser,
+  clearMockUser,
+  getStoredMockUser,
+  isMockAuthEnabled,
+  persistMockUser,
+} from './lib/mockAuth.js';
 import { isSupabaseConfigured, supabase } from './supabaseClient';
 
 const AuthContext = createContext(null);
@@ -140,6 +147,15 @@ export function AuthProvider({ children }) {
     if (USE_SUPABASE) {
       async function bootstrapSupabase() {
         setLoading(true);
+
+        const mockUser = getStoredMockUser();
+        if (mockUser) {
+          setToken('mock');
+          setUser(mockUser);
+          setLoading(false);
+          return;
+        }
+
         const { data, error } = await supabase.auth.getSession();
         if (cancelled) return;
         if (error || !data.session?.user) {
@@ -220,6 +236,14 @@ export function AuthProvider({ children }) {
     }
 
     async function bootstrap() {
+      const mockUser = getStoredMockUser();
+      if (mockUser) {
+        setToken('mock');
+        setUser(mockUser);
+        setLoading(false);
+        return;
+      }
+
       if (!token) {
         setUser(null);
         setLoading(false);
@@ -282,6 +306,16 @@ export function AuthProvider({ children }) {
   }, [user?.profileIncomplete, user?.id, fetchSupabaseUser]);
 
   const login = useCallback(async (email, password) => {
+    if (isMockAuthEnabled()) {
+      const mockUser = authenticateMockUser(email, password);
+      if (mockUser) {
+        persistMockUser(mockUser);
+        setToken('mock');
+        setUser(mockUser);
+        return mockUser;
+      }
+    }
+
     if (USE_SUPABASE) {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -322,6 +356,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   const logout = useCallback(() => {
+    clearMockUser();
     if (USE_SUPABASE) {
       supabase.auth.signOut();
       setToken(null);
@@ -364,6 +399,7 @@ export function AuthProvider({ children }) {
       loading,
       isSupabaseConfigured,
       usingSupabaseAuth: USE_SUPABASE,
+      mockAuthEnabled: isMockAuthEnabled(),
       login,
       completeBootstrapSetup,
       logout,

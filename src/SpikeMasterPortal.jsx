@@ -56,6 +56,7 @@ import { orientationSlides } from './orientationSlideContents.jsx';
 import { AdminRegisterForm } from './components/AdminRegisterForm.jsx';
 import { GuestBootstrapForm } from './components/GuestBootstrapForm.jsx';
 import { GuestLoginForm } from './components/GuestLoginForm.jsx';
+import { listMockAuthAccountHints } from './lib/mockAuthUsers.js';
 import { InternSignupPanel } from './components/InternSignupPanel.jsx';
 import { ForcePasswordChangeGate } from './components/ForcePasswordChangeGate.jsx';
 
@@ -67,6 +68,7 @@ const SpikeMasterPortal = () => {
     user,
     loading: authLoading,
     usingSupabaseAuth,
+    mockAuthEnabled,
     login,
     logout,
     refreshUser,
@@ -1838,6 +1840,8 @@ const SpikeMasterPortal = () => {
                     heading={setupMeta?.needsBootstrap ? 'Sign in instead' : 'Sign in'}
                     onLogin={handleGuestLogin}
                     usingSupabaseAuth={usingSupabaseAuth}
+                    mockAuthEnabled={mockAuthEnabled}
+                    mockAccounts={mockAuthEnabled ? listMockAuthAccountHints() : []}
                     onRequestPasswordHelp={
                       usingSupabaseAuth ? requestPasswordHelpForGuest : undefined
                     }

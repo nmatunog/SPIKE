@@ -6,6 +6,8 @@ export const GuestLoginForm = memo(function GuestLoginForm({
   onLogin,
   usingSupabaseAuth = false,
   onRequestPasswordHelp,
+  mockAuthEnabled = false,
+  mockAccounts = [],
 }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -57,6 +59,35 @@ export const GuestLoginForm = memo(function GuestLoginForm({
       onSubmit={handleSubmit}
     >
       <h3 className="text-center text-sm font-bold text-gray-800">{heading}</h3>
+      {mockAuthEnabled && mockAccounts.length > 0 ? (
+        <div className="rounded-lg border border-dashed border-sky-200 bg-sky-50/60 p-3 text-left text-xs text-gray-700">
+          <p className="mb-2 font-bold text-sky-900">Demo accounts</p>
+          <p className="mb-2 text-[11px] text-gray-600">
+            Password for all demo users: <span className="font-mono font-bold">password123</span>
+          </p>
+          <ul className="space-y-1">
+            {mockAccounts.map((account) => (
+              <li key={account.email}>
+                <button
+                  type="button"
+                  className="font-semibold text-[#8B0000] underline decoration-[#8B0000]/30 underline-offset-2 hover:decoration-[#8B0000]"
+                  onClick={() => {
+                    setEmail(account.email);
+                    setPassword('password123');
+                    setError('');
+                  }}
+                >
+                  {account.email}
+                </button>
+                <span className="text-gray-500">
+                  {' '}
+                  — {account.label} ({account.role.toLowerCase()})
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
       {error && (
         <p className="rounded-lg bg-red-50 p-2 text-center text-sm text-red-700">{error}</p>
       )}
