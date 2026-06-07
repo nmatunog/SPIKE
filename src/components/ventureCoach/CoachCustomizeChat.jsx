@@ -1,6 +1,6 @@
 import { CoachMessage, CoachUserReplyInput } from './CoachMessage.jsx';
 
-/** @param {'ambition' | 'impact' | 'purpose' | 'tagline'} statementType @param {{ id: string, label: string, placeholder: string }} field @param {number} index */
+/** @param {'ambition' | 'impact' | 'purpose' | 'tagline'} statementType @param {{ id: string, label: string, placeholder: string, suggestion?: string }} field @param {number} index */
 function coachPromptForField(statementType, field, index) {
   if (statementType === 'ambition') {
     if (field.id === 'role') return 'What role do you want to become? Reply like you are texting a mentor.';
@@ -27,13 +27,14 @@ function coachPromptForField(statementType, field, index) {
 /**
  * @param {{
  *   statementType: 'ambition' | 'impact' | 'purpose' | 'tagline',
- *   fields: Array<{ id: string, label: string, placeholder: string, value: string }>,
+ *   fields: Array<{ id: string, label: string, placeholder: string, suggestion?: string, value: string }>,
  *   values: Record<string, string>,
  *   onChange: (id: string, value: string) => void,
  *   onRegenerate: () => void,
+ *   regenerating?: boolean,
  * }} props
  */
-export function CoachCustomizeChat({ statementType, fields, values, onChange, onRegenerate }) {
+export function CoachCustomizeChat({ statementType, fields, values, onChange, onRegenerate, regenerating = false }) {
   const intro =
     statementType === 'ambition'
       ? 'Let us personalize this draft. Answer in short chat replies — I will rebuild your ambition statement from your words.'
@@ -53,7 +54,7 @@ export function CoachCustomizeChat({ statementType, fields, values, onChange, on
           <CoachUserReplyInput
             label="You"
             value={values[field.id] ?? ''}
-            placeholder={field.placeholder}
+            placeholder={field.suggestion ? `e.g. ${field.suggestion}` : field.placeholder}
             rows={field.id === 'word3' ? 1 : 2}
             onChange={(next) => onChange(field.id, next)}
             onSubmit={field.id === lastFieldId ? onRegenerate : undefined}
@@ -66,9 +67,10 @@ export function CoachCustomizeChat({ statementType, fields, values, onChange, on
         <button
           type="button"
           onClick={onRegenerate}
-          className="inline-flex items-center gap-2 rounded-xl bg-spike px-4 py-2 text-sm font-semibold text-white transition hover:bg-spike-light"
+          disabled={regenerating}
+          className="inline-flex items-center gap-2 rounded-xl bg-spike px-4 py-2 text-sm font-semibold text-white transition hover:bg-spike-light disabled:cursor-not-allowed disabled:opacity-60"
         >
-          Regenerate statement
+          {regenerating ? 'Regenerating…' : 'Regenerate statement'}
         </button>
       </div>
     </div>

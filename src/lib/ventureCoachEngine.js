@@ -737,40 +737,29 @@ export function extractCustomizationFields(draft, statementType) {
     ];
   }
 
-  let role = signals.role ? phraseFromSource(signals.cleaned, signals.role) : 'respected leader';
-  let contribution = '';
-  let mark = '';
-
-  const whoMatch = String(draft ?? '').match(/\bwho\s+([^.—,;]+?)(?:\s+and\s+|$)/i);
-  if (whoMatch) {
-    contribution = whoMatch[1].trim();
-  }
-
-  const andMatch = String(draft ?? '').match(/\band\s+(builds|creates|develops|leads)\s+([^.—,;]+)/i);
-  if (andMatch) {
-    mark = `${andMatch[1]} ${andMatch[2]}`.trim();
-  }
-
-  if (!contribution && signals.distinctive[0]) {
-    contribution = `develops ${signals.distinctive[0]}`;
-  }
-  if (!mark && signals.distinctive[1]) {
-    mark = `builds ${signals.distinctive[1]}`;
-  }
+  const parsed = parseAmbitionCustomization(draft);
 
   return [
-    { id: 'role', label: 'Role you want', placeholder: 'Agency Director', value: role },
+    {
+      id: 'role',
+      label: 'Role you want',
+      placeholder: 'Agency Director',
+      suggestion: parsed.role || 'Agency Director',
+      value: '',
+    },
     {
       id: 'contribution',
       label: 'What you will do',
       placeholder: 'develops leaders',
-      value: contribution || 'develops leaders',
+      suggestion: parsed.contribution || 'develops leaders',
+      value: '',
     },
     {
       id: 'mark',
       label: 'What you will build',
       placeholder: 'a thriving organization',
-      value: mark || 'a thriving organization',
+      suggestion: parsed.mark || 'a thriving organization',
+      value: '',
     },
   ];
 }
@@ -783,6 +772,102 @@ function normalizeContribution(phrase) {
     .replace(/[.!?]+$/, '');
 }
 
+/** @param {string} raw */
+function sanitizeRolePhrase(raw) {
+  let role = normalizeWhitespace(raw)
+    .replace(/^(?:I want to\s+)?(?:become|be)\s+(?:a|an|the)?\s+/i, '')
+    .replace(/^(?:a|an|the)\s+/i, '')
+    .replace(/\s+who\s+.*$/i, '')
+    .replace(/^n\s+(?=influ)/i, '')
+    .trim();
+
+  role = role.replace(/\binfluential\s+influential\b/gi, 'influential').trim();
+  if (!role || role.length < 3) return '';
+  return role;
+}
+
+/** @param {string} raw @param {string} [role] */
+function sanitizeActionClause(raw, role = '') {
+  let clause = normalizeContribution(raw)
+    .replace(/^(?:who\s+)?(?:I will|I'll)\s+/i, '')
+    .trim();
+
+  if (!clause) return '';
+
+  const roleWords = new Set(sanitizeRolePhrase(role).toLowerCase().split(/\s+/).filter(Boolean));
+  const parts = clause.split(/\s+/);
+  if (parts.length === 2 && roleWords.has(parts[1].toLowerCase())) {
+    clause = `${parts[0]} leaders`;
+  }
+
+  if (!/^(develop|build|create|inspire|lead|mentor|serve|help|grow|champion|guide|empower)/i.test(clause)) {
+    clause = `build ${clause}`;
+  }
+
+  return clause.replace(/\s+(and|who)\s+.*$/i, '').trim();
+}
+
+/** @param {string} draft */
+function parseAmbitionCustomization(draft) {
+  const cleaned = stripCorporateLanguage(draft);
+  let role = '';
+  let contribution = '';
+  let mark = '';
+
+  const structured = cleaned.match(
+    /^Become\s+(?:a|an|the)?\s*(.+?)\s+who\s+(.+?)(?:\s+and\s+(.+))?\.?$/i,
+  );
+  if (structured) {
+    role = structured[1].trim();
+    contribution = structured[2].trim();
+    mark = structured[3]?.trim() ?? '';
+  } else {
+    const signals = extractDraftSignals(cleaned);
+    role = signals.role ? phraseFromSource(signals.cleaned, signals.role) : '';
+    if (!role && signals.lead === 'become') {
+      role = sanitizeRolePhrase(cleaned);
+    }
+  }
+
+  role = sanitizeRolePhrase(role);
+  contribution = sanitizeActionClause(contribution, role);
+  mark = sanitizeActionClause(mark, role);
+
+  return { role, contribution, mark };
+}
+
+/** @param {Record<string, string>} fields */
+function ambitionFieldsLookInvalid(fields) {
+  const role = sanitizeRolePhrase(fields.role ?? '');
+  if (!role) return true;
+  const contribution = sanitizeActionClause(fields.contribution ?? '', role);
+  const mark = sanitizeActionClause(fields.mark ?? '', role);
+  return !contribution && !mark;
+}
+
+/** @param {string} role @param {string} contribution @param {string} mark @param {'short' | 'balanced' | 'inspirational'} variant */
+function buildAmbitionFromParts(role, contribution, mark, variant) {
+  let cleanRole = sanitizeRolePhrase(role) || 'leader in financial services';
+  if (variant === 'inspirational' && !/\binfluential\b/i.test(cleanRole)) {
+    cleanRole = `influential ${cleanRole}`;
+  }
+  const cleanContribution = sanitizeActionClause(contribution, cleanRole);
+  const cleanMark = sanitizeActionClause(mark, cleanRole);
+
+  let sentence;
+  if (variant === 'short') {
+    sentence = `Become ${withArticle(cleanRole)}.`;
+  } else if (cleanContribution && cleanMark) {
+    sentence = `Become ${withArticle(cleanRole)} who ${cleanContribution} and ${cleanMark}.`;
+  } else if (cleanContribution) {
+    sentence = `Become ${withArticle(cleanRole)} who ${cleanContribution}.`;
+  } else {
+    sentence = `Become ${withArticle(cleanRole)}.`;
+  }
+
+  return polishStatement(sentence, MAX_AMBITION_WORDS, 1);
+}
+
 /**
  * Rebuild a statement from edited keyword fields.
  * @param {{
@@ -793,36 +878,31 @@ function normalizeContribution(phrase) {
  */
 export function regenerateFromCustomization({ statementType, variant = 'balanced', fields = {} }) {
   if (statementType === 'ambition') {
-    const role = String(fields.role ?? '').trim() || 'respected leader';
-    const contribution = normalizeContribution(fields.contribution);
-    const mark = String(fields.mark ?? '').trim().replace(/[.!?]+$/, '');
+    if (ambitionFieldsLookInvalid(fields)) {
+      return {
+        skipped: true,
+        note: 'Try clearer replies: your role (e.g. Agency Director), what you will do (e.g. develops leaders), and what you will build (e.g. a thriving team).',
+      };
+    }
 
-    const short = polishStatement(`Become ${withArticle(role)}.`, 15, 1);
-    const balanced = polishStatement(
-      contribution && mark
-        ? `Become ${withArticle(role)} who ${contribution} and ${mark}.`
-        : contribution
-          ? `Become ${withArticle(role)} who ${contribution}.`
-          : `Become ${withArticle(role)}.`,
-      MAX_AMBITION_WORDS,
-      1,
-    );
-    const inspirational = polishStatement(
-      contribution
-        ? `Become an influential ${role.replace(/^(a|an|the)\s+/i, '')} who ${contribution}${mark ? ` and ${mark}` : ''}.`
-        : `Become an influential ${role.replace(/^(a|an|the)\s+/i, '')} who creates meaningful impact.`,
-      MAX_AMBITION_WORDS,
-      1,
-    );
+    const role = String(fields.role ?? '').trim();
+    const contribution = String(fields.contribution ?? '').trim();
+    const mark = String(fields.mark ?? '').trim();
+
+    const short = buildAmbitionFromParts(role, contribution, mark, 'short');
+    const balanced = buildAmbitionFromParts(role, contribution, mark, 'balanced');
+    const inspirational = buildAmbitionFromParts(role, contribution, mark, 'inspirational');
 
     const variants = { short, balanced, inspirational };
     const text = variants[variant] ?? variants.balanced;
-    const pieces = [role, contribution, mark].filter(Boolean).join(', ');
+    const pieces = [sanitizeRolePhrase(role), sanitizeActionClause(contribution, role), sanitizeActionClause(mark, role)]
+      .filter(Boolean)
+      .join(', ');
 
     return {
       text,
       variants,
-      note: `I regenerated your statement using your words: ${pieces}.`,
+      note: `I rebuilt your ambition from your words: ${pieces}.`,
     };
   }
 

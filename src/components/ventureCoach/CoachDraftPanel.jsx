@@ -8,6 +8,10 @@ import {
   regenerateFromCustomization,
 } from '../../lib/ventureCoachEngine.js';
 import {
+  coachAiTaskForStatementType,
+  requestCoachAiGeneration,
+} from '../../lib/ventureCoachAiService.js';
+import {
   AMBITION_VARIANTS,
   FUTURE_SELF_REFINE_ACTIONS,
   IDENTITY_REFINE_ACTIONS,
@@ -143,11 +147,9 @@ export function CoachDraftPanel({
   const actions = refineSet === 'future-self' ? FUTURE_SELF_REFINE_ACTIONS : IDENTITY_REFINE_ACTIONS;
   const [refineNote, setRefineNote] = useState('');
   const [undoDraft, setUndoDraft] = useState(null);
+  const [regenerating, setRegenerating] = useState(false);
   const [fieldDefs, setFieldDefs] = useState(() => extractCustomizationFields(draft, statementType));
-  const [customFields, setCustomFields] = useState(() => {
-    if (savedCustomFields && Object.keys(savedCustomFields).length) return savedCustomFields;
-    return Object.fromEntries(extractCustomizationFields(draft, statementType).map((field) => [field.id, field.value]));
-  });
+  const [customFields, setCustomFields] = useState(() => savedCustomFields ?? {});
   const variantSeedRef = useRef(selectedVariant);
 
   useEffect(() => {
@@ -156,9 +158,8 @@ export function CoachDraftPanel({
     variantSeedRef.current = selectedVariant;
     const defs = extractCustomizationFields(draft, statementType);
     setFieldDefs(defs);
-    const next = Object.fromEntries(defs.map((field) => [field.id, field.value]));
-    setCustomFields(next);
-    onCustomFieldsChange?.(next);
+    setCustomFields({});
+    onCustomFieldsChange?.({});
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only re-seed fields when style variant changes
   }, [selectedVariant, draft, enableCustomization, statementType]);
 
@@ -168,17 +169,44 @@ export function CoachDraftPanel({
     onCustomFieldsChange?.(next);
   }
 
-  function handleRegenerate() {
-    const result = regenerateFromCustomization({
-      statementType,
-      variant: selectedVariant,
-      fields: customFields,
-    });
-    setUndoDraft(draft);
-    setRefineNote(result.note);
-    onDraftChange(result.text);
-    if (result.variants && onVariantsRegenerated) {
-      onVariantsRegenerated(result.variants, selectedVariant, result.text);
+  async function handleRegenerate() {
+    const mergedFields = Object.fromEntries(
+      fieldDefs.map((field) => [field.id, customFields[field.id]?.trim() || field.suggestion || '']),
+    );
+
+    setRegenerating(true);
+    try {
+      const aiResult = await requestCoachAiGeneration({
+        task: coachAiTaskForStatementType(statementType),
+        variant: selectedVariant,
+        fields: mergedFields,
+        statementType,
+      });
+
+      if (aiResult?.text) {
+        setUndoDraft(draft);
+        setRefineNote(aiResult.note);
+        onDraftChange(aiResult.text);
+        return;
+      }
+
+      const result = regenerateFromCustomization({
+        statementType,
+        variant: selectedVariant,
+        fields: mergedFields,
+      });
+      if (result.skipped) {
+        setRefineNote(result.note);
+        return;
+      }
+      setUndoDraft(draft);
+      setRefineNote(result.note);
+      onDraftChange(result.text);
+      if (result.variants && onVariantsRegenerated) {
+        onVariantsRegenerated(result.variants, selectedVariant, result.text);
+      }
+    } finally {
+      setRegenerating(false);
     }
   }
 
@@ -232,6 +260,7 @@ export function CoachDraftPanel({
           values={customFields}
           onChange={updateCustomField}
           onRegenerate={handleRegenerate}
+          regenerating={regenerating}
         />
       ) : null}
 

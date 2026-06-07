@@ -5,6 +5,7 @@ import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
 import { authRequired, requireRoles, signToken } from './auth.js';
+import { registerCoachRoutes } from './coachRoutes.js';
 import { segmentFromHours } from './segment.js';
 
 if (!process.env.JWT_SECRET) {
@@ -398,6 +399,8 @@ app.patch(
     return res.json({ ok: true, hoursAdded: log.hours, newTotalHours: nextHours, segment: nextSegment });
   },
 );
+
+registerCoachRoutes(app);
 
 const host = process.env.HOST || '0.0.0.0';
 app.listen(port, host, () => {
