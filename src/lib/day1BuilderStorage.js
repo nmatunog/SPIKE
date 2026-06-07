@@ -81,4 +81,18 @@ export function writeBuilderEntry(participantId, builderId, data, completed = fa
   return entry;
 }
 
+/** @param {string} participantId @param {string} builderId */
+export function clearBuilderEntry(participantId, builderId) {
+  const all = readAll();
+  const user = all[participantId];
+  if (!user?.builders) return;
+
+  delete user.builders[builderId];
+
+  const legacyId = Object.entries(LEGACY_BUILDER_IDS).find(([, current]) => current === builderId)?.[0];
+  if (legacyId) delete user.builders[legacyId];
+
+  writeAll(all);
+}
+
 export { readAll as readDay1BuilderStore, writeAll as writeDay1BuilderStore };

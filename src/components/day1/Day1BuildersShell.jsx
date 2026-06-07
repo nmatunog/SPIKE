@@ -7,9 +7,11 @@ import {
   getBuilderData,
   getDay1MissionProgress,
   isBuilderCompleted,
+  resetDay1Builder,
   saveBuilderDraft,
 } from '../../lib/day1BuilderService.js';
 import { Day1MissionControl } from './Day1MissionControl.jsx';
+import { BuilderResetButton } from './BuilderResetButton.jsx';
 import { AmbitionBuilder } from './builders/AmbitionBuilder.jsx';
 import { PurposeBuilder } from './builders/PurposeBuilder.jsx';
 import { ValuesBuilder } from './builders/ValuesBuilder.jsx';
@@ -50,11 +52,11 @@ export function Day1BuildersShell({
   const [activeId, setActiveId] = useState(initialBuilder ?? firstIncompleteId);
   const [draft, setDraft] = useState(() => getBuilderData(participantId, activeId) ?? {});
   const [refreshKey, setRefreshKey] = useState(0);
+  const [builderMountKey, setBuilderMountKey] = useState(0);
 
   const activeBuilder = DAY1_BUILDERS.find((b) => b.id === activeId) ?? DAY1_BUILDERS[0];
   const activeIndex = DAY1_BUILDERS.findIndex((b) => b.id === activeId);
   const BuilderComponent = BUILDER_COMPONENTS[activeId];
-  const completed = isBuilderCompleted(participantId, activeId);
 
   function switchBuilder(id) {
     setActiveId(id);
@@ -73,6 +75,13 @@ export function Day1BuildersShell({
     if (nextBuilder) {
       switchBuilder(nextBuilder.id);
     }
+  }
+
+  function handleReset() {
+    resetDay1Builder(participantId, activeId);
+    setDraft({});
+    setBuilderMountKey((k) => k + 1);
+    setRefreshKey((k) => k + 1);
   }
 
   return (
@@ -116,20 +125,24 @@ export function Day1BuildersShell({
         </nav>
 
         <div className="min-w-0">
-          <header className="mb-4">
-            <p className="spike-label text-spike">Builder {activeIndex + 1} of {DAY1_BUILDERS.length}</p>
-            <h3 className="text-xl font-semibold text-slate-900 lg:text-2xl">{activeBuilder.label}</h3>
-            <p className="mt-1 text-sm text-slate-600">{activeBuilder.description}</p>
-            <p className="mt-1 text-xs text-slate-500">Feeds → {activeBuilder.feeds}</p>
+          <header className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p className="spike-label text-spike">Builder {activeIndex + 1} of {DAY1_BUILDERS.length}</p>
+              <h3 className="text-xl font-semibold text-slate-900 lg:text-2xl">{activeBuilder.label}</h3>
+              <p className="mt-1 text-sm text-slate-600">{activeBuilder.description}</p>
+              <p className="mt-1 text-xs text-slate-500">Feeds → {activeBuilder.feeds}</p>
+            </div>
+            <BuilderResetButton onReset={handleReset} />
           </header>
 
           {BuilderComponent ? (
             <BuilderComponent
+              key={`${activeId}-${builderMountKey}`}
               participantId={participantId}
               participantName={participantName}
               squadName={squadName}
               draft={draft}
-              completed={completed}
+              completed={isBuilderCompleted(participantId, activeId)}
               onChange={handleDraftChange}
               onComplete={handleComplete}
             />
