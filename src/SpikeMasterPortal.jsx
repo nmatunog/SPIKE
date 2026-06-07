@@ -42,6 +42,8 @@ import { SquadCharterPage } from './pages/cohort/SquadCharterPage.jsx';
 import { AdminCohortsPage } from './pages/admin/AdminCohortsPage.jsx';
 import { AdminSquadThemesPage } from './pages/admin/AdminSquadThemesPage.jsx';
 import { AdminSquadsPage } from './pages/admin/AdminSquadsPage.jsx';
+import { MentorVentureCoachPage } from './pages/mentor/MentorVentureCoachPage.jsx';
+import { CohortIdentityAnalyticsPage } from './pages/analytics/CohortIdentityAnalyticsPage.jsx';
 import { useAuth } from './AuthContext.jsx';
 import { apiFetch } from './apiClient.js';
 import {
@@ -1266,6 +1268,16 @@ const SpikeMasterPortal = () => {
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
             onUpdateIntern={handleOpenModal}
+          />
+        );
+      }
+      if (path === ROUTES.analyticsCohortIdentity) {
+        return <CohortIdentityAnalyticsPage />;
+      }
+      if (path.startsWith(`${ROUTES.mentorVentureCoach}/`)) {
+        return (
+          <MentorVentureCoachPage
+            interns={interns.map((i) => ({ id: i.id, name: i.name }))}
           />
         );
       }

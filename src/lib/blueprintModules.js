@@ -18,6 +18,14 @@ export const BLUEPRINT_MODULES = [
     tracks: ['agency_builder', 'specialist_consultant'],
   },
   {
+    slug: 'coach',
+    label: 'AI Venture Coach™',
+    shortLabel: 'Coach',
+    description: 'Discover ambition, purpose, values, and future self.',
+    navGroup: 'foundation',
+    tracks: ['agency_builder', 'specialist_consultant'],
+  },
+  {
     slug: 'vision',
     label: 'Ambition & Purpose',
     shortLabel: 'Ambition',

@@ -14,6 +14,8 @@ export const ROUTES = {
   adminCohorts: '/admin/cohorts',
   adminSquadThemes: '/admin/squad-themes',
   adminSquads: '/admin/squads',
+  mentorVentureCoach: '/mentor/participants',
+  analyticsCohortIdentity: '/analytics/cohort-identity',
 };
 
 /** Blueprint sub-routes (PR4) — Business Plan, Milestones, Venture Board live inside the OS. */
@@ -29,6 +31,7 @@ export const BLUEPRINT_LINKS = {
   milestones: '/venture-blueprint/milestones',
   ventureBoard: '/venture-blueprint/venture-board',
   vision: '/venture-blueprint/vision',
+  ventureCoach: '/venture-blueprint/coach',
 };
 
 const INTERN_FORMATION_ROUTES = [
@@ -127,6 +130,12 @@ export function matchModulePath(pathname) {
   if (pathname === ROUTES.adminSquads || pathname.startsWith(`${ROUTES.adminSquads}/`)) {
     return ROUTES.adminSquads;
   }
+  if (pathname === ROUTES.analyticsCohortIdentity) {
+    return ROUTES.analyticsCohortIdentity;
+  }
+  if (pathname.startsWith(`${ROUTES.mentorVentureCoach}/`)) {
+    return ROUTES.mentorVentureCoach;
+  }
 
   for (const route of Object.values(ROUTES)) {
     if (route === ROUTES.home) continue;
@@ -148,6 +157,8 @@ export function rolesForRoute(pathname) {
   if (INTERN_FORMATION_ROUTES.includes(pathname)) return ['intern'];
   if (pathname === ROUTES.adminCohorts || pathname === ROUTES.adminSquadThemes) return ['admin'];
   if (pathname === ROUTES.adminSquads) return ['admin', 'faculty'];
+  if (pathname === ROUTES.analyticsCohortIdentity) return ['faculty', 'admin', 'mentor'];
+  if (pathname.startsWith(`${ROUTES.mentorVentureCoach}/`)) return ['faculty', 'mentor', 'admin'];
 
   const route = matchModulePath(pathname);
   if (!route) return [];

@@ -205,6 +205,9 @@ export function VisionPurposePanel({ participantId }) {
           Continue Day 1 Builders ({day1.percent}%)
         </Link>
       ) : null}
+      <Link to={BLUEPRINT_LINKS.ventureCoach} className="spike-btn-secondary inline-flex">
+        Open AI Venture Coach™
+      </Link>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {components.map((item) => {
           let fieldValue = '';
