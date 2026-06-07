@@ -12,7 +12,7 @@ export const BLUEPRINT_SECTION_WEIGHTS = {
 
 export const VISION_FIELDS = [
   { key: 'vision_statement', label: 'My Ambition', minChars: 20 },
-  { key: 'mission_statement', label: 'My Purpose', minChars: 20 },
+  { key: 'mission_statement', label: 'My Impact', minChars: 20 },
   { key: 'my_values', label: 'My Values', minChars: 20 },
   { key: 'personal_tagline', label: 'My Tagline', minChars: 8 },
   { key: 'future_self_narrative', label: 'Future Self Narrative', minChars: 100 },

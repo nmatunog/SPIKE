@@ -12,16 +12,18 @@ import { CoachProgressSidebar } from './CoachProgressSidebar.jsx';
 import {
   AmbitionCoachFlow,
   FutureSelfCoachFlow,
-  PurposeCoachFlow,
+  ImpactCoachFlow,
   TaglineCoachFlow,
   ValuesCoachFlow,
   VentureDirectionCoachFlow,
 } from './CoachSectionFlows.jsx';
+import { CoachIdentityTriangle } from './CoachIdentityTriangle.jsx';
 import { ROUTES } from '../../routes/paths.js';
 
 const SECTION_TITLES = {
   ambition: 'My Ambition',
-  purpose: 'My Purpose',
+  impact: 'My Impact',
+  purpose: 'My Impact',
   values: 'My Values',
   tagline: 'My Tagline',
   'future-self': 'My Future Self',
@@ -44,7 +46,8 @@ export function VentureCoachShell({ participantId, section }) {
   if (!section) {
     return (
       <div className="mx-auto max-w-3xl space-y-8 py-4">
-        <section className="overflow-hidden rounded-3xl border border-spike/15 bg-gradient-to-br from-slate-900 via-slate-800 to-spike-dark p-8 text-white shadow-projection sm:p-10">
+          <CoachIdentityTriangle />
+          <section className="overflow-hidden rounded-3xl border border-spike/15 bg-gradient-to-br from-slate-900 via-slate-800 to-spike-dark p-8 text-white shadow-projection sm:p-10">
           <div className="mb-4 flex items-center gap-2 text-spike-light">
             <Sparkles size={20} />
             <span className="text-sm font-bold uppercase tracking-widest">AI Venture Coach™</span>
@@ -90,8 +93,9 @@ export function VentureCoachShell({ participantId, section }) {
     switch (section) {
       case 'ambition':
         return <AmbitionCoachFlow key={sectionKey} participantId={participantId} onProgress={bumpProgress} />;
+      case 'impact':
       case 'purpose':
-        return <PurposeCoachFlow key={sectionKey} participantId={participantId} onProgress={bumpProgress} />;
+        return <ImpactCoachFlow key={sectionKey} participantId={participantId} onProgress={bumpProgress} />;
       case 'values':
         return <ValuesCoachFlow key={sectionKey} participantId={participantId} onProgress={bumpProgress} />;
       case 'tagline':

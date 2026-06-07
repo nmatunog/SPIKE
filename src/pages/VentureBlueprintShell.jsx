@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { PageContainer } from '../components/layout/PageContainer.jsx';
 import { BlueprintStateHeader } from '../components/blueprint/BlueprintStateHeader.jsx';
 import { BlueprintModuleNav } from '../components/blueprint/BlueprintModuleNav.jsx';
@@ -114,6 +114,9 @@ export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }
       case 'export':
         return <ExportCenterPanel />;
       case 'coach':
+        if (coachSection === 'purpose') {
+          return <Navigate to={`${ROUTES.ventureBlueprint}/coach/impact`} replace />;
+        }
         return <VentureCoachShell participantId={user.id} section={coachSection} />;
       case 'day-1-builders':
         return (

@@ -4,20 +4,22 @@ import {
   AMBITION_MOTIVATOR_CARDS,
   COACH_VALUE_CARDS,
   FUTURE_SELF_GOALS,
+  IMPACT_AUDIENCES,
   INCOME_SLIDER_LABELS,
-  PURPOSE_DRIVERS,
   VENTURE_DIRECTION_CARDS,
   WORD_LIMITS,
 } from '../../lib/ventureCoachConstants.js';
 import {
+  AMBITION_IMPACT_OVERLAP_WARNING,
   countWords,
   generateAmbitionVariants,
   generateFutureSelfNarrative,
   generateFutureSelfSummary,
-  generatePurposeDraft,
+  generateImpactDraft,
   generateTagline,
   generateValuesProfile,
   labelFor,
+  statementsOverlapTooMuch,
 } from '../../lib/ventureCoachEngine.js';
 import {
   acceptCoachSection,
@@ -30,7 +32,8 @@ import { CoachRankList, CoachSelectionCounter } from './CoachRankList.jsx';
 import { ROUTES } from '../../routes/paths.js';
 
 const AMBITION_EXACT = 3;
-const PURPOSE_EXACT = 2;
+const IMPACT_MAX = 2;
+/** @deprecated */ const PURPOSE_EXACT = IMPACT_MAX;
 
 /** @param {(() => void) | undefined} onSectionComplete @param {ReturnType<typeof useNavigate>} navigate @param {string} nextPath */
 function afterSectionAccept(onSectionComplete, navigate, nextPath) {
@@ -97,7 +100,7 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
       selectedVariant,
     });
     onProgress();
-    afterSectionAccept(onSectionComplete, navigate, `${ROUTES.ventureBlueprint}/coach/purpose`);
+    afterSectionAccept(onSectionComplete, navigate, `${ROUTES.ventureBlueprint}/coach/impact`);
   }
 
   if (stored.completedAt) {
@@ -114,8 +117,10 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
       {step === 1 ? (
         <>
           <CoachMessage>
-            <p className="font-semibold">What excites you most about your future?</p>
-            <p className="mt-2 text-slate-600">Select exactly 3 — force yourself to prioritize what matters most.</p>
+            <p className="font-semibold">What do I want to become?</p>
+            <p className="mt-2 text-slate-600">
+              Who do you aspire to become? What kind of leader or entrepreneur do you want to be? Select exactly 3.
+            </p>
           </CoachMessage>
           <CoachSelectionCounter count={selected.length} exact={AMBITION_EXACT} />
           <CoachCardGrid
@@ -193,20 +198,27 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
 /**
  * @param {{ participantId: string, onProgress: () => void, onSectionComplete?: () => void }} props
  */
-export function PurposeCoachFlow({ participantId, onProgress, onSectionComplete }) {
+export function ImpactCoachFlow({ participantId, onProgress, onSectionComplete }) {
   const navigate = useNavigate();
-  const stored = getCoachSection(participantId, 'purpose');
+  const stored = getCoachSection(participantId, 'impact');
+  const ambitionStored = getCoachSection(participantId, 'ambition');
   const [step, setStep] = useState(stored.data.step ?? 1);
-  const [drivers, setDrivers] = useState(/** @type {string[]} */ (stored.data.drivers ?? []));
+  const [audiences, setAudiences] = useState(
+    /** @type {string[]} */ (stored.data.audiences ?? stored.data.drivers ?? []),
+  );
   const [draft, setDraft] = useState(String(stored.data.draft ?? ''));
 
+  const ambitionText = String(ambitionStored.data.finalText ?? ambitionStored.data.draft ?? '');
+  const overlapWarning =
+    draft && ambitionText && statementsOverlapTooMuch(ambitionText, draft) ? AMBITION_IMPACT_OVERLAP_WARNING : null;
+
   function persist(data) {
-    saveCoachSectionDraft(participantId, 'purpose', { ...stored.data, ...data, step });
+    saveCoachSectionDraft(participantId, 'impact', { ...stored.data, ...data, step });
   }
 
   function handleAccept() {
-    if (countWords(draft) > WORD_LIMITS.purpose.max) return;
-    acceptCoachSection(participantId, 'purpose', draft.trim(), { drivers });
+    if (countWords(draft) > WORD_LIMITS.impact.max) return;
+    acceptCoachSection(participantId, 'impact', draft.trim(), { audiences });
     onProgress();
     afterSectionAccept(onSectionComplete, navigate, `${ROUTES.ventureBlueprint}/coach/values`);
   }
@@ -214,7 +226,7 @@ export function PurposeCoachFlow({ participantId, onProgress, onSectionComplete 
   if (stored.completedAt) {
     return (
       <CoachMessage>
-        <p className="font-semibold">My Purpose — complete ✓</p>
+        <p className="font-semibold">My Impact — complete ✓</p>
         <p className="mt-2 whitespace-pre-wrap text-slate-600">{stored.data.finalText}</p>
       </CoachMessage>
     );
@@ -225,49 +237,56 @@ export function PurposeCoachFlow({ participantId, onProgress, onSectionComplete 
       {step === 1 ? (
         <>
           <CoachMessage>
-            <p className="font-semibold">Why is this ambition important to you?</p>
-            <p className="mt-2 text-slate-600">Select exactly 2 drivers — less choice creates better clarity.</p>
+            <p className="font-semibold">Who do I want to help?</p>
+            <p className="mt-2 text-slate-600">
+              Who would you like to serve? What difference do you want to make? Select up to 2 audiences.
+            </p>
           </CoachMessage>
-          <CoachSelectionCounter count={drivers.length} exact={PURPOSE_EXACT} />
+          <CoachSelectionCounter count={audiences.length} exact={IMPACT_MAX} />
           <CoachCardGrid
-            options={PURPOSE_DRIVERS}
-            selected={drivers}
+            options={IMPACT_AUDIENCES}
+            selected={audiences}
             onToggle={(id) => {
-              let next = drivers.includes(id) ? drivers.filter((x) => x !== id) : [...drivers, id];
-              if (next.length > PURPOSE_EXACT) next = next.slice(-PURPOSE_EXACT);
-              setDrivers(next);
-              persist({ drivers: next });
+              let next = audiences.includes(id) ? audiences.filter((x) => x !== id) : [...audiences, id];
+              if (next.length > IMPACT_MAX) next = next.slice(-IMPACT_MAX);
+              setAudiences(next);
+              persist({ audiences: next, drivers: next });
             }}
-            exactSelections={PURPOSE_EXACT}
+            exactSelections={IMPACT_MAX}
           />
           <button
             type="button"
-            disabled={drivers.length !== PURPOSE_EXACT}
+            disabled={audiences.length === 0}
             onClick={() => {
-              const text = generatePurposeDraft({ drivers });
+              const text = generateImpactDraft({ audiences });
               setDraft(text);
-              persist({ draft: text, step: 2 });
+              persist({ draft: text, audiences, step: 2 });
               setStep(2);
             }}
             className="spike-btn-primary disabled:opacity-50"
           >
-            Generate my purpose statement
+            Generate my impact statement
           </button>
         </>
       ) : null}
 
       {step === 2 && draft ? (
         <>
+          {overlapWarning ? (
+            <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+              {overlapWarning}
+            </div>
+          ) : null}
           <CoachMessage>
-            <p>Here is your purpose statement. Refine until you can say it confidently in under 30 seconds.</p>
+            <p>Here is your impact statement. Refine until you can say it confidently in under 30 seconds.</p>
           </CoachMessage>
           <CoachDraftPanel
-            title="Purpose Statement"
-            statementType="purpose"
+            title="Impact Statement"
+            statementType="impact"
             draft={draft}
-            wordLimits={WORD_LIMITS.purpose}
-            maxWords={WORD_LIMITS.purpose.max}
-            acceptDisabled={countWords(draft) > WORD_LIMITS.purpose.max}
+            wordLimits={WORD_LIMITS.impact}
+            maxWords={WORD_LIMITS.impact.max}
+            acceptDisabled={countWords(draft) > WORD_LIMITS.impact.max}
             onDraftChange={(text) => {
               setDraft(text);
               persist({ draft: text });
@@ -279,6 +298,9 @@ export function PurposeCoachFlow({ participantId, onProgress, onSectionComplete 
     </div>
   );
 }
+
+/** @deprecated Use ImpactCoachFlow */
+export const PurposeCoachFlow = ImpactCoachFlow;
 
 /**
  * @param {{ participantId: string, onProgress: () => void, onSectionComplete?: () => void }} props
@@ -312,8 +334,11 @@ export function ValuesCoachFlow({ participantId, onProgress, onSectionComplete }
       {step === 1 ? (
         <>
           <CoachMessage>
-            <p className="font-semibold">What principles will guide your venture?</p>
-            <p className="mt-2 text-slate-600">Select up to 10 values — choose at least 5 to continue.</p>
+            <p className="font-semibold">How will I do it?</p>
+            <p className="mt-2 text-slate-600">
+              What principles guide you? What standards will you never compromise? Select up to 10 values — choose at
+              least 5 to continue.
+            </p>
           </CoachMessage>
           <CoachSelectionCounter count={selected.length} max={10} />
           <CoachCardGrid
@@ -431,14 +456,14 @@ export function TaglineCoachFlow({ participantId, onProgress, onSectionComplete 
   const navigate = useNavigate();
   const stored = getCoachSection(participantId, 'tagline');
   const ambition = getCoachSection(participantId, 'ambition').data;
-  const purpose = getCoachSection(participantId, 'purpose').data;
+  const impact = getCoachSection(participantId, 'impact').data;
   const values = getCoachSection(participantId, 'values').data;
 
   const [draft, setDraft] = useState(() => {
     if (stored.data.draft) return String(stored.data.draft);
     return generateTagline({
       ambition: ambition.finalText ?? ambition.draft,
-      purpose: purpose.finalText ?? purpose.draft,
+      impact: impact.finalText ?? impact.draft,
       topThree: values.topThree ?? [],
     });
   });
@@ -468,7 +493,7 @@ export function TaglineCoachFlow({ participantId, onProgress, onSectionComplete 
       <CoachMessage>
         <p className="font-semibold">Your personal tagline</p>
         <p className="mt-2 text-slate-600">
-          Generated from your ambition, purpose, and values. Keep it memorable — 3–6 words is ideal.
+          Generated from your ambition, impact, and values. Keep it memorable — 3–6 words is ideal.
         </p>
       </CoachMessage>
       <CoachDraftPanel

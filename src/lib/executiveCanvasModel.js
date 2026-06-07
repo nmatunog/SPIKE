@@ -199,6 +199,10 @@ export function buildExecutiveCanvasModel({ participantId, participantName, stat
       ambition: summarizeExecutiveField(
         getSectionField(participantId, 'vision-purpose', 'vision_statement'),
       ),
+      impact: summarizeExecutiveField(
+        getSectionField(participantId, 'vision-purpose', 'mission_statement'),
+      ),
+      /** @deprecated Use impact */
       purpose: summarizeExecutiveField(
         getSectionField(participantId, 'vision-purpose', 'mission_statement'),
       ),

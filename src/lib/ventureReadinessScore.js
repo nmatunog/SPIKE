@@ -38,7 +38,7 @@ function clamp(value) {
 }
 
 export const VENTURE_READINESS_WEIGHTS = [
-  { key: 'vision_purpose', label: 'Ambition & Purpose', weight: 15 },
+  { key: 'vision_purpose', label: 'Ambition & Impact', weight: 15 },
   { key: 'canvas', label: 'Canvas', weight: 20 },
   { key: 'market_intelligence', label: 'Market Intelligence', weight: 15 },
   { key: 'client_growth', label: 'Client Growth', weight: 15 },

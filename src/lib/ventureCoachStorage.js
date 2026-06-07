@@ -21,6 +21,29 @@ function writeAll(data) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
+function migrateCoachProfile(user) {
+  if (!user?.sections) return false;
+  let changed = false;
+
+  if (user.sections.purpose && !user.sections.impact) {
+    user.sections.impact = user.sections.purpose;
+    delete user.sections.purpose;
+    changed = true;
+  }
+
+  if (Array.isArray(user.badges)) {
+    const nextBadges = user.badges.map((badge) =>
+      badge === 'Purpose Discovered' ? 'Impact Defined' : badge,
+    );
+    if (nextBadges.some((badge, index) => badge !== user.badges[index])) {
+      user.badges = nextBadges;
+      changed = true;
+    }
+  }
+
+  return changed;
+}
+
 /** @param {string} participantId */
 export function ensureCoachUser(participantId) {
   const all = readAll();
@@ -33,7 +56,7 @@ export function ensureCoachUser(participantId) {
     writeAll(all);
   } else {
     const user = all[participantId];
-    let changed = false;
+    let changed = migrateCoachProfile(user);
     for (const s of COACH_SECTIONS) {
       if (!user.sections[s.id]) {
         user.sections[s.id] = emptySection();
@@ -55,8 +78,10 @@ export function getCoachProfile(participantId) {
 
 /** @param {string} participantId @param {string} sectionId */
 export function getCoachSection(participantId, sectionId) {
+  ensureCoachUser(participantId);
   const profile = getCoachProfile(participantId);
-  return profile?.sections?.[sectionId] ?? emptySection();
+  const resolvedId = sectionId === 'impact' && profile?.sections?.purpose && !profile?.sections?.impact ? 'purpose' : sectionId;
+  return profile?.sections?.[resolvedId] ?? emptySection();
 }
 
 /**
@@ -144,6 +169,7 @@ export function aggregateCoachAnalytics() {
   const taglines = {};
   const tracks = { agency_builder: 0, specialist_consultant: 0, undecided: 0 };
   const purposeDrivers = {};
+  const impactDrivers = {};
   let profileCount = 0;
 
   for (const profile of profiles) {
@@ -153,8 +179,9 @@ export function aggregateCoachAnalytics() {
     for (const id of ambition.rankedMotivators ?? ambition.selectedMotivators ?? []) {
       motivators[id] = (motivators[id] ?? 0) + 1;
     }
-    const purpose = profile.sections?.purpose?.data ?? {};
-    for (const id of purpose.drivers ?? []) {
+    const impact = profile.sections?.impact?.data ?? profile.sections?.purpose?.data ?? {};
+    for (const id of impact.audiences ?? impact.drivers ?? []) {
+      impactDrivers[id] = (impactDrivers[id] ?? 0) + 1;
       purposeDrivers[id] = (purposeDrivers[id] ?? 0) + 1;
     }
     const vals = profile.sections?.values?.data?.topThree ?? profile.sections?.values?.data?.topFive ?? [];
@@ -174,6 +201,8 @@ export function aggregateCoachAnalytics() {
     profileCount,
     topMotivators: topEntries(motivators, 8),
     topValues: topEntries(values, 8),
+    topImpactAudiences: topEntries(impactDrivers, 8),
+    /** @deprecated Use topImpactAudiences */
     topPurposeDrivers: topEntries(purposeDrivers, 8),
     topTaglines: topEntries(taglines, 8),
     trackDistribution: trackTotal

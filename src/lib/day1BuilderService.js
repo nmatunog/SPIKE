@@ -58,8 +58,9 @@ function syncBuilderToBlueprint(participantId, builderId, data) {
     case 'ambition-builder':
       syncAmbition(participantId, data);
       break;
+    case 'impact-builder':
     case 'purpose-builder':
-      syncPurpose(participantId, data);
+      syncImpact(participantId, data);
       break;
     case 'values-builder':
       syncValues(participantId, data);
@@ -94,15 +95,15 @@ function syncAmbition(participantId, data) {
 }
 
 /** @param {string} participantId @param {Record<string, unknown>} data */
-function syncPurpose(participantId, data) {
-  const purpose = String(data.purposeStatement ?? '').trim();
-  setSectionField(participantId, 'vision-purpose', 'mission_statement', purpose, {
+function syncImpact(participantId, data) {
+  const impact = String(data.impactStatement ?? data.purposeStatement ?? '').trim();
+  setSectionField(participantId, 'vision-purpose', 'mission_statement', impact, {
     sourceType: 'day1_builder',
-    sourceId: 'purpose-builder',
+    sourceId: 'impact-builder',
   });
 
   const legacyAnswers = {
-    'wq-day-1-why-1': purpose,
+    'wq-day-1-why-1': impact,
     'wq-day-1-why-2': String(data.whyImportant ?? ''),
     'wq-day-1-why-3': 4,
     'wq-day-1-why-4': true,

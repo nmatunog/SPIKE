@@ -2,7 +2,7 @@
 
 export const COACH_SECTIONS = [
   { id: 'ambition', label: 'My Ambition', route: 'ambition', badge: 'Ambition Defined' },
-  { id: 'purpose', label: 'My Purpose', route: 'purpose', badge: 'Purpose Discovered' },
+  { id: 'impact', label: 'My Impact', route: 'impact', badge: 'Impact Defined' },
   { id: 'values', label: 'My Values', route: 'values', badge: 'Values Identified' },
   { id: 'tagline', label: 'My Tagline', route: 'tagline', badge: 'Tagline Created' },
   { id: 'future-self', label: 'My Future Self', route: 'future-self', badge: 'Future Self Designed' },
@@ -16,6 +16,8 @@ export const COACH_SECTIONS = [
 
 export const WORD_LIMITS = {
   ambition: { max: 25, targetMin: 12, targetMax: 18 },
+  impact: { max: 20, targetMin: 8, targetMax: 15 },
+  /** @deprecated Use WORD_LIMITS.impact */
   purpose: { max: 20, targetMin: 8, targetMax: 15 },
   valuesProfile: { max: 40 },
   tagline: { max: 8, targetMin: 3, targetMax: 6 },
@@ -24,48 +26,46 @@ export const WORD_LIMITS = {
 };
 
 export const AMBITION_MOTIVATOR_CARDS = [
-  { id: 'financial_freedom', label: 'Financial Freedom' },
   { id: 'entrepreneurship', label: 'Entrepreneurship' },
   { id: 'leadership', label: 'Leadership' },
-  { id: 'helping_others', label: 'Helping Others' },
-  { id: 'building_wealth', label: 'Building Wealth' },
+  { id: 'financial_freedom', label: 'Financial Freedom' },
   { id: 'professional_expertise', label: 'Professional Expertise' },
-  { id: 'flexibility', label: 'Flexibility' },
-  { id: 'travel', label: 'Travel' },
-  { id: 'impact', label: 'Impact' },
+  { id: 'business_ownership', label: 'Business Ownership' },
+  { id: 'building_team', label: 'Building a Team' },
   { id: 'recognition', label: 'Recognition' },
   { id: 'legacy', label: 'Legacy' },
-  { id: 'innovation', label: 'Innovation' },
+  { id: 'personal_growth', label: 'Personal Growth' },
+  { id: 'independence', label: 'Independence' },
 ];
 
-export const PURPOSE_DRIVERS = [
-  { id: 'family', label: 'Family' },
-  { id: 'impact', label: 'Impact' },
-  { id: 'service', label: 'Service' },
-  { id: 'freedom', label: 'Freedom' },
-  { id: 'growth', label: 'Growth' },
-  { id: 'leadership', label: 'Leadership' },
-  { id: 'security', label: 'Security' },
-  { id: 'community', label: 'Community' },
-  { id: 'success', label: 'Success' },
-  { id: 'learning', label: 'Learning' },
+export const IMPACT_AUDIENCES = [
+  { id: 'families', label: 'Families' },
+  { id: 'young_professionals', label: 'Young Professionals' },
+  { id: 'entrepreneurs', label: 'Entrepreneurs' },
+  { id: 'students', label: 'Students' },
+  { id: 'ofws', label: 'OFWs' },
+  { id: 'business_owners', label: 'Business Owners' },
+  { id: 'healthcare_professionals', label: 'Healthcare Professionals' },
+  { id: 'communities', label: 'Communities' },
+  { id: 'future_leaders', label: 'Future Leaders' },
+  { id: 'my_family', label: 'My Family' },
 ];
+
+/** @deprecated Use IMPACT_AUDIENCES */
+export const PURPOSE_DRIVERS = IMPACT_AUDIENCES;
 
 export const COACH_VALUE_CARDS = [
   { id: 'integrity', label: 'Integrity' },
-  { id: 'growth', label: 'Growth' },
   { id: 'service', label: 'Service' },
+  { id: 'growth', label: 'Growth' },
   { id: 'leadership', label: 'Leadership' },
   { id: 'excellence', label: 'Excellence' },
   { id: 'accountability', label: 'Accountability' },
-  { id: 'innovation', label: 'Innovation' },
-  { id: 'family', label: 'Family' },
-  { id: 'freedom', label: 'Freedom' },
   { id: 'respect', label: 'Respect' },
-  { id: 'learning', label: 'Learning' },
+  { id: 'innovation', label: 'Innovation' },
   { id: 'courage', label: 'Courage' },
   { id: 'resilience', label: 'Resilience' },
-  { id: 'impact', label: 'Impact' },
+  { id: 'learning', label: 'Learning' },
   { id: 'collaboration', label: 'Collaboration' },
 ];
 
@@ -138,11 +138,17 @@ export const COACH_WELCOME = `Hello, I am your SPIKE Venture Coach.
 
 My role is to help you discover:
 
-• What future excites you
-• What motivates you
-• What values guide you
+• What you want to become (Ambition)
+• Who you want to help (Impact)
+• How you will do it (Values)
 • A memorable tagline and future self story
 
 There are no right or wrong answers — only clearer choices.
 
 Let's begin.`;
+
+export const IDENTITY_TRIANGLE = {
+  ambition: { label: 'Ambition', subtitle: 'What I want to become' },
+  impact: { label: 'Impact', subtitle: 'Who I want to help' },
+  values: { label: 'Values', subtitle: 'How I will do it' },
+};

@@ -170,12 +170,12 @@ export async function exportVentureBoardCoverSheet(
 
   y += 12;
   pdf.setFont('helvetica', 'bold');
-  pdf.text('Ambition & Purpose', margin, y);
+  pdf.text('Ambition & Impact', margin, y);
   y += 18;
   pdf.setFont('helvetica', 'normal');
   const ambitionPurposeLines = [
     ['Ambition', model.ambitionPurpose?.ambition ?? '—'],
-    ['Purpose', model.ambitionPurpose?.purpose ?? '—'],
+    ['Impact', model.ambitionPurpose?.impact ?? model.ambitionPurpose?.purpose ?? '—'],
     ['Values', model.ambitionPurpose?.values ?? '—'],
     ['Tagline', model.ambitionPurpose?.tagline ?? '—'],
     ['Future Self Summary', model.ambitionPurpose?.futureSelfSummary ?? '—'],

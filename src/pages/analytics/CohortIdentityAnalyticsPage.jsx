@@ -5,7 +5,7 @@ import { aggregateCoachAnalytics } from '../../lib/ventureCoachService.js';
 import {
   AMBITION_MOTIVATOR_CARDS,
   COACH_VALUE_CARDS,
-  PURPOSE_DRIVERS,
+  IMPACT_AUDIENCES,
 } from '../../lib/ventureCoachConstants.js';
 import { ROUTES } from '../../routes/paths.js';
 
@@ -32,7 +32,7 @@ export function CohortIdentityAnalyticsPage() {
       <div className="grid gap-4 lg:grid-cols-2">
         <AnalyticsList title="Top Ambitions" items={analytics.topMotivators} options={AMBITION_MOTIVATOR_CARDS} />
         <AnalyticsList title="Top Values (Public Top 3)" items={analytics.topValues} options={COACH_VALUE_CARDS} />
-        <AnalyticsList title="Top Purpose Drivers" items={analytics.topPurposeDrivers} options={PURPOSE_DRIVERS} />
+        <AnalyticsList title="Top Impact Audiences" items={analytics.topImpactAudiences ?? analytics.topPurposeDrivers} options={IMPACT_AUDIENCES} />
         <TaglineList title="Most Common Taglines" items={analytics.topTaglines} />
 
         <section className="spike-card lg:col-span-2">

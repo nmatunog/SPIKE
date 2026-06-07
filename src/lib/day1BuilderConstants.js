@@ -6,23 +6,23 @@ export const DAY1_BUILDERS = [
     label: 'My Ambition',
     missionLabel: 'AI Coach — My Ambition',
     description: 'Your Venture Coach guides you through a conversation — no blank forms.',
-    feeds: 'Ambition & Purpose',
+    feeds: 'Ambition & Impact',
     coachSection: 'ambition',
   },
   {
-    id: 'purpose-builder',
-    label: 'My Purpose',
-    missionLabel: 'AI Coach — My Purpose',
-    description: 'Discover why your ambition matters through guided reflection.',
-    feeds: 'Ambition & Purpose',
-    coachSection: 'purpose',
+    id: 'impact-builder',
+    label: 'My Impact',
+    missionLabel: 'AI Coach — My Impact',
+    description: 'Clarify who you want to help through guided reflection.',
+    feeds: 'Ambition & Impact',
+    coachSection: 'impact',
   },
   {
     id: 'values-builder',
     label: 'My Values',
     missionLabel: 'AI Coach — My Values',
     description: 'Select, rank, and understand your guiding principles.',
-    feeds: 'Ambition & Purpose',
+    feeds: 'Ambition & Impact',
     coachSection: 'values',
   },
   {
@@ -30,7 +30,7 @@ export const DAY1_BUILDERS = [
     label: 'My Tagline',
     missionLabel: 'AI Coach — My Tagline',
     description: 'Distill your identity into a memorable phrase for your profile and presentations.',
-    feeds: 'Ambition & Purpose',
+    feeds: 'Ambition & Impact',
     coachSection: 'tagline',
   },
   {
@@ -38,7 +38,7 @@ export const DAY1_BUILDERS = [
     label: 'My Future Self',
     missionLabel: 'AI Coach — Future Self',
     description: 'Build your 3-year narrative through an interactive timeline.',
-    feeds: 'Ambition & Purpose',
+    feeds: 'Ambition & Impact',
     coachSection: 'future-self',
   },
   {
@@ -46,7 +46,7 @@ export const DAY1_BUILDERS = [
     label: 'Dream Board Studio',
     missionLabel: 'Create Your Dream Board',
     description: 'Visualize lifestyle, family, career, and financial goals.',
-    feeds: 'Ambition & Purpose',
+    feeds: 'Ambition & Impact',
   },
   {
     id: 'future-venture',
@@ -73,25 +73,27 @@ export const DAY1_BUILDERS = [
 ];
 
 export const AMBITION_CARDS = [
-  { id: 'financial_freedom', label: 'Financial Freedom', emoji: '💰' },
   { id: 'entrepreneurship', label: 'Entrepreneurship', emoji: '🚀' },
   { id: 'leadership', label: 'Leadership', emoji: '🎯' },
-  { id: 'helping_others', label: 'Helping Others', emoji: '🤝' },
-  { id: 'building_wealth', label: 'Building Wealth', emoji: '📈' },
-  { id: 'building_team', label: 'Building a Team', emoji: '👥' },
+  { id: 'financial_freedom', label: 'Financial Freedom', emoji: '💰' },
   { id: 'professional_expertise', label: 'Professional Expertise', emoji: '💼' },
+  { id: 'business_ownership', label: 'Business Ownership', emoji: '🏢' },
+  { id: 'building_team', label: 'Building a Team', emoji: '👥' },
+  { id: 'recognition', label: 'Recognition', emoji: '⭐' },
+  { id: 'legacy', label: 'Legacy', emoji: '🌳' },
   { id: 'personal_growth', label: 'Personal Growth', emoji: '🌱' },
+  { id: 'independence', label: 'Independence', emoji: '🕊️' },
 ];
 
 /** @deprecated Use AMBITION_CARDS — kept for legacy reads */
 export const MOTIVATION_CARDS = AMBITION_CARDS;
 
 export const AMBITION_EXAMPLES = [
-  'Build a successful financial services business',
-  'Become a trusted financial advisor',
-  'Lead a team of future entrepreneurs',
-  'Achieve financial independence',
-  'Create impact in my community',
+  'Become a respected Agency Director who develops leaders and builds a thriving organization.',
+  'Become the trusted financial advisor for professionals in my chosen niche.',
+  'Become a recognized entrepreneur who builds lasting success.',
+  'Become financially independent through disciplined entrepreneurship.',
+  'Become a leader known for integrity and excellence.',
 ];
 
 export const PURPOSE_PROMPTS = [
@@ -181,7 +183,8 @@ export const DAY1_ID = 'day-segment-1-week-1-day-1';
 
 /** Legacy builder IDs mapped to current IDs for stored progress */
 export const LEGACY_BUILDER_IDS = {
-  'discover-why': 'purpose-builder',
+  'discover-why': 'impact-builder',
+  'purpose-builder': 'impact-builder',
   'design-future': 'future-self',
 };
 

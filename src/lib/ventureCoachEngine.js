@@ -6,12 +6,13 @@ import {
   COACH_VALUE_CARDS,
   FUTURE_SELF_GOALS,
   INCOME_SLIDER_LABELS,
-  PURPOSE_DRIVERS,
+  IMPACT_AUDIENCES,
   WORD_LIMITS,
 } from './ventureCoachConstants.js';
 
 const MAX_AMBITION_WORDS = WORD_LIMITS.ambition.max;
-const MAX_PURPOSE_WORDS = WORD_LIMITS.purpose.max;
+const MAX_IMPACT_WORDS = WORD_LIMITS.impact.max;
+/** @deprecated */ const MAX_PURPOSE_WORDS = MAX_IMPACT_WORDS;
 const MAX_VALUES_WORDS = WORD_LIMITS.valuesProfile.max;
 const MAX_TAGLINE_WORDS = WORD_LIMITS.tagline.max;
 const MAX_FUTURE_SELF_WORDS = WORD_LIMITS.futureSelf.max;
@@ -155,10 +156,21 @@ function compressToTarget(text, targetWords) {
 /**
  * Semantic compression — preserves intent while increasing clarity.
  * @param {string} text
- * @param {'ambition' | 'purpose' | 'tagline'} statementType
+ * @param {'ambition' | 'impact' | 'purpose' | 'tagline'} statementType
+ */
+function resolveStatementLimits(statementType) {
+  if (statementType === 'purpose' || statementType === 'impact') return WORD_LIMITS.impact;
+  if (statementType === 'tagline') return WORD_LIMITS.tagline;
+  return WORD_LIMITS.ambition;
+}
+
+/**
+ * Semantic compression — preserves intent while increasing clarity.
+ * @param {string} text
+ * @param {'ambition' | 'impact' | 'purpose' | 'tagline'} statementType
  */
 export function simplifyStatement(text, statementType = 'ambition') {
-  const limits = WORD_LIMITS[statementType] ?? WORD_LIMITS.ambition;
+  const limits = resolveStatementLimits(statementType);
   const target = Math.round(((limits.targetMin ?? 10) + (limits.targetMax ?? limits.max)) / 2);
 
   let result = compressToTarget(text, target);
@@ -186,11 +198,11 @@ export function simplifyStatement(text, statementType = 'ambition') {
  * Distill to a single memorable central idea.
  * @param {string} text
  * @param {number} maxWords
- * @param {'ambition' | 'purpose' | 'tagline'} statementType
+ * @param {'ambition' | 'impact' | 'purpose' | 'tagline'} statementType
  */
 function findCoreIdeaStatement(text, maxWords, statementType = 'ambition') {
   const cleaned = stripCorporateLanguage(text);
-  const limits = WORD_LIMITS[statementType] ?? WORD_LIMITS.ambition;
+  const limits = resolveStatementLimits(statementType);
 
   /** @type {Array<{ weight: number, idea: string }>} */
   const themes = [];
@@ -218,11 +230,12 @@ function findCoreIdeaStatement(text, maxWords, statementType = 'ambition') {
 
   let result = themes[0]?.idea ?? firstPhrase(cleaned, 72);
 
-  if (statementType === 'purpose') {
-    if (/famil/i.test(cleaned)) result = 'Strengthen families and improve lives.';
-    else if (/impact|service/i.test(cleaned)) result = 'Create impact that improves lives.';
-    else if (/freedom|security/i.test(cleaned)) result = 'Build security and freedom for others.';
-    else result = themes[0]?.idea.replace(/^Build/, 'Enable').replace(/^Help/, 'Serve so families') ?? result;
+  if (statementType === 'impact' || statementType === 'purpose') {
+    if (/famil/i.test(cleaned)) result = 'Help families achieve financial security.';
+    else if (/professional|healthcare|young/i.test(cleaned)) result = 'Serve professionals with confident financial guidance.';
+    else if (/entrepreneur|leader|opportunit/i.test(cleaned)) result = 'Create opportunities for aspiring entrepreneurs.';
+    else if (/communit|student|ofw/i.test(cleaned)) result = 'Strengthen communities through financial opportunity.';
+    else result = themes[0]?.idea.replace(/^Build/, 'Help').replace(/^Become/, 'Serve') ?? result;
   }
 
   if (statementType === 'tagline') {
@@ -471,30 +484,40 @@ export function polishStatement(text, maxWords, maxSentences = 2) {
  */
 export function generateAmbitionVariants(data) {
   const ranked = /** @type {string[]} */ (data.rankedMotivators ?? data.selectedMotivators ?? []);
-  const labels = labelsFor(AMBITION_MOTIVATOR_CARDS, ranked);
-  const primary = labels[0]?.toLowerCase() ?? 'building my venture';
-  const secondary = labels[1]?.toLowerCase() ?? '';
-  const tertiary = labels[2]?.toLowerCase() ?? '';
+  const ids = ranked.slice(0, 3);
+  const labels = labelsFor(AMBITION_MOTIVATOR_CARDS, ids);
+  const primary = ids[0] ?? 'leadership';
+  const secondary = ids[1] ?? '';
 
-  const short = polishStatement(
-    `Build a venture focused on ${primary}, creating freedom and impact.`,
-    15,
-    1,
-  );
+  const agencyIds = new Set(['leadership', 'building_team', 'entrepreneurship', 'business_ownership', 'recognition']);
+  const specialistIds = new Set(['professional_expertise', 'financial_freedom', 'independence', 'personal_growth']);
 
-  const balanced = polishStatement(
-    secondary
-      ? `Build a successful financial services business centered on ${primary} and ${secondary}, helping families thrive.`
-      : `Build a successful financial services business focused on ${primary}, helping families thrive.`,
-    MAX_AMBITION_WORDS,
-  );
+  let short;
+  let balanced;
+  let inspirational;
 
-  const inspirational = polishStatement(
-    tertiary
-      ? `Become a trusted entrepreneur who leads with ${primary}, ${secondary}, and ${tertiary}.`
-      : `Become a trusted financial entrepreneur who creates opportunities and develops future leaders.`,
-    MAX_AMBITION_WORDS,
-  );
+  if (agencyIds.has(primary) || agencyIds.has(secondary)) {
+    short = 'Become a respected leader who builds high-performing teams.';
+    balanced = 'Become a respected Agency Director who develops leaders and builds a thriving organization.';
+    inspirational = 'Become an influential leader who inspires teams to achieve extraordinary results.';
+  } else if (specialistIds.has(primary) || specialistIds.has(secondary)) {
+    short = 'Become a trusted advisor in my chosen niche.';
+    balanced = 'Become the trusted financial advisor for professionals in my chosen niche.';
+    inspirational = 'Become the go-to expert professionals trust for confident financial decisions.';
+  } else {
+    const focus = formatListNatural(labels, 2) || 'leadership and growth';
+    short = polishStatement(`Become a venture builder focused on ${focus}.`, 15, 1);
+    balanced = polishStatement(
+      `Become a respected professional known for ${focus} and lasting success.`,
+      MAX_AMBITION_WORDS,
+      1,
+    );
+    inspirational = polishStatement(
+      `Become an influential leader who embodies ${formatListNatural(labels, 3) || focus}.`,
+      MAX_AMBITION_WORDS,
+      1,
+    );
+  }
 
   return { short, balanced, inspirational };
 }
@@ -506,43 +529,70 @@ export function generateAmbitionDraft(data) {
   return generateAmbitionVariants(data).balanced;
 }
 
+const IMPACT_TEMPLATES = {
+  families: 'Help Filipino families achieve financial security and peace of mind.',
+  my_family: 'Help my family build financial security and a stronger future.',
+  young_professionals: 'Help young professionals make confident financial decisions early in their careers.',
+  entrepreneurs: 'Create opportunities for aspiring entrepreneurs to build meaningful careers.',
+  students: 'Help students build financial confidence and prepare for responsible adulthood.',
+  ofws: 'Help OFW families achieve financial security across distance and life transitions.',
+  business_owners: 'Help business owners make disciplined financial decisions that protect their ventures.',
+  healthcare_professionals: 'Help healthcare professionals make confident financial decisions.',
+  communities: 'Strengthen communities through accessible financial guidance and opportunity.',
+  future_leaders: 'Develop future leaders who create lasting impact in financial services.',
+};
+
 /**
  * @param {Record<string, unknown>} data
  */
+export function generateImpactDraft(data) {
+  const audiences = /** @type {string[]} */ (data.audiences ?? data.drivers ?? []).slice(0, 2);
+  const primary = audiences[0];
+  const secondary = audiences[1];
+
+  if (primary && IMPACT_TEMPLATES[primary]) {
+    if (secondary && IMPACT_TEMPLATES[secondary] && secondary !== primary) {
+      const primaryLabel = IMPACT_AUDIENCES.find((item) => item.id === primary)?.label ?? 'others';
+      const secondaryLabel = IMPACT_AUDIENCES.find((item) => item.id === secondary)?.label ?? 'communities';
+      return polishStatement(
+        `Serve ${primaryLabel.toLowerCase()} and ${secondaryLabel.toLowerCase()} with meaningful financial guidance.`,
+        MAX_IMPACT_WORDS,
+        1,
+      );
+    }
+    return polishStatement(IMPACT_TEMPLATES[primary], MAX_IMPACT_WORDS, 1);
+  }
+
+  return polishStatement('Help others achieve financial security and peace of mind.', MAX_IMPACT_WORDS, 1);
+}
+
+/** @deprecated Use generateImpactDraft */
 export function generatePurposeDraft(data) {
-  const drivers = labelsFor(PURPOSE_DRIVERS, (data.drivers ?? []).slice(0, 2));
-  const driverPhrase = formatListNatural(drivers, 2) || 'impact and service';
-
-  const templates = [
-    `Create opportunities that improve lives, driven by ${driverPhrase}.`,
-    `Use my talents to create impact through ${driverPhrase}.`,
-    `Serve families with purpose, guided by ${driverPhrase}.`,
-  ];
-
-  return polishStatement(templates[0], MAX_PURPOSE_WORDS, 1);
+  return generateImpactDraft(data);
 }
 
 /**
- * Compact purpose statement from legacy prompt answers.
+ * Compact impact statement from legacy prompt answers.
  * @param {Record<string, string>} answers
  */
-export function composePurposeFromPrompts(answers) {
-  const why = firstPhrase(answers.whyImportant, 80)
-    .replace(/^this matters to me because\s*/i, '')
-    .replace(/^because\s*/i, '')
-    .trim();
-  const who = firstPhrase(answers.whoImpact, 40).replace(/[.!?]+$/, '').trim();
+export function composeImpactFromPrompts(answers) {
+  const who = firstPhrase(answers.whoImpact, 60).replace(/[.!?]+$/, '').trim();
+  const difference = firstPhrase(answers.difference, 80).replace(/[.!?]+$/, '').trim();
   const audience = who || 'families and my community';
 
   let draft;
-  if (why) {
-    const reason = why.charAt(0).toLowerCase() + why.slice(1);
-    draft = `Guide ${audience.toLowerCase()} with purpose because ${reason}.`;
+  if (difference) {
+    draft = `Help ${audience.toLowerCase()} by ${difference.charAt(0).toLowerCase()}${difference.slice(1)}.`;
   } else {
-    draft = `Guide ${audience.toLowerCase()} to create meaningful, lasting impact.`;
+    draft = `Help ${audience.toLowerCase()} achieve financial security and peace of mind.`;
   }
 
-  return polishStatement(draft, MAX_PURPOSE_WORDS, 1);
+  return polishStatement(draft, MAX_IMPACT_WORDS, 1);
+}
+
+/** @deprecated Use composeImpactFromPrompts */
+export function composePurposeFromPrompts(answers) {
+  return composeImpactFromPrompts(answers);
 }
 
 /**
@@ -564,8 +614,8 @@ export function composeAmbitionFromCards(selectedIds, options, pathPreference) {
         : '';
 
   const draft = trackHint
-    ? `Build a venture focused on ${focus} — ${trackHint}.`
-    : `Build a venture focused on ${focus}, helping families thrive.`;
+    ? `Become a venture builder focused on ${focus} — ${trackHint}.`
+    : `Become a respected professional focused on ${focus}.`;
 
   return polishStatement(draft, MAX_AMBITION_WORDS);
 }
@@ -578,29 +628,93 @@ export function generateValuesProfile(topThree) {
   if (names.length < 3) return '';
   const core = formatListNatural(names, 3);
   return polishStatement(
-    `You are motivated by ${core}, suggesting a purpose-driven approach to leadership and entrepreneurship.`,
+    `You are guided by ${core}, suggesting a principled approach to leadership and entrepreneurship.`,
     MAX_VALUES_WORDS,
     2,
   );
 }
 
+const CONCEPT_STOP_WORDS = new Set([
+  'what',
+  'want',
+  'become',
+  'help',
+  'build',
+  'that',
+  'with',
+  'through',
+  'their',
+  'who',
+  'will',
+  'this',
+  'from',
+  'have',
+  'make',
+  'financial',
+  'services',
+  'others',
+  'people',
+]);
+
+/** @param {string} text */
+function statementConceptTokens(text) {
+  return new Set(
+    String(text ?? '')
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, ' ')
+      .split(/\s+/)
+      .filter((word) => word.length > 3 && !CONCEPT_STOP_WORDS.has(word)),
+  );
+}
+
+export const AMBITION_IMPACT_OVERLAP_WARNING =
+  'Your Ambition and Impact appear too similar. Try focusing your Ambition on yourself and your Impact on the people you want to serve.';
+
+/** @param {string} ambition @param {string} impact */
+export function statementsOverlapTooMuch(ambition, impact) {
+  const ambitionTokens = statementConceptTokens(ambition);
+  const impactTokens = statementConceptTokens(impact);
+  if (!ambitionTokens.size || !impactTokens.size) return false;
+
+  let shared = 0;
+  for (const token of ambitionTokens) {
+    if (impactTokens.has(token)) shared += 1;
+  }
+
+  const overlapRatio = shared / Math.min(ambitionTokens.size, impactTokens.size);
+  const ambitionServesOthers = /\b(help|serve|famil|communit|others|people|clients)\b/i.test(ambition);
+  const impactIsIdentity = /\b(become|leader|director|advisor|entrepreneur|build a career)\b/i.test(impact);
+
+  return overlapRatio > 0.5 || (ambitionServesOthers && !/\bbecome\b/i.test(ambition)) || impactIsIdentity;
+}
+
 /**
- * @param {{ ambition?: string, purpose?: string, topThree?: string[] }} data
+ * @param {{ ambition?: string, impact?: string, purpose?: string, topThree?: string[] }} data
  */
 export function generateTagline(data) {
   const values = labelsFor(COACH_VALUE_CARDS, data.topThree ?? []).slice(0, 3);
   const ambition = String(data.ambition ?? '').toLowerCase();
-  const purpose = String(data.purpose ?? '').toLowerCase();
+  const impact = String(data.impact ?? data.purpose ?? '').toLowerCase();
+
+  if (ambition.includes('leader') || ambition.includes('director') || ambition.includes('agency')) {
+    return capStatementWords('Building Leaders. Creating Opportunities.', MAX_TAGLINE_WORDS);
+  }
+  if (ambition.includes('advisor') || ambition.includes('expert') || ambition.includes('niche')) {
+    return capStatementWords('Helping Professionals Thrive.', MAX_TAGLINE_WORDS);
+  }
+  if (values.includes('Growth') && values.includes('Service') && values.includes('Leadership')) {
+    return capStatementWords('Grow. Serve. Lead.', MAX_TAGLINE_WORDS);
+  }
 
   const fragments = [];
 
-  if (ambition.includes('freedom') || ambition.includes('wealth') || purpose.includes('freedom')) {
+  if (ambition.includes('freedom') || ambition.includes('wealth') || impact.includes('freedom')) {
     fragments.push('Building Freedom');
   }
-  if (ambition.includes('help') || ambition.includes('famil') || purpose.includes('famil') || purpose.includes('impact')) {
+  if (impact.includes('help') || impact.includes('famil') || impact.includes('communit') || impact.includes('serve')) {
     fragments.push('Creating Impact');
   }
-  if (values.includes('Service') || purpose.includes('service')) {
+  if (values.includes('Service') || impact.includes('service')) {
     fragments.push('Serve');
   }
   if (values.includes('Growth')) {
@@ -610,7 +724,7 @@ export function generateTagline(data) {
     fragments.push('Lead');
   }
   if (values.includes('Integrity')) {
-    fragments.push('Lead With Purpose');
+    fragments.push('Lead With Integrity');
   }
 
   if (fragments.length >= 2) {
@@ -621,11 +735,11 @@ export function generateTagline(data) {
     return capStatementWords(`${values[0]}. ${values[1]}. ${values[2] ?? 'Lead'}.`, MAX_TAGLINE_WORDS);
   }
 
-  if (purpose.includes('opportunit')) {
+  if (impact.includes('opportunit') || impact.includes('entrepreneur')) {
     return capStatementWords('Building Leaders. Creating Opportunities.', MAX_TAGLINE_WORDS);
   }
 
-  return capStatementWords('Leading With Purpose.', MAX_TAGLINE_WORDS);
+  return capStatementWords('Grow. Serve. Lead.', MAX_TAGLINE_WORDS);
 }
 
 /**
@@ -639,7 +753,7 @@ export function generateFutureSelfNarrative(data) {
   const goalLine = formatListNatural(goals, 3) || 'building my venture';
 
   const paragraphs = [
-    `In three years, I am a venture builder making measurable progress on ${goalLine}. I wake up with clarity about where I am headed and the standards I hold myself to every day. My ambition and purpose guide the decisions I make — from how I serve clients to how I develop my skills and network.`,
+    `In three years, I am a venture builder making measurable progress on ${goalLine}. I wake up with clarity about where I am headed and the standards I hold myself to every day. My ambition, impact, and values guide the decisions I make — from how I serve clients to how I develop my skills and network.`,
     `Financially, I operate at a ${income.toLowerCase()} level. That means my business or practice generates the income I need to support my goals while reinvesting in growth. I track key metrics, manage cash flow deliberately, and make choices that align with long-term freedom — not just short-term wins.`,
     `The impact I create centers on ${impact.replace(/[.!?]+$/, '').toLowerCase()}. I measure success not only by revenue but by the families and professionals whose lives improve because of my work. I stay connected to my values and use them as a filter when opportunities arise.`,
     `When I imagine success, ${success.replace(/[.!?]+$/, '').toLowerCase()}. I have built credibility in my market, earned trust through consistent delivery, and created a reputation for integrity and excellence. People refer others to me because they believe in what I stand for.`,
@@ -680,13 +794,15 @@ export function getAmbitionFollowUps() {
   return [];
 }
 
-/** @param {string} text @param {string} mode @param {number} [maxWords] @param {'ambition' | 'purpose' | 'tagline' | 'future-self'} [statementType] */
+/** @param {string} text @param {string} mode @param {number} [maxWords] @param {'ambition' | 'impact' | 'purpose' | 'tagline' | 'future-self'} [statementType] */
 export function refineText(text, mode, maxWords = MAX_AMBITION_WORDS, statementType = 'ambition') {
   const base = String(text ?? '').trim();
   if (!base) return base;
 
   const resolvedMode = mode === 'shorten' ? 'simplify' : mode;
   const type = statementType === 'future-self' ? 'ambition' : statementType;
+  const simplifyType =
+    type === 'tagline' ? 'tagline' : type === 'impact' || type === 'purpose' ? 'impact' : 'ambition';
   let result = base;
 
   switch (resolvedMode) {
@@ -694,14 +810,10 @@ export function refineText(text, mode, maxWords = MAX_AMBITION_WORDS, statementT
       if (statementType === 'future-self') {
         return simplifyFutureSelfNarrative(base);
       }
-      result = simplifyStatement(base, type === 'tagline' ? 'tagline' : type === 'purpose' ? 'purpose' : 'ambition');
+      result = simplifyStatement(base, simplifyType);
       break;
     case 'core':
-      result = findCoreIdeaStatement(
-        base,
-        maxWords,
-        type === 'tagline' ? 'tagline' : type === 'purpose' ? 'purpose' : 'ambition',
-      );
+      result = findCoreIdeaStatement(base, maxWords, simplifyType);
       break;
     case 'ambitious':
       result = thinkBiggerStatement(base, maxWords);

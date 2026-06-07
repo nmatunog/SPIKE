@@ -25,7 +25,7 @@ export function MentorDay1Panel({ interns, mentorId }) {
 function MentorInternDay1Card({ intern, mentorId }) {
   const progress = getDay1MissionProgress(intern.id);
   const data = getAllDay1BuilderData(intern.id);
-  const purpose = data['purpose-builder']?.data ?? data['discover-why']?.data;
+  const purpose = data['impact-builder']?.data ?? data['purpose-builder']?.data ?? data['discover-why']?.data;
   const ambition = data['ambition-builder']?.data;
   const values = data['values-builder']?.data;
   const charter = getParticipantCharterPreview(intern.id);
@@ -51,7 +51,7 @@ function MentorInternDay1Card({ intern, mentorId }) {
           </p>
         </div>
         <div className="rounded-xl bg-slate-50 p-3">
-          <p className="spike-label">My Purpose</p>
+          <p className="spike-label">My Impact</p>
           <p className="mt-1 line-clamp-3 text-sm text-slate-700">
             {purpose?.purposeStatement
               ? String(purpose.purposeStatement)

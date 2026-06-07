@@ -94,7 +94,7 @@ function ScoreCell({ label, value, numeric = false }) {
  *   onDraftChange: (text: string) => void,
  *   onAccept: () => void,
  *   refineSet?: 'identity' | 'future-self',
- *   statementType?: 'ambition' | 'purpose' | 'tagline' | 'future-self',
+ *   statementType?: 'ambition' | 'impact' | 'purpose' | 'tagline' | 'future-self',
  *   acceptLabel?: string,
  *   maxWords?: number,
  *   wordLimits?: { max: number, targetMin?: number, targetMax?: number, min?: number },

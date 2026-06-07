@@ -48,7 +48,7 @@ export function MentorVentureCoachPage({ interns = [] }) {
 
       <div className="grid gap-4 lg:grid-cols-2">
         <SummaryCard title="Ambition" text={summary?.ambition} />
-        <SummaryCard title="Purpose" text={summary?.purpose} />
+        <SummaryCard title="Impact" text={summary?.impact ?? summary?.purpose} />
         <SummaryCard
           title="Top 3 Values"
           text={topThreeLabels.length ? topThreeLabels.join(' · ') : undefined}

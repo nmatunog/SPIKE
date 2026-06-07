@@ -6,7 +6,7 @@ import { markCoachStarted } from '../../lib/ventureCoachService.js';
 import {
   AmbitionCoachFlow,
   FutureSelfCoachFlow,
-  PurposeCoachFlow,
+  ImpactCoachFlow,
   TaglineCoachFlow,
   ValuesCoachFlow,
   VentureDirectionCoachFlow,
@@ -14,7 +14,8 @@ import {
 
 const COACH_FLOWS = {
   ambition: AmbitionCoachFlow,
-  purpose: PurposeCoachFlow,
+  impact: ImpactCoachFlow,
+  purpose: ImpactCoachFlow,
   values: ValuesCoachFlow,
   tagline: TaglineCoachFlow,
   'future-self': FutureSelfCoachFlow,

@@ -38,7 +38,7 @@ export function isWorksheetCompleted(participantId, worksheetId) {
 }
 
 /**
- * Ambition & Purpose module progress from Day 1 builders and legacy worksheets.
+ * Ambition & Impact module progress from Day 1 builders and legacy worksheets.
  * @param {string | undefined} participantId
  */
 export function getVisionPurposeProgress(participantId) {
@@ -56,7 +56,7 @@ export function getVisionPurposeProgress(participantId) {
   if (isBuilderCompleted(participantId, 'ambition-builder')) {
     base.vision_statement = 20;
   }
-  if (isBuilderCompleted(participantId, 'purpose-builder')) {
+  if (isBuilderCompleted(participantId, 'impact-builder') || isBuilderCompleted(participantId, 'purpose-builder')) {
     base.mission_statement = 20;
   }
   if (isBuilderCompleted(participantId, 'values-builder')) {

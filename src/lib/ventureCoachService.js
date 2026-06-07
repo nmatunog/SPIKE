@@ -58,10 +58,11 @@ function syncSectionToBlueprint(participantId, sectionId, text, extra) {
         sourceId: 'ambition',
       });
       break;
+    case 'impact':
     case 'purpose':
       setSectionField(participantId, 'vision-purpose', 'mission_statement', text, {
         sourceType: 'venture_coach',
-        sourceId: 'purpose',
+        sourceId: 'impact',
       });
       break;
     case 'values':
@@ -111,7 +112,11 @@ export function getCoachSummaryForMentor(participantId) {
   return {
     progress,
     ambition: profile.sections?.ambition?.data?.finalText ?? '',
-    purpose: profile.sections?.purpose?.data?.finalText ?? '',
+    impact:
+      profile.sections?.impact?.data?.finalText ?? profile.sections?.purpose?.data?.finalText ?? '',
+    /** @deprecated Use impact */
+    purpose:
+      profile.sections?.impact?.data?.finalText ?? profile.sections?.purpose?.data?.finalText ?? '',
     topThreeValues: topThree,
     valuesProfile: valuesData.valuesProfile ?? '',
     tagline: profile.sections?.tagline?.data?.finalText ?? '',

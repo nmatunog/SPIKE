@@ -184,7 +184,7 @@ export function VisionPurposePanel({ participantId }) {
 
   const components = [
     { key: 'vision_statement', label: 'My Ambition', pct: progress.vision_statement },
-    { key: 'mission_statement', label: 'My Purpose', pct: progress.mission_statement },
+    { key: 'mission_statement', label: 'My Impact', pct: progress.mission_statement },
     { key: 'my_values', label: 'My Values', pct: progress.my_values },
     { key: 'personal_tagline', label: 'My Tagline', pct: progress.personal_tagline ?? 0 },
     { key: 'future_self_narrative', label: 'Future Self Narrative', pct: progress.future_self_narrative },
@@ -199,7 +199,7 @@ export function VisionPurposePanel({ participantId }) {
   return (
     <div className="space-y-4">
       <p className="text-sm text-gray-600">
-        {section?.description ?? 'Design your ambition, purpose, and venture identity.'} Day 1 Venture
+        {section?.description ?? 'Design your ambition, impact, and venture identity.'} Day 1 Venture
         Blueprint Builders™ auto-fill this module — no duplicate entry.
       </p>
       {day1 && day1.percent < 100 ? (
@@ -248,7 +248,7 @@ export function VisionPurposePanel({ participantId }) {
       ) : null}
 
       {participantId ? (
-        <SectionCard title="Portfolio drafts — Identity & Purpose">
+        <SectionCard title="Portfolio drafts — Identity & Impact">
           {listPortfolioArtifacts(participantId, 'portfolio-identity-purpose').length > 0 ? (
             <div className="space-y-3">
               {listPortfolioArtifacts(participantId, 'portfolio-identity-purpose').map((a) => (
