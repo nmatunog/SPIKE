@@ -1,4 +1,5 @@
 import { deriveWeekDay } from './sprint01Metrics.js';
+import { countCompletedFnas } from './fnaService.js';
 import { computeSpikeReadinessScore } from './spikeReadinessScore.js';
 
 /**
@@ -11,7 +12,9 @@ export function buildParticipantState(participantId, internProgress) {
   const segment = internProgress?.segment ?? 1;
   const derived = deriveWeekDay(hours);
   const careerTrack = normalizeCareerTrack(internProgress?.career_track);
-  const readiness = computeSpikeReadinessScore(internProgress);
+  const readiness = computeSpikeReadinessScore(internProgress, {
+    fnaCount: countCompletedFnas(participantId),
+  });
 
   return {
     participant_id: participantId,

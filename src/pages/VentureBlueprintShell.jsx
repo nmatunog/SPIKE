@@ -49,7 +49,7 @@ export function VentureBlueprintShell({ user, onLogTraction }) {
       case 'milestones':
         return <MilestonesModule state={state} />;
       case 'client-growth':
-        return <ClientGrowthPanel state={state} />;
+        return <ClientGrowthPanel state={state} participantId={user.id} />;
       case 'recruitment':
         return <RecruitmentPanel />;
       case 'leadership':

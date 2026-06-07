@@ -6,15 +6,19 @@
 
 /**
  * @param {{ hours?: number, segment?: number, licensed?: boolean } | null | undefined} progress
+ * @param {{ fnaCount?: number }} [options]
  */
-export function computeSpikeReadinessScore(progress) {
+export function computeSpikeReadinessScore(progress, options = {}) {
   const hours = progress?.hours ?? 0;
   const segment = progress?.segment ?? 1;
   const licensed = progress?.licensed ?? false;
+  const fnaCount = options.fnaCount ?? 0;
 
   const learning = Math.min(100, Math.round((hours / 200) * 100));
   const portfolio = Math.min(100, Math.round((hours / 600) * 22 * 4.5));
-  const production = hours >= 110 ? 100 : Math.round((hours / 110) * 100);
+  const productionFromHours = hours >= 110 ? 100 : Math.round((hours / 110) * 100);
+  const productionFromFnas = fnaCount > 0 ? Math.min(100, 35 + fnaCount * 20) : 0;
+  const production = Math.max(productionFromHours, productionFromFnas);
   const recruitment = segment >= 2 ? Math.min(100, Math.round(((hours - 200) / 200) * 100)) : Math.round((hours / 80) * 40);
   const leadership = segment >= 3 ? Math.min(100, Math.round(((hours - 400) / 200) * 100)) : Math.round((hours / 400) * 30);
   const professionalism = licensed ? 100 : Math.min(100, Math.round((hours / 160) * 85));

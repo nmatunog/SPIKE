@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight,
@@ -23,6 +24,9 @@ import {
 } from '../../../lib/playbookSeeds.js';
 import { getVisionPurposeProgress } from '../../../lib/playbookProgress.js';
 import { listBlueprintTimelineEvents } from '../../../lib/blueprintTimeline.js';
+import { getClientGrowthSummary } from '../../../lib/clientGrowthService.js';
+import { listFnas } from '../../../lib/fnaService.js';
+import { FnaEngineModule } from '../../fna/FnaEngineModule.jsx';
 
 function SectionCard({ title, children, className = '' }) {
   return (
@@ -266,30 +270,60 @@ export function FinancialCanvasPanel() {
 }
 
 const CLIENT_FUNNEL = [
-  'Prospects',
-  'Contacts',
-  'Appointments',
-  'FNAs',
-  'Proposals',
-  'Applications',
-  'Issued Cases',
+  { key: 'prospects', label: 'Prospects' },
+  { key: 'contacts', label: 'Contacts' },
+  { key: 'appointments', label: 'Appointments' },
+  { key: 'fnas', label: 'FNAs' },
+  { key: 'proposals', label: 'Proposals' },
+  { key: 'applications', label: 'Applications' },
+  { key: 'issuedCases', label: 'Issued Cases' },
 ];
 
-export function ClientGrowthPanel({ state }) {
+/**
+ * @param {{ state: object, participantId?: string }} props
+ */
+export function ClientGrowthPanel({ state, participantId }) {
+  const [refreshKey, setRefreshKey] = useState(0);
+  void refreshKey;
+
+  const fnas = participantId ? listFnas(participantId) : [];
+  const funnel = participantId ? getClientGrowthSummary(participantId, fnas) : null;
+  const completedFnas = fnas.filter((f) => f.status !== 'draft').length;
+
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <MetricCard label="FNA readiness" value={`${state.spike_readiness_dimensions.production}%`} sub="mock from hours" />
-        <MetricCard label="Conversion" value="—" sub="awaiting FNA engine" accent="blue" />
-        <MetricCard label="Issued cases" value="0" sub="client_growth table" accent="green" />
-        <MetricCard label="Referrals" value="0" sub="client_growth table" accent="amber" />
+        <MetricCard
+          label="Production score"
+          value={`${state.spike_readiness_dimensions.production}%`}
+          sub={completedFnas > 0 ? `${completedFnas} FNA(s) on file` : 'complete an FNA to boost'}
+        />
+        <MetricCard
+          label="FNAs completed"
+          value={String(funnel?.fnas ?? 0)}
+          sub="client growth funnel"
+          accent="blue"
+        />
+        <MetricCard
+          label="Issued cases"
+          value={String(funnel?.issuedCases ?? 0)}
+          sub="implemented FNAs"
+          accent="green"
+        />
+        <MetricCard
+          label="Referrals"
+          value={String(funnel?.referrals ?? 0)}
+          sub="referral engine (Sprint 06)"
+          accent="amber"
+        />
       </div>
       <SectionCard title="Production funnel">
         <div className="flex flex-col items-stretch gap-1 sm:flex-row sm:flex-wrap sm:items-center">
           {CLIENT_FUNNEL.map((stage, idx) => (
-            <div key={stage} className="flex items-center gap-1">
-              <span className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs font-bold text-gray-800">
-                {stage}
+            <div key={stage.key} className="flex items-center gap-1">
+              <span className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-900">
+                {stage.label}
+                <span className="ml-1.5 text-emerald-700">{funnel?.[stage.key] ?? 0}</span>
               </span>
               {idx < CLIENT_FUNNEL.length - 1 ? (
                 <ArrowRight size={14} className="hidden text-gray-400 sm:block" />
@@ -297,10 +331,18 @@ export function ClientGrowthPanel({ state }) {
             </div>
           ))}
         </div>
-        <PlaceholderNotice className="mt-4">
-          FNA Engine (PRD Module 8) will populate this funnel. Traction hours: {state.hours}.
-        </PlaceholderNotice>
+        {completedFnas === 0 ? (
+          <PlaceholderNotice className="mt-4">
+            Complete an FNA below to populate funnel stages. Traction hours: {state.hours}.
+          </PlaceholderNotice>
+        ) : null}
       </SectionCard>
+
+      {participantId ? (
+        <FnaEngineModule participantId={participantId} onUpdated={() => setRefreshKey((k) => k + 1)} />
+      ) : (
+        <PlaceholderNotice>Sign in to create FNAs.</PlaceholderNotice>
+      )}
     </div>
   );
 }

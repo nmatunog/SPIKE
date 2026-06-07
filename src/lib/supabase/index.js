@@ -16,3 +16,5 @@ export {
 } from './blueprintArtifacts.js';
 export { fetchPlaybookCompletions, upsertPlaybookCompletion } from './playbookProgress.js';
 export { fetchSurveyResponse, upsertSurveyResponse } from './surveyResponses.js';
+export { fetchFnaRecords, upsertFnaRecord } from './fnaRecords.js';
+export { fetchClientGrowthFunnel, upsertClientGrowthFunnel } from './clientGrowth.js';

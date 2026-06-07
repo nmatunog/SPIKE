@@ -74,5 +74,7 @@ App loads curriculum from `/content` JSON and hydrates `day_contributions` from 
 - Migration: `supabase/migrations/20260621_sprint_03_playbook_completions.sql`
 - Survey responses: `src/lib/surveyService.js`, `src/lib/supabase/surveyResponses.js`
 - Migration: `supabase/migrations/20260622_sprint_04_survey_engine.sql`
+- FNA Engine: `src/lib/fnaService.js`, `src/components/fna/FnaForm.jsx`
+- Migration: `supabase/migrations/20260623_sprint_04_fna_engine.sql`
 
 The `api/` folder is for optional local JWT development only; production uses Supabase.
