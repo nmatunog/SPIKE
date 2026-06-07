@@ -22,21 +22,53 @@ export const BLUEPRINT_LINKS = {
 export const MODULE_NAV = [
   {
     path: ROUTES.ventureBlueprint,
-    label: 'My Blueprint',
+    label: 'Blueprint',
+    shortLabel: 'Blueprint',
     icon: 'blueprint',
     roles: ['intern'],
   },
   {
     path: ROUTES.dashboard,
-    label: 'Dashboard',
+    label: 'Home',
+    shortLabel: 'Home',
     icon: 'dashboard',
     roles: ['faculty', 'mentor', 'admin'],
   },
-  { path: ROUTES.playbook, label: 'Playbook', icon: 'playbook', roles: ['intern', 'faculty', 'mentor', 'admin'] },
-  { path: ROUTES.portfolio, label: 'Portfolio', icon: 'portfolio', roles: ['faculty', 'mentor', 'admin'] },
-  { path: ROUTES.research, label: 'Research', icon: 'research', roles: ['intern', 'faculty', 'mentor', 'admin'] },
-  { path: ROUTES.reports, label: 'Reports', icon: 'reports', roles: ['faculty', 'mentor', 'admin'] },
-  { path: ROUTES.admin, label: 'Admin', icon: 'admin', roles: ['admin'] },
+  {
+    path: ROUTES.playbook,
+    label: 'Playbook',
+    shortLabel: 'Playbook',
+    icon: 'playbook',
+    roles: ['intern', 'faculty', 'mentor', 'admin'],
+  },
+  {
+    path: ROUTES.portfolio,
+    label: 'Portfolio',
+    shortLabel: 'Portfolio',
+    icon: 'portfolio',
+    roles: ['faculty', 'mentor', 'admin'],
+  },
+  {
+    path: ROUTES.research,
+    label: 'Research',
+    shortLabel: 'Research',
+    icon: 'research',
+    roles: ['intern', 'faculty', 'mentor', 'admin'],
+  },
+  {
+    path: ROUTES.reports,
+    label: 'Reports',
+    shortLabel: 'Reports',
+    icon: 'reports',
+    roles: ['faculty', 'mentor', 'admin'],
+  },
+  {
+    path: ROUTES.admin,
+    label: 'Admin',
+    shortLabel: 'Admin',
+    icon: 'admin',
+    roles: ['admin'],
+  },
 ];
 
 export function moduleNavForRole(userRole) {

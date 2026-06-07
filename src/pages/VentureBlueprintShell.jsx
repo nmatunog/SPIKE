@@ -58,6 +58,8 @@ export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }
 
   const activeModule = getBlueprintModule(moduleSlug) ?? getBlueprintModule('overview');
   const showTrackPicker = needsCareerTrackSelection(user.id, progress);
+  const isOverview = moduleSlug === 'overview';
+  const headerVariant = isOverview ? 'full' : 'compact';
 
   function handleTrackComplete(nextProgress) {
     setProgress(nextProgress);
@@ -107,11 +109,10 @@ export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }
   ) {
     return (
       <PageContainer>
-        <BlueprintStateHeader state={state} participantId={user.id} />
-        <p className="rounded-xl border border-sky-200 bg-sky-50 p-4 text-sm text-sky-900">
-          Track-specific modules unlock after Week 1, when you choose Agency Builder or Specialist
-          Consultant. For now, focus on Overview, Vision, Canvas, Market Intelligence, and Client
-          Growth.
+        <BlueprintStateHeader state={state} participantId={user.id} variant="compact" />
+        <p className="spike-card text-sm text-sky-900">
+          Track-specific modules unlock after Week 1. For now, use Foundation and Growth sections in
+          the menu.
         </p>
       </PageContainer>
     );
@@ -124,10 +125,9 @@ export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }
   ) {
     return (
       <PageContainer>
-        <BlueprintStateHeader state={state} participantId={user.id} />
-        <p className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-          This Blueprint module is not available on your current career track. Open Overview or
-          Career Accelerator.
+        <BlueprintStateHeader state={state} participantId={user.id} variant="compact" />
+        <p className="spike-card text-sm text-amber-900">
+          This module is not on your career track. Open Overview or Career Accelerator instead.
         </p>
       </PageContainer>
     );
@@ -143,24 +143,34 @@ export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }
         />
       ) : null}
 
-      <BlueprintStateHeader state={state} participantId={user.id} />
+      <BlueprintStateHeader
+        state={state}
+        participantId={user.id}
+        variant={headerVariant}
+      />
 
-      <div className="mb-4 lg:hidden">
-        <BlueprintModuleNav careerTrack={state.career_track} variant="mobile" />
+      <div className="mb-4 space-y-3 lg:hidden">
+        <BlueprintModuleNav
+          careerTrack={state.career_track}
+          activeSlug={moduleSlug}
+          variant="select"
+        />
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(220px,260px)_1fr]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(200px,240px)_1fr] xl:grid-cols-[minmax(220px,260px)_1fr] 2xl:grid-cols-[minmax(260px,300px)_1fr] 2xl:gap-8">
         <aside className="hidden lg:block">
-          <div className="sticky top-24 rounded-xl border border-gray-200 bg-white p-3 shadow-sm">
-            <BlueprintModuleNav careerTrack={state.career_track} variant="sidebar" />
+          <div className="sticky top-[4.5rem] rounded-2xl border border-slate-200/80 bg-white p-3 shadow-card lg:top-24 xl:p-4 2xl:top-28">
+            <BlueprintModuleNav careerTrack={state.career_track} activeSlug={moduleSlug} />
           </div>
         </aside>
 
         <div className="min-w-0">
-          <header className="mb-4">
-            <h3 className="text-lg font-bold text-gray-900 sm:text-xl">{activeModule?.label}</h3>
-            <p className="mt-1 text-sm text-gray-600">{activeModule?.description}</p>
-          </header>
+          {!isOverview ? (
+            <header className="mb-4 lg:mb-5">
+              <h3 className="text-lg font-semibold text-slate-900 lg:text-xl 2xl:text-2xl">{activeModule?.label}</h3>
+              <p className="mt-1 text-sm text-slate-600 lg:text-base 2xl:text-lg">{activeModule?.description}</p>
+            </header>
+          ) : null}
           {renderModulePanel()}
         </div>
       </div>

@@ -42,91 +42,88 @@ export const GuestBootstrapForm = memo(function GuestBootstrapForm({
 
   return (
     <form
-      className="mb-10 w-full space-y-4 rounded-2xl border-2 border-[#8B0000]/30 bg-red-50/50 p-6 shadow-sm"
+      className="mb-2 w-full space-y-4 rounded-2xl border border-spike/20 bg-spike-muted/40 p-5 shadow-card"
       onSubmit={handleSubmit}
     >
-      <h3 className="text-center text-lg font-bold text-gray-900">
-        First-time setup: create administrator
-      </h3>
-      <p className="text-center text-xs text-gray-600">
-        This form appears only when the database has no users. You will be signed in as an admin.
-        No one else can use this shortcut after the first account exists.
-      </p>
-      {error && (
-        <p className="rounded-lg bg-red-50 p-2 text-center text-sm text-red-700">{error}</p>
-      )}
-      <div>
-        <label className="mb-1 block text-xs font-bold text-gray-700">Full name</label>
+      <div className="text-center">
+        <h3 className="text-base font-semibold text-slate-900">First-time setup</h3>
+        <p className="mt-1 text-xs leading-relaxed text-slate-600">
+          Create the first administrator account. This shortcut works only once.
+        </p>
+      </div>
+
+      {error ? (
+        <p className="rounded-xl bg-red-50 p-2.5 text-center text-sm text-red-700">{error}</p>
+      ) : null}
+
+      <label className="block">
+        <span className="spike-label mb-1 block">Full name</span>
         <input
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 bg-white p-2.5 text-sm outline-none focus:border-[#8B0000]"
+          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-spike focus:ring-2 focus:ring-spike/20"
           placeholder="Your name"
           autoComplete="name"
         />
-      </div>
-      <div>
-        <label className="mb-1 block text-xs font-bold text-gray-700">Email</label>
+      </label>
+
+      <label className="block">
+        <span className="spike-label mb-1 block">Email</span>
         <input
           type="email"
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 bg-white p-2.5 text-sm outline-none focus:border-[#8B0000]"
+          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-spike focus:ring-2 focus:ring-spike/20"
           placeholder="you@agency.com"
           autoComplete="username"
         />
-      </div>
-      <div>
-        <label className="mb-1 block text-xs font-bold text-gray-700">Password</label>
+      </label>
+
+      <label className="block">
+        <span className="spike-label mb-1 block">Password</span>
         <PasswordInput
           required
           minLength={8}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 bg-white p-2.5 text-sm outline-none focus:border-[#8B0000]"
+          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-spike focus:ring-2 focus:ring-spike/20"
           placeholder="At least 8 characters"
           autoComplete="new-password"
         />
-      </div>
-      <div>
-        <label className="mb-1 block text-xs font-bold text-gray-700">Confirm password</label>
+      </label>
+
+      <label className="block">
+        <span className="spike-label mb-1 block">Confirm password</span>
         <PasswordInput
           required
           minLength={8}
           value={password2}
           onChange={(e) => setPassword2(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 bg-white p-2.5 text-sm outline-none focus:border-[#8B0000]"
+          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-spike focus:ring-2 focus:ring-spike/20"
           placeholder="Repeat password"
           autoComplete="new-password"
         />
-      </div>
-      {secretRequired && (
-        <div>
-          <label className="mb-1 block text-xs font-bold text-gray-700">Setup secret</label>
+      </label>
+
+      {secretRequired ? (
+        <label className="block">
+          <span className="spike-label mb-1 block">Setup secret</span>
           <PasswordInput
             required
             value={secret}
             onChange={(e) => setSecret(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 bg-white p-2.5 text-sm outline-none focus:border-[#8B0000]"
-            placeholder="Value from API SETUP_SECRET"
+            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-spike focus:ring-2 focus:ring-spike/20"
+            placeholder="From API SETUP_SECRET"
             autoComplete="off"
             showLabel="Show setup secret"
             hideLabel="Hide setup secret"
           />
-          <p className="mt-1 text-xs text-gray-500">
-            Your API host must define{' '}
-            <code className="rounded bg-gray-100 px-1">SETUP_SECRET</code> for this field to
-            appear.
-          </p>
-        </div>
-      )}
-      <button
-        type="submit"
-        disabled={submitting}
-        className="w-full rounded-lg bg-[#8B0000] py-2.5 text-sm font-bold text-white transition hover:bg-red-900 disabled:opacity-60"
-      >
+        </label>
+      ) : null}
+
+      <button type="submit" disabled={submitting} className="spike-btn-primary w-full">
         {submitting ? 'Creating account…' : 'Create administrator & sign in'}
       </button>
     </form>

@@ -44,16 +44,16 @@ export function ParticipantDayView({ bundle, participantId, onProgress }) {
       />
 
       {sessions.length > 1 ? (
-        <div className="flex flex-wrap gap-2">
+        <div className="spike-scroll-tabs">
           {sessions.map((session, idx) => (
             <button
               key={session.id}
               type="button"
               onClick={() => setSessionIndex(idx)}
-              className={`min-h-[40px] rounded-lg px-3 py-2 text-sm font-bold transition ${
+              className={`min-h-[44px] shrink-0 rounded-xl px-3 py-2 text-sm font-semibold transition lg:px-4 lg:text-base ${
                 sessionIndex === idx
-                  ? 'bg-[#8B0000] text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'spike-nav-pill-active'
+                  : 'spike-nav-pill-inactive bg-slate-100'
               }`}
             >
               S{session.sessionNumber}: {session.title}

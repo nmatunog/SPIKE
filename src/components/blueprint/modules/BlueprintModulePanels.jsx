@@ -25,8 +25,7 @@ import {
 import { getVisionPurposeProgress } from '../../../lib/playbookProgress.js';
 import { BlueprintTimelineFeed } from '../BlueprintTimelineFeed.jsx';
 import { getClientGrowthSummary } from '../../../lib/clientGrowthService.js';
-import { listFnas, countCompletedFnas } from '../../../lib/fnaService.js';
-import { countSubmittedSurveys } from '../../../lib/surveyService.js';
+import { listFnas } from '../../../lib/fnaService.js';
 import { getMarketIntelligenceSummary } from '../../../lib/marketIntelligenceService.js';
 import { getSectionField, setSectionField } from '../../../lib/blueprintSectionStore.js';
 import { RECRUITMENT_FIELDS, LEADERSHIP_FIELDS, CAREER_FIELDS } from '../../../lib/blueprintSectionConstants.js';
@@ -38,8 +37,8 @@ import { AutoSaveField } from '../AutoSaveField.jsx';
 
 function SectionCard({ title, children, className = '' }) {
   return (
-    <div className={`rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5 ${className}`}>
-      <h3 className="mb-3 font-bold text-gray-900">{title}</h3>
+    <div className={`spike-card ${className}`}>
+      <h3 className="mb-3 text-sm font-semibold text-slate-900">{title}</h3>
       {children}
     </div>
   );
@@ -61,157 +60,96 @@ function PlaceholderNotice({ children, className = '' }) {
 export function BlueprintOverviewPanel({ state, participantId, onLogTraction }) {
   const integration = getWeekIntegrationByWeekId(`week-segment-1-${Math.min(state.week, 5)}`);
   const nextAction = participantId ? getNextBlueprintAction(state, participantId) : null;
-  const surveyCount = participantId ? countSubmittedSurveys(participantId) : 0;
-  const fnaCount = participantId ? countCompletedFnas(participantId) : 0;
   const sectionPct = state.blueprint_sections ?? {};
 
   return (
     <div className="space-y-4">
-      <SectionCard title="My Venture Blueprint™">
-        <p className="text-sm text-gray-600">
-          Your business plan, career plan, portfolio, and progress tracker — auto-filled from
-          Playbook, surveys, FNAs, and coaching.
-        </p>
-        <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <MetricCard label="Blueprint" value={`${state.blueprint_completion}%`} accent="red" />
-          <MetricCard label="Surveys" value={String(surveyCount)} sub="submitted" accent="blue" />
-          <MetricCard label="FNAs" value={String(fnaCount)} sub="completed" accent="green" />
-          <MetricCard
-            label="Career"
-            value={state.career_position.replace(/_/g, ' ')}
-            sub={
-              state.career_track_selected
-                ? state.career_track === 'agency_builder'
-                  ? 'Agency Builder'
-                  : 'Specialist'
-                : state.week >= 2
-                  ? 'Choose your track'
-                  : 'After Week 1'
-            }
-            accent="amber"
-          />
-        </div>
-      </SectionCard>
+      {nextAction ? (
+        <section className="rounded-2xl border border-spike/15 bg-gradient-to-br from-white to-spike-muted/50 p-5 shadow-card sm:p-6">
+          <p className="spike-label text-spike">Recommended next step</p>
+          <h3 className="mt-1 text-lg font-semibold text-slate-900">{nextAction.title}</h3>
+          <p className="mt-2 text-sm leading-relaxed text-slate-600">{nextAction.detail}</p>
+          <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+            <Link to={nextAction.href} className="spike-btn-primary">
+              Continue <ArrowRight size={16} />
+            </Link>
+            <Link to={ROUTES.playbook} className="spike-btn-secondary">
+              <Rocket size={16} /> Open Playbook
+            </Link>
+          </div>
+        </section>
+      ) : (
+        <section className="spike-card">
+          <p className="text-sm text-slate-600">
+            Your business plan, portfolio, and progress — filled in as you complete Playbook,
+            surveys, and coaching.
+          </p>
+          <Link to={ROUTES.playbook} className="spike-btn-primary mt-4">
+            <Rocket size={16} /> Start in Playbook
+          </Link>
+        </section>
+      )}
 
       {!state.career_track_selected && state.week < 2 ? (
-        <SectionCard title="Career track — coming after Week 1">
-          <p className="text-sm text-gray-700">
-            Week 1 is shared orientation: vision, market research, and client growth basics. After
-            you complete Week 1, you&apos;ll choose <strong>Agency Builder</strong> or{' '}
-            <strong>Specialist Consultant</strong> to unlock track-specific Blueprint modules.
+        <SectionCard title="Week 1 — explore before you choose">
+          <p className="text-sm leading-relaxed text-slate-700">
+            Focus on vision, market research, and client growth. After Week 1 you&apos;ll choose{' '}
+            <strong>Agency Builder</strong> or <strong>Specialist Consultant</strong>.
           </p>
         </SectionCard>
       ) : null}
 
-      {nextAction ? (
-        <SectionCard title="Next recommended action">
-          <p className="font-bold text-gray-900">{nextAction.title}</p>
-          <p className="mt-1 text-sm text-gray-600">{nextAction.detail}</p>
-          <Link
-            to={nextAction.href}
-            className="mt-3 inline-flex min-h-[44px] items-center gap-2 rounded-lg bg-[#8B0000] px-4 py-2 text-sm font-bold text-white hover:bg-[#6B0000]"
-          >
-            Go <ArrowRight size={16} />
-          </Link>
-        </SectionCard>
-      ) : null}
-
       <SectionCard title="Section progress">
-        <div className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-3">
+        <div className="space-y-2">
           {Object.entries(sectionPct).map(([slug, pct]) => (
-            <div key={slug} className="rounded-lg border border-gray-100 bg-gray-50 px-2 py-2">
-              <p className="font-bold text-gray-800">{slug.replace(/-/g, ' ')}</p>
-              <p className="text-[#8B0000]">{pct}%</p>
+            <div key={slug} className="flex items-center gap-3">
+              <span className="w-28 shrink-0 truncate text-xs font-medium capitalize text-slate-700">
+                {slug.replace(/-/g, ' ')}
+              </span>
+              <div className="h-2 min-w-0 flex-1 overflow-hidden rounded-full bg-slate-100">
+                <div
+                  className="h-full rounded-full bg-spike transition-all"
+                  style={{ width: `${pct}%` }}
+                />
+              </div>
+              <span className="w-10 shrink-0 text-right text-xs font-semibold text-slate-600">
+                {pct}%
+              </span>
             </div>
           ))}
         </div>
       </SectionCard>
 
-      <SectionCard title="30-second check-in">
-        <ul className="space-y-2 text-sm text-gray-700">
-          <li>
-            <strong>Where am I now?</strong> Segment {state.segment}, Week {state.week}, Day{' '}
-            {state.day} — {state.blueprint_completion}% Blueprint complete.
-          </li>
-          <li>
-            <strong>Where am I going?</strong>{' '}
-            {!state.career_track_selected
-              ? state.week >= 2
-                ? 'Choose Agency Builder or Specialist Consultant to set your ACS path.'
-                : 'Explore both paths during Week 1 — decide after orientation.'
-              : state.career_track === 'agency_builder'
-                ? 'Agency Director path via ACS progression.'
-                : 'Practice Principal via Specialist Consultant track.'}
-          </li>
-          <li>
-            <strong>What must I do next?</strong> Continue Playbook Week {state.week} and complete
-            portfolio deliverables for this week.
-          </li>
-          <li>
-            <strong>Am I on track?</strong> SPIKE Readiness {state.spike_readiness_score} — venture
-            board {state.venture_board_status.replace(/_/g, ' ')}.
-          </li>
-        </ul>
-      </SectionCard>
-
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <SectionCard title="This week integration">
+        <SectionCard title="This week">
           {integration ? (
-            <dl className="space-y-2 text-sm text-gray-700">
+            <dl className="space-y-2 text-sm text-slate-700">
               <div>
-                <dt className="text-xs font-bold uppercase text-gray-500">Business plan chapter</dt>
-                <dd>{integration.businessPlanChapter}</dd>
+                <dt className="spike-label">Business plan</dt>
+                <dd className="mt-0.5">{integration.businessPlanChapter}</dd>
               </div>
               <div>
-                <dt className="text-xs font-bold uppercase text-gray-500">Portfolio section</dt>
-                <dd>{integration.portfolioSection}</dd>
+                <dt className="spike-label">Portfolio</dt>
+                <dd className="mt-0.5">{integration.portfolioSection}</dd>
               </div>
             </dl>
           ) : (
-            <PlaceholderNotice>Week integration seeds load for Segment 1 weeks 1–5.</PlaceholderNotice>
+            <PlaceholderNotice>Week integration loads for Segment 1 weeks 1–5.</PlaceholderNotice>
           )}
         </SectionCard>
 
-        <SectionCard title="Quick actions">
+        <SectionCard title="Shortcuts">
           <div className="flex flex-col gap-2">
-            <Link
-              to={ROUTES.playbook}
-              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg bg-[#8B0000] px-4 py-2 text-sm font-bold text-white hover:bg-[#6B0000]"
-            >
-              <Rocket size={16} /> Open Playbook
-            </Link>
             {onLogTraction ? (
-              <button
-                type="button"
-                onClick={onLogTraction}
-                className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-bold text-gray-800 hover:bg-gray-50"
-              >
+              <button type="button" onClick={onLogTraction} className="spike-btn-secondary">
                 <LineChart size={16} /> Log traction hours
               </button>
             ) : null}
-            <Link
-              to={ROUTES.research}
-              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-bold text-gray-800 hover:bg-gray-50"
-            >
-              <Users size={16} /> Research Squad
+            <Link to={ROUTES.research} className="spike-btn-secondary">
+              <Users size={16} /> Research squad
             </Link>
-            <Link
-              to={BLUEPRINT_LINKS.milestones}
-              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-bold text-gray-800 hover:bg-gray-50"
-            >
-              Milestones
-            </Link>
-            <Link
-              to={BLUEPRINT_LINKS.businessPlan}
-              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-bold text-gray-800 hover:bg-gray-50"
-            >
-              Business Plan
-            </Link>
-            <Link
-              to={BLUEPRINT_LINKS.ventureBoard}
-              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-bold text-gray-800 hover:bg-gray-50"
-            >
-              Venture Board
+            <Link to={BLUEPRINT_LINKS.milestones} className="spike-btn-secondary">
+              <Target size={16} /> Milestones
             </Link>
           </div>
         </SectionCard>

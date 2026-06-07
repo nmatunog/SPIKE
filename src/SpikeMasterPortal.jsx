@@ -5,15 +5,10 @@ import {
   Users,
   Settings,
   BarChart,
-  Edit3,
-  MonitorPlay,
   CheckCircle,
   Clock,
-  Shield,
   Briefcase,
-  PlusCircle,
   Download,
-  Search,
   AlertCircle,
   X,
   Info,
@@ -34,12 +29,12 @@ import { AdminPage } from './pages/AdminPage.jsx';
 import { PlaybookShell } from './pages/PlaybookShell.jsx';
 import { PortfolioPage } from './pages/PortfolioPage.jsx';
 import { ResearchPage } from './pages/ResearchPage.jsx';
+import { ProgressReportsPage } from './pages/ProgressReportsPage.jsx';
+import { StaffDashboardPage } from './pages/StaffDashboardPage.jsx';
+import { WelcomePage } from './pages/WelcomePage.jsx';
 import { RoleRouteGuard } from './components/routing/RoleRouteGuard.jsx';
-import { InternReportCard } from './components/reports/InternReportCard.jsx';
-import { PendingLogCard } from './components/traction/PendingLogCard.jsx';
 import { ROUTES, defaultRouteForRole } from './routes/paths.js';
 import { VentureBlueprintShell } from './pages/VentureBlueprintShell.jsx';
-import { deriveReportRowMetrics } from './lib/sprint01Metrics.js';
 import { useAuth } from './AuthContext.jsx';
 import { apiFetch } from './apiClient.js';
 import {
@@ -47,18 +42,13 @@ import {
   fetchInterns,
   fetchMyTractionLogs,
   fetchPendingTractionLogs,
-  reviewTractionLog,
   updateInternProgress,
 } from './lib/supabase/index.js';
 import { supabase } from './supabaseClient.js';
 import { fullSyllabusData } from './fullSyllabusData.js';
 import { orientationSlides } from './orientationSlideContents.jsx';
 import { AdminRegisterForm } from './components/AdminRegisterForm.jsx';
-import { GuestBootstrapForm } from './components/GuestBootstrapForm.jsx';
-import { GuestLoginForm } from './components/GuestLoginForm.jsx';
 import { isMockUser, shouldUseSupabaseForUser } from './lib/mockAuth.js';
-import { listMockAuthAccountHints } from './lib/mockAuthUsers.js';
-import { InternSignupPanel } from './components/InternSignupPanel.jsx';
 import { ForcePasswordChangeGate } from './components/ForcePasswordChangeGate.jsx';
 
 const SpikeMasterPortal = () => {
@@ -359,9 +349,9 @@ const SpikeMasterPortal = () => {
     const [currentSlide, setCurrentSlide] = useState(0);
 
     return (
-      <div className="container mx-auto flex flex-col items-center px-4 py-6 sm:px-6 sm:py-8">
-        <div className="flex min-h-[min(600px,75vh)] max-h-[85vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl sm:min-h-[600px]">
-          <div className="flex flex-col gap-2 border-b border-gray-200 bg-gray-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-4">
+      <div className="mx-auto flex w-full max-w-projection flex-col items-center px-4 py-6 sm:px-6 sm:py-8 lg:py-10 2xl:py-12">
+        <div className="flex min-h-[min(560px,72dvh)] max-h-[88dvh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl sm:min-h-[600px] lg:max-w-5xl 2xl:max-w-projection 2xl:min-h-[640px] 2xl:shadow-projection">
+          <div className="flex flex-col gap-2 border-b border-slate-200 bg-slate-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-4 lg:px-8 2xl:px-10">
             <div className="flex items-center gap-2">
               <Presentation className="text-[#8B0000]" size={20} />
               <span className="text-sm font-bold uppercase tracking-wider text-gray-700">
@@ -383,18 +373,18 @@ const SpikeMasterPortal = () => {
           </div>
 
           <div
-            className="animate-in zoom-in-95 fade-in flex-grow overflow-y-auto p-6 duration-300 md:p-10"
+            className="animate-in zoom-in-95 fade-in flex-grow overflow-y-auto p-6 duration-300 md:p-10 lg:p-12 2xl:p-16"
             key={currentSlide}
           >
-            <div className="mx-auto my-auto w-full max-w-3xl">
-              <div className="mb-8 text-center">
-                <div className="flex justify-center">
+            <div className="mx-auto my-auto w-full max-w-3xl lg:max-w-4xl 2xl:max-w-projection">
+              <div className="mb-8 text-center lg:mb-10 2xl:mb-12">
+                <div className="flex justify-center [&_svg]:h-8 [&_svg]:w-8 lg:[&_svg]:h-10 lg:[&_svg]:w-10 2xl:[&_svg]:h-12 2xl:[&_svg]:w-12">
                   {orientationSlides[currentSlide].icon}
                 </div>
-                <h2 className="mb-3 text-2xl font-black text-gray-900 sm:text-3xl md:text-4xl">
+                <h2 className="mb-3 text-2xl font-semibold text-slate-900 sm:text-3xl md:text-4xl lg:text-5xl 2xl:text-display-xl">
                   {orientationSlides[currentSlide].title}
                 </h2>
-                <p className="text-base italic text-gray-500 sm:text-lg">
+                <p className="text-base italic text-slate-500 sm:text-lg lg:text-xl 2xl:text-2xl">
                   {orientationSlides[currentSlide].subtitle}
                 </p>
               </div>
@@ -776,169 +766,6 @@ const SpikeMasterPortal = () => {
     </div>
   );
 
-  const ProgressReportsView = () => {
-    const filteredInterns = interns.filter((intern) => {
-      const q = searchQuery.trim().toLowerCase();
-      if (!q) return true;
-      return (
-        intern.name.toLowerCase().includes(q) ||
-        (intern.email || '').toLowerCase().includes(q) ||
-        (intern.university || '').toLowerCase().includes(q) ||
-        (intern.squad || '').toLowerCase().includes(q)
-      );
-    });
-
-    return (
-    <div className="container mx-auto px-4 py-6 sm:px-6 sm:py-8">
-      <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:mb-8 md:flex-row md:items-end">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl">
-            Intern Progress Reports
-          </h2>
-          <p className="mt-1 text-sm text-gray-600 sm:text-base">
-            Track hours, segment status, portfolio progress, and licensing. Extended columns use
-            Sprint 01 mock metrics until Phase 3 schema.
-          </p>
-        </div>
-        <div className="flex min-h-[44px] w-full items-center rounded-lg border border-gray-300 bg-white px-3 py-2 md:w-64">
-          <Search size={18} className="shrink-0 text-gray-400" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search interns..."
-            className="ml-2 w-full text-base outline-none sm:text-sm"
-          />
-        </div>
-      </div>
-
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-        {internsLoading ? (
-          <div className="flex items-center justify-center gap-2 p-8 text-gray-600">
-            <Loader2 className="animate-spin" size={22} />
-            Loading interns…
-          </div>
-        ) : (
-        <>
-        <div className="divide-y md:hidden">
-          {filteredInterns.length === 0 ? (
-            <p className="p-6 text-center text-sm text-gray-500">No interns match your search.</p>
-          ) : (
-            filteredInterns.map((intern) => (
-              <InternReportCard
-                key={intern.id}
-                intern={intern}
-                report={deriveReportRowMetrics(intern)}
-                onUpdate={handleOpenModal}
-              />
-            ))
-          )}
-        </div>
-        <div className="hidden overflow-x-auto md:block">
-          <table className="w-full border-collapse text-left">
-            <thead>
-              <tr className="bg-gray-100 text-sm uppercase tracking-wide text-gray-700">
-                <th className="border-b p-4">Intern Name</th>
-                <th className="border-b p-4">Recruitment Source</th>
-                <th className="border-b p-4">Segment Status</th>
-                <th className="border-b p-4">Career Track</th>
-                <th className="border-b p-4">Hours</th>
-                <th className="border-b p-4 text-center">Portfolio %</th>
-                <th className="border-b p-4 text-center">Survey</th>
-                <th className="border-b p-4 text-center">FNA</th>
-                <th className="border-b p-4 text-center">Licensing</th>
-                <th className="border-b p-4 text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredInterns.map((intern) => {
-                  const report = deriveReportRowMetrics(intern);
-                  return (
-                <tr
-                  key={intern.id}
-                  className="border-b border-gray-100 transition-colors last:border-0 hover:bg-gray-50"
-                >
-                  <td className="p-4">
-                    <div className="font-bold text-gray-900">{intern.name}</div>
-                    <div className="text-xs text-gray-500">
-                      {intern.email}
-                      {intern.squad ? ` · ${intern.squad}` : ''}
-                    </div>
-                  </td>
-                  <td className="p-4 text-sm text-gray-600">
-                    {intern.university}
-                  </td>
-                  <td className="p-4 text-sm font-medium text-gray-800">
-                    <span
-                      className={`rounded px-2 py-1 text-xs font-bold ${
-                        intern.segment === 1
-                          ? 'bg-blue-100 text-blue-800'
-                          : intern.segment === 2
-                            ? 'bg-purple-100 text-purple-800'
-                            : 'bg-green-100 text-green-800'
-                      }`}
-                    >
-                      {report.segmentStatus}
-                    </span>
-                  </td>
-                  <td className="p-4 text-xs text-gray-600">{report.careerTrack}</td>
-                  <td className="p-4">
-                    <div className="flex min-w-[100px] items-center gap-2">
-                      <div className="h-2 w-full rounded-full bg-gray-200">
-                        <div
-                          className="h-2 rounded-full bg-[#8B0000]"
-                          style={{
-                            width: `${Math.min((intern.hours / 600) * 100, 100)}%`,
-                          }}
-                        />
-                      </div>
-                      <span className="w-12 text-right text-xs font-bold text-gray-700">
-                        {intern.hours}/600
-                      </span>
-                    </div>
-                  </td>
-                  <td className="p-4 text-center text-sm font-bold text-gray-800">
-                    {report.portfolioPct}%
-                  </td>
-                  <td className="p-4 text-center text-sm text-gray-700">
-                    {report.surveyCompletion}%
-                  </td>
-                  <td className="p-4 text-center text-sm text-gray-700">
-                    {report.fnaCompletion}%
-                  </td>
-                  <td className="p-4 text-center">
-                    {intern.licensed ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-1 text-xs font-bold text-green-800">
-                        <CheckCircle size={12} /> {report.licensingStatus}
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-yellow-100 px-2.5 py-1 text-xs font-bold text-yellow-800">
-                        <Clock size={12} /> {report.licensingStatus}
-                      </span>
-                    )}
-                  </td>
-                  <td className="p-4 text-center">
-                    <button
-                      type="button"
-                      onClick={() => handleOpenModal(intern)}
-                      className="min-h-[44px] rounded-lg px-3 py-2 text-sm font-bold text-[#8B0000] underline transition hover:bg-red-50 hover:text-red-900"
-                    >
-                      Update
-                    </button>
-                  </td>
-                </tr>
-              );
-                })}
-            </tbody>
-          </table>
-        </div>
-        </>
-        )}
-      </div>
-    </div>
-    );
-  };
-
   const InternDashboard = () => {
     const p = user?.internProgress;
     const hours = p?.hours ?? 0;
@@ -1167,353 +994,6 @@ const SpikeMasterPortal = () => {
     );
   };
 
-  const FacultyDashboard = () => (
-    <div className="container mx-auto px-4 py-6 sm:px-6 sm:py-8">
-      <div className="mb-6 flex flex-col items-stretch justify-between gap-4 sm:mb-8 md:flex-row md:items-end">
-        <div>
-          <h2 className="mb-2 text-2xl font-bold text-gray-900 sm:text-3xl">S.P.I.K.E. Dev Studio</h2>
-          <p className="text-gray-600">Dynamic curriculum editor for the full 600-hour master plan.</p>
-        </div>
-        <button
-          type="button"
-          onClick={() => showToast('Opening New Module Builder...', 'info')}
-          className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-lg bg-[#8B0000] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-red-900 md:mt-0 md:w-auto"
-        >
-          <PlusCircle size={18} /> New Module Element
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h3 className="mb-4 flex items-center gap-2 text-lg font-bold">
-            <Edit3 className="text-[#8B0000]" /> Live Syllabus Editor
-          </h3>
-          <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-            <p className="mb-2 text-xs text-gray-500">
-              Select a module from any of the 3 segments to edit tasks.
-            </p>
-            <select className="mb-4 w-full rounded-lg border border-gray-300 p-2 text-sm outline-none focus:border-[#8B0000]">
-              <optgroup label="Segment 1">
-                <option>Module 1: Industry Immersion</option>
-                <option>Module 6: Insurance Entrepreneurship</option>
-              </optgroup>
-              <optgroup label="Segment 2">
-                <option>Module 8: Prospecting & Approaching</option>
-                <option>Module 11: Objections, Closing & Validation</option>
-              </optgroup>
-              <optgroup label="Segment 3">
-                <option>Module 13: Agency Scaling & Graduation</option>
-              </optgroup>
-            </select>
-            <button
-              type="button"
-              onClick={() => showToast('Live editor loaded for selected module.', 'info')}
-              className="w-full rounded-lg bg-gray-200 py-2 text-sm font-bold text-gray-700 transition hover:bg-gray-300"
-            >
-              Open Editor
-            </button>
-          </div>
-        </div>
-
-        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h3 className="mb-4 flex items-center gap-2 text-lg font-bold">
-            <MonitorPlay className="text-[#8B0000]" /> Presentation Assets
-          </h3>
-          <ul className="space-y-3">
-            <li
-              role="presentation"
-              onClick={() => showToast('Opening presentation...', 'info')}
-              className="flex cursor-pointer items-center gap-3 rounded border border-gray-100 p-2 text-sm hover:bg-gray-50"
-            >
-              <MonitorPlay size={16} className="text-blue-600" />
-              <span>AIA LMS Module 1-4 Overview.pptx</span>
-            </li>
-            <li
-              role="presentation"
-              onClick={() => showToast('Opening presentation...', 'info')}
-              className="flex cursor-pointer items-center gap-3 rounded border border-gray-100 p-2 text-sm hover:bg-gray-50"
-            >
-              <MonitorPlay size={16} className="text-blue-600" />
-              <span>Partnership Board Pitch Template.pptx</span>
-            </li>
-          </ul>
-          <button
-            type="button"
-            onClick={() => showToast('File upload dialog opened.', 'info')}
-            className="mt-4 w-full rounded-lg border-2 border-dashed border-gray-300 py-2 text-sm font-medium text-gray-500 transition hover:border-[#8B0000] hover:text-[#8B0000]"
-          >
-            + Upload Presentation
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-
-  const MentorDashboard = () => (
-    <div className="container mx-auto px-4 py-6 sm:px-6 sm:py-8">
-      <h2 className="mb-6 text-2xl font-bold text-gray-900 sm:text-3xl">Advisory Board Control Center</h2>
-      <div className="mb-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
-        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h3 className="mb-4 flex items-center gap-2 text-lg font-bold">
-            <Users className="text-[#8B0000]" /> Active interns overview
-          </h3>
-          <div className="overflow-hidden rounded-lg border">
-            <div className="border-b bg-gray-50 px-4 py-2 text-sm font-semibold text-gray-700">
-              Incubator stages (live)
-            </div>
-            <div className="space-y-3 p-4">
-              <div className="flex items-center justify-between text-sm">
-                <span className="font-bold text-[#8B0000]">Segment 1 (Proof of Concept)</span>
-                <span className="text-xs text-gray-500">{internSummary.s1} interns</span>
-              </div>
-              <div className="flex items-center justify-between border-t pt-2 text-sm">
-                <span className="font-bold text-blue-700">Segment 2 (Market Validation)</span>
-                <span className="text-xs text-gray-500">{internSummary.s2} interns</span>
-              </div>
-              <div className="flex flex-col gap-2 border-t pt-2 text-sm sm:flex-row sm:items-center sm:justify-between">
-                <span className="font-bold text-green-700">Segment 3 (Partnership Track)</span>
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                  <span className="text-xs text-gray-500">{internSummary.s3} interns</span>
-                  <button
-                    type="button"
-                    onClick={() => showToast('Final Board Pitch scheduled!', 'success')}
-                    className="min-h-[44px] rounded-lg bg-green-100 px-3 py-2 text-xs font-bold text-green-800 transition hover:bg-green-200 sm:py-1.5"
-                  >
-                    Schedule Board Pitch
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h3 className="mb-4 flex items-center gap-2 text-lg font-bold">
-            <Briefcase className="text-[#8B0000]" /> Field work debriefing (auto-log)
-          </h3>
-          <p className="mb-4 text-sm text-gray-600">
-            Submit verified field hours; totals sync to the intern record in the database.
-          </p>
-          <form
-            className="space-y-4"
-            onSubmit={async (e) => {
-              e.preventDefault();
-              const internId = e.target.internId.value;
-              const hoursToAdd = Number.parseInt(e.target.hoursCompleted.value, 10);
-              if (!internId || !hoursToAdd) return;
-              try {
-                if (usingSupabaseAuth && supabase) {
-                  await updateInternProgress(internId, { hoursAdd: hoursToAdd });
-                } else {
-                  if (!token) return;
-                  const legacyId = Number.parseInt(internId, 10);
-                  await apiFetch(`/api/interns/${legacyId}/progress`, {
-                    token,
-                    method: 'PATCH',
-                    body: { hoursAdd: hoursToAdd },
-                  });
-                }
-                await loadInterns();
-                showToast(`Logged ${hoursToAdd} traction hours.`);
-                e.target.reset();
-              } catch (err) {
-                showToast(err.message || 'Failed to log hours', 'info');
-              }
-            }}
-          >
-            <div>
-              <label className="mb-1 block text-xs font-bold text-gray-700">Select intern</label>
-              <select
-                name="internId"
-                required
-                className="w-full rounded-lg border border-gray-300 p-2 text-sm outline-none focus:border-[#8B0000]"
-              >
-                <option value="">-- Choose intern --</option>
-                {interns.map((intern) => (
-                  <option key={intern.id} value={intern.id}>
-                    {intern.name} (Seg {intern.segment}) - {intern.hours}hrs
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="mb-1 block text-xs font-bold text-gray-700">Execution duration</label>
-              <select
-                name="hoursCompleted"
-                required
-                className="w-full rounded-lg border border-gray-300 p-2 text-sm outline-none focus:border-[#8B0000]"
-              >
-                <option value="">-- Select hours --</option>
-                <option value="4">Half-day session (4 hrs)</option>
-                <option value="8">Full day session (8 hrs)</option>
-                <option value="16">Multi-day field execution (16 hrs)</option>
-              </select>
-            </div>
-            <div>
-              <label className="mb-1 block text-xs font-bold text-gray-700">Board feedback notes</label>
-              <textarea
-                name="notes"
-                rows={3}
-                className="w-full rounded-lg border border-gray-300 p-2 text-sm outline-none focus:border-[#8B0000]"
-                placeholder="Optional notes for the intern file"
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full rounded-lg bg-[#8B0000] py-2 text-sm font-bold text-white transition hover:bg-red-900"
-            >
-              Submit evaluation & log hours
-            </button>
-          </form>
-        </div>
-
-        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm lg:col-span-2">
-          <h3 className="mb-4 flex items-center gap-2 text-lg font-bold">
-            <CheckCircle className="text-[#8B0000]" /> Pending traction approvals
-          </h3>
-          {pendingLogs.length === 0 ? (
-            <p className="rounded-lg border border-dashed border-gray-200 bg-gray-50 p-4 text-center text-sm text-gray-500">
-              No pending traction logs.
-            </p>
-          ) : (
-            <>
-            <div className="space-y-3 md:hidden">
-              {pendingLogs.map((log) => (
-                <PendingLogCard
-                  key={log.id}
-                  log={log}
-                  onApprove={async () => {
-                    try {
-                      if (usingSupabaseAuth && supabase) {
-                        await reviewTractionLog(log.id, 'approve');
-                      } else {
-                        if (!token) return;
-                        await apiFetch(`/api/traction-logs/${log.id}`, {
-                          token,
-                          method: 'PATCH',
-                          body: { action: 'approve' },
-                        });
-                      }
-                      await loadInterns();
-                      await loadPendingLogs();
-                      showToast(`Approved ${log.hours} hrs for ${log.user?.name}`);
-                    } catch (err) {
-                      showToast(err.message || 'Approve failed', 'info');
-                    }
-                  }}
-                  onReject={async () => {
-                    try {
-                      if (usingSupabaseAuth && supabase) {
-                        await reviewTractionLog(log.id, 'reject');
-                      } else {
-                        if (!token) return;
-                        await apiFetch(`/api/traction-logs/${log.id}`, {
-                          token,
-                          method: 'PATCH',
-                          body: { action: 'reject' },
-                        });
-                      }
-                      await loadPendingLogs();
-                      showToast(`Rejected log for ${log.user?.name}`, 'info');
-                    } catch (err) {
-                      showToast(err.message || 'Reject failed', 'info');
-                    }
-                  }}
-                />
-              ))}
-            </div>
-            <div className="hidden overflow-x-auto md:block">
-              <table className="w-full border-collapse text-left">
-                <thead>
-                  <tr className="border-b bg-gray-50 text-xs uppercase tracking-wide text-gray-600">
-                    <th className="p-3">Date</th>
-                    <th className="p-3">Intern</th>
-                    <th className="p-3">Task</th>
-                    <th className="p-3 text-center">Hours</th>
-                    <th className="p-3 text-center">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {pendingLogs.map((log) => (
-                    <tr
-                      key={log.id}
-                      className="border-b border-gray-100 last:border-0 hover:bg-gray-50"
-                    >
-                      <td className="p-3 text-sm text-gray-500">
-                        {new Date(log.createdAt).toLocaleDateString()}
-                      </td>
-                      <td className="p-3 text-sm font-bold text-gray-900">
-                        {log.user?.name}
-                      </td>
-                      <td className="p-3 text-sm text-gray-700">{log.task}</td>
-                      <td className="p-3 text-center text-sm font-bold text-[#8B0000]">
-                        {log.hours}
-                      </td>
-                      <td className="p-3">
-                        <div className="flex justify-center gap-2">
-                          <button
-                            type="button"
-                            onClick={async () => {
-                              try {
-                                if (usingSupabaseAuth && supabase) {
-                                  await reviewTractionLog(log.id, 'approve');
-                                } else {
-                                  if (!token) return;
-                                  await apiFetch(`/api/traction-logs/${log.id}`, {
-                                    token,
-                                    method: 'PATCH',
-                                    body: { action: 'approve' },
-                                  });
-                                }
-                                await loadInterns();
-                                await loadPendingLogs();
-                                showToast(`Approved ${log.hours} hrs for ${log.user?.name}`);
-                              } catch (err) {
-                                showToast(err.message || 'Approve failed', 'info');
-                              }
-                            }}
-                            className="min-h-[44px] rounded-lg bg-green-100 px-3 py-2 text-xs font-bold text-green-700 transition hover:bg-green-200"
-                          >
-                            Approve
-                          </button>
-                          <button
-                            type="button"
-                            onClick={async () => {
-                              try {
-                                if (usingSupabaseAuth && supabase) {
-                                  await reviewTractionLog(log.id, 'reject');
-                                } else {
-                                  if (!token) return;
-                                  await apiFetch(`/api/traction-logs/${log.id}`, {
-                                    token,
-                                    method: 'PATCH',
-                                    body: { action: 'reject' },
-                                  });
-                                }
-                                await loadPendingLogs();
-                                showToast(`Rejected log for ${log.user?.name}`, 'info');
-                              } catch (err) {
-                                showToast(err.message || 'Reject failed', 'info');
-                              }
-                            }}
-                            className="min-h-[44px] rounded-lg bg-red-50 px-3 py-2 text-xs font-bold text-red-700 transition hover:bg-red-100"
-                          >
-                            Reject
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            </>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-
   const adminPage = useMemo(
     () => (
       <AdminPage
@@ -1682,25 +1162,20 @@ const SpikeMasterPortal = () => {
   );
 
   const renderStaffDashboard = () => {
-    if (userRole === 'faculty') {
+    if (userRole === 'faculty' || userRole === 'mentor') {
       return (
-        <>
-          <div className="container mx-auto px-4 pt-6 sm:px-6 sm:pt-8">
-            <RoleDashboardCards role="faculty" user={user} interns={interns} internSummary={internSummary} />
-          </div>
-          <FacultyDashboard />
-          <MentorDashboard />
-        </>
-      );
-    }
-    if (userRole === 'mentor') {
-      return (
-        <>
-          <div className="container mx-auto px-4 pt-6 sm:px-6 sm:pt-8">
-            <RoleDashboardCards role="mentor" user={user} interns={interns} internSummary={internSummary} />
-          </div>
-          <MentorDashboard />
-        </>
+        <StaffDashboardPage
+          userRole={userRole}
+          user={user}
+          interns={interns}
+          internSummary={internSummary}
+          pendingLogs={pendingLogs}
+          token={token}
+          usingSupabaseAuth={usingSupabaseAuth}
+          showToast={showToast}
+          onLoadInterns={loadInterns}
+          onLoadPendingLogs={loadPendingLogs}
+        />
       );
     }
     if (userRole === 'admin') return <AdminDashboardHome />;
@@ -1754,7 +1229,17 @@ const SpikeMasterPortal = () => {
       if (path === ROUTES.playbook) return renderPlaybook();
       if (path === ROUTES.portfolio) return <PortfolioPage hours={internSummary.avgHours} />;
       if (path === ROUTES.research) return <ResearchPage user={user} />;
-      if (path === ROUTES.reports) return <ProgressReportsView />;
+      if (path === ROUTES.reports) {
+        return (
+          <ProgressReportsPage
+            interns={interns}
+            internsLoading={internsLoading}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            onUpdateIntern={handleOpenModal}
+          />
+        );
+      }
       if (path === ROUTES.admin) return adminPage;
       return renderStaffDashboard();
     }
@@ -1764,8 +1249,8 @@ const SpikeMasterPortal = () => {
 
   return (
     <div
-      className={`relative min-h-screen bg-gray-50 font-sans selection:bg-red-900 selection:text-white ${
-        compactNav ? 'pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))]' : 'pb-12'
+      className={`spike-app-shell ${
+        compactNav ? 'spike-app-shell--compact-nav' : 'spike-app-shell--desktop-nav'
       }`}
     >
       <PortalHeader
@@ -1805,70 +1290,20 @@ const SpikeMasterPortal = () => {
               <p className="text-sm font-medium">Loading session…</p>
             </div>
           ) : (
-            <div className="mx-auto flex max-w-lg flex-col items-center px-6 py-16">
-              <Shield size={56} className="mb-4 text-[#8B0000]" />
-              <h2 className="mb-2 text-center text-2xl font-extrabold text-gray-900 sm:text-3xl">
-                Welcome to S.P.I.K.E.
-              </h2>
-              <p className="mb-6 text-center text-sm text-gray-600">
-                {usingSupabaseAuth
-                  ? 'Sign in with your registered account to continue. New interns can create an account using today’s activation code from an administrator.'
-                  : 'There is no public self-registration. The first person to access an empty database creates the administrator account once. Everyone else must be created by an admin after that.'}
-              </p>
-
-              {setupLoadState === 'loading' && (
-                <div className="flex flex-col items-center gap-3 py-8 text-gray-600">
-                  <Loader2 className="animate-spin text-[#8B0000]" size={32} />
-                  <p className="text-sm font-medium">Checking setup…</p>
-                </div>
-              )}
-
-              {setupLoadState === 'error' && (
-                <div className="mb-6 w-full rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
-                  <p className="mb-3 font-medium">{setupLoadError}</p>
-                  <button
-                    type="button"
-                    onClick={() => loadSetupInfo()}
-                    className="rounded-lg bg-amber-900 px-4 py-2 text-sm font-bold text-white transition hover:bg-amber-950"
-                  >
-                    Retry
-                  </button>
-                </div>
-              )}
-
-              {setupLoadState === 'ok' && setupMeta?.needsBootstrap && (
-                <GuestBootstrapForm
-                  secretRequired={!!setupMeta.secretRequired}
-                  onSubmit={handleBootstrapComplete}
-                />
-              )}
-
-              {setupLoadState === 'ok' && (
-                <>
-                  {setupMeta?.needsBootstrap && (
-                    <p className="mb-4 w-full text-center text-xs font-bold uppercase tracking-wider text-gray-500">
-                      Already set up this server?
-                    </p>
-                  )}
-                  <GuestLoginForm
-                    heading={setupMeta?.needsBootstrap ? 'Sign in instead' : 'Sign in'}
-                    onLogin={handleGuestLogin}
-                    usingSupabaseAuth={usingSupabaseAuth}
-                    mockAuthEnabled={mockAuthEnabled}
-                    mockAccounts={mockAuthEnabled ? listMockAuthAccountHints() : []}
-                    onRequestPasswordHelp={
-                      usingSupabaseAuth ? requestPasswordHelpForGuest : undefined
-                    }
-                  />
-                  {usingSupabaseAuth && (
-                    <InternSignupPanel onSignup={handleInternSignup} />
-                  )}
-                </>
-              )}
-              {usingSupabaseAuth && setupLoadState !== 'ok' && (
-                <InternSignupPanel onSignup={handleInternSignup} />
-              )}
-            </div>
+            <WelcomePage
+              usingSupabaseAuth={usingSupabaseAuth}
+              mockAuthEnabled={mockAuthEnabled}
+              setupLoadState={setupLoadState}
+              setupLoadError={setupLoadError}
+              setupMeta={setupMeta}
+              onRetrySetup={() => loadSetupInfo()}
+              onBootstrap={handleBootstrapComplete}
+              onLogin={handleGuestLogin}
+              onRequestPasswordHelp={
+                usingSupabaseAuth ? requestPasswordHelpForGuest : undefined
+              }
+              onInternSignup={handleInternSignup}
+            />
           )
         )}
 

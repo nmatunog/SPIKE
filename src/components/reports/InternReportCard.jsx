@@ -1,80 +1,103 @@
-import { CheckCircle, Clock } from 'lucide-react';
+import { useState } from 'react';
+import { CheckCircle, ChevronDown, ChevronRight, Clock } from 'lucide-react';
 
 export function InternReportCard({ intern, report, onUpdate }) {
+  const [expanded, setExpanded] = useState(false);
   const hoursPct = Math.min((intern.hours / 600) * 100, 100);
 
   return (
-    <article className="space-y-3 p-4">
-      <div>
-        <p className="font-bold text-gray-900">{intern.name}</p>
-        <p className="text-xs text-gray-500">
-          {intern.email}
-          {intern.squad ? ` · ${intern.squad}` : ''}
-        </p>
-        {intern.university ? (
-          <p className="mt-1 text-sm text-gray-600">{intern.university}</p>
-        ) : null}
-      </div>
-
-      <div className="flex flex-wrap gap-2">
+    <article className="p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="font-semibold text-slate-900">{intern.name}</p>
+          <p className="text-xs text-slate-500">
+            {intern.email}
+            {intern.squad ? ` · ${intern.squad}` : ''}
+          </p>
+        </div>
         <span
-          className={`rounded px-2 py-1 text-xs font-bold ${
+          className={`shrink-0 rounded-lg px-2 py-1 text-xs font-semibold ${
             intern.segment === 1
-              ? 'bg-blue-100 text-blue-800'
+              ? 'bg-sky-100 text-sky-800'
               : intern.segment === 2
-                ? 'bg-purple-100 text-purple-800'
-                : 'bg-green-100 text-green-800'
+                ? 'bg-violet-100 text-violet-800'
+                : 'bg-emerald-100 text-emerald-800'
           }`}
         >
           {report.segmentStatus}
         </span>
-        {intern.licensed ? (
-          <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-1 text-xs font-bold text-green-800">
-            <CheckCircle size={12} /> {report.licensingStatus}
-          </span>
-        ) : (
-          <span className="inline-flex items-center gap-1 rounded-full bg-yellow-100 px-2.5 py-1 text-xs font-bold text-yellow-800">
-            <Clock size={12} /> {report.licensingStatus}
-          </span>
-        )}
       </div>
 
-      <div>
-        <div className="mb-1 flex justify-between text-xs font-bold text-gray-600">
-          <span>Hours</span>
-          <span>
-            {intern.hours}/600
-          </span>
+      <div className="mt-3 grid grid-cols-3 gap-2 text-center text-sm">
+        <div className="rounded-xl bg-slate-50 px-2 py-2">
+          <p className="spike-label">Hours</p>
+          <p className="font-semibold text-slate-900">{intern.hours}h</p>
         </div>
-        <div className="h-2 w-full rounded-full bg-gray-200">
-          <div className="h-2 rounded-full bg-[#8B0000]" style={{ width: `${hoursPct}%` }} />
+        <div className="rounded-xl bg-slate-50 px-2 py-2">
+          <p className="spike-label">Progress</p>
+          <p className="font-semibold text-slate-900">{report.portfolioPct}%</p>
+        </div>
+        <div className="rounded-xl bg-slate-50 px-2 py-2">
+          <p className="spike-label">Status</p>
+          <p className="text-xs font-semibold text-slate-800">
+            {intern.licensed ? 'Licensed' : 'Active'}
+          </p>
         </div>
       </div>
 
-      <dl className="grid grid-cols-2 gap-2 text-sm">
-        <div className="rounded-lg bg-gray-50 p-2">
-          <dt className="text-xs font-bold uppercase text-gray-500">Portfolio</dt>
-          <dd className="font-bold text-gray-900">{report.portfolioPct}%</dd>
+      <div className="mt-3">
+        <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+          <div className="h-full rounded-full bg-spike" style={{ width: `${hoursPct}%` }} />
         </div>
-        <div className="rounded-lg bg-gray-50 p-2">
-          <dt className="text-xs font-bold uppercase text-gray-500">Survey</dt>
-          <dd className="font-bold text-gray-900">{report.surveyCompletion}%</dd>
-        </div>
-        <div className="rounded-lg bg-gray-50 p-2">
-          <dt className="text-xs font-bold uppercase text-gray-500">FNA</dt>
-          <dd className="font-bold text-gray-900">{report.fnaCompletion}%</dd>
-        </div>
-        <div className="rounded-lg bg-gray-50 p-2">
-          <dt className="text-xs font-bold uppercase text-gray-500">Track</dt>
-          <dd className="text-xs font-semibold text-gray-800">{report.careerTrack}</dd>
-        </div>
-      </dl>
+      </div>
 
       <button
         type="button"
-        onClick={() => onUpdate(intern)}
-        className="min-h-[44px] w-full rounded-lg bg-[#8B0000] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-red-900"
+        onClick={() => setExpanded((v) => !v)}
+        className="mt-3 inline-flex min-h-[40px] items-center gap-1 text-sm font-semibold text-spike"
+        aria-expanded={expanded}
       >
+        {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+        {expanded ? 'Hide details' : 'Show details'}
+      </button>
+
+      {expanded ? (
+        <div className="mt-3 space-y-3 rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm">
+          {intern.university ? (
+            <p>
+              <span className="spike-label block">Recruitment source</span>
+              {intern.university}
+            </p>
+          ) : null}
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <span className="spike-label block">Survey</span>
+              <span className="font-semibold">{report.surveyCompletion}%</span>
+            </div>
+            <div>
+              <span className="spike-label block">FNA</span>
+              <span className="font-semibold">{report.fnaCompletion}%</span>
+            </div>
+          </div>
+          <p>
+            <span className="spike-label block">Career track</span>
+            {report.careerTrack}
+          </p>
+          <p className="flex items-center gap-1 text-xs">
+            {intern.licensed ? (
+              <>
+                <CheckCircle size={12} className="text-emerald-600" /> {report.licensingStatus}
+              </>
+            ) : (
+              <>
+                <Clock size={12} className="text-amber-600" /> {report.licensingStatus}
+              </>
+            )}
+          </p>
+        </div>
+      ) : null}
+
+      <button type="button" onClick={() => onUpdate(intern)} className="spike-btn-primary mt-4 w-full">
         Update progress
       </button>
     </article>

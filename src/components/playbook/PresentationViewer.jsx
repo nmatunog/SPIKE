@@ -14,19 +14,38 @@ import { SlideNavigator } from './SlideNavigator.jsx';
  */
 export function PresentationViewer({ presentation, slides, facultyMode = false }) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [showNotes, setShowNotes] = useState(false);
   const slide = slides[currentIndex];
 
   if (!slide) {
-    return <p className="text-sm text-gray-500">No slides in this presentation.</p>;
+    return <p className="text-sm text-slate-500 lg:text-base">No slides in this presentation.</p>;
   }
 
+  const notesPanel = (
+    <div className="space-y-3">
+      <SpeakerNotesPanel notes={slide.speakerNotes} />
+      <DiscussionPanel questions={slide.discussionQuestions} />
+    </div>
+  );
+
   return (
-    <section className="space-y-4 rounded-xl border border-gray-200 bg-white p-4 sm:p-5">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <Presentation size={18} className="text-[#8B0000]" />
-          <h4 className="font-bold text-gray-900">{presentation.title}</h4>
+    <section className="spike-card space-y-4 lg:space-y-5 2xl:space-y-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-2">
+          <Presentation size={20} className="shrink-0 text-spike lg:h-6 lg:w-6" aria-hidden />
+          <h4 className="truncate font-semibold text-slate-900 lg:text-lg 2xl:text-xl">
+            {presentation.title}
+          </h4>
         </div>
+        {!facultyMode ? (
+          <button
+            type="button"
+            onClick={() => setShowNotes((v) => !v)}
+            className="spike-btn-secondary !min-h-[40px] lg:hidden"
+          >
+            {showNotes ? 'Hide notes' : 'Show notes'}
+          </button>
+        ) : null}
       </div>
 
       <SlideNavigator
@@ -36,15 +55,21 @@ export function PresentationViewer({ presentation, slides, facultyMode = false }
         onNext={() => setCurrentIndex((i) => Math.min(slides.length - 1, i + 1))}
       />
 
-      <div className={`grid gap-4 ${facultyMode ? 'lg:grid-cols-2' : 'lg:grid-cols-5'}`}>
-        <div className={facultyMode ? '' : 'lg:col-span-3'}>
+      {facultyMode ? (
+        <div className="grid gap-4 lg:grid-cols-2 2xl:gap-8">
           <SlideViewer slide={slide} />
+          {notesPanel}
         </div>
-        <div className={`space-y-3 ${facultyMode ? '' : 'lg:col-span-2'}`}>
-          <SpeakerNotesPanel notes={slide.speakerNotes} />
-          <DiscussionPanel questions={slide.discussionQuestions} />
-        </div>
-      </div>
+      ) : (
+        <>
+          <SlideViewer slide={slide} />
+          <div className={`${showNotes ? 'block' : 'hidden'} lg:block`}>
+            <div className="grid gap-4 lg:grid-cols-2 2xl:grid-cols-1 2xl:max-w-projection">
+              {notesPanel}
+            </div>
+          </div>
+        </>
+      )}
     </section>
   );
 }

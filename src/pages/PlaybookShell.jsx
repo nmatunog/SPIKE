@@ -24,10 +24,8 @@ function PathPill({ active, children, onClick, className = '' }) {
     <button
       type="button"
       onClick={onClick}
-      className={`min-h-[40px] shrink-0 rounded-lg px-3 py-2 text-left text-xs font-bold transition sm:text-sm ${
-        active
-          ? 'bg-[#8B0000] text-white shadow-sm'
-          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+      className={`min-h-[40px] shrink-0 rounded-xl px-3 py-2 text-left text-xs font-semibold transition sm:text-sm ${
+        active ? 'spike-nav-pill-active' : 'spike-nav-pill-inactive bg-slate-100'
       } ${className}`}
     >
       {children}
@@ -68,6 +66,7 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [] })
   const selectedSegment = segments.find((s) => s.slug === segmentSlug);
   const selectedWeek = weeks.find((w) => w.slug === weekSlug);
   const selectedDay = days.find((d) => d.slug === daySlug);
+  const showSegmentPicker = segments.length > 1;
 
   let bundle = null;
   try {
@@ -124,121 +123,151 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [] })
       />
     )
   ) : (
-    <p className="text-sm text-gray-500">
-      Select a day with published content. Weeks 2–5 are listed; day bundles publish incrementally.
+    <p className="text-sm text-slate-500">
+      Pick a week and day with published content.
     </p>
   );
 
-  const pathBar = (
-    <div className="rounded-xl border border-gray-200 bg-white p-3 shadow-sm sm:p-4">
-      <p className="mb-3 flex flex-wrap items-center gap-1 text-xs font-bold text-gray-500">
-        <span className="uppercase tracking-wider">Path</span>
-        <ChevronRight size={12} className="text-gray-400" />
-        <span className="text-gray-800">{selectedSegment?.segment.title ?? 'Segment'}</span>
+  const pathBarMobile = (
+    <div className="spike-card space-y-3">
+      <p className="flex flex-wrap items-center gap-1 text-xs text-slate-500">
+        <span className="font-semibold text-slate-700">
+          {selectedSegment?.segment.title ?? 'Segment'}
+        </span>
         {selectedWeek ? (
           <>
-            <ChevronRight size={12} className="text-gray-400" />
-            <span className="text-gray-800">Week {selectedWeek.week.weekNumber}</span>
+            <ChevronRight size={12} className="text-slate-400" />
+            <span>Week {selectedWeek.week.weekNumber}</span>
           </>
         ) : null}
         {selectedDay ? (
           <>
-            <ChevronRight size={12} className="text-gray-400" />
-            <span className="text-gray-800">Day {selectedDay.day.dayNumber}</span>
+            <ChevronRight size={12} className="text-slate-400" />
+            <span>Day {selectedDay.day.dayNumber}</span>
+          </>
+        ) : null}
+      </p>
+      <div className="grid grid-cols-2 gap-2">
+        <label className="block">
+          <span className="spike-label mb-1 block">Week</span>
+          <select
+            value={weekSlug}
+            onChange={(event) => selectWeek(event.target.value)}
+            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm focus:border-spike focus:outline-none focus:ring-2 focus:ring-spike/20"
+          >
+            {weeks.map(({ slug, week }) => (
+              <option key={slug} value={slug}>
+                Week {week.weekNumber}: {week.title}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="block">
+          <span className="spike-label mb-1 block">Day</span>
+          <select
+            value={daySlug}
+            onChange={(event) => selectDay(event.target.value)}
+            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm focus:border-spike focus:outline-none focus:ring-2 focus:ring-spike/20"
+          >
+            {days.map(({ slug, day }) => (
+              <option key={slug} value={slug}>
+                Day {day.dayNumber}: {day.title}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+    </div>
+  );
+
+  const pathBarDesktop = (
+    <div className="spike-card space-y-3">
+      <p className="flex flex-wrap items-center gap-1 text-xs text-slate-500">
+        <span className="spike-label">Path</span>
+        <ChevronRight size={12} className="text-slate-400" />
+        <span className="font-medium text-slate-800">{selectedSegment?.segment.title ?? 'Segment'}</span>
+        {selectedWeek ? (
+          <>
+            <ChevronRight size={12} className="text-slate-400" />
+            <span className="font-medium text-slate-800">Week {selectedWeek.week.weekNumber}</span>
+          </>
+        ) : null}
+        {selectedDay ? (
+          <>
+            <ChevronRight size={12} className="text-slate-400" />
+            <span className="font-medium text-slate-800">Day {selectedDay.day.dayNumber}</span>
           </>
         ) : null}
       </p>
 
-      <div className="space-y-3">
-        <div>
-          <p className="mb-1.5 text-[11px] font-bold uppercase tracking-wider text-gray-500">Week</p>
-          <div className="flex flex-wrap gap-2">
-            {weeks.length === 0 ? (
-              <span className="text-sm text-gray-500">No weeks published.</span>
-            ) : (
-              weeks.map(({ slug, week }) => (
-                <PathPill key={slug} active={weekSlug === slug} onClick={() => selectWeek(slug)}>
-                  W{week.weekNumber}: {week.title}
-                </PathPill>
-              ))
-            )}
-          </div>
-        </div>
+      <div className="flex flex-wrap gap-2">
+        {weeks.map(({ slug, week }) => (
+          <PathPill key={slug} active={weekSlug === slug} onClick={() => selectWeek(slug)}>
+            Week {week.weekNumber}
+          </PathPill>
+        ))}
+      </div>
 
-        <div>
-          <p className="mb-1.5 text-[11px] font-bold uppercase tracking-wider text-gray-500">Day</p>
-          <div className="flex flex-wrap gap-2">
-            {days.length === 0 ? (
-              <span className="text-sm text-gray-500">No days published for this week yet.</span>
-            ) : (
-              days.map(({ slug, day }) => (
-                <PathPill key={slug} active={daySlug === slug} onClick={() => selectDay(slug)}>
-                  D{day.dayNumber}: {day.title}
-                </PathPill>
-              ))
-            )}
-          </div>
-        </div>
+      <div className="flex flex-wrap gap-2">
+        {days.map(({ slug, day }) => (
+          <PathPill key={slug} active={daySlug === slug} onClick={() => selectDay(slug)}>
+            Day {day.dayNumber}
+          </PathPill>
+        ))}
       </div>
     </div>
   );
 
   return (
-    <PageContainer className="max-w-6xl">
-      <div className="mb-5">
-        <PageTitle>Playbook</PageTitle>
-        <p className="mt-1 text-sm text-gray-600 sm:text-base">
-          <span className="font-semibold text-gray-800">{roleLabel} view</span> — Segment → Week →
-          Day → Session curriculum.
-          {dataSource === 'hybrid' ? (
-            <span className="mt-1 block text-xs font-semibold text-emerald-700">
-              Linked to Supabase reference data (content from /content JSON).
-            </span>
-          ) : null}
-        </p>
-      </div>
+    <PageContainer presentation wide>
+      <PageTitle presentation subtitle={`${roleLabel} view — pick a week and day to open sessions.`}>
+        Playbook
+      </PageTitle>
 
-      <div className="mb-4 flex gap-2 overflow-x-auto pb-1 scrollbar-thin">
-        {segments.map(({ slug, segment }) => (
-          <PathPill
-            key={slug}
-            active={segmentSlug === slug}
-            onClick={() => selectSegment(slug)}
-            className="!text-sm"
-          >
-            {segment.title}
-          </PathPill>
-        ))}
-      </div>
+      {showSegmentPicker ? (
+        <div className="mb-4 mt-5 flex gap-2 overflow-x-auto pb-1 scrollbar-thin">
+          {segments.map(({ slug, segment }) => (
+            <PathPill
+              key={slug}
+              active={segmentSlug === slug}
+              onClick={() => selectSegment(slug)}
+            >
+              {segment.title}
+            </PathPill>
+          ))}
+        </div>
+      ) : null}
 
-      <div className="space-y-4 lg:hidden">
+      <div className="mt-5 space-y-4 lg:hidden">
         {(weeks.length > 2 || days.length > 3) && mobilePanel !== 'content' ? (
           <>
             <button
               type="button"
               onClick={() => setMobilePanel('content')}
-              className="inline-flex min-h-[44px] items-center gap-1 text-sm font-bold text-[#8B0000]"
+              className="inline-flex min-h-[44px] items-center gap-1 text-sm font-semibold text-spike"
             >
               <ArrowLeft size={16} /> Back to day
             </button>
-            {mobilePanel === 'weeks' && pathBar}
+            {mobilePanel === 'weeks' && pathBarMobile}
           </>
         ) : (
           <>
-            {pathBar}
-            <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
-              {dayContent}
-            </div>
+            {pathBarMobile}
+            <div className="spike-card lg:p-6 2xl:p-8">{dayContent}</div>
           </>
         )}
       </div>
 
-      <div className="hidden space-y-4 lg:block">
-        {pathBar}
-        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm xl:p-8">
-          {dayContent}
-        </div>
+      <div className="mt-5 hidden space-y-4 lg:block">
+        {pathBarDesktop}
+        <div className="spike-card xl:p-8 2xl:p-10">{dayContent}</div>
       </div>
+
+      {dataSource === 'hybrid' ? (
+        <p className="mt-4 text-2xs font-medium text-emerald-700">
+          Curriculum linked to Supabase reference data.
+        </p>
+      ) : null}
     </PageContainer>
   );
 }
@@ -257,8 +286,8 @@ export function PlaybookShell({
 
   return (
     <div>
-      <div className="border-b border-gray-200 bg-white px-4 py-2 sm:px-6 sm:py-3">
-        <div className="container mx-auto flex max-w-6xl gap-2 overflow-x-auto scrollbar-thin">
+      <div className="border-b border-slate-200/80 bg-white px-4 py-2 sm:px-6">
+        <div className="mx-auto flex max-w-content gap-2 overflow-x-auto py-1 scrollbar-thin">
           {TABS.map((item) => {
             const TabIcon = item.icon;
             return (
@@ -266,10 +295,8 @@ export function PlaybookShell({
                 key={item.id}
                 type="button"
                 onClick={() => setTab(item.id)}
-                className={`flex min-h-[44px] shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-bold transition ${
-                  tab === item.id
-                    ? 'bg-[#8B0000] text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                className={`flex min-h-[44px] shrink-0 items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold transition ${
+                  tab === item.id ? 'spike-nav-pill-active' : 'spike-nav-pill-inactive bg-slate-100'
                 }`}
               >
                 <TabIcon size={16} /> {item.label}
