@@ -74,7 +74,7 @@ export function WorksheetViewer({ worksheet, questions, participantId, onComplet
           </button>
         ) : (
           <p className="text-sm text-gray-600">
-            Your responses contribute to Vision &amp; Purpose in My Venture Blueprint.
+            Your responses contribute to Ambition &amp; Purpose in My Venture Blueprint.
           </p>
         )}
       </form>

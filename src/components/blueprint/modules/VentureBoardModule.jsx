@@ -45,7 +45,7 @@ export function VentureBoardModule({ state, participantId }) {
   const planCount = participantId ? listBusinessPlanArtifacts(participantId).length : 0;
 
   const packetSections = [
-    { label: 'Vision', ready: portfolioCount > 0 },
+    { label: 'Ambition', ready: portfolioCount > 0 },
     { label: 'Canvas / Business Plan', ready: planCount > 0 },
     { label: 'Market Research', ready: false },
     { label: '3-Year Blueprint', ready: planCount > 0 },

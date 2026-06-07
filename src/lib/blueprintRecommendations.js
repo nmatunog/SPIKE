@@ -21,7 +21,7 @@ export function getNextBlueprintAction(state, participantId) {
   }
 
   const sections = [
-    { slug: 'vision-purpose', label: 'Vision & Purpose', path: '/venture-blueprint/vision' },
+    { slug: 'vision-purpose', label: 'Ambition & Purpose', path: '/venture-blueprint/vision' },
     { slug: 'market-intelligence', label: 'Market Intelligence', path: '/venture-blueprint/market-intelligence' },
     { slug: 'client-growth', label: 'Client Growth', path: '/venture-blueprint/client-growth' },
     { slug: 'canvas', label: 'Financial Canvas', path: '/venture-blueprint/canvas' },

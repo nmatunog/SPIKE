@@ -16,7 +16,7 @@ export const WORKSHEET_BLUEPRINT_MAPPINGS = {
     businessPlanChapterId: 'bp-chapter-1',
     blueprintModule: 'vision',
     completionWeight: 5,
-    artifactTitle: 'Personal Why Statement',
+    artifactTitle: 'My Purpose Statement',
     sourceDayId: 'day-segment-1-week-1-day-1',
   },
 };

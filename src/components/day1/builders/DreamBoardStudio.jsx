@@ -142,7 +142,7 @@ export function DreamBoardStudio({ draft, completed, onChange, onComplete }) {
           Publish Dream Board to Blueprint
         </button>
       ) : (
-        <p className="text-sm font-semibold text-emerald-700">✓ Dream Board saved to Vision Section</p>
+        <p className="text-sm font-semibold text-emerald-700">✓ Dream Board saved to Ambition & Purpose</p>
       )}
     </div>
   );

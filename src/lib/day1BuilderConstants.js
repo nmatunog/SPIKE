@@ -2,25 +2,39 @@
 
 export const DAY1_BUILDERS = [
   {
-    id: 'discover-why',
-    label: 'Discover Your Why',
-    missionLabel: 'Discover Your Why',
-    description: 'Choose what motivates you and craft your Personal Why Statement.',
-    feeds: 'Vision & Purpose',
+    id: 'ambition-builder',
+    label: 'Ambition Builder',
+    missionLabel: 'Define My Ambition',
+    description: 'Which future are you trying to create? Select ambitions and craft your statement.',
+    feeds: 'Ambition & Purpose',
   },
   {
-    id: 'design-future',
-    label: 'Design Your Future',
-    missionLabel: 'Design Your Future',
-    description: 'Map your timeline and future self narrative.',
-    feeds: 'Vision Section',
+    id: 'purpose-builder',
+    label: 'Purpose Builder',
+    missionLabel: 'Define My Purpose',
+    description: 'Why does your ambition matter to you? Guided prompts — no blank page.',
+    feeds: 'Ambition & Purpose',
+  },
+  {
+    id: 'values-builder',
+    label: 'Values Builder',
+    missionLabel: 'Define My Values',
+    description: 'Select, narrow, and rank the principles that will guide your venture.',
+    feeds: 'Ambition & Purpose',
+  },
+  {
+    id: 'future-self',
+    label: 'Future Self',
+    missionLabel: 'Imagine Your Future Self',
+    description: 'Describe your life and career in 3 years if everything goes well.',
+    feeds: 'Ambition & Purpose',
   },
   {
     id: 'dream-board',
     label: 'Dream Board Studio',
     missionLabel: 'Create Your Dream Board',
-    description: 'Visualize lifestyle, family, business, and financial goals.',
-    feeds: 'Vision Section',
+    description: 'Visualize lifestyle, family, career, and financial goals.',
+    feeds: 'Ambition & Purpose',
   },
   {
     id: 'future-venture',
@@ -45,15 +59,72 @@ export const DAY1_BUILDERS = [
   },
 ];
 
-export const MOTIVATION_CARDS = [
+export const AMBITION_CARDS = [
   { id: 'financial_freedom', label: 'Financial Freedom', emoji: '💰' },
-  { id: 'helping_people', label: 'Helping People', emoji: '🤝' },
-  { id: 'building_business', label: 'Building a Business', emoji: '🏗️' },
+  { id: 'entrepreneurship', label: 'Entrepreneurship', emoji: '🚀' },
   { id: 'leadership', label: 'Leadership', emoji: '🎯' },
-  { id: 'family_security', label: 'Family Security', emoji: '🏠' },
+  { id: 'helping_others', label: 'Helping Others', emoji: '🤝' },
+  { id: 'building_wealth', label: 'Building Wealth', emoji: '📈' },
+  { id: 'building_team', label: 'Building a Team', emoji: '👥' },
+  { id: 'professional_expertise', label: 'Professional Expertise', emoji: '💼' },
   { id: 'personal_growth', label: 'Personal Growth', emoji: '🌱' },
-  { id: 'making_impact', label: 'Making an Impact', emoji: '✨' },
 ];
+
+/** @deprecated Use AMBITION_CARDS — kept for legacy reads */
+export const MOTIVATION_CARDS = AMBITION_CARDS;
+
+export const AMBITION_EXAMPLES = [
+  'Build a successful financial services business',
+  'Become a trusted financial advisor',
+  'Lead a team of future entrepreneurs',
+  'Achieve financial independence',
+  'Create impact in my community',
+];
+
+export const PURPOSE_PROMPTS = [
+  {
+    key: 'whyImportant',
+    label: 'Why is achieving your ambition important to you?',
+    placeholder: 'This matters to me because…',
+  },
+  {
+    key: 'whoImpact',
+    label: 'Who do you want to help or impact?',
+    placeholder: 'Families, professionals, my community…',
+  },
+  {
+    key: 'successFeels',
+    label: 'What would success feel like for you?',
+    placeholder: 'I would feel proud when…',
+  },
+  {
+    key: 'difference',
+    label: 'What difference do you want to make?',
+    placeholder: 'I want to create…',
+  },
+];
+
+export const VALUE_OPTIONS = [
+  { id: 'integrity', label: 'Integrity' },
+  { id: 'service', label: 'Service' },
+  { id: 'growth', label: 'Growth' },
+  { id: 'excellence', label: 'Excellence' },
+  { id: 'leadership', label: 'Leadership' },
+  { id: 'accountability', label: 'Accountability' },
+  { id: 'innovation', label: 'Innovation' },
+  { id: 'empathy', label: 'Empathy' },
+  { id: 'discipline', label: 'Discipline' },
+  { id: 'collaboration', label: 'Collaboration' },
+  { id: 'courage', label: 'Courage' },
+  { id: 'humility', label: 'Humility' },
+];
+
+export const CAREER_TRACK_AMBITION_EXAMPLES = {
+  agency_builder:
+    'By 2029, I aim to become a Unit Manager leading a productive team of advisors serving hundreds of families.',
+  specialist_consultant:
+    'By 2029, I aim to become the preferred financial advisor for professionals in my chosen niche market.',
+};
 
 export const RESEARCH_MARKETS = [
   { id: 'gen_z', label: 'Gen Z' },
@@ -67,11 +138,12 @@ export const RESEARCH_MARKETS = [
 export const DREAM_BOARD_CATEGORIES = [
   { id: 'lifestyle', label: 'Lifestyle', color: 'bg-violet-50 border-violet-200 text-violet-900' },
   { id: 'family', label: 'Family', color: 'bg-rose-50 border-rose-200 text-rose-900' },
+  { id: 'health', label: 'Health', color: 'bg-emerald-50 border-emerald-200 text-emerald-900' },
+  { id: 'career', label: 'Career', color: 'bg-indigo-50 border-indigo-200 text-indigo-900' },
+  { id: 'financial', label: 'Financial', color: 'bg-spike-muted border-spike/20 text-spike' },
+  { id: 'community', label: 'Community', color: 'bg-teal-50 border-teal-200 text-teal-900' },
   { id: 'travel', label: 'Travel', color: 'bg-sky-50 border-sky-200 text-sky-900' },
   { id: 'business', label: 'Business', color: 'bg-amber-50 border-amber-200 text-amber-900' },
-  { id: 'health', label: 'Health', color: 'bg-emerald-50 border-emerald-200 text-emerald-900' },
-  { id: 'community', label: 'Community', color: 'bg-teal-50 border-teal-200 text-teal-900' },
-  { id: 'financial_goals', label: 'Financial Goals', color: 'bg-spike-muted border-spike/20 text-spike' },
 ];
 
 export const VENTURE_PATH_CARDS = [
@@ -92,14 +164,13 @@ export const VENTURE_PATH_CARDS = [
   },
 ];
 
-export const FUTURE_TIMELINE = [
-  { id: 'today', label: 'Today' },
-  { id: 'year_1', label: '1 Year' },
-  { id: 'year_3', label: '3 Years' },
-  { id: 'year_10', label: '10 Years' },
-];
-
 export const DAY1_ID = 'day-segment-1-week-1-day-1';
+
+/** Legacy builder IDs mapped to current IDs for stored progress */
+export const LEGACY_BUILDER_IDS = {
+  'discover-why': 'purpose-builder',
+  'design-future': 'future-self',
+};
 
 /** @param {string} builderId */
 export function getDay1Builder(builderId) {

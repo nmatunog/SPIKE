@@ -1,7 +1,7 @@
 /**
  * Day 1 builder local storage — no playbook imports (avoids circular deps).
  */
-import { DAY1_BUILDERS } from './day1BuilderConstants.js';
+import { DAY1_BUILDERS, LEGACY_BUILDER_IDS } from './day1BuilderConstants.js';
 
 const STORAGE_KEY = 'spike_day1_builders';
 
@@ -28,7 +28,13 @@ export function ensureDay1User(participantId) {
 
 /** @param {string} participantId @param {string} builderId */
 export function readBuilderEntry(participantId, builderId) {
-  return readAll()[participantId]?.builders?.[builderId] ?? null;
+  const builders = readAll()[participantId]?.builders ?? {};
+  if (builders[builderId]) return builders[builderId];
+
+  const legacyId = Object.entries(LEGACY_BUILDER_IDS).find(([, current]) => current === builderId)?.[0];
+  if (legacyId && builders[legacyId]) return builders[legacyId];
+
+  return null;
 }
 
 /** @param {string} participantId @param {string} builderId */

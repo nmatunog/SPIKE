@@ -1,6 +1,6 @@
 /**
  * SPIKE Venture Readiness Score™ — Sprint 05C executive canvas scorecard.
- * Weights: Vision 15%, Canvas 20%, Market 15%, Client 15%, Recruitment 15%,
+ * Weights: Ambition & Purpose 15%, Canvas 20%, Market 15%, Client 15%, Recruitment 15%,
  * Leadership 10%, Career 10%.
  */
 
@@ -38,7 +38,7 @@ function clamp(value) {
 }
 
 export const VENTURE_READINESS_WEIGHTS = [
-  { key: 'vision_purpose', label: 'Vision & Purpose', weight: 15 },
+  { key: 'vision_purpose', label: 'Ambition & Purpose', weight: 15 },
   { key: 'canvas', label: 'Canvas', weight: 20 },
   { key: 'market_intelligence', label: 'Market Intelligence', weight: 15 },
   { key: 'client_growth', label: 'Client Growth', weight: 15 },

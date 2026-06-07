@@ -11,10 +11,14 @@ export const BLUEPRINT_SECTION_WEIGHTS = {
 };
 
 export const VISION_FIELDS = [
-  { key: 'mission_statement', label: 'Mission Statement', minChars: 20 },
-  { key: 'vision_statement', label: 'Vision Statement', minChars: 20 },
+  { key: 'vision_statement', label: 'My Ambition', minChars: 20 },
+  { key: 'mission_statement', label: 'My Purpose', minChars: 20 },
+  { key: 'my_values', label: 'My Values', minChars: 20 },
   { key: 'future_self_narrative', label: 'Future Self Narrative', minChars: 100 },
-  { key: 'dream_board', label: 'Dream Board Notes', minChars: 30 },
+  { key: 'dream_board', label: 'Dream Board', minChars: 30 },
+  { key: 'cohort_identity', label: 'Cohort Identity', minChars: 10 },
+  { key: 'squad_preferences', label: 'Squad Membership', minChars: 10 },
+  { key: 'squad_charter', label: 'Squad Charter', minChars: 20 },
   { key: 'lessons_learned', label: 'Lessons Learned', minChars: 20 },
   { key: 'personal_insights', label: 'Personal Insights', minChars: 20 },
   { key: 'growth_reflections', label: 'Growth Reflections', minChars: 20 },

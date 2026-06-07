@@ -2,7 +2,6 @@ import { MessageSquare } from 'lucide-react';
 import { useState } from 'react';
 import { getDay1MissionProgress, getAllDay1BuilderData } from '../../lib/day1BuilderService.js';
 import { getParticipantCharterPreview } from '../../lib/squadCharterService.js';
-import { MOTIVATION_CARDS } from '../../lib/day1BuilderConstants.js';
 
 /**
  * @param {{
@@ -26,14 +25,12 @@ export function MentorDay1Panel({ interns, mentorId }) {
 function MentorInternDay1Card({ intern, mentorId }) {
   const progress = getDay1MissionProgress(intern.id);
   const data = getAllDay1BuilderData(intern.id);
-  const why = data['discover-why']?.data;
+  const purpose = data['purpose-builder']?.data ?? data['discover-why']?.data;
+  const ambition = data['ambition-builder']?.data;
+  const values = data['values-builder']?.data;
   const charter = getParticipantCharterPreview(intern.id);
   const [comment, setComment] = useState('');
   const [saved, setSaved] = useState(false);
-
-  const motivationLabels = (why?.motivationCards ?? [])
-    .map((id) => MOTIVATION_CARDS.find((c) => c.id === id)?.label)
-    .filter(Boolean);
 
   return (
     <article className="spike-card">
@@ -46,21 +43,34 @@ function MentorInternDay1Card({ intern, mentorId }) {
 
       <div className="mb-4 grid gap-3 sm:grid-cols-2">
         <div className="rounded-xl bg-slate-50 p-3">
-          <p className="spike-label">Mission statement</p>
-          <p className="mt-1 text-sm text-slate-700">
-            {motivationLabels.length
-              ? `Motivated by ${motivationLabels.join(', ')}`
+          <p className="spike-label">My Ambition</p>
+          <p className="mt-1 line-clamp-3 text-sm text-slate-700">
+            {ambition?.ambitionStatement
+              ? String(ambition.ambitionStatement)
               : 'Not started'}
           </p>
-          {why?.joinReason ? (
-            <p className="mt-1 text-xs text-slate-500">{String(why.joinReason)}</p>
-          ) : null}
+        </div>
+        <div className="rounded-xl bg-slate-50 p-3">
+          <p className="spike-label">My Purpose</p>
+          <p className="mt-1 line-clamp-3 text-sm text-slate-700">
+            {purpose?.purposeStatement
+              ? String(purpose.purposeStatement)
+              : purpose?.joinReason
+                ? String(purpose.joinReason)
+                : 'Not started'}
+          </p>
+        </div>
+        <div className="rounded-xl bg-slate-50 p-3">
+          <p className="spike-label">My Values</p>
+          <p className="mt-1 line-clamp-3 text-sm text-slate-700">
+            {values?.valuesProfile ? String(values.valuesProfile) : 'Not started'}
+          </p>
         </div>
         <div className="rounded-xl bg-slate-50 p-3">
           <p className="spike-label">Dream board</p>
           <p className="mt-1 text-sm text-slate-700">
             {data['dream-board']?.completedAt
-              ? `${(data['dream-board']?.data?.assets ?? []).length} vision cards`
+              ? `${(data['dream-board']?.data?.assets ?? []).length} dream cards`
               : 'Not started'}
           </p>
         </div>

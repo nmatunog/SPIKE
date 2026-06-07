@@ -36,6 +36,7 @@ import { FnaEngineModule } from '../../fna/FnaEngineModule.jsx';
 import { AutoSaveField } from '../AutoSaveField.jsx';
 import { Day1MissionControl } from '../../day1/Day1MissionControl.jsx';
 import { isDay1MissionActive } from '../../../lib/day1BuilderService.js';
+import { hasSubmittedCohortIdentity, getSquadPreferences } from '../../../lib/cohortFormationService.js';
 import { getDay1MissionProgress } from '../../../lib/day1BuilderStorage.js';
 
 function SectionCard({ title, children, className = '' }) {
@@ -176,12 +177,19 @@ export function VisionPurposePanel({ participantId }) {
   const section = sections[0];
   const progress = getVisionPurposeProgress(participantId);
   const day1 = participantId ? getDay1MissionProgress(participantId) : null;
+  const hasCohort = participantId ? hasSubmittedCohortIdentity(participantId) : false;
+  const hasSquadPrefs = participantId
+    ? Boolean(getSquadPreferences(participantId)?.rankings?.length)
+    : false;
 
   const components = [
-    { key: 'mission_statement', label: 'Personal Why', pct: progress.mission_statement },
-    { key: 'vision_statement', label: 'Vision Statement', pct: progress.vision_statement },
+    { key: 'vision_statement', label: 'My Ambition', pct: progress.vision_statement },
+    { key: 'mission_statement', label: 'My Purpose', pct: progress.mission_statement },
+    { key: 'my_values', label: 'My Values', pct: progress.my_values },
     { key: 'future_self_narrative', label: 'Future Self Narrative', pct: progress.future_self_narrative },
     { key: 'dream_board', label: 'Dream Board', pct: progress.dream_board },
+    { key: 'cohort_identity', label: 'Cohort Identity', pct: hasCohort ? 100 : 0 },
+    { key: 'squad_preferences', label: 'Squad Membership', pct: hasSquadPrefs ? 100 : 0 },
     { key: 'career_interest_explored', label: 'Career Interest', pct: day1?.builders.find((b) => b.id === 'future-venture')?.completed ? 100 : 0 },
     { key: 'squad_charter', label: 'Squad Charter', pct: day1?.builders.find((b) => b.id === 'squad-charter')?.completed ? 100 : 0 },
   ];
@@ -189,7 +197,7 @@ export function VisionPurposePanel({ participantId }) {
   return (
     <div className="space-y-4">
       <p className="text-sm text-gray-600">
-        {section?.description ?? 'Establish participant identity and direction.'} Day 1 Venture
+        {section?.description ?? 'Design your ambition, purpose, and venture identity.'} Day 1 Venture
         Blueprint Builders™ auto-fill this module — no duplicate entry.
       </p>
       {day1 && day1.percent < 100 ? (

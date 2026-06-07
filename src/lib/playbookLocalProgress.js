@@ -38,36 +38,43 @@ export function isWorksheetCompleted(participantId, worksheetId) {
 }
 
 /**
- * Vision & Purpose module progress (PRD Module 1 weights) from local worksheet data.
+ * Ambition & Purpose module progress from Day 1 builders and legacy worksheets.
  * @param {string | undefined} participantId
  */
 export function getVisionPurposeProgress(participantId) {
   const base = {
-    mission_statement: 0,
     vision_statement: 0,
+    mission_statement: 0,
+    my_values: 0,
     future_self_narrative: 0,
     dream_board: 0,
   };
   if (!participantId) return base;
 
-  if (isBuilderCompleted(participantId, 'discover-why')) {
-    base.mission_statement = 25;
+  if (isBuilderCompleted(participantId, 'ambition-builder')) {
+    base.vision_statement = 20;
   }
-  if (isBuilderCompleted(participantId, 'design-future')) {
-    base.future_self_narrative = 25;
-    base.vision_statement = 25;
+  if (isBuilderCompleted(participantId, 'purpose-builder')) {
+    base.mission_statement = 20;
+  }
+  if (isBuilderCompleted(participantId, 'values-builder')) {
+    base.my_values = 20;
+  }
+  if (isBuilderCompleted(participantId, 'future-self')) {
+    base.future_self_narrative = 20;
   }
   if (isBuilderCompleted(participantId, 'dream-board')) {
-    base.dream_board = 25;
+    base.dream_board = 20;
   }
 
   const mission = getDay1MissionProgress(participantId);
   if (mission.percent >= 100) {
     return {
-      mission_statement: 25,
-      vision_statement: 25,
-      future_self_narrative: 25,
-      dream_board: 25,
+      vision_statement: 20,
+      mission_statement: 20,
+      my_values: 20,
+      future_self_narrative: 20,
+      dream_board: 20,
     };
   }
 
@@ -77,16 +84,17 @@ export function getVisionPurposeProgress(participantId) {
   if (!entry) return base;
 
   const answers = entry.answers || {};
-  const hasWhy = Boolean(String(answers['wq-day-1-why-1'] || '').trim());
-  const hasImpact = Boolean(String(answers['wq-day-1-why-2'] || '').trim());
+  const hasPurpose = Boolean(String(answers['wq-day-1-why-1'] || '').trim());
+  const hasAmbition = Boolean(String(answers['wq-day-1-why-2'] || '').trim());
   const hasRating = answers['wq-day-1-why-3'] != null && answers['wq-day-1-why-3'] !== '';
   const hasCommit = Boolean(answers['wq-day-1-why-4']);
 
   return {
-    mission_statement: hasWhy ? 25 : 0,
-    vision_statement: hasImpact ? 25 : 0,
-    future_self_narrative: hasImpact && hasWhy ? 25 : hasImpact ? 15 : 0,
-    dream_board: hasRating && hasCommit ? 25 : hasCommit ? 15 : 0,
+    mission_statement: hasPurpose ? 20 : 0,
+    vision_statement: hasAmbition ? 20 : 0,
+    my_values: hasRating ? 20 : 0,
+    future_self_narrative: hasPurpose && hasAmbition ? 20 : hasAmbition ? 12 : 0,
+    dream_board: hasCommit ? 20 : 0,
   };
 }
 
@@ -94,6 +102,11 @@ export function getVisionPurposeProgress(participantId) {
 export function getVisionPurposeCompletionPct(participantId) {
   const p = getVisionPurposeProgress(participantId);
   return Math.round(
-    (p.mission_statement + p.vision_statement + p.future_self_narrative + p.dream_board) / 4,
+    (p.mission_statement
+      + p.vision_statement
+      + p.my_values
+      + p.future_self_narrative
+      + p.dream_board)
+    / 5,
   );
 }

@@ -8,20 +8,20 @@
   "durationHours": 4,
   "learningObjectives": [
     "Distinguish entrepreneurship from traditional employment in financial services",
-    "Articulate personal why and venture purpose using SPIKE visioning frameworks",
+    "Articulate personal ambition, purpose, and values using SPIKE venture builder frameworks",
     "Map squad roles, advisory dyads, and research squad expectations for Segment 1",
     "Identify first portfolio and business plan outputs for Week 1"
   ],
   "expectedOutputs": [
-    "Completed personal why statement worksheet",
+    "Completed ambition, purpose, and values builders",
     "Squad charter with research and advisory roles assigned",
     "Orientation reflection draft for portfolio Identity & Purpose section"
   ],
   "portfolioDeliverables": [
     "Orientation reflection — why you are building a financial venture",
-    "Vision board snapshot or narrative summary from squad activity"
+    "Dream board snapshot or narrative summary from squad activity"
   ],
-  "businessPlanIntegration": "Draft opening narrative for Business Plan Chapter 1: Vision & Purpose",
+  "businessPlanIntegration": "Draft opening narrative for Business Plan Chapter 1: Ambition & Purpose",
   "presentations": ["presentation-day-1-welcome"],
   "activities": ["activity-day-1-vision-board", "activity-day-1-squad-charter"],
   "worksheets": ["worksheet-day-1-personal-why"],

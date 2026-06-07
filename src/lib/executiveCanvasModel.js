@@ -190,11 +190,25 @@ export function buildExecutiveCanvasModel({ participantId, participantName, stat
       state.career_track,
     ),
     priorities: [summary.priority_1, summary.priority_2, summary.priority_3],
-    yearVision: [
+    yearAmbition: [
       { year: 'Year 1', goal: summary.year1_goal || '—' },
       { year: 'Year 2', goal: summary.year2_goal || '—' },
       { year: 'Year 3', goal: summary.year3_goal || '—' },
     ],
+    ambitionPurpose: {
+      ambition: summarizeExecutiveField(
+        getSectionField(participantId, 'vision-purpose', 'vision_statement'),
+      ),
+      purpose: summarizeExecutiveField(
+        getSectionField(participantId, 'vision-purpose', 'mission_statement'),
+      ),
+      values: summarizeExecutiveField(
+        getSectionField(participantId, 'vision-purpose', 'my_values'),
+      ),
+      futureSelf: summarizeExecutiveField(
+        getSectionField(participantId, 'vision-purpose', 'future_self_narrative'),
+      ),
+    },
     acsRoadmap:
       state.career_track === 'agency_builder'
         ? {

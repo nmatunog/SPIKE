@@ -61,7 +61,7 @@ export function PresentationViewer({ presentation, slides, facultyMode = false }
           <p className="rounded-xl border border-sky-200 bg-sky-50/80 px-3 py-2.5 text-sm text-sky-950">
             Your facilitator leads live discussion in session. Complete the{' '}
             <strong>activities, worksheets, and survey</strong> below — they auto-fill your Venture
-            Blueprint (Vision, Financial Canvas, Market Intelligence).
+            Blueprint (Ambition & Purpose, Financial Canvas, Market Intelligence).
           </p>
         </>
       )}

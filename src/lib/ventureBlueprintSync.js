@@ -73,7 +73,7 @@ export function syncSurveyCompletion(participantId, surveyId, answers, questions
 }
 
 /**
- * Reflection → Vision & Purpose structured fields + legacy sync.
+ * Reflection → Ambition & Purpose structured fields + legacy sync.
  */
 export function syncReflectionCompletion(participantId, reflectionId, responses, reflection) {
   const content = Object.entries(responses)

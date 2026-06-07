@@ -263,10 +263,10 @@ export function ExecutiveCanvasSummary({ participantId, participantName, state }
 
           <section className="executive-canvas-section rounded-xl border border-slate-200 bg-white p-3 lg:col-span-4">
             <h4 className="mb-2 text-xs font-bold uppercase tracking-wide text-spike">
-              3-Year Vision Snapshot
+              3-Year Ambition Snapshot
             </h4>
             <div className="grid grid-cols-3 gap-2">
-              {model.yearVision.map((item) => (
+              {model.yearAmbition.map((item) => (
                 <div key={item.year} className="rounded-lg bg-slate-50 p-2 text-center">
                   <p className="text-2xs font-semibold text-slate-500">{item.year}</p>
                   <p className="mt-1 text-xs font-bold text-slate-900">{item.goal}</p>
@@ -395,7 +395,7 @@ export function ExecutiveCanvasSummary({ participantId, participantName, state }
         </div>
 
         <div className="grid gap-4 sm:grid-cols-3">
-          {model.yearVision.map((item, idx) => (
+          {model.yearAmbition.map((item, idx) => (
             <AutoSaveField
               key={item.year}
               label={`${item.year} goal`}

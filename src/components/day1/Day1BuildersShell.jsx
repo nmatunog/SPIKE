@@ -10,8 +10,10 @@ import {
   saveBuilderDraft,
 } from '../../lib/day1BuilderService.js';
 import { Day1MissionControl } from './Day1MissionControl.jsx';
-import { DiscoverYourWhyBuilder } from './builders/DiscoverYourWhyBuilder.jsx';
-import { DesignYourFutureBuilder } from './builders/DesignYourFutureBuilder.jsx';
+import { AmbitionBuilder } from './builders/AmbitionBuilder.jsx';
+import { PurposeBuilder } from './builders/PurposeBuilder.jsx';
+import { ValuesBuilder } from './builders/ValuesBuilder.jsx';
+import { FutureSelfBuilder } from './builders/FutureSelfBuilder.jsx';
 import { DreamBoardStudio } from './builders/DreamBoardStudio.jsx';
 import { FutureVentureSnapshotBuilder } from './builders/FutureVentureSnapshotBuilder.jsx';
 import { SquadFormationBuilder } from './builders/SquadFormationBuilder.jsx';
@@ -19,8 +21,10 @@ import { SquadCharterBuilder } from './builders/SquadCharterBuilder.jsx';
 import { ROUTES } from '../../routes/paths.js';
 
 const BUILDER_COMPONENTS = {
-  'discover-why': DiscoverYourWhyBuilder,
-  'design-future': DesignYourFutureBuilder,
+  'ambition-builder': AmbitionBuilder,
+  'purpose-builder': PurposeBuilder,
+  'values-builder': ValuesBuilder,
+  'future-self': FutureSelfBuilder,
   'dream-board': DreamBoardStudio,
   'future-venture': FutureVentureSnapshotBuilder,
   'squad-formation': SquadFormationBuilder,
@@ -42,7 +46,7 @@ export function Day1BuildersShell({
   initialBuilder,
 }) {
   const firstIncompleteId = getDay1MissionProgress(participantId).builders.find((b) => !b.completed)?.id
-    ?? 'discover-why';
+    ?? 'ambition-builder';
   const [activeId, setActiveId] = useState(initialBuilder ?? firstIncompleteId);
   const [draft, setDraft] = useState(() => getBuilderData(participantId, activeId) ?? {});
   const [refreshKey, setRefreshKey] = useState(0);

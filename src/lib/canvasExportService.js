@@ -170,6 +170,26 @@ export async function exportVentureBoardCoverSheet(
 
   y += 12;
   pdf.setFont('helvetica', 'bold');
+  pdf.text('Ambition & Purpose', margin, y);
+  y += 18;
+  pdf.setFont('helvetica', 'normal');
+  const ambitionPurposeLines = [
+    ['Ambition', model.ambitionPurpose?.ambition ?? '—'],
+    ['Purpose', model.ambitionPurpose?.purpose ?? '—'],
+    ['Values', model.ambitionPurpose?.values ?? '—'],
+    ['Future Self', model.ambitionPurpose?.futureSelf ?? '—'],
+  ];
+  for (const [label, value] of ambitionPurposeLines) {
+    pdf.setFont('helvetica', 'bold');
+    pdf.text(`${label}:`, margin, y);
+    pdf.setFont('helvetica', 'normal');
+    const wrapped = pdf.splitTextToSize(String(value), 520);
+    pdf.text(wrapped, margin + 80, y);
+    y += Math.max(wrapped.length * 14, 16) + 4;
+  }
+
+  y += 8;
+  pdf.setFont('helvetica', 'bold');
   pdf.text('Canvas Summary', margin, y);
   y += 18;
   pdf.setFont('helvetica', 'normal');

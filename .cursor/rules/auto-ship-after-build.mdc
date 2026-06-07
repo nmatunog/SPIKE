@@ -1,0 +1,16 @@
+---
+description: Auto commit, push, and deploy after successful builds
+alwaysApply: true
+---
+
+# Auto-ship after build
+
+After implementing changes and verifying the app builds:
+
+1. Prefer `npm run ship` (lint + build + auto commit/push) over `npm run build` alone.
+2. Do not manually commit/push/deploy unless the user asks — `postbuild` runs `scripts/ship-after-build.sh` locally.
+3. Push to `main` triggers `.github/workflows/deploy-cloudflare-pages.yml` → https://spike-asc.pages.dev
+4. To skip auto-ship for a one-off build: `SKIP_AUTO_SHIP=1 npm run build`
+5. For a custom commit message: `SHIP_COMMIT_MSG="feat: …" npm run ship`
+
+Never ship `.env`, credentials, or `.cursor/logs`.

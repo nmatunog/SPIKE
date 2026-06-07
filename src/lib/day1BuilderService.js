@@ -1,7 +1,7 @@
 /**
  * Venture Blueprint Builders™ — Day 1 completion and Blueprint sync.
  */
-import { DAY1_ID, MOTIVATION_CARDS } from './day1BuilderConstants.js';
+import { DAY1_ID } from './day1BuilderConstants.js';
 import { setSectionField } from './blueprintSectionStore.js';
 import {
   markActivityCompleted,
@@ -50,11 +50,17 @@ export function completeDay1Builder(participantId, builderId, data) {
  */
 function syncBuilderToBlueprint(participantId, builderId, data) {
   switch (builderId) {
-    case 'discover-why':
-      syncDiscoverWhy(participantId, data);
+    case 'ambition-builder':
+      syncAmbition(participantId, data);
       break;
-    case 'design-future':
-      syncDesignFuture(participantId, data);
+    case 'purpose-builder':
+      syncPurpose(participantId, data);
+      break;
+    case 'values-builder':
+      syncValues(participantId, data);
+      break;
+    case 'future-self':
+      syncFutureSelf(participantId, data);
       break;
     case 'dream-board':
       syncDreamBoard(participantId, data);
@@ -74,27 +80,25 @@ function syncBuilderToBlueprint(participantId, builderId, data) {
 }
 
 /** @param {string} participantId @param {Record<string, unknown>} data */
-function syncDiscoverWhy(participantId, data) {
-  const cards = /** @type {string[]} */ (data.motivationCards ?? []);
-  const labels = cards
-    .map((id) => MOTIVATION_CARDS.find((c) => c.id === id)?.label)
-    .filter(Boolean);
-  const joinReason = String(data.joinReason ?? '').trim();
-  const personalWhy = [
-    labels.length ? `Motivated by: ${labels.join(', ')}.` : '',
-    joinReason ? `Why SPIKE: ${joinReason}` : '',
-  ]
-    .filter(Boolean)
-    .join(' ');
-
-  setSectionField(participantId, 'vision-purpose', 'mission_statement', personalWhy, {
+function syncAmbition(participantId, data) {
+  const statement = String(data.ambitionStatement ?? '').trim();
+  setSectionField(participantId, 'vision-purpose', 'vision_statement', statement, {
     sourceType: 'day1_builder',
-    sourceId: 'discover-why',
+    sourceId: 'ambition-builder',
+  });
+}
+
+/** @param {string} participantId @param {Record<string, unknown>} data */
+function syncPurpose(participantId, data) {
+  const purpose = String(data.purposeStatement ?? '').trim();
+  setSectionField(participantId, 'vision-purpose', 'mission_statement', purpose, {
+    sourceType: 'day1_builder',
+    sourceId: 'purpose-builder',
   });
 
   const legacyAnswers = {
-    'wq-day-1-why-1': personalWhy,
-    'wq-day-1-why-2': joinReason,
+    'wq-day-1-why-1': purpose,
+    'wq-day-1-why-2': String(data.whyImportant ?? ''),
     'wq-day-1-why-3': 4,
     'wq-day-1-why-4': true,
   };
@@ -108,25 +112,21 @@ function syncDiscoverWhy(participantId, data) {
 }
 
 /** @param {string} participantId @param {Record<string, unknown>} data */
-function syncDesignFuture(participantId, data) {
-  const narrative = buildFutureNarrative(data);
-  setSectionField(participantId, 'vision-purpose', 'future_self_narrative', narrative, {
+function syncValues(participantId, data) {
+  const profile = String(data.valuesProfile ?? '').trim();
+  setSectionField(participantId, 'vision-purpose', 'my_values', profile, {
     sourceType: 'day1_builder',
-    sourceId: 'design-future',
-  });
-  setSectionField(participantId, 'vision-purpose', 'vision_statement', String(data.impactGoal ?? ''), {
-    sourceType: 'day1_builder',
-    sourceId: 'design-future',
+    sourceId: 'values-builder',
   });
 }
 
-/** @param {Record<string, unknown>} data */
-function buildFutureNarrative(data) {
-  return [
-    `In 10 years, I see myself living in ${data.livingLocation || 'my chosen community'}.`,
-    `I aim for ${data.targetIncome || 'sustainable income'} while building ${data.careerVision || 'my financial services practice'}.`,
-    `The impact I want to create: ${data.impactGoal || 'helping families achieve financial security'}.`,
-  ].join(' ');
+/** @param {string} participantId @param {Record<string, unknown>} data */
+function syncFutureSelf(participantId, data) {
+  const narrative = String(data.futureSelfNarrative ?? '').trim();
+  setSectionField(participantId, 'vision-purpose', 'future_self_narrative', narrative, {
+    sourceType: 'day1_builder',
+    sourceId: 'future-self',
+  });
 }
 
 /** @param {string} participantId @param {Record<string, unknown>} data */
