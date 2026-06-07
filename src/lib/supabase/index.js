@@ -15,3 +15,4 @@ export {
   upsertPortfolioArtifactDraft,
 } from './blueprintArtifacts.js';
 export { fetchPlaybookCompletions, upsertPlaybookCompletion } from './playbookProgress.js';
+export { fetchSurveyResponse, upsertSurveyResponse } from './surveyResponses.js';

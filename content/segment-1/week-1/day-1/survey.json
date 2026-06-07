@@ -3,8 +3,8 @@
     "id": "survey-day-1-orientation",
     "dayId": "day-segment-1-week-1-day-1",
     "title": "Orientation Pulse Survey",
-    "description": "Baseline confidence and expectations survey for research squad planning. Collection not enabled in Sprint 02 — definition only.",
-    "status": "draft"
+    "description": "Baseline confidence and expectations for research squad planning. Responses feed Market Intelligence in your Venture Blueprint.",
+    "status": "active"
   },
   "questions": [
     {
@@ -30,6 +30,43 @@
       "type": "checkbox",
       "required": true,
       "sortOrder": 3
+    },
+    {
+      "id": "sq-day-1-04",
+      "surveyId": "survey-day-1-orientation",
+      "prompt": "Which career track are you leaning toward?",
+      "type": "single_choice",
+      "required": true,
+      "sortOrder": 4,
+      "options": ["Agency Builder", "Specialist Consultant", "Undecided"]
+    },
+    {
+      "id": "sq-day-1-05",
+      "surveyId": "survey-day-1-orientation",
+      "prompt": "Which Segment 1 focus areas matter most to you right now? (select all that apply)",
+      "type": "multiple_choice",
+      "required": true,
+      "sortOrder": 5,
+      "options": [
+        "Vision & purpose",
+        "Market research",
+        "FNA practice",
+        "Venture board preparation"
+      ]
+    },
+    {
+      "id": "sq-day-1-06",
+      "surveyId": "survey-day-1-orientation",
+      "prompt": "Rank these planning priorities for your first research squad project (1 = highest).",
+      "type": "ranking",
+      "required": true,
+      "sortOrder": 6,
+      "options": [
+        "Income protection",
+        "Retirement planning",
+        "Education funding",
+        "Legacy planning"
+      ]
     }
   ]
 }

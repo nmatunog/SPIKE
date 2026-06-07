@@ -3,6 +3,7 @@ import { ActivityViewer } from './ActivityViewer.jsx';
 import { WorksheetViewer } from './WorksheetViewer.jsx';
 import { AssessmentPanel } from './AssessmentPanel.jsx';
 import { ReflectionViewer } from './ReflectionViewer.jsx';
+import { SurveyViewer } from './SurveyViewer.jsx';
 
 /**
  * @typedef {import('../../lib/contentLoader.js').DayContentBundle} DayContentBundle
@@ -25,7 +26,7 @@ export function SessionView({
   onProgress,
   showSpeakerNotes = false,
 }) {
-  const { presentation, activities, worksheets, assessment, reflections } = bundle;
+  const { presentation, activities, worksheets, assessment, reflections, survey } = bundle;
 
   const sessionPresentations =
     session.presentationIds.length > 0 && presentation?.presentation
@@ -48,6 +49,11 @@ export function SessionView({
     session.assessmentIds.length > 0 &&
     assessment?.assessment &&
     session.assessmentIds.includes(assessment.assessment.id);
+
+  const showSurvey =
+    session.surveyIds?.length > 0 &&
+    survey?.survey &&
+    session.surveyIds.includes(survey.survey.id);
 
   return (
     <div className="space-y-6">
@@ -112,6 +118,18 @@ export function SessionView({
             Assessment
           </h4>
           <AssessmentPanel assessment={assessment.assessment} rubric={assessment.rubric} />
+        </section>
+      ) : null}
+
+      {showSurvey ? (
+        <section>
+          <h4 className="mb-2 text-xs font-bold uppercase tracking-wider text-gray-500">Survey</h4>
+          <SurveyViewer
+            survey={survey.survey}
+            questions={survey.questions}
+            participantId={participantId}
+            onCompleted={onProgress}
+          />
         </section>
       ) : null}
 

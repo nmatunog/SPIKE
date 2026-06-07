@@ -72,5 +72,7 @@ App loads curriculum from `/content` JSON and hydrates `day_contributions` from 
 - Curriculum facade: `src/lib/curriculumService.js` (JSON tree + Supabase enrichment)
 - Playbook progress: `src/lib/playbookProgress.js`, `src/lib/supabase/playbookProgress.js`
 - Migration: `supabase/migrations/20260621_sprint_03_playbook_completions.sql`
+- Survey responses: `src/lib/surveyService.js`, `src/lib/supabase/surveyResponses.js`
+- Migration: `supabase/migrations/20260622_sprint_04_survey_engine.sql`
 
 The `api/` folder is for optional local JWT development only; production uses Supabase.

@@ -1,23 +1,30 @@
 /**
  * Playbook Integration Engine — routes completed items to Venture Blueprint (Sprint 04).
  */
-import { syncPlaybookActivity, syncPlaybookReflection, syncPlaybookWorksheet } from './playbookBlueprintSync.js';
+import {
+  syncPlaybookActivity,
+  syncPlaybookReflection,
+  syncPlaybookSurvey,
+  syncPlaybookWorksheet,
+} from './playbookBlueprintSync.js';
 
-export { syncPlaybookWorksheet, syncPlaybookActivity, syncPlaybookReflection };
+export { syncPlaybookWorksheet, syncPlaybookActivity, syncPlaybookReflection, syncPlaybookSurvey };
 
 /**
  * @param {{
  *   participantId: string,
- *   itemType: 'worksheet' | 'activity' | 'reflection',
+ *   itemType: 'worksheet' | 'activity' | 'reflection' | 'survey',
  *   itemId: string,
  *   payload?: Record<string, unknown>,
  *   questions?: Array<{ id: string, prompt: string }>,
  *   activity?: { title: string, outputs: string[] },
  *   reflection?: { title: string },
+ *   survey?: { title: string },
  * }} input
  */
 export function runPlaybookAutomation(input) {
-  const { participantId, itemType, itemId, payload = {}, questions, activity, reflection } = input;
+  const { participantId, itemType, itemId, payload = {}, questions, activity, reflection, survey } =
+    input;
 
   switch (itemType) {
     case 'worksheet':
@@ -37,6 +44,15 @@ export function runPlaybookAutomation(input) {
         itemId,
         /** @type {Record<string, string>} */ (payload.responses ?? {}),
         reflection,
+      );
+    case 'survey':
+      if (!survey) return null;
+      return syncPlaybookSurvey(
+        participantId,
+        itemId,
+        /** @type {Record<string, unknown>} */ (payload.answers ?? {}),
+        questions ?? [],
+        survey,
       );
     default:
       return null;

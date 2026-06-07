@@ -10,7 +10,8 @@
       "activityIds": ["activity-day-1-vision-board"],
       "worksheetIds": [],
       "assessmentIds": [],
-      "reflectionIds": []
+      "reflectionIds": [],
+      "surveyIds": []
     },
     {
       "id": "session-day-1-afternoon",
@@ -22,7 +23,8 @@
       "activityIds": ["activity-day-1-squad-charter"],
       "worksheetIds": ["worksheet-day-1-personal-why"],
       "assessmentIds": ["assessment-day-1-participation"],
-      "reflectionIds": ["reflection-day-1-close"]
+      "reflectionIds": ["reflection-day-1-close"],
+      "surveyIds": ["survey-day-1-orientation"]
     }
   ]
 }

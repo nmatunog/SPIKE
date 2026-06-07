@@ -59,6 +59,7 @@ export interface Session {
   worksheetIds: string[]
   assessmentIds: string[]
   reflectionIds: string[]
+  surveyIds: string[]
 }
 
 export interface Reflection {
@@ -84,6 +85,7 @@ export type PlaybookItemType =
   | 'activity'
   | 'reflection'
   | 'assessment'
+  | 'survey'
   | 'presentation'
 
 export interface DayCompletionSummary {
@@ -184,7 +186,14 @@ export interface DayContribution {
   contributesToCompetencies: string[]
 }
 
-export type SurveyQuestionType = 'short_text' | 'long_text' | 'rating' | 'checkbox' | 'single_choice'
+export type SurveyQuestionType =
+  | 'short_text'
+  | 'long_text'
+  | 'rating'
+  | 'checkbox'
+  | 'single_choice'
+  | 'multiple_choice'
+  | 'ranking'
 
 export interface SurveyQuestion {
   id: string
@@ -193,6 +202,22 @@ export interface SurveyQuestion {
   type: SurveyQuestionType
   required: boolean
   sortOrder: number
+  /** Options for single_choice, multiple_choice, ranking */
+  options?: string[]
+}
+
+export interface SurveyResponseAnswer {
+  questionId: string
+  value: string | number | boolean | string[] | Record<string, number>
+}
+
+export interface SurveyResponse {
+  id: string
+  participantId: string
+  surveyId: string
+  dayId: string
+  answers: SurveyResponseAnswer[]
+  submittedAt: string
 }
 
 export type SurveyStatus = 'draft' | 'active' | 'closed'

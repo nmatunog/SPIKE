@@ -63,7 +63,24 @@ export function getActivityMapping(activityId) {
   return ACTIVITY_BLUEPRINT_MAPPINGS[activityId] ?? null;
 }
 
+/** @type {Record<string, WorksheetBlueprintMapping>} */
+export const SURVEY_BLUEPRINT_MAPPINGS = {
+  'survey-day-1-orientation': {
+    portfolioSectionId: 'portfolio-market-intelligence',
+    businessPlanChapterId: 'bp-chapter-2',
+    blueprintModule: 'client-growth',
+    completionWeight: 4,
+    artifactTitle: 'Orientation Pulse Survey Insights',
+    sourceDayId: 'day-segment-1-week-1-day-1',
+  },
+};
+
 /** @param {string} reflectionId */
 export function getReflectionMapping(reflectionId) {
   return REFLECTION_BLUEPRINT_MAPPINGS[reflectionId] ?? null;
+}
+
+/** @param {string} surveyId */
+export function getSurveyMapping(surveyId) {
+  return SURVEY_BLUEPRINT_MAPPINGS[surveyId] ?? null;
 }

@@ -4,6 +4,7 @@ import { ActivityViewer } from './ActivityViewer.jsx';
 import { WorksheetViewer } from './WorksheetViewer.jsx';
 import { AssessmentPanel } from './AssessmentPanel.jsx';
 import { DayContributionChips } from './DayContributionChips.jsx';
+import { SurveyViewer } from './SurveyViewer.jsx';
 
 /**
  * @typedef {import('../../lib/contentLoader.js').DayContentBundle} DayContentBundle
@@ -129,17 +130,13 @@ export function DayView({ bundle, participantId, onWorksheetCompleted }) {
         </section>
 
         <section>
-          <SectionTitle>Survey (definition)</SectionTitle>
-          <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4 text-sm text-gray-600">
-            <p className="font-bold text-gray-800">{survey.survey.title}</p>
-            <p className="mt-1">{survey.survey.description}</p>
-            <p className="mt-2 text-xs uppercase text-gray-500">Status: {survey.survey.status}</p>
-            <ul className="mt-3 space-y-1">
-              {survey.questions.map((q) => (
-                <li key={q.id}>• {q.prompt}</li>
-              ))}
-            </ul>
-          </div>
+          <SectionTitle>Survey</SectionTitle>
+          <SurveyViewer
+            survey={survey.survey}
+            questions={survey.questions}
+            participantId={participantId}
+            onCompleted={onWorksheetCompleted}
+          />
         </section>
       </div>
     </div>

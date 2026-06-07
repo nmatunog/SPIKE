@@ -79,6 +79,19 @@ function MentorInternCard({ row }) {
         <p className="text-sm text-gray-500">No worksheet submissions yet.</p>
       )}
 
+      {(subs.surveys ?? []).length > 0 ? (
+        <div className="mt-3">
+          <h5 className="mb-2 text-xs font-bold uppercase text-gray-500">Survey submissions</h5>
+          <ul className="space-y-1 text-sm text-gray-700">
+            {subs.surveys.map((s) => (
+              <li key={s.surveyId}>
+                {s.surveyId} — {s.completedAt?.slice(0, 10) ?? 'submitted'}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
       {Object.keys(subs.reflections ?? {}).length > 0 ? (
         <p className="mt-3 text-xs font-semibold text-emerald-700">
           {Object.keys(subs.reflections).length} reflection(s) saved

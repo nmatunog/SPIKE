@@ -10,6 +10,7 @@ import {
 } from './playbookLocalProgress.js';
 import { upsertPlaybookCompletion } from './supabase/playbookProgress.js';
 import { runPlaybookAutomation } from './playbookAutomation.js';
+import { isSurveySubmitted } from './surveyService.js';
 
 export {
   getVisionPurposeProgress,
@@ -34,7 +35,7 @@ function writeAll(data) {
 function ensureUser(participantId) {
   const all = readAll();
   if (!all[participantId]) {
-    all[participantId] = { worksheets: {}, activities: {}, reflections: {} };
+    all[participantId] = { worksheets: {}, activities: {}, reflections: {}, surveys: {} };
   }
   return all;
 }
@@ -84,10 +85,6 @@ export function isWorksheetCompleted(participantId, worksheetId) {
 /**
  * @param {string} participantId
  * @param {string} activityId
- */
-/**
- * @param {string} participantId
- * @param {string} activityId
  * @param {string} [dayId]
  * @param {{ title: string, outputs: string[] }} [activity]
  */
@@ -113,11 +110,6 @@ export function isActivityCompleted(participantId, activityId) {
   return Boolean(readAll()[participantId]?.activities?.[activityId]);
 }
 
-/**
- * @param {string} participantId
- * @param {string} reflectionId
- * @param {Record<string, string>} responses
- */
 /**
  * @param {string} participantId
  * @param {string} reflectionId
@@ -147,6 +139,49 @@ export function markReflectionCompleted(participantId, reflectionId, responses =
 /** @param {string} participantId @param {string} reflectionId */
 export function isReflectionCompleted(participantId, reflectionId) {
   return Boolean(readAll()[participantId]?.reflections?.[reflectionId]);
+}
+
+/**
+ * @param {string} participantId
+ * @param {string} surveyId
+ * @param {Record<string, unknown>} answers
+ * @param {string} [dayId]
+ */
+export function markSurveyCompleted(participantId, surveyId, answers, dayId) {
+  const all = ensureUser(participantId);
+  all[participantId].surveys[surveyId] = {
+    completedAt: new Date().toISOString(),
+    answers,
+  };
+  writeAll(all);
+  void upsertPlaybookCompletion(participantId, 'survey', surveyId, dayId, { answers });
+}
+
+/** @param {string} participantId @param {string} surveyId */
+export function isSurveyCompleted(participantId, surveyId) {
+  return Boolean(
+    readAll()[participantId]?.surveys?.[surveyId] || isSurveySubmitted(participantId, surveyId),
+  );
+}
+
+/**
+ * @param {string} participantId
+ * @param {string} surveyId
+ * @param {Record<string, unknown>} answers
+ * @param {string} [dayId]
+ * @param {Array<{ id: string, prompt: string, type: string }>} questions
+ * @param {{ title: string }} survey
+ */
+export function completeSurvey(participantId, surveyId, answers, dayId, questions, survey) {
+  markSurveyCompleted(participantId, surveyId, answers, dayId);
+  return runPlaybookAutomation({
+    participantId,
+    itemType: 'survey',
+    itemId: surveyId,
+    payload: { answers },
+    questions,
+    survey,
+  });
 }
 
 /** @param {string} participantId @param {string} worksheetId */
@@ -196,6 +231,16 @@ export function getDayCompletionSummary(participantId, bundle) {
     });
   }
 
+  const survey = bundle.survey?.survey;
+  if (survey) {
+    items.push({
+      id: survey.id,
+      type: /** @type {'survey'} */ ('survey'),
+      title: survey.title,
+      completed: participantId ? isSurveyCompleted(participantId, survey.id) : false,
+    });
+  }
+
   const totalItems = items.length;
   const completedItems = items.filter((i) => i.completed).length;
 
@@ -233,10 +278,18 @@ export function listParticipantSubmissions(participantId) {
     /* ignore */
   }
 
+  const surveys = [];
+  if (all?.surveys) {
+    for (const [id, entry] of Object.entries(all.surveys)) {
+      surveys.push({ surveyId: id, ...entry });
+    }
+  }
+
   return {
     worksheets,
     activities: all?.activities ?? {},
     reflections: all?.reflections ?? {},
+    surveys,
   };
 }
 

@@ -1,8 +1,10 @@
 import {
   getActivityMapping,
   getReflectionMapping,
+  getSurveyMapping,
   getWorksheetMapping,
 } from './activityBlueprintMappings.js';
+import { formatSurveyAnswersForDisplay } from './surveyService.js';
 import { appendBlueprintTimelineEvent } from './blueprintTimeline.js';
 import {
   createBusinessPlanArtifactDraft,
@@ -106,4 +108,18 @@ export function syncPlaybookReflection(participantId, reflectionId, responses, r
     ...Object.entries(responses).map(([prompt, answer]) => `${prompt}\n${answer}`),
   ].join('\n\n');
   return syncFromMapping(mapping, participantId, 'reflection', reflectionId, content);
+}
+
+/**
+ * @param {string} participantId
+ * @param {string} surveyId
+ * @param {Record<string, unknown>} answers
+ * @param {Array<{ id: string, prompt: string, type: string }>} questions
+ * @param {{ title: string }} survey
+ */
+export function syncPlaybookSurvey(participantId, surveyId, answers, questions, survey) {
+  const mapping = getSurveyMapping(surveyId);
+  if (!mapping) return null;
+  const content = [survey.title, '', formatSurveyAnswersForDisplay(questions, answers)].join('\n');
+  return syncFromMapping(mapping, participantId, 'survey', surveyId, content);
 }
