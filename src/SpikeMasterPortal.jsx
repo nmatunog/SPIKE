@@ -1639,6 +1639,8 @@ const SpikeMasterPortal = () => {
       orientationView={<OrientationModule />}
       syllabusView={<MasterSyllabusView />}
       participantId={user?.id}
+      userRole={userRole}
+      interns={interns}
     />
   );
 

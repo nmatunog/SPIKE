@@ -1,0 +1,28 @@
+{
+  "sessions": [
+    {
+      "id": "session-day-1-morning",
+      "dayId": "day-segment-1-week-1-day-1",
+      "sessionNumber": 1,
+      "title": "Welcome & Venture Mindset",
+      "durationMinutes": 120,
+      "presentationIds": ["presentation-day-1-welcome"],
+      "activityIds": ["activity-day-1-vision-board"],
+      "worksheetIds": [],
+      "assessmentIds": [],
+      "reflectionIds": []
+    },
+    {
+      "id": "session-day-1-afternoon",
+      "dayId": "day-segment-1-week-1-day-1",
+      "sessionNumber": 2,
+      "title": "Squad Charter & Personal Why",
+      "durationMinutes": 120,
+      "presentationIds": [],
+      "activityIds": ["activity-day-1-squad-charter"],
+      "worksheetIds": ["worksheet-day-1-personal-why"],
+      "assessmentIds": ["assessment-day-1-participation"],
+      "reflectionIds": ["reflection-day-1-close"]
+    }
+  ]
+}

@@ -3,12 +3,12 @@ import { CheckCircle } from 'lucide-react';
 import {
   isWorksheetCompleted,
   markWorksheetCompleted,
-} from '../../lib/playbookLocalProgress.js';
+} from '../../lib/playbookProgress.js';
 import { syncPlaybookWorksheet } from '../../lib/playbookBlueprintSync.js';
 
 /**
  * @param {{
- *   worksheet: { id: string, title: string, questionIds: string[] },
+ *   worksheet: { id: string, dayId?: string, title: string, questionIds: string[] },
  *   questions: Array<{ id: string, prompt: string, type: string, required: boolean }>,
  *   participantId?: string,
  *   onCompleted?: () => void,
@@ -38,7 +38,7 @@ export function WorksheetViewer({ worksheet, questions, participantId, onComplet
       return;
     }
     if (participantId) {
-      markWorksheetCompleted(participantId, worksheet.id, answers);
+      markWorksheetCompleted(participantId, worksheet.id, answers, worksheet.dayId);
       syncPlaybookWorksheet(participantId, worksheet.id, answers, sorted);
     }
     setSubmitted(true);

@@ -1,0 +1,58 @@
+{
+  "dayId": "day-segment-1-week-1-day-1",
+  "title": "Facilitator Guide — Day 1: Agency Orientation & Entrepreneur Mindset",
+  "durationHours": 4,
+  "prepChecklist": [
+    "Confirm squad assignments and advisory dyad pairings",
+    "Print or share vision board materials and squad charter template",
+    "Test projector / slide deck and speaker notes visibility",
+    "Review Day 1 worksheet rubric with mentors"
+  ],
+  "sessionFlow": [
+    {
+      "time": "0:00–0:45",
+      "activity": "Opening presentation — Welcome to SPIKE",
+      "notes": "Set incubator tone. Avoid classroom language. Use discussion questions on slides 1–2."
+    },
+    {
+      "time": "0:45–1:30",
+      "activity": "Vision Board Squad Activity",
+      "notes": "Circulate among squads. Capture photos of boards for portfolio evidence."
+    },
+    {
+      "time": "1:30–2:00",
+      "activity": "Break + transition to afternoon session",
+      "notes": "Mentors check in with squads on alignment with Week 1 goals."
+    },
+    {
+      "time": "2:00–2:30",
+      "activity": "Research Squad Charter & Role Assignment",
+      "notes": "Ensure every intern has a named role for Week 1 rotation."
+    },
+    {
+      "time": "2:30–3:30",
+      "activity": "Personal Why Worksheet (individual)",
+      "notes": "Worksheet feeds Venture Blueprint Vision & Purpose — remind interns before submit."
+    },
+    {
+      "time": "3:30–4:00",
+      "activity": "Participation assessment + Day 1 reflection",
+      "notes": "Faculty observation rubric. Close with reflection prompts."
+    }
+  ],
+  "debriefQuestions": [
+    "Which squad vision boards showed the strongest alignment between personal why and venture thesis?",
+    "Where did interns struggle to distinguish entrepreneurship from traditional employment?",
+    "What coaching will mentors provide before Day 2?"
+  ],
+  "commonPitfalls": [
+    "Treating SPIKE as a lecture course rather than an incubator",
+    "Skipping squad charter — leads to unclear research roles in Week 1",
+    "Rushing the personal why worksheet — quality drives Blueprint Vision module"
+  ],
+  "coachingTips": [
+    "Ask each intern to state their why aloud before worksheet submit",
+    "Link every activity output to Portfolio Identity & Purpose and Business Plan Chapter 1",
+    "Flag interns who did not complete reflection for mentor follow-up"
+  ]
+}

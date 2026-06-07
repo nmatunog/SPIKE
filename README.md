@@ -98,13 +98,19 @@ See [`supabase/README.md`](./supabase/README.md). Run SQL files in the Supabase 
 
 See [`CURSOR_REFACTOR_SPRINT_01_EXECUTION_PLAN.md`](./CURSOR_REFACTOR_SPRINT_01_EXECUTION_PLAN.md).
 
-## Sprint 02 — Playbook engine + instructional architecture
+## Sprint 02 — Instructional architecture substrate
 
-15-phase platform foundation (portfolio, business plan, competencies, career tracks, venture board, research). Architecture only — not full curriculum or final LMS.
+Types, content tree, DB scaffold, curriculum service, and Playbook viewers (foundation for Sprint 03).
 
 - Spec: [`PLAYBOOK_SCHEMA_V1.md`](./PLAYBOOK_SCHEMA_V1.md)
 - Gap analysis: [`PLAYBOOK_SCHEMA_V1_GAP_ANALYSIS.md`](./PLAYBOOK_SCHEMA_V1_GAP_ANALYSIS.md)
 - Execution plan (8 PRs): [`PLAYBOOK_SCHEMA_V1_EXECUTION_PLAN.md`](./PLAYBOOK_SCHEMA_V1_EXECUTION_PLAN.md)
+
+## Sprint 03 — Playbook engine & curriculum execution
+
+Session layer, role views (participant / faculty / mentor), completion tracking, Segment 1 week ladder.
+
+- Execution plan: [`SPRINT_03_PLAYBOOK_EXECUTION_PLAN.md`](./SPRINT_03_PLAYBOOK_EXECUTION_PLAN.md)
 
 ## Venture Blueprint™ — product requirements
 

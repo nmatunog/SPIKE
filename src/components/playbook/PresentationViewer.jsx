@@ -9,9 +9,10 @@ import { SlideNavigator } from './SlideNavigator.jsx';
  * @param {{
  *   presentation: { title: string },
  *   slides: Array<{ title: string, body: string, speakerNotes: string, discussionQuestions: string[] }>,
+ *   facultyMode?: boolean,
  * }} props
  */
-export function PresentationViewer({ presentation, slides }) {
+export function PresentationViewer({ presentation, slides, facultyMode = false }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const slide = slides[currentIndex];
 
@@ -35,11 +36,11 @@ export function PresentationViewer({ presentation, slides }) {
         onNext={() => setCurrentIndex((i) => Math.min(slides.length - 1, i + 1))}
       />
 
-      <div className="grid gap-4 lg:grid-cols-5">
-        <div className="lg:col-span-3">
+      <div className={`grid gap-4 ${facultyMode ? 'lg:grid-cols-2' : 'lg:grid-cols-5'}`}>
+        <div className={facultyMode ? '' : 'lg:col-span-3'}>
           <SlideViewer slide={slide} />
         </div>
-        <div className="space-y-3 lg:col-span-2">
+        <div className={`space-y-3 ${facultyMode ? '' : 'lg:col-span-2'}`}>
           <SpeakerNotesPanel notes={slide.speakerNotes} />
           <DiscussionPanel questions={slide.discussionQuestions} />
         </div>

@@ -14,3 +14,4 @@ export {
   upsertBusinessPlanArtifactDraft,
   upsertPortfolioArtifactDraft,
 } from './blueprintArtifacts.js';
+export { fetchPlaybookCompletions, upsertPlaybookCompletion } from './playbookProgress.js';

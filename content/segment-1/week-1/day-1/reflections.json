@@ -1,0 +1,14 @@
+{
+  "reflections": [
+    {
+      "id": "reflection-day-1-close",
+      "dayId": "day-segment-1-week-1-day-1",
+      "title": "Day 1 Closing Reflection",
+      "prompts": [
+        "In one sentence, what is your personal why for building a financial venture?",
+        "What will you contribute to your research squad this week?",
+        "What is one concrete action you will take before Day 2?"
+      ]
+    }
+  ]
+}

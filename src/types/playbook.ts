@@ -47,13 +47,51 @@ export interface Day {
   assessments: string[]
 }
 
-/** Session layer — future curriculum imports may split a day into multiple sessions. */
+/** Session layer — splits a day into facilitatable blocks. */
 export interface Session {
   id: string
   dayId: string
   sessionNumber: number
   title: string
   durationMinutes: number
+  presentationIds: string[]
+  activityIds: string[]
+  worksheetIds: string[]
+  assessmentIds: string[]
+  reflectionIds: string[]
+}
+
+export interface Reflection {
+  id: string
+  dayId: string
+  title: string
+  prompts: string[]
+}
+
+export interface FacilitatorGuide {
+  dayId: string
+  title: string
+  durationHours: number
+  prepChecklist: string[]
+  sessionFlow: Array<{ time: string; activity: string; notes: string }>
+  debriefQuestions: string[]
+  commonPitfalls: string[]
+  coachingTips: string[]
+}
+
+export type PlaybookItemType =
+  | 'worksheet'
+  | 'activity'
+  | 'reflection'
+  | 'assessment'
+  | 'presentation'
+
+export interface DayCompletionSummary {
+  dayId: string
+  totalItems: number
+  completedItems: number
+  percent: number
+  items: Array<{ id: string; type: PlaybookItemType; title: string; completed: boolean }>
 }
 
 export type CompetencyCategory = 'personal' | 'technical' | 'business' | 'leadership'

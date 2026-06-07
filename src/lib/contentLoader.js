@@ -13,6 +13,9 @@
  * @typedef {import('../types/playbook').Survey} Survey
  * @typedef {import('../types/playbook').SurveyQuestion} SurveyQuestion
  * @typedef {import('../types/playbook').DayContribution} DayContribution
+ * @typedef {import('../types/playbook').Session} Session
+ * @typedef {import('../types/playbook').Reflection} Reflection
+ * @typedef {import('../types/playbook').FacilitatorGuide} FacilitatorGuide
  */
 
 /**
@@ -24,6 +27,9 @@
  * @property {{ assessment: Assessment, rubric: Rubric | null }} assessment
  * @property {{ survey: Survey, questions: SurveyQuestion[] }} survey
  * @property {DayContribution} contributions
+ * @property {{ sessions: Session[] }} [sessions]
+ * @property {{ reflections: Reflection[] }} [reflections]
+ * @property {FacilitatorGuide} [facilitator]
  */
 
 /**
@@ -152,6 +158,15 @@ for (const [filePath, data] of Object.entries(contentModules)) {
     case 'contributions':
       bundle.contributions = /** @type {DayContribution} */ (data);
       break;
+    case 'sessions':
+      bundle.sessions = /** @type {DayContentBundle['sessions']} */ (data);
+      break;
+    case 'reflections':
+      bundle.reflections = /** @type {DayContentBundle['reflections']} */ (data);
+      break;
+    case 'facilitator-guide':
+      bundle.facilitator = /** @type {FacilitatorGuide} */ (data);
+      break;
     default:
       break;
   }
@@ -274,6 +289,15 @@ export function assertSegment1Week1Day1Ready() {
   }
   if (!bundle.contributions?.contributesToPortfolio?.length) {
     throw new Error('Day 1 missing portfolio contributions');
+  }
+  if (!bundle.sessions?.sessions?.length) {
+    throw new Error('Day 1 missing sessions');
+  }
+  if (!bundle.reflections?.reflections?.length) {
+    throw new Error('Day 1 missing reflections');
+  }
+  if (!bundle.facilitator?.title) {
+    throw new Error('Day 1 missing facilitator guide');
   }
   return bundle;
 }

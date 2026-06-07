@@ -1,16 +1,32 @@
-import { Clock, Package } from 'lucide-react';
+import { CheckCircle, Clock, Package } from 'lucide-react';
+import {
+  isActivityCompleted,
+  markActivityCompleted,
+} from '../../lib/playbookProgress.js';
 
 /**
  * @param {{ activity: {
+ *   id: string,
  *   title: string,
  *   durationMinutes: number,
  *   materials: string[],
  *   instructions: string[],
  *   outputs: string[],
  *   debriefQuestions: string[],
- * }}} props
+ * },
+ *   participantId?: string,
+ *   onCompleted?: () => void,
+ * }} props
  */
-export function ActivityViewer({ activity }) {
+export function ActivityViewer({ activity, participantId, onCompleted }) {
+  const completed = participantId && isActivityCompleted(participantId, activity.id);
+
+  function handleComplete() {
+    if (!participantId) return;
+    markActivityCompleted(participantId, activity.id, activity.dayId);
+    onCompleted?.();
+  }
+
   return (
     <article className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
       <div className="mb-3 flex flex-wrap items-center gap-3">
@@ -54,7 +70,7 @@ export function ActivityViewer({ activity }) {
       </div>
 
       {activity.debriefQuestions?.length > 0 ? (
-        <div>
+        <div className="mb-4">
           <h5 className="mb-2 text-xs font-bold uppercase text-gray-500">Debrief questions</h5>
           <ul className="space-y-1 text-sm text-gray-700">
             {activity.debriefQuestions.map((q) => (
@@ -62,6 +78,22 @@ export function ActivityViewer({ activity }) {
             ))}
           </ul>
         </div>
+      ) : null}
+
+      {participantId ? (
+        completed ? (
+          <span className="inline-flex items-center gap-1 text-xs font-bold text-green-700">
+            <CheckCircle size={14} /> Activity marked complete
+          </span>
+        ) : (
+          <button
+            type="button"
+            onClick={handleComplete}
+            className="min-h-[44px] rounded-lg bg-[#8B0000] px-4 py-2 text-sm font-bold text-white hover:bg-[#6B0000]"
+          >
+            Mark activity complete
+          </button>
+        )
       ) : null}
     </article>
   );

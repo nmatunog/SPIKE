@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, BookOpen, ChevronRight, Layers, PlayCircle } from 'lucide-react';
 import { PageContainer, PageTitle } from '../components/layout/PageContainer.jsx';
-import { DayView } from '../components/playbook/DayView.jsx';
+import { ParticipantDayView } from '../components/playbook/ParticipantDayView.jsx';
+import { FacultyPlaybookView } from '../components/playbook/FacultyPlaybookView.jsx';
+import { MentorPlaybookView } from '../components/playbook/MentorPlaybookView.jsx';
 import {
   getCurriculumDataSource,
   getDayContentBundle,
@@ -34,10 +36,15 @@ function PathPill({ active, children, onClick, className = '' }) {
 }
 
 /**
- * @param {{ participantId?: string }} props
+ * @param {{
+ *   participantId?: string,
+ *   userRole?: string,
+ *   interns?: Array<{ id: string, name: string }>,
+ * }} props
  */
-function ContentCurriculum({ participantId }) {
+function ContentCurriculum({ participantId, userRole = 'intern', interns = [] }) {
   const [dataSource, setDataSource] = useState(() => getCurriculumDataSource());
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     let active = true;
@@ -57,7 +64,6 @@ function ContentCurriculum({ participantId }) {
   const days = useMemo(() => listDays(segmentSlug, weekSlug), [segmentSlug, weekSlug]);
   const [daySlug, setDaySlug] = useState(days[0]?.slug ?? 'day-1');
   const [mobilePanel, setMobilePanel] = useState('content');
-  const [refreshKey, setRefreshKey] = useState(0);
 
   const selectedSegment = segments.find((s) => s.slug === segmentSlug);
   const selectedWeek = weeks.find((w) => w.slug === weekSlug);
@@ -91,6 +97,32 @@ function ContentCurriculum({ participantId }) {
     setDaySlug(slug);
     setMobilePanel('content');
   };
+
+  const roleLabel =
+    userRole === 'faculty' || userRole === 'admin'
+      ? 'Faculty'
+      : userRole === 'mentor'
+        ? 'Mentor'
+        : 'Participant';
+
+  const dayContent = bundle ? (
+    userRole === 'faculty' || userRole === 'admin' ? (
+      <FacultyPlaybookView key={refreshKey} bundle={bundle} />
+    ) : userRole === 'mentor' ? (
+      <MentorPlaybookView key={refreshKey} bundle={bundle} interns={interns} />
+    ) : (
+      <ParticipantDayView
+        key={refreshKey}
+        bundle={bundle}
+        participantId={participantId}
+        onProgress={() => setRefreshKey((k) => k + 1)}
+      />
+    )
+  ) : (
+    <p className="text-sm text-gray-500">
+      Select a day with published content. Weeks 2–5 are listed; day bundles publish incrementally.
+    </p>
+  );
 
   const pathBar = (
     <div className="rounded-xl border border-gray-200 bg-white p-3 shadow-sm sm:p-4">
@@ -132,7 +164,7 @@ function ContentCurriculum({ participantId }) {
           <p className="mb-1.5 text-[11px] font-bold uppercase tracking-wider text-gray-500">Day</p>
           <div className="flex flex-wrap gap-2">
             {days.length === 0 ? (
-              <span className="text-sm text-gray-500">No days published.</span>
+              <span className="text-sm text-gray-500">No days published for this week yet.</span>
             ) : (
               days.map(({ slug, day }) => (
                 <PathPill key={slug} active={daySlug === slug} onClick={() => selectDay(slug)}>
@@ -146,25 +178,13 @@ function ContentCurriculum({ participantId }) {
     </div>
   );
 
-  const dayContent = bundle ? (
-    <DayView
-      key={refreshKey}
-      bundle={bundle}
-      participantId={participantId}
-      onWorksheetCompleted={() => setRefreshKey((k) => k + 1)}
-    />
-  ) : (
-    <p className="text-sm text-gray-500">
-      Select a day with published content, or complete the content bundle for this day.
-    </p>
-  );
-
   return (
     <PageContainer className="max-w-6xl">
       <div className="mb-5">
         <PageTitle>Playbook</PageTitle>
         <p className="mt-1 text-sm text-gray-600 sm:text-base">
-          Segment → Week → Day curriculum. Complete worksheets to update your Venture Blueprint.
+          <span className="font-semibold text-gray-800">{roleLabel} view</span> — Segment → Week →
+          Day → Session curriculum.
           {dataSource === 'hybrid' ? (
             <span className="mt-1 block text-xs font-semibold text-emerald-700">
               Linked to Supabase reference data (content from /content JSON).
@@ -186,7 +206,6 @@ function ContentCurriculum({ participantId }) {
         ))}
       </div>
 
-      {/* Mobile: optional focus mode when many weeks/days — skip drill-down when path fits */}
       <div className="space-y-4 lg:hidden">
         {(weeks.length > 2 || days.length > 3) && mobilePanel !== 'content' ? (
           <>
@@ -209,7 +228,6 @@ function ContentCurriculum({ participantId }) {
         )}
       </div>
 
-      {/* Desktop: path bar + full-width content */}
       <div className="hidden space-y-4 lg:block">
         {pathBar}
         <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm xl:p-8">
@@ -221,9 +239,15 @@ function ContentCurriculum({ participantId }) {
 }
 
 /**
- * Playbook module — content tree + legacy orientation / syllabus views.
+ * Playbook module — role-specific curriculum + legacy orientation / syllabus views.
  */
-export function PlaybookShell({ orientationView, syllabusView, participantId }) {
+export function PlaybookShell({
+  orientationView,
+  syllabusView,
+  participantId,
+  userRole = 'intern',
+  interns = [],
+}) {
   const [tab, setTab] = useState('curriculum');
 
   return (
@@ -249,7 +273,13 @@ export function PlaybookShell({ orientationView, syllabusView, participantId }) 
           })}
         </div>
       </div>
-      {tab === 'curriculum' && <ContentCurriculum participantId={participantId} />}
+      {tab === 'curriculum' && (
+        <ContentCurriculum
+          participantId={participantId}
+          userRole={userRole}
+          interns={interns}
+        />
+      )}
       {tab === 'orientation' && orientationView}
       {tab === 'syllabus' && syllabusView}
     </div>
