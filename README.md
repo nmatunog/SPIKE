@@ -112,6 +112,13 @@ Session layer, role views (participant / faculty / mentor), completion tracking,
 
 - Execution plan: [`SPRINT_03_PLAYBOOK_EXECUTION_PLAN.md`](./SPRINT_03_PLAYBOOK_EXECUTION_PLAN.md)
 
+## Master roadmap (Sprints 04–11)
+
+Integrated plan: **Learn → Execute → Track → Scale**
+
+- [`SPIKE_MASTER_ROADMAP.md`](./SPIKE_MASTER_ROADMAP.md) — canonical sequence
+- [`SPRINT_04_EXECUTION_ACTIVITY_ENGINE.md`](./SPRINT_04_EXECUTION_ACTIVITY_ENGINE.md) — next sprint PRs
+
 ## Venture Blueprint™ — product requirements
 
 The Venture Blueprint is the platform operating system (not an LMS page). Defines modules, platform engines, automation, and default intern experience.

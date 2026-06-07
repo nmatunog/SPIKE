@@ -1,5 +1,9 @@
 # Sprint 04 — Venture Portfolio Automation
 
+> **Superseded scope:** See [`SPIKE_MASTER_ROADMAP.md`](./SPIKE_MASTER_ROADMAP.md) and [`SPRINT_04_EXECUTION_ACTIVITY_ENGINE.md`](./SPRINT_04_EXECUTION_ACTIVITY_ENGINE.md).  
+> Sprint 04 is now **Execution & Activity Engine** (Survey + FNA + Timeline + Blueprint auto-update).  
+> PR1 below is **done**; remaining work maps to PR 4.1–4.4 in the new doc.
+
 **Objective:** Every completed Playbook item automatically updates Venture Blueprint modules — no duplicate data entry.
 
 **Baseline:** Sprint 03 Playbook engine with worksheet → Blueprint sync (Day 1 Personal Why).
