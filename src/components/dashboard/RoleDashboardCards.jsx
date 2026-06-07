@@ -8,7 +8,7 @@ import {
 
 export function RoleDashboardCards({ role, user, interns, internSummary }) {
   if (role === 'intern') {
-    const m = deriveInternDashboardMetrics(user?.internProgress);
+    const m = deriveInternDashboardMetrics(user?.internProgress, user?.id);
     return (
       <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-7">
           <MetricCard label="Segment" value={`Seg ${m.segment}`} sub={m.segmentStatus} />

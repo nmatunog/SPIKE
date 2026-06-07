@@ -1,4 +1,9 @@
-/** Sprint 01 metrics — real hours/segment/licensing + mock fields until Phase 3 schema. */
+/** Sprint 01 metrics — hours/segment/licensing + real survey/FNA when participantId known. */
+
+import { countCompletedFnas } from './fnaService.js';
+import { countSubmittedSurveys } from './surveyService.js';
+
+const FNA_COMPLETION_TARGET = 2;
 
 export function deriveWeekDay(hours) {
   const h = Math.max(0, hours ?? 0);
@@ -7,11 +12,32 @@ export function deriveWeekDay(hours) {
   return { currentWeek, currentDay };
 }
 
-export function deriveInternDashboardMetrics(progress) {
+function deriveSurveyCompletion(participantId, hours) {
+  if (participantId) {
+    const submitted = countSubmittedSurveys(participantId);
+    return submitted > 0 ? 100 : 0;
+  }
+  return hours >= 60 ? 100 : Math.round((hours / 60) * 100);
+}
+
+function deriveFnaCompletion(participantId, hours) {
+  if (participantId) {
+    const completed = countCompletedFnas(participantId);
+    return Math.min(100, Math.round((completed / FNA_COMPLETION_TARGET) * 100));
+  }
+  return hours >= 110 ? 100 : Math.round((hours / 110) * 100);
+}
+
+/**
+ * @param {object} [progress]
+ * @param {string} [participantId]
+ */
+export function deriveInternDashboardMetrics(progress, participantId) {
   const hours = progress?.hours ?? 0;
   const segment = progress?.segment ?? 1;
   const { currentWeek, currentDay } = deriveWeekDay(hours);
   const portfolioPct = Math.min(Math.round((hours / 600) * 22), 22);
+  const pid = participantId ?? progress?.participantId;
 
   return {
     segment,
@@ -23,15 +49,18 @@ export function deriveInternDashboardMetrics(progress) {
     pendingDeliverables: segment === 1 ? 3 : segment === 2 ? 2 : 1,
     mentorFeedback: hours < 110 ? 'Focus on licensing prep and FNA practice.' : 'Strong traction — prepare market validation pitch.',
     careerTrack: 'Financial Entrepreneur',
-    surveyCompletion: hours >= 60 ? 100 : Math.round((hours / 60) * 100),
-    fnaCompletion: hours >= 110 ? 100 : Math.round((hours / 110) * 100),
+    surveyCompletion: deriveSurveyCompletion(pid, hours),
+    fnaCompletion: deriveFnaCompletion(pid, hours),
     segmentStatus:
       segment === 1 ? 'Proof of Concept' : segment === 2 ? 'Market Validation' : 'Partnership Track',
   };
 }
 
 export function deriveReportRowMetrics(intern) {
-  const m = deriveInternDashboardMetrics({ segment: intern.segment, hours: intern.hours, licensed: intern.licensed });
+  const m = deriveInternDashboardMetrics(
+    { segment: intern.segment, hours: intern.hours, licensed: intern.licensed },
+    intern.id,
+  );
   return {
     portfolioPct: m.portfolioPct,
     licensingStatus: intern.licensed ? 'Licensed' : 'Pending',
@@ -44,7 +73,9 @@ export function deriveReportRowMetrics(intern) {
 
 export function deriveMentorDashboardMetrics(interns, internSummary) {
   const avgPortfolio = internSummary.n
-    ? Math.round(interns.reduce((a, i) => a + deriveInternDashboardMetrics(i).portfolioPct, 0) / internSummary.n)
+    ? Math.round(
+        interns.reduce((a, i) => a + deriveInternDashboardMetrics(i, i.id).portfolioPct, 0) / internSummary.n,
+      )
     : 0;
   const atRisk = interns.filter((i) => !i.licensed && i.hours >= 85 && i.hours < 115).length;
 

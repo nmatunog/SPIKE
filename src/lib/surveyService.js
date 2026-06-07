@@ -49,6 +49,12 @@ export function isSurveySubmitted(participantId, surveyId) {
   return Boolean(getSurveyResponseLocal(participantId, surveyId));
 }
 
+/** @param {string} participantId */
+export function countSubmittedSurveys(participantId) {
+  if (!participantId) return 0;
+  return Object.keys(readAll()[participantId] ?? {}).length;
+}
+
 /**
  * @param {string} participantId
  * @param {string} surveyId
