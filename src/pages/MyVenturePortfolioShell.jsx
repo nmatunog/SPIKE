@@ -1,4 +1,4 @@
-import { Link, Navigate, useParams } from 'react-router-dom';
+import { Link, Navigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Briefcase } from 'lucide-react';
 import { PageContainer } from '../components/layout/PageContainer.jsx';
 import {
@@ -109,14 +109,25 @@ function renderSection(sectionId, portfolio, participantId, participantName) {
   }
 }
 
+/** @param {string} pathname */
+export function portfolioSectionFromPath(pathname) {
+  if (pathname === ROUTES.myVenturePortfolio) return 'overview';
+  const prefix = `${ROUTES.myVenturePortfolio}/`;
+  if (!pathname.startsWith(prefix)) return 'overview';
+  const slug = pathname.slice(prefix.length).split('/').filter(Boolean)[0] ?? 'overview';
+  return PORTFOLIO_NAV_SECTIONS.some((item) => item.id === slug) ? slug : 'overview';
+}
+
 /**
  * Route wrapper — `/my-venture-portfolio/:section?`
+ * SpikeMasterPortal uses a catch-all route, so section is parsed from pathname (not useParams).
  * @param {{ user: { id: string, name?: string, email?: string, internProgress?: object | null } }} props
  */
 export function MyVenturePortfolioRoute({ user }) {
-  const { section } = useParams();
+  const { pathname } = useLocation();
+  const section = portfolioSectionFromPath(pathname);
   if (!user?.internProgress) {
     return <Navigate to={ROUTES.home} replace />;
   }
-  return <MyVenturePortfolioShell user={user} section={section ?? 'overview'} />;
+  return <MyVenturePortfolioShell user={user} section={section} />;
 }
