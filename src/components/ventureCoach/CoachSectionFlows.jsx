@@ -826,7 +826,7 @@ export function VentureDirectionCoachFlow({ participantId, onProgress, onSection
             {VENTURE_DIRECTION_CARDS.find((c) => c.id === stored.data.track)?.label ?? stored.data.track}
           </p>
         </CoachMessage>
-        <Link to={`${ROUTES.ventureBlueprint}/portfolio`} className="spike-btn-primary inline-flex">
+        <Link to={ROUTES.myVenturePortfolio} className="spike-btn-primary inline-flex">
           View your Venture Portfolio →
         </Link>
       </div>

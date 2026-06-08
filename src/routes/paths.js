@@ -24,6 +24,8 @@ export const ROUTES = {
   mentorPlaybook: '/mentor/playbook',
   adminFacultyPlaybook: '/admin/faculty-playbook',
   adminMentorPlaybook: '/admin/mentor-playbook',
+  myVenturePortfolio: '/my-venture-portfolio',
+  adminPortfolioSettings: '/admin/portfolio-settings',
 };
 
 /** Blueprint sub-routes (PR4) — Business Plan, Milestones, Venture Board live inside the OS. */
@@ -40,7 +42,7 @@ export const BLUEPRINT_LINKS = {
   ventureBoard: '/venture-blueprint/venture-board',
   vision: '/venture-blueprint/vision',
   ventureCoach: '/venture-blueprint/coach',
-  venturePortfolio: '/venture-blueprint/portfolio',
+  venturePortfolio: '/my-venture-portfolio',
 };
 
 const INTERN_FORMATION_ROUTES = [
@@ -57,6 +59,13 @@ export const MODULE_NAV = [
     label: 'Blueprint',
     shortLabel: 'Blueprint',
     icon: 'blueprint',
+    roles: ['intern'],
+  },
+  {
+    path: ROUTES.myVenturePortfolio,
+    label: 'My Portfolio',
+    shortLabel: 'Portfolio',
+    icon: 'portfolio',
     roles: ['intern'],
   },
   {
@@ -181,6 +190,10 @@ export function matchModulePath(pathname) {
   }
   if (pathname === ROUTES.adminFacultyPlaybook) return ROUTES.adminFacultyPlaybook;
   if (pathname === ROUTES.adminMentorPlaybook) return ROUTES.adminMentorPlaybook;
+  if (pathname === ROUTES.adminPortfolioSettings) return ROUTES.adminPortfolioSettings;
+  if (pathname === ROUTES.myVenturePortfolio || pathname.startsWith(`${ROUTES.myVenturePortfolio}/`)) {
+    return ROUTES.myVenturePortfolio;
+  }
   if (pathname.startsWith(`${ROUTES.mentorVentureCoach}/`)) {
     return ROUTES.mentorVentureCoach;
   }
@@ -208,6 +221,7 @@ export function rolesForRoute(pathname) {
   if (pathname === ROUTES.adminContentStudio || pathname.startsWith(`${ROUTES.adminContentStudio}/`)) {
     return ['admin', 'faculty'];
   }
+  if (pathname === ROUTES.adminPortfolioSettings) return ['admin', 'faculty'];
   if (pathname === ROUTES.adminFacultyPlaybook) return ['admin', 'faculty'];
   if (pathname === ROUTES.adminMentorPlaybook) return ['admin', 'mentor'];
   if (pathname === ROUTES.facultyHome || pathname.startsWith(`${ROUTES.facultyHome}/`)) {
@@ -224,7 +238,7 @@ export function rolesForRoute(pathname) {
   const route = matchModulePath(pathname);
   if (!route) return [];
   if (route === ROUTES.dashboard) return AUTHENTICATED_ROLES;
-  if (route === ROUTES.ventureBlueprint) return ['intern'];
+  if (route === ROUTES.ventureBlueprint || route === ROUTES.myVenturePortfolio) return ['intern'];
   const item = MODULE_NAV.find((entry) => entry.path === route);
   return item?.roles ?? [];
 }

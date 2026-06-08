@@ -31,9 +31,9 @@ const SECTION_TITLES = {
 };
 
 /**
- * @param {{ participantId: string, section?: string, participantName?: string }} props
+ * @param {{ participantId: string, section?: string }} props
  */
-export function VentureCoachShell({ participantId, section, participantName = 'You' }) {
+export function VentureCoachShell({ participantId, section }) {
   const navigate = useNavigate();
   const [refreshKey, setRefreshKey] = useState(0);
   const [sectionKey, setSectionKey] = useState(0);
@@ -74,7 +74,7 @@ export function VentureCoachShell({ participantId, section, participantName = 'Y
             <p className="text-2xl font-bold text-slate-900">{progress.percent}% complete</p>
             {progress.percent >= 100 ? (
               <Link
-                to={`${ROUTES.ventureBlueprint}/portfolio`}
+                to={ROUTES.myVenturePortfolio}
                 className="mt-3 inline-flex min-h-[44px] items-center rounded-xl bg-spike px-5 py-2.5 text-sm font-semibold text-white hover:bg-spike-light"
               >
                 View your Venture Portfolio →
@@ -120,7 +120,7 @@ export function VentureCoachShell({ participantId, section, participantName = 'Y
             key={sectionKey}
             participantId={participantId}
             onProgress={bumpProgress}
-            onSectionComplete={() => navigate(`${ROUTES.ventureBlueprint}/portfolio`)}
+            onSectionComplete={() => navigate(ROUTES.myVenturePortfolio)}
           />
         );
       default:

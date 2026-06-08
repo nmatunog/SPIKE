@@ -56,6 +56,9 @@ import {
   StaffDashboardPage,
   VentureBlueprintShell,
   WelcomePage,
+  MyVenturePortfolioRoute,
+  PublicPortfolioPage,
+  PortfolioSettingsPage,
 } from './routes/lazyPages.js';
 import { useAuth } from './AuthContext.jsx';
 import { apiFetch } from './apiClient.js';
@@ -1216,6 +1219,14 @@ const SpikeMasterPortal = () => {
   const renderAuthenticatedModule = () => {
     const path = location.pathname;
 
+    if (path.startsWith(`${ROUTES.portfolio}/`) && path !== ROUTES.portfolio) {
+      return (
+        <LazyRoute label="Loading portfolio…">
+          <PublicPortfolioPage />
+        </LazyRoute>
+      );
+    }
+
     if (userRole === 'intern') {
       if (path === ROUTES.cohortIdentity) {
         return <CohortIdentityPage participantId={user.id} />;
@@ -1260,9 +1271,19 @@ const SpikeMasterPortal = () => {
           />
         );
       }
+      if (
+        path === ROUTES.myVenturePortfolio
+        || path.startsWith(`${ROUTES.myVenturePortfolio}/`)
+      ) {
+        return (
+          <LazyRoute label="Loading portfolio…">
+            <MyVenturePortfolioRoute user={user} />
+          </LazyRoute>
+        );
+      }
       if (path === ROUTES.playbook) return renderPlaybook();
       if (path === ROUTES.portfolio) {
-        return <Navigate to={ROUTES.ventureBlueprint} replace />;
+        return <Navigate to={ROUTES.myVenturePortfolio} replace />;
       }
       if (path === ROUTES.research) return <ResearchPage user={user} />;
       if (path === ROUTES.dashboard && user?.internProgress) return <InternDashboard />;
@@ -1436,6 +1457,13 @@ const SpikeMasterPortal = () => {
           <AdminSquadsPage
             interns={interns.map((i) => ({ id: i.id, name: i.name }))}
           />
+        );
+      }
+      if (path === ROUTES.adminPortfolioSettings) {
+        return (
+          <LazyRoute label="Loading portfolio settings…">
+            <PortfolioSettingsPage />
+          </LazyRoute>
         );
       }
       if (path === ROUTES.adminContentStudio || path.startsWith(`${ROUTES.adminContentStudio}/`)) {

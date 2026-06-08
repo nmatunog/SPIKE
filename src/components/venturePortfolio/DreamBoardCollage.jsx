@@ -2,11 +2,16 @@ import { dreamBoardCategoryMeta } from '../../lib/venturePortfolioService.js';
 
 /**
  * @param {{
- *   assets: Array<{ id: string, category: string, caption: string, imageUrl?: string }>,
+ *   assets: Array<{ id: string, category: string, caption: string, imageUrl?: string, addedAt?: string | null }>,
  *   emptyMessage?: string,
+ *   showMeta?: boolean,
  * }} props
  */
-export function DreamBoardCollage({ assets, emptyMessage = 'Complete Dream Board Studio to add your vision cards.' }) {
+export function DreamBoardCollage({
+  assets,
+  emptyMessage = 'Complete Dream Board Studio to add your vision cards.',
+  showMeta = true,
+}) {
   const cards = assets.filter((asset) => asset.caption?.trim() || asset.imageUrl);
 
   if (!cards.length) {
@@ -21,10 +26,14 @@ export function DreamBoardCollage({ assets, emptyMessage = 'Complete Dream Board
     <div className="columns-1 gap-4 sm:columns-2 lg:columns-3 xl:columns-4">
       {cards.map((asset) => {
         const category = dreamBoardCategoryMeta(asset.category);
+        const addedLabel = asset.addedAt
+          ? new Date(asset.addedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
+          : null;
+
         return (
           <article
             key={asset.id}
-            className={`mb-4 break-inside-avoid overflow-hidden rounded-2xl border shadow-card ${category.color}`}
+            className={`mb-4 break-inside-avoid overflow-hidden rounded-2xl border shadow-card transition hover:shadow-projection ${category.color}`}
           >
             {asset.imageUrl ? (
               <img
@@ -41,11 +50,19 @@ export function DreamBoardCollage({ assets, emptyMessage = 'Complete Dream Board
               </div>
             )}
             <div className="space-y-2 p-4">
-              <span className="inline-block rounded-full bg-white/80 px-2 py-0.5 text-2xs font-bold uppercase tracking-wide text-slate-600">
-                {category.label}
-              </span>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="inline-block rounded-full bg-white/80 px-2 py-0.5 text-2xs font-bold uppercase tracking-wide text-slate-600">
+                  {category.label}
+                </span>
+                {showMeta && addedLabel ? (
+                  <span className="text-2xs text-slate-500">Added {addedLabel}</span>
+                ) : null}
+              </div>
               {asset.caption?.trim() ? (
                 <p className="text-sm font-medium leading-snug text-slate-900">{asset.caption}</p>
+              ) : null}
+              {showMeta ? (
+                <p className="text-2xs font-semibold uppercase tracking-wide text-emerald-700">Captured</p>
               ) : null}
             </div>
           </article>

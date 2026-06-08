@@ -26,7 +26,6 @@ import { MilestonesModule } from '../components/blueprint/modules/MilestonesModu
 import { VentureBoardModule } from '../components/blueprint/modules/VentureBoardModule.jsx';
 import { Day1BuildersShell } from '../components/day1/Day1BuildersShell.jsx';
 import { VentureCoachShell } from '../components/ventureCoach/VentureCoachShell.jsx';
-import { VenturePortfolioPanel } from '../components/venturePortfolio/VenturePortfolioPanel.jsx';
 
 /**
  * @param {{ user: { id: string, internProgress?: object | null }, onLogTraction?: () => void, onProgressRefresh?: (progress: object) => void }} props
@@ -119,9 +118,9 @@ export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }
         if (coachSection === 'purpose') {
           return <Navigate to={`${ROUTES.ventureBlueprint}/coach/impact`} replace />;
         }
-        return <VentureCoachShell participantId={user.id} section={coachSection} participantName={participantName} />;
+        return <VentureCoachShell participantId={user.id} section={coachSection} />;
       case 'portfolio':
-        return <VenturePortfolioPanel participantId={user.id} participantName={participantName} />;
+        return <Navigate to={ROUTES.myVenturePortfolio} replace />;
       case 'day-1-builders':
         return (
           <Day1BuildersShell

@@ -98,3 +98,15 @@ export const CohortIdentityAnalyticsPage = lazyNamed(
   () => import('../pages/analytics/CohortIdentityAnalyticsPage.jsx'),
   'CohortIdentityAnalyticsPage',
 );
+export const MyVenturePortfolioRoute = lazyNamed(
+  () => import('../pages/MyVenturePortfolioShell.jsx'),
+  'MyVenturePortfolioRoute',
+);
+export const PublicPortfolioPage = lazyNamed(
+  () => import('../pages/PublicPortfolioPage.jsx'),
+  'PublicPortfolioPage',
+);
+export const PortfolioSettingsPage = lazyNamed(
+  () => import('../pages/admin/PortfolioSettingsPage.jsx'),
+  'PortfolioSettingsPage',
+);

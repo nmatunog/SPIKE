@@ -162,5 +162,7 @@ export function getBlueprintModule(slug) {
 
 /** @param {string} slug @param {string} base */
 export function blueprintModulePath(slug, base = '/venture-blueprint') {
-  return slug === 'overview' ? base : `${base}/${slug}`;
+  if (slug === 'overview') return base;
+  if (slug === 'portfolio') return '/my-venture-portfolio';
+  return `${base}/${slug}`;
 }
