@@ -31,9 +31,9 @@ const SECTION_TITLES = {
 };
 
 /**
- * @param {{ participantId: string, section?: string }} props
+ * @param {{ participantId: string, section?: string, participantName?: string }} props
  */
-export function VentureCoachShell({ participantId, section }) {
+export function VentureCoachShell({ participantId, section, participantName = 'You' }) {
   const navigate = useNavigate();
   const [refreshKey, setRefreshKey] = useState(0);
   const [sectionKey, setSectionKey] = useState(0);
@@ -72,9 +72,21 @@ export function VentureCoachShell({ participantId, section }) {
           <div className="spike-card">
             <p className="spike-label">Your progress</p>
             <p className="text-2xl font-bold text-slate-900">{progress.percent}% complete</p>
-            <Link to={`${ROUTES.ventureBlueprint}/coach/ambition`} className="mt-3 inline-block text-sm font-semibold text-spike hover:underline">
-              Continue coaching →
-            </Link>
+            {progress.percent >= 100 ? (
+              <Link
+                to={`${ROUTES.ventureBlueprint}/portfolio`}
+                className="mt-3 inline-flex min-h-[44px] items-center rounded-xl bg-spike px-5 py-2.5 text-sm font-semibold text-white hover:bg-spike-light"
+              >
+                View your Venture Portfolio →
+              </Link>
+            ) : (
+              <Link
+                to={`${ROUTES.ventureBlueprint}/coach/ambition`}
+                className="mt-3 inline-block text-sm font-semibold text-spike hover:underline"
+              >
+                Continue coaching →
+              </Link>
+            )}
           </div>
         ) : null}
       </div>
@@ -104,7 +116,12 @@ export function VentureCoachShell({ participantId, section }) {
         return <FutureSelfCoachFlow key={sectionKey} participantId={participantId} onProgress={bumpProgress} />;
       case 'venture-direction':
         return (
-          <VentureDirectionCoachFlow key={sectionKey} participantId={participantId} onProgress={bumpProgress} />
+          <VentureDirectionCoachFlow
+            key={sectionKey}
+            participantId={participantId}
+            onProgress={bumpProgress}
+            onSectionComplete={() => navigate(`${ROUTES.ventureBlueprint}/portfolio`)}
+          />
         );
       default:
         return (

@@ -40,6 +40,7 @@ export const BLUEPRINT_LINKS = {
   ventureBoard: '/venture-blueprint/venture-board',
   vision: '/venture-blueprint/vision',
   ventureCoach: '/venture-blueprint/coach',
+  venturePortfolio: '/venture-blueprint/portfolio',
 };
 
 const INTERN_FORMATION_ROUTES = [

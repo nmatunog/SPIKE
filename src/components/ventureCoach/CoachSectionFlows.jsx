@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   AMBITION_MOTIVATOR_CARDS,
   COACH_VALUE_CARDS,
@@ -819,12 +819,17 @@ export function VentureDirectionCoachFlow({ participantId, onProgress, onSection
 
   if (stored.completedAt) {
     return (
-      <CoachMessage>
-        <p className="font-semibold">Venture Direction — complete ✓</p>
-        <p className="mt-2 text-slate-600">
-          {VENTURE_DIRECTION_CARDS.find((c) => c.id === stored.data.track)?.label ?? stored.data.track}
-        </p>
-      </CoachMessage>
+      <div className="space-y-4">
+        <CoachMessage>
+          <p className="font-semibold">Venture Direction — complete ✓</p>
+          <p className="mt-2 text-slate-600">
+            {VENTURE_DIRECTION_CARDS.find((c) => c.id === stored.data.track)?.label ?? stored.data.track}
+          </p>
+        </CoachMessage>
+        <Link to={`${ROUTES.ventureBlueprint}/portfolio`} className="spike-btn-primary inline-flex">
+          View your Venture Portfolio →
+        </Link>
+      </div>
     );
   }
 

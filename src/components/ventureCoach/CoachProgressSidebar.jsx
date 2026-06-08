@@ -56,6 +56,15 @@ export function CoachProgressSidebar({ progress, activeSection }) {
           </div>
         </div>
       ) : null}
+
+      {progress.percent >= 100 ? (
+        <Link
+          to={`${ROUTES.ventureBlueprint}/portfolio`}
+          className="block rounded-xl bg-spike px-3 py-2.5 text-center text-sm font-semibold text-white hover:bg-spike-light"
+        >
+          View Venture Portfolio
+        </Link>
+      ) : null}
     </aside>
   );
 }

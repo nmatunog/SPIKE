@@ -26,6 +26,7 @@ import { MilestonesModule } from '../components/blueprint/modules/MilestonesModu
 import { VentureBoardModule } from '../components/blueprint/modules/VentureBoardModule.jsx';
 import { Day1BuildersShell } from '../components/day1/Day1BuildersShell.jsx';
 import { VentureCoachShell } from '../components/ventureCoach/VentureCoachShell.jsx';
+import { VenturePortfolioPanel } from '../components/venturePortfolio/VenturePortfolioPanel.jsx';
 
 /**
  * @param {{ user: { id: string, internProgress?: object | null }, onLogTraction?: () => void, onProgressRefresh?: (progress: object) => void }} props
@@ -69,6 +70,7 @@ export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }
   const isExecutiveSummary = moduleSlug === 'canvas' && canvasSubRoute === 'summary';
   const isDay1Builders = moduleSlug === 'day-1-builders';
   const isCoach = moduleSlug === 'coach';
+  const isPortfolio = moduleSlug === 'portfolio';
 
   const activeModule = getBlueprintModule(moduleSlug) ?? getBlueprintModule('overview');
   const showTrackPicker = needsCareerTrackSelection(user.id, progress);
@@ -117,7 +119,9 @@ export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }
         if (coachSection === 'purpose') {
           return <Navigate to={`${ROUTES.ventureBlueprint}/coach/impact`} replace />;
         }
-        return <VentureCoachShell participantId={user.id} section={coachSection} />;
+        return <VentureCoachShell participantId={user.id} section={coachSection} participantName={participantName} />;
+      case 'portfolio':
+        return <VenturePortfolioPanel participantId={user.id} participantName={participantName} />;
       case 'day-1-builders':
         return (
           <Day1BuildersShell
@@ -170,7 +174,10 @@ export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }
   }
 
   return (
-    <PageContainer presentation={isExecutiveSummary || isDay1Builders || isCoach} wide={isExecutiveSummary || isDay1Builders || isCoach}>
+    <PageContainer
+      presentation={isExecutiveSummary || isDay1Builders || isCoach || isPortfolio}
+      wide={isExecutiveSummary || isDay1Builders || isCoach || isPortfolio}
+    >
       {showTrackPicker ? (
         <CareerTrackPicker
           userId={user.id}
@@ -185,7 +192,7 @@ export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }
         variant={headerVariant}
       />
 
-      {!isDay1Builders && !isExecutiveSummary && !isCoach ? (
+      {!isDay1Builders && !isExecutiveSummary && !isCoach && !isPortfolio ? (
       <div className="mb-4 space-y-3 lg:hidden">
         <BlueprintModuleNav
           careerTrack={state.career_track}
@@ -197,12 +204,12 @@ export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }
 
       <div
         className={
-          isDay1Builders || isExecutiveSummary || isCoach
+          isDay1Builders || isExecutiveSummary || isCoach || isPortfolio
             ? 'min-w-0'
             : 'grid grid-cols-1 gap-6 lg:grid-cols-[minmax(200px,240px)_1fr] xl:grid-cols-[minmax(220px,260px)_1fr] 2xl:grid-cols-[minmax(260px,300px)_1fr] 2xl:gap-8'
         }
       >
-        {!isDay1Builders && !isExecutiveSummary && !isCoach ? (
+        {!isDay1Builders && !isExecutiveSummary && !isCoach && !isPortfolio ? (
         <aside className="hidden lg:block">
           <div className="sticky top-[4.5rem] rounded-2xl border border-slate-200/80 bg-white p-3 shadow-card lg:top-24 xl:p-4 2xl:top-28">
             <BlueprintModuleNav careerTrack={state.career_track} activeSlug={moduleSlug} />
@@ -211,7 +218,7 @@ export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }
         ) : null}
 
         <div className="min-w-0">
-          {!isOverview && !isExecutiveSummary && !isDay1Builders && !isCoach ? (
+          {!isOverview && !isExecutiveSummary && !isDay1Builders && !isCoach && !isPortfolio ? (
             <header className="mb-4 lg:mb-5">
               <h3 className="text-lg font-semibold text-slate-900 lg:text-xl 2xl:text-2xl">{activeModule?.label}</h3>
               <p className="mt-1 text-sm text-slate-600 lg:text-base 2xl:text-lg">{activeModule?.description}</p>

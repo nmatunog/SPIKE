@@ -26,6 +26,14 @@ export const BLUEPRINT_MODULES = [
     tracks: ['agency_builder', 'specialist_consultant'],
   },
   {
+    slug: 'portfolio',
+    label: 'Venture Portfolio',
+    shortLabel: 'Portfolio',
+    description: 'Your ambition, impact, values, future self, and dream board collage.',
+    navGroup: 'foundation',
+    tracks: ['agency_builder', 'specialist_consultant'],
+  },
+  {
     slug: 'vision',
     label: 'Ambition & Impact',
     shortLabel: 'Ambition',
