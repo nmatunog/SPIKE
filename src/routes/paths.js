@@ -45,6 +45,15 @@ export const BLUEPRINT_LINKS = {
   venturePortfolio: '/my-venture-portfolio',
 };
 
+/** @param {string} pathname @param {string[]} validSectionIds */
+export function portfolioSectionFromPath(pathname, validSectionIds) {
+  if (pathname === ROUTES.myVenturePortfolio) return 'overview';
+  const prefix = `${ROUTES.myVenturePortfolio}/`;
+  if (!pathname.startsWith(prefix)) return 'overview';
+  const slug = pathname.slice(prefix.length).split('/').filter(Boolean)[0] ?? 'overview';
+  return validSectionIds.includes(slug) ? slug : 'overview';
+}
+
 const INTERN_FORMATION_ROUTES = [
   ROUTES.cohortIdentity,
   ROUTES.squadPreferences,

@@ -17,7 +17,7 @@ import {
   generateVenturePortfolio,
   PORTFOLIO_NAV_SECTIONS,
 } from '../services/portfolioGenerator.js';
-import { ROUTES } from '../routes/paths.js';
+import { ROUTES, portfolioSectionFromPath } from '../routes/paths.js';
 
 /**
  * @param {{
@@ -109,15 +109,6 @@ function renderSection(sectionId, portfolio, participantId, participantName) {
   }
 }
 
-/** @param {string} pathname */
-export function portfolioSectionFromPath(pathname) {
-  if (pathname === ROUTES.myVenturePortfolio) return 'overview';
-  const prefix = `${ROUTES.myVenturePortfolio}/`;
-  if (!pathname.startsWith(prefix)) return 'overview';
-  const slug = pathname.slice(prefix.length).split('/').filter(Boolean)[0] ?? 'overview';
-  return PORTFOLIO_NAV_SECTIONS.some((item) => item.id === slug) ? slug : 'overview';
-}
-
 /**
  * Route wrapper — `/my-venture-portfolio/:section?`
  * SpikeMasterPortal uses a catch-all route, so section is parsed from pathname (not useParams).
@@ -125,7 +116,10 @@ export function portfolioSectionFromPath(pathname) {
  */
 export function MyVenturePortfolioRoute({ user }) {
   const { pathname } = useLocation();
-  const section = portfolioSectionFromPath(pathname);
+  const section = portfolioSectionFromPath(
+    pathname,
+    PORTFOLIO_NAV_SECTIONS.map((item) => item.id),
+  );
   if (!user?.internProgress) {
     return <Navigate to={ROUTES.home} replace />;
   }
