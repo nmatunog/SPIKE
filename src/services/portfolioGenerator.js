@@ -51,13 +51,21 @@ export const SPECIALIST_CAREER_ROADMAP = [
 ];
 
 const PORTFOLIO_SPIKE_BADGES = [
-  { id: 'founding_cohort', label: 'Founding Cohort Member', test: (ctx) => ctx.segment >= 1 },
-  { id: 'canvas_builder', label: 'Canvas Builder', test: (ctx) => ctx.canvasPct >= 70 },
-  { id: 'market_explorer', label: 'Market Explorer', test: (ctx) => ctx.researchMetrics.surveysCompleted >= 1 },
-  { id: 'venture_planner', label: 'Venture Planner', test: (ctx) => ctx.blueprintCompletion >= 50 },
-  { id: 'dream_builder', label: 'Dream Board Creator', test: (ctx) => ctx.dreamBoard.completed },
-  { id: 'identity_defined', label: 'Identity Defined', test: (ctx) => ctx.coachProgress.percent >= 100 },
-  { id: 'partnership_ready', label: 'Partnership Ready', test: (ctx) => ctx.hours >= 400 },
+  { id: 'founding_cohort', label: 'Founding Cohort Member', test: (ctx) => (ctx.segment ?? 0) >= 1 },
+  { id: 'canvas_builder', label: 'Canvas Builder', test: (ctx) => (ctx.canvasPct ?? 0) >= 70 },
+  {
+    id: 'market_explorer',
+    label: 'Market Explorer',
+    test: (ctx) => (ctx.researchMetrics?.surveysCompleted ?? 0) >= 1,
+  },
+  { id: 'venture_planner', label: 'Venture Planner', test: (ctx) => (ctx.blueprintCompletion ?? 0) >= 50 },
+  { id: 'dream_builder', label: 'Dream Board Creator', test: (ctx) => Boolean(ctx.dreamBoardCompleted) },
+  {
+    id: 'identity_defined',
+    label: 'Identity Defined',
+    test: (ctx) => (ctx.coachProgress?.percent ?? 0) >= 100,
+  },
+  { id: 'partnership_ready', label: 'Partnership Ready', test: (ctx) => (ctx.hours ?? 0) >= 400 },
 ];
 
 const COMPLETION_WEIGHTS = {

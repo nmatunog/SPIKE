@@ -55,7 +55,7 @@ export function PublicPortfolioPage() {
         </section>
         <section>
           <h2 className="mb-4 text-xl font-bold text-slate-900">Dream Board</h2>
-          <DreamBoardCollage assets={portfolio.dreamBoard.assets} showMeta={false} />
+          <DreamBoardCollage assets={portfolio.dreamBoard?.assets ?? []} showMeta={false} />
         </section>
         <section className="rounded-2xl border border-slate-200 bg-white p-6">
           <h2 className="text-xl font-bold text-slate-900">Executive Canvas</h2>

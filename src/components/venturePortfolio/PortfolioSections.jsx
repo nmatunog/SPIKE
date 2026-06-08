@@ -124,7 +124,7 @@ export function PortfolioIdentitySection({ portfolio }) {
 
 /** @param {{ portfolio: ReturnType<import('../../services/portfolioGenerator.js').generateVenturePortfolio> }} props */
 export function PortfolioDreamBoardSection({ portfolio }) {
-  const { dreamBoard } = portfolio;
+  const dreamBoard = portfolio.dreamBoard ?? { completed: false, assets: [], evolution: [] };
   return (
     <div className="space-y-8">
       <header>
