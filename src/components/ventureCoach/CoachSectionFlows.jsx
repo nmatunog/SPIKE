@@ -67,6 +67,7 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
     /** @type {Record<string, string>} */ (stored.data.customFields ?? {}),
   );
   const [generating, setGenerating] = useState(false);
+  const [coachNote, setCoachNote] = useState('');
 
   function persist(data) {
     saveCoachSectionDraft(participantId, 'ambition', { ...stored.data, ...data, step });
@@ -83,10 +84,13 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
     const order = ranked.length === AMBITION_EXACT ? ranked : selected;
     setGenerating(true);
     try {
-      const { variants: generated } = await generateAmbitionVariantsWithAi({ rankedMotivators: order });
+      const { variants: generated, note, provider } = await generateAmbitionVariantsWithAi({ rankedMotivators: order });
       setVariants(generated);
       setDraft(generated.balanced);
       setSelectedVariant('balanced');
+      setCoachNote(
+        provider && provider !== 'local' ? `${note} (via ${provider})` : note || '',
+      );
       setStep(3);
       saveCoachSectionDraft(participantId, 'ambition', {
         selectedMotivators: selected,
@@ -183,6 +187,7 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
         <>
           <CoachMessage>
             <p>Choose Short, Balanced, or Inspirational — chat your tweaks to the coach, regenerate, then refine until it feels like yours.</p>
+            {coachNote ? <p className="mt-2 text-sm text-slate-600">{coachNote}</p> : null}
           </CoachMessage>
           <CoachDraftPanel
             title="Draft Ambition Statement"

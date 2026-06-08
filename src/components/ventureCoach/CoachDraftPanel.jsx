@@ -8,6 +8,7 @@ import {
 } from '../../lib/ventureCoachEngine.js';
 import {
   coachAiTaskForStatementType,
+  formatAiUnavailableMessage,
   refineStatementWithAi,
   requestCoachAiGeneration,
 } from '../../lib/ventureCoachAiService.js';
@@ -184,10 +185,17 @@ export function CoachDraftPanel({
         statementType,
       });
 
-      if (aiResult?.text) {
+      if (aiResult?.text && !aiResult.unavailable) {
         setUndoDraft(draft);
-        setRefineNote(aiResult.note);
+        setRefineNote(
+          aiResult.provider && aiResult.provider !== 'local'
+            ? `${aiResult.note} (via ${aiResult.provider})`
+            : aiResult.note,
+        );
         onDraftChange(aiResult.text);
+        if (aiResult.variants && onVariantsRegenerated) {
+          onVariantsRegenerated(aiResult.variants, selectedVariant, aiResult.text);
+        }
         return;
       }
 
@@ -201,7 +209,8 @@ export function CoachDraftPanel({
         return;
       }
       setUndoDraft(draft);
-      setRefineNote(result.note);
+      const fallbackNote = aiResult?.unavailable ? formatAiUnavailableMessage(aiResult) : '';
+      setRefineNote(fallbackNote ? `${result.note} ${fallbackNote}` : result.note);
       onDraftChange(result.text);
       if (result.variants && onVariantsRegenerated) {
         onVariantsRegenerated(result.variants, selectedVariant, result.text);
@@ -227,7 +236,11 @@ export function CoachDraftPanel({
         wordMin,
       );
       setUndoDraft(draft);
-      setRefineNote(result.note);
+      setRefineNote(
+        result.provider && result.provider !== 'local'
+          ? `${result.note} (via ${result.provider})`
+          : result.note,
+      );
       onDraftChange(result.text);
     } finally {
       setRefining(false);

@@ -76,6 +76,11 @@ export async function callGemini(apiKey, payload) {
 export async function callOpenAI(apiKey, payload) {
   const prompt = buildCoachPrompt(payload);
   const model = payload.openaiModel ?? 'gpt-4o-mini';
+  const task = String(payload.task ?? '');
+  const systemContent =
+    task === 'generate_ambition'
+      ? 'You are SPIKE Venture Coach. Reply with JSON only: {"variants":{"short":"...","balanced":"...","inspirational":"..."},"note":"..."}.'
+      : 'You are SPIKE Venture Coach. Reply with JSON only: {"text":"...","note":"..."}.';
 
   const res = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
@@ -88,7 +93,7 @@ export async function callOpenAI(apiKey, payload) {
       messages: [
         {
           role: 'system',
-          content: 'You are SPIKE Venture Coach. Reply with JSON only: {"text":"...","note":"..."}.',
+          content: systemContent,
         },
         { role: 'user', content: prompt },
       ],

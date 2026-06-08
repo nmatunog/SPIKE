@@ -45,6 +45,26 @@ function resolveWordLimits(statementType, task) {
   return { wordLimit: WORD_LIMITS.ambition.max, wordMin: 0 };
 }
 
+/** @param {{ reason?: string, failures?: Array<{ provider: string, error: string }> }} info */
+export function formatAiUnavailableMessage(info) {
+  if (!info) return 'AI coach unavailable — using built-in templates.';
+  if (info.reason === 'no_providers') {
+    return 'AI coach is not configured on the server. Add GEMINI_API_KEY in Cloudflare (Production secrets).';
+  }
+  if (info.reason === 'endpoint_missing') {
+    return 'Coach API endpoint not found. Redeploy with Pages Functions enabled.';
+  }
+  const detail = info.failures?.[0]?.error ?? '';
+  if (/quota|rate limit/i.test(detail)) {
+    return 'AI quota reached — using built-in coach. Check Gemini billing or wait a few minutes.';
+  }
+  if (/country|region|territory/i.test(detail)) {
+    return 'OpenAI blocked this region from Cloudflare. Set GEMINI_API_KEY in Cloudflare secrets (primary provider).';
+  }
+  if (detail) return `AI unavailable (${detail.slice(0, 120)}) — using built-in coach.`;
+  return 'AI coach unavailable — using built-in templates.';
+}
+
 /**
  * @param {{
  *   task: CoachAiTask,
@@ -56,10 +76,11 @@ function resolveWordLimits(statementType, task) {
  *   wordLimit?: number,
  *   wordMin?: number,
  * }} input
+ * @returns {Promise<{ text?: string, note?: string, provider?: string, variants?: object, summary?: string, unavailable?: boolean, reason?: string, failures?: Array<{ provider: string, error: string }> } | null>}
  */
 export async function requestCoachAiGeneration(input) {
   if (import.meta.env.VITE_COACH_AI === 'false') {
-    return null;
+    return { unavailable: true, reason: 'disabled' };
   }
 
   const limits = resolveWordLimits(input.statementType, input.task);
@@ -80,10 +101,41 @@ export async function requestCoachAiGeneration(input) {
       }),
     });
 
-    if (res.status === 503) return null;
+    const raw = await res.text();
+    if (/^\s*<(!DOCTYPE|html)/i.test(raw)) {
+      return {
+        unavailable: true,
+        reason: 'endpoint_missing',
+        failures: [{ provider: 'api', error: 'Received HTML instead of JSON from /api/coach/generate.' }],
+      };
+    }
 
-    const data = await res.json();
-    if (!res.ok || (!data?.text && !data?.variants)) return null;
+    let data = null;
+    try {
+      data = raw ? JSON.parse(raw) : null;
+    } catch {
+      return {
+        unavailable: true,
+        reason: 'bad_response',
+        failures: [{ provider: 'api', error: raw.slice(0, 120) || res.statusText }],
+      };
+    }
+
+    if (res.status === 503) {
+      return {
+        unavailable: true,
+        reason: data?.reason ?? 'providers_failed',
+        failures: data?.failures ?? [],
+      };
+    }
+
+    if (!res.ok || (!data?.text && !data?.variants)) {
+      return {
+        unavailable: true,
+        reason: 'request_failed',
+        failures: [{ provider: 'api', error: data?.message ?? res.statusText }],
+      };
+    }
 
     return {
       text: data.text ? String(data.text) : String(data.variants?.balanced ?? ''),
@@ -92,8 +144,12 @@ export async function requestCoachAiGeneration(input) {
       variants: data.variants ?? null,
       summary: data.summary ? String(data.summary) : '',
     };
-  } catch {
-    return null;
+  } catch (err) {
+    return {
+      unavailable: true,
+      reason: 'network',
+      failures: [{ provider: 'api', error: String(/** @type {Error} */ (err).message ?? err) }],
+    };
   }
 }
 
@@ -120,9 +176,13 @@ export async function generateAmbitionVariantsWithAi(data) {
   });
 
   if (ai?.variants?.balanced) {
-    return { variants: ai.variants, note: ai.note, provider: ai.provider };
+    return {
+      variants: ai.variants,
+      note: ai.note,
+      provider: ai.provider,
+    };
   }
-  if (ai?.text) {
+  if (ai?.text && !ai.unavailable) {
     const single = ai.text;
     return {
       variants: { short: single, balanced: single, inspirational: single },
@@ -131,7 +191,11 @@ export async function generateAmbitionVariantsWithAi(data) {
     };
   }
 
-  return { variants: generateAmbitionVariants(data), note: '', provider: 'local' };
+  return {
+    variants: generateAmbitionVariants(data),
+    note: formatAiUnavailableMessage(ai ?? undefined),
+    provider: 'local',
+  };
 }
 
 /**
@@ -147,11 +211,15 @@ export async function generateImpactDraftWithAi(data) {
     statementType: 'impact',
   });
 
-  if (ai?.text) {
+  if (ai?.text && !ai.unavailable) {
     return { text: ai.text, note: ai.note, provider: ai.provider };
   }
 
-  return { text: generateImpactDraft(data), note: '', provider: 'local' };
+  return {
+    text: generateImpactDraft(data),
+    note: formatAiUnavailableMessage(ai ?? undefined),
+    provider: 'local',
+  };
 }
 
 /**
@@ -250,14 +318,20 @@ export async function refineStatementWithAi(draft, actionId, action, maxWords, s
     wordMin,
   });
 
-  if (ai?.text) {
+  if (ai?.text && !ai.unavailable) {
     return { text: ai.text, note: ai.note, provider: ai.provider };
   }
 
-  return {
-    ...refineTextWithFeedback(draft, actionId, maxWords, statementType),
-    provider: 'local',
-  };
+  const local = refineTextWithFeedback(draft, actionId, maxWords, statementType);
+  if (ai?.unavailable) {
+    return {
+      ...local,
+      note: `${local.note} ${formatAiUnavailableMessage(ai)}`.trim(),
+      provider: 'local',
+    };
+  }
+
+  return { ...local, provider: 'local' };
 }
 
 /** @param {string[]} topThree */
