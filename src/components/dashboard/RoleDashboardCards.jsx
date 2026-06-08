@@ -6,7 +6,7 @@ import {
   deriveMentorDashboardMetrics,
 } from '../../lib/sprint01Metrics.js';
 
-export function RoleDashboardCards({ role, user, interns, internSummary }) {
+export function RoleDashboardCards({ role, user, interns, internSummary, pendingLogs = 0 }) {
   if (role === 'intern') {
     const m = deriveInternDashboardMetrics(user?.internProgress, user?.id);
     return (
@@ -33,7 +33,7 @@ export function RoleDashboardCards({ role, user, interns, internSummary }) {
     return (
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <MetricCard label="Assigned participants" value={m.assignedParticipants} />
-          <MetricCard label="Coaching notes" value={m.coachingNotesOpen} accent="amber" sub="open items" />
+          <MetricCard label="Coaching notes" value={m.coachingNotesOpen} accent="amber" sub="saved" />
           <MetricCard label="Portfolio progress" value={`${m.portfolioProgressAvg}%`} accent="green" sub="cohort avg" />
           <MetricCard label="At-risk" value={m.atRiskParticipants} accent="amber" sub="licensing window" />
       </div>
@@ -41,7 +41,8 @@ export function RoleDashboardCards({ role, user, interns, internSummary }) {
   }
 
   if (role === 'faculty') {
-    const m = deriveFacultyDashboardMetrics(internSummary);
+    const licensedCount = interns.filter((i) => i.licensed).length;
+    const m = deriveFacultyDashboardMetrics(internSummary, { pendingLogs, licensedCount });
     return (
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <MetricCard label="Cohort progress" value={`${m.cohortProgress}%`} />

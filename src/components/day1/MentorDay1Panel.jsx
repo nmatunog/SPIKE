@@ -1,28 +1,47 @@
 import { MessageSquare } from 'lucide-react';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { saveMentorCoachingNote } from '../../lib/coachingService.js';
 import { getDay1MissionProgress, getAllDay1BuilderData } from '../../lib/day1BuilderService.js';
 import { getParticipantCharterPreview } from '../../lib/squadCharterService.js';
+import { ROUTES } from '../../routes/paths.js';
 
 /**
  * @param {{
  *   interns: Array<{ id: string, name: string }>,
  *   mentorId?: string,
+ *   showToast?: (message: string, type?: string) => void,
  * }} props
  */
-export function MentorDay1Panel({ interns, mentorId }) {
+export function MentorDay1Panel({ interns, mentorId, showToast }) {
   return (
     <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h3 className="text-sm font-semibold text-slate-900">Day 1 builder previews</h3>
+        <Link to={ROUTES.playbook} className="text-sm font-semibold text-spike hover:underline">
+          Open Playbook →
+        </Link>
+      </div>
       {interns.map((intern) => (
-        <MentorInternDay1Card key={intern.id} intern={intern} mentorId={mentorId} />
+        <MentorInternDay1Card
+          key={intern.id}
+          intern={intern}
+          mentorId={mentorId}
+          showToast={showToast}
+        />
       ))}
     </div>
   );
 }
 
 /**
- * @param {{ intern: { id: string, name: string }, mentorId?: string }} props
+ * @param {{
+ *   intern: { id: string, name: string },
+ *   mentorId?: string,
+ *   showToast?: (message: string, type?: string) => void,
+ * }} props
  */
-function MentorInternDay1Card({ intern, mentorId }) {
+function MentorInternDay1Card({ intern, mentorId, showToast }) {
   const progress = getDay1MissionProgress(intern.id);
   const data = getAllDay1BuilderData(intern.id);
   const purpose = data['impact-builder']?.data ?? data['purpose-builder']?.data ?? data['discover-why']?.data;
@@ -30,12 +49,36 @@ function MentorInternDay1Card({ intern, mentorId }) {
   const values = data['values-builder']?.data;
   const charter = getParticipantCharterPreview(intern.id);
   const [comment, setComment] = useState('');
+  const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  async function handleSaveComment() {
+    if (!comment.trim() || !mentorId) return;
+    setSaving(true);
+    try {
+      await saveMentorCoachingNote(mentorId, intern.id, comment.trim(), {
+        topic: 'Day 1 builder coaching note',
+      });
+      setSaved(true);
+      setComment('');
+      showToast?.(`Coaching note saved for ${intern.name}.`);
+    } finally {
+      setSaving(false);
+    }
+  }
 
   return (
     <article className="spike-card">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <h4 className="font-semibold text-slate-900">{intern.name}</h4>
+        <div>
+          <h4 className="font-semibold text-slate-900">{intern.name}</h4>
+          <Link
+            to={`${ROUTES.mentorVentureCoach}/${intern.id}`}
+            className="text-xs font-semibold text-spike hover:underline"
+          >
+            Venture Coach review →
+          </Link>
+        </div>
         <span className="rounded-full bg-sky-100 px-3 py-1 text-xs font-bold text-sky-800">
           Day 1: {progress.percent}%
         </span>
@@ -45,9 +88,7 @@ function MentorInternDay1Card({ intern, mentorId }) {
         <div className="rounded-xl bg-slate-50 p-3">
           <p className="spike-label">My Ambition</p>
           <p className="mt-1 line-clamp-3 text-sm text-slate-700">
-            {ambition?.ambitionStatement
-              ? String(ambition.ambitionStatement)
-              : 'Not started'}
+            {ambition?.ambitionStatement ? String(ambition.ambitionStatement) : 'Not started'}
           </p>
         </div>
         <div className="rounded-xl bg-slate-50 p-3">
@@ -91,16 +132,19 @@ function MentorInternDay1Card({ intern, mentorId }) {
           className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
           value={comment}
           placeholder="Coaching note on Day 1 builders…"
-          onChange={(e) => setComment(e.target.value)}
+          onChange={(e) => {
+            setComment(e.target.value);
+            setSaved(false);
+          }}
         />
       </label>
       <button
         type="button"
-        disabled={!comment.trim() || !mentorId}
-        onClick={() => setSaved(true)}
+        disabled={!comment.trim() || !mentorId || saving}
+        onClick={() => void handleSaveComment()}
         className="mt-2 spike-btn-secondary text-sm disabled:opacity-50"
       >
-        {saved ? 'Comment saved' : 'Post comment'}
+        {saving ? 'Saving…' : saved ? 'Comment saved' : 'Post comment'}
       </button>
     </article>
   );

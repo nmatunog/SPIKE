@@ -7,6 +7,8 @@ import {
   LayoutDashboard,
   Rocket,
   Settings,
+  Sparkles,
+  Users,
 } from 'lucide-react';
 import { useCompactNav } from '../../hooks/useCompactNav.js';
 import { moduleNavForRole } from '../../routes/paths.js';
@@ -18,6 +20,8 @@ const ICONS = {
   portfolio: Briefcase,
   research: FlaskConical,
   reports: BarChart,
+  people: Users,
+  analytics: Sparkles,
   admin: Settings,
 };
 

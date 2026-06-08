@@ -51,6 +51,18 @@ export const MOCK_AUTH_ACCOUNTS = {
       isMockUser: true,
     },
   },
+  'faculty@example.com': {
+    password: 'password123',
+    user: {
+      id: 'mock-user-faculty',
+      email: 'faculty@example.com',
+      name: 'Dr. Ana Faculty',
+      role: 'FACULTY',
+      internProgress: null,
+      mustChangePassword: false,
+      isMockUser: true,
+    },
+  },
 };
 
 /** @returns {Array<{ email: string, label: string, role: string }>} */

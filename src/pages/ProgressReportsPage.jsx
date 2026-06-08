@@ -1,8 +1,10 @@
 import { Fragment, useState } from 'react';
-import { CheckCircle, ChevronDown, ChevronRight, Clock, Loader2, Search } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { CheckCircle, ChevronDown, ChevronRight, Clock, Loader2, Search, Sparkles } from 'lucide-react';
 import { PageContainer, PageTitle } from '../components/layout/PageContainer.jsx';
 import { InternReportCard } from '../components/reports/InternReportCard.jsx';
 import { deriveReportRowMetrics } from '../lib/sprint01Metrics.js';
+import { ROUTES } from '../routes/paths.js';
 
 /**
  * @param {{
@@ -181,13 +183,22 @@ export function ProgressReportsPage({
                                   </p>
                                 </div>
                               </div>
-                              <button
-                                type="button"
-                                onClick={() => onUpdateIntern(intern)}
-                                className="spike-btn-primary mt-4"
-                              >
-                                Update progress
-                              </button>
+                              <div className="mt-4 flex flex-wrap gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => onUpdateIntern(intern)}
+                                  className="spike-btn-primary"
+                                >
+                                  Update progress
+                                </button>
+                                <Link
+                                  to={`${ROUTES.mentorVentureCoach}/${intern.id}`}
+                                  className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-800 hover:bg-slate-50"
+                                >
+                                  <Sparkles size={16} className="text-spike" />
+                                  Venture Coach review
+                                </Link>
+                              </div>
                             </td>
                           </tr>
                         ) : null}

@@ -36,6 +36,7 @@ import {
   ContentStudioPage,
   CohortIdentityAnalyticsPage,
   CohortIdentityPage,
+  MentorParticipantsPage,
   MentorVentureCoachPage,
   PlaybookShell,
   PortfolioPage,
@@ -1287,11 +1288,30 @@ const SpikeMasterPortal = () => {
       if (path === ROUTES.analyticsCohortIdentity) {
         return <CohortIdentityAnalyticsPage />;
       }
+      if (path === ROUTES.mentorVentureCoach) {
+        return (
+          <LazyRoute label="Loading participants…">
+            <MentorParticipantsPage
+              interns={interns.map((i) => ({
+                id: i.id,
+                name: i.name,
+                segment: i.segment,
+                hours: i.hours,
+                squad: i.squad,
+              }))}
+            />
+          </LazyRoute>
+        );
+      }
       if (path.startsWith(`${ROUTES.mentorVentureCoach}/`)) {
         return (
-          <MentorVentureCoachPage
-            interns={interns.map((i) => ({ id: i.id, name: i.name }))}
-          />
+          <LazyRoute label="Loading Venture Coach review…">
+            <MentorVentureCoachPage
+              interns={interns.map((i) => ({ id: i.id, name: i.name }))}
+              mentorId={user?.id}
+              showToast={showToast}
+            />
+          </LazyRoute>
         );
       }
       if (path === ROUTES.admin) {

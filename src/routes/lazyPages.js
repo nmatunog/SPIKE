@@ -58,6 +58,10 @@ export const MentorVentureCoachPage = lazyNamed(
   () => import('../pages/mentor/MentorVentureCoachPage.jsx'),
   'MentorVentureCoachPage',
 );
+export const MentorParticipantsPage = lazyNamed(
+  () => import('../pages/mentor/MentorParticipantsPage.jsx'),
+  'MentorParticipantsPage',
+);
 export const CohortIdentityAnalyticsPage = lazyNamed(
   () => import('../pages/analytics/CohortIdentityAnalyticsPage.jsx'),
   'CohortIdentityAnalyticsPage',

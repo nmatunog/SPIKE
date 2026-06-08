@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 import {
   BarChart3,
   BookOpen,
@@ -8,10 +8,11 @@ import {
   ChevronRight,
   Clock,
   Edit3,
+  ExternalLink,
   Loader2,
   MonitorPlay,
-  PlusCircle,
   Search,
+  Sparkles,
   Users,
   Briefcase,
 } from 'lucide-react';
@@ -24,6 +25,7 @@ import { apiFetch } from '../apiClient.js';
 import { reviewTractionLog, updateInternProgress } from '../lib/supabase/index.js';
 import { supabase } from '../supabaseClient.js';
 import { FacultyDay1Panel } from '../components/day1/FacultyDay1Panel.jsx';
+import { MentorDay1Panel } from '../components/day1/MentorDay1Panel.jsx';
 
 const FACULTY_TABS = [
   { id: 'overview', label: 'Overview', icon: BarChart3 },
@@ -61,65 +63,67 @@ function SegmentSummary({ internSummary }) {
   );
 }
 
-function CurriculumPanel({ showToast }) {
+function CurriculumPanel() {
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
       <div className="spike-card">
         <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-900">
-          <Edit3 size={18} className="text-spike" /> Syllabus editor
+          <Edit3 size={18} className="text-spike" /> Content Studio™
         </h3>
-        <p className="mb-3 text-sm text-slate-600">
-          Select a module from any segment to edit tasks and content.
+        <p className="mb-4 text-sm text-slate-600">
+          Edit curriculum blocks, day sequences, and playbook content in the CMS.
         </p>
-        <select className="mb-3 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm focus:border-spike focus:outline-none focus:ring-2 focus:ring-spike/20">
-          <optgroup label="Segment 1">
-            <option>Module 1: Industry Immersion</option>
-            <option>Module 6: Insurance Entrepreneurship</option>
-          </optgroup>
-          <optgroup label="Segment 2">
-            <option>Module 8: Prospecting & Approaching</option>
-            <option>Module 11: Objections, Closing & Validation</option>
-          </optgroup>
-          <optgroup label="Segment 3">
-            <option>Module 13: Agency Scaling & Graduation</option>
-          </optgroup>
-        </select>
-        <button
-          type="button"
-          onClick={() => showToast('Live editor loaded for selected module.', 'info')}
-          className="spike-btn-secondary w-full"
+        <Link to={ROUTES.adminContentStudio} className="spike-btn-primary inline-flex w-full justify-center">
+          Open Content Studio
+        </Link>
+        <Link
+          to={`${ROUTES.adminContentStudio}/day-builder`}
+          className="mt-3 inline-flex w-full items-center justify-center gap-2 text-sm font-semibold text-spike hover:underline"
         >
-          Open editor
-        </button>
+          Day builder <ExternalLink size={14} />
+        </Link>
       </div>
 
       <div className="spike-card">
         <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-900">
-          <MonitorPlay size={18} className="text-spike" /> Presentation assets
+          <MonitorPlay size={18} className="text-spike" /> Playbook delivery
         </h3>
-        <ul className="space-y-2 text-sm">
-          {['AIA LMS Module 1-4 Overview.pptx', 'Partnership Board Pitch Template.pptx'].map(
-            (file) => (
-              <li key={file}>
-                <button
-                  type="button"
-                  onClick={() => showToast('Opening presentation…', 'info')}
-                  className="flex w-full items-center gap-2 rounded-lg border border-slate-100 px-3 py-2 text-left hover:bg-slate-50"
-                >
-                  <MonitorPlay size={16} className="shrink-0 text-sky-600" />
-                  {file}
-                </button>
-              </li>
-            ),
-          )}
-        </ul>
-        <button
-          type="button"
-          onClick={() => showToast('File upload dialog opened.', 'info')}
-          className="mt-4 w-full rounded-xl border-2 border-dashed border-slate-200 py-2.5 text-sm font-medium text-slate-500 transition hover:border-spike hover:text-spike"
+        <p className="mb-4 text-sm text-slate-600">
+          Run facilitator mode with speaker notes, session guides, and cohort Day 1 oversight.
+        </p>
+        <Link to={ROUTES.playbook} className="spike-btn-secondary inline-flex w-full justify-center">
+          Open Playbook
+        </Link>
+        <Link
+          to={ROUTES.adminSquads}
+          className="mt-3 inline-flex w-full items-center justify-center gap-2 text-sm font-semibold text-spike hover:underline"
         >
-          + Upload presentation
-        </button>
+          Squad assignments <ExternalLink size={14} />
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function StaffQuickLinks({ userRole }) {
+  return (
+    <div className="spike-card">
+      <h3 className="mb-3 text-sm font-semibold text-slate-900">Quick links</h3>
+      <div className="flex flex-wrap gap-2">
+        <Link to={ROUTES.mentorVentureCoach} className="spike-btn-secondary text-sm">
+          <Sparkles size={16} /> Venture Coach reviews
+        </Link>
+        <Link to={ROUTES.reports} className="spike-btn-secondary text-sm">
+          <Users size={16} /> Progress reports
+        </Link>
+        <Link to={ROUTES.analyticsCohortIdentity} className="spike-btn-secondary text-sm">
+          <BarChart3 size={16} /> Cohort analytics
+        </Link>
+        {userRole === 'faculty' ? (
+          <Link to={ROUTES.adminSquads} className="spike-btn-secondary text-sm">
+            Squad formation
+          </Link>
+        ) : null}
       </div>
     </div>
   );
@@ -317,29 +321,30 @@ export function StaffDashboardPage({
             user={user}
             interns={interns}
             internSummary={internSummary}
+            pendingLogs={pendingLogs.length}
           />
+          <StaffQuickLinks userRole={userRole} />
           {userRole === 'faculty' ? (
             <FacultyDay1Panel
               interns={interns.map((i) => ({ id: i.id, name: i.name }))}
             />
-          ) : null}
+          ) : (
+            <MentorDay1Panel
+              mentorId={user?.id}
+              interns={interns.map((i) => ({ id: i.id, name: i.name }))}
+              showToast={showToast}
+            />
+          )}
           <SegmentSummary internSummary={internSummary} />
         </div>
       ) : null}
 
       {tab === 'curriculum' && userRole === 'faculty' ? (
         <div className="mt-5 space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm text-slate-600">Edit curriculum and manage presentation assets.</p>
-            <button
-              type="button"
-              onClick={() => showToast('Opening New Module Builder…', 'info')}
-              className="spike-btn-primary"
-            >
-              <PlusCircle size={16} /> New module element
-            </button>
-          </div>
-          <CurriculumPanel showToast={showToast} />
+          <p className="text-sm text-slate-600">
+            Manage curriculum in Content Studio and deliver sessions from the Playbook.
+          </p>
+          <CurriculumPanel />
         </div>
       ) : null}
 

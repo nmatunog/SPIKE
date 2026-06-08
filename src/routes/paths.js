@@ -95,6 +95,20 @@ export const MODULE_NAV = [
     roles: ['faculty', 'mentor', 'admin'],
   },
   {
+    path: ROUTES.mentorVentureCoach,
+    label: 'Participants',
+    shortLabel: 'People',
+    icon: 'people',
+    roles: ['faculty', 'mentor', 'admin'],
+  },
+  {
+    path: ROUTES.analyticsCohortIdentity,
+    label: 'Analytics',
+    shortLabel: 'Stats',
+    icon: 'analytics',
+    roles: ['faculty', 'mentor', 'admin'],
+  },
+  {
     path: ROUTES.admin,
     label: 'Admin',
     shortLabel: 'Admin',
@@ -166,7 +180,9 @@ export function rolesForRoute(pathname) {
     return ['admin', 'faculty'];
   }
   if (pathname === ROUTES.analyticsCohortIdentity) return ['faculty', 'admin', 'mentor'];
-  if (pathname.startsWith(`${ROUTES.mentorVentureCoach}/`)) return ['faculty', 'mentor', 'admin'];
+  if (pathname === ROUTES.mentorVentureCoach || pathname.startsWith(`${ROUTES.mentorVentureCoach}/`)) {
+    return ['faculty', 'mentor', 'admin'];
+  }
 
   const route = matchModulePath(pathname);
   if (!route) return [];

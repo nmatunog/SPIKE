@@ -5,6 +5,8 @@ import { countSubmittedSurveys } from './surveyService.js';
 
 const FNA_COMPLETION_TARGET = 2;
 
+import { countCoachingNotesForParticipants } from './coachingService.js';
+
 export function deriveWeekDay(hours) {
   const h = Math.max(0, hours ?? 0);
   const currentWeek = Math.min(Math.floor(h / 40) + 1, 15);
@@ -78,22 +80,27 @@ export function deriveMentorDashboardMetrics(interns, internSummary) {
       )
     : 0;
   const atRisk = interns.filter((i) => !i.licensed && i.hours >= 85 && i.hours < 115).length;
+  const participantIds = interns.map((i) => i.id);
 
   return {
     assignedParticipants: internSummary.n,
-    coachingNotesOpen: Math.min(internSummary.n, 5),
+    coachingNotesOpen: countCoachingNotesForParticipants(participantIds),
     portfolioProgressAvg: avgPortfolio,
     atRiskParticipants: atRisk,
   };
 }
 
-export function deriveFacultyDashboardMetrics(internSummary) {
+/** @param {object} internSummary @param {{ pendingLogs?: number, licensedCount?: number }} [options] */
+export function deriveFacultyDashboardMetrics(internSummary, options = {}) {
+  const pendingLogs = options.pendingLogs ?? 0;
+  const licensedCount = options.licensedCount ?? 0;
   const completion = internSummary.n ? Math.round((internSummary.avgHours / 600) * 100) : 0;
+
   return {
-    cohortProgress: Math.min(completion + 12, 100),
-    attendance: 94,
-    submissionsPending: Math.max(internSummary.s1, 2),
-    assessmentPassRate: 87,
+    cohortProgress: Math.min(completion, 100),
+    attendance: internSummary.n ? Math.min(98, 60 + Math.round(internSummary.avgHours / 12)) : 0,
+    submissionsPending: pendingLogs,
+    assessmentPassRate: internSummary.n ? Math.round((licensedCount / internSummary.n) * 100) : 0,
   };
 }
 
