@@ -840,7 +840,8 @@ export function resolveRegenerateFields(customFields, fieldDefs, statementType, 
       continue;
     }
 
-    merged[field.id] = hasCardContext ? '' : field.suggestion ?? '';
+    merged[field.id] =
+      statementType === 'tagline' ? field.suggestion ?? '' : hasCardContext ? '' : field.suggestion ?? '';
   }
 
   const labels = formatCoachCardContextLabels(cardContext);
@@ -879,10 +880,30 @@ export function extractCustomizationFields(draft, statementType, cardContext = {
   }
 
   if (statementType === 'tagline') {
+    const cleaned = String(draft ?? '').replace(/[.!?]+$/, '').trim();
+    const segments = cleaned.split(/\.\s+/).filter(Boolean);
     return [
-      { id: 'word1', label: 'First beat', placeholder: 'Building Leaders', value: '' },
-      { id: 'word2', label: 'Second beat', placeholder: 'Creating Opportunities', value: '' },
-      { id: 'word3', label: 'Third beat (optional)', placeholder: 'Grow. Serve. Lead.', value: '' },
+      {
+        id: 'word1',
+        label: 'First beat',
+        placeholder: 'Building Leaders',
+        value: '',
+        suggestion: segments[0] ?? '',
+      },
+      {
+        id: 'word2',
+        label: 'Second beat',
+        placeholder: 'Creating Opportunities',
+        value: '',
+        suggestion: segments[1] ?? '',
+      },
+      {
+        id: 'word3',
+        label: 'Third beat (optional)',
+        placeholder: 'Grow. Serve. Lead.',
+        value: '',
+        suggestion: segments[2] ?? '',
+      },
     ];
   }
 
