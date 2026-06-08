@@ -686,80 +686,229 @@ export function generateImpactDraft(data) {
   return polishStatement('Help others achieve financial security and peace of mind.', MAX_IMPACT_WORDS, 1);
 }
 
-/**
- * Editable keyword slots extracted from the current draft.
- * @param {string} draft
- * @param {'ambition' | 'impact' | 'purpose' | 'tagline'} statementType
- * @returns {Array<{ id: string, label: string, placeholder: string, value: string }>}
- */
-export function extractCustomizationFields(draft, statementType) {
-  const signals = extractDraftSignals(draft);
+const AMBITION_AGENCY_MOTIVATOR_IDS = new Set([
+  'leadership',
+  'building_team',
+  'entrepreneurship',
+  'business_ownership',
+  'recognition',
+]);
+const AMBITION_SPECIALIST_MOTIVATOR_IDS = new Set([
+  'professional_expertise',
+  'financial_freedom',
+  'independence',
+  'personal_growth',
+]);
 
-  if (statementType === 'impact' || statementType === 'purpose') {
-    let outcome = '';
-    const outcomeMatch = String(draft ?? '').match(
-      /\b(?:achieve|make|build|create|reach|experience|prepare for)\s+([^.—,;]+)/i,
-    );
-    if (outcomeMatch) {
-      outcome = outcomeMatch[1].trim();
-    } else if (signals.distinctive.length) {
-      outcome = joinNatural(signals.distinctive.slice(0, 2));
+/**
+ * @typedef {{ rankedMotivators?: string[], audiences?: string[] }} CoachCardContext
+ */
+
+/** @param {string} template */
+function parseImpactTemplateParts(template) {
+  const helpMatch = String(template ?? '').match(
+    /^Help\s+(.+?)\s+(achieve|make|build|create|reach|experience|prepare for)\s+(.+?)\.?$/i,
+  );
+  if (helpMatch) {
+    return { audience: helpMatch[1].trim(), outcome: `${helpMatch[2]} ${helpMatch[3].trim()}` };
+  }
+
+  const createMatch = String(template ?? '').match(/^Create\s+(.+?)\s+for\s+(.+?)\.?$/i);
+  if (createMatch) {
+    return { audience: createMatch[2].trim(), outcome: `${createMatch[1].trim()}` };
+  }
+
+  const developMatch = String(template ?? '').match(/^Develop\s+(.+?)\s+who\s+(.+?)\.?$/i);
+  if (developMatch) {
+    return { audience: developMatch[1].trim(), outcome: developMatch[2].trim() };
+  }
+
+  const strengthenMatch = String(template ?? '').match(/^Strengthen\s+(.+?)\s+through\s+(.+?)\.?$/i);
+  if (strengthenMatch) {
+    return { audience: strengthenMatch[1].trim(), outcome: strengthenMatch[2].trim() };
+  }
+
+  return { audience: '', outcome: '' };
+}
+
+/** @param {string[]} rankedIds */
+export function ambitionDefaultsFromMotivators(rankedIds = []) {
+  const ids = rankedIds.slice(0, 3);
+  const labels = labelsFor(AMBITION_MOTIVATOR_CARDS, ids);
+  const primary = ids[0] ?? '';
+  const secondary = ids[1] ?? '';
+
+  if (AMBITION_AGENCY_MOTIVATOR_IDS.has(primary) || AMBITION_AGENCY_MOTIVATOR_IDS.has(secondary)) {
+    return {
+      role: 'Agency Director',
+      contribution: 'develops leaders',
+      mark: 'a thriving organization',
+      motivatorLabels: labels,
+    };
+  }
+
+  if (AMBITION_SPECIALIST_MOTIVATOR_IDS.has(primary) || AMBITION_SPECIALIST_MOTIVATOR_IDS.has(secondary)) {
+    return {
+      role: 'trusted financial advisor',
+      contribution: 'serves professionals in my chosen niche',
+      mark: 'lasting client relationships',
+      motivatorLabels: labels,
+    };
+  }
+
+  const focus = formatListNatural(labels, 2) || 'leadership and growth';
+  return {
+    role: `leader focused on ${focus}`,
+    contribution: `champions ${focus}`,
+    mark: 'meaningful impact',
+    motivatorLabels: labels,
+  };
+}
+
+/** @param {string[]} audienceIds */
+export function impactDefaultsFromAudiences(audienceIds = []) {
+  const ids = audienceIds.slice(0, 2);
+  const labels = labelsFor(IMPACT_AUDIENCES, ids);
+  const primary = ids[0];
+  const secondary = ids[1];
+
+  if (primary && secondary && IMPACT_TEMPLATES[primary] && IMPACT_TEMPLATES[secondary] && secondary !== primary) {
+    return {
+      audience: `${labels[0]?.toLowerCase() ?? 'others'} and ${labels[1]?.toLowerCase() ?? 'communities'}`,
+      outcome: 'meaningful financial guidance',
+      audienceLabels: labels,
+    };
+  }
+
+  if (primary && IMPACT_TEMPLATES[primary]) {
+    const parts = parseImpactTemplateParts(IMPACT_TEMPLATES[primary]);
+    return {
+      audience: parts.audience || labels[0]?.toLowerCase() || '',
+      outcome: parts.outcome || '',
+      audienceLabels: labels,
+    };
+  }
+
+  return {
+    audience: labels[0]?.toLowerCase() ?? '',
+    outcome: '',
+    audienceLabels: labels,
+  };
+}
+
+/** @param {CoachCardContext} [cardContext] */
+export function formatCoachCardContextLabels(cardContext = {}) {
+  const ranked = cardContext.rankedMotivators ?? [];
+  const audiences = cardContext.audiences ?? [];
+  return {
+    motivators: labelsFor(AMBITION_MOTIVATOR_CARDS, ranked.slice(0, 3)).join(', '),
+    audiences: labelsFor(IMPACT_AUDIENCES, audiences.slice(0, 2)).join(', '),
+  };
+}
+
+/**
+ * Merge typed replies with card picks (motivators / audiences) before regenerate.
+ * @param {Record<string, string>} customFields
+ * @param {Array<{ id: string, suggestion?: string }>} fieldDefs
+ * @param {'ambition' | 'impact' | 'purpose' | 'tagline'} statementType
+ * @param {CoachCardContext} [cardContext]
+ */
+export function resolveRegenerateFields(customFields, fieldDefs, statementType, cardContext = {}) {
+  const ambitionDefaults =
+    statementType === 'ambition' ? ambitionDefaultsFromMotivators(cardContext.rankedMotivators ?? []) : null;
+  const impactDefaults =
+    statementType === 'impact' || statementType === 'purpose'
+      ? impactDefaultsFromAudiences(cardContext.audiences ?? [])
+      : null;
+  const hasCardContext = Boolean(cardContext.rankedMotivators?.length || cardContext.audiences?.length);
+
+  const merged = {};
+  for (const field of fieldDefs) {
+    const typed = customFields[field.id]?.trim();
+    if (typed) {
+      merged[field.id] = typed;
+      continue;
     }
 
-    const audience =
-      (signals.audience ? phraseFromSource(signals.cleaned, signals.audience) : '')
-      || signals.audience
-      || 'Filipino families';
+    if (ambitionDefaults && field.id in ambitionDefaults) {
+      merged[field.id] = ambitionDefaults[field.id];
+      continue;
+    }
 
+    if (impactDefaults && field.id in impactDefaults) {
+      merged[field.id] = impactDefaults[field.id];
+      continue;
+    }
+
+    merged[field.id] = hasCardContext ? '' : field.suggestion ?? '';
+  }
+
+  const labels = formatCoachCardContextLabels(cardContext);
+  if (labels.motivators) merged.motivators = labels.motivators;
+  if (labels.audiences) merged.audiences = labels.audiences;
+
+  return merged;
+}
+
+/**
+ * Editable keyword slots for personalize step — empty values; card context drives regenerate defaults.
+ * @param {string} draft
+ * @param {'ambition' | 'impact' | 'purpose' | 'tagline'} statementType
+ * @param {CoachCardContext} [cardContext]
+ * @returns {Array<{ id: string, label: string, placeholder: string, value: string, hint?: string }>}
+ */
+export function extractCustomizationFields(draft, statementType, cardContext = {}) {
+  if (statementType === 'impact' || statementType === 'purpose') {
+    const defaults = impactDefaultsFromAudiences(cardContext.audiences ?? []);
     return [
       {
         id: 'audience',
         label: 'Who you help',
-        placeholder: 'Filipino families',
-        value: audience,
+        placeholder: 'young professionals',
+        value: '',
+        hint: defaults.audience ? `From your audience picks: ${defaults.audience}` : undefined,
       },
       {
         id: 'outcome',
         label: 'Difference you create',
-        placeholder: 'financial security and peace of mind',
-        value: outcome || 'financial security and peace of mind',
+        placeholder: 'confident financial decisions early in their careers',
+        value: '',
+        hint: defaults.outcome ? `From your audience picks: ${defaults.outcome}` : undefined,
       },
     ];
   }
 
   if (statementType === 'tagline') {
-    const cleaned = String(draft ?? '').replace(/[.!?]+$/, '').trim();
-    const segments = cleaned.split(/\.\s+/).filter(Boolean);
     return [
-      { id: 'word1', label: 'First beat', placeholder: 'Building Leaders', value: segments[0] ?? 'Building Leaders' },
-      { id: 'word2', label: 'Second beat', placeholder: 'Creating Opportunities', value: segments[1] ?? 'Creating Opportunities' },
-      { id: 'word3', label: 'Third beat (optional)', placeholder: 'Grow. Serve. Lead.', value: segments[2] ?? '' },
+      { id: 'word1', label: 'First beat', placeholder: 'Building Leaders', value: '' },
+      { id: 'word2', label: 'Second beat', placeholder: 'Creating Opportunities', value: '' },
+      { id: 'word3', label: 'Third beat (optional)', placeholder: 'Grow. Serve. Lead.', value: '' },
     ];
   }
 
-  const parsed = parseAmbitionCustomization(draft);
+  const defaults = ambitionDefaultsFromMotivators(cardContext.rankedMotivators ?? []);
 
   return [
     {
       id: 'role',
       label: 'Role you want',
       placeholder: 'Agency Director',
-      suggestion: parsed.role || 'Agency Director',
       value: '',
+      hint: defaults.role ? `Suggested from your motivators: ${defaults.role}` : undefined,
     },
     {
       id: 'contribution',
       label: 'What you will do',
       placeholder: 'develops leaders',
-      suggestion: parsed.contribution || 'develops leaders',
       value: '',
+      hint: defaults.contribution ? `Suggested from your motivators: ${defaults.contribution}` : undefined,
     },
     {
       id: 'mark',
       label: 'What you will build',
       placeholder: 'a thriving organization',
-      suggestion: parsed.mark || 'a thriving organization',
       value: '',
+      hint: defaults.mark ? `Suggested from your motivators: ${defaults.mark}` : undefined,
     },
   ];
 }

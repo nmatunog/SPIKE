@@ -187,7 +187,10 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
       {step === 3 && draft ? (
         <>
           <CoachMessage>
-            <p>Choose Short, Balanced, or Inspirational — chat your tweaks to the coach, regenerate, then refine until it feels like yours.</p>
+            <p>
+              Choose Short, Balanced, or Inspirational — optionally tweak the three parts below, regenerate, then refine
+              until it feels like yours.
+            </p>
             {coachNote ? <p className="mt-2 text-sm text-slate-600">{coachNote}</p> : null}
           </CoachMessage>
           <CoachDraftPanel
@@ -195,6 +198,7 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
             title="Draft Ambition Statement"
             statementType="ambition"
             draft={draft}
+            coachCardContext={{ rankedMotivators: ranked.length === AMBITION_EXACT ? ranked : selected }}
             enableCustomization
             savedCustomFields={customFields}
             onCustomFieldsChange={(fields) => {
@@ -320,13 +324,17 @@ export function ImpactCoachFlow({ participantId, onProgress, onSectionComplete }
             </div>
           ) : null}
           <CoachMessage>
-            <p>Reply to the coach in your own words, regenerate, then refine until you can say it confidently in under 30 seconds.</p>
+            <p>
+              Optionally adjust who you help and the difference you make, regenerate, then refine until you can say it
+              confidently in under 30 seconds.
+            </p>
           </CoachMessage>
           <CoachDraftPanel
             participantId={participantId}
             title="Impact Statement"
             statementType="impact"
             draft={draft}
+            coachCardContext={{ audiences }}
             enableCustomization
             savedCustomFields={customFields}
             onCustomFieldsChange={(fields) => {

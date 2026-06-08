@@ -108,8 +108,9 @@ export function buildCoachPrompt(payload) {
   if (task === 'regenerate_ambition') {
     return [
       prefix,
-      'Turn these chat replies into one ambition statement.',
+      'Turn these inputs into one ambition statement. Honor their ranked motivator cards even if role fields are brief.',
       `Style: ${variant ?? 'balanced'}.`,
+      `Motivators (most important first): ${fields.motivators ?? ''}`,
       `Role: ${fields.role ?? ''}`,
       `What they will do: ${fields.contribution ?? ''}`,
       `What they will build or leave behind: ${fields.mark ?? ''}`,
@@ -120,7 +121,8 @@ export function buildCoachPrompt(payload) {
   if (task === 'regenerate_impact' || task === 'regenerate_purpose') {
     return [
       prefix,
-      'Turn these replies into one impact statement.',
+      'Turn these inputs into one impact statement. Honor their selected audience cards.',
+      `Audiences selected: ${fields.audiences ?? ''}`,
       `Who they help: ${fields.audience ?? ''}`,
       `Difference they create: ${fields.outcome ?? ''}`,
       rules,

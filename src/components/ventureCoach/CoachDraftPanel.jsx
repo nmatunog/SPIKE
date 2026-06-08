@@ -3,8 +3,10 @@ import {
   countWords,
   evaluateStatement,
   extractCustomizationFields,
+  formatCoachCardContextLabels,
   getWordGuidanceStatus,
   regenerateFromCustomization,
+  resolveRegenerateFields,
 } from '../../lib/ventureCoachEngine.js';
 import { polishCoachStatement, regenerateCoachWithLearning } from '../../lib/ventureCoachLearning.js';
 import {
@@ -124,6 +126,7 @@ function ScoreCell({ label, value, numeric = false }) {
  *     text: string,
  *   ) => void,
  *   participantId?: string,
+ *   coachCardContext?: { rankedMotivators?: string[], audiences?: string[] },
  * }} props
  */
 export function CoachDraftPanel({
@@ -147,26 +150,40 @@ export function CoachDraftPanel({
   savedCustomFields = null,
   onCustomFieldsChange,
   onVariantsRegenerated,
+  coachCardContext = {},
 }) {
   const actions = refineSet === 'future-self' ? FUTURE_SELF_REFINE_ACTIONS : IDENTITY_REFINE_ACTIONS;
   const [refineNote, setRefineNote] = useState('');
   const [undoDraft, setUndoDraft] = useState(null);
   const [regenerating, setRegenerating] = useState(false);
   const [refining, setRefining] = useState(false);
-  const [fieldDefs, setFieldDefs] = useState(() => extractCustomizationFields(draft, statementType));
+  const [fieldDefs, setFieldDefs] = useState(() =>
+    extractCustomizationFields(draft, statementType, coachCardContext),
+  );
   const [customFields, setCustomFields] = useState(() => savedCustomFields ?? {});
   const variantSeedRef = useRef(selectedVariant);
+  const contextLabels = formatCoachCardContextLabels(coachCardContext);
+  const contextChips =
+    statementType === 'ambition'
+      ? contextLabels.motivators.split(', ').filter(Boolean)
+      : statementType === 'impact' || statementType === 'purpose'
+        ? contextLabels.audiences.split(', ').filter(Boolean)
+        : [];
+
+  useEffect(() => {
+    if (!enableCustomization) return;
+    setFieldDefs(extractCustomizationFields(draft, statementType, coachCardContext));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- refresh hints when draft or card context changes
+  }, [draft, enableCustomization, statementType, coachCardContext.rankedMotivators, coachCardContext.audiences]);
 
   useEffect(() => {
     if (!enableCustomization) return;
     if (variantSeedRef.current === selectedVariant) return;
     variantSeedRef.current = selectedVariant;
-    const defs = extractCustomizationFields(draft, statementType);
-    setFieldDefs(defs);
     setCustomFields({});
     onCustomFieldsChange?.({});
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only re-seed fields when style variant changes
-  }, [selectedVariant, draft, enableCustomization, statementType]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only clear typed tweaks when style variant changes
+  }, [selectedVariant, enableCustomization]);
 
   function updateCustomField(id, value) {
     const next = { ...customFields, [id]: value };
@@ -175,9 +192,7 @@ export function CoachDraftPanel({
   }
 
   async function handleRegenerate() {
-    const mergedFields = Object.fromEntries(
-      fieldDefs.map((field) => [field.id, customFields[field.id]?.trim() || field.suggestion || '']),
-    );
+    const mergedFields = resolveRegenerateFields(customFields, fieldDefs, statementType, coachCardContext);
 
     setRegenerating(true);
     try {
@@ -318,6 +333,7 @@ export function CoachDraftPanel({
           onChange={updateCustomField}
           onRegenerate={handleRegenerate}
           regenerating={regenerating}
+          contextChips={contextChips}
         />
       ) : null}
 

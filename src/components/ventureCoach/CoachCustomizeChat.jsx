@@ -1,69 +1,70 @@
-import { CoachMessage, CoachUserReplyInput } from './CoachMessage.jsx';
-
-/** @param {'ambition' | 'impact' | 'purpose' | 'tagline'} statementType @param {{ id: string, label: string, placeholder: string, suggestion?: string }} field @param {number} index */
-function coachPromptForField(statementType, field, index) {
-  if (statementType === 'ambition') {
-    if (field.id === 'role') return 'What role do you want to become? Reply like you are texting a mentor.';
-    if (field.id === 'contribution') return 'Got it. What will you do in that role?';
-    if (field.id === 'mark') return 'And what will you build or leave behind?';
-  }
-
-  if (statementType === 'impact' || statementType === 'purpose') {
-    if (field.id === 'audience') return 'Who do you want to help? Say it in your own words.';
-    if (field.id === 'outcome') return 'What difference do you want to make for them?';
-  }
-
-  if (statementType === 'tagline') {
-    if (index === 0) {
-      return 'Give me 2–3 short beats for your tagline — one per reply, like a quick chat.';
-    }
-    if (field.id === 'word2') return 'Second beat?';
-    if (field.id === 'word3') return 'Optional third beat — or leave blank.';
-  }
-
-  return field.label;
-}
+import { CoachMessage } from './CoachMessage.jsx';
 
 /**
  * @param {{
  *   statementType: 'ambition' | 'impact' | 'purpose' | 'tagline',
- *   fields: Array<{ id: string, label: string, placeholder: string, suggestion?: string, value: string }>,
+ *   fields: Array<{ id: string, label: string, placeholder: string, hint?: string }>,
  *   values: Record<string, string>,
  *   onChange: (id: string, value: string) => void,
  *   onRegenerate: () => void,
  *   regenerating?: boolean,
+ *   contextChips?: string[],
  * }} props
  */
-export function CoachCustomizeChat({ statementType, fields, values, onChange, onRegenerate, regenerating = false }) {
+export function CoachCustomizeChat({
+  statementType,
+  fields,
+  values,
+  onChange,
+  onRegenerate,
+  regenerating = false,
+  contextChips = [],
+}) {
   const intro =
     statementType === 'ambition'
-      ? 'Let us personalize this draft. Answer in short chat replies — I will rebuild your ambition statement from your words.'
+      ? 'Your motivator cards are locked in below. Optionally tweak the three parts — leave a field blank to keep the suggestion from your picks.'
       : statementType === 'tagline'
-        ? 'Let us tune your tagline. Reply with short beats — I will stitch them together.'
-        : 'Let us sharpen your impact. Tell me who you help and the difference you make — like a quick chat.';
-
-  const lastFieldId = fields[fields.length - 1]?.id;
+        ? 'Optionally replace any beat below. Leave blank to keep the current draft wording.'
+        : 'Your audience picks are locked in below. Optionally describe who you help and the difference you make — blanks use your card choices.';
 
   return (
     <div className="space-y-4 rounded-xl border border-slate-200 bg-slate-50/80 p-4">
-      <CoachMessage>{intro}</CoachMessage>
+      <CoachMessage>
+        <p>{intro}</p>
+        {contextChips.length ? (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {contextChips.map((chip) => (
+              <span
+                key={chip}
+                className="rounded-full border border-spike/20 bg-spike-muted/60 px-3 py-1 text-xs font-semibold text-spike"
+              >
+                {chip}
+              </span>
+            ))}
+          </div>
+        ) : null}
+      </CoachMessage>
 
-      {fields.map((field, index) => (
-        <div key={field.id} className="space-y-3">
-          <CoachMessage>{coachPromptForField(statementType, field, index)}</CoachMessage>
-          <CoachUserReplyInput
-            label="You"
-            value={values[field.id] ?? ''}
-            placeholder={field.suggestion ? `e.g. ${field.suggestion}` : field.placeholder}
-            rows={field.id === 'word3' ? 1 : 2}
-            onChange={(next) => onChange(field.id, next)}
-            onSubmit={field.id === lastFieldId ? onRegenerate : undefined}
-          />
-        </div>
-      ))}
+      <div className="space-y-3">
+        {fields.map((field) => (
+          <label key={field.id} className="block">
+            <span className="text-xs font-bold uppercase tracking-wide text-slate-500">{field.label}</span>
+            <input
+              type="text"
+              value={values[field.id] ?? ''}
+              placeholder={field.placeholder}
+              onChange={(e) => onChange(field.id, e.target.value)}
+              className="mt-1 block w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-spike focus:outline-none focus:ring-2 focus:ring-spike/20"
+            />
+            {field.hint ? <p className="mt-1 text-2xs text-slate-500">{field.hint}</p> : null}
+          </label>
+        ))}
+      </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-3">
-        <p className="text-xs text-slate-500">Press Enter on your last reply, or tap send, to regenerate your draft.</p>
+        <p className="text-xs text-slate-500">
+          Regenerate rebuilds your draft from your card picks plus anything you typed above.
+        </p>
         <button
           type="button"
           onClick={onRegenerate}
