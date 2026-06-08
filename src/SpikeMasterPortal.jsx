@@ -30,13 +30,21 @@ import { RoleRouteGuard } from './components/routing/RoleRouteGuard.jsx';
 import { ROUTES, defaultRouteForRole } from './routes/paths.js';
 import {
   AdminCohortsPage,
+  AdminFacultyPlaybookPage,
+  AdminMentorPlaybookPage,
   AdminPage,
   AdminSquadsPage,
   AdminSquadThemesPage,
   ContentStudioPage,
   CohortIdentityAnalyticsPage,
   CohortIdentityPage,
+  FacultyDayFrameworkPage,
+  FacultyHomePage,
+  FacultyPlaybookPage,
+  MentorDayFrameworkPage,
+  MentorHomePage,
   MentorParticipantsPage,
+  MentorPlaybookPage,
   MentorVentureCoachPage,
   PlaybookShell,
   PortfolioPage,
@@ -1288,6 +1296,110 @@ const SpikeMasterPortal = () => {
       if (path === ROUTES.analyticsCohortIdentity) {
         return <CohortIdentityAnalyticsPage />;
       }
+      if (path === `${ROUTES.facultyHome}/advisory`) {
+        return (
+          <LazyRoute label="Loading advisory…">
+            <StaffDashboardPage
+              userRole="faculty"
+              user={user}
+              interns={interns}
+              internSummary={internSummary}
+              pendingLogs={pendingLogs}
+              token={token}
+              usingSupabaseAuth={usingSupabaseAuth}
+              showToast={showToast}
+              onLoadInterns={loadInterns}
+              onLoadPendingLogs={loadPendingLogs}
+              initialTab="advisory"
+            />
+          </LazyRoute>
+        );
+      }
+      if (path === `${ROUTES.mentorHome}/advisory`) {
+        return (
+          <LazyRoute label="Loading advisory…">
+            <StaffDashboardPage
+              userRole="mentor"
+              user={user}
+              interns={interns}
+              internSummary={internSummary}
+              pendingLogs={pendingLogs}
+              token={token}
+              usingSupabaseAuth={usingSupabaseAuth}
+              showToast={showToast}
+              onLoadInterns={loadInterns}
+              onLoadPendingLogs={loadPendingLogs}
+              initialTab="advisory"
+            />
+          </LazyRoute>
+        );
+      }
+      if (path === ROUTES.facultyHome) {
+        return (
+          <LazyRoute label="Loading faculty…">
+            <FacultyHomePage
+              interns={interns}
+              internSummary={internSummary}
+              pendingLogs={pendingLogs}
+            />
+          </LazyRoute>
+        );
+      }
+      if (path === ROUTES.facultyPlaybook) {
+        return (
+          <LazyRoute label="Loading faculty playbook…">
+            <FacultyPlaybookPage />
+          </LazyRoute>
+        );
+      }
+      if (path.startsWith(`${ROUTES.facultyPlaybook}/`)) {
+        return (
+          <LazyRoute label="Loading day framework…">
+            <FacultyDayFrameworkPage />
+          </LazyRoute>
+        );
+      }
+      if (path === ROUTES.mentorHome) {
+        return (
+          <LazyRoute label="Loading mentor…">
+            <MentorHomePage
+              user={user}
+              interns={interns}
+              internSummary={internSummary}
+              pendingLogs={pendingLogs}
+              showToast={showToast}
+            />
+          </LazyRoute>
+        );
+      }
+      if (path === ROUTES.mentorPlaybook) {
+        return (
+          <LazyRoute label="Loading mentor playbook…">
+            <MentorPlaybookPage />
+          </LazyRoute>
+        );
+      }
+      if (path.startsWith(`${ROUTES.mentorPlaybook}/`)) {
+        return (
+          <LazyRoute label="Loading day guide…">
+            <MentorDayFrameworkPage />
+          </LazyRoute>
+        );
+      }
+      if (path === ROUTES.adminFacultyPlaybook) {
+        return (
+          <LazyRoute label="Loading faculty admin…">
+            <AdminFacultyPlaybookPage />
+          </LazyRoute>
+        );
+      }
+      if (path === ROUTES.adminMentorPlaybook) {
+        return (
+          <LazyRoute label="Loading mentor admin…">
+            <AdminMentorPlaybookPage />
+          </LazyRoute>
+        );
+      }
       if (path === ROUTES.mentorVentureCoach) {
         return (
           <LazyRoute label="Loading participants…">
@@ -1332,6 +1444,12 @@ const SpikeMasterPortal = () => {
             <ContentStudioPage />
           </LazyRoute>
         );
+      }
+      if (path === ROUTES.dashboard && userRole === 'faculty') {
+        return <Navigate to={ROUTES.facultyHome} replace />;
+      }
+      if (path === ROUTES.dashboard && userRole === 'mentor') {
+        return <Navigate to={ROUTES.mentorHome} replace />;
       }
       return renderStaffDashboard();
     }

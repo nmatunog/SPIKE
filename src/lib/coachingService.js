@@ -24,7 +24,7 @@ function writeAll(data) {
  * @param {string} mentorId
  * @param {string} participantId
  * @param {string} notes
- * @param {{ topic?: string, action?: string }} [options]
+ * @param {{ topic?: string, action?: string, concernFlagged?: boolean, followUpDate?: string, discussionSummary?: string, strengths?: string, growthAreas?: string, week?: number, day?: number }} [options]
  */
 export async function saveMentorCoachingNote(mentorId, participantId, notes, options = {}) {
   const trimmed = String(notes || '').trim().slice(0, MAX_NOTES);
@@ -51,6 +51,13 @@ export async function saveMentorCoachingNote(mentorId, participantId, notes, opt
   void createCoachingSession(mentorId, participantId, {
     topic,
     notes: trimmed,
+    concernFlagged: options.concernFlagged,
+    followUpDate: options.followUpDate,
+    discussionSummary: options.discussionSummary,
+    strengths: options.strengths,
+    growthAreas: options.growthAreas,
+    week: options.week,
+    day: options.day,
   });
 
   appendTimelineEvent(participantId, {
@@ -86,15 +93,18 @@ const VENTURE_COACH_TOPICS = {
   Comment: 'Venture Coach — mentor comment',
   Approve: 'Venture Coach — approved',
   'Request Reflection': 'Venture Coach — reflection requested',
+  'Flag Concern': 'Venture Coach — concern flagged',
+  'Schedule Follow-Up': 'Venture Coach — follow-up scheduled',
 };
 
 /**
  * @param {string} mentorId
  * @param {string} participantId
- * @param {'Comment' | 'Approve' | 'Request Reflection'} action
+ * @param {'Comment' | 'Approve' | 'Request Reflection' | 'Flag Concern' | 'Schedule Follow-Up'} action
  * @param {string} [notes]
+ * @param {{ followUpDate?: string, week?: number, day?: number }} [meta]
  */
-export async function saveVentureCoachMentorFeedback(mentorId, participantId, action, notes = '') {
+export async function saveVentureCoachMentorFeedback(mentorId, participantId, action, notes = '', meta = {}) {
   const topic = VENTURE_COACH_TOPICS[action] ?? 'Venture Coach — mentor feedback';
   const trimmedNote = String(notes || '').trim();
   const body =
@@ -103,7 +113,19 @@ export async function saveVentureCoachMentorFeedback(mentorId, participantId, ac
       ? 'Mentor approved your Venture Coach journey.'
       : action === 'Request Reflection'
         ? 'Mentor requested a reflection on your Venture Coach statements.'
-        : 'Mentor left feedback on your Venture Coach journey.');
+        : action === 'Flag Concern'
+          ? 'Mentor flagged a concern for follow-up coaching.'
+          : action === 'Schedule Follow-Up'
+            ? `Mentor scheduled a follow-up${meta.followUpDate ? ` on ${meta.followUpDate}` : ''}.`
+            : 'Mentor left feedback on your Venture Coach journey.');
 
-  return saveMentorCoachingNote(mentorId, participantId, body, { topic, action });
+  return saveMentorCoachingNote(mentorId, participantId, body, {
+    topic,
+    action,
+    concernFlagged: action === 'Flag Concern',
+    followUpDate: meta.followUpDate,
+    week: meta.week,
+    day: meta.day,
+    discussionSummary: trimmedNote || body,
+  });
 }

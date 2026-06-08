@@ -3,13 +3,13 @@ import { ContentStudioBlocksPage } from './ContentStudioBlocksPage.jsx';
 import { ContentStudioDayBuilderPage } from './ContentStudioDayBuilderPage.jsx';
 import { ContentStudioHomePage } from './ContentStudioHomePage.jsx';
 import { ContentStudioMediaPage } from './ContentStudioMediaPage.jsx';
+import { ContentStudioPlaybooksPage } from './ContentStudioPlaybooksPage.jsx';
 import { ROUTES } from '../../../routes/paths.js';
 
 const BLOCK_PAGES = {
   [`${ROUTES.adminContentStudio}/playbooks`]: {
     title: 'Playbooks',
-    description: 'Browse published playbook days and link content blocks to delivery paths.',
-    emptyHint: 'Playbook delivery still reads JSON until the curriculum tree is fully published from Content Studio.',
+    section: 'playbooks',
   },
   [`${ROUTES.adminContentStudio}/presentations`]: {
     title: 'Presentations',
@@ -66,6 +66,10 @@ export function ContentStudioPage() {
 
   if (pathname === `${ROUTES.adminContentStudio}/media`) {
     return <ContentStudioMediaPage />;
+  }
+
+  if (pathname === `${ROUTES.adminContentStudio}/playbooks`) {
+    return <ContentStudioPlaybooksPage />;
   }
 
   const config = BLOCK_PAGES[pathname];

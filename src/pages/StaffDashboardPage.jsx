@@ -141,6 +141,7 @@ function StaffQuickLinks({ userRole }) {
  *   showToast: (message: string, type?: string) => void,
  *   onLoadInterns: () => Promise<void>,
  *   onLoadPendingLogs: () => Promise<void>,
+ *   initialTab?: 'overview' | 'curriculum' | 'advisory',
  * }} props
  */
 export function StaffDashboardPage({
@@ -154,9 +155,10 @@ export function StaffDashboardPage({
   showToast,
   onLoadInterns,
   onLoadPendingLogs,
+  initialTab = 'overview',
 }) {
   const tabs = userRole === 'faculty' ? FACULTY_TABS : MENTOR_TABS;
-  const [tab, setTab] = useState('overview');
+  const [tab, setTab] = useState(initialTab);
 
   async function approveLog(log) {
     try {

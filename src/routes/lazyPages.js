@@ -62,6 +62,38 @@ export const MentorParticipantsPage = lazyNamed(
   () => import('../pages/mentor/MentorParticipantsPage.jsx'),
   'MentorParticipantsPage',
 );
+export const FacultyHomePage = lazyNamed(
+  () => import('../pages/faculty/FacultyHomePage.jsx'),
+  'FacultyHomePage',
+);
+export const FacultyPlaybookPage = lazyNamed(
+  () => import('../pages/faculty/FacultyPlaybookPage.jsx'),
+  'FacultyPlaybookPage',
+);
+export const FacultyDayFrameworkPage = lazyNamed(
+  () => import('../pages/faculty/FacultyDayFrameworkPage.jsx'),
+  'FacultyDayFrameworkPage',
+);
+export const MentorHomePage = lazyNamed(
+  () => import('../pages/mentor/MentorHomePage.jsx'),
+  'MentorHomePage',
+);
+export const MentorPlaybookPage = lazyNamed(
+  () => import('../pages/mentor/MentorPlaybookPage.jsx'),
+  'MentorPlaybookPage',
+);
+export const MentorDayFrameworkPage = lazyNamed(
+  () => import('../pages/mentor/MentorDayFrameworkPage.jsx'),
+  'MentorDayFrameworkPage',
+);
+export const AdminFacultyPlaybookPage = lazyNamed(
+  () => import('../pages/admin/AdminFacultyPlaybookPage.jsx'),
+  'AdminFacultyPlaybookPage',
+);
+export const AdminMentorPlaybookPage = lazyNamed(
+  () => import('../pages/admin/AdminMentorPlaybookPage.jsx'),
+  'AdminMentorPlaybookPage',
+);
 export const CohortIdentityAnalyticsPage = lazyNamed(
   () => import('../pages/analytics/CohortIdentityAnalyticsPage.jsx'),
   'CohortIdentityAnalyticsPage',

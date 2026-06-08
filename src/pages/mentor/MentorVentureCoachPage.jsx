@@ -11,7 +11,9 @@ import { COACH_VALUE_CARDS, VENTURE_DIRECTION_CARDS } from '../../lib/ventureCoa
 import { labelFor } from '../../lib/ventureCoachEngine.js';
 import { ROUTES } from '../../routes/paths.js';
 
-/** @typedef {'Comment' | 'Approve' | 'Request Reflection'} MentorAction */
+/** @typedef {'Comment' | 'Approve' | 'Request Reflection' | 'Flag Concern' | 'Schedule Follow-Up'} MentorAction */
+
+const MENTOR_ACTIONS = ['Comment', 'Approve', 'Request Reflection', 'Flag Concern', 'Schedule Follow-Up'];
 
 /**
  * @param {{
@@ -31,6 +33,7 @@ export function MentorVentureCoachPage({
   const intern = interns.find((i) => i.id === participantId);
   const summary = participantId ? getCoachSummaryForMentor(participantId) : null;
   const [note, setNote] = useState('');
+  const [followUpDate, setFollowUpDate] = useState('');
   const [action, setAction] = useState(/** @type {MentorAction | ''} */ (''));
   const [saving, setSaving] = useState(false);
   const [history, setHistory] = useState(() =>
@@ -60,7 +63,11 @@ export function MentorVentureCoachPage({
 
     setSaving(true);
     try {
-      const entry = await saveVentureCoachMentorFeedback(mentorId, participantId, selectedAction, note);
+      const entry = await saveVentureCoachMentorFeedback(mentorId, participantId, selectedAction, note, {
+        followUpDate: selectedAction === 'Schedule Follow-Up' ? followUpDate : undefined,
+        week: 1,
+        day: 1,
+      });
       if (!entry) {
         showToast?.('Add a coaching note before saving.', 'info');
         return;
@@ -117,7 +124,7 @@ export function MentorVentureCoachPage({
         {!readOnly ? (
           <>
             <div className="flex flex-wrap gap-2">
-              {(['Comment', 'Approve', 'Request Reflection']).map((label) => (
+              {MENTOR_ACTIONS.map((label) => (
                 <button
                   key={label}
                   type="button"
@@ -149,6 +156,17 @@ export function MentorVentureCoachPage({
                 onChange={(e) => setNote(e.target.value)}
               />
             </label>
+            {action === 'Schedule Follow-Up' ? (
+              <label className="block">
+                <span className="mb-1 text-xs font-semibold text-slate-600">Follow-up date</span>
+                <input
+                  type="date"
+                  className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
+                  value={followUpDate}
+                  onChange={(e) => setFollowUpDate(e.target.value)}
+                />
+              </label>
+            ) : null}
             {!mentorId ? (
               <p className="text-sm text-amber-800">Sign in to save coaching feedback.</p>
             ) : null}
