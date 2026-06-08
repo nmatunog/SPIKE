@@ -120,7 +120,7 @@ npm run deploy:prod
 
 ## Supabase setup
 
-See [`supabase/README.md`](./supabase/README.md). Run SQL files in the Supabase SQL Editor (`schema.sql`, `activation_codes.sql`, `password_reset_requests.sql`).
+See [`supabase/README.md`](./supabase/README.md) for the **full 16-step SQL checklist** (schema + all sprint migrations through Content Studio 06A). Do not run only `schema.sql` — steps 2–16 are required for Playbook, Blueprint, Coach, and Content Studio.
 
 ## Sprint 01 refactor
 
@@ -139,6 +139,14 @@ Types, content tree, DB scaffold, curriculum service, and Playbook viewers (foun
 Session layer, role views (participant / faculty / mentor), completion tracking, Segment 1 week ladder.
 
 - Execution plan: [`SPRINT_03_PLAYBOOK_EXECUTION_PLAN.md`](./SPRINT_03_PLAYBOOK_EXECUTION_PLAN.md)
+
+## Sprint 06A — Content Studio™
+
+No-code curriculum authoring for faculty and admins.
+
+- Spec: [`SPRINT_06A_CONTENT_STUDIO.md`](./SPRINT_06A_CONTENT_STUDIO.md)
+- Route: `/admin/content-studio`
+- Migration: step **16** in [`supabase/README.md`](./supabase/README.md)
 
 ## Master roadmap (Sprints 04–11)
 

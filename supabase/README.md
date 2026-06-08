@@ -1,37 +1,74 @@
 # Supabase
 
-Production database and auth for SPIKE. Apply scripts in the Supabase **SQL Editor**.
+Production database and auth for SPIKE. Apply scripts in the Supabase **SQL Editor** in the order below.
+
+---
 
 ## 1) Create project
 
 1. Create a Supabase project.
 2. Keep Auth enabled (email/password).
 
-## 2) Apply schema
+---
 
-Run in order:
+## 2) Apply schema (run every file in order)
 
-1. `schema.sql` — `profiles`, `intern_progress`, `traction_logs`, RLS
-2. `migrations/20260606_sprint_01_scaffold.sql` — Sprint 01 Phase 3: `cohorts`, curriculum tables, `venture_portfolio_entries`, `career_track` on `intern_progress`
-3. `migrations/20260620_sprint_02_instructional_architecture.sql` — Sprint 02: competencies, milestones, artifacts, research squads, venture board, integration mappings
-4. `activation_codes.sql` — intern signup codes
-5. `password_reset_requests.sql` — admin-assisted password help queue
-6. `migrations/20260621_sprint_03_playbook_completions.sql` — playbook completions
-7. `migrations/20260622_sprint_04_survey_engine.sql` — survey responses
-8. `migrations/20260623_sprint_04_fna_engine.sql` — FNA + client growth
-9. `migrations/20260624_sprint_04_timeline_engine.sql` — timeline + coaching
-10. `migrations/20260625_sprint_05_blueprint_integration.sql` — Blueprint sections, canvas, leadership journal
-11. `migrations/20260626_sprint_05b_research_squad_intelligence.sql` — research squads (if missing), squad members, cohort analytics
-12. `migrations/20260627_sprint_06a_content_studio.sql` — Content Studio: `content_blocks`, `content_assets`, CMS columns, Week 1 seed
+Copy-paste each file into the SQL Editor and run. All migrations are idempotent unless noted.
+
+| Step | File | What it adds |
+|------|------|----------------|
+| **1** | [`schema.sql`](./schema.sql) | `profiles`, `intern_progress`, `traction_logs`, RLS, `app_role` enum |
+| **2** | [`migrations/20260606_sprint_01_scaffold.sql`](./migrations/20260606_sprint_01_scaffold.sql) | `cohorts`, curriculum hierarchy (`segments` → `weeks` → `days`), presentations, activities, worksheets, assessments, surveys scaffold, `venture_portfolio_entries` |
+| **3** | [`migrations/20260620_sprint_02_instructional_architecture.sql`](./migrations/20260620_sprint_02_instructional_architecture.sql) | Competencies, milestones, portfolio/business-plan chapters, sessions, rubrics, research squads, `day_contributions`, `activity_blueprint_mappings` |
+| **4** | [`activation_codes.sql`](./activation_codes.sql) | Intern signup activation codes |
+| **5** | [`password_reset_requests.sql`](./password_reset_requests.sql) | Admin-assisted password help queue |
+| **6** | [`migrations/20260621_sprint_03_playbook_completions.sql`](./migrations/20260621_sprint_03_playbook_completions.sql) | `playbook_completions` (slug-keyed item progress) |
+| **7** | [`migrations/20260622_sprint_04_survey_engine.sql`](./migrations/20260622_sprint_04_survey_engine.sql) | `survey_responses`, `survey_response_answers` (content slug IDs) |
+| **8** | [`migrations/20260623_sprint_04_fna_engine.sql`](./migrations/20260623_sprint_04_fna_engine.sql) | FNA + client growth tables |
+| **9** | [`migrations/20260624_sprint_04_timeline_engine.sql`](./migrations/20260624_sprint_04_timeline_engine.sql) | Timeline + coaching tables |
+| **10** | [`migrations/20260625_sprint_05_blueprint_integration.sql`](./migrations/20260625_sprint_05_blueprint_integration.sql) | Blueprint sections, executive canvas, leadership journal |
+| **11** | [`migrations/20260607_sprint_05c_canvas_summary.sql`](./migrations/20260607_sprint_05c_canvas_summary.sql) | Executive canvas summary (requires step 10) |
+| **12** | [`migrations/20260626_sprint_05b_research_squad_intelligence.sql`](./migrations/20260626_sprint_05b_research_squad_intelligence.sql) | Research squad members, cohort analytics |
+| **13** | [`migrations/20260608_sprint_day1_builders.sql`](./migrations/20260608_sprint_day1_builders.sql) | Day 1 Venture Blueprint builder artifacts |
+| **14** | [`migrations/20260609_cohort_squad_formation.sql`](./migrations/20260609_cohort_squad_formation.sql) | Cohort identity, squad themes, squad assignments |
+| **15** | [`migrations/20260610_venture_coach.sql`](./migrations/20260610_venture_coach.sql) | AI Venture Coach section storage |
+| **16** | [`migrations/20260627_sprint_06a_content_studio.sql`](./migrations/20260627_sprint_06a_content_studio.sql) | **Content Studio™** — `content_blocks`, `content_assets`, CMS columns, Week 1 seed |
+
+**Quick checklist (16 steps after project creation):**
+
+```
+☐  1  schema.sql
+☐  2  20260606_sprint_01_scaffold.sql
+☐  3  20260620_sprint_02_instructional_architecture.sql
+☐  4  activation_codes.sql
+☐  5  password_reset_requests.sql
+☐  6  20260621_sprint_03_playbook_completions.sql
+☐  7  20260622_sprint_04_survey_engine.sql
+☐  8  20260623_sprint_04_fna_engine.sql
+☐  9  20260624_sprint_04_timeline_engine.sql
+☐ 10  20260625_sprint_05_blueprint_integration.sql
+☐ 11  20260607_sprint_05c_canvas_summary.sql
+☐ 12  20260626_sprint_05b_research_squad_intelligence.sql
+☐ 13  20260608_sprint_day1_builders.sql
+☐ 14  20260609_cohort_squad_formation.sql
+☐ 15  20260610_venture_coach.sql
+☐ 16  20260627_sprint_06a_content_studio.sql
+```
+
+---
 
 ## 3) First admin
 
 After the first Auth sign-up:
 
-1. Find the user UUID in `auth.users`.
+1. Find the user UUID in **Authentication → Users**.
 2. Run the commented SQL at the bottom of `schema.sql` to set role `ADMIN`.
 
+---
+
 ## 4) Cloudflare Pages env vars
+
+Set in **Workers & Pages → spike → Settings → Production**:
 
 | Variable | Purpose |
 |----------|---------|
@@ -40,50 +77,73 @@ After the first Auth sign-up:
 
 Redeploy after changing env vars.
 
-## 5) Sprint 01 scaffold tables (Phase 3)
+### Cloudflare secrets (Pages Functions — server-side only)
 
-After the migration, these tables exist (scaffold only — app still uses mock/static data until wired):
+For AI Venture Coach (`/api/coach/generate`):
 
-| Table | Purpose |
-|-------|---------|
-| `cohorts` | Cohort definitions |
-| `intern_progress` | Extended with `career_track`, `cohort_id`, `current_week`, `current_day` |
-| `segments` → `weeks` → `days` | Playbook curriculum hierarchy |
-| `presentations`, `slides`, `activities`, `worksheets`, `assessments` | Day content |
-| `surveys` | Research module scaffold |
-| `venture_portfolio_entries` | Per-user portfolio items (`portfolio_section` enum) |
+| Secret | Purpose |
+|--------|---------|
+| `GEMINI_API_KEY` | Primary LLM |
+| `OPENAI_API_KEY` | Fallback when Gemini hits limits |
 
-Enums: `career_track` (`agency_builder`, `specialist_consultant`), `portfolio_section`, `portfolio_entry_status`, `survey_status`.
+Do **not** prefix these with `VITE_`. Set in the same Cloudflare project under **Variables and Secrets** as encrypted values.
 
-## 6) Sprint 02 tables (instructional architecture)
+Local dev: copy `api/.env.example` → `api/.env` and run `cd api && npm run dev`.
 
-After `20260620_sprint_02_instructional_architecture.sql`:
+---
 
-| Table | Purpose |
-|-------|---------|
-| `programs` | SPIKE program definitions |
-| `competencies`, `milestones`, `week_integrations` | Instructional design reference |
-| `portfolio_sections`, `business_plan_chapters` | Blueprint section metadata |
-| `portfolio_artifacts`, `business_plan_artifacts` | Participant drafts (Supabase path) |
-| `career_tracks`, `track_requirements`, `venture_boards`, `venture_board_criteria` | Career + board reference |
-| `day_contributions`, `activity_blueprint_mappings` | Playbook → Blueprint routing |
-| `research_squads`, `research_projects` | Research foundation |
-| `sessions`, `worksheet_questions`, `survey_questions`, `rubrics` | Curriculum extensions |
+## 5) Sprint reference — what each migration enables
 
-App loads curriculum from `/content` JSON and hydrates `day_contributions` from Supabase when configured (PR8). Full DB curriculum import is a follow-on task.
+| Sprint | Key tables / features |
+|--------|------------------------|
+| **01** | `cohorts`, `segments` → `days`, portfolio entries |
+| **02** | Competencies, milestones, sessions, rubrics, blueprint mappings |
+| **03** | Playbook completions |
+| **04** | Surveys, FNA, timeline, coaching |
+| **05** | Blueprint canvas, leadership journal, research squads |
+| **05b–05c** | Cohort analytics, canvas summary |
+| **Day 1 builders** | Structured builder artifacts |
+| **Cohort / squads** | Formation, themes, assignments |
+| **Venture Coach** | Coach section drafts per participant |
+| **06A Content Studio** | `content_blocks`, `content_assets`, `day_content_sequences`, curriculum CMS views |
 
-## 7) App integration
+---
 
-- Auth: `src/AuthContext.jsx`, `src/supabaseClient.js`
-- Data helpers: `src/lib/supabase/` (`interns.js`, `tractionLogs.js`, `curriculum.js`, `blueprintArtifacts.js`)
-- Curriculum facade: `src/lib/curriculumService.js` (JSON tree + Supabase enrichment)
-- Playbook progress: `src/lib/playbookProgress.js`, `src/lib/supabase/playbookProgress.js`
-- Migration: `supabase/migrations/20260621_sprint_03_playbook_completions.sql`
-- Survey responses: `src/lib/surveyService.js`, `src/lib/supabase/surveyResponses.js`
-- Migration: `supabase/migrations/20260622_sprint_04_survey_engine.sql`
-- FNA Engine: `src/lib/fnaService.js`, `src/components/fna/FnaForm.jsx`
-- Migration: `supabase/migrations/20260623_sprint_04_fna_engine.sql`
-- Timeline: `src/lib/timelineService.js`, `src/lib/coachingService.js`
-- Migration: `supabase/migrations/20260624_sprint_04_timeline_engine.sql`
+## 6) App integration map
 
-The `api/` folder is for optional local JWT development only; production uses Supabase.
+| Feature | Code | Migration |
+|---------|------|-----------|
+| Auth + profiles | `src/AuthContext.jsx`, `src/supabaseClient.js` | `schema.sql` |
+| Intern progress | `src/lib/supabase/interns.js` | `schema.sql` |
+| Curriculum (JSON + DB) | `src/lib/curriculumService.js`, `src/lib/contentLoader.js` | 01, 02, 06A |
+| Playbook delivery | `src/pages/PlaybookShell.jsx`, `src/components/playbook/*` | 03 |
+| Survey engine | `src/lib/surveyService.js` | 07 |
+| FNA | `src/lib/fnaService.js` | 08 |
+| Timeline / coaching | `src/lib/timelineService.js`, `src/lib/coachingService.js` | 09 |
+| Venture Blueprint | `src/lib/ventureBlueprintSync.js` | 10, 11 |
+| Cohort / squads | `src/lib/cohortFormationService.js` | 14 |
+| Venture Coach | `src/lib/ventureCoachService.js` | 15 |
+| **Content Studio** | `src/lib/contentStudioService.js`, `/admin/content-studio` | **16** |
+| AI coach API | `functions/api/coach/generate.js` | Cloudflare secrets (not Supabase) |
+
+The `api/` folder is optional local JWT dev only; **production uses Supabase**.
+
+---
+
+## 7) Content Studio (Sprint 06A)
+
+After step **16**:
+
+- Admin → **Content** → **Open Content Studio**, or `/admin/content-studio`
+- Roles: `ADMIN`, `FACULTY`
+- Spec: [`SPRINT_06A_CONTENT_STUDIO.md`](../SPRINT_06A_CONTENT_STUDIO.md)
+
+Until step 16 is applied, Content Studio lists fall back to JSON curriculum; block tables will be empty.
+
+---
+
+## 8) Verify
+
+1. **Table Editor** — confirm `content_blocks`, `playbook_completions`, `profiles` exist.
+2. Sign in as admin → **Admin → Content Studio** → Curriculum shows Segment 1 / Week 1 / Days 1–5.
+3. **Playbook** — Day 1 still loads from `/content` JSON (delivery path unchanged until CMS publish pipeline ships).
