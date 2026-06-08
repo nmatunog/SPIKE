@@ -50,6 +50,10 @@ export const AdminSquadsPage = lazyNamed(
   () => import('../pages/admin/AdminSquadsPage.jsx'),
   'AdminSquadsPage',
 );
+export const ContentStudioPage = lazyNamed(
+  () => import('../pages/admin/contentStudio/ContentStudioPage.jsx'),
+  'ContentStudioPage',
+);
 export const MentorVentureCoachPage = lazyNamed(
   () => import('../pages/mentor/MentorVentureCoachPage.jsx'),
   'MentorVentureCoachPage',

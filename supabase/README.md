@@ -22,6 +22,7 @@ Run in order:
 9. `migrations/20260624_sprint_04_timeline_engine.sql` — timeline + coaching
 10. `migrations/20260625_sprint_05_blueprint_integration.sql` — Blueprint sections, canvas, leadership journal
 11. `migrations/20260626_sprint_05b_research_squad_intelligence.sql` — research squads (if missing), squad members, cohort analytics
+12. `migrations/20260627_sprint_06a_content_studio.sql` — Content Studio: `content_blocks`, `content_assets`, CMS columns, Week 1 seed
 
 ## 3) First admin
 

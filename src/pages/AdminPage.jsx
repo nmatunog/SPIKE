@@ -80,10 +80,16 @@ export function AdminPage({ usersPanel, settingsPanel, passwordHelpPanel }) {
       )}
 
       {tab === 'content' && (
-        <PlaceholderPanel
-          title="Content"
-          description="Playbook CMS and presentation asset management will live here. Curriculum still uses static modules for Sprint 01."
-        />
+        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <h3 className="mb-2 text-lg font-bold text-gray-900">Content Studio™</h3>
+          <p className="mb-4 text-sm text-gray-600">
+            Author segments, weeks, days, sessions, worksheets, activities, surveys, and media — then
+            publish to the Playbook without code changes.
+          </p>
+          <Link to={ROUTES.adminContentStudio} className="spike-btn-primary">
+            Open Content Studio
+          </Link>
+        </div>
       )}
 
       {tab === 'settings' && settingsPanel}

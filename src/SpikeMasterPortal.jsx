@@ -33,6 +33,7 @@ import {
   AdminPage,
   AdminSquadsPage,
   AdminSquadThemesPage,
+  ContentStudioPage,
   CohortIdentityAnalyticsPage,
   CohortIdentityPage,
   MentorVentureCoachPage,
@@ -1303,6 +1304,13 @@ const SpikeMasterPortal = () => {
           <AdminSquadsPage
             interns={interns.map((i) => ({ id: i.id, name: i.name }))}
           />
+        );
+      }
+      if (path === ROUTES.adminContentStudio || path.startsWith(`${ROUTES.adminContentStudio}/`)) {
+        return (
+          <LazyRoute label="Loading Content Studio…">
+            <ContentStudioPage />
+          </LazyRoute>
         );
       }
       return renderStaffDashboard();

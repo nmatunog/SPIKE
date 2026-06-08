@@ -14,6 +14,8 @@ export const ROUTES = {
   adminCohorts: '/admin/cohorts',
   adminSquadThemes: '/admin/squad-themes',
   adminSquads: '/admin/squads',
+  adminContentStudio: '/admin/content-studio',
+  adminContentStudioDayBuilder: '/admin/content-studio/day-builder',
   mentorVentureCoach: '/mentor/participants',
   analyticsCohortIdentity: '/analytics/cohort-identity',
 };
@@ -130,6 +132,9 @@ export function matchModulePath(pathname) {
   if (pathname === ROUTES.adminSquads || pathname.startsWith(`${ROUTES.adminSquads}/`)) {
     return ROUTES.adminSquads;
   }
+  if (pathname === ROUTES.adminContentStudio || pathname.startsWith(`${ROUTES.adminContentStudio}/`)) {
+    return ROUTES.adminContentStudio;
+  }
   if (pathname === ROUTES.analyticsCohortIdentity) {
     return ROUTES.analyticsCohortIdentity;
   }
@@ -157,6 +162,9 @@ export function rolesForRoute(pathname) {
   if (INTERN_FORMATION_ROUTES.includes(pathname)) return ['intern'];
   if (pathname === ROUTES.adminCohorts || pathname === ROUTES.adminSquadThemes) return ['admin'];
   if (pathname === ROUTES.adminSquads) return ['admin', 'faculty'];
+  if (pathname === ROUTES.adminContentStudio || pathname.startsWith(`${ROUTES.adminContentStudio}/`)) {
+    return ['admin', 'faculty'];
+  }
   if (pathname === ROUTES.analyticsCohortIdentity) return ['faculty', 'admin', 'mentor'];
   if (pathname.startsWith(`${ROUTES.mentorVentureCoach}/`)) return ['faculty', 'mentor', 'admin'];
 
