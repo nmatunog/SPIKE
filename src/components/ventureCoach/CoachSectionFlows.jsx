@@ -188,8 +188,8 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
         <>
           <CoachMessage>
             <p>
-              Choose Short, Balanced, or Inspirational — optionally tweak the three parts below, regenerate, then refine
-              until it feels like yours.
+              Choose Short, Balanced, or Inspirational — answer the coach one question at a time, then refine until it
+              feels like yours.
             </p>
             {coachNote ? <p className="mt-2 text-sm text-slate-600">{coachNote}</p> : null}
           </CoachMessage>
@@ -325,8 +325,8 @@ export function ImpactCoachFlow({ participantId, onProgress, onSectionComplete }
           ) : null}
           <CoachMessage>
             <p>
-              Optionally adjust who you help and the difference you make, regenerate, then refine until you can say it
-              confidently in under 30 seconds.
+              Answer the coach one question at a time, then refine until you can say it confidently in under 30
+              seconds.
             </p>
           </CoachMessage>
           <CoachDraftPanel

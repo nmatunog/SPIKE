@@ -334,6 +334,7 @@ export function CoachDraftPanel({
           onRegenerate={handleRegenerate}
           regenerating={regenerating}
           contextChips={contextChips}
+          chatResetKey={`${selectedVariant}-${statementType}`}
         />
       ) : null}
 
