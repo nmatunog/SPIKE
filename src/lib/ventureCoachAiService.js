@@ -1,4 +1,5 @@
 import { apiUrl } from '../apiClient.js';
+import { loadCoachRagExamples } from './supabase/coachTraining.js';
 import {
   AMBITION_MOTIVATOR_CARDS,
   COACH_VALUE_CARDS,
@@ -85,6 +86,12 @@ export async function requestCoachAiGeneration(input) {
 
   const limits = resolveWordLimits(input.statementType, input.task);
 
+  const ragExamples = await loadCoachRagExamples({
+    task: input.task,
+    statementType: input.statementType,
+    fields: input.fields,
+  });
+
   try {
     const res = await fetch(apiUrl('/api/coach/generate'), {
       method: 'POST',
@@ -98,6 +105,7 @@ export async function requestCoachAiGeneration(input) {
         statementType: input.statementType,
         currentDraft: input.currentDraft,
         refineAction: input.refineAction,
+        ragExamples,
       }),
     });
 
@@ -137,12 +145,19 @@ export async function requestCoachAiGeneration(input) {
       };
     }
 
+    const baseNote = String(data.note ?? 'Draft updated.');
+    const note =
+      ragExamples.length > 0
+        ? `${baseNote} Informed by ${ragExamples.length} accepted cohort example${ragExamples.length === 1 ? '' : 's'}.`
+        : baseNote;
+
     return {
       text: data.text ? String(data.text) : String(data.variants?.balanced ?? ''),
-      note: String(data.note ?? 'Draft updated.'),
+      note,
       provider: data.provider ?? 'ai',
       variants: data.variants ?? null,
       summary: data.summary ? String(data.summary) : '',
+      ragCount: ragExamples.length,
     };
   } catch (err) {
     return {

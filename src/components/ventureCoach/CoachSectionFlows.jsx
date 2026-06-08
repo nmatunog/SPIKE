@@ -112,6 +112,7 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
       rankedMotivators: ranked,
       draftVariants: variants,
       selectedVariant,
+      customFields,
     });
     onProgress();
     afterSectionAccept(onSectionComplete, navigate, `${ROUTES.ventureBlueprint}/coach/impact`);
@@ -190,6 +191,7 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
             {coachNote ? <p className="mt-2 text-sm text-slate-600">{coachNote}</p> : null}
           </CoachMessage>
           <CoachDraftPanel
+            participantId={participantId}
             title="Draft Ambition Statement"
             statementType="ambition"
             draft={draft}
@@ -253,7 +255,7 @@ export function ImpactCoachFlow({ participantId, onProgress, onSectionComplete }
 
   function handleAccept() {
     if (countWords(draft) > WORD_LIMITS.impact.max) return;
-    acceptCoachSection(participantId, 'impact', draft.trim(), { audiences });
+    acceptCoachSection(participantId, 'impact', draft.trim(), { audiences, customFields });
     onProgress();
     afterSectionAccept(onSectionComplete, navigate, `${ROUTES.ventureBlueprint}/coach/values`);
   }
@@ -321,6 +323,7 @@ export function ImpactCoachFlow({ participantId, onProgress, onSectionComplete }
             <p>Reply to the coach in your own words, regenerate, then refine until you can say it confidently in under 30 seconds.</p>
           </CoachMessage>
           <CoachDraftPanel
+            participantId={participantId}
             title="Impact Statement"
             statementType="impact"
             draft={draft}
@@ -545,7 +548,7 @@ export function TaglineCoachFlow({ participantId, onProgress, onSectionComplete 
 
   function handleAccept() {
     if (countWords(draft) > WORD_LIMITS.tagline.max) return;
-    acceptCoachSection(participantId, 'tagline', draft.trim(), {});
+    acceptCoachSection(participantId, 'tagline', draft.trim(), { customFields });
     onProgress();
     afterSectionAccept(onSectionComplete, navigate, `${ROUTES.ventureBlueprint}/coach/future-self`);
   }
@@ -571,6 +574,7 @@ export function TaglineCoachFlow({ participantId, onProgress, onSectionComplete 
         <CoachMessage>Generating your tagline from ambition, impact, and values…</CoachMessage>
       ) : (
         <CoachDraftPanel
+          participantId={participantId}
           title="Personal Tagline"
           statementType="tagline"
           draft={draft}

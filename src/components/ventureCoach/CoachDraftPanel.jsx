@@ -6,6 +6,7 @@ import {
   getWordGuidanceStatus,
   regenerateFromCustomization,
 } from '../../lib/ventureCoachEngine.js';
+import { polishCoachStatement, regenerateCoachWithLearning } from '../../lib/ventureCoachLearning.js';
 import {
   coachAiTaskForStatementType,
   formatAiUnavailableMessage,
@@ -122,11 +123,13 @@ function ScoreCell({ label, value, numeric = false }) {
  *     variantId: string,
  *     text: string,
  *   ) => void,
+ *   participantId?: string,
  * }} props
  */
 export function CoachDraftPanel({
   title,
   draft,
+  participantId = '',
   onDraftChange,
   onAccept,
   refineSet = 'identity',
@@ -186,24 +189,48 @@ export function CoachDraftPanel({
       });
 
       if (aiResult?.text && !aiResult.unavailable) {
+        const polishedText = polishCoachStatement(aiResult.text, statementType);
+        const polishedVariants = aiResult.variants
+          ? Object.fromEntries(
+              Object.entries(aiResult.variants).map(([key, value]) => [
+                key,
+                polishCoachStatement(String(value), statementType),
+              ]),
+            )
+          : null;
         setUndoDraft(draft);
         setRefineNote(
           aiResult.provider && aiResult.provider !== 'local'
             ? `${aiResult.note} (via ${aiResult.provider})`
             : aiResult.note,
         );
-        onDraftChange(aiResult.text);
-        if (aiResult.variants && onVariantsRegenerated) {
-          onVariantsRegenerated(aiResult.variants, selectedVariant, aiResult.text);
+        onDraftChange(polishedText);
+        if (polishedVariants && onVariantsRegenerated) {
+          onVariantsRegenerated(polishedVariants, selectedVariant, polishedText);
         }
         return;
       }
 
-      const result = regenerateFromCustomization({
-        statementType,
-        variant: selectedVariant,
-        fields: mergedFields,
-      });
+      const result = participantId
+        ? regenerateCoachWithLearning(participantId, {
+            statementType,
+            variant: selectedVariant,
+            fields: mergedFields,
+          })
+        : (() => {
+            const local = regenerateFromCustomization({
+              statementType,
+              variant: selectedVariant,
+              fields: mergedFields,
+            });
+            if (local.text) local.text = polishCoachStatement(local.text, statementType);
+            if (local.variants) {
+              for (const key of Object.keys(local.variants)) {
+                local.variants[key] = polishCoachStatement(local.variants[key], statementType);
+              }
+            }
+            return local;
+          })();
       if (result.skipped) {
         setRefineNote(result.note);
         return;
@@ -241,7 +268,7 @@ export function CoachDraftPanel({
           ? `${result.note} (via ${result.provider})`
           : result.note,
       );
-      onDraftChange(result.text);
+      onDraftChange(result.text ? polishCoachStatement(result.text, statementType) : result.text);
     } finally {
       setRefining(false);
     }

@@ -33,8 +33,9 @@ Copy-paste each file into the SQL Editor and run. All migrations are idempotent 
 | **14** | [`migrations/20260609_cohort_squad_formation.sql`](./migrations/20260609_cohort_squad_formation.sql) | Cohort identity, squad themes, squad assignments |
 | **15** | [`migrations/20260610_venture_coach.sql`](./migrations/20260610_venture_coach.sql) | AI Venture Coach section storage |
 | **16** | [`migrations/20260627_sprint_06a_content_studio.sql`](./migrations/20260627_sprint_06a_content_studio.sql) | **Content Studio™** — `content_blocks`, `content_assets`, CMS columns, Week 1 seed |
+| **17** | [`migrations/20260628_coach_training_rag.sql`](./migrations/20260628_coach_training_rag.sql) | Coach AI training log (`coach_training_events`) + RAG corpus RPC |
 
-**Quick checklist (16 steps after project creation):**
+**Quick checklist (17 steps after project creation):**
 
 ```
 ☐  1  schema.sql
@@ -53,6 +54,7 @@ Copy-paste each file into the SQL Editor and run. All migrations are idempotent 
 ☐ 14  20260609_cohort_squad_formation.sql
 ☐ 15  20260610_venture_coach.sql
 ☐ 16  20260627_sprint_06a_content_studio.sql
+☐ 17  20260628_coach_training_rag.sql
 ```
 
 ---

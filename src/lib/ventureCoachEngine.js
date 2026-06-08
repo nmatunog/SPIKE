@@ -808,7 +808,7 @@ function sanitizeActionClause(raw, role = '') {
 }
 
 /** @param {string} draft */
-function parseAmbitionCustomization(draft) {
+export function parseAmbitionCustomization(draft) {
   const cleaned = stripCorporateLanguage(draft);
   let role = '';
   let contribution = '';

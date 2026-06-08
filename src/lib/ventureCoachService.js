@@ -13,6 +13,13 @@ import {
   patchCoachSection,
   resetCoachSection,
 } from './ventureCoachStorage.js';
+import { polishCoachStatement, recordCoachLearning } from './ventureCoachLearning.js';
+import {
+  buildCoachTrainingLabels,
+  coachTrainingSectionType,
+  defaultCoachTrainingTask,
+  insertCoachTrainingEvent,
+} from './supabase/coachTraining.js';
 
 export {
   getCoachProgress,
@@ -37,15 +44,45 @@ export function saveCoachSectionDraft(participantId, sectionId, data) {
 export function acceptCoachSection(participantId, sectionId, finalText, extra = {}) {
   const meta = COACH_SECTIONS.find((s) => s.id === sectionId);
   const section = getCoachSection(participantId, sectionId);
-  const draftVersions = [...(section.draftVersions ?? []), finalText];
+  const statementType = sectionId === 'purpose' ? 'impact' : sectionId;
+  const polished =
+    statementType === 'values' || statementType === 'venture-direction'
+      ? finalText.trim()
+      : polishCoachStatement(finalText, /** @type {'ambition' | 'impact' | 'tagline' | 'future-self'} */ (statementType));
+  const draftVersions = [...(section.draftVersions ?? []), polished];
 
   patchCoachSection(participantId, sectionId, {
-    data: { ...section.data, ...extra, finalText },
+    data: { ...section.data, ...extra, finalText: polished },
     draftVersions,
   });
 
-  syncSectionToBlueprint(participantId, sectionId, finalText, extra);
+  if (['ambition', 'impact', 'purpose', 'tagline'].includes(sectionId)) {
+    recordCoachLearning(participantId, sectionId, {
+      fields: /** @type {Record<string, string>} */ (extra.customFields ?? section.data.customFields ?? {}),
+      acceptedText: polished,
+    });
+  }
+
+  syncSectionToBlueprint(participantId, sectionId, polished, extra);
   completeCoachSection(participantId, sectionId, meta?.badge ?? '');
+
+  const trainingSection = coachTrainingSectionType(sectionId);
+  if (trainingSection) {
+    void insertCoachTrainingEvent(participantId, {
+      sectionType: trainingSection,
+      eventType: 'accepted',
+      task: defaultCoachTrainingTask(sectionId),
+      inputFields: {
+        ...section.data,
+        ...extra,
+        customFields: extra.customFields ?? section.data.customFields ?? {},
+      },
+      inputLabels: buildCoachTrainingLabels(sectionId, extra, section.data),
+      outputText: polished,
+      variant: extra.selectedVariant ? String(extra.selectedVariant) : null,
+    });
+  }
+
   return getCoachProgress(participantId);
 }
 

@@ -23,6 +23,15 @@ const coachGenerateSchema = z.object({
     .optional(),
   currentDraft: z.string().optional(),
   refineAction: z.string().optional(),
+  ragExamples: z
+    .array(
+      z.object({
+        input_labels: z.record(z.unknown()).optional(),
+        output_text: z.string(),
+        variant: z.string().nullable().optional(),
+      }),
+    )
+    .optional(),
 });
 
 /** @param {import('express').Express} app */

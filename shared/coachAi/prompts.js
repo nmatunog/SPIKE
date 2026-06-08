@@ -1,3 +1,5 @@
+import { formatRagExamplesForPrompt } from './rag.js';
+
 /** @param {Record<string, unknown>} payload */
 function buildRules(payload) {
   const { task, wordLimit = 25, wordMin = 0, statementType = '' } = payload;
@@ -34,11 +36,24 @@ function buildRules(payload) {
 
 /** @param {Record<string, unknown>} payload */
 export function buildCoachPrompt(payload) {
-  const { task, variant, fields = {}, currentDraft = '', refineAction = '', statementType = '' } = payload;
+  const {
+    task,
+    variant,
+    fields = {},
+    currentDraft = '',
+    refineAction = '',
+    statementType = '',
+    ragExamples = [],
+  } = payload;
   const rules = buildRules(payload);
+  const ragBlock = formatRagExamplesForPrompt(
+    /** @type {Array<{ input_labels?: Record<string, unknown>, output_text?: string }>} */ (ragExamples),
+  );
+  const prefix = ragBlock ? `${ragBlock}\n\n` : '';
 
   if (task === 'generate_ambition') {
     return [
+      prefix,
       'Write three ambition statement variants from these ranked motivators.',
       `Motivators (most important first): ${fields.motivators ?? ''}`,
       'Short = concise. Balanced = role + contribution. Inspirational = aspirational but specific.',
@@ -48,6 +63,7 @@ export function buildCoachPrompt(payload) {
 
   if (task === 'generate_impact') {
     return [
+      prefix,
       'Write one impact statement — who they help and the difference they make.',
       `Audiences: ${fields.audiences ?? ''}`,
       rules,
@@ -57,6 +73,7 @@ export function buildCoachPrompt(payload) {
 
   if (task === 'generate_tagline') {
     return [
+      prefix,
       'Write a memorable personal tagline (3–6 words total, 2–3 short beats).',
       `Ambition: ${fields.ambition ?? ''}`,
       `Impact: ${fields.impact ?? ''}`,
@@ -67,6 +84,7 @@ export function buildCoachPrompt(payload) {
 
   if (task === 'generate_values') {
     return [
+      prefix,
       'Write one paragraph describing how these three values guide their leadership.',
       `Top 3 values (ranked): ${fields.values ?? ''}`,
       rules,
@@ -76,6 +94,7 @@ export function buildCoachPrompt(payload) {
 
   if (task === 'generate_future_self') {
     return [
+      prefix,
       'Write a Future Self narrative set 3 years ahead, plus a one-sentence summary.',
       `Goals: ${fields.goals ?? ''}`,
       `Income level: ${fields.income ?? ''}`,
@@ -88,6 +107,7 @@ export function buildCoachPrompt(payload) {
 
   if (task === 'regenerate_ambition') {
     return [
+      prefix,
       'Turn these chat replies into one ambition statement.',
       `Style: ${variant ?? 'balanced'}.`,
       `Role: ${fields.role ?? ''}`,
@@ -99,6 +119,7 @@ export function buildCoachPrompt(payload) {
 
   if (task === 'regenerate_impact' || task === 'regenerate_purpose') {
     return [
+      prefix,
       'Turn these replies into one impact statement.',
       `Who they help: ${fields.audience ?? ''}`,
       `Difference they create: ${fields.outcome ?? ''}`,
@@ -109,6 +130,7 @@ export function buildCoachPrompt(payload) {
   if (task === 'regenerate_tagline') {
     const beats = [fields.word1, fields.word2, fields.word3].filter(Boolean).join(' | ');
     return [
+      prefix,
       'Turn these tagline beats into a short 2–3 phrase tagline.',
       `Beats: ${beats}`,
       rules,
@@ -117,6 +139,7 @@ export function buildCoachPrompt(payload) {
 
   if (task === 'refine_statement') {
     return [
+      prefix,
       'Refine this draft per the instruction. Keep the intern\'s voice and facts.',
       `Section: ${statementType || 'statement'}`,
       `Draft:\n${currentDraft}`,
@@ -125,7 +148,7 @@ export function buildCoachPrompt(payload) {
     ].join('\n');
   }
 
-  return [`Improve this coach draft.\nDraft: ${currentDraft}\n`, rules].join('\n');
+  return [`${prefix}Improve this coach draft.\nDraft: ${currentDraft}\n`, rules].join('\n');
 }
 
 /** @param {string} raw */

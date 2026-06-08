@@ -32,3 +32,9 @@ export {
   fetchResearchProjectsForSquad,
 } from './researchSquads.js';
 export { fetchResearchAnalytics, upsertResearchAnalytics } from './researchAnalytics.js';
+export {
+  buildCoachTrainingLabels,
+  fetchCoachRagExamplesForPrompt,
+  insertCoachTrainingEvent,
+  loadCoachRagExamples,
+} from './coachTraining.js';

@@ -76,6 +76,18 @@ export function getCoachProfile(participantId) {
   return readAll()[participantId] ?? null;
 }
 
+/**
+ * @param {string} participantId
+ * @param {Record<string, Record<string, string[]>>} coachLexicon
+ */
+export function patchCoachProfileLexicon(participantId, coachLexicon) {
+  const all = readAll();
+  const user = ensureCoachUser(participantId);
+  user.coachLexicon = coachLexicon;
+  all[participantId] = user;
+  writeAll(all);
+}
+
 /** @param {string} participantId @param {string} sectionId */
 export function getCoachSection(participantId, sectionId) {
   ensureCoachUser(participantId);
