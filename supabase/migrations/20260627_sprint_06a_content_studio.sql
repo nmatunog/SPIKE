@@ -1,5 +1,23 @@
 -- SPIKE Sprint 06A — Content Studio™ (curriculum CMS)
 -- Run AFTER prior sprint migrations. Idempotent.
+-- Requires: schema.sql + 20260606_sprint_01_scaffold.sql (segments/weeks/days).
+-- Creates `sessions` below if 20260620_sprint_02 was skipped.
+
+-- ------------------------------
+-- Prerequisite: sessions (Sprint 02)
+-- ------------------------------
+create table if not exists public.sessions (
+  id bigint generated always as identity primary key,
+  day_id bigint not null references public.days(id) on delete cascade,
+  session_number integer not null check (session_number >= 1),
+  title text not null,
+  duration_minutes integer,
+  sort_order integer not null default 0,
+  created_at timestamptz not null default now(),
+  unique (day_id, session_number)
+);
+
+create index if not exists sessions_day_id_idx on public.sessions(day_id);
 
 -- ------------------------------
 -- Extend curriculum hierarchy for CMS
