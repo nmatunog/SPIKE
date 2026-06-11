@@ -4,6 +4,8 @@ import { PageContainer, PageTitle } from '../../components/layout/PageContainer.
 import { RoleDashboardCards } from '../../components/dashboard/RoleDashboardCards.jsx';
 import { MentorDay1Panel } from '../../components/day1/MentorDay1Panel.jsx';
 import { FrameworkMetric } from '../../components/framework/FrameworkSections.jsx';
+import { MentorDashboardPanels } from '../../components/mentor/MentorDashboardPanels.jsx';
+import { MENTOR_PHILOSOPHY } from '../../lib/mentorWeek1Constants.js';
 import {
   deriveBlueprintCompletionPct,
   deriveMentorRiskFlags,
@@ -36,8 +38,7 @@ export function MentorHomePage({ user, interns, internSummary, pendingLogs = [],
       </PageTitle>
 
       <div className="mb-4 rounded-xl border border-sky-100 bg-sky-50 px-4 py-3 text-sm text-sky-950">
-        <strong>Mentor answers:</strong> What should participants become? You own discussions, coaching,
-        reflection, career conversations, and accountability — not classroom delivery.
+        {MENTOR_PHILOSOPHY}
       </div>
 
       <RoleDashboardCards
@@ -70,19 +71,7 @@ export function MentorHomePage({ user, interns, internSummary, pendingLogs = [],
         </Link>
       </div>
 
-      {squads.length ? (
-        <section className="mt-6 spike-card">
-          <h3 className="text-sm font-semibold text-slate-900">Assigned squads</h3>
-          <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-            {squads.map((squad) => (
-              <li key={squad.name} className="rounded-xl bg-slate-50 px-3 py-2 text-sm">
-                <span className="font-semibold text-slate-900">{squad.name}</span>
-                <span className="text-slate-500"> · {squad.count} members</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
+      <MentorDashboardPanels interns={interns} />
 
       {atRisk.length ? (
         <section className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
@@ -92,7 +81,7 @@ export function MentorHomePage({ user, interns, internSummary, pendingLogs = [],
           <ul className="mt-2 space-y-1 text-sm text-amber-900">
             {atRisk.map((intern) => (
               <li key={intern.id}>
-                <Link to={`${ROUTES.mentorVentureCoach}/${intern.id}`} className="font-semibold hover:underline">
+                <Link to={`${ROUTES.mentorParticipant}/${intern.id}`} className="font-semibold hover:underline">
                   {intern.name}
                 </Link>{' '}
                 — {intern.hours}h, not yet licensed

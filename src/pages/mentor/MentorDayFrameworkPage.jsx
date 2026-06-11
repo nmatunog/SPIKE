@@ -45,16 +45,20 @@ export function MentorDayFrameworkPage() {
 
       <header className="mb-6">
         <p className="spike-label text-sky-700">Mentor Framework · Seg {seg} Week {wk} Day {dy}</p>
-        <h1 className="text-2xl font-bold text-slate-900">{guide.coaching_objective}</h1>
-        {data?.weekTheme ? <p className="mt-1 text-sm text-slate-600">{data.weekTheme}</p> : null}
+        <h1 className="text-2xl font-bold text-slate-900">
+          {guide.theme ? `${guide.theme}: ` : ''}
+          {guide.coaching_objective}
+        </h1>
+        {data?.weekTheme ? <p className="mt-1 text-sm text-slate-600">Week theme — {data.weekTheme}</p> : null}
       </header>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <FrameworkBulletList title="Discussion questions" items={guide.discussion_questions} />
+        <FrameworkBulletList title="Observation areas" items={guide.observation_areas ?? []} />
         <FrameworkBulletList title="Reflection prompts" items={guide.reflection_prompts} />
         <FrameworkBulletList title="Warning signs" items={guide.warning_signs} />
         <FrameworkBulletList title="Coaching tips" items={guide.coaching_tips} />
-        <FrameworkBulletList title="Expected outcomes" items={guide.expected_outcomes} />
+        <FrameworkBulletList title="Expected output" items={guide.expected_outcomes} />
       </div>
 
       <Link to={ROUTES.mentorVentureCoach} className="mt-6 inline-flex spike-btn-primary">

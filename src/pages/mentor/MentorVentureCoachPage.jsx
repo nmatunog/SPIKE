@@ -1,23 +1,24 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, ChevronDown, ChevronUp, Loader2, MessageSquare } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { PageContainer } from '../../components/layout/PageContainer.jsx';
 import {
-  listCoachingNotesForParticipant,
-  saveVentureCoachMentorFeedback,
-} from '../../lib/coachingService.js';
+  MentorCoachingHistory,
+  MentorCoachingSessionForm,
+} from '../../components/mentor/MentorCoachingSessionForm.jsx';
+import { MentorParticipantOutputs } from '../../components/mentor/MentorParticipantOutputs.jsx';
+import { MentorWeek1SummaryPanel } from '../../components/mentor/MentorWeek1SummaryPanel.jsx';
+import { MentorWeeklyAssessmentPanel } from '../../components/mentor/MentorWeeklyAssessmentPanel.jsx';
+import { listCoachingNotesForParticipant } from '../../lib/coachingService.js';
 import { getCoachSummaryForMentor } from '../../lib/ventureCoachService.js';
 import { COACH_VALUE_CARDS, VENTURE_DIRECTION_CARDS } from '../../lib/ventureCoachConstants.js';
 import { labelFor } from '../../lib/ventureCoachEngine.js';
 import { ROUTES } from '../../routes/paths.js';
 
-/** @typedef {'Comment' | 'Approve' | 'Request Reflection' | 'Flag Concern' | 'Schedule Follow-Up'} MentorAction */
-
-const MENTOR_ACTIONS = ['Comment', 'Approve', 'Request Reflection', 'Flag Concern', 'Schedule Follow-Up'];
-
 /**
+ * Participant Coaching Card — 360° profile for mentors.
  * @param {{
- *   interns?: Array<{ id: string, name: string }>,
+ *   interns?: Array<{ id: string, name: string, squad?: string }>,
  *   mentorId?: string,
  *   readOnly?: boolean,
  *   showToast?: (message: string, type?: string) => void,
@@ -32,18 +33,13 @@ export function MentorVentureCoachPage({
   const { participantId } = useParams();
   const intern = interns.find((i) => i.id === participantId);
   const summary = participantId ? getCoachSummaryForMentor(participantId) : null;
-  const [note, setNote] = useState('');
-  const [followUpDate, setFollowUpDate] = useState('');
-  const [action, setAction] = useState(/** @type {MentorAction | ''} */ (''));
-  const [saving, setSaving] = useState(false);
-  const [history, setHistory] = useState(() =>
-    participantId ? listCoachingNotesForParticipant(participantId) : [],
-  );
+  const [historyKey, setHistoryKey] = useState(0);
+  const history = participantId ? listCoachingNotesForParticipant(participantId) : [];
 
   if (!participantId) {
     return (
       <PageContainer>
-        <p className="text-sm text-slate-600">Select a participant to view their Venture Coach progress.</p>
+        <p className="text-sm text-slate-600">Select a participant to open their coaching card.</p>
       </PageContainer>
     );
   }
@@ -51,34 +47,12 @@ export function MentorVentureCoachPage({
   const trackLabel =
     VENTURE_DIRECTION_CARDS.find((c) => c.id === summary?.ventureDirection)?.label ??
     summary?.ventureDirection ??
-    '—';
+    'Exploring';
 
   const topThreeLabels = (summary?.topThreeValues ?? []).map((id) => labelFor(id, COACH_VALUE_CARDS));
 
-  async function submitAction(selectedAction) {
-    if (readOnly || !mentorId) {
-      showToast?.('Sign in as a mentor or faculty member to save feedback.', 'info');
-      return;
-    }
-
-    setSaving(true);
-    try {
-      const entry = await saveVentureCoachMentorFeedback(mentorId, participantId, selectedAction, note, {
-        followUpDate: selectedAction === 'Schedule Follow-Up' ? followUpDate : undefined,
-        week: 1,
-        day: 1,
-      });
-      if (!entry) {
-        showToast?.('Add a coaching note before saving.', 'info');
-        return;
-      }
-      setAction(selectedAction);
-      setHistory(listCoachingNotesForParticipant(participantId));
-      setNote('');
-      showToast?.(`${selectedAction} saved — intern will see it in Leadership Journal.`);
-    } finally {
-      setSaving(false);
-    }
+  function refreshHistory() {
+    setHistoryKey((k) => k + 1);
   }
 
   return (
@@ -91,102 +65,79 @@ export function MentorVentureCoachPage({
       </Link>
 
       <header className="mb-6">
-        <p className="spike-label text-spike">AI Venture Coach™</p>
+        <p className="spike-label text-spike">Participant Coaching Card</p>
         <h1 className="text-2xl font-bold text-slate-900">{intern?.name ?? 'Participant'}</h1>
         <p className="mt-1 text-sm text-slate-600">
-          Progress: {summary?.progress?.percent ?? 0}% · {summary?.progress?.completed ?? 0}/
-          {summary?.progress?.total ?? 6} sections
+          {intern?.squad ? `${intern.squad} · ` : ''}
+          Venture Coach {summary?.progress?.percent ?? 0}% · {trackLabel}
         </p>
       </header>
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <SummaryCard title="Ambition" text={summary?.ambition} />
-        <SummaryCard title="Impact" text={summary?.impact ?? summary?.purpose} />
-        <SummaryCard
-          title="Top 3 Values"
-          text={topThreeLabels.length ? topThreeLabels.join(' · ') : undefined}
-        />
-        <SummaryCard title="Tagline" text={summary?.tagline} highlight />
-        <SummaryCard title="Future Self Summary" text={summary?.futureSelfSummary} />
-        <SummaryCard
-          title="Full Future Self Narrative"
-          text={summary?.futureSelf}
-          collapsible
-          defaultCollapsed
-        />
-        <SummaryCard title="Career Interest" text={trackLabel} className="lg:col-span-2" />
-      </div>
+      <section className="mb-6">
+        <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">Venture identity</h2>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <SummaryCard title="Ambition" text={summary?.ambition} />
+          <SummaryCard title="Impact" text={summary?.impact ?? summary?.purpose} />
+          <SummaryCard title="Values" text={topThreeLabels.length ? topThreeLabels.join(' · ') : undefined} />
+          <SummaryCard title="Tagline" text={summary?.tagline} highlight />
+        </div>
+      </section>
 
-      <section className="mt-6 spike-card space-y-4">
-        <h3 className="text-sm font-semibold text-slate-900">
-          {readOnly ? 'Mentor feedback history' : 'Mentor actions'}
-        </h3>
-        {!readOnly ? (
-          <>
-            <div className="flex flex-wrap gap-2">
-              {MENTOR_ACTIONS.map((label) => (
-                <button
-                  key={label}
-                  type="button"
-                  disabled={saving || !mentorId}
-                  onClick={() => void submitAction(/** @type {MentorAction} */ (label))}
-                  className={`rounded-full px-4 py-2 text-sm font-semibold transition disabled:opacity-50 ${
-                    action === label ? 'bg-spike text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                  }`}
-                >
-                  {saving && action === label ? (
-                    <span className="inline-flex items-center gap-1">
-                      <Loader2 size={14} className="animate-spin" /> Saving…
-                    </span>
-                  ) : (
-                    label
-                  )}
-                </button>
-              ))}
-            </div>
-            <label className="block">
-              <span className="mb-1 flex items-center gap-1 text-xs font-semibold text-slate-600">
-                <MessageSquare size={14} /> Coaching notes
-              </span>
-              <textarea
-                rows={3}
-                className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
-                value={note}
-                placeholder="Share coaching feedback on their venture coach journey…"
-                onChange={(e) => setNote(e.target.value)}
+      <section className="mb-6">
+        <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">Venture direction</h2>
+        <SummaryCard title="Career track" text={trackLabel} />
+      </section>
+
+      <section className="mb-6">
+        <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">Current outputs</h2>
+        <MentorParticipantOutputs participantId={participantId} participantName={intern?.name} />
+      </section>
+
+      <section className="mb-6 grid gap-4 lg:grid-cols-2">
+        <SummaryCard title="Future Self summary" text={summary?.futureSelfSummary} />
+        <SummaryCard title="Future Self narrative" text={summary?.futureSelf} collapsible defaultCollapsed />
+      </section>
+
+      {!readOnly && mentorId ? (
+        <>
+          <section className="mb-6 space-y-4">
+            <h2 className="text-sm font-bold uppercase tracking-wide text-slate-500">Coaching notes</h2>
+            <MentorCoachingSessionForm
+              mentorId={mentorId}
+              participantId={participantId}
+              showToast={showToast}
+              onSaved={refreshHistory}
+            />
+            <div className="spike-card">
+              <h3 className="mb-3 text-sm font-semibold text-slate-900">Session history</h3>
+              <MentorCoachingHistory
+                key={historyKey}
+                history={history}
+                participantId={participantId}
+                onUpdated={refreshHistory}
               />
-            </label>
-            {action === 'Schedule Follow-Up' ? (
-              <label className="block">
-                <span className="mb-1 text-xs font-semibold text-slate-600">Follow-up date</span>
-                <input
-                  type="date"
-                  className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
-                  value={followUpDate}
-                  onChange={(e) => setFollowUpDate(e.target.value)}
-                />
-              </label>
-            ) : null}
-            {!mentorId ? (
-              <p className="text-sm text-amber-800">Sign in to save coaching feedback.</p>
-            ) : null}
-          </>
-        ) : null}
+            </div>
+          </section>
 
-        {history.length ? (
-          <ul className="space-y-2 border-t border-slate-100 pt-4">
-            {history.slice(0, 8).map((entry) => (
-              <li key={entry.id} className="rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-700">
-                <p className="text-xs font-semibold text-slate-500">
-                  {entry.topic ?? 'Coaching note'} · {new Date(entry.createdAt).toLocaleDateString()}
-                </p>
-                <p className="mt-1 whitespace-pre-wrap">{entry.notes}</p>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-sm text-slate-500">No coaching notes yet.</p>
-        )}
+          <section className="mb-6">
+            <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">Weekly assessment</h2>
+            <MentorWeeklyAssessmentPanel
+              mentorId={mentorId}
+              participantId={participantId}
+              showToast={showToast}
+              onSaved={refreshHistory}
+            />
+          </section>
+        </>
+      ) : null}
+
+      <section className="mb-6">
+        <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">Week 1 summary</h2>
+        <MentorWeek1SummaryPanel
+          participantId={participantId}
+          participantName={intern?.name ?? 'Participant'}
+          squad={intern?.squad}
+        />
       </section>
     </PageContainer>
   );
@@ -221,10 +172,9 @@ function SummaryCard({
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
-            className="text-slate-500 hover:text-spike"
-            aria-label={open ? 'Collapse' : 'Expand'}
+            className="text-xs font-semibold text-spike"
           >
-            {open ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            {open ? 'Collapse' : 'Expand'}
           </button>
         ) : null}
       </div>
@@ -237,9 +187,7 @@ function SummaryCard({
           {text}
         </p>
       ) : (
-        <p className="mt-2 text-sm text-slate-500">
-          {collapsible && hasText ? 'Tap to expand full narrative.' : 'Not completed yet.'}
-        </p>
+        <p className="mt-2 text-sm text-slate-500">Not completed yet.</p>
       )}
     </div>
   );

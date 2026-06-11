@@ -32,6 +32,11 @@ export async function saveMentorCoachingNote(mentorId, participantId, notes, opt
 
   const topic = String(options.topic || 'Playbook coaching note').slice(0, 200);
 
+  const actionItems = (options.actionItems ?? [])
+    .map((item) => String(item).trim())
+    .filter(Boolean)
+    .slice(0, 8);
+
   const entry = {
     id: `coach-${crypto.randomUUID()}`,
     mentorId,
@@ -39,6 +44,16 @@ export async function saveMentorCoachingNote(mentorId, participantId, notes, opt
     topic,
     action: options.action ?? null,
     notes: trimmed,
+    discussionSummary: options.discussionSummary ?? trimmed,
+    strengths: options.strengths ?? '',
+    growthAreas: options.growthAreas ?? '',
+    actionItems,
+    week: options.week ?? 1,
+    day: options.day ?? 1,
+    concernFlagged: Boolean(options.concernFlagged),
+    followUpRequired: Boolean(options.followUpRequired ?? options.followUpDate),
+    followUpDate: options.followUpDate ?? null,
+    completed: Boolean(options.completed),
     createdAt: new Date().toISOString(),
   };
 
@@ -52,10 +67,13 @@ export async function saveMentorCoachingNote(mentorId, participantId, notes, opt
     topic,
     notes: trimmed,
     concernFlagged: options.concernFlagged,
+    followUpRequired: options.followUpRequired,
     followUpDate: options.followUpDate,
-    discussionSummary: options.discussionSummary,
+    completed: options.completed,
+    discussionSummary: options.discussionSummary ?? trimmed,
     strengths: options.strengths,
     growthAreas: options.growthAreas,
+    actionItems,
     week: options.week,
     day: options.day,
   });
@@ -78,9 +96,62 @@ export async function saveMentorCoachingNote(mentorId, participantId, notes, opt
   return entry;
 }
 
+/**
+ * Structured coaching session save (Module 3).
+ * @param {string} mentorId
+ * @param {string} participantId
+ * @param {{
+ *   week?: number,
+ *   day?: number,
+ *   discussionSummary?: string,
+ *   strengths?: string,
+ *   growthAreas?: string,
+ *   actionItems?: string[],
+ *   followUpRequired?: boolean,
+ *   followUpDate?: string,
+ *   completed?: boolean,
+ *   topic?: string,
+ * }} input
+ */
+export async function saveCoachingSession(mentorId, participantId, input) {
+  const summary = String(input.discussionSummary ?? '').trim();
+  if (!summary || !mentorId || !participantId) return null;
+
+  return saveMentorCoachingNote(mentorId, participantId, summary, {
+    topic: input.topic ?? `Week ${input.week ?? 1} Day ${input.day ?? 1} coaching`,
+    discussionSummary: summary,
+    strengths: input.strengths,
+    growthAreas: input.growthAreas,
+    actionItems: input.actionItems,
+    followUpRequired: input.followUpRequired,
+    followUpDate: input.followUpDate,
+    completed: input.completed,
+    week: input.week,
+    day: input.day,
+  });
+}
+
+/** @param {string} sessionId @param {string} participantId */
+export function markCoachingSessionComplete(sessionId, participantId) {
+  const all = readAll();
+  const list = all[participantId] ?? [];
+  const next = list.map((entry) =>
+    entry.id === sessionId ? { ...entry, completed: true, completedAt: new Date().toISOString() } : entry,
+  );
+  all[participantId] = next;
+  writeAll(all);
+  return next.find((e) => e.id === sessionId) ?? null;
+}
+
 /** @param {string} participantId */
 export function listCoachingNotesForParticipant(participantId) {
   return readAll()[participantId] ?? [];
+}
+
+/** @param {string[]} participantIds */
+export function listAllCoachingSessionsForParticipants(participantIds) {
+  const all = readAll();
+  return participantIds.flatMap((id) => (all[id] ?? []).map((entry) => ({ ...entry, participantId: id })));
 }
 
 /** @param {string[]} participantIds */

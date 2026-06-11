@@ -1441,11 +1441,14 @@ const SpikeMasterPortal = () => {
           </LazyRoute>
         );
       }
-      if (path.startsWith(`${ROUTES.mentorVentureCoach}/`)) {
+      if (
+        path.startsWith(`${ROUTES.mentorVentureCoach}/`)
+        || path.startsWith(`${ROUTES.mentorParticipant}/`)
+      ) {
         return (
-          <LazyRoute label="Loading Venture Coach review…">
+          <LazyRoute label="Loading participant coaching card…">
             <MentorVentureCoachPage
-              interns={interns.map((i) => ({ id: i.id, name: i.name }))}
+              interns={interns.map((i) => ({ id: i.id, name: i.name, squad: i.squad }))}
               mentorId={user?.id}
               showToast={showToast}
             />

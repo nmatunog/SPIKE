@@ -21,6 +21,7 @@
     "smoke:content:loader": "node scripts/smoke-content-loader.mjs",
     "smoke:canvas-pptx": "node scripts/smoke-canvas-pptx.mjs",
     "smoke:coach-compose": "node scripts/smoke-coach-compose.mjs",
+    "smoke:mentor-week1": "node scripts/smoke-mentor-week1.mjs",
     "cap:sync": "CAPACITOR=true npm run build && npx cap sync",
     "cap:ios": "npm run cap:sync && npx cap open ios",
     "cap:android": "npm run cap:sync && npx cap open android",

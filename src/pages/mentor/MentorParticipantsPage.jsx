@@ -50,7 +50,7 @@ export function MentorParticipantsPage({ interns = [] }) {
 
                 <div className="mt-4 flex flex-wrap gap-2">
                   <Link
-                    to={`${ROUTES.mentorVentureCoach}/${intern.id}`}
+                    to={`${ROUTES.mentorParticipant}/${intern.id}`}
                     className="inline-flex items-center gap-1 rounded-lg bg-spike px-3 py-2 text-xs font-semibold text-white hover:bg-red-900"
                   >
                     <Sparkles size={14} /> Venture Coach

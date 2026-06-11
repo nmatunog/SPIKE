@@ -17,6 +17,7 @@ export const ROUTES = {
   adminContentStudio: '/admin/content-studio',
   adminContentStudioDayBuilder: '/admin/content-studio/day-builder',
   mentorVentureCoach: '/mentor/participants',
+  mentorParticipant: '/mentor/participant',
   analyticsCohortIdentity: '/analytics/cohort-identity',
   facultyHome: '/faculty',
   mentorHome: '/mentor',
@@ -203,7 +204,10 @@ export function matchModulePath(pathname) {
   if (pathname === ROUTES.myVenturePortfolio || pathname.startsWith(`${ROUTES.myVenturePortfolio}/`)) {
     return ROUTES.myVenturePortfolio;
   }
-  if (pathname.startsWith(`${ROUTES.mentorVentureCoach}/`)) {
+  if (
+    pathname.startsWith(`${ROUTES.mentorVentureCoach}/`)
+    || pathname.startsWith(`${ROUTES.mentorParticipant}/`)
+  ) {
     return ROUTES.mentorVentureCoach;
   }
 
@@ -240,7 +244,11 @@ export function rolesForRoute(pathname) {
     return ['mentor', 'admin'];
   }
   if (pathname === ROUTES.analyticsCohortIdentity) return ['faculty', 'admin', 'mentor'];
-  if (pathname === ROUTES.mentorVentureCoach || pathname.startsWith(`${ROUTES.mentorVentureCoach}/`)) {
+  if (
+    pathname === ROUTES.mentorVentureCoach
+    || pathname.startsWith(`${ROUTES.mentorVentureCoach}/`)
+    || pathname.startsWith(`${ROUTES.mentorParticipant}/`)
+  ) {
     return ['mentor', 'admin'];
   }
 

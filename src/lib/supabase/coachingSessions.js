@@ -6,7 +6,7 @@ const MAX_NOTES = 4000;
 /**
  * @param {string} mentorId
  * @param {string} participantId
- * @param {{ topic: string, notes: string, week?: number, day?: number, discussionSummary?: string, strengths?: string, growthAreas?: string, concernFlagged?: boolean, followUpDate?: string, actionItems?: string[] }} input
+ * @param {{ topic: string, notes: string, week?: number, day?: number, discussionSummary?: string, strengths?: string, growthAreas?: string, concernFlagged?: boolean, followUpRequired?: boolean, followUpDate?: string, completed?: boolean, actionItems?: string[] }} input
  */
 export async function createCoachingSession(mentorId, participantId, input) {
   if (!isSupabaseConfigured || !supabase || !mentorId || !participantId) return null;
@@ -27,7 +27,9 @@ export async function createCoachingSession(mentorId, participantId, input) {
       strengths: input.strengths ?? null,
       growth_areas: input.growthAreas ?? null,
       concern_flagged: Boolean(input.concernFlagged),
+      follow_up_required: Boolean(input.followUpRequired),
       follow_up_date: input.followUpDate ?? null,
+      completed: Boolean(input.completed),
       action_items: input.actionItems ?? [],
     })
     .select('id')
