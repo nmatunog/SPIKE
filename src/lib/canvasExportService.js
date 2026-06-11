@@ -4,6 +4,7 @@
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import PptxGenJS from 'pptxgenjs';
+import { VENTURE_READINESS_WEIGHTS } from './ventureReadinessScore.js';
 
 const EXPORT_WIDTH = 1920;
 const EXPORT_HEIGHT = 1080;
@@ -275,6 +276,296 @@ function addYearAmbitionBox(pptx, slide, box) {
 }
 
 /**
+ * @param {import('pptxgenjs').default} pptx
+ * @param {import('pptxgenjs').Slide} slide
+ * @param {{ x: number, y: number, w: number, h: number, roadmap: NonNullable<import('./executiveCanvasModel.js').ReturnType<typeof import('./executiveCanvasModel.js').buildExecutiveCanvasModel>['acsRoadmap']> }} box
+ */
+function addAcsRoadmapBox(pptx, slide, box) {
+  addCanvasBox(pptx, slide, {
+    x: box.x,
+    y: box.y,
+    w: box.w,
+    h: box.h,
+    fill: PPT_COLORS.white,
+    line: PPT_COLORS.borderStrong,
+    lineWidth: 1,
+  });
+  slide.addText('ACS Career Roadmap', {
+    x: box.x + 0.1,
+    y: box.y + 0.06,
+    w: box.w - 0.2,
+    h: 0.18,
+    fontSize: 8,
+    bold: true,
+    color: PPT_COLORS.spike,
+  });
+
+  const ladder = box.roadmap.ladder ?? [];
+  const stepH = Math.min(0.42, (box.h - 0.72) / Math.max(ladder.length, 1));
+  let stepY = box.y + 0.3;
+
+  ladder.forEach((step, idx) => {
+    const isCurrent = step.key === box.roadmap.currentKey;
+    const isTarget = step.key === box.roadmap.targetKey;
+    const fill = isCurrent ? PPT_COLORS.spike : isTarget ? PPT_COLORS.spikeMuted : 'F1F5F9';
+    const textColor = isCurrent ? PPT_COLORS.white : isTarget ? PPT_COLORS.spike : PPT_COLORS.text;
+    const lineColor = isTarget ? PPT_COLORS.spike : PPT_COLORS.border;
+
+    addCanvasBox(pptx, slide, {
+      x: box.x + 0.12,
+      y: stepY,
+      w: box.w - 0.24,
+      h: stepH - 0.06,
+      fill,
+      line: lineColor,
+      lineWidth: isTarget ? 1.25 : 0.75,
+    });
+    slide.addText(step.label, {
+      x: box.x + 0.18,
+      y: stepY + 0.04,
+      w: box.w - 0.36,
+      h: stepH - 0.14,
+      fontSize: 7.5,
+      bold: isCurrent || isTarget,
+      color: textColor,
+      align: 'center',
+      valign: 'middle',
+    });
+
+    if (idx < ladder.length - 1) {
+      slide.addText('↓', {
+        x: box.x + box.w / 2 - 0.1,
+        y: stepY + stepH - 0.08,
+        w: 0.2,
+        h: 0.12,
+        fontSize: 8,
+        color: PPT_COLORS.muted,
+        align: 'center',
+      });
+    }
+    stepY += stepH;
+  });
+
+  slide.addText(`Readiness score: ${box.roadmap.readinessScore ?? 0}%`, {
+    x: box.x + 0.1,
+    y: box.y + box.h - 0.28,
+    w: box.w - 0.2,
+    h: 0.2,
+    fontSize: 7.5,
+    color: PPT_COLORS.muted,
+  });
+}
+
+/**
+ * @param {import('pptxgenjs').Slide} slide
+ * @param {{ x: number, y: number, w: number, h: number, title: string, metrics: Array<{ label: string, value: string | number }> }} strip
+ */
+function addMetricStrip(slide, strip) {
+  slide.addText(strip.title, {
+    x: strip.x,
+    y: strip.y,
+    w: strip.w,
+    h: 0.16,
+    fontSize: 7,
+    bold: true,
+    color: PPT_COLORS.spike,
+  });
+
+  const metrics = strip.metrics ?? [];
+  const cols = Math.min(metrics.length, 5);
+  const cellW = (strip.w - 0.04) / cols;
+  const cellH = strip.h - 0.2;
+
+  metrics.forEach((metric, idx) => {
+    const cellX = strip.x + idx * cellW;
+    slide.addText(String(metric.value ?? '0'), {
+      x: cellX,
+      y: strip.y + 0.18,
+      w: cellW,
+      h: cellH * 0.55,
+      fontSize: 9,
+      bold: true,
+      color: PPT_COLORS.text,
+      align: 'center',
+      valign: 'bottom',
+    });
+    slide.addText(metric.label, {
+      x: cellX,
+      y: strip.y + 0.18 + cellH * 0.5,
+      w: cellW,
+      h: cellH * 0.45,
+      fontSize: 6.5,
+      color: PPT_COLORS.muted,
+      align: 'center',
+      valign: 'top',
+    });
+  });
+}
+
+/**
+ * @param {import('pptxgenjs').default} pptx
+ * @param {import('pptxgenjs').Slide} slide
+ * @param {{ x: number, y: number, w: number, h: number, metrics: NonNullable<import('./executiveCanvasModel.js').ReturnType<typeof import('./executiveCanvasModel.js').buildExecutiveCanvasModel>['metrics']>, showRecruitment: boolean }} box
+ */
+function addKeyMetricsBox(pptx, slide, box) {
+  addCanvasBox(pptx, slide, {
+    x: box.x,
+    y: box.y,
+    w: box.w,
+    h: box.h,
+    fill: PPT_COLORS.white,
+    line: PPT_COLORS.borderStrong,
+    lineWidth: 1,
+  });
+  slide.addText('Key Metrics Snapshot', {
+    x: box.x + 0.1,
+    y: box.y + 0.06,
+    w: box.w - 0.2,
+    h: 0.18,
+    fontSize: 8,
+    bold: true,
+    color: PPT_COLORS.spike,
+  });
+
+  const stripCount = box.showRecruitment ? 3 : 1;
+  const stripH = (box.h - 0.34) / stripCount;
+  const strips = [
+    { title: 'Client Metrics', metrics: box.metrics.client },
+  ];
+  if (box.showRecruitment) {
+    strips.push(
+      { title: 'Recruitment Metrics', metrics: box.metrics.recruitment },
+      { title: 'Leadership Metrics', metrics: box.metrics.leadership },
+    );
+  }
+
+  strips.forEach((strip, idx) => {
+    addMetricStrip(slide, {
+      x: box.x + 0.1,
+      y: box.y + 0.28 + idx * stripH,
+      w: box.w - 0.2,
+      h: stripH - 0.06,
+      title: strip.title,
+      metrics: strip.metrics,
+    });
+  });
+}
+
+/**
+ * @param {import('pptxgenjs').default} pptx
+ * @param {import('pptxgenjs').Slide} slide
+ * @param {{ x: number, y: number, w: number, h: number, readiness: NonNullable<import('./executiveCanvasModel.js').ReturnType<typeof import('./executiveCanvasModel.js').buildExecutiveCanvasModel>['readiness']> }} box
+ */
+function addReadinessScoreBox(pptx, slide, box) {
+  addCanvasBox(pptx, slide, {
+    x: box.x,
+    y: box.y,
+    w: box.w,
+    h: box.h,
+    fill: PPT_COLORS.spikeMuted,
+    line: PPT_COLORS.borderStrong,
+    lineWidth: 1,
+  });
+  slide.addText('SPIKE Venture Readiness Score™', {
+    x: box.x + 0.1,
+    y: box.y + 0.06,
+    w: box.w - 0.2,
+    h: 0.18,
+    fontSize: 7.5,
+    bold: true,
+    color: PPT_COLORS.spike,
+  });
+  slide.addText(String(box.readiness.composite ?? 0), {
+    x: box.x + 0.1,
+    y: box.y + 0.24,
+    w: box.w - 0.2,
+    h: 0.45,
+    fontSize: 22,
+    bold: true,
+    color: PPT_COLORS.spike,
+    align: 'center',
+  });
+
+  const dimLines = VENTURE_READINESS_WEIGHTS.map(
+    (dim) => `${dim.label} (${dim.weight}%): ${box.readiness.dimensions?.[dim.key] ?? 0}%`,
+  );
+
+  slide.addText(dimLines.join('\n'), {
+    x: box.x + 0.1,
+    y: box.y + 0.72,
+    w: box.w - 0.2,
+    h: box.h - 0.8,
+    fontSize: 6.5,
+    color: PPT_COLORS.text,
+    valign: 'top',
+    lineSpacingMultiple: 1.1,
+  });
+}
+
+/**
+ * @param {import('pptxgenjs').default} pptx
+ * @param {import('./executiveCanvasModel.js').ReturnType<typeof import('./executiveCanvasModel.js').buildExecutiveCanvasModel>} model
+ */
+function addExecutiveCanvasMetricsSlide(pptx, model) {
+  const slide = pptx.addSlide();
+  slide.background = { color: PPT_COLORS.canvasBg };
+
+  const marginX = 0.35;
+  const contentW = 9.3;
+  const rowY = 0.55;
+  const rowH = 4.75;
+  const gap = 0.1;
+
+  slide.addText('Executive Canvas — Roadmap & Metrics', {
+    x: marginX,
+    y: 0.15,
+    w: contentW,
+    h: 0.35,
+    fontSize: 16,
+    bold: true,
+    color: PPT_COLORS.spike,
+  });
+
+  const hasRoadmap = Boolean(model.acsRoadmap);
+  const showRecruitment = Boolean(model.acsRoadmap);
+  const roadmapW = hasRoadmap ? contentW * 0.38 : 0;
+  const readinessW = contentW * 0.28;
+  const metricsW = contentW - roadmapW - readinessW - (hasRoadmap ? gap * 2 : gap);
+
+  let cursorX = marginX;
+  if (hasRoadmap && model.acsRoadmap) {
+    addAcsRoadmapBox(pptx, slide, {
+      x: cursorX,
+      y: rowY,
+      w: roadmapW,
+      h: rowH,
+      roadmap: model.acsRoadmap,
+    });
+    cursorX += roadmapW + gap;
+  }
+
+  if (model.metrics) {
+    addKeyMetricsBox(pptx, slide, {
+      x: cursorX,
+      y: rowY,
+      w: metricsW,
+      h: rowH,
+      metrics: model.metrics,
+      showRecruitment,
+    });
+    cursorX += metricsW + gap;
+  }
+
+  addReadinessScoreBox(pptx, slide, {
+    x: cursorX,
+    y: rowY,
+    w: readinessW,
+    h: rowH,
+    readiness: model.readiness,
+  });
+}
+
+/**
  * @param {import('./executiveCanvasModel.js').ReturnType<typeof import('./executiveCanvasModel.js').buildExecutiveCanvasModel>} model
  * @param {string} [filename]
  */
@@ -413,6 +704,8 @@ export async function exportExecutiveCanvasPpt(model, filename = 'spike-executiv
       align: 'center',
     },
   );
+
+  addExecutiveCanvasMetricsSlide(pptx, model);
 
   await pptx.writeFile({ fileName: filename });
 }

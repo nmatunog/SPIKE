@@ -10,6 +10,14 @@ import { join } from 'node:path';
 import JSZip from 'jszip';
 import { exportExecutiveCanvasPpt } from '../src/lib/canvasExportService.js';
 
+const ACS_CAREER_LADDER = [
+  { key: 'advisor', label: 'Advisor' },
+  { key: 'associate_unit_manager', label: 'Associate Unit Manager' },
+  { key: 'unit_manager', label: 'Unit Manager' },
+  { key: 'senior_unit_manager', label: 'Senior Unit Manager' },
+  { key: 'agency_director', label: 'Agency Director' },
+];
+
 const SLIDE_HEIGHT_IN = 5.625;
 const EMU_PER_INCH = 914400;
 
@@ -58,8 +66,56 @@ function buildFixtureModel() {
       { year: 'Year 2', goal: 'Build Team' },
       { year: 'Year 3', goal: 'Build Leaders' },
     ],
-    readiness: { composite: 35, dimensions: {} },
+    acsRoadmap: {
+      ladder: ACS_CAREER_LADDER,
+      currentKey: 'advisor',
+      targetKey: 'unit_manager',
+      readinessScore: 42,
+    },
+    metrics: {
+      client: [
+        { label: 'Prospects', value: 12 },
+        { label: 'Appointments', value: 4 },
+        { label: 'FNAs', value: 2 },
+        { label: 'Proposals', value: 1 },
+        { label: 'Issued Cases', value: 0 },
+      ],
+      recruitment: [
+        { label: 'Leads', value: 3 },
+        { label: 'Interviews', value: 1 },
+        { label: 'Candidates', value: 0 },
+        { label: 'Licensed', value: 0 },
+        { label: 'Active Advisors', value: 0 },
+      ],
+      leadership: [
+        { label: 'Emerging Leaders', value: 0 },
+        { label: 'Team Members', value: 0 },
+        { label: 'Team Production', value: 0 },
+      ],
+    },
+    readiness: {
+      composite: 35,
+      dimensions: {
+        vision_purpose: 20,
+        canvas: 38,
+        market_intelligence: 10,
+        client_growth: 25,
+        recruitment_growth: 5,
+        leadership_growth: 0,
+        career_progress: 30,
+      },
+    },
   };
+}
+
+/** @param {string} value */
+function decodeXmlEntities(value) {
+  return value
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&apos;/g, "'")
+    .replace(/&quot;/g, '"');
 }
 
 /** @param {string} xml */
@@ -68,7 +124,7 @@ function extractSlideText(xml) {
   const re = /<a:t[^>]*>([^<]*)<\/a:t>/g;
   let match;
   while ((match = re.exec(xml)) !== null) {
-    if (match[1]) texts.push(match[1]);
+    if (match[1]) texts.push(decodeXmlEntities(match[1]));
   }
   return texts.join('\n');
 }
@@ -103,12 +159,17 @@ try {
   await exportExecutiveCanvasPpt(buildFixtureModel(), outPath);
 
   const zip = await JSZip.loadAsync(readFileSync(outPath));
-  const slideEntry = zip.file('ppt/slides/slide1.xml');
-  if (!slideEntry) fail('missing ppt/slides/slide1.xml');
+  const slide1Entry = zip.file('ppt/slides/slide1.xml');
+  const slide2Entry = zip.file('ppt/slides/slide2.xml');
+  if (!slide1Entry) fail('missing ppt/slides/slide1.xml');
+  if (!slide2Entry) fail('missing ppt/slides/slide2.xml');
 
-  const slideXml = await slideEntry.async('string');
+  const slideXml = await slide1Entry.async('string');
+  const slide2Xml = await slide2Entry.async('string');
   const slideText = extractSlideText(slideXml);
+  const slide2Text = extractSlideText(slide2Xml);
   const yPositions = extractTextYPositionsInches(slideXml);
+  const slide2YPositions = extractTextYPositionsInches(slide2Xml);
 
   const requiredStrings = [
     'SPIKE ASC — Executive Canvas',
@@ -166,10 +227,37 @@ try {
     fail(`footer clipped below slide (y=${footer.yIn.toFixed(2)}")`);
   }
 
-  console.log('smoke:canvas-pptx OK — executive summary, year goals, engines, footer on slide');
-  console.log(`  slide text blocks: ${yPositions.length}`);
+  const slide2Required = [
+    'Executive Canvas — Roadmap & Metrics',
+    'ACS Career Roadmap',
+    'Advisor',
+    'Unit Manager',
+    'Readiness score: 42%',
+    'Key Metrics Snapshot',
+    'Client Metrics',
+    'Recruitment Metrics',
+    'Leadership Metrics',
+    'Prospects',
+    'SPIKE Venture Readiness Score',
+    'Ambition & Impact (15%)',
+  ];
+
+  for (const needle of slide2Required) {
+    if (!slide2Text.includes(needle)) {
+      fail(`slide 2 text missing "${needle}"`);
+    }
+  }
+
+  const slide2OffSlide = slide2YPositions.filter((p) => p.yIn > SLIDE_HEIGHT_IN);
+  if (slide2OffSlide.length > 0) {
+    fail(`${slide2OffSlide.length} slide-2 text element(s) below slide height`);
+  }
+
+  console.log('smoke:canvas-pptx OK — slide 1 summary + slide 2 roadmap/metrics');
+  console.log(`  slide 1 text blocks: ${yPositions.length}`);
   console.log(`  summary row y: ${maxSummaryY.toFixed(2)}"`);
   console.log(`  footer y: ${footer.yIn.toFixed(2)}"`);
+  console.log(`  slide 2 text blocks: ${slide2YPositions.length}`);
   console.log(`  output: ${outPath}`);
 } catch (err) {
   fail(err instanceof Error ? err.message : String(err));
