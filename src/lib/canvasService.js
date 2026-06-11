@@ -4,8 +4,10 @@
 import { CANVAS_ENGINES } from './blueprintSectionConstants.js';
 import { upsertCanvasEntry, fetchCanvasEntries } from './supabase/canvasEntries.js';
 import { setSectionField } from './blueprintSectionStore.js';
+import { appendTimelineEvent } from './timelineService.js';
 
 const STORAGE_KEY = 'spike_canvas_entries';
+const MILESTONE_KEY = 'spike_canvas_milestone_30';
 const debounceTimers = new Map();
 
 function readAll() {
@@ -53,6 +55,29 @@ export function saveCanvasField(participantId, engineKey, fieldKey, value) {
   }
   if (engineKey === 'leadership_growth') {
     setSectionField(participantId, 'leadership-growth', fieldKey, value, { sourceType: 'canvas' });
+  }
+
+  maybeRecordCanvasMilestone(participantId);
+}
+
+/** @param {string} participantId */
+function maybeRecordCanvasMilestone(participantId) {
+  const pct = computeCanvasCompletionPct(participantId);
+  if (pct < 30) return;
+  try {
+    const flags = JSON.parse(localStorage.getItem(MILESTONE_KEY) || '{}');
+    if (flags[participantId]) return;
+    flags[participantId] = true;
+    localStorage.setItem(MILESTONE_KEY, JSON.stringify(flags));
+    appendTimelineEvent(participantId, {
+      type: 'canvas_milestone',
+      title: 'FE Canvas v1 draft (30%+)',
+      module: 'financial-entrepreneurship',
+      sourceType: 'canvas',
+      metadata: { completionPct: pct },
+    });
+  } catch {
+    /* storage unavailable */
   }
 }
 

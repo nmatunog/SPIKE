@@ -1,0 +1,20 @@
+{
+  "worksheets": [
+    {
+      "id": "worksheet-day-3",
+      "dayId": "day-segment-1-week-1-day-3",
+      "title": "Customer reflection",
+      "type": "reflection"
+    }
+  ],
+  "questions": [
+    {
+      "id": "wq-day-3-1",
+      "worksheetId": "worksheet-day-3",
+      "prompt": "Reflect on Customer.",
+      "type": "long_text",
+      "required": true,
+      "sortOrder": 1
+    }
+  ]
+}

@@ -51,6 +51,21 @@ const BLOCK_PAGES = {
     description: 'Session overview, teaching notes, facilitation guide, timing, and expected outputs.',
     blockType: 'faculty_guide',
   },
+  [`${ROUTES.adminContentStudio}/coaching-templates`]: {
+    title: 'Coaching Templates',
+    description: 'Mentor coaching session templates for Week 1 conversations.',
+    blockType: 'coaching_template',
+  },
+  [`${ROUTES.adminContentStudio}/observation-forms`]: {
+    title: 'Observation Forms',
+    description: 'Mentor observation checklists aligned to playbook days.',
+    blockType: 'observation_form',
+  },
+  [`${ROUTES.adminContentStudio}/reflection-forms`]: {
+    title: 'Reflection Forms',
+    description: 'Participant and mentor reflection forms for coaching debriefs.',
+    blockType: 'reflection_form',
+  },
 };
 
 export function ContentStudioPage() {

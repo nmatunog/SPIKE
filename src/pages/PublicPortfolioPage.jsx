@@ -1,7 +1,7 @@
 import { Link, useParams } from 'react-router-dom';
 import { findParticipantIdByPortfolioSlug } from '../lib/portfolioStorage.js';
 import { generateVenturePortfolio } from '../services/portfolioGenerator.js';
-import { DreamBoardCollage } from '../components/venturePortfolio/DreamBoardCollage.jsx';
+import { DreamBoardSlideCollage } from '../components/venturePortfolio/DreamBoardSlideCollage.jsx';
 import { ROUTES } from '../routes/paths.js';
 
 /** Public read-only portfolio showcase — `/portfolio/:slug` */
@@ -37,13 +37,18 @@ export function PublicPortfolioPage() {
   return (
     <div className="min-h-screen bg-slate-50">
       <header className="bg-gradient-to-br from-slate-900 to-spike-dark px-6 py-12 text-white">
-        <div className="mx-auto max-w-4xl">
+        <div className="mx-auto flex max-w-4xl items-start gap-6">
+          {portfolio.cover.photoUrl ? (
+            <img src={portfolio.cover.photoUrl} alt="" className="h-24 w-24 rounded-2xl object-cover" />
+          ) : null}
+          <div>
           <p className="text-sm font-bold uppercase tracking-widest text-spike-light">SPIKE Venture Portfolio™</p>
           <h1 className="mt-2 text-3xl font-bold">{portfolio.cover.participantName}</h1>
           <p className="mt-2 text-lg text-spike-light">{portfolio.cover.tagline}</p>
           <p className="mt-3 text-sm text-slate-300">
             {portfolio.cover.cohort} · {portfolio.cover.squad}
           </p>
+          </div>
         </div>
       </header>
       <div className="mx-auto max-w-4xl space-y-10 px-6 py-10">
@@ -55,7 +60,7 @@ export function PublicPortfolioPage() {
         </section>
         <section>
           <h2 className="mb-4 text-xl font-bold text-slate-900">Dream Board</h2>
-          <DreamBoardCollage assets={portfolio.dreamBoard?.assets ?? []} showMeta={false} />
+          <DreamBoardSlideCollage assets={portfolio.dreamBoard?.assets ?? []} title="Dream Board" />
         </section>
         <section className="rounded-2xl border border-slate-200 bg-white p-6">
           <h2 className="text-xl font-bold text-slate-900">Executive Canvas</h2>

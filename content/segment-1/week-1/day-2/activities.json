@@ -1,0 +1,11 @@
+{
+  "activities": [
+    {
+      "id": "activity-day-2",
+      "dayId": "day-segment-1-week-1-day-2",
+      "title": "Opportunity workshop",
+      "format": "squad",
+      "durationMinutes": 90
+    }
+  ]
+}

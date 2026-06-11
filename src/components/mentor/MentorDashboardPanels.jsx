@@ -7,6 +7,7 @@ import {
   deriveWeek1DayProgress,
   groupInternsBySquad,
 } from '../../lib/mentorFrameworkService.js';
+import { getPortfolioSettings } from '../../lib/portfolioStorage.js';
 import { ROUTES } from '../../routes/paths.js';
 
 /**
@@ -32,21 +33,33 @@ export function MentorDashboardPanels({ interns }) {
             <Users size={16} className="text-spike" /> Assigned participants
           </h3>
           <ul className="mt-3 max-h-72 space-y-2 overflow-y-auto">
-            {participants.map((p) => (
+            {participants.map((p) => {
+              const photo = getPortfolioSettings(p.id).photoUrl;
+              return (
               <li key={p.id} className="flex items-center justify-between gap-2 rounded-xl bg-slate-50 px-3 py-2 text-sm">
-                <div className="min-w-0">
+                <div className="flex min-w-0 items-center gap-2">
+                  {photo ? (
+                    <img src={photo} alt="" className="h-8 w-8 shrink-0 rounded-full object-cover" />
+                  ) : (
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-spike-muted text-xs font-bold text-spike">
+                      {p.name.charAt(0)}
+                    </span>
+                  )}
+                  <div className="min-w-0">
                   <Link to={`${ROUTES.mentorParticipant}/${p.id}`} className="font-semibold text-slate-900 hover:text-spike">
                     {p.name}
                   </Link>
                   <p className="truncate text-xs text-slate-500">
                     {p.squad} · {p.careerTrack}
                   </p>
+                  </div>
                 </div>
                 <span className="shrink-0 rounded-full bg-spike-muted px-2 py-0.5 text-xs font-bold text-spike">
                   {p.progressPct}%
                 </span>
               </li>
-            ))}
+            );
+            })}
           </ul>
         </section>
 

@@ -22,6 +22,7 @@ import {
 import { ModuleNav } from './components/nav/ModuleNav.jsx';
 import { useCompactNav } from './hooks/useCompactNav.js';
 import { PortalHeader } from './layouts/PortalHeader.jsx';
+import { filterInternsForMentor } from './lib/mentorAssignmentService.js';
 import { resolveUserRole } from './lib/roles.js';
 import { RoleDashboardCards } from './components/dashboard/RoleDashboardCards.jsx';
 import { BlueprintTimelineFeed } from './components/blueprint/BlueprintTimelineFeed.jsx';
@@ -368,6 +369,11 @@ const SpikeMasterPortal = () => {
     }
   }, [user?.role, usingSupabaseAuth, loadActivationCode, loadPasswordResetRequests]);
 
+  const mentorInterns = useMemo(() => {
+    if (user?.role !== 'MENTOR') return interns;
+    return filterInternsForMentor(interns, user?.id, 'mentor');
+  }, [interns, user?.id, user?.role]);
+
   const internSummary = useMemo(() => {
     const list = interns;
     const n = list.length;
@@ -379,6 +385,18 @@ const SpikeMasterPortal = () => {
       : 0;
     return { n, s1, s2, s3, avgHours };
   }, [interns]);
+
+  const mentorInternSummary = useMemo(() => {
+    const list = mentorInterns;
+    const n = list.length;
+    const s1 = list.filter((i) => i.segment === 1).length;
+    const s2 = list.filter((i) => i.segment === 2).length;
+    const s3 = list.filter((i) => i.segment === 3).length;
+    const avgHours = n
+      ? Math.round(list.reduce((a, i) => a + (i.hours || 0), 0) / n)
+      : 0;
+    return { n, s1, s2, s3, avgHours };
+  }, [mentorInterns]);
 
   const OrientationModule = () => {
     const [currentSlide, setCurrentSlide] = useState(0);
@@ -1390,8 +1408,8 @@ const SpikeMasterPortal = () => {
           <LazyRoute label="Loading mentor…">
             <MentorHomePage
               user={user}
-              interns={interns}
-              internSummary={internSummary}
+              interns={mentorInterns}
+              internSummary={mentorInternSummary}
               pendingLogs={pendingLogs}
               showToast={showToast}
             />
@@ -1430,7 +1448,7 @@ const SpikeMasterPortal = () => {
         return (
           <LazyRoute label="Loading participants…">
             <MentorParticipantsPage
-              interns={interns.map((i) => ({
+              interns={mentorInterns.map((i) => ({
                 id: i.id,
                 name: i.name,
                 segment: i.segment,
@@ -1448,7 +1466,7 @@ const SpikeMasterPortal = () => {
         return (
           <LazyRoute label="Loading participant coaching card…">
             <MentorVentureCoachPage
-              interns={interns.map((i) => ({ id: i.id, name: i.name, squad: i.squad }))}
+              interns={mentorInterns.map((i) => ({ id: i.id, name: i.name, squad: i.squad }))}
               mentorId={user?.id}
               showToast={showToast}
             />

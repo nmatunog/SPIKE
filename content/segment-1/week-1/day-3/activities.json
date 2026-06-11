@@ -1,0 +1,11 @@
+{
+  "activities": [
+    {
+      "id": "activity-day-3",
+      "dayId": "day-segment-1-week-1-day-3",
+      "title": "Customer workshop",
+      "format": "squad",
+      "durationMinutes": 90
+    }
+  ]
+}

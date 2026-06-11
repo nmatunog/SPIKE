@@ -3,6 +3,7 @@ import { BookOpen, GraduationCap, Layers, Sparkles } from 'lucide-react';
 import { PageContainer, PageTitle } from '../../components/layout/PageContainer.jsx';
 import { RoleDashboardCards } from '../../components/dashboard/RoleDashboardCards.jsx';
 import { FacultyDay1Panel } from '../../components/day1/FacultyDay1Panel.jsx';
+import { FacultyWeek1ProgressPanel } from '../../components/faculty/FacultyWeek1ProgressPanel.jsx';
 import { FrameworkMetric } from '../../components/framework/FrameworkSections.jsx';
 import { ROUTES } from '../../routes/paths.js';
 import { countSubmittedSurveys } from '../../lib/surveyService.js';
@@ -68,7 +69,8 @@ export function FacultyHomePage({ interns, internSummary, pendingLogs = [] }) {
         </Link>
       </div>
 
-      <div className="mt-6">
+      <div className="mt-6 space-y-6">
+        <FacultyWeek1ProgressPanel interns={interns} />
         <FacultyDay1Panel interns={interns.map((i) => ({ id: i.id, name: i.name }))} />
       </div>
     </PageContainer>

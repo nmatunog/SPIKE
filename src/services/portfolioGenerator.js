@@ -20,6 +20,12 @@ import {
 } from '../lib/ventureCoachConstants.js';
 import { getCoachProgress, getCoachSummaryForMentor } from '../lib/ventureCoachService.js';
 import { getPortfolioSettings } from '../lib/portfolioStorage.js';
+import {
+  getWeek1DayProgress,
+  getWeek1RequiredOutputs,
+  isWeek1PresentationReady,
+  week1CompletionPct,
+} from '../lib/week1JourneyService.js';
 
 export const PORTFOLIO_NAV_SECTIONS = [
   { id: 'overview', label: 'Overview' },
@@ -298,6 +304,12 @@ export function generateVenturePortfolio(participantId, meta = {}) {
     sectionScores,
     portfolioCompletion,
     ready: coachProgress.percent >= 100,
+    week1Journey: {
+      completionPct: week1CompletionPct(participantId),
+      presentationReady: isWeek1PresentationReady(participantId),
+      days: getWeek1DayProgress(participantId),
+      requiredOutputs: getWeek1RequiredOutputs(participantId),
+    },
   };
 }
 

@@ -1,0 +1,33 @@
+{
+  "id": "day-segment-1-week-1-day-5",
+  "segmentId": "segment-1",
+  "weekId": "week-segment-1-1",
+  "dayNumber": 5,
+  "title": "My Venture Direction",
+  "theme": "Commitment",
+  "durationHours": 4,
+  "learningObjectives": [
+    "Complete Commitment objectives for Week 1"
+  ],
+  "expectedOutputs": [
+    "Venture Blueprint Draft",
+    "Week 1 Portfolio Presentation"
+  ],
+  "portfolioDeliverables": [
+    "Venture Blueprint Draft",
+    "Week 1 Portfolio Presentation"
+  ],
+  "businessPlanIntegration": "Week 1 Day 5 — Commitment",
+  "presentations": [
+    "presentation-day-5"
+  ],
+  "activities": [
+    "activity-day-5"
+  ],
+  "worksheets": [
+    "worksheet-day-5"
+  ],
+  "assessments": [
+    "assessment-day-5"
+  ]
+}

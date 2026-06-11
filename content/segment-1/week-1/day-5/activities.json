@@ -1,0 +1,11 @@
+{
+  "activities": [
+    {
+      "id": "activity-day-5",
+      "dayId": "day-segment-1-week-1-day-5",
+      "title": "Commitment workshop",
+      "format": "squad",
+      "durationMinutes": 90
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "survey": {
+    "id": "survey-day-5",
+    "dayId": "day-segment-1-week-1-day-5",
+    "title": "Day 5 pulse",
+    "description": "Week 1 progress check",
+    "status": "active"
+  },
+  "questions": [
+    {
+      "id": "sq-day-5-01",
+      "surveyId": "survey-day-5",
+      "prompt": "Rate your clarity after today.",
+      "type": "rating",
+      "required": true,
+      "sortOrder": 1
+    }
+  ]
+}

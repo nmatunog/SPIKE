@@ -1,0 +1,33 @@
+{
+  "id": "day-segment-1-week-1-day-2",
+  "segmentId": "segment-1",
+  "weekId": "week-segment-1-1",
+  "dayNumber": 2,
+  "title": "Discover The Industry",
+  "theme": "Opportunity",
+  "durationHours": 4,
+  "learningObjectives": [
+    "Complete Opportunity objectives for Week 1"
+  ],
+  "expectedOutputs": [
+    "Opportunity Reflection",
+    "Industry Insights"
+  ],
+  "portfolioDeliverables": [
+    "Opportunity Reflection",
+    "Industry Insights"
+  ],
+  "businessPlanIntegration": "Week 1 Day 2 — Opportunity",
+  "presentations": [
+    "presentation-day-2"
+  ],
+  "activities": [
+    "activity-day-2"
+  ],
+  "worksheets": [
+    "worksheet-day-2"
+  ],
+  "assessments": [
+    "assessment-day-2"
+  ]
+}

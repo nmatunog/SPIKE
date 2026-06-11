@@ -13,6 +13,7 @@ import {
   PortfolioPresentationsSection,
   PortfolioResearchSection,
 } from '../components/venturePortfolio/PortfolioSections.jsx';
+import { PortfolioPresentationView } from '../components/venturePortfolio/PortfolioPresentationView.jsx';
 import {
   generateVenturePortfolio,
   PORTFOLIO_NAV_SECTIONS,
@@ -32,7 +33,15 @@ export function MyVenturePortfolioShell({ user, section = 'overview' }) {
     internProgress: user.internProgress,
   });
 
-  const activeSection = PORTFOLIO_NAV_SECTIONS.some((item) => item.id === section) ? section : 'overview';
+  const activeSection = PORTFOLIO_NAV_SECTIONS.some((item) => item.id === section)
+    ? section
+    : section === 'present'
+      ? 'present'
+      : 'overview';
+
+  if (section === 'present') {
+    return <PortfolioPresentationView portfolio={portfolio} />;
+  }
 
   return (
     <PageContainer presentation wide>
@@ -92,7 +101,7 @@ function renderSection(sectionId, portfolio, participantId, participantName) {
     case 'milestones':
       return <PortfolioMilestonesSection portfolio={portfolio} />;
     case 'presentations':
-      return <PortfolioPresentationsSection portfolio={portfolio} />;
+      return <PortfolioPresentationsSection portfolio={portfolio} participantId={participantId} />;
     case 'certifications':
       return <PortfolioCertificationsSection portfolio={portfolio} />;
     case 'export':
@@ -105,7 +114,13 @@ function renderSection(sectionId, portfolio, participantId, participantName) {
       );
     case 'overview':
     default:
-      return <PortfolioOverviewSection portfolio={portfolio} />;
+      return (
+        <PortfolioOverviewSection
+          portfolio={portfolio}
+          participantId={participantId}
+          participantName={participantName}
+        />
+      );
   }
 }
 
@@ -116,10 +131,10 @@ function renderSection(sectionId, portfolio, participantId, participantName) {
  */
 export function MyVenturePortfolioRoute({ user }) {
   const { pathname } = useLocation();
-  const section = portfolioSectionFromPath(
-    pathname,
-    PORTFOLIO_NAV_SECTIONS.map((item) => item.id),
-  );
+  const section = portfolioSectionFromPath(pathname, [
+    ...PORTFOLIO_NAV_SECTIONS.map((item) => item.id),
+    'present',
+  ]);
   if (!user?.internProgress) {
     return <Navigate to={ROUTES.home} replace />;
   }

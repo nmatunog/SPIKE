@@ -1,0 +1,20 @@
+{
+  "worksheets": [
+    {
+      "id": "worksheet-day-2",
+      "dayId": "day-segment-1-week-1-day-2",
+      "title": "Opportunity reflection",
+      "type": "reflection"
+    }
+  ],
+  "questions": [
+    {
+      "id": "wq-day-2-1",
+      "worksheetId": "worksheet-day-2",
+      "prompt": "Reflect on Opportunity.",
+      "type": "long_text",
+      "required": true,
+      "sortOrder": 1
+    }
+  ]
+}

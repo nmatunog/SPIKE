@@ -1,0 +1,33 @@
+{
+  "id": "day-segment-1-week-1-day-4",
+  "segmentId": "segment-1",
+  "weekId": "week-segment-1-1",
+  "dayNumber": 4,
+  "title": "Financial Entrepreneurship",
+  "theme": "Entrepreneur",
+  "durationHours": 4,
+  "learningObjectives": [
+    "Complete Entrepreneur objectives for Week 1"
+  ],
+  "expectedOutputs": [
+    "Canvas v1",
+    "Career Direction"
+  ],
+  "portfolioDeliverables": [
+    "Canvas v1",
+    "Career Direction"
+  ],
+  "businessPlanIntegration": "Week 1 Day 4 — Entrepreneur",
+  "presentations": [
+    "presentation-day-4"
+  ],
+  "activities": [
+    "activity-day-4"
+  ],
+  "worksheets": [
+    "worksheet-day-4"
+  ],
+  "assessments": [
+    "assessment-day-4"
+  ]
+}

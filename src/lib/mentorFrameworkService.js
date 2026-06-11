@@ -10,6 +10,7 @@ import { generateVenturePortfolio } from '../services/portfolioGenerator.js';
 import { getCoachSummaryForMentor } from './ventureCoachService.js';
 import { getWeeklyAssessment } from './weeklyAssessmentService.js';
 import { VENTURE_DIRECTION_CARDS } from './ventureCoachConstants.js';
+import { isWeek1DayComplete } from './week1JourneyService.js';
 
 export { groupInternsBySquad, deriveMentorRiskFlags, deriveBlueprintCompletionPct };
 
@@ -40,10 +41,12 @@ export function week1OutputCompletionPct(outputs) {
     'ambition',
     'impact',
     'values',
+    'tagline',
     'futureSelf',
     'careerDirection',
     'squadMembership',
     'squadCharter',
+    'dreamBoard',
     'feCanvas',
     'portfolio',
   ];
@@ -126,26 +129,8 @@ export function deriveWeek1DayProgress(interns) {
     return [1, 2, 3, 4, 5].map((day) => ({ day, label: `Day ${day}`, completePct: 0 }));
   }
 
-  const dayChecks = [
-    (id) => {
-      const o = getParticipantWeek1Outputs(id);
-      return o.ambition && o.impact && o.values;
-    },
-    (id) => (interns.find((i) => i.id === id)?.hours ?? 0) >= 8,
-    (id) => (interns.find((i) => i.id === id)?.hours ?? 0) >= 16,
-    (id) => {
-      const o = getParticipantWeek1Outputs(id);
-      return o.careerDirection || o.feCanvas;
-    },
-    (id) => {
-      const coach = getCoachSummaryForMentor(id);
-      return Boolean(getWeeklyAssessment(id, 1)) || (coach?.progress?.percent ?? 0) >= 80;
-    },
-  ];
-
-  return dayChecks.map((check, index) => {
-    const day = index + 1;
-    const complete = interns.filter((i) => check(i.id)).length;
+  return [1, 2, 3, 4, 5].map((day) => {
+    const complete = interns.filter((i) => isWeek1DayComplete(i.id, day)).length;
     return {
       day,
       label: `Day ${day}`,

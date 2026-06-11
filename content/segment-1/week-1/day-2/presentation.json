@@ -1,0 +1,24 @@
+{
+  "presentation": {
+    "id": "presentation-day-2",
+    "dayId": "day-segment-1-week-1-day-2",
+    "title": "Discover The Industry",
+    "slideIds": [
+      "slide-day-2-01"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-day-2-01",
+      "presentationId": "presentation-day-2",
+      "sortOrder": 1,
+      "title": "Discover The Industry",
+      "body": "Week 1 Day 2: Opportunity",
+      "speakerNotes": "Facilitate per faculty day template.",
+      "discussionQuestions": [
+        "What stood out today?",
+        "How does this connect to your ambition?"
+      ]
+    }
+  ]
+}

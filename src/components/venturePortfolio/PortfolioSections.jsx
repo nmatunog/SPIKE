@@ -1,20 +1,29 @@
 import { Link } from 'react-router-dom';
 import { Award, Download, Share2, TrendingUp } from 'lucide-react';
 import { ArtifactDraftCard } from '../blueprint/ArtifactDraftCard.jsx';
-import { CoachIdentityTriangle } from '../ventureCoach/CoachIdentityTriangle.jsx';
 import { BLUEPRINT_LINKS, ROUTES } from '../../routes/paths.js';
 import { exportVenturePortfolioPdf } from '../../lib/portfolioExportService.js';
 import { ensurePortfolioSlug, savePortfolioSettings } from '../../lib/portfolioStorage.js';
 import { DreamBoardCollage } from './DreamBoardCollage.jsx';
 import { DreamBoardSlideCollage } from './DreamBoardSlideCollage.jsx';
+import { ParticipantPhotoUpload } from './ParticipantPhotoUpload.jsx';
+import { PortfolioCoachingTimeline } from './PortfolioCoachingTimeline.jsx';
+import { PortfolioWeek1JourneyPanel } from './PortfolioWeek1JourneyPanel.jsx';
 import { VentureTimeline } from './VentureTimeline.jsx';
 
-/** @param {{ portfolio: ReturnType<import('../../services/portfolioGenerator.js').generateVenturePortfolio> }} props */
-export function PortfolioOverviewSection({ portfolio }) {
+/** @param {{ portfolio: ReturnType<import('../../services/portfolioGenerator.js').generateVenturePortfolio>, participantId?: string, participantName?: string }} props */
+export function PortfolioOverviewSection({ portfolio, participantId = '', participantName = '' }) {
   const { cover, sectionScores, certifications } = portfolio;
 
   return (
     <div className="space-y-6">
+      {participantId ? (
+        <section className="spike-card">
+          <p className="mb-3 text-sm font-semibold text-slate-900">Profile photo</p>
+          <ParticipantPhotoUpload participantId={participantId} participantName={participantName || cover.participantName} />
+        </section>
+      ) : null}
+      {participantId ? <PortfolioWeek1JourneyPanel participantId={participantId} /> : null}
       <section className="overflow-hidden rounded-3xl border border-spike/15 bg-gradient-to-br from-slate-900 via-slate-800 to-spike-dark p-8 text-white shadow-projection sm:p-10">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
           {cover.photoUrl ? (
@@ -97,7 +106,25 @@ export function PortfolioIdentitySection({ portfolio }) {
   const { identity } = portfolio;
   return (
     <div className="space-y-6">
-      <CoachIdentityTriangle />
+      <section className="rounded-2xl border border-spike/15 bg-gradient-to-br from-white to-spike-muted/30 p-6">
+        <p className="mb-4 text-center text-xs font-bold uppercase tracking-widest text-spike">Your SPIKE Identity</p>
+        <div className="grid gap-3 md:grid-cols-3 text-center text-sm">
+          <div className="rounded-xl bg-white/80 p-3 shadow-sm">
+            <p className="font-bold text-slate-900">Ambition</p>
+            <p className="mt-1 text-xs text-slate-600 line-clamp-3">{identity.ambition || '—'}</p>
+          </div>
+          <div className="rounded-xl bg-white/80 p-3 shadow-sm">
+            <p className="font-bold text-slate-900">Impact</p>
+            <p className="mt-1 text-xs text-slate-600 line-clamp-3">{identity.impact || '—'}</p>
+          </div>
+          <div className="rounded-xl bg-white/80 p-3 shadow-sm">
+            <p className="font-bold text-slate-900">Values</p>
+            <p className="mt-1 text-xs text-slate-600 line-clamp-3">
+              {identity.topThreeValues.length ? identity.topThreeValues.join(' · ') : '—'}
+            </p>
+          </div>
+        </div>
+      </section>
       <div className="grid gap-4 lg:grid-cols-2">
         <StatementCard title="My Ambition" text={identity.ambition} />
         <StatementCard title="My Impact" text={identity.impact} />
@@ -228,9 +255,14 @@ export function PortfolioCanvasSection({ portfolio }) {
           <h2 className="text-2xl font-bold text-slate-900">Executive canvas summary</h2>
           <p className="mt-1 text-sm text-slate-600">{canvas.completionPct}% canvas complete</p>
         </div>
-        <Link to={BLUEPRINT_LINKS.canvasSummary} className="spike-btn-secondary text-sm">
-          Open full canvas summary
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link to={BLUEPRINT_LINKS.canvas} className="spike-btn-primary text-sm">
+            Edit canvas
+          </Link>
+          <Link to={BLUEPRINT_LINKS.canvasSummary} className="spike-btn-secondary text-sm">
+            Full summary
+          </Link>
+        </div>
       </header>
       <section className="spike-card space-y-3">
         <p className="text-sm font-semibold text-slate-900">Strategy statement</p>
@@ -330,12 +362,21 @@ export function PortfolioMilestonesSection({ portfolio }) {
 }
 
 /** @param {{ portfolio: ReturnType<import('../../services/portfolioGenerator.js').generateVenturePortfolio> }} props */
-export function PortfolioPresentationsSection({ portfolio }) {
+/** @param {{ portfolio: ReturnType<import('../../services/portfolioGenerator.js').generateVenturePortfolio>, participantId?: string }} props */
+export function PortfolioPresentationsSection({ portfolio, participantId = '' }) {
   return (
     <div className="space-y-4">
       <header>
         <p className="spike-label text-spike">Presentations & Deliverables</p>
         <h2 className="text-2xl font-bold text-slate-900">Venture board reviews</h2>
+        {participantId ? (
+          <Link
+            to={`${ROUTES.myVenturePortfolio}/present`}
+            className="mt-2 inline-flex text-sm font-semibold text-spike hover:underline"
+          >
+            Launch Week 1 presentation mode →
+          </Link>
+        ) : null}
       </header>
       <div className="grid gap-4 md:grid-cols-3">
         {portfolio.presentations.boards.map((board) => (
@@ -387,6 +428,13 @@ export function PortfolioCertificationsSection({ portfolio }) {
  */
 export function PortfolioExportSection({ portfolio, participantId, participantName }) {
   const slug = ensurePortfolioSlug(participantId, participantName);
+
+  const coachingSection = participantId ? (
+    <section className="spike-card space-y-3">
+      <p className="spike-label text-spike">Coaching history</p>
+      <PortfolioCoachingTimeline participantId={participantId} />
+    </section>
+  ) : null;
   const shareUrl =
     typeof window !== 'undefined' ? `${window.location.origin}/portfolio/${slug}` : `/portfolio/${slug}`;
 
@@ -449,6 +497,7 @@ export function PortfolioExportSection({ portfolio, participantId, participantNa
           venture board reviews in one place.
         </p>
       </section>
+      {coachingSection}
     </div>
   );
 }
