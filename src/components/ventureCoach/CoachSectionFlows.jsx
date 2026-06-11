@@ -12,21 +12,25 @@ import {
 import {
   AMBITION_IMPACT_OVERLAP_WARNING,
   countWords,
+  generateFutureSelfNarrative,
   generateFutureSelfSummary,
+  generateValuesProfile,
   statementsOverlapTooMuch,
 } from '../../lib/ventureCoachEngine.js';
-import {
-  generateFutureSelfWithAi,
-  generateImpactDraftWithAi,
-  generateTaglineWithAi,
-  generateValuesProfileWithAi,
-} from '../../lib/ventureCoachAiService.js';
+import { generateTaglineWithAi } from '../../lib/ventureCoachAiService.js';
 import {
   ambitionContextLabels,
   findCohortStatementConflict,
   findUniqueAmbitionDraft,
+  findUniqueFutureSelfSummary,
+  findUniqueImpactDraft,
+  impactContextLabels,
 } from '../../lib/ventureCoachComposer.js';
-import { AMBITION_ROLE_ARCHETYPES } from '../../lib/ventureCoachPhraseBank.js';
+import {
+  AMBITION_ROLE_ARCHETYPES,
+  CUSTOM_ROLE_ARCHETYPE_ID,
+  sanitizeCustomRolePhrase,
+} from '../../lib/ventureCoachPhraseBank.js';
 import {
   acceptCoachSection,
   getCoachSection,
@@ -37,11 +41,13 @@ import { CoachComposerPanel } from './CoachComposerPanel.jsx';
 import { CoachDraftPanel, CoachWordGuidance } from './CoachDraftPanel.jsx';
 import { CoachRankList, CoachSelectionCounter } from './CoachRankList.jsx';
 import { CoachSectionHeader } from './CoachSectionHeader.jsx';
+import { CoachStepNav } from './CoachStepNav.jsx';
 import { ROUTES } from '../../routes/paths.js';
 
 const AMBITION_EXACT = 3;
 const AMBITION_STEPS = 4;
 const IMPACT_MAX = 2;
+const IMPACT_STEPS = 2;
 /** @deprecated */ const PURPOSE_EXACT = IMPACT_MAX;
 
 /** @param {(() => void) | undefined} onSectionComplete @param {ReturnType<typeof useNavigate>} navigate @param {string} nextPath */
@@ -76,10 +82,16 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
   );
   const [selectedVariant, setSelectedVariant] = useState(String(stored.data.selectedVariant ?? 'balanced'));
   const [draft, setDraft] = useState(String(stored.data.draft ?? ''));
+  const [customRolePhrase, setCustomRolePhrase] = useState(String(stored.data.customRolePhrase ?? ''));
+  const [customRoleError, setCustomRoleError] = useState('');
   const [shuffling, setShuffling] = useState(false);
   const [acceptError, setAcceptError] = useState('');
 
   const rankedOrder = ranked.length === AMBITION_EXACT ? ranked : selected;
+  const resolvedCustomRole =
+    roleArchetypeId === CUSTOM_ROLE_ARCHETYPE_ID
+      ? sanitizeCustomRolePhrase(customRolePhrase).phrase
+      : '';
 
   function persist(data, nextStep = step) {
     saveCoachSectionDraft(participantId, 'ambition', { ...stored.data, ...data, step: nextStep });
@@ -97,7 +109,14 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
     seed = patternSeed,
     variant = selectedVariant,
   } = {}) {
-    const result = findUniqueAmbitionDraft(rankedOrder, roleArchetypeId, tone, participantId, seed);
+    const result = findUniqueAmbitionDraft(
+      rankedOrder,
+      roleArchetypeId,
+      tone,
+      participantId,
+      seed,
+      resolvedCustomRole,
+    );
     setVariants(result.variants);
     const text = result.variants[variant] ?? result.variants.balanced;
     setDraft(text);
@@ -110,6 +129,7 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
       compositionTone: tone,
       patternSeed: result.patternSeed,
       roleArchetypeId,
+      customRolePhrase: resolvedCustomRole,
       rankedMotivators: rankedOrder,
       selectedMotivators: selected,
     });
@@ -117,6 +137,14 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
   }
 
   function beginComposeStep() {
+    if (roleArchetypeId === CUSTOM_ROLE_ARCHETYPE_ID) {
+      const check = sanitizeCustomRolePhrase(customRolePhrase);
+      if (!check.valid) {
+        setCustomRoleError(check.error);
+        return;
+      }
+      setCustomRoleError('');
+    }
     const result = regenerateComposedDraft({ seed: patternSeed, variant: 'balanced' });
     setSelectedVariant('balanced');
     setStep(4);
@@ -125,6 +153,7 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
         rankedMotivators: rankedOrder,
         selectedMotivators: selected,
         roleArchetypeId,
+        customRolePhrase: resolvedCustomRole,
         draftVariants: result.variants,
         draft: result.variants.balanced,
         selectedVariant: 'balanced',
@@ -158,6 +187,7 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
       draftVariants: variants,
       selectedVariant,
       roleArchetypeId,
+      customRolePhrase: resolvedCustomRole,
       compositionTone,
       patternSeed,
     });
@@ -165,7 +195,10 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
     afterSectionAccept(onSectionComplete, navigate, `${ROUTES.ventureBlueprint}/coach/impact`);
   }
 
-  const roleLabel = AMBITION_ROLE_ARCHETYPES.find((role) => role.id === roleArchetypeId)?.label ?? '';
+  const roleLabel =
+    roleArchetypeId === CUSTOM_ROLE_ARCHETYPE_ID
+      ? resolvedCustomRole
+      : AMBITION_ROLE_ARCHETYPES.find((role) => role.id === roleArchetypeId)?.label ?? '';
   const contextChips = [...ambitionContextLabels(rankedOrder), roleLabel].filter(Boolean);
 
   if (stored.completedAt) {
@@ -194,18 +227,15 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
             onToggle={toggleMotivator}
             exactSelections={AMBITION_EXACT}
           />
-          <button
-            type="button"
-            disabled={selected.length !== AMBITION_EXACT}
-            onClick={() => {
+          <CoachStepNav
+            forwardLabel="Continue to ranking"
+            forwardDisabled={selected.length !== AMBITION_EXACT}
+            onForward={() => {
               setRanked([...selected]);
               setStep(2);
               persist({ rankedMotivators: [...selected] }, 2);
             }}
-            className="spike-btn-primary disabled:opacity-50"
-          >
-            Continue to ranking
-          </button>
+          />
         </>
       ) : null}
 
@@ -225,21 +255,15 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
               persist({ rankedMotivators: next });
             }}
           />
-          <div className="flex flex-wrap gap-3">
-            <button type="button" onClick={() => setStep(1)} className="spike-btn-secondary">
-              Back
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setStep(3);
-                persist({ rankedMotivators: ranked }, 3);
-              }}
-              className="spike-btn-primary"
-            >
-              Continue to role
-            </button>
-          </div>
+          <CoachStepNav
+            backLabel="Back"
+            forwardLabel="Continue to role"
+            onBack={() => setStep(1)}
+            onForward={() => {
+              setStep(3);
+              persist({ rankedMotivators: ranked }, 3);
+            }}
+          />
         </>
       ) : null}
 
@@ -249,24 +273,44 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
             step={3}
             total={AMBITION_STEPS}
             title="What role are you growing into?"
-            description="Choose a role archetype. Your statement will be composed from curated phrases — no typing required yet."
+            description="Choose a role archetype, or enter your own role in one word or a short three-word phrase."
           />
           <CoachRadioList
             options={AMBITION_ROLE_ARCHETYPES}
             value={roleArchetypeId}
             onChange={(id) => {
               setRoleArchetypeId(id);
+              setCustomRoleError('');
               persist({ roleArchetypeId: id });
             }}
           />
-          <div className="flex flex-wrap gap-3">
-            <button type="button" onClick={() => setStep(2)} className="spike-btn-secondary">
-              Back
-            </button>
-            <button type="button" onClick={beginComposeStep} className="spike-btn-primary">
-              Compose my ambition statement
-            </button>
-          </div>
+          {roleArchetypeId === CUSTOM_ROLE_ARCHETYPE_ID ? (
+            <div className="spike-card space-y-2">
+              <label className="text-sm font-semibold text-slate-800" htmlFor="custom-role-phrase">
+                Your role (1 word or up to 3 words)
+              </label>
+              <input
+                id="custom-role-phrase"
+                type="text"
+                maxLength={48}
+                placeholder="e.g. Wealth Coach or Senior Market Leader"
+                className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm"
+                value={customRolePhrase}
+                onChange={(e) => {
+                  setCustomRolePhrase(e.target.value);
+                  setCustomRoleError('');
+                  persist({ customRolePhrase: e.target.value });
+                }}
+              />
+              {customRoleError ? <p className="text-sm text-red-700">{customRoleError}</p> : null}
+            </div>
+          ) : null}
+          <CoachStepNav
+            backLabel="Back"
+            forwardLabel="Compose my ambition statement"
+            onBack={() => setStep(2)}
+            onForward={beginComposeStep}
+          />
         </>
       ) : null}
 
@@ -320,9 +364,7 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
             }}
             onAccept={handleAccept}
           />
-          <button type="button" onClick={() => setStep(3)} className="spike-btn-secondary">
-            Back to role
-          </button>
+          <CoachStepNav backLabel="Back to role" onBack={() => setStep(3)} />
         </>
       ) : null}
     </div>
@@ -340,33 +382,81 @@ export function ImpactCoachFlow({ participantId, onProgress, onSectionComplete }
   const [audiences, setAudiences] = useState(
     /** @type {string[]} */ (stored.data.audiences ?? stored.data.drivers ?? []),
   );
-  const [draft, setDraft] = useState(String(stored.data.draft ?? ''));
-  const [customFields, setCustomFields] = useState(
-    /** @type {Record<string, string>} */ (stored.data.customFields ?? {}),
+  const [patternSeed, setPatternSeed] = useState(Number(stored.data.patternSeed ?? 0));
+  const [variants, setVariants] = useState(
+    /** @type {{ short: string, balanced: string, inspirational: string } | null} */ (
+      stored.data.draftVariants ?? null
+    ),
   );
-  const [generating, setGenerating] = useState(false);
+  const [selectedVariant, setSelectedVariant] = useState(String(stored.data.selectedVariant ?? 'balanced'));
+  const [draft, setDraft] = useState(String(stored.data.draft ?? ''));
+  const [shuffling, setShuffling] = useState(false);
+  const [acceptError, setAcceptError] = useState('');
 
   const ambitionText = String(ambitionStored.data.finalText ?? ambitionStored.data.draft ?? '');
   const overlapWarning =
     draft && ambitionText && statementsOverlapTooMuch(ambitionText, draft) ? AMBITION_IMPACT_OVERLAP_WARNING : null;
 
-  function persist(data) {
-    saveCoachSectionDraft(participantId, 'impact', { ...stored.data, ...data, step });
+  function persist(data, nextStep = step) {
+    saveCoachSectionDraft(participantId, 'impact', { ...stored.data, ...data, step: nextStep });
+  }
+
+  function regenerateComposedDraft({ seed = patternSeed, variant = selectedVariant } = {}) {
+    const result = findUniqueImpactDraft(audiences, participantId, seed);
+    setVariants(result.variants);
+    const text = result.variants[variant] ?? result.variants.balanced;
+    setDraft(text);
+    setPatternSeed(result.patternSeed);
+    persist({
+      draftVariants: result.variants,
+      draft: text,
+      selectedVariant: variant,
+      patternSeed: result.patternSeed,
+      audiences,
+    });
+    return result;
+  }
+
+  function beginComposeStep() {
+    const result = regenerateComposedDraft({ seed: patternSeed, variant: 'balanced' });
+    setSelectedVariant('balanced');
+    setStep(2);
+    persist(
+      {
+        audiences,
+        draftVariants: result.variants,
+        draft: result.variants.balanced,
+        selectedVariant: 'balanced',
+        patternSeed: result.patternSeed,
+      },
+      2,
+    );
   }
 
   function handleAccept() {
     if (countWords(draft) > WORD_LIMITS.impact.max) return;
-    acceptCoachSection(participantId, 'impact', draft.trim(), { audiences, customFields });
+    const conflict = findCohortStatementConflict('impact', draft, participantId);
+    if (conflict?.type === 'exact') {
+      setAcceptError('That exact impact statement is already used. Shuffle wording or edit yours.');
+      return;
+    }
+    setAcceptError('');
+    acceptCoachSection(participantId, 'impact', draft.trim(), {
+      audiences,
+      draftVariants: variants,
+      selectedVariant,
+      patternSeed,
+    });
     onProgress();
     afterSectionAccept(onSectionComplete, navigate, `${ROUTES.ventureBlueprint}/coach/values`);
   }
 
   if (stored.completedAt) {
     return (
-      <CoachMessage>
-        <p className="font-semibold">My Impact — complete ✓</p>
-        <p className="mt-2 whitespace-pre-wrap text-slate-600">{stored.data.finalText}</p>
-      </CoachMessage>
+      <section className="spike-card space-y-2">
+        <p className="font-semibold text-slate-900">My Impact — complete ✓</p>
+        <p className="whitespace-pre-wrap text-slate-600">{stored.data.finalText}</p>
+      </section>
     );
   }
 
@@ -374,12 +464,12 @@ export function ImpactCoachFlow({ participantId, onProgress, onSectionComplete }
     <div className="space-y-6">
       {step === 1 ? (
         <>
-          <CoachMessage>
-            <p className="font-semibold">Who do I want to help?</p>
-            <p className="mt-2 text-slate-600">
-              Who would you like to serve? What difference do you want to make? Select up to 2 audiences.
-            </p>
-          </CoachMessage>
+          <CoachSectionHeader
+            step={1}
+            total={IMPACT_STEPS}
+            title="Who do I want to help?"
+            description="Select up to 2 audiences you want to serve. Your impact line will be composed from curated phrases."
+          />
           <CoachSelectionCounter count={audiences.length} exact={IMPACT_MAX} />
           <CoachCardGrid
             options={IMPACT_AUDIENCES}
@@ -392,61 +482,61 @@ export function ImpactCoachFlow({ participantId, onProgress, onSectionComplete }
             }}
             exactSelections={IMPACT_MAX}
           />
-          <button
-            type="button"
-            disabled={audiences.length === 0 || generating}
-            onClick={async () => {
-              setGenerating(true);
-              try {
-                const { text } = await generateImpactDraftWithAi({ audiences });
-                setDraft(text);
-                persist({ draft: text, audiences, step: 2 });
-                setStep(2);
-              } finally {
-                setGenerating(false);
-              }
-            }}
-            className="spike-btn-primary disabled:opacity-50"
-          >
-            {generating ? 'Generating…' : 'Generate my impact statement'}
-          </button>
+          <CoachStepNav
+            forwardLabel="Compose my impact statement"
+            forwardDisabled={audiences.length === 0}
+            onForward={beginComposeStep}
+          />
         </>
       ) : null}
 
       {step === 2 && draft ? (
         <>
+          <CoachSectionHeader
+            step={2}
+            total={IMPACT_STEPS}
+            title="Compose and finalize"
+            description="Pick a length style, shuffle wording if needed, then edit your impact line."
+          />
           {overlapWarning ? (
             <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
               {overlapWarning}
             </div>
           ) : null}
-          <CoachMessage>
-            <p>
-              Answer the coach one question at a time, then refine until you can say it confidently in under 30
-              seconds.
-            </p>
-          </CoachMessage>
-          <CoachDraftPanel
-            participantId={participantId}
+          <CoachComposerPanel
             title="Impact Statement"
             statementType="impact"
             draft={draft}
-            coachCardContext={{ audiences }}
-            enableCustomization
-            savedCustomFields={customFields}
-            onCustomFieldsChange={(fields) => {
-              setCustomFields(fields);
-              persist({ customFields: fields });
-            }}
+            variants={variants}
+            selectedVariant={selectedVariant}
+            contextChips={impactContextLabels(audiences)}
+            uniquenessWarning={acceptError}
+            shuffling={shuffling}
             wordLimits={WORD_LIMITS.impact}
-            maxWords={WORD_LIMITS.impact.max}
             acceptDisabled={countWords(draft) > WORD_LIMITS.impact.max}
+            onVariantSelect={(id, text) => {
+              setSelectedVariant(id);
+              setDraft(text);
+              persist({ selectedVariant: id, draft: text });
+            }}
+            onShuffle={() => {
+              setShuffling(true);
+              try {
+                regenerateComposedDraft({ seed: patternSeed + 1, variant: selectedVariant });
+                setAcceptError('');
+              } finally {
+                setShuffling(false);
+              }
+            }}
             onDraftChange={(text) => {
               setDraft(text);
+              setAcceptError('');
               persist({ draft: text });
             }}
             onAccept={handleAccept}
+            acceptLabel="Accept impact statement"
           />
+          <CoachStepNav backLabel="Back to audiences" onBack={() => setStep(1)} />
         </>
       ) : null}
     </div>
@@ -469,7 +559,6 @@ export function ValuesCoachFlow({ participantId, onProgress, onSectionComplete }
     /** @type {string[]} */ (stored.data.topThree ?? stored.data.topFive?.slice(0, 3) ?? []),
   );
   const [profile, setProfile] = useState(String(stored.data.valuesProfile ?? ''));
-  const [generating, setGenerating] = useState(false);
 
   function persist(data) {
     saveCoachSectionDraft(participantId, 'values', { ...stored.data, ...data, step });
@@ -507,14 +596,11 @@ export function ValuesCoachFlow({ participantId, onProgress, onSectionComplete }
               persist({ selected: next });
             }}
           />
-          <button
-            type="button"
-            disabled={selected.length < 5}
-            onClick={() => setStep(2)}
-            className="spike-btn-primary disabled:opacity-50"
-          >
-            Narrow to Top 5
-          </button>
+          <CoachStepNav
+            forwardLabel="Narrow to Top 5"
+            forwardDisabled={selected.length < 5}
+            onForward={() => setStep(2)}
+          />
         </>
       ) : null}
 
@@ -534,18 +620,17 @@ export function ValuesCoachFlow({ participantId, onProgress, onSectionComplete }
               persist({ topFive: next });
             }}
           />
-          <button
-            type="button"
-            disabled={topFive.length !== 5}
-            onClick={() => {
+          <CoachStepNav
+            backLabel="Back"
+            forwardLabel="Rank Top 3"
+            forwardDisabled={topFive.length !== 5}
+            onBack={() => setStep(1)}
+            onForward={() => {
               setTopThree(topFive.slice(0, 3));
               persist({ topThree: topFive.slice(0, 3), step: 3 });
               setStep(3);
             }}
-            className="spike-btn-primary disabled:opacity-50"
-          >
-            Rank Top 3
-          </button>
+          />
         </>
       ) : null}
 
@@ -563,24 +648,18 @@ export function ValuesCoachFlow({ participantId, onProgress, onSectionComplete }
               persist({ topThree: next });
             }}
           />
-          <button
-            type="button"
-            disabled={topThree.length !== 3 || generating}
-            onClick={async () => {
-              setGenerating(true);
-              try {
-                const { profile: nextProfile } = await generateValuesProfileWithAi(topThree);
-                setProfile(nextProfile);
-                persist({ valuesProfile: nextProfile, topThree, step: 4 });
-                setStep(4);
-              } finally {
-                setGenerating(false);
-              }
+          <CoachStepNav
+            backLabel="Back"
+            forwardLabel="Generate values profile"
+            forwardDisabled={topThree.length !== 3}
+            onBack={() => setStep(2)}
+            onForward={() => {
+              const nextProfile = generateValuesProfile(topThree);
+              setProfile(nextProfile);
+              persist({ valuesProfile: nextProfile, topThree, step: 4 });
+              setStep(4);
             }}
-            className="spike-btn-primary disabled:opacity-50"
-          >
-            {generating ? 'Generating…' : 'Generate values profile'}
-          </button>
+          />
         </>
       ) : null}
 
@@ -590,17 +669,16 @@ export function ValuesCoachFlow({ participantId, onProgress, onSectionComplete }
             <p className="font-semibold">Values Profile</p>
             <p className="mt-2 whitespace-pre-wrap text-slate-600">{profile}</p>
           </CoachMessage>
-          <button
-            type="button"
-            onClick={() => {
+          <CoachStepNav
+            backLabel="Back"
+            forwardLabel="Accept & continue to Tagline"
+            onBack={() => setStep(3)}
+            onForward={() => {
               acceptCoachSection(participantId, 'values', profile, { topFive, topThree, valuesProfile: profile });
               onProgress();
               afterSectionAccept(onSectionComplete, navigate, `${ROUTES.ventureBlueprint}/coach/tagline`);
             }}
-            className="spike-btn-primary"
-          >
-            Accept &amp; continue to Tagline
-          </button>
+          />
         </>
       ) : null}
     </div>
@@ -718,6 +796,8 @@ export function FutureSelfCoachFlow({ participantId, onProgress, onSectionComple
   const [successVision, setSuccessVision] = useState(String(stored.data.successVision ?? ''));
   const [draft, setDraft] = useState(String(stored.data.draft ?? ''));
   const [summary, setSummary] = useState(String(stored.data.futureSelfSummary ?? ''));
+  const [summarySeed, setSummarySeed] = useState(Number(stored.data.summarySeed ?? 0));
+  const [summaryError, setSummaryError] = useState('');
   const [generating, setGenerating] = useState(false);
 
   function persist(data) {
@@ -762,9 +842,11 @@ export function FutureSelfCoachFlow({ participantId, onProgress, onSectionComple
               persist({ goals: next });
             }}
           />
-          <button type="button" disabled={goals.length === 0} onClick={() => setStep(2)} className="spike-btn-primary disabled:opacity-50">
-            Continue
-          </button>
+          <CoachStepNav
+            forwardLabel="Continue"
+            forwardDisabled={goals.length === 0}
+            onForward={() => setStep(2)}
+          />
         </>
       ) : null}
 
@@ -788,9 +870,7 @@ export function FutureSelfCoachFlow({ participantId, onProgress, onSectionComple
           <p className="text-center text-sm font-semibold text-spike">
             {INCOME_SLIDER_LABELS.find((l) => l.value === incomeLevel)?.label}
           </p>
-          <button type="button" onClick={() => setStep(3)} className="spike-btn-primary">
-            Continue
-          </button>
+          <CoachStepNav backLabel="Back" forwardLabel="Continue" onBack={() => setStep(1)} onForward={() => setStep(3)} />
         </>
       ) : null}
 
@@ -822,30 +902,36 @@ export function FutureSelfCoachFlow({ participantId, onProgress, onSectionComple
               persist({ successVision: e.target.value });
             }}
           />
-          <button
-            type="button"
-            disabled={impact.trim().length < 5 || successVision.trim().length < 5 || generating}
-            onClick={async () => {
+          <CoachStepNav
+            backLabel="Back"
+            forwardLabel={generating ? 'Generating…' : 'Generate Future Self Narrative'}
+            backDisabled={generating}
+            forwardDisabled={impact.trim().length < 5 || successVision.trim().length < 5 || generating}
+            onBack={() => setStep(2)}
+            onForward={() => {
               setGenerating(true);
               try {
-                const { text, summary: oneLine } = await generateFutureSelfWithAi({
-                  goals,
-                  incomeLevel,
-                  impact,
-                  successVision,
-                });
+                const text = generateFutureSelfNarrative({ goals, incomeLevel, impact, successVision });
+                const summaryResult = findUniqueFutureSelfSummary(
+                  { goals, incomeLevel, impact, successVision },
+                  participantId,
+                  summarySeed,
+                );
                 setDraft(text);
-                setSummary(oneLine);
-                persist({ draft: text, futureSelfSummary: oneLine, step: 4 });
+                setSummary(summaryResult.summary);
+                setSummarySeed(summaryResult.patternSeed);
+                persist({
+                  draft: text,
+                  futureSelfSummary: summaryResult.summary,
+                  summarySeed: summaryResult.patternSeed,
+                  step: 4,
+                });
                 setStep(4);
               } finally {
                 setGenerating(false);
               }
             }}
-            className="spike-btn-primary disabled:opacity-50"
-          >
-            {generating ? 'Generating…' : 'Generate Future Self Narrative'}
-          </button>
+          />
         </>
       ) : null}
 
@@ -873,12 +959,19 @@ export function FutureSelfCoachFlow({ participantId, onProgress, onSectionComple
               persist({ draft: text, futureSelfSummary: nextSummary });
             }}
             onAccept={() => {
+              const conflict = findCohortStatementConflict('future-self', summary, participantId);
+              if (conflict?.type === 'exact') {
+                setSummaryError('That one-sentence summary is already used. Regenerate or edit it.');
+                return;
+              }
+              setSummaryError('');
               acceptCoachSection(participantId, 'future-self', draft.trim(), {
                 goals,
                 incomeLevel,
                 impact,
                 successVision,
                 futureSelfSummary: summary,
+                summarySeed,
               });
               onProgress();
               afterSectionAccept(
@@ -889,18 +982,42 @@ export function FutureSelfCoachFlow({ participantId, onProgress, onSectionComple
             }}
           />
           <div className="spike-card space-y-3">
-            <p className="spike-label">One-Sentence Summary</p>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="spike-label">One-Sentence Summary</p>
+              <button
+                type="button"
+                className="spike-btn-secondary text-xs"
+                onClick={() => {
+                  const result = findUniqueFutureSelfSummary(
+                    { goals, incomeLevel, impact, successVision },
+                    participantId,
+                    summarySeed + 1,
+                  );
+                  setSummary(result.summary);
+                  setSummarySeed(result.patternSeed);
+                  setSummaryError('');
+                  persist({ futureSelfSummary: result.summary, summarySeed: result.patternSeed });
+                }}
+              >
+                Regenerate summary
+              </button>
+            </div>
             <textarea
               rows={2}
               className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm"
               value={summary}
               onChange={(e) => {
                 setSummary(e.target.value);
+                setSummaryError('');
                 persist({ futureSelfSummary: e.target.value });
               }}
             />
             <CoachWordGuidance count={countWords(summary)} limits={WORD_LIMITS.futureSelfSummary} />
+            {summaryError ? (
+              <p className="text-sm text-amber-800">{summaryError}</p>
+            ) : null}
           </div>
+          <CoachStepNav backLabel="Back to vision inputs" onBack={() => setStep(3)} />
         </>
       ) : null}
     </div>

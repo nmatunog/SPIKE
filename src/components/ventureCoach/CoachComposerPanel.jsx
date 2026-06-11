@@ -27,6 +27,7 @@ import { CoachWordGuidance } from './CoachDraftPanel.jsx';
  *   contextChips?: string[],
  *   uniquenessWarning?: string | null,
  *   rows?: number,
+ *   statementType?: 'ambition' | 'impact',
  * }} props
  */
 export function CoachComposerPanel({
@@ -36,6 +37,7 @@ export function CoachComposerPanel({
   onAccept,
   acceptLabel = 'Accept statement',
   acceptDisabled = false,
+  statementType = 'ambition',
   wordLimits = WORD_LIMITS.ambition,
   variants = null,
   selectedVariant = 'balanced',
@@ -53,7 +55,7 @@ export function CoachComposerPanel({
   const evaluation = evaluateStatement(draft, wordLimits);
 
   function applyRefine(actionId) {
-    const result = refineTextWithFeedback(draft, actionId, wordLimits.max, 'ambition');
+    const result = refineTextWithFeedback(draft, actionId, wordLimits.max, statementType);
     setUndoDraft(draft);
     setRefineNote(result.note || 'Updated your draft.');
     onDraftChange(result.text);

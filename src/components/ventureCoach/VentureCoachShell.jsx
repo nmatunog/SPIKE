@@ -9,6 +9,7 @@ import {
 } from '../../lib/ventureCoachService.js';
 import { BuilderResetButton } from '../day1/BuilderResetButton.jsx';
 import { CoachProgressSidebar } from './CoachProgressSidebar.jsx';
+import { CoachSectionNav } from './CoachSectionNav.jsx';
 import {
   AmbitionCoachFlow,
   FutureSelfCoachFlow,
@@ -158,6 +159,7 @@ export function VentureCoachShell({ participantId, section }) {
               confirmMessage="Clear this coach section and start over? Your saved draft for this step will be removed."
             />
           </header>
+          <CoachSectionNav activeSection={section} />
           {renderSection()}
         </div>
       </div>

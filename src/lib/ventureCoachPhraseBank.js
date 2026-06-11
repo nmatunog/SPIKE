@@ -3,10 +3,56 @@
 export const AMBITION_ROLE_ARCHETYPES = [
   { id: 'agency_director', label: 'Agency Director' },
   { id: 'unit_manager', label: 'Unit Manager' },
+  { id: 'associate_unit_manager', label: 'Associate Unit Manager' },
   { id: 'senior_leader', label: 'Senior Leader' },
+  { id: 'senior_unit_manager', label: 'Senior Unit Manager' },
   { id: 'trusted_advisor', label: 'Trusted Advisor' },
+  { id: 'financial_advisor', label: 'Financial Advisor' },
+  { id: 'wealth_strategist', label: 'Wealth Strategist' },
   { id: 'venture_builder', label: 'Venture Builder' },
   { id: 'team_leader', label: 'Team Leader' },
+  { id: 'practice_owner', label: 'Practice Owner' },
+  { id: 'market_leader', label: 'Market Leader' },
+  { id: 'custom', label: 'My own role (1–3 words)' },
+];
+
+export const CUSTOM_ROLE_ARCHETYPE_ID = 'custom';
+
+/** @param {string} input */
+export function sanitizeCustomRolePhrase(input) {
+  const cleaned = String(input ?? '')
+    .trim()
+    .replace(/[^A-Za-z\s'-]/g, '')
+    .replace(/\s+/g, ' ');
+  const words = cleaned.split(' ').filter(Boolean);
+  if (!words.length) {
+    return { valid: false, phrase: '', error: 'Enter your role — one word or up to three words.' };
+  }
+  if (words.length > 3) {
+    return { valid: false, phrase: '', error: 'Use at most 3 words for your role.' };
+  }
+  const phrase = words
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+  return { valid: true, phrase, error: '' };
+}
+
+export const IMPACT_SENTENCE_PATTERNS = [
+  'Help {primaryAudience} achieve {primaryOutcome} through trusted financial guidance.',
+  'Serve {primaryAudience} and {secondaryAudience} with meaningful financial guidance.',
+  'Empower {primaryAudience} to build {primaryOutcome} with clarity and confidence.',
+  'Guide {primaryAudience} toward {primaryOutcome} while strengthening {secondaryTheme}.',
+  'Create lasting impact for {primaryAudience} through disciplined financial planning.',
+  'Support {primaryAudience} and {secondaryAudience} in reaching {primaryOutcome}.',
+];
+
+export const FUTURE_SELF_SUMMARY_PATTERNS = [
+  'In three years, I am a respected entrepreneur focused on {primaryGoal}, creating {impact} at a {income} level.',
+  'My future self leads a thriving venture centered on {primaryGoal}, delivering {impact} with {income} results.',
+  'Within three years, I build a credible practice around {primaryGoal}, helping others through {impact}.',
+  'I become a confident venture builder known for {primaryGoal}, {impact}, and sustainable {income} growth.',
+  'Three years from now, I am recognized for {primaryGoal} while creating {impact} at a {income} standard.',
+  'I grow into a leader who advances {primaryGoal}, drives {impact}, and earns {income} with integrity.',
 ];
 
 /** @type {Record<string, { theme: string, verb: string, outcome: string, accent: string }>} */

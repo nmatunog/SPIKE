@@ -6,6 +6,7 @@ import { BLUEPRINT_LINKS, ROUTES } from '../../routes/paths.js';
 import { exportVenturePortfolioPdf } from '../../lib/portfolioExportService.js';
 import { ensurePortfolioSlug, savePortfolioSettings } from '../../lib/portfolioStorage.js';
 import { DreamBoardCollage } from './DreamBoardCollage.jsx';
+import { DreamBoardSlideCollage } from './DreamBoardSlideCollage.jsx';
 import { VentureTimeline } from './VentureTimeline.jsx';
 
 /** @param {{ portfolio: ReturnType<import('../../services/portfolioGenerator.js').generateVenturePortfolio> }} props */
@@ -139,7 +140,13 @@ export function PortfolioDreamBoardSection({ portfolio }) {
           </Link>
         ) : null}
       </header>
-      <DreamBoardCollage assets={dreamBoard.assets} showMeta />
+      <DreamBoardSlideCollage assets={dreamBoard.assets} title={`${portfolio.cover.participantName}'s Dream Board`} />
+      <details className="spike-card group">
+        <summary className="cursor-pointer text-sm font-semibold text-spike">View card grid</summary>
+        <div className="mt-4">
+          <DreamBoardCollage assets={dreamBoard.assets} showMeta />
+        </div>
+      </details>
       {dreamBoard.evolution.length ? (
         <section className="spike-card space-y-4">
           <p className="spike-label text-spike">Dream Evolution</p>
