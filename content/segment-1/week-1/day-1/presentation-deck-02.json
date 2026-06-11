@@ -1,0 +1,102 @@
+{
+  "presentation": {
+    "id": "presentation-day-1-deck-02",
+    "dayId": "day-segment-1-week-1-day-1",
+    "title": "Faculty Deck 02 — Building My Future",
+    "slideIds": [
+      "slide-deck02-01",
+      "slide-deck02-02",
+      "slide-deck02-03",
+      "slide-deck02-04",
+      "slide-deck02-05",
+      "slide-deck02-06",
+      "slide-deck02-07"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-deck02-01",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 1,
+      "title": "Building My Future — Overview",
+      "body": "Your Venture Identity is built from five pillars:\n\n1. Ambition — who you want to become\n2. Impact — who you want to serve\n3. Values — what you will never compromise\n4. Future Self — your 3-year narrative\n5. Career Direction — Agency Builder or Specialist Consultant\n\nEach pillar becomes a builder activity in Venture Blueprint™ and a section in your Venture Portfolio™.",
+      "speakerNotes": "Open Deck 02 immediately after Deck 01 close. Show the five-pillar diagram if available on screen. Tell participants they will complete each pillar today — not someday. 3 minutes.",
+      "discussionQuestions": [
+        "Which pillar feels hardest to articulate right now?",
+        "Why does identity come before market research?"
+      ]
+    },
+    {
+      "id": "slide-deck02-02",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 2,
+      "title": "Ambition",
+      "body": "Ambition is not a wish list — it is a declaration of who you are becoming.\n\nStrong ambition statements are:\n• Specific (role + outcome)\n• Personal (your words, not copied phrases)\n• Entrepreneurial (builder mindset, not employee mindset)\n\nExample: 'Become a respected Agency Director who develops leaders and builds a thriving organization.'\n\nYou will craft yours with Venture Coach™ — guided conversation, not blank forms.",
+      "speakerNotes": "Facilitate before they open the builder. Read one strong and one weak example. Weak: 'I want to be successful.' Strong: uses role + action + outcome. Launch activity-day-1-ambition-builder after this slide. 5 minutes.",
+      "discussionQuestions": [
+        "Say your ambition aloud in one sentence — even if it is imperfect.",
+        "What makes an ambition statement feel authentic vs performative?"
+      ]
+    },
+    {
+      "id": "slide-deck02-03",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 3,
+      "title": "Impact",
+      "body": "Impact answers: Who do you want to help — and how will their lives be different because of you?\n\nImpact connects AIA's protection mission to your personal venture.\n\nStrong impact statements name:\n• A specific audience (professionals, families, young parents, freelancers)\n• A transformation (peace of mind, financial clarity, protected legacy)\n\nYour impact feeds Business Plan Chapter 1 and your portfolio Identity section.",
+      "speakerNotes": "Link back to AIA Story from Deck 01. Impact is not generic 'help people' — push for specificity. Launch impact builder activity after debrief. 5 minutes.",
+      "discussionQuestions": [
+        "Who is one person you already want to help — by name or by type?",
+        "What problem do they face that financial planning could solve?"
+      ]
+    },
+    {
+      "id": "slide-deck02-04",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 4,
+      "title": "Values",
+      "body": "Values are your non-negotiables — the principles that guide decisions when pressure is high.\n\nIn SPIKE you will:\n• Select values that resonate\n• Rank your top three\n• See how they shape your venture culture\n\nValues are not decoration. They appear in your squad charter, mentor conversations, and Hour 200 Venture Board presentation.",
+      "speakerNotes": "Share one personal value and how it showed up in a hard decision. Emphasize ranking top three — forced prioritization reveals character. 4 minutes before values builder.",
+      "discussionQuestions": [
+        "Which value would you never compromise — even if it cost you a sale?",
+        "How will your squad know what you stand for?"
+      ]
+    },
+    {
+      "id": "slide-deck02-05",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 5,
+      "title": "Future Self",
+      "body": "Future Self is your 3-year narrative — a story of who you have become.\n\nNot a job description. A life picture:\n• Professional identity\n• Lifestyle and financial milestones\n• Relationships and team\n• Legacy and contribution\n\nVenture Coach™ helps you build this through an interactive timeline. Your Future Self anchors every Week 1 conversation with your mentor.",
+      "speakerNotes": "Read a 3-sentence future self narrative as exemplar. Warn against fantasy without discipline — future self must be aspirational AND believable. 5 minutes.",
+      "discussionQuestions": [
+        "Describe yourself three years from now — present tense, as if it already happened.",
+        "What daily habit today makes that future self possible?"
+      ]
+    },
+    {
+      "id": "slide-deck02-06",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 6,
+      "title": "Career Direction",
+      "body": "SPIKE offers two venture paths — exploration today, commitment by Day 5:\n\nAgency Builder — build a team, recruit, scale an organization.\nSpecialist Consultant — build deep expertise and a premium practice.\n\nNo wrong answer on Day 1. Honest exploration beats premature commitment.\n\nYour direction feeds Career Track in Venture Portfolio and canvas engines in Week 1.",
+      "speakerNotes": "Present both paths without bias. Use real district examples. Day 1 is exploration — they can change by Day 5. Launch career direction activity. 4 minutes.",
+      "discussionQuestions": [
+        "Which path energizes you today — and what evidence supports that?",
+        "What would you need to learn before committing to either path?"
+      ]
+    },
+    {
+      "id": "slide-deck02-07",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 7,
+      "title": "Deck 02 Close — Day 1 Deliverables",
+      "body": "By end of Day 1 you will have:\n\n✓ Ambition, Impact, Values, Future Self, Career Direction\n✓ Dream Board visual collage\n✓ Squad membership and signed charter\n✓ Portfolio Identity section started\n✓ Mentor snapshot for coaching\n\nFaculty and mentors use Day 1 evaluation templates to observe — not grade — your engagement and clarity.",
+      "speakerNotes": "Close with clear deliverable list. Point to Week 1 Journey panel in Venture Portfolio. Confirm mentor check-ins before Day 2. 3 minutes.",
+      "discussionQuestions": [
+        "What is the one deliverable you will finish before you leave today?",
+        "What will you ask your mentor at first check-in?"
+      ]
+    }
+  ]
+}

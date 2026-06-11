@@ -6,6 +6,7 @@ import { ReflectionViewer } from './ReflectionViewer.jsx';
 import { SurveyViewer } from './SurveyViewer.jsx';
 import { Link } from 'react-router-dom';
 import { Rocket } from 'lucide-react';
+import { resolvePresentations } from '../../lib/contentLoader.js';
 import { BLUEPRINT_LINKS } from '../../routes/paths.js';
 
 /**
@@ -31,12 +32,10 @@ export function SessionView({
   showSpeakerNotes = false,
   hideWorksheets = false,
 }) {
-  const { presentation, activities, worksheets, assessment, reflections, survey } = bundle;
+  const { activities, worksheets, assessment, reflections, survey } = bundle;
 
   const sessionPresentations =
-    session.presentationIds.length > 0 && presentation?.presentation
-      ? [{ presentation: presentation.presentation, slides: presentation.slides }]
-      : [];
+    session.presentationIds.length > 0 ? resolvePresentations(bundle, session.presentationIds) : [];
 
   const sessionActivities = (activities?.activities ?? []).filter((a) =>
     session.activityIds.includes(a.id),

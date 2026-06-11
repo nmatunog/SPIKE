@@ -3,6 +3,7 @@ import { Users } from 'lucide-react';
 import { summarizeInternPlaybookProgress } from '../../lib/playbookProgress.js';
 import { saveMentorCoachingNote } from '../../lib/coachingService.js';
 import { MentorDay1Panel } from '../day1/MentorDay1Panel.jsx';
+import { MentorGuidePanel } from './MentorGuidePanel.jsx';
 import { getDay1MissionProgress } from '../../lib/day1BuilderStorage.js';
 
 /**
@@ -38,10 +39,10 @@ export function MentorPlaybookView({ bundle, interns, mentorId }) {
       {!bundle ? (
         <p className="text-sm text-gray-500">No content bundle loaded for the selected day.</p>
       ) : bundle.day.id === 'day-segment-1-week-1-day-1' ? (
-        <MentorDay1Panel
-          interns={interns}
-          mentorId={mentorId}
-        />
+        <>
+          {bundle.mentorGuide ? <MentorGuidePanel guide={bundle.mentorGuide} /> : null}
+          <MentorDay1Panel interns={interns} mentorId={mentorId} />
+        </>
       ) : summaries.length === 0 ? (
         <p className="text-sm text-gray-500">No interns in cohort yet.</p>
       ) : (

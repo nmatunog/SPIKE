@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import { GraduationCap } from 'lucide-react';
+import { EvaluationTemplatesPanel } from './EvaluationTemplatesPanel.jsx';
 import { FacilitatorGuidePanel } from './FacilitatorGuidePanel.jsx';
+import { MentorGuidePanel } from './MentorGuidePanel.jsx';
 import { SessionView } from './SessionView.jsx';
 import { PresentationViewer } from './PresentationViewer.jsx';
+import { resolvePresentations } from '../../lib/contentLoader.js';
 
 /**
  * @typedef {import('../../lib/contentLoader.js').DayContentBundle} DayContentBundle
@@ -30,6 +33,12 @@ export function FacultyPlaybookView({ bundle }) {
 
       {bundle.facilitator ? <FacilitatorGuidePanel guide={bundle.facilitator} /> : null}
 
+      {bundle.evaluations?.templates?.length ? (
+        <EvaluationTemplatesPanel templates={bundle.evaluations.templates} />
+      ) : null}
+
+      {bundle.mentorGuide ? <MentorGuidePanel guide={bundle.mentorGuide} /> : null}
+
       {sessions.length > 0 ? (
         <div className="flex flex-wrap gap-2">
           {sessions.map((session, idx) => (
@@ -51,12 +60,15 @@ export function FacultyPlaybookView({ bundle }) {
 
       {activeSession ? (
         <SessionView session={activeSession} bundle={bundle} showSpeakerNotes />
-      ) : bundle.presentation ? (
-        <PresentationViewer
-          presentation={bundle.presentation.presentation}
-          slides={bundle.presentation.slides}
-          facultyMode
-        />
+      ) : resolvePresentations(bundle, bundle.day.presentations ?? []).length ? (
+        resolvePresentations(bundle, bundle.day.presentations ?? []).map((pres) => (
+          <PresentationViewer
+            key={pres.presentation.id}
+            presentation={pres.presentation}
+            slides={pres.slides}
+            facultyMode
+          />
+        ))
       ) : null}
     </div>
   );

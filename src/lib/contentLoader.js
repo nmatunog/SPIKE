@@ -30,6 +30,9 @@
  * @property {{ sessions: Session[] }} [sessions]
  * @property {{ reflections: Reflection[] }} [reflections]
  * @property {FacilitatorGuide} [facilitator]
+ * @property {{ presentation: Presentation, slides: Slide[] }} [presentationDeck02]
+ * @property {{ templates: Array<Record<string, unknown>> }} [evaluations]
+ * @property {Record<string, unknown>} [mentorGuide]
  */
 
 /**
@@ -167,6 +170,15 @@ for (const [filePath, data] of Object.entries(contentModules)) {
     case 'facilitator-guide':
       bundle.facilitator = /** @type {FacilitatorGuide} */ (data);
       break;
+    case 'presentation-deck-02':
+      bundle.presentationDeck02 = /** @type {DayContentBundle['presentationDeck02']} */ (data);
+      break;
+    case 'evaluations':
+      bundle.evaluations = /** @type {DayContentBundle['evaluations']} */ (data);
+      break;
+    case 'mentor-guide':
+      bundle.mentorGuide = /** @type {DayContentBundle['mentorGuide']} */ (data);
+      break;
     default:
       break;
   }
@@ -261,6 +273,33 @@ export function getDayContentBundle(segmentSlug, weekSlug, daySlug) {
   return /** @type {DayContentBundle} */ (partial);
 }
 
+/**
+ * @param {DayContentBundle} bundle
+ * @returns {Map<string, { presentation: Presentation, slides: Slide[] }>}
+ */
+export function getPresentationMap(bundle) {
+  /** @type {Map<string, { presentation: Presentation, slides: Slide[] }>} */
+  const map = new Map();
+  if (bundle.presentation?.presentation) {
+    map.set(bundle.presentation.presentation.id, bundle.presentation);
+  }
+  if (bundle.presentationDeck02?.presentation) {
+    map.set(bundle.presentationDeck02.presentation.id, bundle.presentationDeck02);
+  }
+  return map;
+}
+
+/**
+ * @param {DayContentBundle} bundle
+ * @param {string[]} presentationIds
+ */
+export function resolvePresentations(bundle, presentationIds) {
+  const map = getPresentationMap(bundle);
+  return presentationIds
+    .map((id) => map.get(id))
+    .filter(Boolean);
+}
+
 /** Convenience path for acceptance criteria smoke checks. */
 export function getSegment1Week1Day1Bundle() {
   return getDayContentBundle('segment-1', 'week-1', 'day-1');
@@ -298,6 +337,22 @@ export function assertSegment1Week1Day1Ready() {
   }
   if (!bundle.facilitator?.title) {
     throw new Error('Day 1 missing facilitator guide');
+  }
+  if (!bundle.presentationDeck02?.slides?.length) {
+    throw new Error('Day 1 missing Faculty Deck 02');
+  }
+  if (!bundle.evaluations?.templates?.length) {
+    throw new Error('Day 1 missing evaluation templates');
+  }
+  if (!bundle.mentorGuide?.title) {
+    throw new Error('Day 1 missing mentor guide');
+  }
+  const deck01 = bundle.presentation?.presentation?.id;
+  if (deck01 !== 'presentation-day-1-deck-01') {
+    throw new Error('Day 1 missing Faculty Deck 01');
+  }
+  if (bundle.activities.activities.length < 8) {
+    throw new Error('Day 1 requires 8 activity guides');
   }
   return bundle;
 }

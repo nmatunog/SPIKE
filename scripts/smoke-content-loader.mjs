@@ -22,8 +22,9 @@ try {
     throw new Error('no segments loaded');
   }
   const bundle = mod.assertSegment1Week1Day1Ready();
+  const deck02Slides = bundle.presentationDeck02?.slides?.length ?? 0;
   console.log(
-    `smoke:content:loader OK — Day 1 "${bundle.day.title}" with ${bundle.presentation.slides.length} slides`,
+    `smoke:content:loader OK — Day 1 "${bundle.day.title}" with ${bundle.presentation.slides.length}+${deck02Slides} slides, ${bundle.activities.activities.length} activities`,
   );
 } catch (error) {
   console.error('smoke:content:loader FAIL —', error.message);

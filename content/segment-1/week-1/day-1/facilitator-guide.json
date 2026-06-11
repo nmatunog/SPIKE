@@ -1,58 +1,81 @@
 {
   "dayId": "day-segment-1-week-1-day-1",
-  "title": "Facilitator Guide — Day 1: Agency Orientation & Entrepreneur Mindset",
+  "title": "Facilitator Guide — Day 1: Stories, Identity & Squad Formation",
   "durationHours": 4,
   "prepChecklist": [
-    "Confirm squad assignments and advisory dyad pairings",
-    "Print or share vision board materials and squad charter template",
-    "Test projector / slide deck and speaker notes visibility",
-    "Review Day 1 worksheet rubric with mentors"
+    "Load Faculty Deck 01 and Deck 02 — confirm speaker notes visible in faculty view",
+    "Confirm squad assignments and mentor pairings in formation admin",
+    "Test Venture Blueprint Day 1 Builders access for all participants",
+    "Print or share evaluation templates: participation rubric, venture identity rubric, faculty observation form",
+    "Brief mentors on Day 1 mentor guide and observation areas",
+    "Prepare dream board materials (digital studio + optional physical supplies)"
   ],
   "sessionFlow": [
     {
-      "time": "0:00–0:45",
-      "activity": "Opening presentation — Welcome to SPIKE",
-      "notes": "Set incubator tone. Avoid classroom language. Use discussion questions on slides 1–2."
+      "time": "0:00–0:35",
+      "activity": "Faculty Deck 01 — AIA, Agency, SPIKE Stories",
+      "notes": "Deliver all six Deck 01 slides with stories, not bullet reads. Use discussion questions on slides 2–4."
     },
     {
-      "time": "0:45–1:30",
-      "activity": "Vision Board Squad Activity",
-      "notes": "Circulate among squads. Capture photos of boards for portfolio evidence."
+      "time": "0:35–0:50",
+      "activity": "Faculty Deck 02 — Building My Future (overview + Ambition + Impact)",
+      "notes": "Slides 1–3. Transition directly into ambition and impact builders."
     },
     {
-      "time": "1:30–2:00",
-      "activity": "Break + transition to afternoon session",
-      "notes": "Mentors check in with squads on alignment with Week 1 goals."
+      "time": "0:50–1:35",
+      "activity": "Ambition + Impact + Values Builders",
+      "notes": "Individual work with mentor circulation. Debrief each activity using activity guide questions."
     },
     {
-      "time": "2:00–2:30",
-      "activity": "Research Squad Charter & Role Assignment",
-      "notes": "Ensure every intern has a named role for Week 1 rotation."
+      "time": "1:35–1:45",
+      "activity": "Break",
+      "notes": "Mentors check squad roster and preview afternoon flow."
     },
     {
-      "time": "2:30–3:30",
-      "activity": "Ambition, Purpose & Values Builders (individual)",
-      "notes": "Builders feed Venture Blueprint Ambition & Purpose — remind interns before submit."
+      "time": "1:45–2:15",
+      "activity": "Deck 02 — Future Self + Career Direction slides + builders",
+      "notes": "Slides 5–6 then activities. Dyad discussion for career direction."
     },
     {
-      "time": "3:30–4:00",
-      "activity": "Participation assessment + Day 1 reflection",
-      "notes": "Faculty observation rubric. Close with reflection prompts."
+      "time": "2:15–3:00",
+      "activity": "Dream Board Studio + Squad Formation",
+      "notes": "Squads form visually then confirm membership in app. Gallery walk at 2:55."
+    },
+    {
+      "time": "3:00–3:30",
+      "activity": "Squad Charter Builder",
+      "notes": "Digital signatures required. Faculty and mentor sign-off."
+    },
+    {
+      "time": "3:30–3:50",
+      "activity": "Deck 02 Close + Day 1 evaluation",
+      "notes": "Faculty uses observation form and venture identity rubric. Participation assessment in app."
+    },
+    {
+      "time": "3:50–4:00",
+      "activity": "Day 1 reflection + mentor debrief",
+      "notes": "Participant reflection survey. Mentors complete debrief reflection form with faculty."
     }
   ],
   "debriefQuestions": [
-    "Which squad vision boards showed the strongest alignment between personal why and venture thesis?",
-    "Where did interns struggle to distinguish entrepreneurship from traditional employment?",
-    "What coaching will mentors provide before Day 2?"
+    "Which squad dream boards showed strongest alignment between personal ambition and venture thesis?",
+    "Where did participants struggle to distinguish entrepreneurship from traditional employment?",
+    "Which identity builder produced the most authentic voice — and which produced the most generic answers?",
+    "What coaching will mentors provide before Day 2 industry immersion?",
+    "Are all Day 1 deliverables visible in Venture Portfolio for every participant?"
   ],
   "commonPitfalls": [
-    "Treating SPIKE as a lecture course rather than an incubator",
-    "Skipping squad charter — leads to unclear research roles in Week 1",
-    "Rushing the personal why worksheet — quality drives Blueprint Vision module"
+    "Rushing Deck 01 stories — participants need emotional frame before builders",
+    "Reading slides instead of telling AIA and agency stories",
+    "Skipping debrief questions after each builder activity",
+    "Treating identity builders as forms to rush through",
+    "Allowing squad charter without assigned roles or digital signatures",
+    "Ending without evaluation templates completed"
   ],
   "coachingTips": [
-    "Ask each intern to state their why aloud before worksheet submit",
-    "Link every activity output to Portfolio Identity & Purpose and Business Plan Chapter 1",
-    "Flag interns who did not complete reflection for mentor follow-up"
+    "Faculty and mentors use the same language: ambition, impact, values, future self, career direction",
+    "Link every activity output to Portfolio Identity and Business Plan Chapter 1",
+    "Use Week 1 Journey panel in Venture Portfolio as live progress check",
+    "Flag participants with observation form 'needs follow-up' for mentor priority on Day 2"
   ]
 }

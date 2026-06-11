@@ -3,27 +3,41 @@
   "segmentId": "segment-1",
   "weekId": "week-segment-1-1",
   "dayNumber": 1,
-  "title": "Venture Blueprint Builders — Day 1",
-  "theme": "Build the foundation of your Venture Blueprint™",
+  "title": "Day 1 — Stories, Identity & Squad Formation",
+  "theme": "Discover Yourself — AIA, Agency, SPIKE, and Building My Future",
   "durationHours": 4,
   "learningObjectives": [
-    "Distinguish entrepreneurship from traditional employment in financial services",
-    "Articulate personal ambition, purpose, and values using SPIKE venture builder frameworks",
-    "Map squad roles, advisory dyads, and research squad expectations for Segment 1",
-    "Identify first portfolio and business plan outputs for Week 1"
+    "Understand the AIA, Agency, and SPIKE stories that frame the incubator experience",
+    "Articulate personal ambition, impact, values, future self, and career direction",
+    "Complete identity builders in Venture Blueprint and sync to Venture Portfolio",
+    "Form research squads, build dream boards, and sign squad charters"
   ],
   "expectedOutputs": [
-    "Completed ambition, purpose, and values builders",
-    "Squad charter with research and advisory roles assigned",
-    "Orientation reflection draft for portfolio Identity & Purpose section"
+    "Ambition, impact, values, future self, and career direction statements",
+    "Dream board collage in Venture Portfolio",
+    "Squad membership and signed squad charter",
+    "Day 1 faculty and mentor evaluation observations"
   ],
   "portfolioDeliverables": [
-    "Orientation reflection — why you are building a financial venture",
-    "Dream board snapshot or narrative summary from squad activity"
+    "Venture Identity — ambition, impact, values, tagline, future self",
+    "Dream Board 16:9 collage",
+    "Squad charter summary"
   ],
   "businessPlanIntegration": "Draft opening narrative for Business Plan Chapter 1: Ambition & Purpose",
-  "presentations": ["presentation-day-1-welcome"],
-  "activities": ["activity-day-1-vision-board", "activity-day-1-squad-charter"],
+  "presentations": [
+    "presentation-day-1-deck-01",
+    "presentation-day-1-deck-02"
+  ],
+  "activities": [
+    "activity-day-1-ambition-builder",
+    "activity-day-1-impact-builder",
+    "activity-day-1-values-builder",
+    "activity-day-1-future-self-builder",
+    "activity-day-1-career-direction",
+    "activity-day-1-dream-board",
+    "activity-day-1-squad-formation",
+    "activity-day-1-squad-charter"
+  ],
   "worksheets": ["worksheet-day-1-personal-why"],
   "assessments": ["assessment-day-1-participation"]
 }

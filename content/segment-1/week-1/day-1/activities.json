@@ -1,53 +1,218 @@
 {
   "activities": [
     {
-      "id": "activity-day-1-vision-board",
+      "id": "activity-day-1-ambition-builder",
       "dayId": "day-segment-1-week-1-day-1",
-      "title": "Vision Board Squad Activity",
-      "durationMinutes": 45,
+      "title": "Ambition Builder — Venture Coach™",
+      "durationMinutes": 25,
       "materials": [
-        "Poster boards or digital canvas link",
-        "Sticky notes and markers",
-        "SPIKE visioning prompt cards"
+        "Venture Blueprint app — Ambition builder",
+        "Faculty Deck 02 slide: Ambition (reference)",
+        "Ambition example cards (optional printed)"
       ],
       "instructions": [
-        "Form research squads of 3–4 interns.",
-        "Each member shares a 2-minute personal why story.",
-        "Collaboratively build a squad vision board: images, words, and symbols representing your shared venture thesis.",
-        "Capture three measurable goals for Week 1 on the board footer."
+        "Faculty introduces Ambition after Deck 02 slide 2.",
+        "Participants open Venture Blueprint → Day 1 Builders → My Ambition.",
+        "Venture Coach™ guides a conversation — participants respond in their own words.",
+        "Coach generates a draft ambition statement; participant edits until authentic.",
+        "Submit when clarity score is acceptable or faculty calls time.",
+        "Mentors circulate — listen for copied language vs personal voice."
       ],
       "outputs": [
-        "Photo or export of squad vision board",
-        "Three Week 1 goals listed in squad charter"
+        "Submitted ambition statement in Venture Blueprint",
+        "Portfolio Identity — Ambition field populated"
       ],
       "debriefQuestions": [
-        "Where did squad visions align or diverge?",
-        "Which goal is most challenging for your squad this week?",
-        "How does this connect to Business Plan Chapter 1?"
+        "Who heard something surprising in a squad mate's ambition?",
+        "What made your ambition statement feel true — not performative?",
+        "How does your ambition connect to the AIA Story from Deck 01?"
+      ]
+    },
+    {
+      "id": "activity-day-1-impact-builder",
+      "dayId": "day-segment-1-week-1-day-1",
+      "title": "Impact Builder — Venture Coach™",
+      "durationMinutes": 20,
+      "materials": [
+        "Venture Blueprint app — Impact builder",
+        "Faculty Deck 02 slide: Impact"
+      ],
+      "instructions": [
+        "Facilitate immediately after ambition debrief.",
+        "Open Impact builder in Venture Coach™.",
+        "Participants name audience + transformation in guided prompts.",
+        "Review draft impact statement for specificity.",
+        "Submit and confirm sync to Portfolio Identity section."
+      ],
+      "outputs": [
+        "Impact / purpose statement in Blueprint",
+        "Business Plan Chapter 1 — purpose paragraph seed"
+      ],
+      "debriefQuestions": [
+        "Who is the specific audience in your impact statement?",
+        "How does impact differ from ambition in your own words?",
+        "Where could your impact show up in a real client conversation?"
+      ]
+    },
+    {
+      "id": "activity-day-1-values-builder",
+      "dayId": "day-segment-1-week-1-day-1",
+      "title": "Values Profile Builder",
+      "durationMinutes": 20,
+      "materials": [
+        "Venture Blueprint app — Values builder",
+        "Values card reference (in-app)"
+      ],
+      "instructions": [
+        "Present Values slide from Deck 02.",
+        "Participants select values that resonate from the card deck.",
+        "Rank top three — forced prioritization.",
+        "Write one sentence on how top value guides decisions.",
+        "Submit values profile to Blueprint and Portfolio."
+      ],
+      "outputs": [
+        "Ranked top-three values",
+        "Values narrative in Portfolio Identity"
+      ],
+      "debriefQuestions": [
+        "Which value was hardest to rank — and why?",
+        "Share one value your squad shares and one where you differ.",
+        "How will your values appear in your squad charter?"
+      ]
+    },
+    {
+      "id": "activity-day-1-future-self-builder",
+      "dayId": "day-segment-1-week-1-day-1",
+      "title": "Future Self Narrative Builder",
+      "durationMinutes": 30,
+      "materials": [
+        "Venture Blueprint app — Future Self builder",
+        "Timeline prompt cards (in-app)"
+      ],
+      "instructions": [
+        "Faculty reads exemplar 3-year narrative (Deck 02 slide 5).",
+        "Participants build future self through interactive timeline in Venture Coach™.",
+        "Encourage present-tense narrative — 'I am' not 'I will'.",
+        "Generate summary for portfolio and mentor snapshot.",
+        "Mentors note confidence and specificity during circulation."
+      ],
+      "outputs": [
+        "Future self narrative (full + summary)",
+        "Mentor coaching snapshot input"
+      ],
+      "debriefQuestions": [
+        "What detail in your future self narrative felt most real?",
+        "What fear showed up while writing — and did you name it?",
+        "How does future self connect to your ambition statement?"
+      ]
+    },
+    {
+      "id": "activity-day-1-career-direction",
+      "dayId": "day-segment-1-week-1-day-1",
+      "title": "Career Direction Explorer",
+      "durationMinutes": 20,
+      "materials": [
+        "Venture Blueprint app — Venture Direction builder",
+        "Agency Builder vs Specialist Consultant comparison (Deck 02 slide 6)"
+      ],
+      "instructions": [
+        "Present both career tracks without prescribing either.",
+        "Participants explore Venture Direction builder — no final lock required on Day 1.",
+        "Capture initial preference and one reason.",
+        "Discuss with dyad partner for 5 minutes.",
+        "Save exploration state to Blueprint Career Track module."
+      ],
+      "outputs": [
+        "Initial career direction selection or 'exploring'",
+        "Career track note for mentor observation"
+      ],
+      "debriefQuestions": [
+        "Which track energized you — and what evidence supports that?",
+        "What question do you still need answered before committing?",
+        "How does career direction connect to your future self narrative?"
+      ]
+    },
+    {
+      "id": "activity-day-1-dream-board",
+      "dayId": "day-segment-1-week-1-day-1",
+      "title": "Dream Board Studio",
+      "durationMinutes": 45,
+      "materials": [
+        "Dream Board Studio in Venture Blueprint",
+        "Optional: poster boards, markers, printed images",
+        "Squad breakout space"
+      ],
+      "instructions": [
+        "Squads gather for visual dream board creation.",
+        "Each member adds lifestyle, family, career, and financial goal images.",
+        "Write captions connecting visuals to ambition and future self.",
+        "Export 16:9 collage for Venture Portfolio Dream Board section.",
+        "Squad shares one board highlight in gallery walk (2 min per squad)."
+      ],
+      "outputs": [
+        "Dream board assets with captions",
+        "Portfolio Dream Board collage (16:9)",
+        "Squad gallery photo (optional)"
+      ],
+      "debriefQuestions": [
+        "Which image on your board represents your ambition best?",
+        "Where did squad members' dreams align or diverge?",
+        "How does your dream board support your impact statement?"
+      ]
+    },
+    {
+      "id": "activity-day-1-squad-formation",
+      "dayId": "day-segment-1-week-1-day-1",
+      "title": "Research Squad Formation",
+      "durationMinutes": 25,
+      "materials": [
+        "Squad Formation builder in app",
+        "Research market preference list",
+        "Faculty squad assignment sheet"
+      ],
+      "instructions": [
+        "Faculty announces squad assignments or guides self-selection by market interest.",
+        "Participants complete Squad Formation builder — rank research market preferences.",
+        "Confirm squad roster and mentor assignment in app.",
+        "Introduce squad members and exchange contact details.",
+        "Mentor joins each squad for 5-minute introduction."
+      ],
+      "outputs": [
+        "Squad membership recorded",
+        "Research market preference rankings",
+        "Mentor assignment confirmed"
+      ],
+      "debriefQuestions": [
+        "What strength does each squad member bring?",
+        "What research market excites your squad most?",
+        "How will your squad communicate between sessions?"
       ]
     },
     {
       "id": "activity-day-1-squad-charter",
       "dayId": "day-segment-1-week-1-day-1",
-      "title": "Research Squad Charter & Role Assignment",
+      "title": "Squad Charter Builder",
       "durationMinutes": 30,
       "materials": [
-        "Squad charter template (worksheet or digital form)",
+        "Squad Charter Builder in Venture Blueprint",
         "Role description handout: Lead, Scribe, Presenter, Analyst"
       ],
       "instructions": [
         "Assign squad roles for Week 1 rotation.",
-        "Document meeting cadence and communication channel.",
-        "List accountability norms and how conflicts will be resolved.",
-        "Faculty coach signs off on charter before break."
+        "Co-create mission statement linking squad vision to cohort theme.",
+        "Document meeting cadence, communication channel, and conflict norms.",
+        "Each member signs charter digitally in app.",
+        "Faculty and mentor sign-off before session close."
       ],
       "outputs": [
         "Signed squad charter",
-        "Role rotation schedule for Week 1"
+        "Role rotation schedule for Week 1",
+        "Portfolio squad charter section"
       ],
       "debriefQuestions": [
         "What norm will keep your squad effective under time pressure?",
-        "Who will present squad outputs at the Vision Review gate?"
+        "Who will present squad outputs at the Day 5 review?",
+        "How does your charter reflect shared values?"
       ]
     }
   ]

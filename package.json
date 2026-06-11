@@ -19,6 +19,7 @@
     "ship:dirty": "bash scripts/ship-if-dirty.sh",
     "smoke:content": "node scripts/smoke-content-files.mjs",
     "smoke:content:loader": "node scripts/smoke-content-loader.mjs",
+    "simulate:day1": "node scripts/simulate-day1.mjs",
     "smoke:canvas-pptx": "node scripts/smoke-canvas-pptx.mjs",
     "smoke:coach-compose": "node scripts/smoke-coach-compose.mjs",
     "smoke:mentor-week1": "node scripts/smoke-mentor-week1.mjs",

@@ -1,0 +1,138 @@
+{
+  "templates": [
+    {
+      "id": "rubric-day-1-participation",
+      "dayId": "day-segment-1-week-1-day-1",
+      "type": "rubric",
+      "title": "Day 1 Participation Rubric",
+      "audience": "faculty",
+      "description": "Faculty observation of engagement across squad activities and builder completion. Evidence for competency tracking — not a graded exam.",
+      "criteria": [
+        {
+          "label": "Squad engagement",
+          "indicators": [
+            "Contributes actively in dream board and charter activities",
+            "Listens and builds on squad mates' ideas",
+            "Shows up prepared for squad formation"
+          ]
+        },
+        {
+          "label": "Builder completion",
+          "indicators": [
+            "Completes ambition, impact, and values builders",
+            "Submits future self narrative with personal detail",
+            "Explores career direction with honest reflection"
+          ]
+        },
+        {
+          "label": "Incubator mindset",
+          "indicators": [
+            "Uses venture builder language vs employee language",
+            "Connects activities to portfolio and business plan outputs",
+            "Asks questions about entrepreneurship path"
+          ]
+        },
+        {
+          "label": "Professional presence",
+          "indicators": [
+            "Participates in gallery walk and debriefs",
+            "Communicates clearly in dyad and squad settings",
+            "Accepts coaching feedback without defensiveness"
+          ]
+        }
+      ],
+      "scale": ["Needs coaching", "Developing", "Proficient", "Exemplary"]
+    },
+    {
+      "id": "rubric-day-1-venture-identity",
+      "dayId": "day-segment-1-week-1-day-1",
+      "type": "rubric",
+      "title": "Venture Identity Readiness Rubric",
+      "audience": "faculty",
+      "description": "Assesses quality of Day 1 identity outputs — ambition, impact, values, future self — for Hour 200 readiness trajectory.",
+      "criteria": [
+        {
+          "label": "Ambition clarity",
+          "indicators": [
+            "Names a specific role or outcome",
+            "Uses personal language, not copied phrases",
+            "Connects to entrepreneurship, not employment"
+          ]
+        },
+        {
+          "label": "Impact specificity",
+          "indicators": [
+            "Identifies a target audience",
+            "Describes a transformation or outcome for that audience",
+            "Links to protection or financial planning context"
+          ]
+        },
+        {
+          "label": "Values integrity",
+          "indicators": [
+            "Ranks top three values with reasoning",
+            "Values align with stated ambition",
+            "Can articulate a non-negotiable"
+          ]
+        },
+        {
+          "label": "Future self narrative",
+          "indicators": [
+            "Written in present tense, 3-year horizon",
+            "Includes professional and personal dimensions",
+            "Feels aspirational yet believable"
+          ]
+        }
+      ],
+      "scale": ["Not ready", "Emerging", "Ready", "Portfolio-ready"]
+    },
+    {
+      "id": "observation-day-1-faculty",
+      "dayId": "day-segment-1-week-1-day-1",
+      "type": "observation_form",
+      "title": "Faculty Day 1 Observation Form",
+      "audience": "faculty",
+      "description": "Quick-scan observation during Deck 01/02 delivery and builder activities. Complete one row per participant.",
+      "fields": [
+        { "id": "engaged_deck", "label": "Engaged during faculty decks", "type": "rating", "max": 5 },
+        { "id": "builder_completion", "label": "Completed all identity builders", "type": "checkbox" },
+        { "id": "squad_contribution", "label": "Contributed meaningfully in squad", "type": "rating", "max": 5 },
+        { "id": "authentic_voice", "label": "Uses authentic voice (not copied)", "type": "rating", "max": 5 },
+        { "id": "follow_up", "label": "Needs mentor follow-up", "type": "checkbox" },
+        { "id": "notes", "label": "Faculty notes", "type": "long_text" }
+      ]
+    },
+    {
+      "id": "observation-day-1-mentor",
+      "dayId": "day-segment-1-week-1-day-1",
+      "type": "observation_form",
+      "title": "Mentor Day 1 Identity Observation",
+      "audience": "mentor",
+      "description": "Mentor observation during squad activities and first coaching check-in. Feeds Week 1 coaching summary.",
+      "fields": [
+        { "id": "confidence", "label": "Confidence", "type": "rating", "max": 5 },
+        { "id": "self_awareness", "label": "Self-Awareness", "type": "rating", "max": 5 },
+        { "id": "motivation", "label": "Motivation", "type": "rating", "max": 5 },
+        { "id": "communication", "label": "Communication", "type": "rating", "max": 5 },
+        { "id": "warning_sign", "label": "Warning sign observed", "type": "checkbox" },
+        { "id": "warning_detail", "label": "Warning sign detail", "type": "short_text" },
+        { "id": "coaching_note", "label": "Coaching note for participant snapshot", "type": "long_text" }
+      ],
+      "observationAreas": ["Confidence", "Self-Awareness", "Motivation", "Communication"]
+    },
+    {
+      "id": "reflection-day-1-mentor-debrief",
+      "dayId": "day-segment-1-week-1-day-1",
+      "type": "reflection_form",
+      "title": "Mentor Day 1 Debrief Reflection",
+      "audience": "mentor",
+      "description": "Mentor completes after Day 1 squad sessions. Informs Day 2 coaching plan.",
+      "prompts": [
+        "Which participant needs the most follow-up before Day 2?",
+        "What identity gap did you observe most often today?",
+        "What coaching question worked best in your squad?",
+        "What will you watch for during Day 2 industry immersion?"
+      ]
+    }
+  ]
+}

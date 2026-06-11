@@ -1,60 +1,88 @@
 {
   "presentation": {
-    "id": "presentation-day-1-welcome",
+    "id": "presentation-day-1-deck-01",
     "dayId": "day-segment-1-week-1-day-1",
-    "title": "Welcome to SPIKE — Venture Incubator Orientation",
+    "title": "Faculty Deck 01 — Stories That Frame SPIKE",
     "slideIds": [
-      "slide-day-1-01",
-      "slide-day-1-02",
-      "slide-day-1-03",
-      "slide-day-1-04"
+      "slide-deck01-01",
+      "slide-deck01-02",
+      "slide-deck01-03",
+      "slide-deck01-04",
+      "slide-deck01-05",
+      "slide-deck01-06"
     ]
   },
   "slides": [
     {
-      "id": "slide-day-1-01",
-      "presentationId": "presentation-day-1-welcome",
+      "id": "slide-deck01-01",
+      "presentationId": "presentation-day-1-deck-01",
       "sortOrder": 1,
-      "title": "Welcome to S.P.I.K.E.",
-      "body": "SPIKE is a Startup Business Incubator — not a traditional internship. You are building a 3-Year business blueprint as a financial entrepreneur.\n\nStakeholders: Interns (venture builders), Advisory Board (coaches), Venture Partners (agency directors).",
-      "speakerNotes": "Open with energy. Emphasize incubator language — avoid 'classroom' framing. 5 minutes.",
+      "title": "Faculty Deck 01 — Opening",
+      "body": "Today we begin with three stories:\n\n1. The AIA Story — why protection matters\n2. The Agency Story — how financial entrepreneurs build\n3. The SPIKE Story — how you become a venture builder\n\nThese stories are not background noise. They are the frame for every deliverable you will create this week.",
+      "speakerNotes": "Set the tone: this is an incubator, not a classroom. Faculty delivers all three stories before any builder activity. 3 minutes. Pause after listing the three stories so participants know the arc.",
       "discussionQuestions": [
-        "What surprised you most about the incubator model?",
-        "How is this different from internships you have seen before?"
+        "Which story are you most curious to hear today?",
+        "What does 'venture builder' mean to you right now — before we define it?"
       ]
     },
     {
-      "id": "slide-day-1-02",
-      "presentationId": "presentation-day-1-welcome",
+      "id": "slide-deck01-02",
+      "presentationId": "presentation-day-1-deck-01",
       "sortOrder": 2,
-      "title": "Program Architecture",
-      "body": "Segment 1 (200 hours) → Proof of Concept Venture Board.\n\nEvery day contributes to: Portfolio, Business Plan, Competencies, and Venture readiness.\n\nWeek 1 focus: Ambition & Purpose — Identity & Purpose portfolio section.",
-      "speakerNotes": "Walk through the six venture-incubator dimensions. Point to Playbook navigation they will use daily.",
+      "title": "The AIA Story",
+      "body": "AIA was founded in Shanghai in 1919 with a single conviction: people deserve financial protection when life does not go as planned.\n\nToday, AIA is the largest pan-Asian life insurance group — a company built on trust, discipline, and long-term relationships.\n\nIn the Philippines, AIA protects families, funds education, and helps people plan for retirement and legacy. You are not selling products — you are helping people protect what matters most.",
+      "speakerNotes": "Tell the AIA story with pride, not corporate jargon. Use one local example (family protection, education fund, health crisis). Connect to participant motivation: they joined because they want to build something meaningful. 5–7 minutes. Avoid product training — this is purpose and context only.",
       "discussionQuestions": [
-        "Which output system — portfolio or business plan — feels most unfamiliar today?"
+        "When have you seen a family struggle because they lacked financial protection?",
+        "How does AIA's mission connect to your personal why?"
       ]
     },
     {
-      "id": "slide-day-1-03",
-      "presentationId": "presentation-day-1-welcome",
+      "id": "slide-deck01-03",
+      "presentationId": "presentation-day-1-deck-01",
       "sortOrder": 3,
-      "title": "Squad Dynamics",
-      "body": "Research Squads (3–4): market intelligence and collaborative problem solving.\n\nAdvisory Dyads: roleplay, mock client meetings, pitch refinement.\n\nFaculty coaches assign squads today.",
-      "speakerNotes": "Explain squad charter activity coming next. Dyads pair by complementary strengths.",
+      "title": "The Agency Story",
+      "body": "The agency model is not a job — it is a franchise of entrepreneurship.\n\nFinancial advisors build books of business. Agency builders recruit, develop, and lead teams. Unit Managers and Agency Directors invest in people the way venture partners invest in startups.\n\nIn SPIKE, you learn the Educate → Expand → Empower model: educate your market, expand your client base, empower your team. Your 3-Year Business Blueprint is the agency story written in your own ambition.",
+      "speakerNotes": "Contrast employment vs entrepreneurship clearly. Name the career ladder: Advisor → Unit Manager → Agency Director. Reference Matunog District as a living example of agency building. 5 minutes. Transition: 'Your agency story starts with identity — which we build in Deck 02.'",
+      "discussionQuestions": [
+        "What is the difference between having a job and building a venture?",
+        "Who is an agency leader you admire — and what did they build?"
+      ]
+    },
+    {
+      "id": "slide-deck01-04",
+      "presentationId": "presentation-day-1-deck-01",
+      "sortOrder": 4,
+      "title": "The SPIKE Story",
+      "body": "SPIKE = Startup Business Incubator for Knowledge Entrepreneurs.\n\nYou are not interns filling hours — you are venture builders creating:\n• Venture Portfolio™ (your personal brand and proof)\n• Venture Blueprint™ (your 3-year business plan)\n• Financial Entrepreneurship Canvas (your operating model)\n\nStakeholders:\n• You — the venture builder\n• Faculty — program architects and facilitators\n• Mentors — your advisory board coaches\n• Venture Partners — agency directors who approve milestones",
+      "speakerNotes": "Walk through the four outputs systems. Emphasize Segment 1 ends at Hour 200 Venture Board. Point to Playbook, Blueprint, and Portfolio navigation in the app. 5 minutes. This slide bridges Story → Action.",
+      "discussionQuestions": [
+        "Which output system — Portfolio or Business Plan — feels most unfamiliar?",
+        "What milestone at Hour 200 would make you proud?"
+      ]
+    },
+    {
+      "id": "slide-deck01-05",
+      "presentationId": "presentation-day-1-deck-01",
+      "sortOrder": 5,
+      "title": "Program Architecture & Squads",
+      "body": "Segment 1 (200 hours) → Proof of Concept Venture Board.\n\nResearch Squads (3–4): market intelligence and collaborative problem solving.\nAdvisory Dyads: roleplay, mock client meetings, pitch refinement.\nAgency Teams: business planning and franchise simulation.\n\nWeek 1 theme: Identity & Purpose — everything today feeds your Venture Portfolio and Blueprint Chapter 1.",
+      "speakerNotes": "Explain squad formation happens today. Mentors will be assigned to squads. Preview afternoon builders. 4 minutes.",
       "discussionQuestions": [
         "What strength will you bring to your research squad?",
-        "What do you want from your advisory dyad partner?"
+        "What do you want from your mentor in Week 1?"
       ]
     },
     {
-      "id": "slide-day-1-04",
-      "presentationId": "presentation-day-1-welcome",
-      "sortOrder": 4,
-      "title": "Day 1 Outputs",
-      "body": "By end of day:\n• Personal why statement (worksheet)\n• Squad charter (activity)\n• Orientation reflection → Portfolio: Identity & Purpose\n• Vision narrative seed → Business Plan Chapter 1",
-      "speakerNotes": "Close with clear deliverables. Link to competency targets: Visioning and Goal Setting.",
+      "id": "slide-deck01-06",
+      "presentationId": "presentation-day-1-deck-01",
+      "sortOrder": 6,
+      "title": "Deck 01 Close — Transition to Building My Future",
+      "body": "You have heard three stories:\n• AIA protects what matters\n• The agency model rewards builders\n• SPIKE turns you into a financial entrepreneur\n\nNext: Faculty Deck 02 — Building My Future.\nYou will define Ambition, Impact, Values, Future Self, and Career Direction — the foundation of your Venture Blueprint™.",
+      "speakerNotes": "Close Deck 01 with energy. Take a 2-minute stretch before Deck 02. Faculty confirms everyone can access Venture Blueprint in the app.",
       "discussionQuestions": [
-        "What is one goal you will hold yourself accountable to before Day 2?"
+        "What is one word that captures how you feel after these three stories?",
+        "What question do you want answered about your own future today?"
       ]
     }
   ]

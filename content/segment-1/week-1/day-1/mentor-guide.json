@@ -1,0 +1,96 @@
+{
+  "dayId": "day-segment-1-week-1-day-1",
+  "theme": "Identity",
+  "title": "Mentor Guide — Day 1: Identity & Purpose",
+  "coachingObjective": "Connect the SPIKE opportunity to each participant's personal ambition. Help them find authentic voice in identity builders — not perfect words.",
+  "timing": {
+    "preSession": "15 min — review squad roster, read Faculty Deck 01/02 speaker notes, print observation form",
+    "duringSession": "Circulate during builders and squad activities; 5 min intro per squad",
+    "postSession": "20 min — complete observation forms and participant snapshots"
+  },
+  "discussionQuestions": [
+    "Why did you join SPIKE?",
+    "What attracted you to this opportunity?",
+    "What future are you hoping to create?",
+    "What concerns do you have about the entrepreneurship path?",
+    "What part of today resonated most — AIA story, agency story, or your own ambition?",
+    "Say your ambition in one sentence — I want to hear it in your words.",
+    "Who do you want to help — and why them?",
+    "What value will you never compromise?"
+  ],
+  "observationAreas": [
+    {
+      "area": "Confidence",
+      "lookFor": ["Speaks up in squad without prompting", "Shares ambition aloud", "Makes eye contact during dyad"],
+      "warningSigns": ["Withdrawal from squad activity", "Only echoes facilitator language"]
+    },
+    {
+      "area": "Self-Awareness",
+      "lookFor": ["Names personal strengths and gaps", "Acknowledges fears honestly", "Connects values to behavior"],
+      "warningSigns": ["Generic answers with no personal detail", "Cannot articulate why they joined"]
+    },
+    {
+      "area": "Motivation",
+      "lookFor": ["Energy during dream board", "Connects AIA mission to personal why", "Asks questions about path"],
+      "warningSigns": ["Treats day as checkbox exercise", "No connection between ambition and impact"]
+    },
+    {
+      "area": "Communication",
+      "lookFor": ["Clear sentences in builders", "Listens to squad mates", "Responds to coaching prompts"],
+      "warningSigns": ["Copied phrases from slides or peers", "Unable to summarize own ambition"]
+    }
+  ],
+  "coachingTips": [
+    "Listen for authentic voice, not perfect words — specificity beats polish on Day 1.",
+    "Ask participants to read ambition aloud before they submit the builder.",
+    "Link every coaching comment to Portfolio Identity or Business Plan Chapter 1.",
+    "Celebrate one brave moment per participant — naming a fear counts.",
+    "Flag participants who did not complete reflection for faculty follow-up.",
+    "Do not prescribe career direction — explore both tracks with curiosity."
+  ],
+  "warningSigns": [
+    "Copying facilitator or peer language verbatim in builders",
+    "Unable to articulate personal ambition when asked directly",
+    "Withdrawal from squad dream board or charter activity",
+    "Dismissing entrepreneurship path as 'just sales'",
+    "Completing builders with one-word or placeholder answers"
+  ],
+  "reflectionPrompts": [
+    "Write one sentence that captures who you are becoming.",
+    "What fear showed up today?",
+    "What will you do differently tomorrow because of today's identity work?"
+  ],
+  "expectedOutcomes": [
+    "Participant Snapshot — mentor can describe participant ambition, impact, and values in own words",
+    "Squad charter signed with mentor awareness of roles",
+    "Observation form completed for each assigned participant",
+    "At-risk participants flagged for Day 2 follow-up"
+  ],
+  "activityCoachingNotes": [
+    {
+      "activityId": "activity-day-1-ambition-builder",
+      "note": "Stand beside participant during coach conversation. If draft sounds generic, ask: 'What would your best friend say you are building?'"
+    },
+    {
+      "activityId": "activity-day-1-impact-builder",
+      "note": "Push for one named audience. 'Families' is too broad — 'young parents in BPO' is coachable."
+    },
+    {
+      "activityId": "activity-day-1-future-self-builder",
+      "note": "Future self should be present tense. Model one sentence if they are stuck."
+    },
+    {
+      "activityId": "activity-day-1-dream-board",
+      "note": "Gallery walk — ask each member to explain one image connection to ambition."
+    },
+    {
+      "activityId": "activity-day-1-squad-charter",
+      "note": "Ensure every member has a named role. Conflict norms matter for Week 1 research."
+    }
+  ],
+  "debriefWithFaculty": [
+    "Which participants need extra support before Day 2?",
+    "Did squad formation produce balanced teams?",
+    "Any identity outputs that are portfolio-ready vs need rework?"
+  ]
+}
