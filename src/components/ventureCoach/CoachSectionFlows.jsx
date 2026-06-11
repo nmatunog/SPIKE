@@ -16,23 +16,31 @@ import {
   statementsOverlapTooMuch,
 } from '../../lib/ventureCoachEngine.js';
 import {
-  generateAmbitionVariantsWithAi,
   generateFutureSelfWithAi,
   generateImpactDraftWithAi,
   generateTaglineWithAi,
   generateValuesProfileWithAi,
 } from '../../lib/ventureCoachAiService.js';
 import {
+  ambitionContextLabels,
+  findCohortStatementConflict,
+  findUniqueAmbitionDraft,
+} from '../../lib/ventureCoachComposer.js';
+import { AMBITION_ROLE_ARCHETYPES } from '../../lib/ventureCoachPhraseBank.js';
+import {
   acceptCoachSection,
   getCoachSection,
   saveCoachSectionDraft,
 } from '../../lib/ventureCoachService.js';
-import { CoachCardGrid, CoachMessage } from './CoachMessage.jsx';
+import { CoachCardGrid, CoachMessage, CoachRadioList } from './CoachMessage.jsx';
+import { CoachComposerPanel } from './CoachComposerPanel.jsx';
 import { CoachDraftPanel, CoachWordGuidance } from './CoachDraftPanel.jsx';
 import { CoachRankList, CoachSelectionCounter } from './CoachRankList.jsx';
+import { CoachSectionHeader } from './CoachSectionHeader.jsx';
 import { ROUTES } from '../../routes/paths.js';
 
 const AMBITION_EXACT = 3;
+const AMBITION_STEPS = 4;
 const IMPACT_MAX = 2;
 /** @deprecated */ const PURPOSE_EXACT = IMPACT_MAX;
 
@@ -56,6 +64,11 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
   const [ranked, setRanked] = useState(
     /** @type {string[]} */ (stored.data.rankedMotivators ?? stored.data.selectedMotivators ?? []),
   );
+  const [roleArchetypeId, setRoleArchetypeId] = useState(
+    String(stored.data.roleArchetypeId ?? AMBITION_ROLE_ARCHETYPES[0].id),
+  );
+  const [compositionTone, setCompositionTone] = useState(String(stored.data.compositionTone ?? 'balanced'));
+  const [patternSeed, setPatternSeed] = useState(Number(stored.data.patternSeed ?? 0));
   const [variants, setVariants] = useState(
     /** @type {{ short: string, balanced: string, inspirational: string } | null} */ (
       stored.data.draftVariants ?? null
@@ -63,14 +76,13 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
   );
   const [selectedVariant, setSelectedVariant] = useState(String(stored.data.selectedVariant ?? 'balanced'));
   const [draft, setDraft] = useState(String(stored.data.draft ?? ''));
-  const [customFields, setCustomFields] = useState(
-    /** @type {Record<string, string>} */ (stored.data.customFields ?? {}),
-  );
-  const [generating, setGenerating] = useState(false);
-  const [coachNote, setCoachNote] = useState('');
+  const [shuffling, setShuffling] = useState(false);
+  const [acceptError, setAcceptError] = useState('');
 
-  function persist(data) {
-    saveCoachSectionDraft(participantId, 'ambition', { ...stored.data, ...data, step });
+  const rankedOrder = ranked.length === AMBITION_EXACT ? ranked : selected;
+
+  function persist(data, nextStep = step) {
+    saveCoachSectionDraft(participantId, 'ambition', { ...stored.data, ...data, step: nextStep });
   }
 
   function toggleMotivator(id) {
@@ -80,50 +92,88 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
     persist({ selectedMotivators: next });
   }
 
-  async function handleGenerateDraft() {
-    const order = ranked.length === AMBITION_EXACT ? ranked : selected;
-    setGenerating(true);
-    try {
-      const { variants: generated, note, provider } = await generateAmbitionVariantsWithAi({ rankedMotivators: order });
-      setVariants(generated);
-      setDraft(generated.balanced);
-      setSelectedVariant('balanced');
-      setCoachNote(
-        provider && provider !== 'local' ? `${note} (via ${provider})` : note || '',
-      );
-      setStep(3);
-      saveCoachSectionDraft(participantId, 'ambition', {
+  function regenerateComposedDraft({
+    tone = compositionTone,
+    seed = patternSeed,
+    variant = selectedVariant,
+  } = {}) {
+    const result = findUniqueAmbitionDraft(rankedOrder, roleArchetypeId, tone, participantId, seed);
+    setVariants(result.variants);
+    const text = result.variants[variant] ?? result.variants.balanced;
+    setDraft(text);
+    setPatternSeed(result.patternSeed);
+    setCompositionTone(tone);
+    persist({
+      draftVariants: result.variants,
+      draft: text,
+      selectedVariant: variant,
+      compositionTone: tone,
+      patternSeed: result.patternSeed,
+      roleArchetypeId,
+      rankedMotivators: rankedOrder,
+      selectedMotivators: selected,
+    });
+    return result;
+  }
+
+  function beginComposeStep() {
+    const result = regenerateComposedDraft({ seed: patternSeed, variant: 'balanced' });
+    setSelectedVariant('balanced');
+    setStep(4);
+    persist(
+      {
+        rankedMotivators: rankedOrder,
         selectedMotivators: selected,
-        rankedMotivators: order,
-        draftVariants: generated,
+        roleArchetypeId,
+        draftVariants: result.variants,
+        draft: result.variants.balanced,
         selectedVariant: 'balanced',
-        draft: generated.balanced,
-        step: 3,
-      });
-    } finally {
-      setGenerating(false);
+        compositionTone,
+        patternSeed: result.patternSeed,
+      },
+      4,
+    );
+  }
+
+  function uniquenessWarningFor(text) {
+    const conflict = findCohortStatementConflict('ambition', text, participantId);
+    if (!conflict) return null;
+    if (conflict.type === 'exact') {
+      return 'Another intern in this browser already uses this exact wording. Shuffle wording or edit yours before accepting.';
     }
+    return 'This wording is very similar to another intern. Consider shuffling or editing to make it more yours.';
   }
 
   function handleAccept() {
     if (countWords(draft) > WORD_LIMITS.ambition.max) return;
+    const conflict = findCohortStatementConflict('ambition', draft, participantId);
+    if (conflict?.type === 'exact') {
+      setAcceptError('That exact statement is already taken in your cohort. Shuffle wording or edit before accepting.');
+      return;
+    }
+    setAcceptError('');
     acceptCoachSection(participantId, 'ambition', draft.trim(), {
       selectedMotivators: selected,
-      rankedMotivators: ranked,
+      rankedMotivators: rankedOrder,
       draftVariants: variants,
       selectedVariant,
-      customFields,
+      roleArchetypeId,
+      compositionTone,
+      patternSeed,
     });
     onProgress();
     afterSectionAccept(onSectionComplete, navigate, `${ROUTES.ventureBlueprint}/coach/impact`);
   }
 
+  const roleLabel = AMBITION_ROLE_ARCHETYPES.find((role) => role.id === roleArchetypeId)?.label ?? '';
+  const contextChips = [...ambitionContextLabels(rankedOrder), roleLabel].filter(Boolean);
+
   if (stored.completedAt) {
     return (
-      <CoachMessage>
-        <p className="font-semibold">My Ambition — complete ✓</p>
-        <p className="mt-2 whitespace-pre-wrap text-slate-600">{stored.data.finalText}</p>
-      </CoachMessage>
+      <section className="spike-card space-y-2">
+        <p className="font-semibold text-slate-900">My Ambition — complete ✓</p>
+        <p className="whitespace-pre-wrap text-slate-600">{stored.data.finalText}</p>
+      </section>
     );
   }
 
@@ -131,12 +181,12 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
     <div className="space-y-6">
       {step === 1 ? (
         <>
-          <CoachMessage>
-            <p className="font-semibold">What do I want to become?</p>
-            <p className="mt-2 text-slate-600">
-              Who do you aspire to become? What kind of leader or entrepreneur do you want to be? Select exactly 3.
-            </p>
-          </CoachMessage>
+          <CoachSectionHeader
+            step={1}
+            total={AMBITION_STEPS}
+            title="What do I want to become?"
+            description="Pick exactly 3 drivers that describe the leader or entrepreneur you want to become."
+          />
           <CoachSelectionCounter count={selected.length} exact={AMBITION_EXACT} />
           <CoachCardGrid
             options={AMBITION_MOTIVATOR_CARDS}
@@ -149,8 +199,8 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
             disabled={selected.length !== AMBITION_EXACT}
             onClick={() => {
               setRanked([...selected]);
-              persist({ rankedMotivators: [...selected], step: 2 });
               setStep(2);
+              persist({ rankedMotivators: [...selected] }, 2);
             }}
             className="spike-btn-primary disabled:opacity-50"
           >
@@ -161,10 +211,12 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
 
       {step === 2 ? (
         <>
-          <CoachMessage>
-            <p className="font-semibold">Which one matters most?</p>
-            <p className="mt-2 text-slate-600">Rank your 3 choices — #1 is your primary driver.</p>
-          </CoachMessage>
+          <CoachSectionHeader
+            step={2}
+            total={AMBITION_STEPS}
+            title="Which one matters most?"
+            description="Rank your 3 choices — #1 is your primary driver for the composed statement."
+          />
           <CoachRankList
             items={ranked}
             options={AMBITION_MOTIVATOR_CARDS}
@@ -173,59 +225,104 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
               persist({ rankedMotivators: next });
             }}
           />
-          <button
-            type="button"
-            onClick={handleGenerateDraft}
-            disabled={generating}
-            className="spike-btn-primary disabled:opacity-50"
-          >
-            {generating ? 'Generating…' : 'Generate ambition statements'}
-          </button>
+          <div className="flex flex-wrap gap-3">
+            <button type="button" onClick={() => setStep(1)} className="spike-btn-secondary">
+              Back
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setStep(3);
+                persist({ rankedMotivators: ranked }, 3);
+              }}
+              className="spike-btn-primary"
+            >
+              Continue to role
+            </button>
+          </div>
         </>
       ) : null}
 
-      {step === 3 && draft ? (
+      {step === 3 ? (
         <>
-          <CoachMessage>
-            <p>
-              Choose Short, Balanced, or Inspirational — answer the coach one question at a time, then refine until it
-              feels like yours.
-            </p>
-            {coachNote ? <p className="mt-2 text-sm text-slate-600">{coachNote}</p> : null}
-          </CoachMessage>
-          <CoachDraftPanel
-            participantId={participantId}
+          <CoachSectionHeader
+            step={3}
+            total={AMBITION_STEPS}
+            title="What role are you growing into?"
+            description="Choose a role archetype. Your statement will be composed from curated phrases — no typing required yet."
+          />
+          <CoachRadioList
+            options={AMBITION_ROLE_ARCHETYPES}
+            value={roleArchetypeId}
+            onChange={(id) => {
+              setRoleArchetypeId(id);
+              persist({ roleArchetypeId: id });
+            }}
+          />
+          <div className="flex flex-wrap gap-3">
+            <button type="button" onClick={() => setStep(2)} className="spike-btn-secondary">
+              Back
+            </button>
+            <button type="button" onClick={beginComposeStep} className="spike-btn-primary">
+              Compose my ambition statement
+            </button>
+          </div>
+        </>
+      ) : null}
+
+      {step === 4 && draft ? (
+        <>
+          <CoachSectionHeader
+            step={4}
+            total={AMBITION_STEPS}
+            title="Compose and finalize"
+            description="Pick a length style and tone, shuffle wording if needed, then edit the final line until it sounds like you."
+          />
+          <CoachComposerPanel
             title="Draft Ambition Statement"
-            statementType="ambition"
             draft={draft}
-            coachCardContext={{ rankedMotivators: ranked.length === AMBITION_EXACT ? ranked : selected }}
-            enableCustomization
-            savedCustomFields={customFields}
-            onCustomFieldsChange={(fields) => {
-              setCustomFields(fields);
-              persist({ customFields: fields });
-            }}
-            onVariantsRegenerated={(newVariants, variantId, text) => {
-              setVariants(newVariants);
-              setDraft(text);
-              persist({ draftVariants: newVariants, draft: text, selectedVariant: variantId });
-            }}
             variants={variants}
             selectedVariant={selectedVariant}
+            selectedTone={compositionTone}
+            contextChips={contextChips}
+            uniquenessWarning={acceptError || uniquenessWarningFor(draft)}
+            shuffling={shuffling}
+            wordLimits={WORD_LIMITS.ambition}
+            acceptDisabled={countWords(draft) > WORD_LIMITS.ambition.max}
             onVariantSelect={(id, text) => {
               setSelectedVariant(id);
               setDraft(text);
               persist({ selectedVariant: id, draft: text });
             }}
-            wordLimits={WORD_LIMITS.ambition}
-            maxWords={WORD_LIMITS.ambition.max}
-            acceptDisabled={countWords(draft) > WORD_LIMITS.ambition.max}
+            onToneSelect={(tone) => {
+              const result = regenerateComposedDraft({ tone, seed: patternSeed, variant: selectedVariant });
+              if (result.conflict?.type === 'exact') {
+                regenerateComposedDraft({ tone, seed: result.patternSeed + 1, variant: selectedVariant });
+              }
+            }}
+            onShuffle={() => {
+              setShuffling(true);
+              try {
+                regenerateComposedDraft({
+                  tone: compositionTone,
+                  seed: patternSeed + 1,
+                  variant: selectedVariant,
+                });
+                setAcceptError('');
+              } finally {
+                setShuffling(false);
+              }
+            }}
             onDraftChange={(text) => {
               setDraft(text);
+              setAcceptError('');
               persist({ draft: text });
             }}
             onAccept={handleAccept}
           />
+          <button type="button" onClick={() => setStep(3)} className="spike-btn-secondary">
+            Back to role
+          </button>
         </>
       ) : null}
     </div>

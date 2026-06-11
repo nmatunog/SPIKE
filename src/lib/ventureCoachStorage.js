@@ -17,6 +17,11 @@ function readAll() {
   }
 }
 
+/** All stored coach profiles (browser-local; used for cohort uniqueness checks). */
+export function readAllCoachProfiles() {
+  return readAll();
+}
+
 function writeAll(data) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }

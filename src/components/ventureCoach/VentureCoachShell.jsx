@@ -50,9 +50,9 @@ export function VentureCoachShell({ participantId, section }) {
           <section className="overflow-hidden rounded-3xl border border-spike/15 bg-gradient-to-br from-slate-900 via-slate-800 to-spike-dark p-8 text-white shadow-projection sm:p-10">
           <div className="mb-4 flex items-center gap-2 text-spike-light">
             <Sparkles size={20} />
-            <span className="text-sm font-bold uppercase tracking-widest">AI Venture Coach™</span>
+            <span className="text-sm font-bold uppercase tracking-widest">Venture Identity Builder</span>
           </div>
-          <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Build your future — one conversation at a time.</h2>
+          <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Build your venture identity — step by step.</h2>
           <pre className="mt-6 whitespace-pre-wrap font-sans text-sm leading-relaxed text-slate-300">
             {COACH_WELCOME}
           </pre>
