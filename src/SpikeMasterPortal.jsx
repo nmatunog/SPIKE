@@ -302,7 +302,7 @@ const SpikeMasterPortal = () => {
   }, [token, user, userIsMock, usingSupabaseAuth]);
 
   const loadSetupInfo = useCallback(async () => {
-    if (STATIC_ONLY || usingSupabaseAuth) {
+    if (STATIC_ONLY || usingSupabaseAuth || mockAuthEnabled) {
       setSetupMeta({ needsBootstrap: false, secretRequired: false });
       setSetupLoadError('');
       setSetupLoadState('ok');
@@ -319,10 +319,15 @@ const SpikeMasterPortal = () => {
       setSetupLoadState('ok');
     } catch (e) {
       setSetupLoadState('error');
-      setSetupLoadError(e.message || 'Could not reach the API.');
+      const message = e.message || 'Could not reach the API.';
+      setSetupLoadError(
+        message === 'Bad Gateway'
+          ? 'API server is not running. Start it with `cd api && npm run dev`, or add Supabase keys to `.env`, or use demo sign-in (mock auth).'
+          : message,
+      );
       setSetupMeta(null);
     }
-  }, [STATIC_ONLY, usingSupabaseAuth]);
+  }, [STATIC_ONLY, usingSupabaseAuth, mockAuthEnabled]);
 
   useEffect(() => {
     if (userRole !== 'guest' || authLoading) return;
