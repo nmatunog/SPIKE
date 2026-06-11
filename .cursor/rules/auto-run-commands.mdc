@@ -1,0 +1,16 @@
+---
+description: Run terminal commands proactively without asking the user to run them
+alwaysApply: true
+---
+
+# Auto-run terminal commands
+
+When a task needs shell access, **run commands yourself** via the terminal tool. Do not paste commands for the user to copy unless they explicitly asked for instructions only.
+
+- Investigate, build, test, deploy, and fix issues by executing commands — do not stop at "you can run…"
+- Batch independent commands in parallel when safe
+- Retry with alternatives if a command fails; do not give up after one error
+- Only ask before running destructive or irreversible operations (force push, hard reset) unless the user already requested them
+- Run setup, npm scripts, smoke tests, and local dev yourself — the user prefers not to copy terminal commands
+- Prefer repo scripts from project root: `npm run dev`, `SKIP_AUTO_SHIP=1 npm run build`, `npm run smoke:coach-compose`, `npm run smoke:canvas-pptx`
+- For git commits and pushes: follow user commit rules (commit only when asked) and skip push when the user is on another git account
