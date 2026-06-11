@@ -1,24 +1,71 @@
 {
   "presentation": {
-    "id": "presentation-day-3",
+    "id": "presentation-day-3-deck-01",
     "dayId": "day-segment-1-week-1-day-3",
-    "title": "Discover The Market",
+    "title": "Faculty Deck 01 — Problems, Needs & Segments",
     "slideIds": [
-      "slide-day-3-01"
+      "slide-d3-01-01",
+      "slide-d3-01-02",
+      "slide-d3-01-03",
+      "slide-d3-01-04",
+      "slide-d3-01-05"
     ]
   },
   "slides": [
     {
-      "id": "slide-day-3-01",
-      "presentationId": "presentation-day-3",
-      "sortOrder": 1,
-      "title": "Discover The Market",
-      "body": "Week 1 Day 3: Customer",
-      "speakerNotes": "Facilitate per faculty day template.",
+      "id": "slide-d3-01-01",
+      "title": "Day 3 — Customer Discovery",
+      "body": "Entrepreneurs do not start with products.\nThey start with problems.\n\nToday: observe, listen, persona — then opportunity.",
+      "speakerNotes": "Set empathy tone. 3 min.",
       "discussionQuestions": [
-        "What stood out today?",
-        "How does this connect to your ambition?"
-      ]
+        "What customer did you think about on the way in today?"
+      ],
+      "presentationId": "presentation-day-3-deck-01",
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-d3-01-02",
+      "title": "Problems Before Solutions",
+      "body": "Great ventures solve painful problems.\n\nListen for: frequency, intensity, willingness to pay for relief.\n\nAvoid solution-first thinking until problems are clear.",
+      "speakerNotes": "Use squad examples from Day 2 research plan. 5 min.",
+      "discussionQuestions": [
+        "What problem did you hear repeatedly yesterday?"
+      ],
+      "presentationId": "presentation-day-3-deck-01",
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-d3-01-03",
+      "title": "Customer Segments",
+      "body": "Demographics + psychographics + behavior.\n\nExamples: young parents, freelancers, SME owners, OFW families.\n\nYour squad segment should match your research market.",
+      "speakerNotes": "Connect to squad formation Day 1. 5 min.",
+      "discussionQuestions": [
+        "Who is most affected by the problems you identified?"
+      ],
+      "presentationId": "presentation-day-3-deck-01",
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-d3-01-04",
+      "title": "Needs Analysis Mindset",
+      "body": "Needs analysis is not a form — it is a conversation.\n\nSPIKE squads conduct real surveys this week.\nToday you design the persona that guides those conversations.",
+      "speakerNotes": "Preview survey activity in app. 4 min.",
+      "discussionQuestions": [
+        "What question will you ask in your first survey?"
+      ],
+      "presentationId": "presentation-day-3-deck-01",
+      "sortOrder": 4
+    },
+    {
+      "id": "slide-d3-01-05",
+      "title": "Deck 01 Close",
+      "body": "Next: Deck 02 — Persona Workshop.\nThen: market observation and squad presentations.",
+      "speakerNotes": "2 min transition.",
+      "discussionQuestions": [
+        "What will you observe in the next hour?"
+      ],
+      "presentationId": "presentation-day-3-deck-01",
+      "sortOrder": 5
     }
   ]
 }

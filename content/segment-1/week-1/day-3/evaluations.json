@@ -1,0 +1,71 @@
+{
+  "templates": [
+    {
+      "id": "rubric-day-3-research-quality",
+      "type": "rubric",
+      "title": "Research Quality Rubric",
+      "audience": "faculty",
+      "description": "Evidence quality in persona and observation.",
+      "criteria": [
+        {
+          "label": "Evidence",
+          "indicators": [
+            "Real quotes",
+            "Named segment",
+            "Clear problem"
+          ]
+        }
+      ],
+      "scale": [
+        "Weak",
+        "Developing",
+        "Strong",
+        "Exemplary"
+      ],
+      "dayId": "day-segment-1-week-1-day-3"
+    },
+    {
+      "id": "rubric-day-3-persona-present",
+      "type": "rubric",
+      "title": "Persona Presentation Rubric",
+      "audience": "faculty",
+      "criteria": [
+        {
+          "label": "Presentation",
+          "indicators": [
+            "Clear persona",
+            "Problem stated",
+            "Opportunity hypothesis"
+          ]
+        }
+      ],
+      "scale": [
+        "Not ready",
+        "Emerging",
+        "Ready",
+        "Exemplary"
+      ],
+      "dayId": "day-segment-1-week-1-day-3"
+    },
+    {
+      "id": "observation-day-3-mentor",
+      "type": "observation_form",
+      "title": "Mentor Day 3 Observation",
+      "audience": "mentor",
+      "observationAreas": [
+        "Listening Skills",
+        "Empathy",
+        "Problem Identification"
+      ],
+      "fields": [
+        {
+          "id": "empathy",
+          "label": "Empathy",
+          "type": "rating",
+          "max": 5
+        }
+      ],
+      "dayId": "day-segment-1-week-1-day-3"
+    }
+  ]
+}

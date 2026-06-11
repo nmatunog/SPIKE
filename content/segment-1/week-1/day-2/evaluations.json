@@ -1,0 +1,97 @@
+{
+  "templates": [
+    {
+      "id": "rubric-day-2-participation",
+      "type": "rubric",
+      "title": "Day 2 Participation Rubric",
+      "audience": "faculty",
+      "description": "Engagement in immersion and interviews.",
+      "criteria": [
+        {
+          "label": "Interview quality",
+          "indicators": [
+            "Thoughtful questions",
+            "Captured quotes",
+            "Personal reflection"
+          ]
+        }
+      ],
+      "scale": [
+        "Needs coaching",
+        "Developing",
+        "Proficient",
+        "Exemplary"
+      ],
+      "dayId": "day-segment-1-week-1-day-2"
+    },
+    {
+      "id": "rubric-day-2-interview-prep",
+      "type": "rubric",
+      "title": "Interview Preparation Rubric",
+      "audience": "faculty",
+      "description": "Quality of interview prep and notes.",
+      "criteria": [
+        {
+          "label": "Preparation",
+          "indicators": [
+            "5 questions prepared",
+            "Notes completed",
+            "Ambition connection"
+          ]
+        }
+      ],
+      "scale": [
+        "Not ready",
+        "Emerging",
+        "Ready",
+        "Exemplary"
+      ],
+      "dayId": "day-segment-1-week-1-day-2"
+    },
+    {
+      "id": "observation-day-2-faculty",
+      "type": "observation_form",
+      "title": "Faculty Day 2 Observation",
+      "audience": "faculty",
+      "fields": [
+        {
+          "id": "curiosity",
+          "label": "Shows industry curiosity",
+          "type": "rating",
+          "max": 5
+        },
+        {
+          "id": "notes",
+          "label": "Notes",
+          "type": "long_text"
+        }
+      ],
+      "dayId": "day-segment-1-week-1-day-2"
+    },
+    {
+      "id": "observation-day-2-mentor",
+      "type": "observation_form",
+      "title": "Mentor Day 2 Observation",
+      "audience": "mentor",
+      "observationAreas": [
+        "Curiosity",
+        "Industry Understanding",
+        "Business Awareness"
+      ],
+      "fields": [
+        {
+          "id": "curiosity",
+          "label": "Curiosity",
+          "type": "rating",
+          "max": 5
+        },
+        {
+          "id": "coaching_note",
+          "label": "Coaching note",
+          "type": "long_text"
+        }
+      ],
+      "dayId": "day-segment-1-week-1-day-2"
+    }
+  ]
+}

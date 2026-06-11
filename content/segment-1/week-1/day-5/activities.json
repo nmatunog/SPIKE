@@ -1,11 +1,95 @@
 {
   "activities": [
     {
-      "id": "activity-day-5",
-      "dayId": "day-segment-1-week-1-day-5",
-      "title": "Commitment workshop",
-      "format": "squad",
-      "durationMinutes": 90
+      "id": "activity-day-5-portfolio-rehearsal",
+      "title": "Venture Portfolio Rehearsal",
+      "durationMinutes": 45,
+      "materials": [
+        "Portfolio presentation mode"
+      ],
+      "instructions": [
+        "Participants run presentation mode individually.",
+        "Dyad feedback on clarity and pacing.",
+        "Faculty checks presentation-ready threshold."
+      ],
+      "outputs": [
+        "Presentation-ready portfolio"
+      ],
+      "debriefQuestions": [
+        "What slide needs the most work?",
+        "Is your story coherent in 5 minutes?",
+        "What question might faculty ask?"
+      ],
+      "dayId": "day-segment-1-week-1-day-5"
+    },
+    {
+      "id": "activity-day-5-venture-presentations",
+      "title": "Week 1 Portfolio Presentations",
+      "durationMinutes": 90,
+      "materials": [
+        "Presentation rubric",
+        "Timer"
+      ],
+      "instructions": [
+        "Each participant or squad rep presents Venture Portfolio.",
+        "Faculty scores with presentation rubric.",
+        "Audience provides structured peer feedback."
+      ],
+      "outputs": [
+        "Completed presentation"
+      ],
+      "debriefQuestions": [
+        "What presentation inspired you?",
+        "What evidence was most convincing?",
+        "What will you strengthen in Week 2?"
+      ],
+      "dayId": "day-segment-1-week-1-day-5"
+    },
+    {
+      "id": "activity-day-5-squad-pitch",
+      "title": "Squad Week 1 Pitch",
+      "durationMinutes": 35,
+      "materials": [
+        "Squad charter reference"
+      ],
+      "instructions": [
+        "3-minute squad pitch: segment, persona, direction.",
+        "Mentor gives squad-level feedback.",
+        "Capture squad photo for portfolio."
+      ],
+      "outputs": [
+        "Squad pitch complete"
+      ],
+      "debriefQuestions": [
+        "What is your squad's unified market thesis?",
+        "Where does squad need to improve collaboration?",
+        "What research continues in Week 2?"
+      ],
+      "dayId": "day-segment-1-week-1-day-5"
+    },
+    {
+      "id": "activity-day-5-commitment-ceremony",
+      "title": "Week 1 Commitment Ceremony",
+      "durationMinutes": 30,
+      "materials": [
+        "Commitment worksheet",
+        "Mentor coaching summary form"
+      ],
+      "instructions": [
+        "Each participant states commitment aloud.",
+        "Complete commitment worksheet.",
+        "Mentor saves Week 1 coaching summary in app."
+      ],
+      "outputs": [
+        "Week 1 Coaching Summary",
+        "Week 2 priority"
+      ],
+      "debriefQuestions": [
+        "What commitment will you keep?",
+        "Who will hold you accountable?",
+        "What do you need from your mentor in Week 2?"
+      ],
+      "dayId": "day-segment-1-week-1-day-5"
     }
   ]
 }

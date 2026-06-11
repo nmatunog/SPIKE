@@ -1,0 +1,46 @@
+{
+  "dayId": "day-segment-1-week-1-day-3",
+  "title": "Facilitator Guide — Day 3: Customer Discovery",
+  "durationHours": 4,
+  "prepChecklist": [
+    "Confirm observation locations and permissions",
+    "Load persona exemplar",
+    "Brief mentors on empathy coaching"
+  ],
+  "sessionFlow": [
+    {
+      "time": "0:00–0:25",
+      "activity": "Decks 01–02",
+      "notes": "Problems before solutions."
+    },
+    {
+      "time": "0:25–1:15",
+      "activity": "Market observation",
+      "notes": "Safety briefing first."
+    },
+    {
+      "time": "1:15–2:15",
+      "activity": "Persona workshop",
+      "notes": "Push for evidence."
+    },
+    {
+      "time": "2:15–3:00",
+      "activity": "Research plan + presentations",
+      "notes": "Use persona rubric."
+    }
+  ],
+  "debriefQuestions": [
+    "Which personas lacked evidence?",
+    "What problems appeared across squads?",
+    "Are survey plans realistic?"
+  ],
+  "commonPitfalls": [
+    "Fictional personas",
+    "Solution-first thinking",
+    "Skipping observation"
+  ],
+  "coachingTips": [
+    "Demand verbatim quotes",
+    "Link persona to Day 1 impact audience"
+  ]
+}

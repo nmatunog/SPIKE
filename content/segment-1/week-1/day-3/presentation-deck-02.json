@@ -1,0 +1,59 @@
+{
+  "presentation": {
+    "id": "presentation-day-3-deck-02",
+    "dayId": "day-segment-1-week-1-day-3",
+    "title": "Faculty Deck 02 — Persona & Opportunity Workshop",
+    "slideIds": [
+      "slide-d3-02-01",
+      "slide-d3-02-02",
+      "slide-d3-02-03",
+      "slide-d3-02-04"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-d3-02-01",
+      "title": "Building Evidence-Based Personas",
+      "body": "A persona is not fiction — it is compressed evidence.\n\nInclude: name, segment, problems, goals, fears, financial behaviors.",
+      "speakerNotes": "Show exemplar persona on screen. 5 min.",
+      "discussionQuestions": [
+        "What evidence do you already have?"
+      ],
+      "presentationId": "presentation-day-3-deck-02",
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-d3-02-02",
+      "title": "Market Observation Protocol",
+      "body": "Observe in pairs: public spaces, campus, community.\nNote exact language people use — not your interpretation.",
+      "speakerNotes": "Safety and ethics reminder. 4 min.",
+      "discussionQuestions": [
+        "Where will your squad observe today?"
+      ],
+      "presentationId": "presentation-day-3-deck-02",
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-d3-02-03",
+      "title": "Persona Presentation Format",
+      "body": "Each squad presents: persona, top problem, opportunity hypothesis.\n3 minutes present + 2 minutes faculty/mentor feedback.",
+      "speakerNotes": "Set presentation rubric expectations. 3 min.",
+      "discussionQuestions": [
+        "Who presents for your squad?"
+      ],
+      "presentationId": "presentation-day-3-deck-02",
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-d3-02-04",
+      "title": "Day 3 Deliverables",
+      "body": "✓ Customer persona canvas\n✓ Market insight log\n✓ Needs analysis survey plan\n✓ Portfolio market intelligence update",
+      "speakerNotes": "3 min close.",
+      "discussionQuestions": [
+        "What survey will you launch before Day 4?"
+      ],
+      "presentationId": "presentation-day-3-deck-02",
+      "sortOrder": 4
+    }
+  ]
+}

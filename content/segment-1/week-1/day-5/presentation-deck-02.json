@@ -1,0 +1,71 @@
+{
+  "presentation": {
+    "id": "presentation-day-5-deck-02",
+    "dayId": "day-segment-1-week-1-day-5",
+    "title": "Faculty Deck 02 — Portfolio Presentation & Commitment",
+    "slideIds": [
+      "slide-d5-02-01",
+      "slide-d5-02-02",
+      "slide-d5-02-03",
+      "slide-d5-02-04",
+      "slide-d5-02-05"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-d5-02-01",
+      "title": "Venture Portfolio Presentation Format",
+      "body": "Use /my-venture-portfolio/present mode.\nSlides: Cover · Identity · Dream Board · Career · Canvas · Future Self · Commitment.\n\n5–7 minutes per participant or squad representative.",
+      "speakerNotes": "Demo presentation mode if possible. 5 min.",
+      "discussionQuestions": [
+        "Which section is your strongest?"
+      ],
+      "presentationId": "presentation-day-5-deck-02",
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-d5-02-02",
+      "title": "Presentation Rubric",
+      "body": "Faculty evaluates: identity, evidence, canvas, commitment, delivery.\nMentors complete Week 1 coaching summary during presentations.",
+      "speakerNotes": "Share rubric. 4 min.",
+      "discussionQuestions": [
+        "What will you improve before Hour 200?"
+      ],
+      "presentationId": "presentation-day-5-deck-02",
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-d5-02-03",
+      "title": "Squad Pitch Rehearsal",
+      "body": "Squads rehearse 3-minute squad story: market + persona + direction.",
+      "speakerNotes": "Squad breakout. 3 min intro.",
+      "discussionQuestions": [
+        "What is your squad's unified thesis?"
+      ],
+      "presentationId": "presentation-day-5-deck-02",
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-d5-02-04",
+      "title": "Week 1 Commitment Ceremony",
+      "body": "Each participant states one commitment aloud.\nMentor records in coaching summary.\n\nWeek 2 begins — industry execution, not more setup.",
+      "speakerNotes": "Close Week 1 with accountability. 5 min.",
+      "discussionQuestions": [
+        "What commitment are you making today?"
+      ],
+      "presentationId": "presentation-day-5-deck-02",
+      "sortOrder": 4
+    },
+    {
+      "id": "slide-d5-02-05",
+      "title": "Week 1 Close",
+      "body": "✓ Portfolio presented\n✓ Blueprint Week 1 draft\n✓ Mentor coaching summary\n✓ Week 2 priority set\n\nCongratulations — you are venture builders.",
+      "speakerNotes": "3 min celebration.",
+      "discussionQuestions": [
+        "What will you do in the next 24 hours?"
+      ],
+      "presentationId": "presentation-day-5-deck-02",
+      "sortOrder": 5
+    }
+  ]
+}

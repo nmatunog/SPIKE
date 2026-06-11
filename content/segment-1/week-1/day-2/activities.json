@@ -1,11 +1,96 @@
 {
   "activities": [
     {
-      "id": "activity-day-2",
-      "dayId": "day-segment-1-week-1-day-2",
-      "title": "Opportunity workshop",
-      "format": "squad",
-      "durationMinutes": 90
+      "id": "activity-day-2-industry-immersion",
+      "title": "Industry Immersion Session",
+      "durationMinutes": 60,
+      "materials": [
+        "Faculty Deck 01",
+        "Interview notes worksheet"
+      ],
+      "instructions": [
+        "Faculty delivers Deck 01 with discussion after slides 2–4.",
+        "Participants take structured notes in interview worksheet.",
+        "Facilitate Q&A on financial services landscape."
+      ],
+      "outputs": [
+        "Industry insight notes"
+      ],
+      "debriefQuestions": [
+        "What surprised you about the industry today?",
+        "What assumption from yesterday changed?",
+        "How does protection connect to your impact statement?"
+      ],
+      "dayId": "day-segment-1-week-1-day-2"
+    },
+    {
+      "id": "activity-day-2-practitioner-interview",
+      "title": "Practitioner Interview / Observation",
+      "durationMinutes": 45,
+      "materials": [
+        "Interview notes worksheet",
+        "Practitioner guest or mentor"
+      ],
+      "instructions": [
+        "Pairs or triads interview a practitioner, mentor, or faculty guest.",
+        "Use worksheet prompts — minimum 3 substantive answers.",
+        "Record key quotes for business plan evidence."
+      ],
+      "outputs": [
+        "Completed interview notes"
+      ],
+      "debriefQuestions": [
+        "What quote will you remember from today?",
+        "What career path did the practitioner describe?",
+        "What habit could you adopt this week?"
+      ],
+      "dayId": "day-segment-1-week-1-day-2"
+    },
+    {
+      "id": "activity-day-2-squad-industry-debrief",
+      "title": "Squad Industry Debrief",
+      "durationMinutes": 30,
+      "materials": [
+        "Squad workspace",
+        "Shared doc or app"
+      ],
+      "instructions": [
+        "Squads share top 3 industry insights.",
+        "Identify overlap with research market segment.",
+        "Assign scribe to compile squad insight summary."
+      ],
+      "outputs": [
+        "Squad industry insight summary"
+      ],
+      "debriefQuestions": [
+        "Where did squad insights align or diverge?",
+        "What is your squad's research priority for Week 1?",
+        "Who presents at Day 3 persona workshop?"
+      ],
+      "dayId": "day-segment-1-week-1-day-2"
+    },
+    {
+      "id": "activity-day-2-opportunity-reflection",
+      "title": "Opportunity Reflection",
+      "durationMinutes": 25,
+      "materials": [
+        "Venture Portfolio",
+        "Business Plan draft"
+      ],
+      "instructions": [
+        "Individual reflection linking industry to Day 1 ambition.",
+        "Complete worksheet question 3 and survey.",
+        "Sync to Portfolio market intelligence section."
+      ],
+      "outputs": [
+        "Opportunity reflection artifact"
+      ],
+      "debriefQuestions": [
+        "How did today change your 3-year picture?",
+        "What opportunity excites you most?",
+        "What concern remains about this industry?"
+      ],
+      "dayId": "day-segment-1-week-1-day-2"
     }
   ]
 }

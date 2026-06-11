@@ -1,0 +1,47 @@
+{
+  "sessions": [
+    {
+      "id": "session-day-4-morning",
+      "sessionNumber": 1,
+      "title": "Entrepreneur Paths & Canvas",
+      "durationMinutes": 140,
+      "presentationIds": [
+        "presentation-day-4-deck-01",
+        "presentation-day-4-deck-02"
+      ],
+      "activityIds": [
+        "activity-day-4-track-clinic",
+        "activity-day-4-canvas-workshop"
+      ],
+      "worksheetIds": [],
+      "assessmentIds": [],
+      "reflectionIds": [],
+      "surveyIds": [],
+      "dayId": "day-segment-1-week-1-day-4"
+    },
+    {
+      "id": "session-day-4-afternoon",
+      "sessionNumber": 2,
+      "title": "Peer Review & Presentations",
+      "durationMinutes": 100,
+      "presentationIds": [],
+      "activityIds": [
+        "activity-day-4-canvas-peer-review",
+        "activity-day-4-canvas-presentation"
+      ],
+      "worksheetIds": [
+        "worksheet-day-4-canvas-reflection"
+      ],
+      "assessmentIds": [
+        "assessment-day-4-canvas"
+      ],
+      "reflectionIds": [
+        "reflection-day-4-close"
+      ],
+      "surveyIds": [
+        "survey-day-4"
+      ],
+      "dayId": "day-segment-1-week-1-day-4"
+    }
+  ]
+}

@@ -1,20 +1,40 @@
 {
   "worksheets": [
     {
-      "id": "worksheet-day-5",
+      "id": "worksheet-day-5-commitment",
       "dayId": "day-segment-1-week-1-day-5",
-      "title": "Commitment reflection",
-      "type": "reflection"
+      "title": "Week 1 Commitment & Week 2 Priorities",
+      "questionIds": [
+        "wq-d5-1",
+        "wq-d5-2",
+        "wq-d5-3"
+      ]
     }
   ],
   "questions": [
     {
-      "id": "wq-day-5-1",
-      "worksheetId": "worksheet-day-5",
-      "prompt": "Reflect on Commitment.",
-      "type": "long_text",
+      "id": "wq-d5-1",
+      "worksheetId": "worksheet-day-5-commitment",
+      "prompt": "In one sentence: what are you building?",
+      "type": "short_text",
       "required": true,
       "sortOrder": 1
+    },
+    {
+      "id": "wq-d5-2",
+      "worksheetId": "worksheet-day-5-commitment",
+      "prompt": "Who do you serve — be specific?",
+      "type": "short_text",
+      "required": true,
+      "sortOrder": 2
+    },
+    {
+      "id": "wq-d5-3",
+      "worksheetId": "worksheet-day-5-commitment",
+      "prompt": "What is your #1 priority for Week 2?",
+      "type": "long_text",
+      "required": true,
+      "sortOrder": 3
     }
   ]
 }

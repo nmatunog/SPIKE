@@ -1,0 +1,47 @@
+{
+  "sessions": [
+    {
+      "id": "session-day-3-morning",
+      "sessionNumber": 1,
+      "title": "Customer Discovery & Observation",
+      "durationMinutes": 130,
+      "presentationIds": [
+        "presentation-day-3-deck-01",
+        "presentation-day-3-deck-02"
+      ],
+      "activityIds": [
+        "activity-day-3-market-observation",
+        "activity-day-3-persona-workshop"
+      ],
+      "worksheetIds": [
+        "worksheet-day-3-persona"
+      ],
+      "assessmentIds": [],
+      "reflectionIds": [],
+      "surveyIds": [],
+      "dayId": "day-segment-1-week-1-day-3"
+    },
+    {
+      "id": "session-day-3-afternoon",
+      "sessionNumber": 2,
+      "title": "Research Plan & Presentations",
+      "durationMinutes": 110,
+      "presentationIds": [],
+      "activityIds": [
+        "activity-day-3-squad-research-plan",
+        "activity-day-3-persona-presentation"
+      ],
+      "worksheetIds": [],
+      "assessmentIds": [
+        "assessment-day-3-persona"
+      ],
+      "reflectionIds": [
+        "reflection-day-3-close"
+      ],
+      "surveyIds": [
+        "survey-day-3"
+      ],
+      "dayId": "day-segment-1-week-1-day-3"
+    }
+  ]
+}

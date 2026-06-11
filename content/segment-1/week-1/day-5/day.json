@@ -3,31 +3,40 @@
   "segmentId": "segment-1",
   "weekId": "week-segment-1-1",
   "dayNumber": 5,
-  "title": "My Venture Direction",
+  "title": "Day 5 — My Venture Direction",
   "theme": "Commitment",
   "durationHours": 4,
   "learningObjectives": [
-    "Complete Commitment objectives for Week 1"
+    "Articulate 3-year venture vision with evidence from Week 1",
+    "Present Venture Portfolio in Day 5 review format",
+    "Commit to venture direction and Week 2 priorities",
+    "Complete Week 1 mentor coaching summary"
   ],
   "expectedOutputs": [
-    "Venture Blueprint Draft",
-    "Week 1 Portfolio Presentation"
+    "Venture Portfolio presentation",
+    "Venture Blueprint Week 1 draft",
+    "Week 1 Coaching Summary",
+    "Week 2 commitment"
   ],
   "portfolioDeliverables": [
-    "Venture Blueprint Draft",
-    "Week 1 Portfolio Presentation"
+    "Full Week 1 portfolio presentation",
+    "Venture identity + canvas + research"
   ],
-  "businessPlanIntegration": "Week 1 Day 5 — Commitment",
+  "businessPlanIntegration": "Business Plan Chapter 1–3 synthesis — Week 1 draft",
   "presentations": [
-    "presentation-day-5"
+    "presentation-day-5-deck-01",
+    "presentation-day-5-deck-02"
   ],
   "activities": [
-    "activity-day-5"
+    "activity-day-5-portfolio-rehearsal",
+    "activity-day-5-venture-presentations",
+    "activity-day-5-squad-pitch",
+    "activity-day-5-commitment-ceremony"
   ],
   "worksheets": [
-    "worksheet-day-5"
+    "worksheet-day-5-commitment"
   ],
   "assessments": [
-    "assessment-day-5"
+    "assessment-day-5-week1"
   ]
 }

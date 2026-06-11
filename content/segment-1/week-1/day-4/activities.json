@@ -1,11 +1,92 @@
 {
   "activities": [
     {
-      "id": "activity-day-4",
-      "dayId": "day-segment-1-week-1-day-4",
-      "title": "Entrepreneur workshop",
-      "format": "squad",
-      "durationMinutes": 90
+      "id": "activity-day-4-track-clinic",
+      "title": "Career Track Exploration Clinic",
+      "durationMinutes": 40,
+      "materials": [
+        "Venture Direction builder"
+      ],
+      "instructions": [
+        "Review Agency Builder vs Specialist Consultant in Venture Coach.",
+        "Dyads discuss evidence for each path.",
+        "Update career direction checkpoint — exploration or preference."
+      ],
+      "outputs": [
+        "Career direction checkpoint"
+      ],
+      "debriefQuestions": [
+        "Which pathway energizes you today?",
+        "What evidence supports that?",
+        "What would change your mind?"
+      ],
+      "dayId": "day-segment-1-week-1-day-4"
+    },
+    {
+      "id": "activity-day-4-canvas-workshop",
+      "title": "FE Canvas Workshop",
+      "durationMinutes": 75,
+      "materials": [
+        "Canvas editor in app"
+      ],
+      "instructions": [
+        "Participants complete canvas engines in Venture Blueprint.",
+        "Faculty targets 30% completion minimum.",
+        "Mentors help with strategy statement clarity."
+      ],
+      "outputs": [
+        "FE Canvas v1 in portfolio"
+      ],
+      "debriefQuestions": [
+        "What engine was hardest?",
+        "Does canvas match your ambition?",
+        "What will you finish before Day 5?"
+      ],
+      "dayId": "day-segment-1-week-1-day-4"
+    },
+    {
+      "id": "activity-day-4-canvas-peer-review",
+      "title": "Canvas Peer Review",
+      "durationMinutes": 35,
+      "materials": [
+        "Canvas summary view"
+      ],
+      "instructions": [
+        "Dyads exchange canvas summaries.",
+        "Give one strength and one gap feedback.",
+        "Revise strategy statement if needed."
+      ],
+      "outputs": [
+        "Revised canvas fields"
+      ],
+      "debriefQuestions": [
+        "What feedback was most useful?",
+        "What gap will you close this week?",
+        "How does canvas connect to your persona?"
+      ],
+      "dayId": "day-segment-1-week-1-day-4"
+    },
+    {
+      "id": "activity-day-4-canvas-presentation",
+      "title": "Canvas Snapshot Presentations",
+      "durationMinutes": 30,
+      "materials": [
+        "Canvas rubric"
+      ],
+      "instructions": [
+        "Volunteers share 2-minute canvas snapshot.",
+        "Faculty uses canvas rubric.",
+        "Mentors note coaching priorities for Day 5."
+      ],
+      "outputs": [
+        "Presentation notes"
+      ],
+      "debriefQuestions": [
+        "Which presentation showed clearest venture model?",
+        "What will you add before Day 5?",
+        "How does canvas support your future self?"
+      ],
+      "dayId": "day-segment-1-week-1-day-4"
     }
   ]
 }

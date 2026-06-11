@@ -1,20 +1,31 @@
 {
   "worksheets": [
     {
-      "id": "worksheet-day-4",
+      "id": "worksheet-day-4-canvas-reflection",
       "dayId": "day-segment-1-week-1-day-4",
-      "title": "Entrepreneur reflection",
-      "type": "reflection"
+      "title": "Canvas Workshop Reflection",
+      "questionIds": [
+        "wq-d4-1",
+        "wq-d4-2"
+      ]
     }
   ],
   "questions": [
     {
-      "id": "wq-day-4-1",
-      "worksheetId": "worksheet-day-4",
-      "prompt": "Reflect on Entrepreneur.",
+      "id": "wq-d4-1",
+      "worksheetId": "worksheet-day-4-canvas-reflection",
+      "prompt": "Which pathway energizes you today — Agency Builder or Specialist Consultant?",
       "type": "long_text",
       "required": true,
       "sortOrder": 1
+    },
+    {
+      "id": "wq-d4-2",
+      "worksheetId": "worksheet-day-4-canvas-reflection",
+      "prompt": "What is the first engine you will complete on your canvas this week?",
+      "type": "short_text",
+      "required": true,
+      "sortOrder": 2
     }
   ]
 }

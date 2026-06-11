@@ -3,31 +3,39 @@
   "segmentId": "segment-1",
   "weekId": "week-segment-1-1",
   "dayNumber": 4,
-  "title": "Financial Entrepreneurship",
+  "title": "Day 4 — Financial Entrepreneurship",
   "theme": "Entrepreneur",
   "durationHours": 4,
   "learningObjectives": [
-    "Complete Entrepreneur objectives for Week 1"
+    "Distinguish advisor, practice owner, and agency builder paths",
+    "Draft Financial Entrepreneurship Canvas v1 (30%+ completion)",
+    "Align canvas engines to career direction",
+    "Prepare for Day 5 venture commitment"
   ],
   "expectedOutputs": [
-    "Canvas v1",
-    "Career Direction"
+    "FE Canvas v1",
+    "Career Direction checkpoint",
+    "Canvas presentation notes"
   ],
   "portfolioDeliverables": [
-    "Canvas v1",
-    "Career Direction"
+    "Financial canvas summary",
+    "Career direction update"
   ],
-  "businessPlanIntegration": "Week 1 Day 4 — Entrepreneur",
+  "businessPlanIntegration": "Business Plan Chapter 3 — Operating Model & Canvas",
   "presentations": [
-    "presentation-day-4"
+    "presentation-day-4-deck-01",
+    "presentation-day-4-deck-02"
   ],
   "activities": [
-    "activity-day-4"
+    "activity-day-4-track-clinic",
+    "activity-day-4-canvas-workshop",
+    "activity-day-4-canvas-peer-review",
+    "activity-day-4-canvas-presentation"
   ],
   "worksheets": [
-    "worksheet-day-4"
+    "worksheet-day-4-canvas-reflection"
   ],
   "assessments": [
-    "assessment-day-4"
+    "assessment-day-4-canvas"
   ]
 }

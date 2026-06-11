@@ -1,0 +1,73 @@
+{
+  "dayId": "day-segment-1-week-1-day-2",
+  "theme": "Opportunity",
+  "title": "Mentor Guide — Day 2: Opportunity",
+  "coachingObjective": "Connect industry opportunity to personal goals from Day 1.",
+  "timing": {
+    "preSession": "10 min — review deck speaker notes and observation form",
+    "duringSession": "Circulate during squad activities; coach individuals at transitions",
+    "postSession": "15 min — complete observation forms and coaching notes"
+  },
+  "discussionQuestions": [
+    "What surprised you about the industry?",
+    "What assumptions changed today?",
+    "Would you personally buy insurance today? Why?",
+    "Where do you see opportunity?"
+  ],
+  "observationAreas": [
+    {
+      "area": "Curiosity",
+      "lookFor": [
+        "Asks follow-up questions",
+        "Takes detailed notes"
+      ],
+      "warningSigns": [
+        "Dismissing industry as irrelevant"
+      ]
+    },
+    {
+      "area": "Industry Understanding",
+      "lookFor": [
+        "Uses correct terminology",
+        "Connects protection to clients"
+      ],
+      "warningSigns": [
+        "Overconfidence without evidence"
+      ]
+    },
+    {
+      "area": "Business Awareness",
+      "lookFor": [
+        "Sees entrepreneurship in practitioner stories"
+      ],
+      "warningSigns": [
+        "Employee mindset only"
+      ]
+    }
+  ],
+  "coachingTips": [
+    "Link industry facts to Day 1 ambition",
+    "Ask for one quote from interview that stuck"
+  ],
+  "warningSigns": [
+    "Dismissing industry",
+    "Copying generic insights"
+  ],
+  "reflectionPrompts": [
+    "How does today change your 3-year picture?"
+  ],
+  "expectedOutcomes": [
+    "Opportunity Reflection",
+    "Interview Notes"
+  ],
+  "activityCoachingNotes": [
+    {
+      "activityId": "activity-day-2-practitioner-interview",
+      "note": "Ensure they ask at least one question about daily habits of top performers."
+    }
+  ],
+  "debriefWithFaculty": [
+    "Who needs follow-up before market observation?",
+    "Are research plans realistic?"
+  ]
+}

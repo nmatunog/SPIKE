@@ -1,0 +1,59 @@
+{
+  "presentation": {
+    "id": "presentation-day-4-deck-02",
+    "dayId": "day-segment-1-week-1-day-4",
+    "title": "Faculty Deck 02 — FE Canvas Workshop",
+    "slideIds": [
+      "slide-d4-02-01",
+      "slide-d4-02-02",
+      "slide-d4-02-03",
+      "slide-d4-02-04"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-d4-02-01",
+      "title": "Financial Entrepreneurship Canvas",
+      "body": "Your canvas is your operating model — not a one-page plan.\n\nEngines: financial, client, talent, leadership, marketing, operations.\n\nDay 4 goal: 30%+ completion = FE Canvas v1.",
+      "speakerNotes": "Show canvas in app. 5 min.",
+      "discussionQuestions": [
+        "Which engine feels most unfamiliar?"
+      ],
+      "presentationId": "presentation-day-4-deck-02",
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-d4-02-02",
+      "title": "Strategy Statement & Priorities",
+      "body": "Draft your strategy statement: who you serve + how you win.\nSet priority 1–3 for Week 2 execution.",
+      "speakerNotes": "Workshop begins after slide. 4 min.",
+      "discussionQuestions": [
+        "What is priority #1 on your canvas?"
+      ],
+      "presentationId": "presentation-day-4-deck-02",
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-d4-02-03",
+      "title": "Canvas Peer Review",
+      "body": "Dyads review each other's canvas for clarity and gaps.\nMentors coach — do not grade.",
+      "speakerNotes": "4 min intro then activity.",
+      "discussionQuestions": [
+        "What gap did your partner identify?"
+      ],
+      "presentationId": "presentation-day-4-deck-02",
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-d4-02-04",
+      "title": "Day 4 Deliverables",
+      "body": "✓ Canvas v1 (30%+)\n✓ Career direction checkpoint\n✓ Portfolio canvas section updated",
+      "speakerNotes": "3 min.",
+      "discussionQuestions": [
+        "What will you present on Day 5?"
+      ],
+      "presentationId": "presentation-day-4-deck-02",
+      "sortOrder": 4
+    }
+  ]
+}

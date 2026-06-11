@@ -2,18 +2,34 @@
   "survey": {
     "id": "survey-day-5",
     "dayId": "day-segment-1-week-1-day-5",
-    "title": "Day 5 pulse",
-    "description": "Week 1 progress check",
+    "title": "Day 5 pulse survey",
+    "description": "Week 1 closing pulse survey",
     "status": "active"
   },
   "questions": [
     {
       "id": "sq-day-5-01",
-      "surveyId": "survey-day-5",
-      "prompt": "Rate your clarity after today.",
+      "prompt": "Rate your Week 1 clarity (1–5).",
       "type": "rating",
       "required": true,
+      "surveyId": "survey-day-5",
       "sortOrder": 1
+    },
+    {
+      "id": "sq-day-5-02",
+      "prompt": "What commitment are you making for Week 2?",
+      "type": "long_text",
+      "required": true,
+      "surveyId": "survey-day-5",
+      "sortOrder": 2
+    },
+    {
+      "id": "sq-day-5-03",
+      "prompt": "What support do you need from your mentor?",
+      "type": "long_text",
+      "required": true,
+      "surveyId": "survey-day-5",
+      "sortOrder": 3
     }
   ]
 }

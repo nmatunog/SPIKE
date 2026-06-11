@@ -1,0 +1,47 @@
+{
+  "sessions": [
+    {
+      "id": "session-day-2-morning",
+      "sessionNumber": 1,
+      "title": "Industry Landscape & Immersion",
+      "durationMinutes": 135,
+      "presentationIds": [
+        "presentation-day-2-deck-01",
+        "presentation-day-2-deck-02"
+      ],
+      "activityIds": [
+        "activity-day-2-industry-immersion",
+        "activity-day-2-practitioner-interview"
+      ],
+      "worksheetIds": [
+        "worksheet-day-2-interview-notes"
+      ],
+      "assessmentIds": [],
+      "reflectionIds": [],
+      "surveyIds": [],
+      "dayId": "day-segment-1-week-1-day-2"
+    },
+    {
+      "id": "session-day-2-afternoon",
+      "sessionNumber": 2,
+      "title": "Squad Debrief & Opportunity Reflection",
+      "durationMinutes": 105,
+      "presentationIds": [],
+      "activityIds": [
+        "activity-day-2-squad-industry-debrief",
+        "activity-day-2-opportunity-reflection"
+      ],
+      "worksheetIds": [],
+      "assessmentIds": [
+        "assessment-day-2-industry"
+      ],
+      "reflectionIds": [
+        "reflection-day-2-close"
+      ],
+      "surveyIds": [
+        "survey-day-2"
+      ],
+      "dayId": "day-segment-1-week-1-day-2"
+    }
+  ]
+}

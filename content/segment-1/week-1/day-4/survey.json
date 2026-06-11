@@ -2,18 +2,26 @@
   "survey": {
     "id": "survey-day-4",
     "dayId": "day-segment-1-week-1-day-4",
-    "title": "Day 4 pulse",
-    "description": "Week 1 progress check",
+    "title": "Day 4 pulse survey",
+    "description": "Day 4 canvas workshop pulse",
     "status": "active"
   },
   "questions": [
     {
       "id": "sq-day-4-01",
-      "surveyId": "survey-day-4",
-      "prompt": "Rate your clarity after today.",
+      "prompt": "How clear is your venture path after today?",
       "type": "rating",
       "required": true,
+      "surveyId": "survey-day-4",
       "sortOrder": 1
+    },
+    {
+      "id": "sq-day-4-02",
+      "prompt": "Which canvas engine was hardest to complete?",
+      "type": "short_text",
+      "required": true,
+      "surveyId": "survey-day-4",
+      "sortOrder": 2
     }
   ]
 }

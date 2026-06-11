@@ -2,18 +2,26 @@
   "survey": {
     "id": "survey-day-2",
     "dayId": "day-segment-1-week-1-day-2",
-    "title": "Day 2 pulse",
-    "description": "Week 1 progress check",
+    "title": "Day 2 pulse survey",
+    "description": "Day 2 industry immersion pulse check",
     "status": "active"
   },
   "questions": [
     {
       "id": "sq-day-2-01",
-      "surveyId": "survey-day-2",
-      "prompt": "Rate your clarity after today.",
+      "prompt": "How clearly does the industry connect to your ambition?",
       "type": "rating",
       "required": true,
+      "surveyId": "survey-day-2",
       "sortOrder": 1
+    },
+    {
+      "id": "sq-day-2-02",
+      "prompt": "What is your biggest open question about financial services?",
+      "type": "long_text",
+      "required": true,
+      "surveyId": "survey-day-2",
+      "sortOrder": 2
     }
   ]
 }

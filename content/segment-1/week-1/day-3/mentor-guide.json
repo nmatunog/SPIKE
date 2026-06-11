@@ -1,0 +1,72 @@
+{
+  "dayId": "day-segment-1-week-1-day-3",
+  "theme": "Customer",
+  "title": "Mentor Guide — Day 3: Customer",
+  "coachingObjective": "Develop empathy and customer awareness.",
+  "timing": {
+    "preSession": "10 min — review deck speaker notes and observation form",
+    "duringSession": "Circulate during squad activities; coach individuals at transitions",
+    "postSession": "15 min — complete observation forms and coaching notes"
+  },
+  "discussionQuestions": [
+    "What concerns did people talk about?",
+    "What needs appeared repeatedly?",
+    "What surprised you?",
+    "What opportunities did you discover?"
+  ],
+  "observationAreas": [
+    {
+      "area": "Listening Skills",
+      "lookFor": [
+        "Captures exact language",
+        "Asks follow-ups"
+      ],
+      "warningSigns": [
+        "Interrupts or assumes"
+      ]
+    },
+    {
+      "area": "Empathy",
+      "lookFor": [
+        "Names customer feelings"
+      ],
+      "warningSigns": [
+        "Judgmental language"
+      ]
+    },
+    {
+      "area": "Problem Identification",
+      "lookFor": [
+        "Prioritizes problems"
+      ],
+      "warningSigns": [
+        "Jumps to product solutions"
+      ]
+    }
+  ],
+  "coachingTips": [
+    "Push for evidence from conversations",
+    "Ask who they want to help by name or type"
+  ],
+  "warningSigns": [
+    "Generic personas",
+    "Solution-first thinking"
+  ],
+  "reflectionPrompts": [
+    "Who is one person you want to help and why?"
+  ],
+  "expectedOutcomes": [
+    "Customer Understanding Assessment",
+    "Customer Persona"
+  ],
+  "activityCoachingNotes": [
+    {
+      "activityId": "activity-day-3-market-observation",
+      "note": "Debrief in field — what did you hear before you interpreted?"
+    }
+  ],
+  "debriefWithFaculty": [
+    "Which squads need persona rework?",
+    "Survey plans ready?"
+  ]
+}

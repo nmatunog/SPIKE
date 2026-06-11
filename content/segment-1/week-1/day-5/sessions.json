@@ -1,0 +1,47 @@
+{
+  "sessions": [
+    {
+      "id": "session-day-5-morning",
+      "sessionNumber": 1,
+      "title": "Synthesis & Rehearsal",
+      "durationMinutes": 120,
+      "presentationIds": [
+        "presentation-day-5-deck-01",
+        "presentation-day-5-deck-02"
+      ],
+      "activityIds": [
+        "activity-day-5-portfolio-rehearsal"
+      ],
+      "worksheetIds": [],
+      "assessmentIds": [],
+      "reflectionIds": [],
+      "surveyIds": [],
+      "dayId": "day-segment-1-week-1-day-5"
+    },
+    {
+      "id": "session-day-5-afternoon",
+      "sessionNumber": 2,
+      "title": "Presentations & Commitment",
+      "durationMinutes": 120,
+      "presentationIds": [],
+      "activityIds": [
+        "activity-day-5-venture-presentations",
+        "activity-day-5-squad-pitch",
+        "activity-day-5-commitment-ceremony"
+      ],
+      "worksheetIds": [
+        "worksheet-day-5-commitment"
+      ],
+      "assessmentIds": [
+        "assessment-day-5-week1"
+      ],
+      "reflectionIds": [
+        "reflection-day-5-close"
+      ],
+      "surveyIds": [
+        "survey-day-5"
+      ],
+      "dayId": "day-segment-1-week-1-day-5"
+    }
+  ]
+}

@@ -3,31 +3,40 @@
   "segmentId": "segment-1",
   "weekId": "week-segment-1-1",
   "dayNumber": 2,
-  "title": "Discover The Industry",
+  "title": "Day 2 — Discover The Industry",
   "theme": "Opportunity",
   "durationHours": 4,
   "learningObjectives": [
-    "Complete Opportunity objectives for Week 1"
+    "Map the financial services and insurance landscape in the Philippines",
+    "Connect industry opportunity to personal ambition from Day 1",
+    "Prepare for practitioner interviews and squad research",
+    "Draft opportunity reflection for portfolio and business plan"
   ],
   "expectedOutputs": [
-    "Opportunity Reflection",
-    "Industry Insights"
+    "Interview Notes",
+    "Industry Insights",
+    "Research Plan",
+    "Opportunity Reflection"
   ],
   "portfolioDeliverables": [
-    "Opportunity Reflection",
-    "Industry Insights"
+    "Industry insights summary",
+    "Opportunity reflection"
   ],
-  "businessPlanIntegration": "Week 1 Day 2 — Opportunity",
+  "businessPlanIntegration": "Business Plan Chapter 1 — Market Context & Opportunity",
   "presentations": [
-    "presentation-day-2"
+    "presentation-day-2-deck-01",
+    "presentation-day-2-deck-02"
   ],
   "activities": [
-    "activity-day-2"
+    "activity-day-2-industry-immersion",
+    "activity-day-2-practitioner-interview",
+    "activity-day-2-squad-industry-debrief",
+    "activity-day-2-opportunity-reflection"
   ],
   "worksheets": [
-    "worksheet-day-2"
+    "worksheet-day-2-interview-notes"
   ],
   "assessments": [
-    "assessment-day-2"
+    "assessment-day-2-industry"
   ]
 }

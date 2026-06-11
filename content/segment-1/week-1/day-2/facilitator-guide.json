@@ -1,0 +1,52 @@
+{
+  "dayId": "day-segment-1-week-1-day-2",
+  "title": "Facilitator Guide — Day 2: Industry & Opportunity",
+  "durationHours": 4,
+  "prepChecklist": [
+    "Confirm practitioner guests or mentor stand-ins",
+    "Load Deck 01 and Deck 02 with speaker notes",
+    "Print interview worksheets",
+    "Brief mentors on observation form"
+  ],
+  "sessionFlow": [
+    {
+      "time": "0:00–0:30",
+      "activity": "Deck 01 — Financial services landscape",
+      "notes": "Tell stories, not bullet reads."
+    },
+    {
+      "time": "0:30–0:45",
+      "activity": "Deck 02 — Ambition + interview protocol",
+      "notes": "Launch interview activity."
+    },
+    {
+      "time": "0:45–1:30",
+      "activity": "Practitioner interviews",
+      "notes": "Mentors circulate with observation form."
+    },
+    {
+      "time": "1:30–2:00",
+      "activity": "Squad industry debrief",
+      "notes": "Compile squad insights."
+    },
+    {
+      "time": "2:00–2:25",
+      "activity": "Opportunity reflection + assessment",
+      "notes": "Close with Day 2 deliverables."
+    }
+  ],
+  "debriefQuestions": [
+    "Which squads connected industry to ambition most clearly?",
+    "Where did participants show curiosity vs skepticism?",
+    "What coaching is needed before Day 3?"
+  ],
+  "commonPitfalls": [
+    "Treating day as product training",
+    "Skipping interview debrief",
+    "Generic industry notes without personal connection"
+  ],
+  "coachingTips": [
+    "Link every insight back to Day 1 ambition",
+    "Push for named practitioners and real quotes"
+  ]
+}

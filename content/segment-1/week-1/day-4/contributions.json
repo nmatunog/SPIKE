@@ -4,9 +4,10 @@
     "portfolio-financial-blueprint"
   ],
   "contributesToBusinessPlan": [
-    "bp-chapter-1"
+    "bp-chapter-3"
   ],
   "contributesToCompetencies": [
-    "competency-visioning"
+    "competency-financial-planning",
+    "competency-entrepreneurship"
   ]
 }

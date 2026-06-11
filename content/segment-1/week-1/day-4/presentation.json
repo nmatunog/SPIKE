@@ -1,24 +1,71 @@
 {
   "presentation": {
-    "id": "presentation-day-4",
+    "id": "presentation-day-4-deck-01",
     "dayId": "day-segment-1-week-1-day-4",
-    "title": "Financial Entrepreneurship",
+    "title": "Faculty Deck 01 — Advisor vs Entrepreneur",
     "slideIds": [
-      "slide-day-4-01"
+      "slide-d4-01-01",
+      "slide-d4-01-02",
+      "slide-d4-01-03",
+      "slide-d4-01-04",
+      "slide-d4-01-05"
     ]
   },
   "slides": [
     {
-      "id": "slide-day-4-01",
-      "presentationId": "presentation-day-4",
-      "sortOrder": 1,
-      "title": "Financial Entrepreneurship",
-      "body": "Week 1 Day 4: Entrepreneur",
-      "speakerNotes": "Facilitate per faculty day template.",
+      "id": "slide-d4-01-01",
+      "title": "Day 4 — Financial Entrepreneurship",
+      "body": "You have identity (Day 1), industry context (Day 2), and customer insight (Day 3).\n\nToday: choose how you will BUILD — and draft your operating model.",
+      "speakerNotes": "3 min open.",
       "discussionQuestions": [
-        "What stood out today?",
-        "How does this connect to your ambition?"
-      ]
+        "What kind of entrepreneur do you want to become?"
+      ],
+      "presentationId": "presentation-day-4-deck-01",
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-d4-01-02",
+      "title": "Advisor vs Entrepreneur",
+      "body": "Advisor mindset: execute someone else's system.\nEntrepreneur mindset: design your own venture system.\n\nSPIKE trains financial entrepreneurs — owners of their blueprint.",
+      "speakerNotes": "Contrast examples. 5 min.",
+      "discussionQuestions": [
+        "Where have you been an advisor vs entrepreneur in your life?"
+      ],
+      "presentationId": "presentation-day-4-deck-01",
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-d4-01-03",
+      "title": "Agency Builder Path",
+      "body": "Build a team · Recruit · Develop leaders · Scale organization.\nCanvas engines: talent, leadership, recruitment, culture.",
+      "speakerNotes": "Use district exemplar. 5 min.",
+      "discussionQuestions": [
+        "What excites you about building a team?"
+      ],
+      "presentationId": "presentation-day-4-deck-01",
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-d4-01-04",
+      "title": "Specialist Consultant Path",
+      "body": "Build deep expertise · Premium practice · Niche authority.\nCanvas engines: expertise, client experience, reputation.",
+      "speakerNotes": "5 min.",
+      "discussionQuestions": [
+        "What niche could you own in 3 years?"
+      ],
+      "presentationId": "presentation-day-4-deck-01",
+      "sortOrder": 4
+    },
+    {
+      "id": "slide-d4-01-05",
+      "title": "Deck 01 Close",
+      "body": "Deck 02 introduces the Financial Entrepreneurship Canvas.",
+      "speakerNotes": "2 min.",
+      "discussionQuestions": [
+        "Which path will you explore first today?"
+      ],
+      "presentationId": "presentation-day-4-deck-01",
+      "sortOrder": 5
     }
   ]
 }

@@ -1,0 +1,46 @@
+{
+  "dayId": "day-segment-1-week-1-day-4",
+  "title": "Facilitator Guide — Day 4: Financial Entrepreneurship",
+  "durationHours": 4,
+  "prepChecklist": [
+    "Test canvas editor access",
+    "Load both decks",
+    "Prepare canvas exemplar at 30%"
+  ],
+  "sessionFlow": [
+    {
+      "time": "0:00–0:25",
+      "activity": "Decks 01–02 intro",
+      "notes": "No path prescription."
+    },
+    {
+      "time": "0:25–0:65",
+      "activity": "Track clinic",
+      "notes": "Honest exploration."
+    },
+    {
+      "time": "0:65–2:00",
+      "activity": "Canvas workshop",
+      "notes": "Target 30% completion."
+    },
+    {
+      "time": "2:00–2:40",
+      "activity": "Peer review + presentations",
+      "notes": "Coach gaps not grades."
+    }
+  ],
+  "debriefQuestions": [
+    "Who reached 30% canvas?",
+    "Which path drew most energy?",
+    "Day 5 presentation prep?"
+  ],
+  "commonPitfalls": [
+    "Choosing path to please others",
+    "Empty canvas fields",
+    "Skipping strategy statement"
+  ],
+  "coachingTips": [
+    "Use canvas gaps as coaching prompts",
+    "Link engines to persona and ambition"
+  ]
+}

@@ -1,12 +1,18 @@
 {
   "dayId": "day-segment-1-week-1-day-5",
   "contributesToPortfolio": [
-    "portfolio-identity-purpose"
+    "portfolio-identity-purpose",
+    "portfolio-financial-blueprint",
+    "portfolio-market-intelligence"
   ],
   "contributesToBusinessPlan": [
-    "bp-chapter-1"
+    "bp-chapter-1",
+    "bp-chapter-2",
+    "bp-chapter-3"
   ],
   "contributesToCompetencies": [
-    "competency-visioning"
+    "competency-visioning",
+    "competency-communication",
+    "competency-commitment"
   ]
 }

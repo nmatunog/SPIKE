@@ -1,9 +1,20 @@
 {
   "assessment": {
-    "id": "assessment-day-4",
-    "dayId": "day-segment-1-week-1-day-4",
-    "title": "Day 4 check-in",
-    "type": "reflection"
+    "id": "assessment-day-4-canvas",
+    "title": "Day 4 Canvas Completeness Check",
+    "description": "Canvas v1 threshold and presentation.",
+    "rubricId": "rubric-day-4-canvas",
+    "dayId": "day-segment-1-week-1-day-4"
   },
-  "rubric": null
+  "rubric": {
+    "id": "rubric-day-4-canvas",
+    "title": "Canvas Presentation Rubric",
+    "criteria": [
+      "30%+ canvas completion",
+      "Strategy statement drafted",
+      "Three priorities identified",
+      "Career direction linked to canvas"
+    ],
+    "assessmentId": "assessment-day-4-canvas"
+  }
 }

@@ -1,24 +1,71 @@
 {
   "presentation": {
-    "id": "presentation-day-5",
+    "id": "presentation-day-5-deck-01",
     "dayId": "day-segment-1-week-1-day-5",
-    "title": "My Venture Direction",
+    "title": "Faculty Deck 01 — Week 1 Synthesis",
     "slideIds": [
-      "slide-day-5-01"
+      "slide-d5-01-01",
+      "slide-d5-01-02",
+      "slide-d5-01-03",
+      "slide-d5-01-04",
+      "slide-d5-01-05"
     ]
   },
   "slides": [
     {
-      "id": "slide-day-5-01",
-      "presentationId": "presentation-day-5",
-      "sortOrder": 1,
-      "title": "My Venture Direction",
-      "body": "Week 1 Day 5: Commitment",
-      "speakerNotes": "Facilitate per faculty day template.",
+      "id": "slide-d5-01-01",
+      "title": "Day 5 — Week 1 Commitment Day",
+      "body": "Five days ago you heard three stories.\nYou built identity, discovered industry and customer, drafted your canvas.\n\nToday: present, commit, and launch Week 2.",
+      "speakerNotes": "Celebrate energy. 3 min.",
       "discussionQuestions": [
-        "What stood out today?",
-        "How does this connect to your ambition?"
-      ]
+        "What are you most proud of from Week 1?"
+      ],
+      "presentationId": "presentation-day-5-deck-01",
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-d5-01-02",
+      "title": "3-Year Vision Review",
+      "body": "Future self · Ambition · Impact · Career direction.\n\nYour presentation must show coherence — one venture story.",
+      "speakerNotes": "Reference portfolio presentation mode. 5 min.",
+      "discussionQuestions": [
+        "Does your portfolio tell one story?"
+      ],
+      "presentationId": "presentation-day-5-deck-01",
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-d5-01-03",
+      "title": "Opportunity Mapping",
+      "body": "Connect persona problems → canvas priorities → Week 2 research.\n\nVenture entrepreneurs show evidence, not hope.",
+      "speakerNotes": "5 min.",
+      "discussionQuestions": [
+        "What evidence supports your direction?"
+      ],
+      "presentationId": "presentation-day-5-deck-01",
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-d5-01-04",
+      "title": "Hour 200 Venture Board Preview",
+      "body": "Segment 1 ends at Hour 200 Venture Board.\nWeek 1 is foundation — not the finish line.\n\nToday's presentation is practice for that gate.",
+      "speakerNotes": "4 min.",
+      "discussionQuestions": [
+        "What will Hour 200 look like for you?"
+      ],
+      "presentationId": "presentation-day-5-deck-01",
+      "sortOrder": 4
+    },
+    {
+      "id": "slide-d5-01-05",
+      "title": "Deck 01 Close",
+      "body": "Deck 02: presentation protocol and coaching summary.",
+      "speakerNotes": "2 min.",
+      "discussionQuestions": [
+        "Who presents first from your squad?"
+      ],
+      "presentationId": "presentation-day-5-deck-01",
+      "sortOrder": 5
     }
   ]
 }

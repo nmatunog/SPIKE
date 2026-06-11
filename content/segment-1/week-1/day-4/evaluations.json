@@ -1,0 +1,47 @@
+{
+  "templates": [
+    {
+      "id": "rubric-day-4-canvas-complete",
+      "type": "rubric",
+      "title": "Canvas Completeness Rubric",
+      "audience": "faculty",
+      "criteria": [
+        {
+          "label": "Canvas v1",
+          "indicators": [
+            "30%+ complete",
+            "Strategy drafted",
+            "Priorities set"
+          ]
+        }
+      ],
+      "scale": [
+        "Below v1",
+        "v1",
+        "Strong v1",
+        "Exemplary"
+      ],
+      "dayId": "day-segment-1-week-1-day-4"
+    },
+    {
+      "id": "observation-day-4-mentor",
+      "type": "observation_form",
+      "title": "Mentor Day 4 Observation",
+      "audience": "mentor",
+      "observationAreas": [
+        "Ownership",
+        "Entrepreneurial Thinking",
+        "Leadership Interest"
+      ],
+      "fields": [
+        {
+          "id": "ownership",
+          "label": "Ownership",
+          "type": "rating",
+          "max": 5
+        }
+      ],
+      "dayId": "day-segment-1-week-1-day-4"
+    }
+  ]
+}

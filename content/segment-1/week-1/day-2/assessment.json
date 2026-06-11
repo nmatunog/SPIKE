@@ -1,9 +1,20 @@
 {
   "assessment": {
-    "id": "assessment-day-2",
-    "dayId": "day-segment-1-week-1-day-2",
-    "title": "Day 2 check-in",
-    "type": "reflection"
+    "id": "assessment-day-2-industry",
+    "title": "Day 2 Industry Comprehension Check",
+    "description": "Faculty and mentor observation of industry immersion engagement and interview prep quality.",
+    "rubricId": "rubric-day-2-industry",
+    "dayId": "day-segment-1-week-1-day-2"
   },
-  "rubric": null
+  "rubric": {
+    "id": "rubric-day-2-industry",
+    "title": "Industry Immersion Rubric",
+    "criteria": [
+      "Demonstrates understanding of protection vs investment basics",
+      "Connects industry trends to personal ambition",
+      "Prepares thoughtful interview questions",
+      "Contributes meaningfully to squad industry debrief"
+    ],
+    "assessmentId": "assessment-day-2-industry"
+  }
 }

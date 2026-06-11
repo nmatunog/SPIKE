@@ -1,0 +1,47 @@
+{
+  "dayId": "day-segment-1-week-1-day-5",
+  "title": "Facilitator Guide — Day 5: Commitment & Presentations",
+  "durationHours": 4,
+  "prepChecklist": [
+    "Test portfolio presentation mode for all",
+    "Print presentation rubrics",
+    "Schedule presentation order",
+    "Brief mentors on coaching summary"
+  ],
+  "sessionFlow": [
+    {
+      "time": "0:00–0:20",
+      "activity": "Decks 01–02",
+      "notes": "Celebrate Week 1."
+    },
+    {
+      "time": "0:20–1:05",
+      "activity": "Portfolio rehearsal",
+      "notes": "Fix blockers before afternoon."
+    },
+    {
+      "time": "1:05–2:35",
+      "activity": "Presentations + squad pitches",
+      "notes": "Use rubric."
+    },
+    {
+      "time": "2:35–3:00",
+      "activity": "Commitment ceremony + survey",
+      "notes": "Mentor summaries due today."
+    }
+  ],
+  "debriefQuestions": [
+    "Who is portfolio-ready for Hour 200 trajectory?",
+    "Which squads need Week 2 intervention?",
+    "Mentor summaries complete?"
+  ],
+  "commonPitfalls": [
+    "Rushing presentations",
+    "Vague commitments",
+    "Incomplete mentor summaries"
+  ],
+  "coachingTips": [
+    "End with accountability",
+    "Link commitment to canvas priority #1"
+  ]
+}

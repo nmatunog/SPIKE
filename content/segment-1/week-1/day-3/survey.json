@@ -2,18 +2,26 @@
   "survey": {
     "id": "survey-day-3",
     "dayId": "day-segment-1-week-1-day-3",
-    "title": "Day 3 pulse",
-    "description": "Week 1 progress check",
+    "title": "Day 3 pulse survey",
+    "description": "Day 3 customer discovery pulse",
     "status": "active"
   },
   "questions": [
     {
       "id": "sq-day-3-01",
-      "surveyId": "survey-day-3",
-      "prompt": "Rate your clarity after today.",
+      "prompt": "How confident are you in your squad persona?",
       "type": "rating",
       "required": true,
+      "surveyId": "survey-day-3",
       "sortOrder": 1
+    },
+    {
+      "id": "sq-day-3-02",
+      "prompt": "What customer problem will you investigate first?",
+      "type": "long_text",
+      "required": true,
+      "surveyId": "survey-day-3",
+      "sortOrder": 2
     }
   ]
 }

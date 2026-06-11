@@ -1,24 +1,71 @@
 {
   "presentation": {
-    "id": "presentation-day-2",
+    "id": "presentation-day-2-deck-01",
     "dayId": "day-segment-1-week-1-day-2",
-    "title": "Discover The Industry",
+    "title": "Faculty Deck 01 — The Financial Services Landscape",
     "slideIds": [
-      "slide-day-2-01"
+      "slide-d2-01-01",
+      "slide-d2-01-02",
+      "slide-d2-01-03",
+      "slide-d2-01-04",
+      "slide-d2-01-05"
     ]
   },
   "slides": [
     {
-      "id": "slide-day-2-01",
-      "presentationId": "presentation-day-2",
-      "sortOrder": 1,
-      "title": "Discover The Industry",
-      "body": "Week 1 Day 2: Opportunity",
-      "speakerNotes": "Facilitate per faculty day template.",
+      "id": "slide-d2-01-01",
+      "title": "Day 2 Opening — From Identity to Industry",
+      "body": "Yesterday you defined who you are becoming.\nToday we ask: what industry will you build in?\n\nFinancial services is one of the largest, most stable, and most impact-driven sectors in the Philippines.",
+      "speakerNotes": "Bridge from Day 1 identity. Reference participant ambition statements. 3 min.",
       "discussionQuestions": [
-        "What stood out today?",
-        "How does this connect to your ambition?"
-      ]
+        "How does your ambition connect to an industry — not just a job?"
+      ],
+      "presentationId": "presentation-day-2-deck-01",
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-d2-01-02",
+      "title": "Financial Services Ecosystem",
+      "body": "Banks · Insurance · Investments · Financial Planning · Fintech\n\nProtection products (life, health, VUL) fund education, retirement, and legacy.\nAdvisors and agency builders are entrepreneurs within this ecosystem.",
+      "speakerNotes": "Use local examples. Avoid product pitch — this is landscape. 6 min.",
+      "discussionQuestions": [
+        "Which part of the ecosystem interests you most?"
+      ],
+      "presentationId": "presentation-day-2-deck-01",
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-d2-01-03",
+      "title": "Insurance & Protection Story",
+      "body": "Insurance is not a transaction — it is a promise.\n\nAIA's protection mission: help people live Healthier, Longer, Better Lives.\n\nThe opportunity: millions of Filipinos are underinsured. Financial entrepreneurs close the protection gap.",
+      "speakerNotes": "Connect to AIA Day 1 story. 5 min.",
+      "discussionQuestions": [
+        "Would you personally buy protection today? Why or why not?"
+      ],
+      "presentationId": "presentation-day-2-deck-01",
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-d2-01-04",
+      "title": "Career Opportunities in Financial Entrepreneurship",
+      "body": "Advisor → Unit Manager → Agency Director\nSpecialist Consultant → Practice Owner\n\nSPIKE prepares you for both agency building and specialist consulting paths.",
+      "speakerNotes": "Link to Day 1 career direction exploration. 4 min.",
+      "discussionQuestions": [
+        "Where do you see yourself adding value in this industry?"
+      ],
+      "presentationId": "presentation-day-2-deck-01",
+      "sortOrder": 4
+    },
+    {
+      "id": "slide-d2-01-05",
+      "title": "Deck 01 Close — Industry Immersion Begins",
+      "body": "Next: Deck 02 — Connecting Industry to Your Ambition.\nThen: practitioner interviews, squad debrief, and research plan.",
+      "speakerNotes": "Transition to Deck 02. 2 min.",
+      "discussionQuestions": [
+        "What do you want to learn from a practitioner today?"
+      ],
+      "presentationId": "presentation-day-2-deck-01",
+      "sortOrder": 5
     }
   ]
 }

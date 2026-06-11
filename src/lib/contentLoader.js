@@ -356,3 +356,78 @@ export function assertSegment1Week1Day1Ready() {
   }
   return bundle;
 }
+
+const WEEK1_DAY_SLUGS = ['day-1', 'day-2', 'day-3', 'day-4', 'day-5'];
+
+/**
+ * Validates Phase 2 content requirements for a Week 1 day bundle.
+ * @param {DayContentBundle} bundle
+ * @param {string} daySlug
+ */
+function assertWeek1DayBundleReady(bundle, daySlug) {
+  const dayNum = bundle.day.dayNumber;
+  if (!bundle.presentation?.slides?.length) {
+    throw new Error(`Day ${dayNum} missing Faculty Deck 01`);
+  }
+  if (!bundle.presentationDeck02?.slides?.length) {
+    throw new Error(`Day ${dayNum} missing Faculty Deck 02`);
+  }
+  if (!bundle.activities?.activities?.length || bundle.activities.activities.length < 4) {
+    throw new Error(`Day ${dayNum} requires at least 4 activity guides`);
+  }
+  for (const act of bundle.activities.activities) {
+    if (!act.debriefQuestions?.length) {
+      throw new Error(`Day ${dayNum} activity ${act.id} missing debrief questions`);
+    }
+    if (!act.speakerNotes && !act.instructions?.length) {
+      throw new Error(`Day ${dayNum} activity ${act.id} missing instructions`);
+    }
+  }
+  for (const slide of bundle.presentation.slides) {
+    if (!slide.speakerNotes?.trim()) {
+      throw new Error(`Day ${dayNum} Deck 01 slide "${slide.title}" missing speaker notes`);
+    }
+  }
+  for (const slide of bundle.presentationDeck02.slides) {
+    if (!slide.speakerNotes?.trim()) {
+      throw new Error(`Day ${dayNum} Deck 02 slide "${slide.title}" missing speaker notes`);
+    }
+  }
+  if (!bundle.evaluations?.templates?.length) {
+    throw new Error(`Day ${dayNum} missing evaluation templates`);
+  }
+  if (!bundle.mentorGuide?.coachingObjective) {
+    throw new Error(`Day ${dayNum} missing mentor guide`);
+  }
+  if (!bundle.facilitator?.title) {
+    throw new Error(`Day ${dayNum} missing facilitator guide`);
+  }
+  if (!bundle.sessions?.sessions?.length) {
+    throw new Error(`Day ${dayNum} missing sessions`);
+  }
+  if (!bundle.reflections?.reflections?.length) {
+    throw new Error(`Day ${dayNum} missing reflections`);
+  }
+  const deck01Id = `presentation-${daySlug}-deck-01`;
+  if (bundle.presentation.presentation.id !== deck01Id && daySlug !== 'day-1') {
+    throw new Error(`Day ${dayNum} Deck 01 id mismatch: expected ${deck01Id}`);
+  }
+}
+
+/**
+ * Validates Segment 1 / Week 1 / Days 1–5 (Phase 2 complete).
+ * @returns {DayContentBundle[]}
+ */
+export function assertSegment1Week1Ready() {
+  const bundles = WEEK1_DAY_SLUGS.map((slug) => {
+    const bundle = getDayContentBundle('segment-1', 'week-1', slug);
+    if (!bundle) throw new Error(`Week 1 ${slug} bundle not found`);
+    if (slug === 'day-1') {
+      assertSegment1Week1Day1Ready();
+    } else {
+      assertWeek1DayBundleReady(bundle, slug);
+    }
+    return bundle;
+  });
+  return bundles;
+}

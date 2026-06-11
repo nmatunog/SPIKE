@@ -1,0 +1,59 @@
+{
+  "presentation": {
+    "id": "presentation-day-2-deck-02",
+    "dayId": "day-segment-1-week-1-day-2",
+    "title": "Faculty Deck 02 — Connecting Industry to Your Ambition",
+    "slideIds": [
+      "slide-d2-02-01",
+      "slide-d2-02-02",
+      "slide-d2-02-03",
+      "slide-d2-02-04"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-d2-02-01",
+      "title": "Ambition Meets Industry",
+      "body": "Your ambition statement is not abstract — it lives in a real market.\n\nToday you will:\n• Interview or observe a practitioner\n• Capture industry insights for your squad\n• Draft your opportunity reflection",
+      "speakerNotes": "Show example connection: ambition → industry niche. 4 min.",
+      "discussionQuestions": [
+        "Read your ambition — what industry segment fits?"
+      ],
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-d2-02-02",
+      "title": "Interview & Observation Protocol",
+      "body": "Prepare 5 questions before you speak to a practitioner.\nListen for: client problems, career path, daily habits, industry changes.\nCapture quotes — your business plan will use this evidence.",
+      "speakerNotes": "Distribute interview worksheet. 5 min.",
+      "discussionQuestions": [
+        "What is one question you are afraid to ask?"
+      ],
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-d2-02-03",
+      "title": "Squad Research Plan",
+      "body": "Squads will research a market segment this week.\nDocument: target segment, key questions, interview schedule, roles.\nLead presents research plan at debrief.",
+      "speakerNotes": "Squad breakout follows. 4 min.",
+      "discussionQuestions": [
+        "What segment will your squad investigate?"
+      ],
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-d2-02-04",
+      "title": "Day 2 Deliverables",
+      "body": "✓ Interview notes\n✓ Industry insights (squad)\n✓ Research plan\n✓ Opportunity reflection → Portfolio",
+      "speakerNotes": "Close with deliverable checklist. 3 min.",
+      "discussionQuestions": [
+        "What is one action before Day 3 market observation?"
+      ],
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 4
+    }
+  ]
+}

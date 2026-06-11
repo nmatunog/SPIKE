@@ -1,0 +1,89 @@
+{
+  "dayId": "day-segment-1-week-1-day-5",
+  "theme": "Commitment",
+  "title": "Mentor Guide — Day 5: Commitment",
+  "coachingObjective": "Create clarity and commitment. Complete Week 1 coaching summary.",
+  "timing": {
+    "preSession": "15 min — review presentation order and rubric",
+    "duringSession": "Observe presentations; take summary notes",
+    "postSession": "30 min — complete Week 1 coaching summary for each participant"
+  },
+  "discussionQuestions": [
+    "What are you building?",
+    "Who do you want to help?",
+    "What would success look like in three years?",
+    "What is your next step?",
+    "What commitment are you making?"
+  ],
+  "observationAreas": [
+    {
+      "area": "Clarity",
+      "lookFor": [
+        "Coherent venture story"
+      ],
+      "warningSigns": [
+        "Vague vision"
+      ]
+    },
+    {
+      "area": "Confidence",
+      "lookFor": [
+        "Presents without reading slides"
+      ],
+      "warningSigns": [
+        "Fear of presenting"
+      ]
+    },
+    {
+      "area": "Commitment",
+      "lookFor": [
+        "Specific Week 2 action"
+      ],
+      "warningSigns": [
+        "No accountability"
+      ]
+    },
+    {
+      "area": "Direction",
+      "lookFor": [
+        "Path aligned with evidence"
+      ],
+      "warningSigns": [
+        "Contradictions across outputs"
+      ]
+    }
+  ],
+  "coachingTips": [
+    "End with accountability: one action before next session",
+    "Complete Week 1 coaching summary in app",
+    "Celebrate specificity"
+  ],
+  "warningSigns": [
+    "Vague vision with no measurable outcome",
+    "Fear of presenting to squad",
+    "Incomplete portfolio"
+  ],
+  "reflectionPrompts": [
+    "What is one commitment you will keep this week?"
+  ],
+  "expectedOutcomes": [
+    "Week 1 Coaching Summary",
+    "Venture Portfolio presentation",
+    "Week 2 commitment"
+  ],
+  "activityCoachingNotes": [
+    {
+      "activityId": "activity-day-5-venture-presentations",
+      "note": "Note one strength and one gap per participant for summary."
+    },
+    {
+      "activityId": "activity-day-5-commitment-ceremony",
+      "note": "Record exact commitment language participant uses aloud."
+    }
+  ],
+  "debriefWithFaculty": [
+    "All coaching summaries submitted?",
+    "Who needs Week 2 intensive support?",
+    "Squad health flags?"
+  ]
+}

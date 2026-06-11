@@ -1,11 +1,93 @@
 {
   "activities": [
     {
-      "id": "activity-day-3",
-      "dayId": "day-segment-1-week-1-day-3",
-      "title": "Customer workshop",
-      "format": "squad",
-      "durationMinutes": 90
+      "id": "activity-day-3-market-observation",
+      "title": "Market Observation Walk",
+      "durationMinutes": 50,
+      "materials": [
+        "Observation worksheet",
+        "Squad pairs"
+      ],
+      "instructions": [
+        "Squads conduct structured observation in assigned area.",
+        "Capture verbatim quotes and behaviors.",
+        "No selling — listen and learn only."
+      ],
+      "outputs": [
+        "Field observation notes"
+      ],
+      "debriefQuestions": [
+        "What exact words did customers use?",
+        "What surprised you in the field?",
+        "What problem appeared most urgent?"
+      ],
+      "dayId": "day-segment-1-week-1-day-3"
+    },
+    {
+      "id": "activity-day-3-persona-workshop",
+      "title": "Customer Persona Workshop",
+      "durationMinutes": 60,
+      "materials": [
+        "Persona canvas worksheet"
+      ],
+      "instructions": [
+        "Squads build persona canvas from observation + Day 2 insights.",
+        "Complete worksheet in app.",
+        "Peer review within squad for evidence quality."
+      ],
+      "outputs": [
+        "Customer persona artifact"
+      ],
+      "debriefQuestions": [
+        "Is your persona based on evidence or assumption?",
+        "What is the persona's biggest unmet need?",
+        "How does persona connect to your impact statement?"
+      ],
+      "dayId": "day-segment-1-week-1-day-3"
+    },
+    {
+      "id": "activity-day-3-squad-research-plan",
+      "title": "Squad Research Planning",
+      "durationMinutes": 35,
+      "materials": [
+        "Survey builder in app"
+      ],
+      "instructions": [
+        "Finalize needs-analysis survey questions (5–8).",
+        "Assign survey roles and targets for Week 1.",
+        "Set completion goal before Day 5."
+      ],
+      "outputs": [
+        "Research plan document"
+      ],
+      "debriefQuestions": [
+        "How many surveys will your squad complete this week?",
+        "What could bias your results?",
+        "How will you share findings in portfolio?"
+      ],
+      "dayId": "day-segment-1-week-1-day-3"
+    },
+    {
+      "id": "activity-day-3-persona-presentation",
+      "title": "Squad Persona Presentations",
+      "durationMinutes": 40,
+      "materials": [
+        "Presentation rubric"
+      ],
+      "instructions": [
+        "Each squad presents persona + opportunity hypothesis.",
+        "Faculty scores with persona rubric.",
+        "Mentors note coaching opportunities."
+      ],
+      "outputs": [
+        "Persona presentation complete"
+      ],
+      "debriefQuestions": [
+        "Which persona was most convincing — and why?",
+        "What feedback will improve your persona?",
+        "What opportunity will you test next?"
+      ],
+      "dayId": "day-segment-1-week-1-day-3"
     }
   ]
 }

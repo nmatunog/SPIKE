@@ -3,31 +3,39 @@
   "segmentId": "segment-1",
   "weekId": "week-segment-1-1",
   "dayNumber": 3,
-  "title": "Discover The Market",
+  "title": "Day 3 — Discover The Market",
   "theme": "Customer",
   "durationHours": 4,
   "learningObjectives": [
-    "Complete Customer objectives for Week 1"
+    "Identify customer problems through observation and conversation",
+    "Build evidence-based customer personas",
+    "Map unmet needs to venture opportunity",
+    "Launch squad needs-analysis research plan"
   ],
   "expectedOutputs": [
     "Customer Persona",
-    "Market Insights"
+    "Market Insights",
+    "Needs Analysis Survey Plan"
   ],
   "portfolioDeliverables": [
-    "Customer Persona",
-    "Market Insights"
+    "Customer persona canvas",
+    "Market insight log"
   ],
-  "businessPlanIntegration": "Week 1 Day 3 — Customer",
+  "businessPlanIntegration": "Business Plan Chapter 2 — Target Market & Customer",
   "presentations": [
-    "presentation-day-3"
+    "presentation-day-3-deck-01",
+    "presentation-day-3-deck-02"
   ],
   "activities": [
-    "activity-day-3"
+    "activity-day-3-market-observation",
+    "activity-day-3-persona-workshop",
+    "activity-day-3-squad-research-plan",
+    "activity-day-3-persona-presentation"
   ],
   "worksheets": [
-    "worksheet-day-3"
+    "worksheet-day-3-persona"
   ],
   "assessments": [
-    "assessment-day-3"
+    "assessment-day-3-persona"
   ]
 }

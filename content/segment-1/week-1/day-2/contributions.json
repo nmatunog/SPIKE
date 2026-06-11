@@ -4,9 +4,11 @@
     "portfolio-market-intelligence"
   ],
   "contributesToBusinessPlan": [
-    "bp-chapter-1"
+    "bp-chapter-1",
+    "bp-chapter-2"
   ],
   "contributesToCompetencies": [
-    "competency-visioning"
+    "competency-industry-knowledge",
+    "competency-research"
   ]
 }

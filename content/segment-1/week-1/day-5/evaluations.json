@@ -1,0 +1,92 @@
+{
+  "templates": [
+    {
+      "id": "rubric-day-5-venture-direction",
+      "type": "rubric",
+      "title": "Venture Direction Rubric",
+      "audience": "faculty",
+      "criteria": [
+        {
+          "label": "Direction clarity",
+          "indicators": [
+            "Clear who they serve",
+            "Evidence-based",
+            "Committed path"
+          ]
+        }
+      ],
+      "scale": [
+        "Unclear",
+        "Emerging",
+        "Clear",
+        "Compelling"
+      ],
+      "dayId": "day-segment-1-week-1-day-5"
+    },
+    {
+      "id": "rubric-day-5-portfolio-present",
+      "type": "rubric",
+      "title": "Portfolio Presentation Rubric",
+      "audience": "faculty",
+      "criteria": [
+        {
+          "label": "Presentation",
+          "indicators": [
+            "Identity",
+            "Dream board",
+            "Canvas",
+            "Commitment",
+            "Delivery"
+          ]
+        }
+      ],
+      "scale": [
+        "Not ready",
+        "Developing",
+        "Ready",
+        "Exemplary"
+      ],
+      "dayId": "day-segment-1-week-1-day-5"
+    },
+    {
+      "id": "observation-day-5-mentor",
+      "type": "observation_form",
+      "title": "Mentor Day 5 Final Observation",
+      "audience": "mentor",
+      "observationAreas": [
+        "Clarity",
+        "Confidence",
+        "Commitment",
+        "Direction"
+      ],
+      "fields": [
+        {
+          "id": "commitment",
+          "label": "Commitment",
+          "type": "rating",
+          "max": 5
+        },
+        {
+          "id": "summary",
+          "label": "Week 1 summary note",
+          "type": "long_text"
+        }
+      ],
+      "dayId": "day-segment-1-week-1-day-5"
+    },
+    {
+      "id": "reflection-day-5-mentor-summary",
+      "type": "reflection_form",
+      "title": "Mentor Week 1 Coaching Summary Template",
+      "audience": "mentor",
+      "prompts": [
+        "Participant ambition in their words",
+        "Greatest growth this week",
+        "Primary risk for Week 2",
+        "Recommended mentor action",
+        "Overall Week 1 recommendation"
+      ],
+      "dayId": "day-segment-1-week-1-day-5"
+    }
+  ]
+}

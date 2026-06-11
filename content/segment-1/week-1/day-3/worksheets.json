@@ -1,20 +1,49 @@
 {
   "worksheets": [
     {
-      "id": "worksheet-day-3",
+      "id": "worksheet-day-3-persona",
       "dayId": "day-segment-1-week-1-day-3",
-      "title": "Customer reflection",
-      "type": "reflection"
+      "title": "Customer Persona Canvas",
+      "questionIds": [
+        "wq-d3-1",
+        "wq-d3-2",
+        "wq-d3-3",
+        "wq-d3-4"
+      ]
     }
   ],
   "questions": [
     {
-      "id": "wq-day-3-1",
-      "worksheetId": "worksheet-day-3",
-      "prompt": "Reflect on Customer.",
-      "type": "long_text",
+      "id": "wq-d3-1",
+      "worksheetId": "worksheet-day-3-persona",
+      "prompt": "Persona name and segment (e.g., Gen Z freelancer)",
+      "type": "short_text",
       "required": true,
       "sortOrder": 1
+    },
+    {
+      "id": "wq-d3-2",
+      "worksheetId": "worksheet-day-3-persona",
+      "prompt": "Top 3 problems this persona faces",
+      "type": "long_text",
+      "required": true,
+      "sortOrder": 2
+    },
+    {
+      "id": "wq-d3-3",
+      "worksheetId": "worksheet-day-3-persona",
+      "prompt": "What unmet need could financial planning address?",
+      "type": "long_text",
+      "required": true,
+      "sortOrder": 3
+    },
+    {
+      "id": "wq-d3-4",
+      "worksheetId": "worksheet-day-3-persona",
+      "prompt": "Evidence source (interview, observation, survey)",
+      "type": "short_text",
+      "required": true,
+      "sortOrder": 4
     }
   ]
 }

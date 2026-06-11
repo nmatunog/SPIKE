@@ -1,9 +1,20 @@
 {
   "assessment": {
-    "id": "assessment-day-3",
-    "dayId": "day-segment-1-week-1-day-3",
-    "title": "Day 3 check-in",
-    "type": "reflection"
+    "id": "assessment-day-3-persona",
+    "title": "Day 3 Persona Presentation Assessment",
+    "description": "Squad persona quality and evidence.",
+    "rubricId": "rubric-day-3-persona",
+    "dayId": "day-segment-1-week-1-day-3"
   },
-  "rubric": null
+  "rubric": {
+    "id": "rubric-day-3-persona",
+    "title": "Customer Persona Rubric",
+    "criteria": [
+      "Persona based on real observation",
+      "Named problems and needs",
+      "Clear target segment",
+      "Squad presentation clarity"
+    ],
+    "assessmentId": "assessment-day-3-persona"
+  }
 }

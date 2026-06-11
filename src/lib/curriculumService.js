@@ -60,6 +60,7 @@ export const getWeek = jsonLoader.getWeek;
 export const listDays = jsonLoader.listDays;
 export const getSegment1Week1Day1Bundle = jsonLoader.getSegment1Week1Day1Bundle;
 export const assertSegment1Week1Day1Ready = jsonLoader.assertSegment1Week1Day1Ready;
+export const assertSegment1Week1Ready = jsonLoader.assertSegment1Week1Ready;
 
 /**
  * @param {string} segmentSlug

@@ -1,9 +1,21 @@
 {
   "assessment": {
-    "id": "assessment-day-5",
-    "dayId": "day-segment-1-week-1-day-5",
-    "title": "Day 5 check-in",
-    "type": "reflection"
+    "id": "assessment-day-5-week1",
+    "title": "Week 1 Venture Board Readiness",
+    "description": "Portfolio presentation and Week 1 output completeness.",
+    "rubricId": "rubric-day-5-presentation",
+    "dayId": "day-segment-1-week-1-day-5"
   },
-  "rubric": null
+  "rubric": {
+    "id": "rubric-day-5-presentation",
+    "title": "Week 1 Portfolio Presentation Rubric",
+    "criteria": [
+      "Identity complete (ambition, impact, values, future self)",
+      "Dream board and canvas present",
+      "Customer/market evidence shown",
+      "Clear commitment and Week 2 priority",
+      "Professional delivery"
+    ],
+    "assessmentId": "assessment-day-5-week1"
+  }
 }

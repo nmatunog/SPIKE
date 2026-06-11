@@ -1,20 +1,40 @@
 {
   "worksheets": [
     {
-      "id": "worksheet-day-2",
+      "id": "worksheet-day-2-interview-notes",
       "dayId": "day-segment-1-week-1-day-2",
-      "title": "Opportunity reflection",
-      "type": "reflection"
+      "title": "Practitioner Interview Notes",
+      "questionIds": [
+        "wq-d2-1",
+        "wq-d2-2",
+        "wq-d2-3"
+      ]
     }
   ],
   "questions": [
     {
-      "id": "wq-day-2-1",
-      "worksheetId": "worksheet-day-2",
-      "prompt": "Reflect on Opportunity.",
-      "type": "long_text",
+      "id": "wq-d2-1",
+      "worksheetId": "worksheet-day-2-interview-notes",
+      "prompt": "Who did you interview or observe today — role and context?",
+      "type": "short_text",
       "required": true,
       "sortOrder": 1
+    },
+    {
+      "id": "wq-d2-2",
+      "worksheetId": "worksheet-day-2-interview-notes",
+      "prompt": "What industry insight surprised you most?",
+      "type": "long_text",
+      "required": true,
+      "sortOrder": 2
+    },
+    {
+      "id": "wq-d2-3",
+      "worksheetId": "worksheet-day-2-interview-notes",
+      "prompt": "How does this connect to your Day 1 ambition?",
+      "type": "long_text",
+      "required": true,
+      "sortOrder": 3
     }
   ]
 }

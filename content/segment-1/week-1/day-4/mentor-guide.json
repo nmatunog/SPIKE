@@ -1,0 +1,71 @@
+{
+  "dayId": "day-segment-1-week-1-day-4",
+  "theme": "Entrepreneur",
+  "title": "Mentor Guide — Day 4: Entrepreneur",
+  "coachingObjective": "Explore venture paths and canvas ownership.",
+  "timing": {
+    "preSession": "10 min — review deck speaker notes and observation form",
+    "duringSession": "Circulate during squad activities; coach individuals at transitions",
+    "postSession": "15 min — complete observation forms and coaching notes"
+  },
+  "discussionQuestions": [
+    "What type of business excites you?",
+    "Would you rather build a Practice, Team, or Agency? Why?",
+    "What would you build first on your canvas?"
+  ],
+  "observationAreas": [
+    {
+      "area": "Ownership",
+      "lookFor": [
+        "Takes canvas seriously",
+        "Revises based on feedback"
+      ],
+      "warningSigns": [
+        "Minimal effort fields"
+      ]
+    },
+    {
+      "area": "Entrepreneurial Thinking",
+      "lookFor": [
+        "Connects engines to market"
+      ],
+      "warningSigns": [
+        "Employee language"
+      ]
+    },
+    {
+      "area": "Leadership Interest",
+      "lookFor": [
+        "Curiosity about team building"
+      ],
+      "warningSigns": [
+        "Avoids leadership engines"
+      ]
+    }
+  ],
+  "coachingTips": [
+    "Use canvas gaps as prompts not grades",
+    "Do not prescribe track — explore"
+  ],
+  "warningSigns": [
+    "Choosing track to please others",
+    "Avoiding commitment entirely"
+  ],
+  "reflectionPrompts": [
+    "Which track feels most like you today?"
+  ],
+  "expectedOutcomes": [
+    "Career Track Assessment",
+    "FE Canvas v1"
+  ],
+  "activityCoachingNotes": [
+    {
+      "activityId": "activity-day-4-canvas-workshop",
+      "note": "Stand behind participant during strategy statement — ask who they serve."
+    }
+  ],
+  "debriefWithFaculty": [
+    "Who is below 30% canvas?",
+    "Day 5 presentation pairs?"
+  ]
+}
