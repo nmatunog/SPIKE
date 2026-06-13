@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Presentation } from 'lucide-react';
+import { Download, Presentation } from 'lucide-react';
 import { SlideViewer } from './SlideViewer.jsx';
 import { SpeakerNotesPanel } from './SpeakerNotesPanel.jsx';
 import { DiscussionPanel } from './DiscussionPanel.jsx';
@@ -7,8 +7,8 @@ import { SlideNavigator } from './SlideNavigator.jsx';
 
 /**
  * @param {{
- *   presentation: { title: string },
- *   slides: Array<{ title: string, body: string, speakerNotes: string, discussionQuestions: string[] }>,
+ *   presentation: { title: string, pptxUrl?: string },
+ *   slides: Array<{ title: string, body: string, speakerNotes: string, discussionQuestions: string[], imageUrl?: string }>,
  *   facultyMode?: boolean,
  * }} props
  */
@@ -40,6 +40,15 @@ export function PresentationViewer({ presentation, slides, facultyMode = false }
           <span className="rounded-full bg-indigo-100 px-2.5 py-1 text-2xs font-semibold uppercase tracking-wide text-indigo-900">
             Facilitator view
           </span>
+        ) : null}
+        {presentation.pptxUrl ? (
+          <a
+            href={presentation.pptxUrl}
+            download
+            className="inline-flex items-center gap-1.5 rounded-lg border border-indigo-200 bg-white px-3 py-1.5 text-xs font-semibold text-indigo-800 hover:bg-indigo-50"
+          >
+            <Download size={14} /> Download PPTX
+          </a>
         ) : null}
       </div>
 
