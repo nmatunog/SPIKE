@@ -3,11 +3,13 @@ import { BookOpen, GraduationCap, Layers, Sparkles } from 'lucide-react';
 import { PageContainer, PageTitle } from '../../components/layout/PageContainer.jsx';
 import { RoleDashboardCards } from '../../components/dashboard/RoleDashboardCards.jsx';
 import { FacultyDay1Panel } from '../../components/day1/FacultyDay1Panel.jsx';
+import { FacultyDashboardPanels } from '../../components/faculty/FacultyDashboardPanels.jsx';
 import { FacultyWeek1ProgressPanel } from '../../components/faculty/FacultyWeek1ProgressPanel.jsx';
 import { FrameworkMetric } from '../../components/framework/FrameworkSections.jsx';
 import { ROUTES } from '../../routes/paths.js';
 import { countSubmittedSurveys } from '../../lib/surveyService.js';
 import { deriveFacultyDashboardMetrics } from '../../lib/sprint01Metrics.js';
+import { FACULTY_PHILOSOPHY } from '../../lib/facultyWeek1Constants.js';
 
 /**
  * @param {{
@@ -32,8 +34,7 @@ export function FacultyHomePage({ interns, internSummary, pendingLogs = [] }) {
       </PageTitle>
 
       <div className="mb-4 rounded-xl border border-indigo-100 bg-indigo-50 px-4 py-3 text-sm text-indigo-950">
-        <strong>Faculty answers:</strong> What should participants know? You own presentations, activities,
-        worksheets, assessments, and rubrics — not coaching conversations.
+        {FACULTY_PHILOSOPHY}
       </div>
 
       <RoleDashboardCards
@@ -71,6 +72,7 @@ export function FacultyHomePage({ interns, internSummary, pendingLogs = [] }) {
 
       <div className="mt-6 space-y-6">
         <FacultyWeek1ProgressPanel interns={interns} />
+        <FacultyDashboardPanels interns={interns} />
         <FacultyDay1Panel interns={interns.map((i) => ({ id: i.id, name: i.name }))} />
       </div>
     </PageContainer>

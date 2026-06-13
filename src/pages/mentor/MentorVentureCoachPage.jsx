@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { PageContainer } from '../../components/layout/PageContainer.jsx';
@@ -9,7 +9,8 @@ import {
 import { MentorParticipantOutputs } from '../../components/mentor/MentorParticipantOutputs.jsx';
 import { MentorWeek1SummaryPanel } from '../../components/mentor/MentorWeek1SummaryPanel.jsx';
 import { MentorWeeklyAssessmentPanel } from '../../components/mentor/MentorWeeklyAssessmentPanel.jsx';
-import { listCoachingNotesForParticipant } from '../../lib/coachingService.js';
+import { hydrateCoachingFromSupabase, listCoachingNotesForParticipant } from '../../lib/coachingService.js';
+import { hydrateWeeklyAssessmentFromSupabase } from '../../lib/weeklyAssessmentService.js';
 import { getCoachSummaryForMentor } from '../../lib/ventureCoachService.js';
 import { COACH_VALUE_CARDS, VENTURE_DIRECTION_CARDS } from '../../lib/ventureCoachConstants.js';
 import { labelFor } from '../../lib/ventureCoachEngine.js';
@@ -35,6 +36,21 @@ export function MentorVentureCoachPage({
   const summary = participantId ? getCoachSummaryForMentor(participantId) : null;
   const [historyKey, setHistoryKey] = useState(0);
   const history = participantId ? listCoachingNotesForParticipant(participantId) : [];
+
+  useEffect(() => {
+    if (!participantId) return;
+    let cancelled = false;
+    (async () => {
+      await Promise.all([
+        hydrateCoachingFromSupabase(participantId),
+        hydrateWeeklyAssessmentFromSupabase(participantId, 1),
+      ]);
+      if (!cancelled) setHistoryKey((k) => k + 1);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [participantId]);
 
   if (!participantId) {
     return (

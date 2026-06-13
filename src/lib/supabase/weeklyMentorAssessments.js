@@ -32,3 +32,25 @@ export async function createWeeklyMentorAssessment(mentorId, participantId, entr
 
   return data?.id ?? null;
 }
+
+/**
+ * @param {string} participantId
+ * @param {number} [week]
+ */
+export async function fetchWeeklyMentorAssessment(participantId, week = 1) {
+  if (!isSupabaseConfigured || !supabase || !participantId) return null;
+
+  const { data, error } = await supabase
+    .from('weekly_mentor_assessments')
+    .select('id, mentor_id, participant_id, week, scores, notes, recommendation, created_at, updated_at')
+    .eq('participant_id', participantId)
+    .eq('week', week)
+    .maybeSingle();
+
+  if (error) {
+    console.warn('[weeklyMentorAssessments] fetch failed:', error.message);
+    return null;
+  }
+
+  return data;
+}

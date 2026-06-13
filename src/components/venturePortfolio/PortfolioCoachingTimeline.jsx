@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { listCoachingNotesForParticipant } from '../../lib/coachingService.js';
+import { hydrateCoachingFromSupabase, listCoachingNotesForParticipant } from '../../lib/coachingService.js';
 import { listTimelineEvents, hydrateTimelineFromSupabase } from '../../lib/timelineService.js';
 
 /**
@@ -11,6 +11,7 @@ export function PortfolioCoachingTimeline({ participantId }) {
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      await hydrateCoachingFromSupabase(participantId);
       await hydrateTimelineFromSupabase(participantId);
       if (cancelled) return;
       const coaching = listCoachingNotesForParticipant(participantId).map((note) => ({

@@ -42,3 +42,27 @@ export async function createCoachingSession(mentorId, participantId, input) {
 
   return data?.id ?? null;
 }
+
+/**
+ * @param {string} participantId
+ * @param {number} [limit]
+ */
+export async function fetchCoachingSessionsForParticipant(participantId, limit = 30) {
+  if (!isSupabaseConfigured || !supabase || !participantId) return [];
+
+  const { data, error } = await supabase
+    .from('coaching_sessions')
+    .select(
+      'id, mentor_id, participant_id, topic, notes, week, day, discussion_summary, strengths, growth_areas, action_items, concern_flagged, follow_up_required, follow_up_date, completed, created_at',
+    )
+    .eq('participant_id', participantId)
+    .order('created_at', { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.warn('[coachingSessions] fetch failed:', error.message);
+    return [];
+  }
+
+  return data ?? [];
+}

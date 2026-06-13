@@ -3,6 +3,7 @@ import { AlertTriangle, BookOpen, Sparkles, Users } from 'lucide-react';
 import { PageContainer, PageTitle } from '../../components/layout/PageContainer.jsx';
 import { RoleDashboardCards } from '../../components/dashboard/RoleDashboardCards.jsx';
 import { MentorDay1Panel } from '../../components/day1/MentorDay1Panel.jsx';
+import { MentorWeek1QuickPanel } from '../../components/mentor/MentorWeek1QuickPanel.jsx';
 import { FrameworkMetric } from '../../components/framework/FrameworkSections.jsx';
 import { MentorDashboardPanels } from '../../components/mentor/MentorDashboardPanels.jsx';
 import { MENTOR_PHILOSOPHY } from '../../lib/mentorWeek1Constants.js';
@@ -91,7 +92,8 @@ export function MentorHomePage({ user, interns, internSummary, pendingLogs = [],
         </section>
       ) : null}
 
-      <div className="mt-6">
+      <div className="mt-6 space-y-6">
+        <MentorWeek1QuickPanel />
         <MentorDay1Panel
           mentorId={user?.id}
           interns={interns.map((i) => ({ id: i.id, name: i.name }))}

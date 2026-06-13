@@ -25,7 +25,8 @@
 | Coaching Queue | Needs Review, Follow-Up, At Risk, Incomplete | `deriveCoachingQueue()` |
 | Week Progress | Day 1–5 complete | `deriveWeek1DayProgress()` cohort % |
 
-**Remaining gap:** Mentor-scoped assignment filter (`formation_squads.mentor_id`) — cohort-wide until assignment table is wired.
+**Remaining gap:** Mentor-scoped assignment filter — wired via `filterInternsForMentor()` when squad `mentorId` is set in formation store.
+
 
 ### Module 2 — Participant Coaching Card
 
@@ -50,7 +51,8 @@
 | follow_up_required, follow_up_date | ✓ | ✓ |
 | created_at | ✓ | ✓ |
 
-**Remaining gap:** Supabase read-back for cross-device history (writes sync; reads use localStorage).
+**Remaining gap:** Supabase read-back hydrates when local cache is empty (writes always sync).
+
 
 ### Module 4 — Weekly Assessment
 

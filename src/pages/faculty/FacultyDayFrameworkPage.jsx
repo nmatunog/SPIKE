@@ -66,9 +66,17 @@ export function FacultyDayFrameworkPage() {
         <FrameworkBulletList title="Expected outputs" items={template.expected_outputs} />
       </div>
 
-      <Link to={ROUTES.playbook} className="mt-6 inline-flex spike-btn-primary">
-        Deliver in Playbook →
-      </Link>
+      <div className="mt-6 flex flex-wrap gap-3">
+        <Link to={ROUTES.playbook} className="inline-flex spike-btn-primary">
+          Deliver in Playbook →
+        </Link>
+        <Link
+          to={`${ROUTES.facultyPlaybook}/${seg}/${wk}/${dy}`}
+          className="inline-flex spike-btn-secondary text-sm"
+        >
+          Back to framework
+        </Link>
+      </div>
     </PageContainer>
   );
 }

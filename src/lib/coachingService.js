@@ -2,11 +2,14 @@
  * Coaching sessions — local fallback + Supabase (Sprint 04 PR4.3).
  */
 import { appendTimelineEvent } from './timelineService.js';
-import { createCoachingSession } from './supabase/coachingSessions.js';
+import { createCoachingSession, fetchCoachingSessionsForParticipant } from './supabase/coachingSessions.js';
 import { syncCoachingNote } from './ventureBlueprintSync.js';
 
 const STORAGE_KEY = 'spike_coaching_sessions';
 const MAX_NOTES = 4000;
+
+/** @type {Set<string>} */
+const hydratedParticipants = new Set();
 
 function readAll() {
   try {
@@ -146,6 +149,52 @@ export function markCoachingSessionComplete(sessionId, participantId) {
 /** @param {string} participantId */
 export function listCoachingNotesForParticipant(participantId) {
   return readAll()[participantId] ?? [];
+}
+
+/**
+ * Merge Supabase coaching history into local cache when local is empty.
+ * @param {string} participantId
+ */
+export async function hydrateCoachingFromSupabase(participantId) {
+  if (!participantId || String(participantId).startsWith('mock-') || hydratedParticipants.has(participantId)) {
+    return;
+  }
+
+  const local = readAll()[participantId] ?? [];
+  if (local.length > 0) {
+    hydratedParticipants.add(participantId);
+    return;
+  }
+
+  const remote = await fetchCoachingSessionsForParticipant(participantId);
+  if (!remote?.length) {
+    hydratedParticipants.add(participantId);
+    return;
+  }
+
+  const all = readAll();
+  const mapped = remote.map((row) => ({
+    id: row.id,
+    mentorId: row.mentor_id,
+    participantId: row.participant_id,
+    topic: row.topic,
+    notes: row.notes ?? row.discussion_summary ?? '',
+    discussionSummary: row.discussion_summary ?? row.notes ?? '',
+    strengths: row.strengths ?? '',
+    growthAreas: row.growth_areas ?? '',
+    actionItems: Array.isArray(row.action_items) ? row.action_items : [],
+    week: row.week ?? 1,
+    day: row.day ?? 1,
+    concernFlagged: Boolean(row.concern_flagged),
+    followUpRequired: Boolean(row.follow_up_required),
+    followUpDate: row.follow_up_date ?? null,
+    completed: Boolean(row.completed),
+    createdAt: row.created_at,
+  }));
+
+  all[participantId] = mapped.slice(0, 30);
+  writeAll(all);
+  hydratedParticipants.add(participantId);
 }
 
 /** @param {string[]} participantIds */
