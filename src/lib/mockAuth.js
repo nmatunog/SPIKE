@@ -41,7 +41,15 @@ export function getStoredMockUser() {
       clearMockUser();
       return null;
     }
-    return { ...entry.user, email: user.email.toLowerCase() };
+    return {
+      ...entry.user,
+      ...user,
+      email: user.email.toLowerCase(),
+      internProgress: {
+        ...(entry.user.internProgress ?? {}),
+        ...(user.internProgress ?? {}),
+      },
+    };
   } catch {
     clearMockUser();
     return null;
