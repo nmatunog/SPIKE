@@ -13,6 +13,8 @@ import {
   RESEARCH_MARKETS,
   ensureFormationStore,
   writeFormationStore,
+  SQUAD_NAME_EXAMPLES,
+  SQUAD_MOTTO_EXAMPLES,
 } from './cohortFormationStorage.js';
 
 /**
@@ -41,6 +43,8 @@ export {
   COHORT_NAME_EXAMPLES,
   COHORT_MOTTO_EXAMPLES,
   COHORT_THEME_EXAMPLES,
+  SQUAD_NAME_EXAMPLES,
+  SQUAD_MOTTO_EXAMPLES,
   RESEARCH_MARKETS,
   DEFAULT_COMMITMENT,
   ACHIEVEMENT_BADGES,
@@ -77,7 +81,245 @@ export function getParticipantCohortSubmission(participantId) {
 
 /** @param {string} participantId */
 export function hasSubmittedCohortIdentity(participantId) {
-  return Boolean(getParticipantCohortSubmission(participantId));
+  return hasCompletedBuildChallenge0(participantId) || Boolean(getParticipantCohortSubmission(participantId));
+}
+
+/** All squad members who can vote in Build Challenge 0. */
+export function listBuildChallengeVoters() {
+  const squads = ensureFormationStore().squads ?? [];
+  const ids = new Set();
+  for (const squad of squads) {
+    for (const member of squad.members ?? []) {
+      if (member.participantId) ids.add(member.participantId);
+    }
+  }
+  return [...ids];
+}
+
+/** @param {string} participantId */
+export function hasCompletedBuildChallenge0(participantId) {
+  return Boolean(ensureFormationStore().cohortVotes?.[participantId]);
+}
+
+/** @param {string} participantId */
+export function createFormingSquad(participantId) {
+  const store = ensureFormationStore();
+  if (getParticipantSquad(participantId)) {
+    throw new Error('You are already in a squad.');
+  }
+  const squad = {
+    id: `squad-${Date.now()}`,
+    cohortId: store.officialCohort?.id ?? null,
+    themeItemId: null,
+    name: '',
+    motto: '',
+    cohortNameProposal: null,
+    researchMarket: '',
+    mentorId: null,
+    capacity: 6,
+    status: 'forming',
+    members: [
+      {
+        participantId,
+        role: 'Leader',
+        joinedAt: new Date().toISOString(),
+      },
+    ],
+    createdAt: new Date().toISOString(),
+  };
+  store.squads.push(squad);
+  writeFormationStore(store);
+  awardBadge(participantId, 'research_squad_member');
+  awardBadge(participantId, 'squad_leader');
+  return squad;
+}
+
+/** @param {string} squadId @param {string} participantId */
+export function joinFormingSquad(squadId, participantId) {
+  const store = ensureFormationStore();
+  if (getParticipantSquad(participantId)) {
+    throw new Error('Leave your current squad before joining another.');
+  }
+  const squad = store.squads.find((s) => s.id === squadId);
+  if (!squad) throw new Error('Squad not found.');
+  const members = squad.members ?? [];
+  if (members.length >= (squad.capacity ?? 6)) {
+    throw new Error('This squad is full.');
+  }
+  members.push({
+    participantId,
+    role: 'Member',
+    joinedAt: new Date().toISOString(),
+  });
+  squad.members = members;
+  squad.status = squad.status ?? 'forming';
+  writeFormationStore(store);
+  awardBadge(participantId, 'research_squad_member');
+  return squad;
+}
+
+/** Squads accepting new members during Build Challenge 0. */
+export function listOpenSquads() {
+  return (ensureFormationStore().squads ?? []).filter((squad) => {
+    const count = squad.members?.length ?? 0;
+    return count < (squad.capacity ?? 6) && squad.status !== 'archived';
+  });
+}
+
+/**
+ * @param {string} squadId
+ * @param {{ name?: string, motto?: string }} patch
+ */
+export function updateSquadProfile(squadId, patch) {
+  const store = ensureFormationStore();
+  const squad = store.squads.find((s) => s.id === squadId);
+  if (!squad) throw new Error('Squad not found.');
+  if (patch.name !== undefined) squad.name = patch.name.trim();
+  if (patch.motto !== undefined) squad.motto = patch.motto.trim();
+  writeFormationStore(store);
+  for (const member of squad.members ?? []) {
+    if (squad.name) {
+      syncSquadMembershipToBlueprint(member.participantId, squad, member.role);
+    }
+  }
+  return squad;
+}
+
+/**
+ * One cohort name proposal per squad (Build Challenge 0 step 4).
+ * @param {string} squadId @param {string} participantId @param {string} cohortName
+ */
+export function submitSquadCohortProposal(squadId, participantId, cohortName) {
+  const store = ensureFormationStore();
+  const squad = store.squads.find((s) => s.id === squadId);
+  if (!squad) throw new Error('Squad not found.');
+  const isMember = squad.members?.some((m) => m.participantId === participantId);
+  if (!isMember) throw new Error('Only squad members can submit a cohort name.');
+  if (!squad.name?.trim() || !squad.motto?.trim()) {
+    throw new Error('Name your squad and choose a motto before proposing a cohort name.');
+  }
+  const trimmed = cohortName.trim();
+  if (trimmed.length < 2) throw new Error('Enter a cohort name with at least 2 characters.');
+
+  squad.cohortNameProposal = {
+    suggested_name: trimmed,
+    submittedBy: participantId,
+    submittedAt: new Date().toISOString(),
+  };
+  writeFormationStore(store);
+
+  const legacy = store.suggestions.find((s) => s.squadId === squadId);
+  const entry = {
+    id: legacy?.id ?? `sug-${squadId}`,
+    squadId,
+    participantId,
+    suggested_name: trimmed,
+    suggested_motto: squad.motto,
+    suggested_theme: '',
+    votes: legacy?.votes ?? 0,
+    created_at: new Date().toISOString(),
+  };
+  const idx = store.suggestions.findIndex((s) => s.squadId === squadId);
+  if (idx >= 0) store.suggestions[idx] = entry;
+  else store.suggestions.push(entry);
+  writeFormationStore(store);
+
+  for (const member of squad.members ?? []) {
+    syncCohortProposalToBlueprint(member.participantId, squad, entry);
+    awardBadge(member.participantId, 'founding_cohort_member');
+  }
+  return squad.cohortNameProposal;
+}
+
+/** @param {string} participantId @param {Record<string, unknown>} squad @param {Record<string, unknown>} entry */
+function syncCohortProposalToBlueprint(participantId, squad, entry) {
+  const block = [
+    `Squad: ${squad.name}`,
+    `Squad Motto: ${squad.motto}`,
+    `Cohort Name Proposal: ${entry.suggested_name}`,
+  ].join('\n');
+  setSectionField(participantId, 'vision-purpose', 'cohort_identity', block, {
+    sourceType: 'cohort_identity',
+    sourceId: String(entry.id),
+  });
+}
+
+/** @param {string} participantId @param {string} squadId — vote for a squad's cohort proposal */
+export function castCohortVote(participantId, squadId) {
+  const store = ensureFormationStore();
+  const voterSquad = getParticipantSquad(participantId);
+  if (!voterSquad) throw new Error('Join a squad before voting.');
+  const target = store.squads.find((s) => s.id === squadId);
+  if (!target?.cohortNameProposal?.suggested_name) {
+    throw new Error('That squad has not submitted a cohort name yet.');
+  }
+  store.cohortVotes[participantId] = {
+    squadId,
+    votedAt: new Date().toISOString(),
+  };
+  writeFormationStore(store);
+  return store.cohortVotes[participantId];
+}
+
+/** Live vote tally for Build Challenge 0 reveal. */
+export function getCohortVoteTally() {
+  const store = ensureFormationStore();
+  const proposals = (store.squads ?? [])
+    .filter((s) => s.cohortNameProposal?.suggested_name)
+    .map((squad) => ({
+      squadId: squad.id,
+      squadName: squad.name,
+      cohortName: squad.cohortNameProposal.suggested_name,
+      votes: 0,
+      voters: [],
+    }));
+
+  const bySquadId = new Map(proposals.map((p) => [p.squadId, p]));
+  for (const [participantId, vote] of Object.entries(store.cohortVotes ?? {})) {
+    const row = bySquadId.get(vote.squadId);
+    if (!row) continue;
+    row.votes += 1;
+    row.voters.push(participantId);
+  }
+  return [...bySquadId.values()].sort((a, b) => b.votes - a.votes);
+}
+
+export function getCohortVoteProgress() {
+  const voters = listBuildChallengeVoters();
+  const store = ensureFormationStore();
+  const voted = voters.filter((id) => store.cohortVotes?.[id]).length;
+  return { voted, total: voters.length, allVoted: voters.length > 0 && voted >= voters.length };
+}
+
+/** Finalize winning cohort when all squad members have voted. */
+export function finalizeCohortFromVotes() {
+  const progress = getCohortVoteProgress();
+  if (!progress.allVoted) return null;
+  const tally = getCohortVoteTally();
+  const winner = tally[0];
+  if (!winner) return null;
+  const store = ensureFormationStore();
+  const squad = store.squads.find((s) => s.id === winner.squadId);
+  return approveOfficialCohort({
+    name: winner.cohortName,
+    motto: squad?.motto ?? '',
+    theme_statement: squad?.name ?? '',
+    batch: 'A',
+  });
+}
+
+/**
+ * @param {string} participantId
+ * @returns {'join' | 'squad-name' | 'squad-motto' | 'cohort-name' | 'vote' | 'reveal'}
+ */
+export function getBuildChallenge0Step(participantId) {
+  const squad = getParticipantSquad(participantId);
+  if (!squad) return 'join';
+  if (!squad.name?.trim()) return 'squad-name';
+  if (!squad.motto?.trim()) return 'squad-motto';
+  if (!squad.cohortNameProposal?.suggested_name) return 'cohort-name';
+  if (!ensureFormationStore().cohortVotes?.[participantId]) return 'vote';
+  return 'reveal';
 }
 
 /**
@@ -131,8 +373,20 @@ export function getOfficialCohort() {
   return ensureFormationStore().officialCohort ?? null;
 }
 
-/** Aggregate suggestions for admin review */
+/** Aggregate squad cohort proposals for admin / faculty review */
 export function getCohortSuggestionSummary() {
+  const tally = getCohortVoteTally();
+  if (tally.length) {
+    return tally.map((row) => ({
+      suggested_name: row.cohortName,
+      suggested_motto: '',
+      suggested_theme: row.squadName,
+      votes: row.votes,
+      participants: row.voters,
+      squadId: row.squadId,
+    }));
+  }
+
   const store = ensureFormationStore();
   const byName = new Map();
   for (const s of store.suggestions) {

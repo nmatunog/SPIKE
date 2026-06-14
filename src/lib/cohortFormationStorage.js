@@ -2,6 +2,14 @@
 
 const STORAGE_KEY = 'spike_cohort_formation_v1';
 
+export const SQUAD_NAME_EXAMPLES = [
+  'Polaris', 'Catalyst', 'Momentum', 'Ascend', 'Pioneer', 'Elevate', 'Ignite', 'Horizon', 'Vanguard',
+];
+
+export const SQUAD_MOTTO_EXAMPLES = [
+  'Dream Bigger.', 'Build Better.', 'Lead Forward.', 'Rise Together.', 'Execute With Purpose.',
+];
+
 export const COHORT_NAME_EXAMPLES = [
   'Ascend', 'Catalyst', 'Pioneer', 'Momentum', 'Elevate', 'Legacy', 'Ignite', 'Horizon', 'Vanguard',
 ];
@@ -59,6 +67,7 @@ export function ensureFormationStore() {
   if (!store.preferences) store.preferences = {};
   if (!store.charters) store.charters = {};
   if (!store.achievements) store.achievements = {};
+  if (!store.cohortVotes) store.cohortVotes = {};
   if (!store.activeThemeId) store.activeThemeId = 'constellations';
   return store;
 }

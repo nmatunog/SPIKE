@@ -62,7 +62,7 @@ export function Day1MissionControl({ participantId, compact = false }) {
         to={ROUTES.cohortIdentity}
         className="mb-4 inline-flex spike-btn-secondary border-white/20 bg-white/10 text-white hover:bg-white/20"
       >
-        {hasSubmittedCohortIdentity(participantId) ? '✓ Represent Your Squad' : 'Represent Your Squad'}
+        {hasSubmittedCohortIdentity(participantId) ? '✓ Build Challenge 0' : 'Build Challenge 0'}
       </Link>
 
       <p className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-400">

@@ -31,13 +31,12 @@ export function SquadDashboardPage({ participantId, participantName }) {
       <PageContainer>
         <section className="spike-card mx-auto max-w-xl text-center">
           <Users className="mx-auto mb-3 text-spike" size={36} />
-          <h2 className="text-xl font-bold text-slate-900">Squad assignment pending</h2>
+          <h2 className="text-xl font-bold text-slate-900">Join a squad first</h2>
           <p className="mt-2 text-sm text-slate-600">
-            Your program coach is forming squads from your preferences. Check back soon — your venture team
-            dashboard will activate here.
+            Complete Build Challenge 0 to form your research squad, name it, and propose your cohort name.
           </p>
-          <Link to={ROUTES.squadPreferences} className="mt-4 inline-flex spike-btn-primary">
-            Review squad preferences
+          <Link to={ROUTES.cohortIdentity} className="mt-4 inline-flex spike-btn-primary">
+            Start Build Challenge 0
           </Link>
         </section>
       </PageContainer>
