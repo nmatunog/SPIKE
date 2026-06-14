@@ -46,9 +46,10 @@ export const GuestBootstrapForm = memo(function GuestBootstrapForm({
       onSubmit={handleSubmit}
     >
       <div className="text-center">
-        <h3 className="text-base font-semibold text-slate-900">First-time setup</h3>
+        <h3 className="text-base font-semibold text-slate-900">First-time superuser setup</h3>
         <p className="mt-1 text-xs leading-relaxed text-slate-600">
-          Create the first administrator account. This shortcut works only once.
+          Creates your Supabase login and promotes it to superuser in one step. Works once while no
+          superuser exists, or with a setup secret to reset a superuser password.
         </p>
       </div>
 
@@ -124,7 +125,7 @@ export const GuestBootstrapForm = memo(function GuestBootstrapForm({
       ) : null}
 
       <button type="submit" disabled={submitting} className="spike-btn-primary w-full">
-        {submitting ? 'Creating account…' : 'Create administrator & sign in'}
+        {submitting ? 'Creating account…' : 'Create superuser & sign in'}
       </button>
     </form>
   );

@@ -80,6 +80,10 @@ import { ForcePasswordChangeGate } from './components/ForcePasswordChangeGate.js
 import { DailyActivationCodeCard } from './components/dashboard/DailyActivationCodeCard.jsx';
 import { validateInternActivationCode } from './lib/activationCodeService.js';
 import { needsStaffBootstrap } from './lib/staffRegistrationCodeService.js';
+import {
+  bootstrapSuperuserAccount,
+  fetchBootstrapSuperuserStatus,
+} from './lib/bootstrapSuperuserService.js';
 import { StaffRegistrationCodeCard } from './components/dashboard/StaffRegistrationCodeCard.jsx';
 import { AdminUserDirectory } from './components/admin/AdminUserDirectory.jsx';
 import { hydrateOnboardingStatus, setOnboardingCompleteCache, hasCompletedOnboardingSync } from './lib/cohortOnboardingService.js';
@@ -128,6 +132,8 @@ const SpikeMasterPortal = () => {
   const [setupLoadError, setSetupLoadError] = useState('');
   const [setupMeta, setSetupMeta] = useState(null);
   const [staffBootstrapMode, setStaffBootstrapMode] = useState(false);
+  const [bootstrapSecretRequired, setBootstrapSecretRequired] = useState(false);
+  const [bootstrapApiConfigured, setBootstrapApiConfigured] = useState(true);
   const [passwordResetRequests, setPasswordResetRequests] = useState([]);
   const [passwordResetLoading, setPasswordResetLoading] = useState(false);
 
@@ -307,12 +313,22 @@ const SpikeMasterPortal = () => {
   const loadStaffBootstrapInfo = useCallback(async () => {
     if (!usingSupabaseAuth) {
       setStaffBootstrapMode(false);
+      setBootstrapSecretRequired(false);
+      setBootstrapApiConfigured(true);
       return;
     }
     try {
-      setStaffBootstrapMode(await needsStaffBootstrap());
+      const [needsBootstrap, apiStatus] = await Promise.all([
+        needsStaffBootstrap(),
+        fetchBootstrapSuperuserStatus(),
+      ]);
+      setStaffBootstrapMode(needsBootstrap);
+      setBootstrapSecretRequired(Boolean(apiStatus.secretRequired));
+      setBootstrapApiConfigured(apiStatus.configured !== false);
     } catch {
       setStaffBootstrapMode(false);
+      setBootstrapSecretRequired(false);
+      setBootstrapApiConfigured(true);
     }
   }, [usingSupabaseAuth]);
 
@@ -589,8 +605,33 @@ const SpikeMasterPortal = () => {
     [usingSupabaseAuth, showToast],
   );
 
+  const handleSupabaseBootstrap = useCallback(
+    async (payload) => {
+      if (!usingSupabaseAuth) {
+        throw new Error('Supabase mode is required for superuser setup.');
+      }
+      const result = await bootstrapSuperuserAccount(payload);
+      const signedIn = await login(payload.email, payload.password);
+      const nextRole = resolveUserRole(signedIn);
+      setStaffBootstrapMode(false);
+      await loadStaffBootstrapInfo();
+      navigate(
+        defaultRouteForRole(
+          nextRole === 'guest' || nextRole === 'profile_error' ? 'superuser' : nextRole,
+        ),
+      );
+      showToast(
+        result?.mode === 'repair'
+          ? 'Superuser password updated. You are signed in.'
+          : 'Superuser account created. You are signed in.',
+        'success',
+      );
+    },
+    [usingSupabaseAuth, login, navigate, showToast, loadStaffBootstrapInfo],
+  );
+
   const handleStaffSignup = useCallback(
-    async ({ name, email, password, role, code, bootstrapMode }) => {
+    async ({ name, email, password, role, code }) => {
       if (!usingSupabaseAuth || !supabase) {
         throw new Error('Signup is only available in Supabase mode.');
       }
@@ -598,7 +639,7 @@ const SpikeMasterPortal = () => {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { name, must_change_password: false } },
+        options: { data: { name, must_change_password: true } },
       });
       if (error) throw error;
       if (!data.user?.id) {
@@ -609,9 +650,7 @@ const SpikeMasterPortal = () => {
         const { error: signInErr } = await supabase.auth.signInWithPassword({ email, password });
         if (signInErr) {
           throw new Error(
-            bootstrapMode
-              ? 'Account created, but sign-in failed. In Supabase → Authentication → Providers → Email, turn off “Confirm email”, then try again.'
-              : 'Account created. Confirm your email if required, then sign in.',
+            'Account created. Confirm your email if required, then sign in.',
           );
         }
       }
@@ -619,26 +658,13 @@ const SpikeMasterPortal = () => {
       const { error: roleErr } = await supabase.rpc('complete_staff_signup', {
         p_role: role,
         p_name: name,
-        p_code: bootstrapMode ? null : code || null,
+        p_code: code || null,
       });
       if (roleErr) throw roleErr;
 
-      if (bootstrapMode) {
-        setStaffBootstrapMode(false);
-        const signedIn = await login(email, password);
-        const nextRole = resolveUserRole(signedIn);
-        navigate(
-          defaultRouteForRole(
-            nextRole === 'guest' || nextRole === 'profile_error' ? 'superuser' : nextRole,
-          ),
-        );
-        showToast('Superuser account created. You are signed in.', 'success');
-        return;
-      }
-
       showToast('Staff account created. You can now sign in.', 'success');
     },
-    [usingSupabaseAuth, showToast, login, navigate],
+    [usingSupabaseAuth, showToast],
   );
 
   const handleBootstrapComplete = useCallback(
@@ -1594,6 +1620,9 @@ const SpikeMasterPortal = () => {
                 onInternSignup={handleInternSignup}
                 onStaffSignup={handleStaffSignup}
                 staffBootstrapMode={staffBootstrapMode}
+                bootstrapSecretRequired={bootstrapSecretRequired}
+                bootstrapApiConfigured={bootstrapApiConfigured}
+                onSupabaseBootstrap={handleSupabaseBootstrap}
               />
             </LazyRoute>
           )

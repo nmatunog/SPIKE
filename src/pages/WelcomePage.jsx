@@ -19,6 +19,9 @@ import { listMockAuthAccountHints } from '../lib/mockAuthUsers.js';
  *   onInternSignup: (payload: object) => Promise<void>,
  *   onStaffSignup: (payload: object) => Promise<void>,
  *   staffBootstrapMode?: boolean,
+ *   bootstrapSecretRequired?: boolean,
+ *   bootstrapApiConfigured?: boolean,
+ *   onSupabaseBootstrap?: (payload: object) => Promise<void>,
  * }} props
  */
 export function WelcomePage({
@@ -34,6 +37,9 @@ export function WelcomePage({
   onInternSignup,
   onStaffSignup,
   staffBootstrapMode = false,
+  bootstrapSecretRequired = false,
+  bootstrapApiConfigured = true,
+  onSupabaseBootstrap,
 }) {
   return (
       <div className="relative overflow-hidden">
@@ -74,40 +80,86 @@ export function WelcomePage({
 
         {setupLoadState === 'ok' ? (
           <div className="mt-8 w-full space-y-4">
-            {setupMeta?.needsBootstrap ? (
-              <GuestBootstrapForm
-                secretRequired={!!setupMeta.secretRequired}
-                onSubmit={onBootstrap}
-              />
-            ) : null}
+            {usingSupabaseAuth && staffBootstrapMode && onSupabaseBootstrap ? (
+              <>
+                {!bootstrapApiConfigured ? (
+                  <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
+                    <p className="font-medium">Superuser setup API is not configured yet.</p>
+                    <p className="mt-2 text-xs leading-relaxed">
+                      In Cloudflare Pages → spike → Settings → Environment variables, add{' '}
+                      <code className="rounded bg-white/80 px-1">SUPABASE_SERVICE_ROLE_KEY</code> (from
+                      Supabase → Project Settings → API), then redeploy. Until then, create the user in
+                      Supabase → Authentication → Users and run the SUPERUSER SQL promotion.
+                    </p>
+                  </div>
+                ) : null}
+                <GuestBootstrapForm
+                  secretRequired={bootstrapSecretRequired}
+                  onSubmit={onSupabaseBootstrap}
+                />
+                <p className="text-center text-2xs font-semibold uppercase tracking-wide text-slate-400">
+                  Already set up?
+                </p>
+                <GuestLoginForm
+                  heading="Sign in to SPIKE"
+                  onLogin={onLogin}
+                  usingSupabaseAuth={usingSupabaseAuth}
+                  mockAuthEnabled={mockAuthEnabled}
+                  mockAccounts={mockAuthEnabled ? listMockAuthAccountHints() : []}
+                  onRequestPasswordHelp={onRequestPasswordHelp}
+                />
+              </>
+            ) : (
+              <>
+                {setupMeta?.needsBootstrap ? (
+                  <GuestBootstrapForm
+                    secretRequired={!!setupMeta.secretRequired}
+                    onSubmit={onBootstrap}
+                  />
+                ) : null}
 
-            {setupMeta?.needsBootstrap ? (
-              <p className="text-center text-2xs font-semibold uppercase tracking-wide text-slate-400">
-                Already set up?
-              </p>
-            ) : null}
+                {setupMeta?.needsBootstrap ? (
+                  <p className="text-center text-2xs font-semibold uppercase tracking-wide text-slate-400">
+                    Already set up?
+                  </p>
+                ) : null}
 
-            <GuestLoginForm
-              heading={setupMeta?.needsBootstrap ? 'Sign in instead' : 'Sign in to SPIKE'}
-              onLogin={onLogin}
-              usingSupabaseAuth={usingSupabaseAuth}
-              mockAuthEnabled={mockAuthEnabled}
-              mockAccounts={mockAuthEnabled ? listMockAuthAccountHints() : []}
-              onRequestPasswordHelp={usingSupabaseAuth ? onRequestPasswordHelp : undefined}
-            />
+                <GuestLoginForm
+                  heading={setupMeta?.needsBootstrap ? 'Sign in instead' : 'Sign in to SPIKE'}
+                  onLogin={onLogin}
+                  usingSupabaseAuth={usingSupabaseAuth}
+                  mockAuthEnabled={mockAuthEnabled}
+                  mockAccounts={mockAuthEnabled ? listMockAuthAccountHints() : []}
+                  onRequestPasswordHelp={usingSupabaseAuth ? onRequestPasswordHelp : undefined}
+                />
 
-            {usingSupabaseAuth ? <InternSignupPanel onSignup={onInternSignup} /> : null}
-            {usingSupabaseAuth ? (
-              <StaffSignupPanel
-                onSignup={onStaffSignup}
-                bootstrapMode={staffBootstrapMode}
-                defaultOpen={staffBootstrapMode}
-              />
-            ) : null}
+                {usingSupabaseAuth ? <InternSignupPanel onSignup={onInternSignup} /> : null}
+                {usingSupabaseAuth ? <StaffSignupPanel onSignup={onStaffSignup} /> : null}
+
+                {usingSupabaseAuth &&
+                !staffBootstrapMode &&
+                bootstrapSecretRequired &&
+                onSupabaseBootstrap &&
+                bootstrapApiConfigured ? (
+                  <details className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4 text-sm text-slate-700">
+                    <summary className="cursor-pointer font-medium text-slate-900">
+                      Reset superuser password (setup secret)
+                    </summary>
+                    <p className="mt-2 text-xs leading-relaxed text-slate-600">
+                      Use this if a superuser account already exists but sign-in fails. Requires the
+                      setup secret configured in Cloudflare.
+                    </p>
+                    <div className="mt-4">
+                      <GuestBootstrapForm secretRequired onSubmit={onSupabaseBootstrap} />
+                    </div>
+                  </details>
+                ) : null}
+              </>
+            )}
           </div>
         ) : null}
 
-        {usingSupabaseAuth && setupLoadState !== 'ok' ? (
+        {usingSupabaseAuth && setupLoadState !== 'ok' && !staffBootstrapMode ? (
           <div className="mt-4 w-full">
             <InternSignupPanel onSignup={onInternSignup} />
           </div>
