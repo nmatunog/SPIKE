@@ -4,7 +4,7 @@
 **Master roadmap:** [`SPIKE_MASTER_ROADMAP.md`](./SPIKE_MASTER_ROADMAP.md)  
 **PRD:** [`PRD_SPIKE_VENTURE_BLUEPRINT_V1.md`](./PRD_SPIKE_VENTURE_BLUEPRINT_V1.md)  
 **Prior sprint:** [`SPRINT_04_EXECUTION_ACTIVITY_ENGINE.md`](./SPRINT_04_EXECUTION_ACTIVITY_ENGINE.md)  
-**Production:** https://spike-asc.pages.dev
+**Production:** https://portal.1cma.online
 
 ---
 
@@ -71,7 +71,7 @@ flowchart LR
   C --> D[npm run lint]
   D --> E[npm run build<br/>VITE_SUPABASE_* from secrets]
   E --> F[wrangler pages deploy dist]
-  F --> G[spike-asc.pages.dev]
+  F --> G[portal.1cma.online]
 ```
 
 - **Cloudflare Git builds:** disconnected (intentional); GitHub Actions is the only deploy path.

@@ -4,7 +4,7 @@ Companion to [`CURSOR_REFACTOR_SPRINT_01.md`](./CURSOR_REFACTOR_SPRINT_01.md).
 
 ## Executive summary
 
-Sprint 01 evolves the live app in place: **Vite + React + Supabase on Cloudflare Pages** (`https://spike-asc.pages.dev`).
+Sprint 01 evolves the live app in place: **Vite + React + Supabase on Cloudflare Pages** (`https://portal.1cma.online`).
 
 ---
 
@@ -76,7 +76,7 @@ Sprint 01 evolves the live app in place: **Vite + React + Supabase on Cloudflare
 ### Phase 4 — Hardening & deploy (1–2 days) ✅ **complete**
 
 - [x] Route role guards (`RoleRouteGuard`, `canAccessRoute` in `src/routes/paths.js`)
-- [x] Lint, build, deploy to `https://spike-asc.pages.dev`
+- [x] Lint, build, deploy to `https://portal.1cma.online`
 
 ---
 

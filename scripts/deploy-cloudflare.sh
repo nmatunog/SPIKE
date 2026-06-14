@@ -93,4 +93,4 @@ echo "==> Pushing to origin/main (triggers GitHub Actions deploy)..."
 git push origin main
 
 echo "Done. Check GitHub → Actions → Deploy to Cloudflare Pages for build status."
-echo "      Live site: https://spike-asc.pages.dev"
+echo "      Live site: https://portal.1cma.online"

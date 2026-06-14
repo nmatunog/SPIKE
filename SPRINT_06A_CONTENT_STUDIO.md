@@ -2,7 +2,7 @@
 
 **Version 1.0** — Curriculum authoring & content management (no-code).
 
-Production: https://spike-asc.pages.dev/admin/content-studio
+Production: https://portal.1cma.online/admin/content-studio
 
 ---
 

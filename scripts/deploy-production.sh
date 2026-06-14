@@ -33,4 +33,4 @@ VITE_STATIC_ONLY="${VITE_STATIC_ONLY:-false}" npm run build
 echo "==> Deploy to Cloudflare Pages (spike)..."
 npx wrangler pages deploy dist --project-name spike --commit-dirty=true
 
-echo "✓ Live: https://spike-asc.pages.dev"
+echo "✓ Live: https://portal.1cma.online"

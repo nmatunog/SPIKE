@@ -1,6 +1,6 @@
 # SPIKE Portal
 
-Production: **https://spike-asc.pages.dev** (Cloudflare Pages + Supabase).
+Production: **https://portal.1cma.online** (Cloudflare Pages + Supabase). Staging: https://spike-asc.pages.dev
 
 ## Stack
 
@@ -62,9 +62,31 @@ After UI changes: `npm run cap:sync` (rebuilds `dist` and copies into native pro
 **Supabase auth on mobile:** add redirect URLs in Supabase → Authentication → URL configuration:
 
 - `com.asc.spike://**` (custom scheme)
-- Your production URL `https://spike-asc.pages.dev/**`
+- Your production URL `https://portal.1cma.online/**`
 
 **Store assets:** replace default launcher icons/splash via `@capacitor/assets` before App Store / Play submission.
+
+## Production domain (`portal.1cma.online`)
+
+SPIKE runs on the **1CMA** apex domain as subdomain **portal**:
+
+| URL | Role |
+|-----|------|
+| https://portal.1cma.online | Production portal |
+| https://spike-asc.pages.dev | Cloudflare Pages default (staging / fallback) |
+
+**One-time DNS + Pages setup** (after `1cma.online` is added to Cloudflare and nameservers are active):
+
+```bash
+chmod +x scripts/setup-portal-domain.sh
+./scripts/setup-portal-domain.sh
+```
+
+Then in **Supabase → Authentication → URL configuration**, add redirect URL:
+
+- `https://portal.1cma.online/**`
+
+Keep `https://spike-asc.pages.dev/**` during transition if needed.
 
 ## Deploy (Cloudflare Pages)
 
@@ -105,7 +127,7 @@ npm run deploy:prod
 
 ## Create a test intern (admin)
 
-1. Sign in as **ADMIN** at https://spike-asc.pages.dev (incognito avoids cached old JS).
+1. Sign in as **ADMIN** at https://portal.1cma.online (incognito avoids cached old JS).
 2. Open **Admin** → **Users** tab.
 3. Fill **Create user account**:
    - Role: **Intern**
