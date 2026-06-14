@@ -3,7 +3,7 @@ import { ArrowRight, Loader2, Sparkles, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { PageContainer } from '../../components/layout/PageContainer.jsx';
 import { useCohortOnboarding } from '../../hooks/useCohortOnboarding.js';
-import { waitingMessage } from '../../components/onboarding/OnboardingPhotoCapture.jsx';
+import { waitingMessage } from '../../lib/cohortOnboardingMessages.js';
 import {
   COHORT_NAME_EXAMPLES,
   SQUAD_MOTTO_EXAMPLES,
@@ -25,7 +25,7 @@ import { isSupabaseConfigured } from '../../supabaseClient.js';
  */
 export function CohortIdentityPage({ participantId }) {
   const navigate = useNavigate();
-  const { loading, error, cohort, step, suggestion, vote, squad, finalists, tally, refresh } =
+  const { loading, error, cohort, step, suggestion, squad, finalists, tally, refresh } =
     useCohortOnboarding(participantId);
 
   const [name, setName] = useState('');

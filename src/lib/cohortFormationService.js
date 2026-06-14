@@ -17,6 +17,8 @@ import {
   SQUAD_MOTTO_EXAMPLES,
 } from './cohortFormationStorage.js';
 import { hasCompletedOnboardingSync } from './cohortOnboardingService.js';
+import { isSupabaseConfigured } from '../supabaseClient.js';
+import { isMockUserId } from './mockAuth.js';
 
 /**
  * @typedef {{
@@ -83,6 +85,8 @@ export function getParticipantCohortSubmission(participantId) {
 /** @param {string} participantId */
 export function hasSubmittedCohortIdentity(participantId) {
   if (hasCompletedOnboardingSync(participantId)) return true;
+  // Supabase onboarding is authoritative — do not use legacy localStorage BC0.
+  if (isSupabaseConfigured && !isMockUserId(participantId)) return false;
   return hasCompletedBuildChallenge0(participantId) || Boolean(getParticipantCohortSubmission(participantId));
 }
 

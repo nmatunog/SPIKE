@@ -87,7 +87,7 @@ export function CohortOnboardingControls({ staffId, interns = [], canAssignSquad
     );
   }
 
-  const { cohort, suggestions, finalists, tally, squads } = data;
+  const { cohort, suggestions, tally, squads } = data;
   const phase = cohort.onboarding_phase;
   const assignedIds = new Set(
     squads.flatMap((s) => (s.formation_squad_members ?? []).map((m) => m.participant_id)),

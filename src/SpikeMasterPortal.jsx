@@ -158,7 +158,7 @@ const SpikeMasterPortal = () => {
     return () => {
       cancelled = true;
     };
-  }, [authLoading, userRole, user?.id, user?.internProgress?.onboarding_complete, location.pathname, navigate]);
+  }, [authLoading, userRole, user, location.pathname, navigate]);
 
   const handleLogout = useCallback(() => {
     logout();
