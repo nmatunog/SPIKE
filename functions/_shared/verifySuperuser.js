@@ -19,6 +19,31 @@ export async function verifySuperuser(env, request) {
   return { user: userData.user, profile };
 }
 
+/** @param {Record<string, string>} env @param {Request} request */
+export async function verifyAdminActor(env, request) {
+  const auth = request.headers.get('Authorization');
+  const client = createUserClient(env, auth);
+  if (!client) return null;
+
+  const { data: userData, error: userErr } = await client.auth.getUser();
+  if (userErr || !userData?.user) return null;
+
+  const { data: profile, error: profErr } = await client
+    .from('profiles')
+    .select('id, role, email, name')
+    .eq('id', userData.user.id)
+    .maybeSingle();
+
+  if (profErr || !profile?.role) return null;
+  if (!['ADMIN', 'SUPERUSER'].includes(profile.role)) return null;
+
+  return {
+    user: userData.user,
+    profile,
+    isSuperuser: profile.role === 'SUPERUSER',
+  };
+}
+
 /** @param {Record<string, unknown>} payload */
 export function json(payload, status = 200) {
   return new Response(JSON.stringify(payload), {

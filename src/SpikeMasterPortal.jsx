@@ -1115,9 +1115,12 @@ const SpikeMasterPortal = () => {
             ) : null}
           </div>
         }
-        superuserPanel={
-          isSuperuserDbRole(user?.role) && usingSupabaseAuth ? (
-            <AdminUserDirectory currentUserId={user?.id ?? ''} />
+        userDirectoryPanel={
+          isAdminLikeRole(resolveUserRole(user)) && usingSupabaseAuth ? (
+            <AdminUserDirectory
+              currentUserId={user?.id ?? ''}
+              isSuperuser={isSuperuserDbRole(user?.role)}
+            />
           ) : null
         }
         settingsPanel={

@@ -21,7 +21,7 @@ function PlaceholderPanel({ title, description }) {
   );
 }
 
-export function AdminPage({ usersPanel, settingsPanel, passwordHelpPanel, superuserPanel }) {
+export function AdminPage({ usersPanel, settingsPanel, passwordHelpPanel, userDirectoryPanel }) {
   const [tab, setTab] = useState('users');
 
   return (
@@ -53,7 +53,7 @@ export function AdminPage({ usersPanel, settingsPanel, passwordHelpPanel, superu
 
       {tab === 'users' && (
         <div className="space-y-8">
-          {superuserPanel}
+          {userDirectoryPanel}
           {usersPanel}
           {passwordHelpPanel}
         </div>

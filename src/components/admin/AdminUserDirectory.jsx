@@ -1,48 +1,60 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Loader2, Shield, Trash2, UserCog } from 'lucide-react';
 import {
-  fetchAllUsersForSuperuser,
-  runSuperuserUserAction,
+  ADMIN_MANAGEABLE_ROLES,
+  fetchUserDirectory,
+  runUserDirectoryAction,
 } from '../../lib/userAdminService.js';
 import { formatUiRoleLabel } from '../../lib/terminology.js';
 import { mapApiRoleToUi } from '../../lib/roles.js';
 
-const ROLE_OPTIONS = ['INTERN', 'FACULTY', 'MENTOR', 'ADMIN', 'SUPERUSER'];
+const SUPERUSER_ROLE_OPTIONS = ['INTERN', 'FACULTY', 'MENTOR', 'ADMIN', 'SUPERUSER'];
 
-/** @param {{ currentUserId?: string }} props */
-export function AdminUserDirectory({ currentUserId = '' }) {
+/** @param {{ currentUserId?: string, isSuperuser?: boolean }} props */
+export function AdminUserDirectory({ currentUserId = '', isSuperuser = false }) {
   const [users, setUsers] = useState([]);
+  const [actorIsSuperuser, setActorIsSuperuser] = useState(isSuperuser);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState('');
   const [modal, setModal] = useState(null);
   const [resultMsg, setResultMsg] = useState('');
 
+  const roleOptions = actorIsSuperuser ? SUPERUSER_ROLE_OPTIONS : ADMIN_MANAGEABLE_ROLES;
+
   const refresh = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
-      const rows = await fetchAllUsersForSuperuser();
+      const { users: rows, actorIsSuperuser: fromApi } = await fetchUserDirectory();
       setUsers(rows);
+      setActorIsSuperuser(fromApi || isSuperuser);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not load users.');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isSuperuser]);
 
   useEffect(() => {
     refresh();
   }, [refresh]);
+
+  function canManageUser(user) {
+    if (actorIsSuperuser) return true;
+    return user.role !== 'SUPERUSER';
+  }
 
   async function runAction(payload) {
     setBusy(payload.action);
     setError('');
     setResultMsg('');
     try {
-      const res = await runSuperuserUserAction(payload);
+      const res = await runUserDirectoryAction(payload, { isSuperuser: actorIsSuperuser });
       if (res?.temporaryPassword) {
-        setResultMsg(`Temporary password: ${res.temporaryPassword} (share securely; user must change on sign-in)`);
+        setResultMsg(
+          `Temporary password: ${res.temporaryPassword} (share securely; user must change on sign-in)`,
+        );
       } else {
         setResultMsg('Action completed.');
       }
@@ -68,10 +80,11 @@ export function AdminUserDirectory({ currentUserId = '' }) {
       <div className="mb-4 flex items-start gap-3">
         <Shield className="mt-1 text-[#8B0000]" size={22} />
         <div>
-          <h3 className="text-lg font-bold text-gray-900">User directory</h3>
+          <h3 className="text-lg font-bold text-gray-900">Registered users</h3>
           <p className="text-sm text-gray-600">
-            Superuser only — promote roles, edit accounts, reset passwords, or remove users. Every action
-            requires a reason and is logged.
+            {actorIsSuperuser
+              ? 'View all accounts — promote roles, edit details, reset passwords, or remove users. Every action requires a reason and is logged.'
+              : 'View all registered accounts and change roles for interns, coaches, mentors, and administrators. Superuser accounts are read-only.'}
           </p>
         </div>
       </div>
@@ -81,66 +94,81 @@ export function AdminUserDirectory({ currentUserId = '' }) {
         <p className="mb-3 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-900">{resultMsg}</p>
       ) : null}
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full text-left text-sm">
-          <thead>
-            <tr className="border-b border-gray-200 text-xs uppercase tracking-wide text-gray-500">
-              <th className="px-2 py-2">Name</th>
-              <th className="px-2 py-2">Email</th>
-              <th className="px-2 py-2">Role</th>
-              <th className="px-2 py-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((u) => (
-              <tr key={u.id} className="border-b border-gray-100">
-                <td className="px-2 py-3 font-medium text-gray-900">{u.name}</td>
-                <td className="px-2 py-3 text-gray-700">{u.email}</td>
-                <td className="px-2 py-3">
-                  <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-bold text-gray-800">
-                    {formatUiRoleLabel(mapApiRoleToUi(u.role))}
-                    {u.role === 'SUPERUSER' ? ' ★' : ''}
-                  </span>
-                </td>
-                <td className="px-2 py-3">
-                  <div className="flex flex-wrap gap-2">
-                    <button
-                      type="button"
-                      className="text-xs font-bold text-[#8B0000] underline"
-                      onClick={() => setModal({ type: 'edit', user: u })}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      type="button"
-                      className="text-xs font-bold text-[#8B0000] underline"
-                      onClick={() => setModal({ type: 'promote', user: u })}
-                    >
-                      Promote
-                    </button>
-                    <button
-                      type="button"
-                      className="text-xs font-bold text-[#8B0000] underline"
-                      onClick={() => setModal({ type: 'password_reset', user: u })}
-                    >
-                      Reset password
-                    </button>
-                    {u.id !== currentUserId ? (
-                      <button
-                        type="button"
-                        className="inline-flex items-center gap-1 text-xs font-bold text-red-700 underline"
-                        onClick={() => setModal({ type: 'delete', user: u })}
-                      >
-                        <Trash2 size={12} /> Remove
-                      </button>
-                    ) : null}
-                  </div>
-                </td>
+      {users.length === 0 ? (
+        <p className="text-sm text-gray-500">No registered users yet.</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-left text-sm">
+            <thead>
+              <tr className="border-b border-gray-200 text-xs uppercase tracking-wide text-gray-500">
+                <th className="px-2 py-2">Name</th>
+                <th className="px-2 py-2">Email</th>
+                <th className="px-2 py-2">Role</th>
+                <th className="px-2 py-2">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {users.map((u) => {
+                const manageable = canManageUser(u);
+                return (
+                  <tr key={u.id} className="border-b border-gray-100">
+                    <td className="px-2 py-3 font-medium text-gray-900">{u.name}</td>
+                    <td className="px-2 py-3 text-gray-700">{u.email}</td>
+                    <td className="px-2 py-3">
+                      <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-bold text-gray-800">
+                        {formatUiRoleLabel(mapApiRoleToUi(u.role))}
+                        {u.role === 'SUPERUSER' ? ' ★' : ''}
+                      </span>
+                    </td>
+                    <td className="px-2 py-3">
+                      {manageable ? (
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            className="text-xs font-bold text-[#8B0000] underline"
+                            onClick={() => setModal({ type: 'edit', user: u })}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            type="button"
+                            className="text-xs font-bold text-[#8B0000] underline"
+                            onClick={() => setModal({ type: 'promote', user: u })}
+                          >
+                            Change role
+                          </button>
+                          {actorIsSuperuser ? (
+                            <>
+                              <button
+                                type="button"
+                                className="text-xs font-bold text-[#8B0000] underline"
+                                onClick={() => setModal({ type: 'password_reset', user: u })}
+                              >
+                                Reset password
+                              </button>
+                              {u.id !== currentUserId ? (
+                                <button
+                                  type="button"
+                                  className="inline-flex items-center gap-1 text-xs font-bold text-red-700 underline"
+                                  onClick={() => setModal({ type: 'delete', user: u })}
+                                >
+                                  <Trash2 size={12} /> Remove
+                                </button>
+                              ) : null}
+                            </>
+                          ) : null}
+                        </div>
+                      ) : (
+                        <span className="text-xs text-gray-400">Superuser — view only</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       <button type="button" onClick={() => refresh()} className="mt-4 text-sm font-bold text-[#8B0000] underline">
         Refresh directory
@@ -150,6 +178,7 @@ export function AdminUserDirectory({ currentUserId = '' }) {
         <ActionModal
           modal={modal}
           busy={busy}
+          roleOptions={roleOptions}
           onClose={() => setModal(null)}
           onSubmit={runAction}
         />
@@ -158,8 +187,8 @@ export function AdminUserDirectory({ currentUserId = '' }) {
   );
 }
 
-/** @param {{ modal: object, busy: string, onClose: () => void, onSubmit: (p: object) => Promise<void> }} props */
-function ActionModal({ modal, busy, onClose, onSubmit }) {
+/** @param {{ modal: object, busy: string, roleOptions: string[], onClose: () => void, onSubmit: (p: object) => Promise<void> }} props */
+function ActionModal({ modal, busy, roleOptions, onClose, onSubmit }) {
   const { type, user } = modal;
   const [reason, setReason] = useState('');
   const [name, setName] = useState(user.name ?? '');
@@ -190,7 +219,7 @@ function ActionModal({ modal, busy, onClose, onSubmit }) {
             <input value={name} onChange={(e) => setName(e.target.value)} className="w-full rounded-lg border px-3 py-2 text-sm" placeholder="Name" />
             <input value={email} onChange={(e) => setEmail(e.target.value)} className="w-full rounded-lg border px-3 py-2 text-sm" placeholder="Email" type="email" />
             <select value={role} onChange={(e) => setRole(e.target.value)} className="w-full rounded-lg border px-3 py-2 text-sm">
-              {ROLE_OPTIONS.map((r) => (
+              {roleOptions.map((r) => (
                 <option key={r} value={r}>{r}</option>
               ))}
             </select>
@@ -199,7 +228,7 @@ function ActionModal({ modal, busy, onClose, onSubmit }) {
 
         {type === 'promote' ? (
           <select value={role} onChange={(e) => setRole(e.target.value)} className="mb-3 w-full rounded-lg border px-3 py-2 text-sm">
-            {ROLE_OPTIONS.map((r) => (
+            {roleOptions.map((r) => (
               <option key={r} value={r}>{r}</option>
             ))}
           </select>
