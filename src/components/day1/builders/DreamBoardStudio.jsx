@@ -137,15 +137,33 @@ function DreamBoardImageUpload({ assetId, imageUrl, onImage, onError }) {
   );
 }
 
+import { BuilderSubmissionFooter } from '../BuilderSubmissionFooter.jsx';
+
 /**
  * @param {{
  *   draft: Record<string, unknown>,
  *   completed: boolean,
+ *   editLocked?: boolean,
+ *   refining?: boolean,
+ *   completedAt?: string | null,
+ *   firstCompletedAt?: string | null,
+ *   canRefine?: boolean,
+ *   onStartRefine?: () => void,
  *   onChange: (d: Record<string, unknown>) => void,
  *   onComplete: (d: Record<string, unknown>) => void,
  * }} props
  */
-export function DreamBoardStudio({ draft, completed, onChange, onComplete }) {
+export function DreamBoardStudio({
+  draft,
+  completed,
+  editLocked = false,
+  completedAt,
+  firstCompletedAt,
+  canRefine = false,
+  onStartRefine,
+  onChange,
+  onComplete,
+}) {
   const [assets, setAssets] = useState(
     /** @type {Array<{ id: string, category: string, caption: string, imageUrl: string }>} */ (
       draft.assets ?? []
@@ -191,7 +209,7 @@ export function DreamBoardStudio({ draft, completed, onChange, onComplete }) {
   const canComplete = assets.filter((a) => a.caption.trim().length >= 3).length >= 3;
 
   return (
-    <div className="space-y-6">
+    <div className={`space-y-6 ${editLocked ? 'pointer-events-none opacity-75' : ''}`}>
       <section className="spike-card">
         <h4 className="mb-1 text-lg font-semibold text-slate-900">Dream Board Studio</h4>
         <p className="mb-4 text-sm text-slate-600">
@@ -268,18 +286,19 @@ export function DreamBoardStudio({ draft, completed, onChange, onComplete }) {
         </div>
       </section>
 
-      {!completed ? (
-        <button
-          type="button"
-          disabled={!canComplete}
-          onClick={() => onComplete({ assets })}
-          className="spike-btn-primary disabled:opacity-50"
-        >
-          Publish Dream Board to Blueprint
-        </button>
-      ) : (
-        <p className="text-sm font-semibold text-emerald-700">✓ Dream Board saved to Ambition & Purpose</p>
-      )}
+      <BuilderSubmissionFooter
+        completed={completed}
+        editLocked={editLocked}
+        completedAt={completedAt}
+        firstCompletedAt={firstCompletedAt}
+        canRefine={canRefine}
+        onStartRefine={onStartRefine}
+        completeDisabled={!canComplete}
+        completeLabel="Publish Dream Board to Blueprint"
+        updateLabel="Update Dream Board"
+        savedLabel="✓ Dream Board saved to Ambition & Purpose"
+        onComplete={() => onComplete({ assets })}
+      />
     </div>
   );
 }

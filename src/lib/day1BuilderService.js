@@ -12,12 +12,23 @@ import {
   getAllDay1BuilderData,
   getDay1MissionProgress,
   isBuilderCompleted,
+  isBuilderEditLocked,
+  canRefineBuilder,
+  startBuilderRefinement,
   readBuilderEntry,
   writeBuilderEntry,
   clearBuilderEntry,
 } from './day1BuilderStorage.js';
 
-export { getDay1MissionProgress, isBuilderCompleted, getAllDay1BuilderData };
+export {
+  getDay1MissionProgress,
+  isBuilderCompleted,
+  isBuilderEditLocked,
+  canRefineBuilder,
+  startBuilderRefinement,
+  getAllDay1BuilderData,
+  readBuilderEntry,
+};
 
 /** @param {string} participantId @param {string} builderId */
 export function resetDay1Builder(participantId, builderId) {

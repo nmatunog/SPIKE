@@ -9,8 +9,10 @@ import {
   getCoachProgress,
   getCoachProfile,
   getCoachSection,
+  isCoachSectionEditLocked,
   markCoachStarted,
   patchCoachSection,
+  reopenCoachSectionForRefinement,
   resetCoachSection,
 } from './ventureCoachStorage.js';
 import { polishCoachStatement, recordCoachLearning } from './ventureCoachLearning.js';
@@ -25,9 +27,11 @@ export {
   getCoachProgress,
   getCoachProfile,
   getCoachSection,
+  isCoachSectionEditLocked,
   markCoachStarted,
   patchCoachSection,
   resetCoachSection,
+  reopenCoachSectionForRefinement,
 };
 
 /** @param {string} participantId @param {string} sectionId @param {Record<string, unknown>} data */

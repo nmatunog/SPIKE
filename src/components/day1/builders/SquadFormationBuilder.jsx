@@ -1,14 +1,30 @@
+import { BuilderSubmissionFooter } from '../BuilderSubmissionFooter.jsx';
 import { RESEARCH_MARKETS } from '../../../lib/day1BuilderConstants.js';
 
 /**
  * @param {{
  *   draft: Record<string, unknown>,
  *   completed: boolean,
+ *   editLocked?: boolean,
+ *   completedAt?: string | null,
+ *   firstCompletedAt?: string | null,
+ *   canRefine?: boolean,
+ *   onStartRefine?: () => void,
  *   onChange: (d: Record<string, unknown>) => void,
  *   onComplete: (d: Record<string, unknown>) => void,
  * }} props
  */
-export function SquadFormationBuilder({ draft, completed, onChange, onComplete }) {
+export function SquadFormationBuilder({
+  draft,
+  completed,
+  editLocked = false,
+  completedAt,
+  firstCompletedAt,
+  canRefine = false,
+  onStartRefine,
+  onChange,
+  onComplete,
+}) {
   const selected = /** @type {string[]} */ (draft.marketPreferences ?? []);
 
   function toggle(marketId) {
@@ -19,7 +35,7 @@ export function SquadFormationBuilder({ draft, completed, onChange, onComplete }
   }
 
   return (
-    <div className="space-y-6">
+    <div className={`space-y-6 ${editLocked ? 'pointer-events-none opacity-75' : ''}`}>
       <section className="spike-card">
         <h4 className="mb-1 text-lg font-semibold text-slate-900">Startup Squad Formation</h4>
         <p className="mb-2 text-sm text-slate-600">
@@ -60,18 +76,19 @@ export function SquadFormationBuilder({ draft, completed, onChange, onComplete }
         </p>
       ) : null}
 
-      {!completed ? (
-        <button
-          type="button"
-          disabled={selected.length < 1}
-          onClick={() => onComplete({ marketPreferences: selected })}
-          className="spike-btn-primary disabled:opacity-50"
-        >
-          Submit Squad Preferences
-        </button>
-      ) : (
-        <p className="text-sm font-semibold text-emerald-700">✓ Squad preferences saved</p>
-      )}
+      <BuilderSubmissionFooter
+        completed={completed}
+        editLocked={editLocked}
+        completedAt={completedAt}
+        firstCompletedAt={firstCompletedAt}
+        canRefine={canRefine}
+        onStartRefine={onStartRefine}
+        completeDisabled={selected.length < 1}
+        completeLabel="Submit Squad Preferences"
+        updateLabel="Update Squad Preferences"
+        savedLabel="✓ Squad preferences saved"
+        onComplete={() => onComplete({ marketPreferences: selected })}
+      />
     </div>
   );
 }

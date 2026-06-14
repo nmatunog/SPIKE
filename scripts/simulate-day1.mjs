@@ -56,21 +56,28 @@ try {
     }
   }
   for (const slide of deck01.slides) {
-    if (!slide.speakerNotes?.trim()) fail(`Deck 01 slide "${slide.title}" missing speaker notes`);
+    if (!slide.imageUrl?.trim() && !slide.speakerNotes?.trim()) {
+      fail(`Deck 01 slide "${slide.title}" missing speaker notes`);
+    }
   }
 
   // Faculty Deck 02
   const deck02 = bundle.presentationDeck02;
   if (!deck02?.slides?.length) fail('Faculty Deck 02 missing');
   log('Faculty Deck 02', `${deck02.presentation.title} — ${deck02.slides.length} slides`);
-  const pillars = ['Ambition', 'Impact', 'Values', 'Future Self', 'Career Direction'];
-  for (const pillar of pillars) {
-    if (!deck02.slides.some((s) => s.title.includes(pillar))) {
-      fail(`Deck 02 missing pillar slide: ${pillar}`);
+  const importedImageDeck = deck02.slides.every((s) => s.imageUrl?.trim());
+  if (!importedImageDeck) {
+    const pillars = ['Ambition', 'Impact', 'Values', 'Future Self', 'Career Direction'];
+    for (const pillar of pillars) {
+      if (!deck02.slides.some((s) => s.title.includes(pillar))) {
+        fail(`Deck 02 missing pillar slide: ${pillar}`);
+      }
     }
   }
   for (const slide of deck02.slides) {
-    if (!slide.speakerNotes?.trim()) fail(`Deck 02 slide "${slide.title}" missing speaker notes`);
+    if (!slide.imageUrl?.trim() && !slide.speakerNotes?.trim()) {
+      fail(`Deck 02 slide "${slide.title}" missing speaker notes`);
+    }
   }
 
   // Activities

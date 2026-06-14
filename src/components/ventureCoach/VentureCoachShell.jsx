@@ -4,6 +4,7 @@ import { ArrowLeft, Sparkles } from 'lucide-react';
 import { COACH_WELCOME } from '../../lib/ventureCoachConstants.js';
 import {
   getCoachProgress,
+  isCoachSectionEditLocked,
   markCoachStarted,
   resetCoachSection,
 } from '../../lib/ventureCoachService.js';
@@ -95,6 +96,7 @@ export function VentureCoachShell({ participantId, section }) {
   }
 
   const title = SECTION_TITLES[section] ?? 'AI Venture Coach';
+  const sectionEditLocked = section ? isCoachSectionEditLocked(participantId, section) : false;
 
   function handleResetSection() {
     resetCoachSection(participantId, section);
@@ -155,6 +157,7 @@ export function VentureCoachShell({ participantId, section }) {
             </div>
             <BuilderResetButton
               onReset={handleResetSection}
+              disabled={sectionEditLocked}
               label="Start this section over"
               confirmMessage="Clear this coach section and start over? Your saved draft for this step will be removed."
             />

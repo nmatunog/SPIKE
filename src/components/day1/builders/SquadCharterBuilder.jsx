@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { PenLine } from 'lucide-react';
+import { BuilderSubmissionFooter } from '../BuilderSubmissionFooter.jsx';
 import { upsertSquadCharterDraft } from '../../../lib/squadCharterService.js';
 
 /**
@@ -9,6 +10,12 @@ import { upsertSquadCharterDraft } from '../../../lib/squadCharterService.js';
  *   squadName?: string,
  *   draft: Record<string, unknown>,
  *   completed: boolean,
+ *   editLocked?: boolean,
+ *   refining?: boolean,
+ *   completedAt?: string | null,
+ *   firstCompletedAt?: string | null,
+ *   canRefine?: boolean,
+ *   onStartRefine?: () => void,
  *   onChange: (d: Record<string, unknown>) => void,
  *   onComplete: (d: Record<string, unknown>) => void,
  * }} props
@@ -19,6 +26,12 @@ export function SquadCharterBuilder({
   squadName,
   draft,
   completed,
+  editLocked = false,
+  refining = false,
+  completedAt,
+  firstCompletedAt,
+  canRefine = false,
+  onStartRefine,
   onChange,
   onComplete,
 }) {
@@ -28,7 +41,7 @@ export function SquadCharterBuilder({
     teamMotto: String(draft.teamMotto ?? ''),
     teamCommitment: String(draft.teamCommitment ?? ''),
   });
-  const [committed, setCommitted] = useState(Boolean(draft.signedAt));
+  const [committed, setCommitted] = useState(Boolean(draft.signedAt) && !refining);
   const squadId = String(draft.squadId ?? 'squad-segment-1-alpha');
 
   function update(key, value) {
@@ -57,7 +70,7 @@ export function SquadCharterBuilder({
     && fields.teamCommitment.trim().length >= 10;
 
   return (
-    <div className="space-y-6">
+    <div className={`space-y-6 ${editLocked ? 'pointer-events-none opacity-75' : ''}`}>
       <section className="spike-card space-y-4">
         <h4 className="text-lg font-semibold text-slate-900">Squad Charter Builder</h4>
         <p className="text-sm text-slate-600">
@@ -99,7 +112,28 @@ export function SquadCharterBuilder({
         ))}
       </section>
 
-      {!committed && !completed ? (
+      {(committed || completed) && !refining ? (
+        <>
+          <section className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+            <p className="font-semibold text-emerald-900">✓ Digital signature recorded</p>
+            <p className="mt-1 text-sm text-emerald-800">
+              Signed by {participantName}. Charter PDF generated — check your downloads.
+            </p>
+          </section>
+          <BuilderSubmissionFooter
+            completed={completed}
+            editLocked={editLocked}
+            completedAt={completedAt}
+            firstCompletedAt={firstCompletedAt}
+            canRefine={canRefine}
+            onStartRefine={onStartRefine}
+            completeLabel="I Commit — Sign Charter"
+            updateLabel="Update Charter"
+            savedLabel="Charter saved to your portfolio"
+            onComplete={handleCommit}
+          />
+        </>
+      ) : (
         <button
           type="button"
           disabled={!canCommit}
@@ -108,13 +142,6 @@ export function SquadCharterBuilder({
         >
           <PenLine size={18} /> I Commit — Sign Charter
         </button>
-      ) : (
-        <section className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
-          <p className="font-semibold text-emerald-900">✓ Digital signature recorded</p>
-          <p className="mt-1 text-sm text-emerald-800">
-            Signed by {participantName}. Charter PDF generated — check your downloads.
-          </p>
-        </section>
       )}
     </div>
   );

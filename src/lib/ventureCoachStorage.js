@@ -2,11 +2,19 @@
  * AI Venture Coach™ — local persistence (Supabase migration ready).
  */
 import { COACH_SECTIONS } from './ventureCoachConstants.js';
+import { canEditPortfolioInput, isPortfolioInputEditLocked } from './portfolioEditWindow.js';
 
 const STORAGE_KEY = 'spike_venture_coach_v1';
 
 function emptySection() {
-  return { step: 0, data: {}, draftVersions: [], completedAt: null };
+  return {
+    step: 0,
+    data: {},
+    draftVersions: [],
+    completedAt: null,
+    firstCompletedAt: null,
+    refining: false,
+  };
 }
 
 function readAll() {
@@ -106,10 +114,13 @@ export function getCoachSection(participantId, sectionId) {
  * @param {string} sectionId
  * @param {Record<string, unknown>} patch
  */
-export function patchCoachSection(participantId, sectionId, patch) {
+export function patchCoachSection(participantId, sectionId, patch, options = {}) {
   const all = readAll();
   const user = ensureCoachUser(participantId);
   const current = user.sections[sectionId] ?? emptySection();
+  if (!options.force && isPortfolioInputEditLocked(current)) {
+    return current;
+  }
   user.sections[sectionId] = {
     ...current,
     ...patch,
@@ -141,7 +152,12 @@ export function completeCoachSection(participantId, sectionId, badge) {
   const all = readAll();
   const user = ensureCoachUser(participantId);
   const section = user.sections[sectionId] ?? emptySection();
-  section.completedAt = new Date().toISOString();
+  const now = new Date().toISOString();
+  if (!section.firstCompletedAt) {
+    section.firstCompletedAt = now;
+  }
+  section.completedAt = now;
+  section.refining = false;
   user.sections[sectionId] = section;
   if (badge && !user.badges.includes(badge)) {
     user.badges.push(badge);
@@ -154,6 +170,19 @@ export function completeCoachSection(participantId, sectionId, badge) {
 /** @param {string} participantId @param {string} sectionId */
 export function isCoachSectionComplete(participantId, sectionId) {
   return Boolean(getCoachSection(participantId, sectionId).completedAt);
+}
+
+/** @param {string} participantId @param {string} sectionId */
+export function isCoachSectionEditLocked(participantId, sectionId) {
+  return isPortfolioInputEditLocked(getCoachSection(participantId, sectionId));
+}
+
+/** @param {string} participantId @param {string} sectionId */
+export function reopenCoachSectionForRefinement(participantId, sectionId) {
+  const section = getCoachSection(participantId, sectionId);
+  if (!section.completedAt || section.refining) return section;
+  if (!canEditPortfolioInput(section.completedAt, section.firstCompletedAt)) return section;
+  return patchCoachSection(participantId, sectionId, { refining: true }, { force: true });
 }
 
 /** @param {string} participantId */
@@ -245,7 +274,7 @@ export function resetCoachSection(participantId, sectionId) {
   const all = readAll();
   const user = all[participantId];
   if (!user?.sections?.[sectionId]) return;
-  user.sections[sectionId] = { step: 0, data: {}, draftVersions: [], completedAt: null };
+  user.sections[sectionId] = emptySection();
   user.badges = (user.badges ?? []).filter(
     (badge) => !COACH_SECTIONS.find((s) => s.id === sectionId && s.badge === badge),
   );

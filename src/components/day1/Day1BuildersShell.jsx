@@ -7,6 +7,10 @@ import {
   getBuilderData,
   getDay1MissionProgress,
   isBuilderCompleted,
+  isBuilderEditLocked,
+  canRefineBuilder,
+  startBuilderRefinement,
+  readBuilderEntry,
   resetDay1Builder,
   saveBuilderDraft,
 } from '../../lib/day1BuilderService.js';
@@ -47,6 +51,11 @@ export function Day1BuildersShell({
 
   const activeBuilder = DAY1_BUILDERS.find((b) => b.id === activeId) ?? DAY1_BUILDERS[0];
   const activeIndex = DAY1_BUILDERS.findIndex((b) => b.id === activeId);
+  const builderEntry = readBuilderEntry(participantId, activeId);
+  const editLocked = isBuilderEditLocked(participantId, activeId);
+  const refining = Boolean(builderEntry?.refining);
+  const submitted = isBuilderCompleted(participantId, activeId);
+  const showSubmitted = submitted && !refining;
   const ClassicComponent = CLASSIC_BUILDERS[activeId];
   const isCoach = isCoachBackedBuilder(activeId);
   const coachConversationIndex = DAY1_BUILDERS.filter((b) => b.coachSection).findIndex((b) => b.id === activeId) + 1;
@@ -71,6 +80,12 @@ export function Day1BuildersShell({
     setRefreshKey((k) => k + 1);
     const nextBuilder = DAY1_BUILDERS[activeIndex + 1];
     if (nextBuilder) switchBuilder(nextBuilder.id);
+  }
+
+  function handleStartRefine() {
+    startBuilderRefinement(participantId, activeId);
+    setRefreshKey((k) => k + 1);
+    setBuilderMountKey((k) => k + 1);
   }
 
   function handleReset() {
@@ -148,7 +163,11 @@ export function Day1BuildersShell({
               <p className="mt-1 text-sm text-slate-600">{activeBuilder.description}</p>
               <p className="mt-1 text-xs text-slate-500">Feeds → {activeBuilder.feeds}</p>
             </div>
-            <BuilderResetButton onReset={handleReset} label={isCoach ? 'Start conversation over' : 'Reset all fields'} />
+            <BuilderResetButton
+              onReset={handleReset}
+              disabled={editLocked}
+              label={isCoach ? 'Start conversation over' : 'Reset all fields'}
+            />
           </header>
 
           {isCoach ? (
@@ -166,7 +185,13 @@ export function Day1BuildersShell({
               participantName={participantName}
               squadName={squadName}
               draft={draft}
-              completed={isBuilderCompleted(participantId, activeId)}
+              completed={showSubmitted}
+              editLocked={editLocked}
+              refining={refining}
+              completedAt={builderEntry?.completedAt}
+              firstCompletedAt={builderEntry?.firstCompletedAt}
+              canRefine={canRefineBuilder(participantId, activeId)}
+              onStartRefine={handleStartRefine}
               onChange={handleDraftChange}
               onComplete={handleClassicComplete}
             />

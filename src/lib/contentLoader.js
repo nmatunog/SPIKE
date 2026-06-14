@@ -384,12 +384,12 @@ function assertWeek1DayBundleReady(bundle, daySlug) {
     }
   }
   for (const slide of bundle.presentation.slides) {
-    if (!slide.speakerNotes?.trim()) {
+    if (!slide.imageUrl?.trim() && !slide.speakerNotes?.trim()) {
       throw new Error(`Day ${dayNum} Deck 01 slide "${slide.title}" missing speaker notes`);
     }
   }
   for (const slide of bundle.presentationDeck02.slides) {
-    if (!slide.speakerNotes?.trim()) {
+    if (!slide.imageUrl?.trim() && !slide.speakerNotes?.trim()) {
       throw new Error(`Day ${dayNum} Deck 02 slide "${slide.title}" missing speaker notes`);
     }
   }

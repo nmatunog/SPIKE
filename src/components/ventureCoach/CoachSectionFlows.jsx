@@ -42,6 +42,7 @@ import { CoachDraftPanel, CoachWordGuidance } from './CoachDraftPanel.jsx';
 import { CoachRankList, CoachSelectionCounter } from './CoachRankList.jsx';
 import { CoachSectionHeader } from './CoachSectionHeader.jsx';
 import { CoachStepNav } from './CoachStepNav.jsx';
+import { CoachSectionCompletePanel } from './CoachSectionCompletePanel.jsx';
 import { ROUTES } from '../../routes/paths.js';
 
 const AMBITION_EXACT = 3;
@@ -201,12 +202,17 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
       : AMBITION_ROLE_ARCHETYPES.find((role) => role.id === roleArchetypeId)?.label ?? '';
   const contextChips = [...ambitionContextLabels(rankedOrder), roleLabel].filter(Boolean);
 
-  if (stored.completedAt) {
+  if (stored.completedAt && !stored.refining) {
     return (
-      <section className="spike-card space-y-2">
-        <p className="font-semibold text-slate-900">My Ambition — complete ✓</p>
+      <CoachSectionCompletePanel
+        participantId={participantId}
+        sectionId="ambition"
+        title="My Ambition"
+        stored={stored}
+        onProgress={onProgress}
+      >
         <p className="whitespace-pre-wrap text-slate-600">{stored.data.finalText}</p>
-      </section>
+      </CoachSectionCompletePanel>
     );
   }
 
@@ -451,12 +457,17 @@ export function ImpactCoachFlow({ participantId, onProgress, onSectionComplete }
     afterSectionAccept(onSectionComplete, navigate, `${ROUTES.ventureBlueprint}/coach/values`);
   }
 
-  if (stored.completedAt) {
+  if (stored.completedAt && !stored.refining) {
     return (
-      <section className="spike-card space-y-2">
-        <p className="font-semibold text-slate-900">My Impact — complete ✓</p>
+      <CoachSectionCompletePanel
+        participantId={participantId}
+        sectionId="impact"
+        title="My Impact"
+        stored={stored}
+        onProgress={onProgress}
+      >
         <p className="whitespace-pre-wrap text-slate-600">{stored.data.finalText}</p>
-      </section>
+      </CoachSectionCompletePanel>
     );
   }
 
@@ -564,12 +575,17 @@ export function ValuesCoachFlow({ participantId, onProgress, onSectionComplete }
     saveCoachSectionDraft(participantId, 'values', { ...stored.data, ...data, step });
   }
 
-  if (stored.completedAt) {
+  if (stored.completedAt && !stored.refining) {
     return (
-      <CoachMessage>
-        <p className="font-semibold">My Values — complete ✓</p>
-        <p className="mt-2 whitespace-pre-wrap text-slate-600">{stored.data.finalText}</p>
-      </CoachMessage>
+      <CoachSectionCompletePanel
+        participantId={participantId}
+        sectionId="values"
+        title="My Values"
+        stored={stored}
+        onProgress={onProgress}
+      >
+        <p className="whitespace-pre-wrap text-slate-600">{stored.data.finalText}</p>
+      </CoachSectionCompletePanel>
     );
   }
 
@@ -736,12 +752,17 @@ export function TaglineCoachFlow({ participantId, onProgress, onSectionComplete 
     afterSectionAccept(onSectionComplete, navigate, `${ROUTES.ventureBlueprint}/coach/future-self`);
   }
 
-  if (stored.completedAt) {
+  if (stored.completedAt && !stored.refining) {
     return (
-      <CoachMessage>
-        <p className="font-semibold">My Tagline — complete ✓</p>
-        <p className="mt-2 text-lg font-semibold text-spike">{stored.data.finalText}</p>
-      </CoachMessage>
+      <CoachSectionCompletePanel
+        participantId={participantId}
+        sectionId="tagline"
+        title="My Tagline"
+        stored={stored}
+        onProgress={onProgress}
+      >
+        <p className="text-lg font-semibold text-spike">{stored.data.finalText}</p>
+      </CoachSectionCompletePanel>
     );
   }
 
@@ -804,13 +825,18 @@ export function FutureSelfCoachFlow({ participantId, onProgress, onSectionComple
     saveCoachSectionDraft(participantId, 'future-self', { ...stored.data, ...data, step });
   }
 
-  if (stored.completedAt) {
+  if (stored.completedAt && !stored.refining) {
     return (
-      <CoachMessage>
-        <p className="font-semibold">My Future Self — complete ✓</p>
-        <p className="mt-2 text-sm font-semibold text-spike">{stored.data.futureSelfSummary}</p>
+      <CoachSectionCompletePanel
+        participantId={participantId}
+        sectionId="future-self"
+        title="My Future Self"
+        stored={stored}
+        onProgress={onProgress}
+      >
+        <p className="text-sm font-semibold text-spike">{stored.data.futureSelfSummary}</p>
         <p className="mt-3 whitespace-pre-wrap text-slate-600">{stored.data.finalText}</p>
-      </CoachMessage>
+      </CoachSectionCompletePanel>
     );
   }
 
@@ -1031,19 +1057,22 @@ export function VentureDirectionCoachFlow({ participantId, onProgress, onSection
   const stored = getCoachSection(participantId, 'venture-direction');
   const [track, setTrack] = useState(String(stored.data.track ?? ''));
 
-  if (stored.completedAt) {
+  if (stored.completedAt && !stored.refining) {
     return (
-      <div className="space-y-4">
-        <CoachMessage>
-          <p className="font-semibold">Venture Direction — complete ✓</p>
-          <p className="mt-2 text-slate-600">
-            {VENTURE_DIRECTION_CARDS.find((c) => c.id === stored.data.track)?.label ?? stored.data.track}
-          </p>
-        </CoachMessage>
-        <Link to={ROUTES.myVenturePortfolio} className="spike-btn-primary inline-flex">
+      <CoachSectionCompletePanel
+        participantId={participantId}
+        sectionId="venture-direction"
+        title="Venture Direction"
+        stored={stored}
+        onProgress={onProgress}
+      >
+        <p className="text-slate-600">
+          {VENTURE_DIRECTION_CARDS.find((c) => c.id === stored.data.track)?.label ?? stored.data.track}
+        </p>
+        <Link to={ROUTES.myVenturePortfolio} className="spike-btn-primary mt-4 inline-flex">
           View your Venture Portfolio →
         </Link>
-      </div>
+      </CoachSectionCompletePanel>
     );
   }
 

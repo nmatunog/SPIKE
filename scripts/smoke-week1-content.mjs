@@ -47,10 +47,10 @@ for (const daySlug of DAYS) {
   if (!activities.activities.every((a) => a.debriefQuestions?.length > 0)) {
     fail(`${daySlug} activity missing debrief`);
   }
-  if (!presentation.slides.every((s) => s.speakerNotes?.trim())) {
+  if (!presentation.slides.every((s) => s.imageUrl?.trim() || s.speakerNotes?.trim())) {
     fail(`${daySlug} deck 01 slide missing speaker notes`);
   }
-  if (!deck02.slides.every((s) => s.speakerNotes?.trim())) {
+  if (!deck02.slides.every((s) => s.imageUrl?.trim() || s.speakerNotes?.trim())) {
     fail(`${daySlug} deck 02 slide missing speaker notes`);
   }
   if (!evaluations.templates?.length) fail(`${daySlug} missing evaluations`);

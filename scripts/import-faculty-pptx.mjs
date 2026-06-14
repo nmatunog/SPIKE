@@ -7,6 +7,10 @@
  *
  * Usage:
  *   node scripts/import-faculty-pptx.mjs --pptx "/path/to/deck.pptx" --day day-1 --deck 1
+ *   node scripts/import-faculty-pptx.mjs --pptx "/path/to/deck.pptx" --day day-1 --deck 2 --overwrite
+ *
+ * By default --overwrite replaces title/body/speaker notes/discussion questions from the PPTX.
+ * Pass --preserve-text to keep existing JSON text when re-importing.
  */
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { execSync } from 'node:child_process';
@@ -18,13 +22,26 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 /** @param {string[]} argv */
 function parseArgs(argv) {
-  const args = { pptx: '', day: 'day-1', deck: 1, segment: 'segment-1', week: 'week-1' };
+  const args = {
+    pptx: '',
+    day: 'day-1',
+    deck: 1,
+    segment: 'segment-1',
+    week: 'week-1',
+    overwrite: true,
+    preserveText: false,
+  };
   for (let i = 2; i < argv.length; i++) {
     if (argv[i] === '--pptx') args.pptx = argv[++i];
     else if (argv[i] === '--day') args.day = argv[++i];
     else if (argv[i] === '--deck') args.deck = Number(argv[++i]);
     else if (argv[i] === '--segment') args.segment = argv[++i];
     else if (argv[i] === '--week') args.week = argv[++i];
+    else if (argv[i] === '--overwrite') args.overwrite = true;
+    else if (argv[i] === '--preserve-text') {
+      args.preserveText = true;
+      args.overwrite = false;
+    }
   }
   if (!args.pptx || !existsSync(args.pptx)) {
     console.error('import-faculty-pptx: --pptx path required and must exist');
@@ -129,14 +146,19 @@ try {
     const imageUrl = `/content/${args.segment}/${args.week}/${args.day}/${deckSlug}/${imageName}`;
     const deckId = deckSlug.replace('-', '');
 
+    const notesFromPptx = speakerNotes[i - 1]?.trim() ?? '';
     slides.push({
       id: prior.id ?? `slide-${deckId}-${String(i).padStart(2, '0')}`,
       presentationId: existing.presentation?.id ?? `presentation-${args.day}-${deckSlug}`,
       sortOrder: i,
-      title: prior.title ?? extracted.title ?? `Slide ${i}`,
-      body: prior.body ?? extracted.body ?? '',
-      speakerNotes: speakerNotes[i - 1] || prior.speakerNotes || '',
-      discussionQuestions: prior.discussionQuestions ?? [],
+      title: args.overwrite
+        ? (extracted.title || `Slide ${i}`)
+        : (prior.title ?? extracted.title ?? `Slide ${i}`),
+      body: args.overwrite ? (extracted.body ?? '') : (prior.body ?? extracted.body ?? ''),
+      speakerNotes: args.overwrite
+        ? notesFromPptx
+        : (notesFromPptx || prior.speakerNotes || ''),
+      discussionQuestions: args.overwrite ? [] : (prior.discussionQuestions ?? []),
       imageUrl,
     });
   }
