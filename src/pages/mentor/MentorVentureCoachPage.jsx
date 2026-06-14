@@ -7,6 +7,7 @@ import {
   MentorCoachingSessionForm,
 } from '../../components/mentor/MentorCoachingSessionForm.jsx';
 import { MentorParticipantOutputs } from '../../components/mentor/MentorParticipantOutputs.jsx';
+import { MentorParticipantEncodingPanel } from '../../components/mentor/MentorQuickCapture.jsx';
 import { MentorWeek1SummaryPanel } from '../../components/mentor/MentorWeek1SummaryPanel.jsx';
 import { MentorWeeklyAssessmentPanel } from '../../components/mentor/MentorWeeklyAssessmentPanel.jsx';
 import { hydrateCoachingFromSupabase, listCoachingNotesForParticipant } from '../../lib/coachingService.js';
@@ -116,6 +117,16 @@ export function MentorVentureCoachPage({
 
       {!readOnly && mentorId ? (
         <>
+          <section className="mb-6">
+            <MentorParticipantEncodingPanel
+              mentorId={mentorId}
+              participantId={participantId}
+              participantName={intern?.name}
+              showToast={showToast}
+              onSaved={refreshHistory}
+            />
+          </section>
+
           <section className="mb-6 space-y-4">
             <h2 className="text-sm font-bold uppercase tracking-wide text-slate-500">Coaching notes</h2>
             <MentorCoachingSessionForm
@@ -136,13 +147,22 @@ export function MentorVentureCoachPage({
           </section>
 
           <section className="mb-6">
-            <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">Weekly assessment</h2>
-            <MentorWeeklyAssessmentPanel
-              mentorId={mentorId}
-              participantId={participantId}
-              showToast={showToast}
-              onSaved={refreshHistory}
-            />
+            <details className="spike-card group">
+              <summary className="cursor-pointer list-none text-sm font-semibold text-slate-900 marker:content-none">
+                <span className="inline-flex items-center gap-2">
+                  End-of-week ratings
+                  <span className="text-xs font-normal text-slate-500">(optional — use after Day 5)</span>
+                </span>
+              </summary>
+              <div className="mt-4 border-t border-slate-100 pt-4">
+                <MentorWeeklyAssessmentPanel
+                  mentorId={mentorId}
+                  participantId={participantId}
+                  showToast={showToast}
+                  onSaved={refreshHistory}
+                />
+              </div>
+            </details>
           </section>
         </>
       ) : null}

@@ -3,6 +3,7 @@ import { AlertTriangle, BookOpen, Sparkles, Users } from 'lucide-react';
 import { PageContainer, PageTitle } from '../../components/layout/PageContainer.jsx';
 import { RoleDashboardCards } from '../../components/dashboard/RoleDashboardCards.jsx';
 import { MentorDay1Panel } from '../../components/day1/MentorDay1Panel.jsx';
+import { MentorDayDebriefPanel } from '../../components/mentor/MentorDayDebriefPanel.jsx';
 import { MentorWeek1QuickPanel } from '../../components/mentor/MentorWeek1QuickPanel.jsx';
 import { FrameworkMetric } from '../../components/framework/FrameworkSections.jsx';
 import { MentorDashboardPanels } from '../../components/mentor/MentorDashboardPanels.jsx';
