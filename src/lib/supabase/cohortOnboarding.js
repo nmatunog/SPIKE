@@ -315,28 +315,20 @@ export async function updateFormationSquad(squadId, patch) {
 
 /** @param {string} participantId */
 export async function markParticipantWelcomed(participantId) {
+  void participantId;
   const client = assertClient();
-  const { data, error } = await client
-    .from('intern_progress')
-    .update({ onboarding_welcomed_at: new Date().toISOString() })
-    .eq('user_id', participantId)
-    .select('onboarding_welcomed_at, onboarding_complete')
-    .single();
+  const { data, error } = await client.rpc('mark_onboarding_welcomed');
   if (error) throw error;
-  return data;
+  return { onboarding_welcomed_at: data };
 }
 
 /** @param {string} participantId */
 export async function markOnboardingComplete(participantId) {
+  void participantId;
   const client = assertClient();
-  const { data, error } = await client
-    .from('intern_progress')
-    .update({ onboarding_complete: true })
-    .eq('user_id', participantId)
-    .select('onboarding_complete')
-    .single();
+  const { data, error } = await client.rpc('mark_onboarding_complete');
   if (error) throw error;
-  return data;
+  return { onboarding_complete: data };
 }
 
 /** @param {string} participantId */

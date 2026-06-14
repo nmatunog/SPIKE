@@ -42,7 +42,11 @@ export function CohortIdentityPage({ participantId }) {
       await fn();
       await refresh();
     } catch (err) {
-      setActionError(err instanceof Error ? err.message : 'Something went wrong.');
+      const supa = err && typeof err === 'object' ? err : null;
+      const msg =
+        (supa && 'message' in supa && String(supa.message))
+        || (err instanceof Error ? err.message : 'Something went wrong.');
+      setActionError(msg);
     } finally {
       setBusy(false);
     }
@@ -349,6 +353,9 @@ function stepTitle(step) {
 
 /** @param {string} step @param {string} phase */
 function stepSubtitle(step, phase) {
+  if (step === 'welcome') {
+    return 'You are joining a founding cohort. Name it together, then form squads of three.';
+  }
   if (step === 'suggest') return 'Submit one name and an optional reason for your founding cohort.';
   if (step === 'vote') return 'Live vote counts update as your classmates vote.';
   if (step === 'reveal') return 'This name is now official for your SPIKE cohort.';
