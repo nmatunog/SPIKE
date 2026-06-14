@@ -63,5 +63,13 @@ export function useCohortOnboarding(participantId) {
     return () => db.unsubscribeChannel(channel);
   }, [participantId, state.cohort?.id, refresh]);
 
+  useEffect(() => {
+    if (!participantId || state.step !== 'waiting' || !isSupabaseConfigured) return undefined;
+    const timer = setInterval(() => {
+      refresh();
+    }, 25_000);
+    return () => clearInterval(timer);
+  }, [participantId, state.step, refresh]);
+
   return { ...state, refresh };
 }

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { ArrowRight, Loader2, Sparkles, Users } from 'lucide-react';
+import { ArrowRight, Clock, Loader2, Sparkles, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { PageContainer } from '../../components/layout/PageContainer.jsx';
 import { useCohortOnboarding } from '../../hooks/useCohortOnboarding.js';
-import { waitingMessage } from '../../lib/cohortOnboardingMessages.js';
+import { waitingMessage, waitingHint, isLiveWaitingStep } from '../../lib/cohortOnboardingMessages.js';
+import { isMockUserId } from '../../lib/mockAuth.js';
 import {
   COHORT_NAME_EXAMPLES,
   SQUAD_MOTTO_EXAMPLES,
@@ -200,8 +201,21 @@ export function CohortIdentityPage({ participantId }) {
 
         {displayStep === 'waiting' ? (
           <section className="spike-card p-8 text-center">
-            <Loader2 className="mx-auto mb-4 animate-spin text-spike" size={28} />
+            {isLiveWaitingStep(displayStep, phase) ? (
+              <Loader2 className="mx-auto mb-4 animate-spin text-spike" size={28} />
+            ) : (
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-spike-muted/40">
+                <Clock className="text-spike" size={28} />
+              </div>
+            )}
             <p className="text-lg font-semibold text-slate-900">{waitingMessage(displayStep, phase)}</p>
+            <p className="mx-auto mt-3 max-w-md text-sm text-slate-500">{waitingHint(displayStep, phase)}</p>
+            {isMockUserId(participantId) ? (
+              <p className="mx-auto mt-4 max-w-md text-xs text-amber-800">
+                Demo login: the full cohort flow needs a real intern account, or your Program Coach opening
+                suggestions from the faculty dashboard while you use a signed-in intern.
+              </p>
+            ) : null}
             {phase === 'voting_open' && tally.length > 0 ? (
               <ul className="mx-auto mt-6 max-w-sm space-y-2 text-left text-sm">
                 {tally.map((row) => (
@@ -266,8 +280,11 @@ export function CohortIdentityPage({ participantId }) {
 
         {displayStep === 'squad-wait' ? (
           <section className="spike-card p-8 text-center">
-            <Users className="mx-auto mb-4 text-spike" size={32} />
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-spike-muted/40">
+              <Users className="text-spike" size={28} />
+            </div>
             <p className="text-lg font-semibold text-slate-900">{waitingMessage('squad-wait', phase)}</p>
+            <p className="mx-auto mt-3 max-w-md text-sm text-slate-500">{waitingHint('squad-wait', phase)}</p>
           </section>
         ) : null}
 
