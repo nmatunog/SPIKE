@@ -24,13 +24,15 @@ import { CanvasEditorModule } from '../components/blueprint/modules/CanvasEditor
 import { ExecutiveCanvasSummary } from '../components/blueprint/modules/ExecutiveCanvasSummary.jsx';
 import { MilestonesModule } from '../components/blueprint/modules/MilestonesModule.jsx';
 import { VentureBoardModule } from '../components/blueprint/modules/VentureBoardModule.jsx';
+import { BlueprintJourneyNav } from '../components/blueprint/BlueprintJourneyNav.jsx';
 import { Day1BuildersShell } from '../components/day1/Day1BuildersShell.jsx';
+import { isDay1MissionActive } from '../lib/day1BuilderService.js';
 import { VentureCoachShell } from '../components/ventureCoach/VentureCoachShell.jsx';
 
 /**
  * @param {{ user: { id: string, internProgress?: object | null }, onLogTraction?: () => void, onProgressRefresh?: (progress: object) => void }} props
  */
-export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }) {
+export function VentureBlueprintShell({ user, onProgressRefresh }) {
   const participantName = user.name || user.email || 'Participant';
   const location = useLocation();
   const [, setHydrateGeneration] = useState(0);
@@ -74,7 +76,8 @@ export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }
   const activeModule = getBlueprintModule(moduleSlug) ?? getBlueprintModule('overview');
   const showTrackPicker = needsCareerTrackSelection(user.id, progress);
   const isOverview = moduleSlug === 'overview';
-  const headerVariant = isOverview ? 'full' : 'compact';
+  const day1Active = isDay1MissionActive(state.week, state.segment);
+  const headerVariant = isOverview ? 'none' : 'compact';
 
   function handleTrackComplete(nextProgress) {
     setProgress(nextProgress);
@@ -135,7 +138,7 @@ export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }
           <BlueprintOverviewPanel
             state={state}
             participantId={user.id}
-            onLogTraction={onLogTraction}
+            participantName={participantName}
           />
         );
     }
@@ -174,8 +177,8 @@ export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }
 
   return (
     <PageContainer
-      presentation={isExecutiveSummary || isDay1Builders || isCoach || isPortfolio}
-      wide={isExecutiveSummary || isDay1Builders || isCoach || isPortfolio}
+      presentation={isExecutiveSummary || isDay1Builders || isCoach || isPortfolio || isOverview}
+      wide={isExecutiveSummary || isDay1Builders || isCoach || isPortfolio || isOverview}
     >
       {showTrackPicker ? (
         <CareerTrackPicker
@@ -185,19 +188,25 @@ export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }
         />
       ) : null}
 
-      <BlueprintStateHeader
-        state={state}
-        participantId={user.id}
-        variant={headerVariant}
-      />
+      {headerVariant !== 'none' ? (
+        <BlueprintStateHeader
+          state={state}
+          participantId={user.id}
+          variant={headerVariant}
+        />
+      ) : null}
 
       {!isDay1Builders && !isExecutiveSummary && !isCoach && !isPortfolio ? (
       <div className="mb-4 space-y-3 lg:hidden">
+        {isOverview && day1Active ? (
+          <BlueprintJourneyNav participantId={user.id} day={state.day} />
+        ) : (
         <BlueprintModuleNav
           careerTrack={state.career_track}
           activeSlug={moduleSlug}
           variant="select"
         />
+        )}
       </div>
       ) : null}
 
@@ -205,14 +214,22 @@ export function VentureBlueprintShell({ user, onLogTraction, onProgressRefresh }
         className={
           isDay1Builders || isExecutiveSummary || isCoach || isPortfolio
             ? 'min-w-0'
-            : 'grid grid-cols-1 gap-6 lg:grid-cols-[minmax(200px,240px)_1fr] xl:grid-cols-[minmax(220px,260px)_1fr] 2xl:grid-cols-[minmax(260px,300px)_1fr] 2xl:gap-8'
+            : isOverview
+              ? 'grid grid-cols-1 gap-8 lg:grid-cols-[minmax(160px,200px)_1fr]'
+              : 'grid grid-cols-1 gap-6 lg:grid-cols-[minmax(200px,240px)_1fr] xl:grid-cols-[minmax(220px,260px)_1fr] 2xl:grid-cols-[minmax(260px,300px)_1fr] 2xl:gap-8'
         }
       >
         {!isDay1Builders && !isExecutiveSummary && !isCoach && !isPortfolio ? (
         <aside className="hidden lg:block">
+          {isOverview && day1Active ? (
+            <div className="sticky top-24">
+              <BlueprintJourneyNav participantId={user.id} day={state.day} />
+            </div>
+          ) : (
           <div className="sticky top-[4.5rem] rounded-2xl border border-slate-200/80 bg-white p-3 shadow-card lg:top-24 xl:p-4 2xl:top-28">
             <BlueprintModuleNav careerTrack={state.career_track} activeSlug={moduleSlug} />
           </div>
+          )}
         </aside>
         ) : null}
 

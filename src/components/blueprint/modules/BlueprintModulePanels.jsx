@@ -20,7 +20,6 @@ import {
   getTrackRequirementsForTrack,
   getVentureBoardCriteriaForBoard,
   getVentureBoardsForSegment,
-  getWeekIntegrationByWeekId,
 } from '../../../lib/playbookSeeds.js';
 import { getVisionPurposeProgress } from '../../../lib/playbookProgress.js';
 import { BlueprintTimelineFeed } from '../BlueprintTimelineFeed.jsx';
@@ -30,12 +29,9 @@ import { getMarketIntelligenceSummary } from '../../../lib/marketIntelligenceSer
 import { getSectionField, setSectionField } from '../../../lib/blueprintSectionStore.js';
 import { RECRUITMENT_FIELDS, LEADERSHIP_FIELDS, CAREER_FIELDS } from '../../../lib/blueprintSectionConstants.js';
 import { listLeadershipJournal } from '../../../lib/leadershipJournalService.js';
-import { getNextBlueprintAction } from '../../../lib/blueprintRecommendations.js';
 import { computeSectionCompletionPct } from '../../../lib/blueprintCompletion.js';
 import { FnaEngineModule } from '../../fna/FnaEngineModule.jsx';
 import { AutoSaveField } from '../AutoSaveField.jsx';
-import { Day1MissionControl } from '../../day1/Day1MissionControl.jsx';
-import { isDay1MissionActive } from '../../../lib/day1BuilderService.js';
 import { hasSubmittedCohortIdentity, getSquadPreferences } from '../../../lib/cohortFormationService.js';
 import { getDay1MissionProgress } from '../../../lib/day1BuilderStorage.js';
 
@@ -58,114 +54,28 @@ function PlaceholderNotice({ children, className = '' }) {
   );
 }
 
+import { BuildStudioHome } from '../BuildStudioHome.jsx';
+
 /**
- * @param {{ state: object, onLogTraction?: () => void }} props
+ * @param {{ state: object, participantId?: string, participantName?: string }} props
  */
-export function BlueprintOverviewPanel({ state, participantId, onLogTraction }) {
-  const integration = getWeekIntegrationByWeekId(`week-segment-1-${Math.min(state.week, 5)}`);
-  const nextAction = participantId ? getNextBlueprintAction(state, participantId) : null;
-  const sectionPct = state.blueprint_sections ?? {};
+export function BlueprintOverviewPanel({ state, participantId, participantName = 'Builder' }) {
+  if (!participantId) {
+    return (
+      <section className="spike-card">
+        <p className="text-sm text-slate-600">
+          Sign in to open your Build Studio and continue your venture.
+        </p>
+      </section>
+    );
+  }
 
   return (
-    <div className="space-y-4">
-      {participantId && isDay1MissionActive(state.week, state.segment) ? (
-        <Day1MissionControl participantId={participantId} />
-      ) : null}
-
-      {nextAction ? (
-        <section className="rounded-2xl border border-spike/15 bg-gradient-to-br from-white to-spike-muted/50 p-5 shadow-card sm:p-6">
-          <p className="spike-label text-spike">Recommended next step</p>
-          <h3 className="mt-1 text-lg font-semibold text-slate-900">{nextAction.title}</h3>
-          <p className="mt-2 text-sm leading-relaxed text-slate-600">{nextAction.detail}</p>
-          <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-            <Link to={nextAction.href} className="spike-btn-primary">
-              Continue <ArrowRight size={16} />
-            </Link>
-            <Link to={ROUTES.playbook} className="spike-btn-secondary">
-              <Rocket size={16} /> Open Playbook
-            </Link>
-          </div>
-        </section>
-      ) : (
-        <section className="spike-card">
-          <p className="text-sm text-slate-600">
-            Your business plan, portfolio, and progress — filled in as you complete Playbook,
-            surveys, and coaching.
-          </p>
-          <Link to={ROUTES.playbook} className="spike-btn-primary mt-4">
-            <Rocket size={16} /> Start in Playbook
-          </Link>
-        </section>
-      )}
-
-      {!state.career_track_selected && state.week < 2 ? (
-        <SectionCard title="Week 1 — explore before you choose">
-          <p className="text-sm leading-relaxed text-slate-700">
-            Focus on vision, market research, and client growth. After Week 1 you&apos;ll choose{' '}
-            <strong>Agency Builder</strong> or <strong>Specialist Consultant</strong>.
-          </p>
-        </SectionCard>
-      ) : null}
-
-      <SectionCard title="Section progress">
-        <div className="space-y-2">
-          {Object.entries(sectionPct).map(([slug, pct]) => (
-            <div key={slug} className="flex items-center gap-3">
-              <span className="w-28 shrink-0 truncate text-xs font-medium capitalize text-slate-700">
-                {slug.replace(/-/g, ' ')}
-              </span>
-              <div className="h-2 min-w-0 flex-1 overflow-hidden rounded-full bg-slate-100">
-                <div
-                  className="h-full rounded-full bg-spike transition-all"
-                  style={{ width: `${pct}%` }}
-                />
-              </div>
-              <span className="w-10 shrink-0 text-right text-xs font-semibold text-slate-600">
-                {pct}%
-              </span>
-            </div>
-          ))}
-        </div>
-      </SectionCard>
-
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <SectionCard title="This week">
-          {integration ? (
-            <dl className="space-y-2 text-sm text-slate-700">
-              <div>
-                <dt className="spike-label">Business plan</dt>
-                <dd className="mt-0.5">{integration.businessPlanChapter}</dd>
-              </div>
-              <div>
-                <dt className="spike-label">Portfolio</dt>
-                <dd className="mt-0.5">{integration.portfolioSection}</dd>
-              </div>
-            </dl>
-          ) : (
-            <PlaceholderNotice>Week integration loads for Segment 1 weeks 1–5.</PlaceholderNotice>
-          )}
-        </SectionCard>
-
-        <SectionCard title="Shortcuts">
-          <div className="flex flex-col gap-2">
-            {onLogTraction ? (
-              <button type="button" onClick={onLogTraction} className="spike-btn-secondary">
-                <LineChart size={16} /> Log traction hours
-              </button>
-            ) : null}
-            <Link to={BLUEPRINT_LINKS.businessPlan} className="spike-btn-secondary">
-              <Briefcase size={16} /> Financial Entrepreneurship Canvas
-            </Link>
-            <Link to={ROUTES.research} className="spike-btn-secondary">
-              <Users size={16} /> Research squad
-            </Link>
-            <Link to={BLUEPRINT_LINKS.milestones} className="spike-btn-secondary">
-              <Target size={16} /> Milestones
-            </Link>
-          </div>
-        </SectionCard>
-      </div>
-    </div>
+    <BuildStudioHome
+      participantId={participantId}
+      participantName={participantName}
+      state={state}
+    />
   );
 }
 

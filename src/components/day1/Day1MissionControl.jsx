@@ -15,7 +15,7 @@ export function Day1MissionControl({ participantId, compact = false }) {
       <section className="rounded-2xl border border-spike/20 bg-gradient-to-br from-white via-spike-muted/30 to-white p-4 shadow-card">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="spike-label text-spike">Day 1 Mission</p>
+            <p className="spike-label text-spike">Build Studio</p>
             <p className="text-sm font-semibold text-slate-900">
               {progress.percent}% — Build your Venture Blueprint™
             </p>
