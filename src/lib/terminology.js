@@ -16,6 +16,8 @@ export function formatUiRoleLabel(userRole) {
       return 'Advisor';
     case 'admin':
       return 'Admin';
+    case 'superuser':
+      return 'Superuser';
     default:
       return 'Guest';
   }

@@ -109,7 +109,7 @@ export const MODULE_NAV = [
     label: 'Home',
     shortLabel: 'Home',
     icon: 'dashboard',
-    roles: ['admin'],
+    roles: ['admin', 'superuser'],
   },
   {
     path: ROUTES.playbook,
@@ -158,7 +158,7 @@ export const MODULE_NAV = [
     label: 'Admin',
     shortLabel: 'Admin',
     icon: 'admin',
-    roles: ['admin'],
+    roles: ['admin', 'superuser'],
   },
 ];
 
@@ -246,19 +246,19 @@ export function isModulePath(pathname) {
   return matchModulePath(pathname) !== null;
 }
 
-const AUTHENTICATED_ROLES = ['intern', 'faculty', 'mentor', 'admin'];
+const AUTHENTICATED_ROLES = ['intern', 'faculty', 'mentor', 'admin', 'superuser'];
 
 /** Roles allowed on a module route (single source of truth with MODULE_NAV). */
 export function rolesForRoute(pathname) {
   if (INTERN_FORMATION_ROUTES.includes(pathname)) return ['intern'];
-  if (pathname === ROUTES.adminCohorts || pathname === ROUTES.adminSquadThemes) return ['admin'];
-  if (pathname === ROUTES.adminSquads) return ['admin', 'faculty'];
+  if (pathname === ROUTES.adminCohorts || pathname === ROUTES.adminSquadThemes) return ['admin', 'superuser'];
+  if (pathname === ROUTES.adminSquads) return ['admin', 'superuser', 'faculty'];
   if (pathname === ROUTES.adminContentStudio || pathname.startsWith(`${ROUTES.adminContentStudio}/`)) {
-    return ['admin', 'faculty'];
+    return ['admin', 'superuser', 'faculty'];
   }
-  if (pathname === ROUTES.adminPortfolioSettings) return ['admin', 'faculty'];
-  if (pathname === ROUTES.adminProgramCoachPlaybook) return ['admin', 'faculty'];
-  if (pathname === ROUTES.adminMentorPlaybook) return ['admin', 'mentor'];
+  if (pathname === ROUTES.adminPortfolioSettings) return ['admin', 'superuser', 'faculty'];
+  if (pathname === ROUTES.adminProgramCoachPlaybook) return ['admin', 'superuser', 'faculty'];
+  if (pathname === ROUTES.adminMentorPlaybook) return ['admin', 'superuser', 'mentor'];
   if (pathname === ROUTES.programCoachHome || pathname.startsWith(`${ROUTES.programCoachHome}/`)) {
     return ['faculty', 'admin'];
   }

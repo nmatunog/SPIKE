@@ -2,6 +2,7 @@ import { Loader2, Shield } from 'lucide-react';
 import { GuestBootstrapForm } from '../components/GuestBootstrapForm.jsx';
 import { GuestLoginForm } from '../components/GuestLoginForm.jsx';
 import { InternSignupPanel } from '../components/InternSignupPanel.jsx';
+import { StaffSignupPanel } from '../components/StaffSignupPanel.jsx';
 import { listMockAuthAccountHints } from '../lib/mockAuthUsers.js';
 
 /**
@@ -16,6 +17,7 @@ import { listMockAuthAccountHints } from '../lib/mockAuthUsers.js';
  *   onLogin: (email: string, password: string) => Promise<void>,
  *   onRequestPasswordHelp?: (email: string, note: string) => Promise<void>,
  *   onInternSignup: (payload: object) => Promise<void>,
+ *   onStaffSignup: (payload: object) => Promise<void>,
  * }} props
  */
 export function WelcomePage({
@@ -29,6 +31,7 @@ export function WelcomePage({
   onLogin,
   onRequestPasswordHelp,
   onInternSignup,
+  onStaffSignup,
 }) {
   return (
       <div className="relative overflow-hidden">
@@ -92,6 +95,7 @@ export function WelcomePage({
             />
 
             {usingSupabaseAuth ? <InternSignupPanel onSignup={onInternSignup} /> : null}
+            {usingSupabaseAuth ? <StaffSignupPanel onSignup={onStaffSignup} /> : null}
           </div>
         ) : null}
 

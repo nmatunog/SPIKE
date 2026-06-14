@@ -33,6 +33,7 @@ fi
 
 SUPABASE_URL="${VITE_SUPABASE_URL:-https://lzbfjbtjropoaynbcxew.supabase.co}"
 SUPABASE_ANON="${VITE_SUPABASE_ANON_KEY:-}"
+SUPABASE_SERVICE="${SUPABASE_SERVICE_ROLE_KEY:-}"
 ACCOUNT_ID="${CLOUDFLARE_ACCOUNT_ID:-66e72ecb625c7e76d017a366156ec53f}"
 CF_TOKEN="${CLOUDFLARE_API_TOKEN:-}"
 
@@ -79,6 +80,12 @@ fi
 
 gh secret set VITE_SUPABASE_URL --body "$SUPABASE_URL"
 gh secret set VITE_SUPABASE_ANON_KEY --body "$SUPABASE_ANON"
+if [[ -n "$SUPABASE_SERVICE" ]]; then
+  gh secret set SUPABASE_SERVICE_ROLE_KEY --body "$SUPABASE_SERVICE"
+  echo "✓ SUPABASE_SERVICE_ROLE_KEY set (superuser admin API)."
+else
+  echo "⚠ Skipped SUPABASE_SERVICE_ROLE_KEY — set in GitHub secrets for superuser user directory API."
+fi
 gh secret set CLOUDFLARE_ACCOUNT_ID --body "$ACCOUNT_ID"
 gh secret set CLOUDFLARE_API_TOKEN --body "$CF_TOKEN"
 

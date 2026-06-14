@@ -23,7 +23,7 @@ import { ModuleNav } from './components/nav/ModuleNav.jsx';
 import { useCompactNav } from './hooks/useCompactNav.js';
 import { PortalHeader } from './layouts/PortalHeader.jsx';
 import { filterInternsForMentor } from './lib/mentorAssignmentService.js';
-import { resolveUserRole } from './lib/roles.js';
+import { resolveUserRole, isSuperuserDbRole, isAdminLikeRole } from './lib/roles.js';
 import { RoleDashboardCards } from './components/dashboard/RoleDashboardCards.jsx';
 import { BlueprintTimelineFeed } from './components/blueprint/BlueprintTimelineFeed.jsx';
 import { PageLoader } from './components/ui/PageLoader.jsx';
@@ -79,12 +79,17 @@ import { isMockUser, shouldUseSupabaseForUser } from './lib/mockAuth.js';
 import { ForcePasswordChangeGate } from './components/ForcePasswordChangeGate.jsx';
 import { DailyActivationCodeCard } from './components/dashboard/DailyActivationCodeCard.jsx';
 import { validateInternActivationCode } from './lib/activationCodeService.js';
+import { validateStaffRegistrationCode } from './lib/staffRegistrationCodeService.js';
+import { StaffRegistrationCodeCard } from './components/dashboard/StaffRegistrationCodeCard.jsx';
+import { AdminUserDirectory } from './components/admin/AdminUserDirectory.jsx';
 import { hydrateOnboardingStatus, setOnboardingCompleteCache, hasCompletedOnboardingSync } from './lib/cohortOnboardingService.js';
 
 /** @param {{ children: import('react').ReactNode, label?: string }} props */
 function LazyRoute({ children, label }) {
   return <Suspense fallback={<PageLoader label={label} />}>{children}</Suspense>;
 }
+
+const STAFF_ROLES = ['FACULTY', 'MENTOR', 'ADMIN', 'SUPERUSER'];
 
 const SpikeMasterPortal = () => {
   const navigate = useNavigate();
@@ -167,7 +172,7 @@ const SpikeMasterPortal = () => {
   }, [logout, navigate, showToast]);
 
   const loadPasswordResetRequests = useCallback(async () => {
-    if (!usingSupabaseAuth || user?.role !== 'ADMIN' || !supabase) return;
+    if (!usingSupabaseAuth || !isAdminLikeRole(resolveUserRole(user)) || !supabase) return;
     setPasswordResetLoading(true);
     try {
       const { data, error } = await supabase
@@ -225,7 +230,7 @@ const SpikeMasterPortal = () => {
   );
 
   const loadInterns = useCallback(async () => {
-    if (!['FACULTY', 'MENTOR', 'ADMIN'].includes(user?.role)) return;
+    if (!STAFF_ROLES.includes(user?.role)) return;
 
     if (usingSupabaseAuth && supabase) {
       setInternsLoading(true);
@@ -252,7 +257,7 @@ const SpikeMasterPortal = () => {
   }, [token, user?.role, usingSupabaseAuth, showToast]);
 
   const loadPendingLogs = useCallback(async () => {
-    if (!['FACULTY', 'MENTOR', 'ADMIN'].includes(user?.role)) return;
+    if (!STAFF_ROLES.includes(user?.role)) return;
 
     if (usingSupabaseAuth && supabase) {
       try {
@@ -332,7 +337,7 @@ const SpikeMasterPortal = () => {
   }, [userRole, authLoading, loadSetupInfo]);
 
   useEffect(() => {
-    if (user && ['FACULTY', 'MENTOR', 'ADMIN'].includes(user.role)) {
+    if (user && STAFF_ROLES.includes(user.role)) {
       loadInterns();
     } else {
       setInterns([]);
@@ -348,7 +353,7 @@ const SpikeMasterPortal = () => {
   }, [user?.role, userIsMock, loadMyLogs]);
 
   useEffect(() => {
-    if (user && ['FACULTY', 'MENTOR', 'ADMIN'].includes(user.role)) {
+    if (user && STAFF_ROLES.includes(user.role)) {
       loadPendingLogs();
     } else {
       setPendingLogs([]);
@@ -356,7 +361,7 @@ const SpikeMasterPortal = () => {
   }, [user, loadPendingLogs]);
 
   useEffect(() => {
-    if (user?.role === 'ADMIN' && usingSupabaseAuth) {
+    if (isAdminLikeRole(resolveUserRole(user)) && usingSupabaseAuth) {
       loadPasswordResetRequests();
     } else {
       setPasswordResetRequests([]);
@@ -570,6 +575,34 @@ const SpikeMasterPortal = () => {
     [usingSupabaseAuth, showToast],
   );
 
+  const handleStaffSignup = useCallback(
+    async ({ name, email, password, role, code }) => {
+      if (!usingSupabaseAuth || !supabase) {
+        throw new Error('Signup is only available in Supabase mode.');
+      }
+      await validateStaffRegistrationCode(code);
+
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { name, must_change_password: true } },
+      });
+      if (error) throw error;
+      if (!data.user?.id) {
+        throw new Error('Could not create this account. The email may already be registered.');
+      }
+
+      const { error: roleErr } = await supabase.rpc('complete_staff_signup', {
+        p_role: role,
+        p_name: name,
+      });
+      if (roleErr) throw roleErr;
+
+      showToast('Staff account created. You can now sign in.', 'success');
+    },
+    [usingSupabaseAuth, showToast],
+  );
+
   const handleBootstrapComplete = useCallback(
     async (payload) => {
       await completeBootstrapSetup(payload);
@@ -585,7 +618,7 @@ const SpikeMasterPortal = () => {
       try {
         if (usingSupabaseAuth) {
           if (!supabase) throw new Error('Supabase is not configured.');
-          if (user?.role !== 'ADMIN') {
+          if (!isAdminLikeRole(resolveUserRole(user))) {
             throw new Error('Only administrators can create accounts.');
           }
 
@@ -1013,7 +1046,15 @@ const SpikeMasterPortal = () => {
             {usingSupabaseAuth ? (
               <DailyActivationCodeCard showRegenerate className="mt-6 border-t border-gray-200 pt-6" />
             ) : null}
+            {usingSupabaseAuth && isAdminLikeRole(resolveUserRole(user)) ? (
+              <StaffRegistrationCodeCard showRegenerate className="mt-6 border-t border-gray-200 pt-6" />
+            ) : null}
           </div>
+        }
+        superuserPanel={
+          isSuperuserDbRole(user?.role) && usingSupabaseAuth ? (
+            <AdminUserDirectory currentUserId={user?.id ?? ''} />
+          ) : null
         }
         settingsPanel={
           <div className="rounded-xl border border-gray-200 bg-white p-6 text-center shadow-sm">
@@ -1096,6 +1137,7 @@ const SpikeMasterPortal = () => {
       passwordResetLoading,
       loadPasswordResetRequests,
       resolvePasswordResetRequest,
+      user,
     ],
   );
 
@@ -1147,7 +1189,7 @@ const SpikeMasterPortal = () => {
         </LazyRoute>
       );
     }
-    if (userRole === 'admin') return <AdminDashboardHome />;
+    if (userRole === 'admin' || userRole === 'superuser') return <AdminDashboardHome />;
     return null;
   };
 
@@ -1512,6 +1554,7 @@ const SpikeMasterPortal = () => {
                   usingSupabaseAuth ? requestPasswordHelpForGuest : undefined
                 }
                 onInternSignup={handleInternSignup}
+                onStaffSignup={handleStaffSignup}
               />
             </LazyRoute>
           )
