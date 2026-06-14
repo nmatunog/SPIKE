@@ -353,11 +353,6 @@ export async function finishOnboarding(participantId, squadId) {
   await db.updateFormationSquad(squadId, { onboarding_complete: true });
   await db.markOnboardingComplete(participantId);
   completeCache.set(participantId, true);
-
-  const cohort = await db.fetchActiveCohort();
-  if (cohort && cohort.onboarding_phase !== 'onboarding_complete') {
-    await db.setCohortPhase(cohort.id, 'onboarding_complete');
-  }
 }
 
 /** @param {Array<{ suggested_name: string, reason?: string }>} suggestions */

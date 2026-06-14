@@ -597,11 +597,19 @@ const SpikeMasterPortal = () => {
     async (email, password) => {
       const signedIn = await login(email, password);
       const role = resolveUserRole(signedIn);
-      navigate(
-        defaultRouteForRole(
-          role === 'guest' || role === 'profile_error' ? 'intern' : role,
-        ),
+      let target = defaultRouteForRole(
+        role === 'guest' || role === 'profile_error' ? 'intern' : role,
       );
+      if (
+        role === 'intern'
+        && signedIn?.id
+        && shouldUseSupabaseForUser(signedIn)
+        && !signedIn?.internProgress?.onboarding_complete
+      ) {
+        const done = await hydrateOnboardingStatus(signedIn.id);
+        if (!done) target = ROUTES.cohortIdentity;
+      }
+      navigate(target);
       showToast('Signed in successfully.');
     },
     [login, navigate, showToast],
@@ -626,17 +634,16 @@ const SpikeMasterPortal = () => {
           .from('profiles')
           .update({ name, role: 'INTERN' })
           .eq('id', data.user.id);
-        await supabase.from('intern_progress').upsert(
-          {
-            user_id: data.user.id,
-            segment: 1,
-            hours: 0,
-            licensed: false,
-            university: university || null,
-            squad: squad || null,
-          },
-          { onConflict: 'user_id' },
-        );
+        if (data.session) {
+          const { error: progErr } = await supabase.rpc('ensure_intern_progress', {
+            p_user_id: data.user.id,
+            p_university: university || null,
+            p_squad: squad || null,
+          });
+          if (progErr) {
+            console.warn('ensure_intern_progress:', progErr.message);
+          }
+        }
       }
 
       showToast('Account created. You can now sign in.', 'success');
@@ -1151,7 +1158,7 @@ const SpikeMasterPortal = () => {
               <DailyActivationCodeCard showRegenerate className="mt-6 border-t border-gray-200 pt-6" />
             ) : null}
             {usingSupabaseAuth && isAdminLikeRole(resolveUserRole(user)) ? (
-              <StaffRegistrationCodeCard showRegenerate className="mt-6 border-t border-gray-200 pt-6" />
+              <StaffRegistrationCodeCard canRegenerate className="mt-6 border-t border-gray-200 pt-6" />
             ) : null}
           </div>
         }
@@ -1396,7 +1403,7 @@ const SpikeMasterPortal = () => {
         path === ROUTES.ventureBlueprint
         || path.startsWith(`${ROUTES.ventureBlueprint}/`)
       ) {
-        if (!internUser?.internProgress) {
+        if (!internUser?.internProgress && !hasCompletedOnboardingSync(internUser.id)) {
           return (
             <div className="container mx-auto px-6 py-12 text-center text-gray-700">
               <p className="font-medium">

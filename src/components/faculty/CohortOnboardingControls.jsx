@@ -96,8 +96,9 @@ export function CohortOnboardingControls({ staffId, interns = [], canAssignSquad
           </p>
         ) : (
           <p className="text-sm text-amber-900">
-            No founding cohort is set up yet. Click below to create one, or run migration{' '}
-            <code className="text-xs">20260702_ensure_active_cohort_staff.sql</code> in Supabase SQL Editor.
+            No founding cohort is set up yet. Click below to create one, or run migrations{' '}
+            <code className="text-xs">20260702</code> and <code className="text-xs">20260708</code>{' '}
+            in Supabase SQL Editor.
           </p>
         )}
         {error ? (

@@ -1,5 +1,18 @@
 import { supabase } from '../supabaseClient.js';
 
+/** @param {{ code?: string; message?: string } | null | undefined} error */
+function formatStaffCodeError(error, fallback) {
+  const message = error?.message || fallback;
+  const missing =
+    error?.code === 'PGRST202' ||
+    error?.code === '42P01' ||
+    /not find|404|schema cache/i.test(message);
+  if (missing) {
+    return 'Staff registration is not set up in Supabase yet. Run migrations 20260703a, 20260703, and 20260709 in the SQL Editor, then run NOTIFY pgrst, \'reload schema\';';
+  }
+  return message;
+}
+
 /** True when no SUPERUSER exists yet — first staff signup skips the registration code. */
 export async function needsStaffBootstrap() {
   if (!supabase) return false;
@@ -11,14 +24,14 @@ export async function needsStaffBootstrap() {
 export async function ensureStaffRegistrationCode() {
   if (!supabase) return null;
   const { data, error } = await supabase.rpc('ensure_staff_registration_code');
-  if (error) throw error;
+  if (error) throw new Error(formatStaffCodeError(error, 'Could not ensure staff registration code.'));
   return data ?? null;
 }
 
 export async function regenerateStaffRegistrationCode() {
   if (!supabase) return null;
   const { data, error } = await supabase.rpc('regenerate_staff_registration_code');
-  if (error) throw error;
+  if (error) throw new Error(formatStaffCodeError(error, 'Could not regenerate staff registration code.'));
   return data ?? null;
 }
 
@@ -30,7 +43,7 @@ export async function loadStaffRegistrationCode() {
     .select('code, expires_at, updated_at')
     .eq('id', 1)
     .maybeSingle();
-  if (error) throw error;
+  if (error) throw new Error(formatStaffCodeError(error, 'Could not load staff registration code.'));
   return data ?? null;
 }
 

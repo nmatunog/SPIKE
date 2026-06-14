@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { ArrowRight, Clock, Loader2, Sparkles, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { PageContainer } from '../../components/layout/PageContainer.jsx';
+import { useAuth } from '../../AuthContext.jsx';
 import { useCohortOnboarding } from '../../hooks/useCohortOnboarding.js';
 import { waitingMessage, waitingHint, isLiveWaitingStep } from '../../lib/cohortOnboardingMessages.js';
 import { isMockUserId } from '../../lib/mockAuth.js';
@@ -27,6 +28,7 @@ import { isSupabaseConfigured } from '../../supabaseClient.js';
  */
 export function CohortIdentityPage({ participantId }) {
   const navigate = useNavigate();
+  const { refreshUser } = useAuth();
   const { loading, error, cohort, step, suggestion, squad, finalists, tally, refresh } =
     useCohortOnboarding(participantId);
 
@@ -156,6 +158,7 @@ export function CohortIdentityPage({ participantId }) {
                 runAction(async () => {
                   await completeWelcome(participantId);
                   setWelcomedOverride(true);
+                  await refreshUser();
                 })
               }
             >
@@ -353,11 +356,13 @@ export function CohortIdentityPage({ participantId }) {
             <p className="text-sm text-slate-600">Take your official squad photo.</p>
             <SquadPhotoUpload
               disabled={busy}
-              onUpload={async (dataUrl) => {
-                await uploadSquadPhoto(squadId, dataUrl);
-                await finishOnboarding(participantId, squadId);
-                navigate(ONBOARDING_EXIT_HREF, { replace: true });
-              }}
+              onUpload={(dataUrl) =>
+                runAction(async () => {
+                  await uploadSquadPhoto(squadId, dataUrl);
+                  await finishOnboarding(participantId, squadId);
+                  await refreshUser();
+                })
+              }
             />
           </section>
         ) : null}

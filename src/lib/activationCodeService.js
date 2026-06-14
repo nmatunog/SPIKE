@@ -1,5 +1,21 @@
 import { supabase } from '../supabaseClient.js';
 
+/** @param {{ code?: string; message?: string } | null | undefined} error */
+function formatActivationCodeError(error, fallback) {
+  const message = error?.message || fallback;
+  const missing =
+    error?.code === 'PGRST202' ||
+    error?.code === '42P01' ||
+    /not find|404|schema cache/i.test(message);
+  if (missing) {
+    return 'Daily activation codes are not set up in Supabase yet. Run migration 20260614 (and 20260709 for superuser) in the SQL Editor, then NOTIFY pgrst, \'reload schema\';';
+  }
+  if (/only administrators/i.test(message)) {
+    return 'Your account cannot regenerate codes yet. Run migration 20260709 in Supabase SQL Editor, then NOTIFY pgrst, \'reload schema\';';
+  }
+  return message;
+}
+
 /** SPIKE cohort timezone — activation codes roll at midnight Manila. */
 export const ACTIVATION_TIMEZONE = 'Asia/Manila';
 
@@ -17,7 +33,7 @@ export function getActivationDateKey(date = new Date()) {
 export async function ensureDailyActivationCode() {
   if (!supabase) return null;
   const { data, error } = await supabase.rpc('ensure_daily_activation_code');
-  if (error) throw error;
+  if (error) throw new Error(formatActivationCodeError(error, 'Could not ensure today\'s activation code.'));
   return data ?? null;
 }
 
@@ -40,7 +56,7 @@ export async function fetchTodayActivationCode() {
 export async function regenerateDailyActivationCode() {
   if (!supabase) return null;
   const { data, error } = await supabase.rpc('regenerate_daily_activation_code');
-  if (error) throw error;
+  if (error) throw new Error(formatActivationCodeError(error, 'Could not regenerate today\'s activation code.'));
   return data ?? null;
 }
 

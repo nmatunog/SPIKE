@@ -374,6 +374,24 @@ export async function markOnboardingComplete(participantId) {
   return { onboarding_complete: data };
 }
 
+/**
+ * @param {{ university?: string | null, squad?: string | null }} [opts]
+ */
+export async function ensureInternProgress(opts = {}) {
+  const client = assertClient();
+  const { data: sessionData, error: sessionError } = await client.auth.getSession();
+  if (sessionError) throw sessionError;
+  const userId = sessionData.session?.user?.id;
+  if (!userId) return null;
+  const { data, error } = await client.rpc('ensure_intern_progress', {
+    p_user_id: userId,
+    p_university: opts.university ?? null,
+    p_squad: opts.squad ?? null,
+  });
+  if (error) throw error;
+  return data;
+}
+
 /** @param {string} participantId */
 export async function fetchParticipantOnboarding(participantId) {
   const client = assertClient();
@@ -383,6 +401,14 @@ export async function fetchParticipantOnboarding(participantId) {
     .eq('user_id', participantId)
     .maybeSingle();
   if (error) {
+    const missingColumns =
+      error.code === '42703'
+      || /onboarding_complete|onboarding_welcomed_at/i.test(String(error.message ?? ''));
+    if (missingColumns) {
+      throw new Error(
+        'Onboarding columns missing in intern_progress. Run migrations 20260615 + 20260616 in Supabase SQL Editor, then NOTIFY pgrst, \'reload schema\';',
+      );
+    }
     const { data: fallback, error: fallbackErr } = await client
       .from('intern_progress')
       .select('cohort_id')

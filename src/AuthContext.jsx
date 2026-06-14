@@ -16,6 +16,7 @@ import {
   persistMockUser,
 } from './lib/mockAuth.js';
 import { setOnboardingCompleteCache } from './lib/cohortOnboardingService.js';
+import { ensureInternProgress } from './lib/supabase/cohortOnboarding.js';
 import { isSupabaseConfigured, supabase } from './supabaseClient';
 
 const AuthContext = createContext(null);
@@ -73,7 +74,7 @@ export function AuthProvider({ children }) {
   const fetchSupabaseUser = useCallback(async (authUser) => {
     if (!authUser || !supabase) return null;
 
-    const [{ data: profile, error: profileError }, { data: internProgress }] =
+    const [{ data: profile, error: profileError }, { data: internProgressRaw }] =
       await Promise.all([
         supabase
           .from('profiles')
@@ -86,6 +87,8 @@ export function AuthProvider({ children }) {
           .eq('user_id', authUser.id)
           .maybeSingle(),
       ]);
+
+    let internProgress = internProgressRaw;
 
     if (profileError) throw profileError;
     if (!profile) {
@@ -102,6 +105,15 @@ export function AuthProvider({ children }) {
         mustChangePassword: readMustChangePassword(authUser),
       };
     }
+
+    if (profile.role === 'INTERN' && !internProgress) {
+      try {
+        internProgress = await ensureInternProgress();
+      } catch {
+        /* RPC may be unavailable until migration 20260708 is applied */
+      }
+    }
+
     if (internProgress?.onboarding_complete) {
       setOnboardingCompleteCache(profile.id, true);
     }
