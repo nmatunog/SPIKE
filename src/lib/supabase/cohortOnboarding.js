@@ -65,6 +65,14 @@ export async function fetchActiveCohort() {
   };
 }
 
+/** Bootstrap founding cohort (staff RPC). Requires Supabase session as FACULTY/MENTOR/ADMIN. */
+export async function ensureActiveCohortForStaff() {
+  const client = assertClient();
+  const { data, error } = await client.rpc('ensure_active_cohort');
+  if (error) throw error;
+  return data;
+}
+
 /** @param {number} cohortId @param {Partial<CohortRow>} patch */
 export async function updateCohort(cohortId, patch) {
   const client = assertClient();

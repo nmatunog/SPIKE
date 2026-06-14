@@ -5,6 +5,7 @@ import {
   staffCloseVoting,
   staffGenerateAndSaveFinalists,
   staffLoadDashboard,
+  staffEnsureActiveCohort,
   staffMarkSquadsAssigned,
   staffOpenSuggestions,
   staffPublishVoting,
@@ -13,6 +14,7 @@ import {
   staffUploadCohortPhoto,
 } from '../../lib/cohortOnboardingService.js';
 import { db } from '../../lib/cohortOnboardingService.js';
+import { isMockUserId } from '../../lib/mockAuth.js';
 import { OnboardingPhotoCapture } from '../onboarding/OnboardingPhotoCapture.jsx';
 import { isSupabaseConfigured } from '../../supabaseClient.js';
 
@@ -80,9 +82,38 @@ export function CohortOnboardingControls({ staffId, interns = [], canAssignSquad
   }
 
   if (!data?.cohort) {
+    const demoStaff = isMockUserId(staffId);
     return (
-      <section className="spike-card p-4 text-sm text-amber-800">
-        No active cohort found. Run the onboarding migration and seed an active cohort.
+      <section className="spike-card space-y-3 p-5" id="cohort-onboarding-controls">
+        <div>
+          <p className="spike-label text-spike">Cohort onboarding</p>
+          <h3 className="text-lg font-bold text-slate-900">Founding cohort controls</h3>
+        </div>
+        {demoStaff ? (
+          <p className="text-sm text-amber-900">
+            You are on a <strong>demo Program Coach</strong> login (`faculty@example.com`). Cohort controls
+            need a real Supabase staff account — sign out and sign in with your Program Coach email from
+            Supabase Auth.
+          </p>
+        ) : (
+          <p className="text-sm text-amber-900">
+            No founding cohort is set up yet. Click below to create one, or run migration{' '}
+            <code className="text-xs">20260702_ensure_active_cohort_staff.sql</code> in Supabase SQL Editor.
+          </p>
+        )}
+        {error ? (
+          <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">{error}</p>
+        ) : null}
+        {!demoStaff ? (
+          <button
+            type="button"
+            disabled={Boolean(busy)}
+            className="spike-btn-primary"
+            onClick={() => run('setup', () => staffEnsureActiveCohort())}
+          >
+            {busy === 'setup' ? 'Setting up…' : 'Set up founding cohort'}
+          </button>
+        ) : null}
       </section>
     );
   }

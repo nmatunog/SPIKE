@@ -423,8 +423,19 @@ export async function staffMarkSquadsAssigned(cohortId) {
   return db.setCohortPhase(cohortId, 'squads_assigned');
 }
 
+export async function staffEnsureActiveCohort() {
+  return db.ensureActiveCohortForStaff();
+}
+
 export async function staffLoadDashboard() {
-  const cohort = await db.fetchActiveCohort();
+  let cohort = await db.fetchActiveCohort();
+  if (!cohort) {
+    try {
+      cohort = await db.ensureActiveCohortForStaff();
+    } catch {
+      cohort = null;
+    }
+  }
   if (!cohort) return null;
   const [suggestions, finalists, tally, squads] = await Promise.all([
     db.fetchSuggestions(cohort.id),

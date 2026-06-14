@@ -53,7 +53,11 @@ export function FacultyHomePage({ interns, internSummary, pendingLogs = [], staf
             canAssignSquads
           />
         </div>
-      ) : null}
+      ) : (
+        <section className="mt-4 spike-card p-4 text-sm text-amber-800">
+          Sign in with a staff account to manage cohort onboarding.
+        </section>
+      )}
 
       <RoleDashboardCards
         role="faculty"
