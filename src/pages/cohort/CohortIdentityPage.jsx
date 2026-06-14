@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowRight, Loader2, Sparkles, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { PageContainer } from '../../components/layout/PageContainer.jsx';
@@ -10,6 +10,7 @@ import {
   SQUAD_NAME_EXAMPLES,
   completeWelcome,
   finishOnboarding,
+  hasAcknowledgedWelcome,
   registerSquad,
   submitCohortSuggestion,
   submitCohortVote,
@@ -34,6 +35,16 @@ export function CohortIdentityPage({ participantId }) {
   const [squadMotto, setSquadMotto] = useState('');
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState('');
+  const [welcomedOverride, setWelcomedOverride] = useState(() =>
+    hasAcknowledgedWelcome(participantId),
+  );
+
+  const displayStep =
+    welcomedOverride && step === 'welcome' ? 'waiting' : step;
+
+  useEffect(() => {
+    setWelcomedOverride(hasAcknowledgedWelcome(participantId));
+  }, [participantId]);
 
   async function runAction(fn) {
     setBusy(true);
@@ -89,7 +100,7 @@ export function CohortIdentityPage({ participantId }) {
     );
   }
 
-  if (step === 'complete') {
+  if (displayStep === 'complete') {
     return (
       <PageContainer>
         <section className="mx-auto max-w-xl rounded-2xl border border-emerald-200 bg-emerald-50 p-8 text-center">
@@ -119,8 +130,8 @@ export function CohortIdentityPage({ participantId }) {
       <div className="mx-auto max-w-2xl">
         <header className="mb-6">
           <p className="spike-label text-spike">Build Challenge 0</p>
-          <h1 className="text-2xl font-bold text-slate-900">{stepTitle(step)}</h1>
-          <p className="mt-2 text-sm text-slate-600">{stepSubtitle(step, phase)}</p>
+          <h1 className="text-2xl font-bold text-slate-900">{stepTitle(displayStep)}</h1>
+          <p className="mt-2 text-sm text-slate-600">{stepSubtitle(displayStep, phase)}</p>
         </header>
 
         {actionError ? (
@@ -129,7 +140,7 @@ export function CohortIdentityPage({ participantId }) {
           </p>
         ) : null}
 
-        {step === 'welcome' ? (
+        {displayStep === 'welcome' ? (
           <section className="spike-card p-8 text-center">
             <h2 className="text-3xl font-bold tracking-tight text-slate-900">Welcome to SPIKE</h2>
             <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-slate-600">
@@ -140,14 +151,19 @@ export function CohortIdentityPage({ participantId }) {
               type="button"
               disabled={busy}
               className="mt-8 spike-btn-primary inline-flex items-center gap-2"
-              onClick={() => runAction(() => completeWelcome(participantId))}
+              onClick={() =>
+                runAction(async () => {
+                  await completeWelcome(participantId);
+                  setWelcomedOverride(true);
+                })
+              }
             >
               Begin <ArrowRight size={16} />
             </button>
           </section>
         ) : null}
 
-        {step === 'suggest' ? (
+        {displayStep === 'suggest' ? (
           <section className="spike-card space-y-4 p-6">
             <label className="block">
               <span className="spike-label">Cohort name</span>
@@ -182,10 +198,10 @@ export function CohortIdentityPage({ participantId }) {
           </section>
         ) : null}
 
-        {step === 'waiting' ? (
+        {displayStep === 'waiting' ? (
           <section className="spike-card p-8 text-center">
             <Loader2 className="mx-auto mb-4 animate-spin text-spike" size={28} />
-            <p className="text-lg font-semibold text-slate-900">{waitingMessage(step, phase)}</p>
+            <p className="text-lg font-semibold text-slate-900">{waitingMessage(displayStep, phase)}</p>
             {phase === 'voting_open' && tally.length > 0 ? (
               <ul className="mx-auto mt-6 max-w-sm space-y-2 text-left text-sm">
                 {tally.map((row) => (
@@ -207,7 +223,7 @@ export function CohortIdentityPage({ participantId }) {
           </section>
         ) : null}
 
-        {step === 'vote' ? (
+        {displayStep === 'vote' ? (
           <section className="spike-card space-y-3 p-6">
             <p className="text-sm text-slate-600">You have one vote. Choose your favorite finalist name.</p>
             {finalists.map((f) => {
@@ -228,7 +244,7 @@ export function CohortIdentityPage({ participantId }) {
           </section>
         ) : null}
 
-        {step === 'reveal' ? (
+        {displayStep === 'reveal' ? (
           <section className="spike-card p-8 text-center">
             <Sparkles className="mx-auto mb-3 text-spike" size={32} />
             <p className="spike-label text-spike">Founding cohort</p>
@@ -248,14 +264,14 @@ export function CohortIdentityPage({ participantId }) {
           </section>
         ) : null}
 
-        {step === 'squad-wait' ? (
+        {displayStep === 'squad-wait' ? (
           <section className="spike-card p-8 text-center">
             <Users className="mx-auto mb-4 text-spike" size={32} />
             <p className="text-lg font-semibold text-slate-900">{waitingMessage('squad-wait', phase)}</p>
           </section>
         ) : null}
 
-        {step === 'squad-name' && squadId ? (
+        {displayStep === 'squad-name' && squadId ? (
           <section className="spike-card space-y-4 p-6">
             <input
               value={squadName}
@@ -277,7 +293,7 @@ export function CohortIdentityPage({ participantId }) {
           </section>
         ) : null}
 
-        {step === 'squad-motto' && squadId ? (
+        {displayStep === 'squad-motto' && squadId ? (
           <section className="spike-card space-y-4 p-6">
             <input
               value={squadMotto}
@@ -299,7 +315,7 @@ export function CohortIdentityPage({ participantId }) {
           </section>
         ) : null}
 
-        {step === 'squad-register' && squadId && squadRow ? (
+        {displayStep === 'squad-register' && squadId && squadRow ? (
           <section className="spike-card space-y-4 p-6 text-center">
             <h3 className="text-2xl font-bold text-slate-900">{squadRow.name}</h3>
             <p className="text-lg italic text-slate-600">{squadRow.motto}</p>
@@ -315,7 +331,7 @@ export function CohortIdentityPage({ participantId }) {
           </section>
         ) : null}
 
-        {step === 'squad-photo' && squadId ? (
+        {displayStep === 'squad-photo' && squadId ? (
           <section className="spike-card space-y-4 p-6 text-center">
             <p className="text-sm text-slate-600">Take your official squad photo.</p>
             <SquadPhotoUpload

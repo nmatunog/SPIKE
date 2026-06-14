@@ -2,6 +2,17 @@ import { MOCK_AUTH_ACCOUNTS } from './mockAuthUsers.js';
 
 const STORAGE_KEY = 'spike_mock_user';
 
+/** Read mock user blob from storage (ignores mock-auth-enabled gate). */
+export function readPersistedMockUser() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Mock sign-in for allowlisted demo accounts.
  * On by default; set VITE_MOCK_AUTH=false to disable (e.g. hardened production).
@@ -81,14 +92,18 @@ export function isMockUserId(userId) {
  */
 export function updateMockInternProgress(userId, progressPatch) {
   if (!isMockUserId(userId)) return null;
-  const stored = getStoredMockUser();
+
+  let stored = readPersistedMockUser();
+  if (!stored || stored.id !== userId) {
+    stored = getStoredMockUser();
+  }
   if (!stored || stored.id !== userId) return null;
 
   const internProgress = {
     ...(stored.internProgress ?? {}),
     ...progressPatch,
   };
-  const nextUser = { ...stored, internProgress };
-  persistMockUser(nextUser);
+  const nextUser = { ...stored, internProgress, isMockUser: true };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(nextUser));
   return internProgress;
 }

@@ -3,7 +3,7 @@
  */
 import { apiUrl } from '../apiClient.js';
 import { isSupabaseConfigured } from '../supabaseClient.js';
-import { getStoredMockUser, isMockUserId, updateMockInternProgress } from './mockAuth.js';
+import { getStoredMockUser, isMockUserId, readPersistedMockUser, updateMockInternProgress } from './mockAuth.js';
 import { setSectionField } from './blueprintSectionStore.js';
 import {
   COHORT_NAME_EXAMPLES,
@@ -16,6 +16,45 @@ export { COHORT_NAME_EXAMPLES, SQUAD_NAME_EXAMPLES, SQUAD_MOTTO_EXAMPLES };
 
 /** @type {Map<string, boolean>} */
 const completeCache = new Map();
+
+const WELCOMED_SESSION_KEY = 'spike_onboarding_welcomed_v1';
+
+/** @param {string} participantId */
+function readWelcomedSessionCache(participantId) {
+  try {
+    const map = JSON.parse(sessionStorage.getItem(WELCOMED_SESSION_KEY) || '{}');
+    return typeof map[participantId] === 'string' ? map[participantId] : null;
+  } catch {
+    return null;
+  }
+}
+
+/** @param {string} participantId @param {string} welcomedAt */
+function writeWelcomedSessionCache(participantId, welcomedAt) {
+  try {
+    const map = JSON.parse(sessionStorage.getItem(WELCOMED_SESSION_KEY) || '{}');
+    map[participantId] = welcomedAt;
+    sessionStorage.setItem(WELCOMED_SESSION_KEY, JSON.stringify(map));
+  } catch {
+    /* ignore quota / private mode */
+  }
+}
+
+/**
+ * @param {string} participantId
+ * @param {{ onboarding_complete?: boolean, onboarding_welcomed_at?: string | null, cohort_id?: string | null } | null} progress
+ */
+function mergeWelcomedProgress(participantId, progress) {
+  const base = progress ?? {
+    onboarding_complete: false,
+    onboarding_welcomed_at: null,
+    cohort_id: null,
+  };
+  if (base.onboarding_welcomed_at) return base;
+  const cached = readWelcomedSessionCache(participantId);
+  if (!cached) return base;
+  return { ...base, onboarding_welcomed_at: cached };
+}
 
 /**
  * @typedef {'welcome' | 'suggest' | 'waiting' | 'vote' | 'reveal' | 'cohort-photo' | 'squad-wait' | 'squad-name' | 'squad-motto' | 'squad-register' | 'squad-photo' | 'complete'} OnboardingStep
@@ -34,11 +73,20 @@ export function hasCompletedOnboardingSync(participantId) {
 /** @param {string} participantId */
 function readMockOnboardingProgress(participantId) {
   if (!isMockUserId(participantId)) return null;
-  const mock = getStoredMockUser();
-  if (!mock || mock.id !== participantId) return null;
+
+  const stored = readPersistedMockUser();
+  const source =
+    stored?.id === participantId
+      ? stored
+      : (() => {
+          const fromTemplate = getStoredMockUser();
+          return fromTemplate?.id === participantId ? fromTemplate : null;
+        })();
+
+  if (!source) return null;
   return {
-    onboarding_complete: Boolean(mock.internProgress?.onboarding_complete),
-    onboarding_welcomed_at: mock.internProgress?.onboarding_welcomed_at ?? null,
+    onboarding_complete: Boolean(source.internProgress?.onboarding_complete),
+    onboarding_welcomed_at: source.internProgress?.onboarding_welcomed_at ?? null,
     cohort_id: null,
   };
 }
@@ -134,11 +182,14 @@ export function resolveOnboardingStep(ctx) {
 /** @param {string} participantId */
 export async function loadOnboardingContext(participantId) {
   if (isMockUserId(participantId)) {
-    const progress = readMockOnboardingProgress(participantId) ?? {
-      onboarding_complete: false,
-      onboarding_welcomed_at: null,
-      cohort_id: null,
-    };
+    const progress = mergeWelcomedProgress(
+      participantId,
+      readMockOnboardingProgress(participantId) ?? {
+        onboarding_complete: false,
+        onboarding_welcomed_at: null,
+        cohort_id: null,
+      },
+    );
     const cohort = await db.fetchActiveCohort().catch(() => null);
     const step = resolveOnboardingStep({
       cohort,
@@ -162,26 +213,35 @@ export async function loadOnboardingContext(participantId) {
     };
   }
 
-  const cohort = await db.fetchActiveCohort();
+  const cohort = await db.fetchActiveCohort().catch(() => null);
+  const progressRaw = await db.fetchParticipantOnboarding(participantId).catch(() => ({
+    onboarding_complete: false,
+    onboarding_welcomed_at: null,
+    cohort_id: null,
+  }));
+  const progress = mergeWelcomedProgress(participantId, progressRaw);
+
   if (!cohort) {
+    const step = resolveOnboardingStep({
+      cohort: null,
+      progress,
+      suggestion: null,
+      vote: null,
+      squad: null,
+    });
     return {
       cohort: null,
-      progress: null,
+      progress,
       suggestion: null,
       vote: null,
       squad: null,
       finalists: [],
       tally: [],
-      step: 'welcome',
+      step,
     };
   }
 
-  const [progress, suggestion, vote, squad, finalists, tally] = await Promise.all([
-    db.fetchParticipantOnboarding(participantId).catch(() => ({
-      onboarding_complete: false,
-      onboarding_welcomed_at: null,
-      cohort_id: null,
-    })),
+  const [suggestion, vote, squad, finalists, tally] = await Promise.all([
     db.fetchParticipantSuggestion(cohort.id, participantId).catch(() => null),
     db.fetchParticipantVote(cohort.id, participantId).catch(() => null),
     db.fetchParticipantSquad(participantId).catch(() => null),
@@ -199,14 +259,29 @@ export async function loadOnboardingContext(participantId) {
 }
 
 /** @param {string} participantId */
+export function hasAcknowledgedWelcome(participantId) {
+  return Boolean(readWelcomedSessionCache(participantId));
+}
+
+/** @param {string} participantId */
 export async function completeWelcome(participantId) {
+  const welcomedAt = new Date().toISOString();
+
   if (isMockUserId(participantId)) {
-    updateMockInternProgress(participantId, {
-      onboarding_welcomed_at: new Date().toISOString(),
+    const updated = updateMockInternProgress(participantId, {
+      onboarding_welcomed_at: welcomedAt,
     });
+    if (!updated) {
+      throw new Error(
+        'Could not save demo progress. Sign out, then sign in again with john@example.com / password123.',
+      );
+    }
+    writeWelcomedSessionCache(participantId, welcomedAt);
     return;
   }
-  await db.markParticipantWelcomed(participantId);
+
+  const row = await db.markParticipantWelcomed(participantId);
+  writeWelcomedSessionCache(participantId, row.onboarding_welcomed_at ?? welcomedAt);
 }
 
 /**
