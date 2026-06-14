@@ -59,8 +59,10 @@ export function MentorCoachingSessionForm({ mentorId, participantId, onSaved, sh
   return (
     <div className="spike-card space-y-4">
       <div>
-        <h3 className="text-sm font-semibold text-slate-900">Coaching notes</h3>
-        <p className="mt-1 text-xs text-slate-500">Record what you discussed, observed, and agreed as next steps.</p>
+        <h3 className="text-sm font-semibold text-slate-900">Session notes</h3>
+        <p className="mt-1 text-xs text-slate-500">
+          Optional detail after your quick check-in — what you discussed and agreed to try next.
+        </p>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">

@@ -108,6 +108,7 @@ export function MentorHomePage({ user, interns, internSummary, pendingLogs = [],
 
       <div className="mt-6 space-y-6">
         <MentorWeek1QuickPanel />
+        {user?.id ? <MentorDayDebriefPanel mentorId={user.id} showToast={showToast} /> : null}
         <MentorDay1Panel
           mentorId={user?.id}
           interns={interns.map((i) => ({ id: i.id, name: i.name }))}

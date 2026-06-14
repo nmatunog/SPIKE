@@ -41,8 +41,10 @@ export function MentorWeeklyAssessmentPanel({ mentorId, participantId, onSaved, 
   return (
     <div className="spike-card space-y-4">
       <div>
-        <h3 className="text-sm font-semibold text-slate-900">Week 1 assessment</h3>
-        <p className="mt-1 text-xs text-slate-500">Rate observed behaviors on a 1–5 scale.</p>
+        <h3 className="text-sm font-semibold text-slate-900">Week 1 snapshot</h3>
+        <p className="mt-1 text-xs text-slate-500">
+          Optional end-of-week view. Daily check-ins above are enough for most mentors.
+        </p>
       </div>
 
       <div className="space-y-3">
