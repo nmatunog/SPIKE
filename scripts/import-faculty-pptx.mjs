@@ -47,7 +47,19 @@ function extractTextRuns(xml) {
     const text = match[1].replace(/\s+/g, ' ').trim();
     if (text) parts.push(text);
   }
-  return parts.join('\n');
+  return parts;
+}
+
+/** @param {string} extractDir @param {number} slideNum */
+function readSlideText(extractDir, slideNum) {
+  const path = join(extractDir, 'ppt', 'slides', `slide${slideNum}.xml`);
+  if (!existsSync(path)) return { title: '', body: '' };
+  const lines = extractTextRuns(readFileSync(path, 'utf8'));
+  if (!lines.length) return { title: '', body: '' };
+  return {
+    title: lines[0],
+    body: lines.slice(1).join('\n'),
+  };
 }
 
 /** @param {string} extractDir @param {number} slideNum */
@@ -63,7 +75,7 @@ function readSpeakerNotes(extractDir, count) {
   const notes = [];
   for (let i = 1; i <= count; i++) {
     const path = join(extractDir, 'ppt', 'notesSlides', `notesSlide${i}.xml`);
-    notes.push(existsSync(path) ? extractTextRuns(readFileSync(path, 'utf8')) : '');
+    notes.push(existsSync(path) ? extractTextRuns(readFileSync(path, 'utf8')).join('\n') : '');
   }
   return notes;
 }
@@ -113,18 +125,28 @@ try {
     }
 
     const prior = existing.slides?.[i - 1] ?? {};
+    const extracted = readSlideText(tmp, i);
     const imageUrl = `/content/${args.segment}/${args.week}/${args.day}/${deckSlug}/${imageName}`;
+    const deckId = deckSlug.replace('-', '');
 
     slides.push({
-      id: prior.id ?? `slide-${deckSlug}-${String(i).padStart(2, '0')}`,
+      id: prior.id ?? `slide-${deckId}-${String(i).padStart(2, '0')}`,
       presentationId: existing.presentation?.id ?? `presentation-${args.day}-${deckSlug}`,
       sortOrder: i,
-      title: prior.title ?? `Slide ${i}`,
-      body: prior.body ?? '',
+      title: prior.title ?? extracted.title ?? `Slide ${i}`,
+      body: prior.body ?? extracted.body ?? '',
       speakerNotes: speakerNotes[i - 1] || prior.speakerNotes || '',
       discussionQuestions: prior.discussionQuestions ?? [],
       imageUrl,
     });
+  }
+
+  // Drop stale slide images when deck shrinks.
+  for (const file of readdirSync(imageDir)) {
+    const match = file.match(/^slide-(\d+)\.png$/);
+    if (match && Number(match[1]) > slideCount) {
+      rmSync(join(imageDir, file), { force: true });
+    }
   }
 
   const slideIds = slides.map((s) => s.id);

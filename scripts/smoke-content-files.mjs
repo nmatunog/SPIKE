@@ -45,7 +45,7 @@ const checks = [
   [day.learningObjectives?.length > 0, 'learningObjectives'],
   [day.presentations?.length === 2, 'day.presentations (2 decks)'],
   [presentation.presentation?.id === 'presentation-day-1-deck-01', 'Faculty Deck 01 id'],
-  [presentation.slides?.length >= 6, 'Deck 01 slides'],
+  [presentation.slides?.length >= 6, 'Deck 01 slides (min 6)'],
   [presentation.presentation?.pptxUrl?.includes('faculty-deck-01.pptx'), 'Deck 01 pptxUrl'],
   [presentation.slides?.every((s) => s.imageUrl), 'Deck 01 slide images'],
   [existsSync(join(ROOT, 'public/content/segment-1/week-1/day-1/faculty-deck-01.pptx')), 'Deck 01 pptx on disk'],
