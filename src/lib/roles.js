@@ -22,6 +22,11 @@ export function isAdminLikeRole(userRole) {
   return userRole === 'admin' || userRole === 'superuser';
 }
 
+/** Staff routes in SpikeMasterPortal (faculty, mentor, admin, superuser). */
+export function isStaffUiRole(userRole) {
+  return userRole === 'faculty' || userRole === 'mentor' || isAdminLikeRole(userRole);
+}
+
 /** @param {string | null | undefined} dbRole */
 export function isSuperuserDbRole(dbRole) {
   return dbRole === 'SUPERUSER';

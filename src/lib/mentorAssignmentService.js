@@ -2,6 +2,7 @@
  * Mentor assignment scoping — filter cohort to assigned squads.
  */
 import { ensureFormationStore } from './cohortFormationStorage.js';
+import { isAdminLikeRole } from './roles.js';
 
 /** @param {string} mentorId */
 export function getParticipantIdsForMentor(mentorId) {
@@ -22,7 +23,7 @@ export function getParticipantIdsForMentor(mentorId) {
  * @param {string} [userRole]
  */
 export function filterInternsForMentor(interns, mentorId, userRole = 'mentor') {
-  if (!mentorId || userRole === 'admin') return interns;
+  if (!mentorId || isAdminLikeRole(userRole)) return interns;
   const assigned = new Set(getParticipantIdsForMentor(mentorId));
   if (!assigned.size) return interns;
   return interns.filter((intern) => assigned.has(intern.id));

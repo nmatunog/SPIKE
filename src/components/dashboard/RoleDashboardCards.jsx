@@ -53,7 +53,7 @@ export function RoleDashboardCards({ role, user, interns, internSummary, pending
     );
   }
 
-  if (role === 'admin') {
+  if (role === 'admin' || role === 'superuser') {
     const m = deriveAdminDashboardMetrics(interns, internSummary);
     const { s1, s2, s3 } = m.segmentDistribution;
     return (

@@ -116,42 +116,42 @@ export const MODULE_NAV = [
     label: 'Playbook',
     shortLabel: 'Playbook',
     icon: 'playbook',
-    roles: ['intern', 'faculty', 'mentor', 'admin'],
+    roles: ['intern', 'faculty', 'mentor', 'admin', 'superuser'],
   },
   {
     path: ROUTES.portfolio,
     label: 'Portfolio',
     shortLabel: 'Portfolio',
     icon: 'portfolio',
-    roles: ['faculty', 'mentor', 'admin'],
+    roles: ['faculty', 'mentor', 'admin', 'superuser'],
   },
   {
     path: ROUTES.research,
     label: 'Research',
     shortLabel: 'Research',
     icon: 'research',
-    roles: ['intern', 'faculty', 'mentor', 'admin'],
+    roles: ['intern', 'faculty', 'mentor', 'admin', 'superuser'],
   },
   {
     path: ROUTES.reports,
     label: 'Reports',
     shortLabel: 'Reports',
     icon: 'reports',
-    roles: ['faculty', 'mentor', 'admin'],
+    roles: ['faculty', 'mentor', 'admin', 'superuser'],
   },
   {
     path: ROUTES.mentorVentureCoach,
     label: 'Participants',
     shortLabel: 'People',
     icon: 'people',
-    roles: ['mentor', 'admin'],
+    roles: ['mentor', 'admin', 'superuser'],
   },
   {
     path: ROUTES.analyticsCohortIdentity,
     label: 'Analytics',
     shortLabel: 'Stats',
     icon: 'analytics',
-    roles: ['faculty', 'mentor', 'admin'],
+    roles: ['faculty', 'mentor', 'admin', 'superuser'],
   },
   {
     path: ROUTES.admin,
@@ -260,19 +260,19 @@ export function rolesForRoute(pathname) {
   if (pathname === ROUTES.adminProgramCoachPlaybook) return ['admin', 'superuser', 'faculty'];
   if (pathname === ROUTES.adminMentorPlaybook) return ['admin', 'superuser', 'mentor'];
   if (pathname === ROUTES.programCoachHome || pathname.startsWith(`${ROUTES.programCoachHome}/`)) {
-    return ['faculty', 'admin'];
+    return ['faculty', 'admin', 'superuser'];
   }
   if (pathname === ROUTES.mentorHome || pathname.startsWith(`${ROUTES.mentorHome}/`)) {
-    return ['mentor', 'admin'];
+    return ['mentor', 'admin', 'superuser'];
   }
-  if (pathname === ROUTES.analyticsCohortIdentity) return ['faculty', 'admin', 'mentor'];
-  if (pathname === ROUTES.brandLexicon) return ['faculty', 'mentor', 'admin'];
+  if (pathname === ROUTES.analyticsCohortIdentity) return ['faculty', 'admin', 'mentor', 'superuser'];
+  if (pathname === ROUTES.brandLexicon) return ['faculty', 'mentor', 'admin', 'superuser'];
   if (
     pathname === ROUTES.mentorVentureCoach
     || pathname.startsWith(`${ROUTES.mentorVentureCoach}/`)
     || pathname.startsWith(`${ROUTES.mentorParticipant}/`)
   ) {
-    return ['mentor', 'admin'];
+    return ['mentor', 'admin', 'superuser'];
   }
 
   const route = matchModulePath(pathname);

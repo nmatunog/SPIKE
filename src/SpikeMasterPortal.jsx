@@ -23,7 +23,7 @@ import { ModuleNav } from './components/nav/ModuleNav.jsx';
 import { useCompactNav } from './hooks/useCompactNav.js';
 import { PortalHeader } from './layouts/PortalHeader.jsx';
 import { filterInternsForMentor } from './lib/mentorAssignmentService.js';
-import { resolveUserRole, isSuperuserDbRole, isAdminLikeRole } from './lib/roles.js';
+import { resolveUserRole, isSuperuserDbRole, isAdminLikeRole, isStaffUiRole } from './lib/roles.js';
 import { RoleDashboardCards } from './components/dashboard/RoleDashboardCards.jsx';
 import { BlueprintTimelineFeed } from './components/blueprint/BlueprintTimelineFeed.jsx';
 import { PageLoader } from './components/ui/PageLoader.jsx';
@@ -1348,7 +1348,7 @@ const SpikeMasterPortal = () => {
       );
     }
 
-    if (['faculty', 'mentor', 'admin'].includes(userRole)) {
+    if (isStaffUiRole(userRole)) {
       if (path === ROUTES.playbook) return renderPlaybook();
       if (path === ROUTES.portfolio) return <PortfolioPage hours={internSummary.avgHours} />;
       if (path === ROUTES.research) return <ResearchPage user={user} />;
@@ -1659,7 +1659,7 @@ const SpikeMasterPortal = () => {
           </div>
         )}
 
-        {(userRole === 'intern' || ['faculty', 'mentor', 'admin'].includes(userRole)) &&
+        {(userRole === 'intern' || isStaffUiRole(userRole)) &&
           !authLoading && (
             <RoleRouteGuard userRole={userRole} pathname={location.pathname}>
               <LazyRoute label="Loading module…">{renderAuthenticatedModule()}</LazyRoute>
