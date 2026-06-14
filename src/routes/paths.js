@@ -31,6 +31,9 @@ export const ROUTES = {
   brandLexicon: '/brand-lexicon',
 };
 
+/** Redirect target after onboarding completes — Build Challenge 1 (Ambition). */
+export const ONBOARDING_EXIT_HREF = `${ROUTES.ventureBlueprint}/coach/ambition`;
+
 /** Blueprint sub-routes (PR4) — Business Plan, Milestones, Venture Board live inside the OS. */
 export const BLUEPRINT_LINKS = {
   businessPlan: '/venture-blueprint/canvas',

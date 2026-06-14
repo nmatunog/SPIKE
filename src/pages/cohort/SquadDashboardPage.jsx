@@ -33,10 +33,10 @@ export function SquadDashboardPage({ participantId, participantName }) {
           <Users className="mx-auto mb-3 text-spike" size={36} />
           <h2 className="text-xl font-bold text-slate-900">Join a squad first</h2>
           <p className="mt-2 text-sm text-slate-600">
-            Complete Build Challenge 0 to form your research squad, name it, and propose your cohort name.
+            Complete Build Challenge 0 to name your founding cohort and set up your squad.
           </p>
           <Link to={ROUTES.cohortIdentity} className="mt-4 inline-flex spike-btn-primary">
-            Start Build Challenge 0
+            Continue onboarding
           </Link>
         </section>
       </PageContainer>

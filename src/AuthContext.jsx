@@ -15,6 +15,7 @@ import {
   isMockAuthEnabled,
   persistMockUser,
 } from './lib/mockAuth.js';
+import { setOnboardingCompleteCache } from './lib/cohortOnboardingService.js';
 import { isSupabaseConfigured, supabase } from './supabaseClient';
 
 const AuthContext = createContext(null);
@@ -81,13 +82,16 @@ export function AuthProvider({ children }) {
           .maybeSingle(),
         supabase
           .from('intern_progress')
-          .select('segment, hours, licensed, squad, university, career_track, career_track_selected_at, current_week, current_day')
+          .select('segment, hours, licensed, squad, university, career_track, career_track_selected_at, current_week, current_day, onboarding_complete, onboarding_welcomed_at, cohort_id')
           .eq('user_id', authUser.id)
           .maybeSingle(),
       ]);
 
     if (profileError) throw profileError;
     if (!profile) {
+      if (internProgress?.onboarding_complete) {
+        setOnboardingCompleteCache(authUser.id, true);
+      }
       return {
         id: authUser.id,
         email: authUser.email,
@@ -97,6 +101,9 @@ export function AuthProvider({ children }) {
         profileIncomplete: true,
         mustChangePassword: readMustChangePassword(authUser),
       };
+    }
+    if (internProgress?.onboarding_complete) {
+      setOnboardingCompleteCache(profile.id, true);
     }
     return {
       id: profile.id,

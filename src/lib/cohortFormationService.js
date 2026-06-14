@@ -16,6 +16,7 @@ import {
   SQUAD_NAME_EXAMPLES,
   SQUAD_MOTTO_EXAMPLES,
 } from './cohortFormationStorage.js';
+import { hasCompletedOnboardingSync } from './cohortOnboardingService.js';
 
 /**
  * @typedef {{
@@ -81,6 +82,7 @@ export function getParticipantCohortSubmission(participantId) {
 
 /** @param {string} participantId */
 export function hasSubmittedCohortIdentity(participantId) {
+  if (hasCompletedOnboardingSync(participantId)) return true;
   return hasCompletedBuildChallenge0(participantId) || Boolean(getParticipantCohortSubmission(participantId));
 }
 

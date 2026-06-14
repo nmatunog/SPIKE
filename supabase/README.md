@@ -36,8 +36,9 @@ Copy-paste each file into the SQL Editor and run. All migrations are idempotent 
 | **17** | [`migrations/20260628_coach_training_rag.sql`](./migrations/20260628_coach_training_rag.sql) | Coach AI training log (`coach_training_events`) + RAG corpus RPC |
 | **18** | [`migrations/20260629_sprint_06b_faculty_mentor_framework.sql`](./migrations/20260629_sprint_06b_faculty_mentor_framework.sql) | **Sprint 06B** — `faculty_day_templates`, `mentor_day_guides`, coaching log columns, Week 1 seed |
 | **19** | [`migrations/20260630_sprint_06c_venture_portfolio.sql`](./migrations/20260630_sprint_06c_venture_portfolio.sql) | **Sprint 06C** — `venture_portfolios`, `venture_portfolio_sections`, `portfolio_assets`, `portfolio_milestones`, `portfolio_exports` |
+| **20** | [`migrations/20260615_onboarding_refactor.sql`](./migrations/20260615_onboarding_refactor.sql) | **Onboarding refactor** — cohort suggestions/votes/finalists, formation squads (bigint cohorts), intern onboarding flags |
 
-**Quick checklist (19 steps after project creation):**
+**Quick checklist (20 steps after project creation):**
 
 ```
 ☐  1  schema.sql
@@ -126,7 +127,7 @@ Local dev: copy `api/.env.example` → `api/.env` and run `cd api && npm run dev
 | FNA | `src/lib/fnaService.js` | 08 |
 | Timeline / coaching | `src/lib/timelineService.js`, `src/lib/coachingService.js` | 09 |
 | Venture Blueprint | `src/lib/ventureBlueprintSync.js` | 10, 11 |
-| Cohort / squads | `src/lib/cohortFormationService.js` | 14 |
+| Cohort / squads | `src/lib/cohortOnboardingService.js`, `src/lib/supabase/cohortOnboarding.js` | 14, 20 |
 | Venture Coach | `src/lib/ventureCoachService.js` | 15 |
 | **Content Studio** | `src/lib/contentStudioService.js`, `/admin/content-studio` | **16** |
 | AI coach API | `functions/api/coach/generate.js` | Cloudflare secrets (not Supabase) |

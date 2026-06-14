@@ -45,6 +45,11 @@ export function buildCoachPrompt(payload) {
     statementType = '',
     ragExamples = [],
   } = payload;
+
+  if (task === 'generate_cohort_finalists' && payload.prompt) {
+    return String(payload.prompt);
+  }
+
   const rules = buildRules(payload);
   const ragBlock = formatRagExamplesForPrompt(
     /** @type {Array<{ input_labels?: Record<string, unknown>, output_text?: string }>} */ (ragExamples),

@@ -1,411 +1,396 @@
-import { useCallback, useEffect, useState } from 'react';
-import { ArrowRight, Sparkles, Users } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { ArrowRight, Loader2, Sparkles, Users } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { PageContainer } from '../../components/layout/PageContainer.jsx';
+import { useCohortOnboarding } from '../../hooks/useCohortOnboarding.js';
+import { waitingMessage } from '../../components/onboarding/OnboardingPhotoCapture.jsx';
 import {
   COHORT_NAME_EXAMPLES,
   SQUAD_MOTTO_EXAMPLES,
   SQUAD_NAME_EXAMPLES,
-  castCohortVote,
-  createFormingSquad,
-  finalizeCohortFromVotes,
-  getBuildChallenge0Step,
-  getCohortVoteProgress,
-  getCohortVoteTally,
-  getOfficialCohort,
-  getParticipantSquad,
-  hasCompletedBuildChallenge0,
-  joinFormingSquad,
-  listOpenSquads,
-  submitSquadCohortProposal,
-  updateSquadProfile,
-} from '../../lib/cohortFormationService.js';
-import { ROUTES } from '../../routes/paths.js';
-
-const STEP_ORDER = ['join', 'squad-name', 'squad-motto', 'cohort-name', 'vote', 'reveal'];
-
-const STEP_LABELS = {
-  join: 'Join Squad',
-  'squad-name': 'Squad Name',
-  'squad-motto': 'Squad Motto',
-  'cohort-name': 'Cohort Name',
-  vote: 'Vote',
-  reveal: 'Reveal',
-};
+  completeWelcome,
+  finishOnboarding,
+  registerSquad,
+  submitCohortSuggestion,
+  submitCohortVote,
+  updateSquadSetup,
+  uploadSquadPhoto,
+} from '../../lib/cohortOnboardingService.js';
+import { ROUTES, ONBOARDING_EXIT_HREF } from '../../routes/paths.js';
+import { isSupabaseConfigured } from '../../supabaseClient.js';
 
 /**
- * Build Challenge 0 — squad first, then cohort name per squad, then live vote.
+ * Build Challenge 0 — cohort-first onboarding (Option A single route).
  * @param {{ participantId: string }} props
  */
 export function CohortIdentityPage({ participantId }) {
-  const [tick, setTick] = useState(0);
-  const refresh = useCallback(() => setTick((n) => n + 1), []);
-  // tick drives re-read from localStorage-backed service
-  void tick;
+  const navigate = useNavigate();
+  const { loading, error, cohort, step, suggestion, vote, squad, finalists, tally, refresh } =
+    useCohortOnboarding(participantId);
 
-  const step = getBuildChallenge0Step(participantId);
-  const squad = getParticipantSquad(participantId);
-  const progress = getCohortVoteProgress();
-  const tally = getCohortVoteTally();
-  const official = getOfficialCohort();
-  const stepIndex = STEP_ORDER.indexOf(step);
+  const [name, setName] = useState('');
+  const [reason, setReason] = useState('');
+  const [squadName, setSquadName] = useState('');
+  const [squadMotto, setSquadMotto] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [actionError, setActionError] = useState('');
 
-  useEffect(() => {
-    if (step !== 'reveal' && step !== 'vote') return undefined;
-    const id = setInterval(() => refresh(), 2500);
-    return () => clearInterval(id);
-  }, [step, refresh]);
-
-  useEffect(() => {
-    if (progress.allVoted && !official) {
-      finalizeCohortFromVotes();
-      refresh();
+  async function runAction(fn) {
+    setBusy(true);
+    setActionError('');
+    try {
+      await fn();
+      await refresh();
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : 'Something went wrong.');
+    } finally {
+      setBusy(false);
     }
-  }, [progress.allVoted, official, refresh]);
+  }
 
-  if (hasCompletedBuildChallenge0(participantId) && progress.allVoted) {
-    const winner = tally[0];
+  if (!isSupabaseConfigured) {
     return (
       <PageContainer>
-        <section className="mx-auto max-w-xl rounded-2xl border border-emerald-200 bg-emerald-50 p-8 text-center">
-          <Sparkles className="mx-auto mb-3 text-emerald-600" size={32} />
-          <h2 className="text-xl font-bold text-emerald-950">Build Challenge 0 complete</h2>
-          <p className="mt-2 text-sm text-emerald-800">
-            {official
-              ? `Your founding cohort is ${official.name}.`
-              : 'Votes are in — your program coach will confirm the official cohort name.'}
+        <section className="mx-auto max-w-xl spike-card p-8 text-center">
+          <h2 className="text-xl font-bold text-slate-900">Onboarding requires Supabase</h2>
+          <p className="mt-2 text-sm text-slate-600">
+            Connect VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to run the founding cohort flow.
           </p>
-          {winner ? (
-            <p className="mt-3 text-2xl font-black tracking-wide text-spike">{winner.cohortName}</p>
-          ) : null}
-          <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-center">
-            <Link to={ROUTES.ventureBlueprint} className="spike-btn-primary">
-              Continue to Build Studio <ArrowRight size={16} />
-            </Link>
-            {squad ? (
-              <Link to={ROUTES.squad} className="spike-btn-secondary">
-                Squad dashboard
-              </Link>
-            ) : null}
-          </div>
         </section>
       </PageContainer>
     );
   }
+
+  if (loading) {
+    return (
+      <PageContainer>
+        <div className="flex flex-col items-center gap-3 py-16 text-slate-600">
+          <Loader2 className="animate-spin text-spike" size={32} />
+          <p className="text-sm font-medium">Loading onboarding…</p>
+        </div>
+      </PageContainer>
+    );
+  }
+
+  if (error) {
+    return (
+      <PageContainer>
+        <section className="mx-auto max-w-xl rounded-2xl border border-amber-200 bg-amber-50 p-6">
+          <p className="text-sm text-amber-950">{error}</p>
+          <button type="button" className="mt-3 spike-btn-primary" onClick={() => refresh()}>
+            Retry
+          </button>
+        </section>
+      </PageContainer>
+    );
+  }
+
+  if (step === 'complete') {
+    return (
+      <PageContainer>
+        <section className="mx-auto max-w-xl rounded-2xl border border-emerald-200 bg-emerald-50 p-8 text-center">
+          <Sparkles className="mx-auto mb-3 text-emerald-600" size={32} />
+          <h2 className="text-xl font-bold text-emerald-950">Onboarding complete</h2>
+          <p className="mt-2 text-sm text-emerald-800">
+            Your founding cohort is {cohort?.official_name ?? cohort?.name}. Continue to Build Challenge 1.
+          </p>
+          <button
+            type="button"
+            className="mt-6 spike-btn-primary inline-flex items-center gap-2"
+            onClick={() => navigate(ONBOARDING_EXIT_HREF, { replace: true })}
+          >
+            Build Your Ambition <ArrowRight size={16} />
+          </button>
+        </section>
+      </PageContainer>
+    );
+  }
+
+  const phase = cohort?.onboarding_phase ?? 'suggestions_closed';
+  const squadRow = squad?.squad;
+  const squadId = squad?.membership?.squad_id;
 
   return (
     <PageContainer wide>
       <div className="mx-auto max-w-2xl">
         <header className="mb-6">
           <p className="spike-label text-spike">Build Challenge 0</p>
-          <h1 className="text-2xl font-bold text-slate-900">Form your squad, then name your cohort</h1>
-          <p className="mt-2 text-sm text-slate-600">
-            Join or create a squad, name it together, then propose one cohort name for the whole founding
-            class.
-          </p>
+          <h1 className="text-2xl font-bold text-slate-900">{stepTitle(step)}</h1>
+          <p className="mt-2 text-sm text-slate-600">{stepSubtitle(step, phase)}</p>
         </header>
 
-        <div className="mb-6 flex gap-1">
-          {STEP_ORDER.map((id, idx) => (
-            <div key={id} className="flex-1 text-center">
-              <div
-                className={`mx-auto mb-1 h-1.5 rounded-full ${idx <= stepIndex ? 'bg-spike' : 'bg-slate-200'}`}
+        {actionError ? (
+          <p className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+            {actionError}
+          </p>
+        ) : null}
+
+        {step === 'welcome' ? (
+          <section className="spike-card p-8 text-center">
+            <h2 className="text-3xl font-bold tracking-tight text-slate-900">Welcome to SPIKE</h2>
+            <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-slate-600">
+              You are joining a founding cohort. First you will name your cohort together, then form squads of
+              three, then begin your Venture Blueprint with Ambition.
+            </p>
+            <button
+              type="button"
+              disabled={busy}
+              className="mt-8 spike-btn-primary inline-flex items-center gap-2"
+              onClick={() => runAction(() => completeWelcome(participantId))}
+            >
+              Begin <ArrowRight size={16} />
+            </button>
+          </section>
+        ) : null}
+
+        {step === 'suggest' ? (
+          <section className="spike-card space-y-4 p-6">
+            <label className="block">
+              <span className="spike-label">Cohort name</span>
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. Catalyst"
+                className="mt-1 w-full rounded-xl border px-4 py-3 text-lg font-semibold"
               />
-              <span className="text-2xs font-semibold uppercase tracking-wide text-slate-500">
-                {STEP_LABELS[id]}
-              </span>
-            </div>
-          ))}
-        </div>
-
-        {step === 'join' ? (
-          <JoinSquadStep
-            participantId={participantId}
-            onCreate={() => {
-              createFormingSquad(participantId);
-              refresh();
-            }}
-            onJoin={(squadId) => {
-              joinFormingSquad(squadId, participantId);
-              refresh();
-            }}
-          />
+            </label>
+            <p className="text-xs text-slate-500">Examples: {COHORT_NAME_EXAMPLES.slice(0, 5).join(', ')}</p>
+            <label className="block">
+              <span className="spike-label">Why this name? (optional)</span>
+              <textarea
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                rows={3}
+                className="mt-1 w-full rounded-xl border px-4 py-3 text-sm"
+                placeholder="What does this name represent for your class?"
+              />
+            </label>
+            <button
+              type="button"
+              disabled={busy || name.trim().length < 2}
+              className="spike-btn-primary w-full sm:w-auto"
+              onClick={() =>
+                runAction(() => submitCohortSuggestion(participantId, { name, reason }))
+              }
+            >
+              Submit suggestion
+            </button>
+          </section>
         ) : null}
 
-        {step === 'squad-name' && squad ? (
-          <BuilderStep
-            stepLabel="Step 2 of 6"
-            title="Choose Squad Name"
-            question="What will your research squad be called?"
-            value={squad.name ?? ''}
-            examples={SQUAD_NAME_EXAMPLES}
-            onSave={(value) => {
-              updateSquadProfile(squad.id, { name: value });
-              refresh();
-            }}
-          />
-        ) : null}
-
-        {step === 'squad-motto' && squad ? (
-          <BuilderStep
-            stepLabel="Step 3 of 6"
-            title="Choose Squad Motto"
-            question="What phrase will guide your squad this week?"
-            value={squad.motto ?? ''}
-            examples={SQUAD_MOTTO_EXAMPLES}
-            onSave={(value) => {
-              updateSquadProfile(squad.id, { motto: value });
-              refresh();
-            }}
-          />
-        ) : null}
-
-        {step === 'cohort-name' && squad ? (
-          <BuilderStep
-            stepLabel="Step 4 of 6"
-            title="Represent Your Squad"
-            promptLabel="Prompt"
-            question="Every Squad will propose one name that represents the identity and aspirations of this founding cohort."
-            value={squad.cohortNameProposal?.suggested_name ?? ''}
-            examples={COHORT_NAME_EXAMPLES}
-            onSave={(value) => {
-              submitSquadCohortProposal(squad.id, participantId, value);
-              refresh();
-            }}
-            hint={`One entry for ${squad.name || 'your squad'} — the first submission locks your squad's proposal.`}
-          />
+        {step === 'waiting' ? (
+          <section className="spike-card p-8 text-center">
+            <Loader2 className="mx-auto mb-4 animate-spin text-spike" size={28} />
+            <p className="text-lg font-semibold text-slate-900">{waitingMessage(step, phase)}</p>
+            {phase === 'voting_open' && tally.length > 0 ? (
+              <ul className="mx-auto mt-6 max-w-sm space-y-2 text-left text-sm">
+                {tally.map((row) => (
+                  <li
+                    key={row.finalistId}
+                    className="flex justify-between rounded-lg bg-slate-50 px-3 py-2"
+                  >
+                    <span className="font-medium">{row.name}</span>
+                    <span className="font-bold text-spike">{row.votes}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+            {suggestion?.suggested_name ? (
+              <p className="mt-4 text-xs text-slate-500">
+                Your suggestion: <strong>{suggestion.suggested_name}</strong>
+              </p>
+            ) : null}
+          </section>
         ) : null}
 
         {step === 'vote' ? (
-          <VoteStep
-            participantId={participantId}
-            tally={tally}
-            progress={progress}
-            onVote={(squadId) => {
-              castCohortVote(participantId, squadId);
-              refresh();
-            }}
-          />
+          <section className="spike-card space-y-3 p-6">
+            <p className="text-sm text-slate-600">You have one vote. Choose your favorite finalist name.</p>
+            {finalists.map((f) => {
+              const count = tally.find((t) => t.finalistId === f.id)?.votes ?? 0;
+              return (
+                <button
+                  key={f.id}
+                  type="button"
+                  disabled={busy}
+                  className="flex w-full items-center justify-between rounded-xl border border-slate-200 px-4 py-4 text-left transition hover:border-spike hover:bg-spike-muted/40"
+                  onClick={() => runAction(() => submitCohortVote(participantId, f.id))}
+                >
+                  <span className="text-lg font-bold text-slate-900">{f.name}</span>
+                  <span className="text-sm font-semibold text-spike">{count} votes</span>
+                </button>
+              );
+            })}
+          </section>
         ) : null}
 
         {step === 'reveal' ? (
-          <RevealStep tally={tally} progress={progress} official={official} />
+          <section className="spike-card p-8 text-center">
+            <Sparkles className="mx-auto mb-3 text-spike" size={32} />
+            <p className="spike-label text-spike">Founding cohort</p>
+            <h2 className="mt-2 text-4xl font-black tracking-wide text-slate-900">
+              {cohort?.official_name ?? '—'}
+            </h2>
+            <p className="mx-auto mt-6 max-w-md text-sm text-slate-600">
+              {waitingMessage('cohort-photo', phase)}
+            </p>
+            {cohort?.photo_url ? (
+              <img
+                src={cohort.photo_url}
+                alt=""
+                className="mx-auto mt-6 h-48 w-full max-w-sm rounded-2xl object-cover"
+              />
+            ) : null}
+          </section>
+        ) : null}
+
+        {step === 'squad-wait' ? (
+          <section className="spike-card p-8 text-center">
+            <Users className="mx-auto mb-4 text-spike" size={32} />
+            <p className="text-lg font-semibold text-slate-900">{waitingMessage('squad-wait', phase)}</p>
+          </section>
+        ) : null}
+
+        {step === 'squad-name' && squadId ? (
+          <section className="spike-card space-y-4 p-6">
+            <input
+              value={squadName}
+              onChange={(e) => setSquadName(e.target.value)}
+              placeholder="Squad name"
+              className="w-full rounded-xl border px-4 py-3 text-lg font-semibold"
+            />
+            <p className="text-xs text-slate-500">Examples: {SQUAD_NAME_EXAMPLES.slice(0, 4).join(', ')}</p>
+            <button
+              type="button"
+              disabled={busy || squadName.trim().length < 2}
+              className="spike-btn-primary"
+              onClick={() =>
+                runAction(() => updateSquadSetup(squadId, { name: squadName.trim() }))
+              }
+            >
+              Save squad name
+            </button>
+          </section>
+        ) : null}
+
+        {step === 'squad-motto' && squadId ? (
+          <section className="spike-card space-y-4 p-6">
+            <input
+              value={squadMotto}
+              onChange={(e) => setSquadMotto(e.target.value)}
+              placeholder="Squad motto"
+              className="w-full rounded-xl border px-4 py-3 text-lg font-semibold"
+            />
+            <p className="text-xs text-slate-500">{SQUAD_MOTTO_EXAMPLES.slice(0, 3).join(' · ')}</p>
+            <button
+              type="button"
+              disabled={busy || squadMotto.trim().length < 2}
+              className="spike-btn-primary"
+              onClick={() =>
+                runAction(() => updateSquadSetup(squadId, { motto: squadMotto.trim() }))
+              }
+            >
+              Save squad motto
+            </button>
+          </section>
+        ) : null}
+
+        {step === 'squad-register' && squadId && squadRow ? (
+          <section className="spike-card space-y-4 p-6 text-center">
+            <h3 className="text-2xl font-bold text-slate-900">{squadRow.name}</h3>
+            <p className="text-lg italic text-slate-600">{squadRow.motto}</p>
+            <p className="text-sm text-slate-500">Register your squad to continue.</p>
+            <button
+              type="button"
+              disabled={busy}
+              className="spike-btn-primary"
+              onClick={() => runAction(() => registerSquad(squadId))}
+            >
+              Register squad
+            </button>
+          </section>
+        ) : null}
+
+        {step === 'squad-photo' && squadId ? (
+          <section className="spike-card space-y-4 p-6 text-center">
+            <p className="text-sm text-slate-600">Take your official squad photo.</p>
+            <SquadPhotoUpload
+              disabled={busy}
+              onUpload={async (dataUrl) => {
+                await uploadSquadPhoto(squadId, dataUrl);
+                await finishOnboarding(participantId, squadId);
+                navigate(ONBOARDING_EXIT_HREF, { replace: true });
+              }}
+            />
+          </section>
         ) : null}
       </div>
     </PageContainer>
   );
 }
 
-/** @param {{ participantId: string, onCreate: () => void, onJoin: (id: string) => void }} props */
-function JoinSquadStep({ participantId, onCreate, onJoin }) {
-  const openSquads = listOpenSquads().filter(
-    (s) => !s.members?.some((m) => m.participantId === participantId),
-  );
-  const [error, setError] = useState('');
-
-  function tryAction(fn) {
-    setError('');
-    try {
-      fn();
-    } catch (err) {
-      setError(err.message || 'Something went wrong.');
-    }
-  }
-
-  return (
-    <section className="spike-card space-y-4">
-      <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Step 1 of 6</p>
-      <h2 className="text-xl font-semibold text-slate-900">Join or create your squad</h2>
-      <p className="text-slate-600">
-        Form your research squad before proposing a cohort name. Squads hold up to 6 members.
-      </p>
-      {error ? <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
-      <button type="button" onClick={() => tryAction(onCreate)} className="spike-btn-primary w-full">
-        <Users size={18} className="mr-2 inline" />
-        Create a new squad
-      </button>
-      {openSquads.length ? (
-        <div className="space-y-2">
-          <p className="spike-label">Open squads</p>
-          {openSquads.map((s) => (
-            <button
-              key={s.id}
-              type="button"
-              onClick={() => tryAction(() => onJoin(s.id))}
-              className="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-left transition hover:border-spike"
-            >
-              <span className="font-semibold text-slate-900">{s.name?.trim() || 'New squad forming…'}</span>
-              <span className="text-xs text-slate-500">
-                {s.members?.length ?? 0}/{s.capacity ?? 6} members
-              </span>
-            </button>
-          ))}
-        </div>
-      ) : (
-        <p className="text-sm text-slate-500">No open squads yet — create one and invite others to join.</p>
-      )}
-    </section>
-  );
+/** @param {string} step */
+function stepTitle(step) {
+  const titles = {
+    welcome: 'Welcome',
+    suggest: 'Suggest a cohort name',
+    waiting: 'Please wait',
+    vote: 'Vote for your cohort name',
+    reveal: 'Your founding cohort',
+    'cohort-photo': 'Cohort photo',
+    'squad-wait': 'Squad formation',
+    'squad-name': 'Choose your squad name',
+    'squad-motto': 'Choose your squad motto',
+    'squad-register': 'Register your squad',
+    'squad-photo': 'Take your squad photo',
+  };
+  return titles[step] ?? 'Onboarding';
 }
 
-/**
- * @param {{
- *   stepLabel: string,
- *   title: string,
- *   promptLabel?: string,
- *   question: string,
- *   value: string,
- *   examples: string[],
- *   onSave: (value: string) => void,
- *   hint?: string,
- * }} props
- */
-function BuilderStep({ stepLabel, title, promptLabel, question, value, examples, onSave, hint }) {
-  const [draft, setDraft] = useState(value);
+/** @param {string} step @param {string} phase */
+function stepSubtitle(step, phase) {
+  if (step === 'suggest') return 'Submit one name and an optional reason for your founding cohort.';
+  if (step === 'vote') return 'Live vote counts update as your classmates vote.';
+  if (step === 'reveal') return 'This name is now official for your SPIKE cohort.';
+  if (step === 'squad-name') return 'Name the squad your Program Coach assigned you to.';
+  return waitingMessage(step, phase);
+}
+
+/** @param {{ disabled?: boolean, onUpload: (url: string) => Promise<void> }} props */
+function SquadPhotoUpload({ disabled, onUpload }) {
+  const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
 
-  function handleSave() {
-    setError('');
-    try {
-      onSave(draft);
-    } catch (err) {
-      setError(err.message || 'Could not save.');
-    }
-  }
-
   return (
-    <section className="spike-card space-y-4">
-      <p className="text-xs font-bold uppercase tracking-widest text-slate-500">{stepLabel}</p>
-      <h2 className="text-xl font-semibold text-slate-900">{title}</h2>
-      {promptLabel ? (
-        <div>
-          <p className="spike-label text-slate-500">{promptLabel}</p>
-          <p className="mt-1 text-slate-700">{question}</p>
-        </div>
-      ) : (
-        <p className="text-slate-600">{question}</p>
-      )}
-      {hint ? <p className="text-xs text-amber-800">{hint}</p> : null}
+    <div>
       <input
-        type="text"
-        value={draft}
-        onChange={(e) => setDraft(e.target.value)}
-        className="w-full rounded-xl border border-slate-200 px-4 py-3 text-lg font-semibold focus:border-spike focus:outline-none focus:ring-2 focus:ring-spike/20"
-        placeholder="Your answer…"
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        disabled={disabled || busy}
+        className="mx-auto block text-sm"
+        onChange={async (e) => {
+          const file = e.target.files?.[0];
+          if (!file) return;
+          if (file.size > 2_500_000) {
+            setError('Image must be under 2.5 MB.');
+            return;
+          }
+          setBusy(true);
+          setError('');
+          const reader = new FileReader();
+          reader.onload = async () => {
+            try {
+              await onUpload(String(reader.result ?? ''));
+            } catch (err) {
+              setError(err instanceof Error ? err.message : 'Upload failed.');
+              setBusy(false);
+            }
+          };
+          reader.readAsDataURL(file);
+          e.target.value = '';
+        }}
       />
-      <div className="flex flex-wrap gap-2">
-        {examples.map((ex) => (
-          <button
-            key={ex}
-            type="button"
-            onClick={() => setDraft(ex)}
-            className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:border-spike hover:text-spike"
-          >
-            {ex}
-          </button>
-        ))}
-      </div>
-      {error ? <p className="text-sm text-red-700">{error}</p> : null}
-      <button
-        type="button"
-        disabled={draft.trim().length < 2}
-        onClick={handleSave}
-        className="spike-btn-primary disabled:opacity-50"
-      >
-        Save & continue
-      </button>
-    </section>
-  );
-}
-
-/** @param {{ participantId: string, tally: Array<object>, progress: object, onVote: (squadId: string) => void }} props */
-function VoteStep({ tally, progress, onVote }) {
-  const [error, setError] = useState('');
-
-  if (!tally.length) {
-    return (
-      <section className="spike-card">
-        <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Step 5 of 6</p>
-        <h2 className="mt-2 text-xl font-semibold text-slate-900">Waiting for squad proposals</h2>
-        <p className="mt-2 text-sm text-slate-600">
-          Each squad must submit one cohort name before voting opens ({progress.voted}/{progress.total}{' '}
-          ready).
-        </p>
-      </section>
-    );
-  }
-
-  return (
-    <section className="spike-card space-y-4">
-      <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Step 5 of 6</p>
-      <h2 className="text-xl font-semibold text-slate-900">Vote for your founding cohort name</h2>
-      <p className="text-sm text-slate-600">
-        Pick the proposal that best represents this class. {progress.voted}/{progress.total} have voted.
-      </p>
-      {error ? <p className="text-sm text-red-700">{error}</p> : null}
-      <div className="space-y-2">
-        {tally.map((row) => (
-          <button
-            key={row.squadId}
-            type="button"
-            onClick={() => {
-              setError('');
-              try {
-                onVote(row.squadId);
-              } catch (err) {
-                setError(err.message || 'Vote failed.');
-              }
-            }}
-            className="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-4 text-left transition hover:border-spike hover:bg-spike-muted/30"
-          >
-            <div>
-              <p className="text-lg font-bold text-slate-900">{row.cohortName}</p>
-              <p className="text-xs text-slate-500">Proposed by {row.squadName}</p>
-            </div>
-            <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-bold text-slate-600">
-              {row.votes} votes
-            </span>
-          </button>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-/** @param {{ tally: Array<object>, progress: object, official: object | null }} props */
-function RevealStep({ tally, progress, official }) {
-  const leader = tally[0];
-  return (
-    <section className="spike-card space-y-4">
-      <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Step 6 of 6</p>
-      <h2 className="text-xl font-semibold text-slate-900">Cohort reveal</h2>
-      <p className="text-sm text-slate-600">
-        {progress.allVoted
-          ? 'Everyone has voted — here are the live results.'
-          : `Waiting for remaining votes (${progress.voted}/${progress.total})…`}
-      </p>
-      <ul className="space-y-2">
-        {tally.map((row, idx) => (
-          <li
-            key={row.squadId}
-            className={`flex items-center justify-between rounded-xl px-4 py-3 ${
-              idx === 0 && progress.allVoted ? 'bg-spike-muted ring-2 ring-spike/30' : 'bg-slate-50'
-            }`}
-          >
-            <div>
-              <p className="font-bold text-slate-900">{row.cohortName}</p>
-              <p className="text-xs text-slate-500">{row.squadName}</p>
-            </div>
-            <span className="text-lg font-black text-spike">{row.votes}</span>
-          </li>
-        ))}
-      </ul>
-      {progress.allVoted && leader ? (
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-center">
-          <p className="text-xs font-bold uppercase tracking-wide text-emerald-800">Winning cohort name</p>
-          <p className="mt-2 text-3xl font-black text-spike">{official?.name ?? leader.cohortName}</p>
-        </div>
-      ) : null}
-    </section>
+      {error ? <p className="mt-2 text-xs text-red-700">{error}</p> : null}
+    </div>
   );
 }

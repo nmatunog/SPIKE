@@ -15,6 +15,7 @@ import {
 import { ROUTES } from '../../routes/paths.js';
 import { DailyActivationCodeCard } from '../../components/dashboard/DailyActivationCodeCard.jsx';
 import { BrandLexiconDashboardCard } from '../../components/resources/BrandLexiconDashboardCard.jsx';
+import { CohortOnboardingControls } from '../../components/faculty/CohortOnboardingControls.jsx';
 
 /**
  * @param {{
@@ -47,6 +48,12 @@ export function MentorHomePage({ user, interns, internSummary, pendingLogs = [],
       <BrandLexiconDashboardCard />
 
       <DailyActivationCodeCard className="mt-4" />
+
+      {user?.id ? (
+        <div className="mt-4">
+          <CohortOnboardingControls staffId={user.id} photoOnly />
+        </div>
+      ) : null}
 
       <RoleDashboardCards
         role="mentor"

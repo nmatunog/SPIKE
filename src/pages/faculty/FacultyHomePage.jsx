@@ -12,15 +12,17 @@ import { deriveFacultyDashboardMetrics } from '../../lib/sprint01Metrics.js';
 import { FACULTY_PHILOSOPHY } from '../../lib/facultyWeek1Constants.js';
 import { DailyActivationCodeCard } from '../../components/dashboard/DailyActivationCodeCard.jsx';
 import { BrandLexiconDashboardCard } from '../../components/resources/BrandLexiconDashboardCard.jsx';
+import { CohortOnboardingControls } from '../../components/faculty/CohortOnboardingControls.jsx';
 
 /**
  * @param {{
  *   interns: Array<object>,
  *   internSummary: object,
  *   pendingLogs: Array<object>,
+ *   staffId?: string,
  * }} props
  */
-export function FacultyHomePage({ interns, internSummary, pendingLogs = [] }) {
+export function FacultyHomePage({ interns, internSummary, pendingLogs = [], staffId = '' }) {
   const licensedCount = interns.filter((i) => i.licensed).length;
   const metrics = deriveFacultyDashboardMetrics(internSummary, {
     pendingLogs: pendingLogs.length,
@@ -42,6 +44,16 @@ export function FacultyHomePage({ interns, internSummary, pendingLogs = [] }) {
       <BrandLexiconDashboardCard />
 
       <DailyActivationCodeCard className="mt-4" />
+
+      {staffId ? (
+        <div className="mt-4">
+          <CohortOnboardingControls
+            staffId={staffId}
+            interns={interns.map((i) => ({ id: i.id, name: i.name }))}
+            canAssignSquads
+          />
+        </div>
+      ) : null}
 
       <RoleDashboardCards
         role="faculty"

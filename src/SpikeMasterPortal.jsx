@@ -79,6 +79,7 @@ import { isMockUser, shouldUseSupabaseForUser } from './lib/mockAuth.js';
 import { ForcePasswordChangeGate } from './components/ForcePasswordChangeGate.jsx';
 import { DailyActivationCodeCard } from './components/dashboard/DailyActivationCodeCard.jsx';
 import { validateInternActivationCode } from './lib/activationCodeService.js';
+import { hydrateOnboardingStatus, setOnboardingCompleteCache } from './lib/cohortOnboardingService.js';
 
 /** @param {{ children: import('react').ReactNode, label?: string }} props */
 function LazyRoute({ children, label }) {
@@ -139,6 +140,25 @@ const SpikeMasterPortal = () => {
       navigate(defaultRouteForRole(userRole), { replace: true });
     }
   }, [authLoading, userRole, location.pathname, navigate]);
+
+  useEffect(() => {
+    if (authLoading || userRole !== 'intern' || !user?.id) return;
+    if (!shouldUseSupabaseForUser(user)) return;
+    if (user.internProgress?.onboarding_complete) {
+      setOnboardingCompleteCache(user.id, true);
+      return;
+    }
+    let cancelled = false;
+    hydrateOnboardingStatus(user.id).then((done) => {
+      if (cancelled || done) return;
+      if (location.pathname !== ROUTES.cohortIdentity) {
+        navigate(ROUTES.cohortIdentity, { replace: true });
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [authLoading, userRole, user?.id, user?.internProgress?.onboarding_complete, location.pathname, navigate]);
 
   const handleLogout = useCallback(() => {
     logout();
@@ -1293,6 +1313,7 @@ const SpikeMasterPortal = () => {
               interns={interns}
               internSummary={internSummary}
               pendingLogs={pendingLogs}
+              staffId={user?.id ?? ''}
             />
           </LazyRoute>
         );
@@ -1384,7 +1405,14 @@ const SpikeMasterPortal = () => {
       if (path === ROUTES.admin) {
         return <LazyRoute label="Loading admin…">{adminPage}</LazyRoute>;
       }
-      if (path === ROUTES.adminCohorts) return <AdminCohortsPage />;
+      if (path === ROUTES.adminCohorts) {
+        return (
+          <AdminCohortsPage
+            staffId={user.id}
+            interns={interns.map((i) => ({ id: i.id, name: i.name }))}
+          />
+        );
+      }
       if (path === ROUTES.adminSquadThemes) return <AdminSquadThemesPage />;
       if (path === ROUTES.adminSquads) {
         return (
