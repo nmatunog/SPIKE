@@ -45,6 +45,7 @@ if (canonicalizePathname('/admin/faculty-playbook') !== ROUTES.adminProgramCoach
 if (canonicalizePathname('/admin/content-studio/faculty-guides') !== ROUTES.programCoachGuides) {
   fail('legacy faculty guides redirect missing');
 }
+if (ROUTES.brandLexicon !== '/brand-lexicon') fail('brand lexicon route missing');
 
 console.log('smoke:faculty-week1 OK');
 console.log(`  templates: ${FACULTY_DAY_TEMPLATES_SEED.length} days`);

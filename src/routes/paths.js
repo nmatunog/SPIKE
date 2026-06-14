@@ -28,6 +28,7 @@ export const ROUTES = {
   adminMentorPlaybook: '/admin/mentor-playbook',
   myVenturePortfolio: '/my-venture-portfolio',
   adminPortfolioSettings: '/admin/portfolio-settings',
+  brandLexicon: '/brand-lexicon',
 };
 
 /** Blueprint sub-routes (PR4) — Business Plan, Milestones, Venture Board live inside the OS. */
@@ -193,6 +194,9 @@ export function matchModulePath(pathname) {
   if (pathname === ROUTES.analyticsCohortIdentity) {
     return ROUTES.analyticsCohortIdentity;
   }
+  if (pathname === ROUTES.brandLexicon) {
+    return ROUTES.brandLexicon;
+  }
   if (pathname === ROUTES.programCoachHome || pathname.startsWith(`${ROUTES.programCoachHome}/`)) {
     return ROUTES.programCoachHome;
   }
@@ -259,6 +263,7 @@ export function rolesForRoute(pathname) {
     return ['mentor', 'admin'];
   }
   if (pathname === ROUTES.analyticsCohortIdentity) return ['faculty', 'admin', 'mentor'];
+  if (pathname === ROUTES.brandLexicon) return ['faculty', 'mentor', 'admin'];
   if (
     pathname === ROUTES.mentorVentureCoach
     || pathname.startsWith(`${ROUTES.mentorVentureCoach}/`)
@@ -281,6 +286,11 @@ export function canAccessRoute(pathname, userRole) {
 }
 
 /** @param {string} [userRole] */
+export function brandLexiconBackHrefForRole(userRole) {
+  if (userRole === 'mentor') return ROUTES.mentorHome;
+  if (userRole === 'faculty') return ROUTES.programCoachHome;
+  return ROUTES.dashboard;
+}
 export function defaultRouteForRole(userRole) {
   if (userRole === 'intern') return ROUTES.ventureBlueprint;
   if (userRole === 'faculty') return ROUTES.programCoachHome;

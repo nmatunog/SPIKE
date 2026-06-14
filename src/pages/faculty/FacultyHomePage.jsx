@@ -10,6 +10,7 @@ import { ROUTES } from '../../routes/paths.js';
 import { countSubmittedSurveys } from '../../lib/surveyService.js';
 import { deriveFacultyDashboardMetrics } from '../../lib/sprint01Metrics.js';
 import { FACULTY_PHILOSOPHY } from '../../lib/facultyWeek1Constants.js';
+import { BrandLexiconDashboardCard } from '../../components/resources/BrandLexiconDashboardCard.jsx';
 
 /**
  * @param {{
@@ -36,6 +37,8 @@ export function FacultyHomePage({ interns, internSummary, pendingLogs = [] }) {
       <div className="mb-4 rounded-xl border border-indigo-100 bg-indigo-50 px-4 py-3 text-sm text-indigo-950">
         {FACULTY_PHILOSOPHY}
       </div>
+
+      <BrandLexiconDashboardCard />
 
       <RoleDashboardCards
         role="faculty"

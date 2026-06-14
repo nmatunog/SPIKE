@@ -98,6 +98,10 @@ export const CohortIdentityAnalyticsPage = lazyNamed(
   () => import('../pages/analytics/CohortIdentityAnalyticsPage.jsx'),
   'CohortIdentityAnalyticsPage',
 );
+export const SpikeBrandLexiconPage = lazyNamed(
+  () => import('../pages/resources/SpikeBrandLexiconPage.jsx'),
+  'SpikeBrandLexiconPage',
+);
 export const MyVenturePortfolioRoute = lazyNamed(
   () => import('../pages/MyVenturePortfolioShell.jsx'),
   'MyVenturePortfolioRoute',

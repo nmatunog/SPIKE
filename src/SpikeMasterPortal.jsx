@@ -28,7 +28,7 @@ import { RoleDashboardCards } from './components/dashboard/RoleDashboardCards.js
 import { BlueprintTimelineFeed } from './components/blueprint/BlueprintTimelineFeed.jsx';
 import { PageLoader } from './components/ui/PageLoader.jsx';
 import { RoleRouteGuard } from './components/routing/RoleRouteGuard.jsx';
-import { ROUTES, defaultRouteForRole } from './routes/paths.js';
+import { ROUTES, brandLexiconBackHrefForRole, defaultRouteForRole } from './routes/paths.js';
 import {
   AdminCohortsPage,
   AdminFacultyPlaybookPage,
@@ -51,6 +51,7 @@ import {
   PortfolioPage,
   ProgressReportsPage,
   ResearchPage,
+  SpikeBrandLexiconPage,
   SquadCharterPage,
   SquadDashboardPage,
   SquadPreferencesPage,
@@ -1339,6 +1340,22 @@ const SpikeMasterPortal = () => {
       }
       if (path === ROUTES.analyticsCohortIdentity) {
         return <CohortIdentityAnalyticsPage />;
+      }
+      if (path === ROUTES.brandLexicon) {
+        return (
+          <LazyRoute label="Loading brand lexicon…">
+            <SpikeBrandLexiconPage
+              backHref={brandLexiconBackHrefForRole(userRole)}
+              backLabel={
+                userRole === 'mentor'
+                  ? 'Back to Mentor home'
+                  : userRole === 'faculty'
+                    ? 'Back to Program Coach home'
+                    : 'Back to dashboard'
+              }
+            />
+          </LazyRoute>
+        );
       }
       if (path === `${ROUTES.programCoachHome}/advisory`) {
         return (
