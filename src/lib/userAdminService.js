@@ -72,15 +72,31 @@ function wrapServiceKeyError(err) {
     || err.status === 500
     || msg.includes('SUPABASE_SERVICE_ROLE_KEY')
     || msg.includes('Server misconfigured')
+    || msg.includes('MISSING_SERVICE_KEY')
   ) {
     return new Error(`This action needs the server admin API. ${SERVICE_KEY_HINT}`);
   }
   return err;
 }
 
+async function fetchUserDirectoryViaApi(actorIsSuperuser) {
+  const { data: sessionData } = await supabase.auth.getSession();
+  const token = sessionData.session?.access_token;
+  if (!token) throw new Error('Your session expired. Sign in again.');
+
+  const res = await apiFetch('/api/admin/users', { method: 'GET', token });
+  return {
+    users: res.users ?? [],
+    actorIsSuperuser: res.actorIsSuperuser ?? actorIsSuperuser,
+    migrationNeeded: false,
+  };
+}
+
 /** Load all auth users (with profile data) for the staff directory. */
 export async function fetchUserDirectory() {
   const { actorIsSuperuser } = await getActorContext();
+
+  await supabase.rpc('sync_missing_portal_profiles').then(() => null, () => null);
 
   const { data, error } = await supabase.rpc('list_portal_users');
   if (!error) {
@@ -92,6 +108,14 @@ export async function fetchUserDirectory() {
   }
 
   const migrationNeeded = isSchemaMissingError(error);
+
+  if (migrationNeeded) {
+    try {
+      return await fetchUserDirectoryViaApi(actorIsSuperuser);
+    } catch {
+      // API unavailable — profiles-only fallback below.
+    }
+  }
 
   const { data: profiles, error: profileErr } = await supabase
     .from('profiles')
@@ -134,6 +158,20 @@ async function updatePortalUser({ targetId, role, name, isSuperuser, target }) {
   if (name) patch.name = name;
   if (role) patch.role = role;
   if (!Object.keys(patch).length) return;
+
+  if (target?.has_profile === false || isSchemaMissingError(rpcErr)) {
+    const { error } = await supabase.from('profiles').upsert(
+      {
+        id: targetId,
+        email: target?.email ?? '',
+        name: name ?? target?.name ?? 'User',
+        role: role ?? target?.role ?? 'INTERN',
+      },
+      { onConflict: 'id' },
+    );
+    if (error) throw error;
+    return;
+  }
 
   const { error } = await supabase.from('profiles').update(patch).eq('id', targetId);
   if (error) throw error;

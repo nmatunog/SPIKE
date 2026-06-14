@@ -764,13 +764,15 @@ const SpikeMasterPortal = () => {
             );
           }
 
-          const { error: profileErr } = await supabase
-            .from('profiles')
-            .update({
+          const { error: profileErr } = await supabase.from('profiles').upsert(
+            {
+              id: newUser.id,
+              email: body.email.trim(),
               name: body.name.trim(),
               role: body.role,
-            })
-            .eq('id', newUser.id);
+            },
+            { onConflict: 'id' },
+          );
           if (profileErr) throw profileErr;
 
           if (body.role === 'INTERN') {

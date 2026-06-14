@@ -4,6 +4,84 @@ import { corsPreflight, json, randomPassword, verifyAdminActor } from '../../_sh
 const ALL_ROLES = ['INTERN', 'FACULTY', 'MENTOR', 'ADMIN', 'SUPERUSER'];
 const ADMIN_MANAGEABLE_ROLES = ['INTERN', 'FACULTY', 'MENTOR', 'ADMIN'];
 
+/** @param {import('@supabase/supabase-js').SupabaseClient} admin */
+async function listAllAuthUsers(admin) {
+  const users = [];
+  let page = 1;
+  while (page < 50) {
+    const { data, error } = await admin.auth.admin.listUsers({ page, perPage: 200 });
+    if (error) throw new Error(error.message);
+    const batch = data?.users ?? [];
+    users.push(...batch);
+    if (batch.length < 200) break;
+    page += 1;
+  }
+  return users;
+}
+
+/** @param {import('@supabase/supabase-js').SupabaseClient} admin */
+async function backfillMissingProfiles(admin, authUsers) {
+  const { data: profiles, error } = await admin
+    .from('profiles')
+    .select('id');
+  if (error) throw new Error(error.message);
+
+  const existing = new Set((profiles ?? []).map((row) => row.id));
+  const missing = authUsers.filter((user) => !existing.has(user.id));
+
+  for (const user of missing) {
+    const name =
+      (typeof user.user_metadata?.name === 'string' && user.user_metadata.name.trim()) ||
+      user.email?.split('@')[0] ||
+      'User';
+    const { error: insertErr } = await admin.from('profiles').insert({
+      id: user.id,
+      email: user.email ?? '',
+      name,
+      role: 'INTERN',
+    });
+    if (insertErr) throw new Error(insertErr.message);
+  }
+}
+
+/** @param {import('@supabase/supabase-js').SupabaseClient} admin */
+async function loadPortalUserDirectory(admin) {
+  const authUsers = await listAllAuthUsers(admin);
+  await backfillMissingProfiles(admin, authUsers);
+
+  const { data: profiles, error } = await admin
+    .from('profiles')
+    .select('id, email, name, role, created_at, updated_at')
+    .order('created_at', { ascending: false });
+  if (error) throw new Error(error.message);
+
+  const profileById = new Map((profiles ?? []).map((row) => [row.id, row]));
+
+  const users = authUsers
+    .map((authUser) => {
+      const profile = profileById.get(authUser.id);
+      const fallbackName =
+        (typeof authUser.user_metadata?.name === 'string' && authUser.user_metadata.name.trim()) ||
+        authUser.email?.split('@')[0] ||
+        'User';
+      return {
+        id: authUser.id,
+        email: profile?.email || authUser.email || '',
+        name: profile?.name || fallbackName,
+        role: profile?.role || 'INTERN',
+        created_at: profile?.created_at || authUser.created_at,
+        updated_at: profile?.updated_at ?? null,
+        has_profile: Boolean(profile),
+      };
+    })
+    .sort(
+      (a, b) =>
+        new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime(),
+    );
+
+  return users;
+}
+
 /** @param {import('@supabase/supabase-js').SupabaseClient} admin @param {string | null} targetId */
 async function getTargetProfile(admin, targetId) {
   const { data, error } = await admin
@@ -54,12 +132,12 @@ export async function onRequest(ctx) {
   }
 
   if (request.method === 'GET') {
-    const { data, error } = await admin
-      .from('profiles')
-      .select('id, email, name, role, created_at, updated_at')
-      .order('created_at', { ascending: false });
-    if (error) return json({ message: error.message }, 400);
-    return json({ users: data ?? [], actorIsSuperuser: actor.isSuperuser });
+    try {
+      const users = await loadPortalUserDirectory(admin);
+      return json({ users, actorIsSuperuser: actor.isSuperuser });
+    } catch (err) {
+      return json({ message: err instanceof Error ? err.message : 'Could not load users.' }, 400);
+    }
   }
 
   if (request.method !== 'POST') {

@@ -95,11 +95,12 @@ export function AdminUserDirectory({ currentUserId = '', isSuperuser = false }) 
 
       {migrationNeeded ? (
         <p className="mb-3 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-950">
-          Admin database functions are not installed yet (console 404 errors). Run{' '}
-          <code className="rounded bg-white px-1">20260710_admin_portal_catchup.sql</code> in the
-          Supabase SQL Editor, then{' '}
-          <code className="rounded bg-white px-1">NOTIFY pgrst, &apos;reload schema&apos;;</code>{' '}
-          and refresh this page. Role changes may still work via fallback until then.
+          Some confirmed accounts may be missing from this list until Supabase migrations run.
+          Run <code className="rounded bg-white px-1">20260710_admin_portal_catchup.sql</code> and{' '}
+          <code className="rounded bg-white px-1">20260711_profile_backfill.sql</code> in the SQL
+          Editor, then <code className="rounded bg-white px-1">NOTIFY pgrst, &apos;reload schema&apos;;</code>{' '}
+          and refresh. Or set <code className="rounded bg-white px-1">SUPABASE_SERVICE_ROLE_KEY</code> on
+          Cloudflare Pages so the directory can sync auth users automatically.
         </p>
       ) : null}
 
