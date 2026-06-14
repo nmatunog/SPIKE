@@ -50,6 +50,7 @@ jobs:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
           VITE_STATIC_ONLY: 'false'
+          VITE_MOCK_AUTH: 'false'
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3

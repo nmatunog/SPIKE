@@ -14,11 +14,11 @@ export function readPersistedMockUser() {
 }
 
 /**
- * Mock sign-in for allowlisted demo accounts.
- * On by default; set VITE_MOCK_AUTH=false to disable (e.g. hardened production).
+ * Demo sign-in for local QA only.
+ * Off by default — set VITE_MOCK_AUTH=true in .env for allowlisted @example.com accounts.
  */
 export function isMockAuthEnabled() {
-  return import.meta.env.VITE_MOCK_AUTH !== 'false';
+  return import.meta.env.VITE_MOCK_AUTH === 'true';
 }
 
 /**

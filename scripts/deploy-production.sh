@@ -28,7 +28,7 @@ fi
 
 echo "==> Lint + build..."
 npm run lint
-VITE_STATIC_ONLY="${VITE_STATIC_ONLY:-false}" npm run build
+VITE_STATIC_ONLY="${VITE_STATIC_ONLY:-false}" VITE_MOCK_AUTH="${VITE_MOCK_AUTH:-false}" npm run build
 
 echo "==> Deploy to Cloudflare Pages (spike)..."
 npx wrangler pages deploy dist --project-name spike --commit-dirty=true

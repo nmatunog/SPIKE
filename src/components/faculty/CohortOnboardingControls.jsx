@@ -91,9 +91,8 @@ export function CohortOnboardingControls({ staffId, interns = [], canAssignSquad
         </div>
         {demoStaff ? (
           <p className="text-sm text-amber-900">
-            You are on a <strong>demo Program Coach</strong> login (`faculty@example.com`). Cohort controls
-            need a real Supabase staff account — sign out and sign in with your Program Coach email from
-            Supabase Auth.
+            Stale demo session detected. Sign out, hard-refresh, and sign in with your real Program
+            Coach Supabase account.
           </p>
         ) : (
           <p className="text-sm text-amber-900">

@@ -76,7 +76,7 @@ export async function saveCareerTrackSelection(userId, track, existingProgress) 
       ...progressPatch,
     });
     if (!progress) {
-      throw new Error('Demo session expired. Sign in again with john@example.com.');
+      throw new Error('Session expired. Sign in again with your SPIKE account.');
     }
     const confirmed = readConfirmed();
     confirmed[userId] = true;

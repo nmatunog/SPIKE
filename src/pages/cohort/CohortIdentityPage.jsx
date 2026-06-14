@@ -212,8 +212,8 @@ export function CohortIdentityPage({ participantId }) {
             <p className="mx-auto mt-3 max-w-md text-sm text-slate-500">{waitingHint(displayStep, phase)}</p>
             {isMockUserId(participantId) ? (
               <p className="mx-auto mt-4 max-w-md text-xs text-amber-800">
-                Demo login: the full cohort flow needs a real intern account, or your Program Coach opening
-                suggestions from the faculty dashboard while you use a signed-in intern.
+                Sign in with a real intern account from Supabase Auth to continue the founding cohort
+                flow with your Program Coach.
               </p>
             ) : null}
             {phase === 'voting_open' && tally.length > 0 ? (

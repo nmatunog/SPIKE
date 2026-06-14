@@ -151,6 +151,10 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     let cancelled = false;
 
+    if (!isMockAuthEnabled()) {
+      clearMockUser();
+    }
+
     if (USE_SUPABASE) {
       async function bootstrapSupabase() {
         setLoading(true);

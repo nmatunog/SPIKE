@@ -273,7 +273,7 @@ export async function completeWelcome(participantId) {
     });
     if (!updated) {
       throw new Error(
-        'Could not save demo progress. Sign out, then sign in again with john@example.com / password123.',
+        'Could not save welcome progress. Sign out and sign in again with your SPIKE account.',
       );
     }
     writeWelcomedSessionCache(participantId, welcomedAt);
