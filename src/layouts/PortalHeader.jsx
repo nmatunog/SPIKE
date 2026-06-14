@@ -1,7 +1,9 @@
 import { LogOut } from 'lucide-react';
 import { formatUiRoleLabel } from '../lib/terminology.js';
 
-export function PortalHeader({ userRole, user, setupMeta, onLogout }) {
+export function PortalHeader({ userRole, user, setupMeta, onLogout, viewAsRole }) {
+  const badgeRole = viewAsRole ?? userRole;
+  const isRolePreview = userRole === 'superuser' && viewAsRole;
   return (
     <header className="safe-top relative z-50 border-b border-spike-dark/20 bg-spike text-white">
       <div className="mx-auto flex max-w-projection flex-col gap-2 px-4 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:py-3 2xl:px-10 2xl:py-3.5">
@@ -31,8 +33,13 @@ export function PortalHeader({ userRole, user, setupMeta, onLogout }) {
             <span className="max-w-[9rem] truncate text-xs text-red-100 sm:max-w-none sm:text-sm lg:text-base">
               {user?.name}
             </span>
-            <span className="rounded-full bg-white/15 px-2 py-0.5 text-2xs font-semibold uppercase tracking-wide text-white lg:px-2.5 lg:py-1 lg:text-xs">
-              {formatUiRoleLabel(userRole)}
+            <span
+              className={`rounded-full px-2 py-0.5 text-2xs font-semibold uppercase tracking-wide lg:px-2.5 lg:py-1 lg:text-xs ${
+                isRolePreview ? 'bg-amber-300/25 text-amber-50 ring-1 ring-amber-200/40' : 'bg-white/15 text-white'
+              }`}
+              title={isRolePreview ? 'Signed in as Superuser' : undefined}
+            >
+              {isRolePreview ? `Preview: ${formatUiRoleLabel(badgeRole)}` : formatUiRoleLabel(badgeRole)}
             </span>
             <button
               type="button"

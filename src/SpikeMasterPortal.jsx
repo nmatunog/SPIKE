@@ -86,6 +86,12 @@ import {
 } from './lib/bootstrapSuperuserService.js';
 import { StaffRegistrationCodeCard } from './components/dashboard/StaffRegistrationCodeCard.jsx';
 import { AdminUserDirectory } from './components/admin/AdminUserDirectory.jsx';
+import { SuperuserViewAsBar } from './components/admin/SuperuserViewAsBar.jsx';
+import {
+  getEffectiveUserRole,
+  readViewAsRole,
+  writeViewAsRole,
+} from './lib/superuserViewAs.js';
 import { hydrateOnboardingStatus, setOnboardingCompleteCache, hasCompletedOnboardingSync } from './lib/cohortOnboardingService.js';
 
 /** @param {{ children: import('react').ReactNode, label?: string }} props */
@@ -110,6 +116,11 @@ const SpikeMasterPortal = () => {
     completeBootstrapSetup,
   } = useAuth();
   const userRole = resolveUserRole(user);
+  const [viewAsRole, setViewAsRole] = useState(() => readViewAsRole());
+  const effectiveUserRole = useMemo(
+    () => getEffectiveUserRole(userRole, viewAsRole),
+    [userRole, viewAsRole],
+  );
   const userIsMock = isMockUser(user);
   const compactNav = useCompactNav();
   const STATIC_ONLY = import.meta.env.VITE_STATIC_ONLY === 'true';
@@ -149,12 +160,20 @@ const SpikeMasterPortal = () => {
     if (authLoading) return;
     if (userRole === 'guest' || userRole === 'profile_error') return;
     if (location.pathname === ROUTES.home) {
-      navigate(defaultRouteForRole(userRole), { replace: true });
+      navigate(defaultRouteForRole(effectiveUserRole), { replace: true });
     }
-  }, [authLoading, userRole, location.pathname, navigate]);
+  }, [authLoading, userRole, effectiveUserRole, location.pathname, navigate]);
 
   useEffect(() => {
-    if (authLoading || userRole !== 'intern' || !user?.id) return;
+    if (userRole !== 'superuser' && viewAsRole) {
+      setViewAsRole(null);
+      writeViewAsRole(null);
+    }
+  }, [userRole, viewAsRole]);
+
+  useEffect(() => {
+    if (authLoading || effectiveUserRole !== 'intern' || !user?.id) return;
+    if (userRole === 'superuser') return;
     if (!shouldUseSupabaseForUser(user)) return;
     if (user.internProgress?.onboarding_complete) {
       setOnboardingCompleteCache(user.id, true);
@@ -170,9 +189,20 @@ const SpikeMasterPortal = () => {
     return () => {
       cancelled = true;
     };
-  }, [authLoading, userRole, user, location.pathname, navigate]);
+  }, [authLoading, effectiveUserRole, userRole, user, location.pathname, navigate]);
+
+  const handleViewAs = useCallback(
+    (role) => {
+      const next = role === 'superuser' ? null : role;
+      setViewAsRole(next);
+      writeViewAsRole(next);
+      navigate(defaultRouteForRole(next ?? 'superuser'));
+    },
+    [navigate],
+  );
 
   const handleLogout = useCallback(() => {
+    writeViewAsRole(null);
     logout();
     navigate(ROUTES.home);
     showToast('Signed out.');
@@ -1214,7 +1244,7 @@ const SpikeMasterPortal = () => {
         orientationView={<OrientationModule />}
         syllabusView={<MasterSyllabusView />}
         participantId={user?.id}
-        userRole={userRole}
+        userRole={effectiveUserRole}
         interns={interns}
       />
     </LazyRoute>
@@ -1238,11 +1268,11 @@ const SpikeMasterPortal = () => {
   );
 
   const renderStaffDashboard = () => {
-    if (userRole === 'faculty' || userRole === 'mentor') {
+    if (effectiveUserRole === 'faculty' || effectiveUserRole === 'mentor') {
       return (
         <LazyRoute label="Loading dashboard…">
           <StaffDashboardPage
-            userRole={userRole}
+            userRole={effectiveUserRole}
             user={user}
             interns={interns}
             internSummary={internSummary}
@@ -1256,7 +1286,7 @@ const SpikeMasterPortal = () => {
         </LazyRoute>
       );
     }
-    if (userRole === 'admin' || userRole === 'superuser') return <AdminDashboardHome />;
+    if (effectiveUserRole === 'admin' || effectiveUserRole === 'superuser') return <AdminDashboardHome />;
     return null;
   };
 
@@ -1271,9 +1301,10 @@ const SpikeMasterPortal = () => {
       );
     }
 
-    if (userRole === 'intern') {
+    if (effectiveUserRole === 'intern') {
       const needsOnboarding =
-        shouldUseSupabaseForUser(user)
+        userRole !== 'superuser'
+        && shouldUseSupabaseForUser(user)
         && !user?.internProgress?.onboarding_complete
         && !hasCompletedOnboardingSync(user.id);
       if (needsOnboarding && path !== ROUTES.cohortIdentity) {
@@ -1310,7 +1341,9 @@ const SpikeMasterPortal = () => {
           return (
             <div className="container mx-auto px-6 py-12 text-center text-gray-700">
               <p className="font-medium">
-                Your account has no intern progress record. Contact an administrator.
+                {userRole === 'superuser'
+                  ? 'Intern preview — your superuser account has no intern progress record.'
+                  : 'Your account has no intern progress record. Contact an administrator.'}
               </p>
             </div>
           );
@@ -1345,13 +1378,15 @@ const SpikeMasterPortal = () => {
       return (
         <div className="container mx-auto px-6 py-12 text-center text-gray-700">
           <p className="font-medium">
-            Your account has no intern progress record. Contact an administrator.
+            {userRole === 'superuser'
+              ? 'Intern preview — your superuser account has no intern progress record.'
+              : 'Your account has no intern progress record. Contact an administrator.'}
           </p>
         </div>
       );
     }
 
-    if (isStaffUiRole(userRole)) {
+    if (isStaffUiRole(effectiveUserRole)) {
       if (path === ROUTES.playbook) return renderPlaybook();
       if (path === ROUTES.portfolio) return <PortfolioPage hours={internSummary.avgHours} />;
       if (path === ROUTES.research) return <ResearchPage user={user} />;
@@ -1373,11 +1408,11 @@ const SpikeMasterPortal = () => {
         return (
           <LazyRoute label="Loading brand lexicon…">
             <SpikeBrandLexiconPage
-              backHref={brandLexiconBackHrefForRole(userRole)}
+              backHref={brandLexiconBackHrefForRole(effectiveUserRole)}
               backLabel={
-                userRole === 'mentor'
+                effectiveUserRole === 'mentor'
                   ? 'Back to Mentor home'
-                  : userRole === 'faculty'
+                  : effectiveUserRole === 'faculty'
                     ? 'Back to Program Coach home'
                     : 'Back to dashboard'
               }
@@ -1552,10 +1587,10 @@ const SpikeMasterPortal = () => {
           </LazyRoute>
         );
       }
-      if (path === ROUTES.dashboard && userRole === 'faculty') {
+      if (path === ROUTES.dashboard && effectiveUserRole === 'faculty') {
         return <Navigate to={ROUTES.programCoachHome} replace />;
       }
-      if (path === ROUTES.dashboard && userRole === 'mentor') {
+      if (path === ROUTES.dashboard && effectiveUserRole === 'mentor') {
         return <Navigate to={ROUTES.mentorHome} replace />;
       }
       return renderStaffDashboard();
@@ -1572,13 +1607,18 @@ const SpikeMasterPortal = () => {
     >
       <PortalHeader
         userRole={userRole}
+        viewAsRole={viewAsRole}
         user={user}
         setupMeta={setupMeta}
         onLogout={handleLogout}
       />
 
+      {userRole === 'superuser' && !authLoading && (
+        <SuperuserViewAsBar viewAsRole={viewAsRole} onViewAs={handleViewAs} />
+      )}
+
       {userRole !== 'guest' && userRole !== 'profile_error' && !authLoading && (
-        <ModuleNav userRole={userRole} />
+        <ModuleNav userRole={effectiveUserRole} />
       )}
 
       <main>
@@ -1662,9 +1702,9 @@ const SpikeMasterPortal = () => {
           </div>
         )}
 
-        {(userRole === 'intern' || isStaffUiRole(userRole)) &&
+        {(effectiveUserRole === 'intern' || isStaffUiRole(effectiveUserRole)) &&
           !authLoading && (
-            <RoleRouteGuard userRole={userRole} pathname={location.pathname}>
+            <RoleRouteGuard userRole={effectiveUserRole} pathname={location.pathname}>
               <LazyRoute label="Loading module…">{renderAuthenticatedModule()}</LazyRoute>
             </RoleRouteGuard>
           )}
