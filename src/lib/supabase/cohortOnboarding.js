@@ -23,6 +23,20 @@ function assertClient() {
   return supabase;
 }
 
+/** @param {{ code?: string, message?: string, details?: string }} error */
+function formatDbError(error, fallback) {
+  if (!error) return fallback;
+  const code = String(error.code ?? '');
+  const message = String(error.message ?? fallback);
+  if (code === 'PGRST116' || /0 rows/i.test(message)) {
+    return 'Permission denied or cohort record not found. Superusers need migration 20260707_superuser_cohort_onboarding.sql applied in Supabase.';
+  }
+  if (code === '42501' || /permission|policy|row-level security/i.test(message)) {
+    return 'You do not have permission for this cohort action. Ensure your account role is SUPERUSER, FACULTY, MENTOR, or ADMIN.';
+  }
+  return message || fallback;
+}
+
 /** @returns {Promise<CohortRow | null>} */
 export async function fetchActiveCohort() {
   const client = assertClient();
@@ -81,8 +95,13 @@ export async function updateCohort(cohortId, patch) {
     .update(patch)
     .eq('id', cohortId)
     .select()
-    .single();
-  if (error) throw error;
+    .maybeSingle();
+  if (error) throw new Error(formatDbError(error, 'Could not update cohort.'));
+  if (!data) {
+    throw new Error(
+      'Cohort update was blocked (no rows changed). Run migration 20260707_superuser_cohort_onboarding.sql in Supabase SQL Editor, then reload the API schema.',
+    );
+  }
   return data;
 }
 
