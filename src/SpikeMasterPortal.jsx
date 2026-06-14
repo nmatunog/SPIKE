@@ -92,6 +92,7 @@ import {
   readViewAsRole,
   writeViewAsRole,
 } from './lib/superuserViewAs.js';
+import { buildSuperuserInternPreviewUser } from './lib/superuserInternPreview.js';
 import { hydrateOnboardingStatus, setOnboardingCompleteCache, hasCompletedOnboardingSync } from './lib/cohortOnboardingService.js';
 
 /** @param {{ children: import('react').ReactNode, label?: string }} props */
@@ -120,6 +121,10 @@ const SpikeMasterPortal = () => {
   const effectiveUserRole = useMemo(
     () => getEffectiveUserRole(userRole, viewAsRole),
     [userRole, viewAsRole],
+  );
+  const internModuleUser = useMemo(
+    () => buildSuperuserInternPreviewUser(user, userRole, viewAsRole),
+    [user, userRole, viewAsRole],
   );
   const userIsMock = isMockUser(user);
   const compactNav = useCompactNav();
@@ -893,17 +898,18 @@ const SpikeMasterPortal = () => {
   );
 
   const InternDashboard = () => {
-    const p = user?.internProgress;
+    const dashboardUser = internModuleUser ?? user;
+    const p = dashboardUser?.internProgress;
     const hours = p?.hours ?? 0;
     const segment = p?.segment ?? 1;
     const licensed = p?.licensed ?? false;
 
     return (
     <div className="container mx-auto px-4 py-6 sm:px-6 sm:py-8">
-      <RoleDashboardCards role="intern" user={user} interns={interns} internSummary={internSummary} />
+      <RoleDashboardCards role="intern" user={dashboardUser} interns={interns} internSummary={internSummary} />
       <div className="mb-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
         <h3 className="mb-3 text-lg font-bold text-gray-900">Activity timeline</h3>
-        <BlueprintTimelineFeed participantId={user?.id} limit={6} />
+        <BlueprintTimelineFeed participantId={dashboardUser?.id} limit={6} />
       </div>
       <div className="flex flex-col gap-8 lg:flex-row">
       <div className="space-y-6 lg:w-1/3">
@@ -1302,34 +1308,35 @@ const SpikeMasterPortal = () => {
     }
 
     if (effectiveUserRole === 'intern') {
+      const internUser = internModuleUser ?? user;
       const needsOnboarding =
         userRole !== 'superuser'
-        && shouldUseSupabaseForUser(user)
-        && !user?.internProgress?.onboarding_complete
-        && !hasCompletedOnboardingSync(user.id);
+        && shouldUseSupabaseForUser(internUser)
+        && !internUser?.internProgress?.onboarding_complete
+        && !hasCompletedOnboardingSync(internUser.id);
       if (needsOnboarding && path !== ROUTES.cohortIdentity) {
         return <Navigate to={ROUTES.cohortIdentity} replace />;
       }
 
       if (path === ROUTES.cohortIdentity) {
-        return <CohortIdentityPage participantId={user.id} />;
+        return <CohortIdentityPage participantId={internUser.id} />;
       }
       if (path === ROUTES.squadPreferences) {
-        return <SquadPreferencesPage participantId={user.id} />;
+        return <SquadPreferencesPage participantId={internUser.id} />;
       }
       if (path === ROUTES.squad) {
         return (
           <SquadDashboardPage
-            participantId={user.id}
-            participantName={user.name || user.email || 'Participant'}
+            participantId={internUser.id}
+            participantName={internUser.name || internUser.email || 'Participant'}
           />
         );
       }
       if (path === ROUTES.squadCharter) {
         return (
           <SquadCharterPage
-            participantId={user.id}
-            participantName={user.name || user.email || 'Participant'}
+            participantId={internUser.id}
+            participantName={internUser.name || internUser.email || 'Participant'}
           />
         );
       }
@@ -1337,20 +1344,18 @@ const SpikeMasterPortal = () => {
         path === ROUTES.ventureBlueprint
         || path.startsWith(`${ROUTES.ventureBlueprint}/`)
       ) {
-        if (!user?.internProgress) {
+        if (!internUser?.internProgress) {
           return (
             <div className="container mx-auto px-6 py-12 text-center text-gray-700">
               <p className="font-medium">
-                {userRole === 'superuser'
-                  ? 'Intern preview — your superuser account has no intern progress record.'
-                  : 'Your account has no intern progress record. Contact an administrator.'}
+                Your account has no intern progress record. Contact an administrator.
               </p>
             </div>
           );
         }
         return (
           <VentureBlueprintShell
-            user={user}
+            user={internUser}
             onLogTraction={() => navigate(ROUTES.dashboard)}
             onProgressRefresh={() => refreshUser()}
           />
@@ -1362,7 +1367,7 @@ const SpikeMasterPortal = () => {
       ) {
         return (
           <LazyRoute label="Loading portfolio…">
-            <MyVenturePortfolioRoute user={user} />
+            <MyVenturePortfolioRoute user={internUser} />
           </LazyRoute>
         );
       }
@@ -1370,17 +1375,15 @@ const SpikeMasterPortal = () => {
       if (path === ROUTES.portfolio) {
         return <Navigate to={ROUTES.myVenturePortfolio} replace />;
       }
-      if (path === ROUTES.research) return <ResearchPage user={user} />;
-      if (path === ROUTES.dashboard && user?.internProgress) return <InternDashboard />;
-      if (user?.internProgress) {
+      if (path === ROUTES.research) return <ResearchPage user={internUser} />;
+      if (path === ROUTES.dashboard && internUser?.internProgress) return <InternDashboard />;
+      if (internUser?.internProgress) {
         return <Navigate to={defaultRouteForRole('intern')} replace />;
       }
       return (
         <div className="container mx-auto px-6 py-12 text-center text-gray-700">
           <p className="font-medium">
-            {userRole === 'superuser'
-              ? 'Intern preview — your superuser account has no intern progress record.'
-              : 'Your account has no intern progress record. Contact an administrator.'}
+            Your account has no intern progress record. Contact an administrator.
           </p>
         </div>
       );

@@ -19,6 +19,7 @@ import {
   PORTFOLIO_NAV_SECTIONS,
 } from '../services/portfolioGenerator.js';
 import { ROUTES, portfolioSectionFromPath } from '../routes/paths.js';
+import { isSuperuserInternPreviewUser } from '../lib/superuserInternPreview.js';
 
 /**
  * @param {{
@@ -45,6 +46,14 @@ export function MyVenturePortfolioShell({ user, section = 'overview' }) {
 
   return (
     <PageContainer presentation wide>
+      {isSuperuserInternPreviewUser(user) ? (
+        <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+          <p className="font-semibold">Sample intern portfolio</p>
+          <p className="mt-1 text-amber-900/90">
+            Mock data for superuser preview — Alex Rivera, Segment 2, 248 hours, Squad Catalyst.
+          </p>
+        </div>
+      ) : null}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <Link
           to={ROUTES.ventureBlueprint}
