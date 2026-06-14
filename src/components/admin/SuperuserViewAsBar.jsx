@@ -19,11 +19,9 @@ export function SuperuserViewAsBar({ viewAsRole, onViewAs }) {
                   {viewingLabel}
                 </span>
                 <span className="ml-1 font-normal text-amber-800/90">(signed in as Superuser)</span>
-                {viewAsRole === 'intern' ? (
-                  <span className="mt-0.5 block text-2xs font-normal text-amber-800/80 sm:mt-0 sm:inline sm:pl-1">
-                    Sample intern portfolio loaded for preview.
-                  </span>
-                ) : null}
+                <span className="mt-0.5 block text-2xs font-normal text-amber-800/80 sm:mt-0 sm:inline sm:pl-1">
+                  Full portal access — preview UI only.
+                </span>
               </>
             ) : (
               <>

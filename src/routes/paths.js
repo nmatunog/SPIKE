@@ -163,6 +163,14 @@ export const MODULE_NAV = [
 ];
 
 export function moduleNavForRole(userRole) {
+  if (userRole === 'superuser') {
+    const seen = new Set();
+    return MODULE_NAV.filter((item) => {
+      if (seen.has(item.path)) return false;
+      seen.add(item.path);
+      return true;
+    });
+  }
   return MODULE_NAV.filter((item) => item.roles.includes(userRole));
 }
 
@@ -285,6 +293,10 @@ export function rolesForRoute(pathname) {
 
 export function canAccessRoute(pathname, userRole) {
   if (!AUTHENTICATED_ROLES.includes(userRole)) return false;
+  if (userRole === 'superuser') {
+    if (INTERN_FORMATION_ROUTES.includes(pathname)) return true;
+    return Boolean(matchModulePath(pathname));
+  }
   return rolesForRoute(pathname).includes(userRole);
 }
 

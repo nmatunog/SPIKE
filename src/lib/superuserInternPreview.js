@@ -29,6 +29,15 @@ export function buildSuperuserInternPreviewUser(user, actualRole, viewAsRole) {
   };
 }
 
+/**
+ * Intern route user for superuser — always sample data on intern-only pages.
+ * @param {object | null | undefined} user
+ * @param {string} actualRole
+ */
+export function resolveSuperuserInternRouteUser(user, actualRole) {
+  return buildSuperuserInternPreviewUser(user, actualRole, 'intern');
+}
+
 /** @param {object | null | undefined} user */
 export function isSuperuserInternPreviewUser(user) {
   return Boolean(user?.isSuperuserInternPreview);

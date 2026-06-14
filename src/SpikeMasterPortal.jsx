@@ -89,10 +89,12 @@ import { AdminUserDirectory } from './components/admin/AdminUserDirectory.jsx';
 import { SuperuserViewAsBar } from './components/admin/SuperuserViewAsBar.jsx';
 import {
   getEffectiveUserRole,
+  getPortalAccessRole,
+  isSuperuserPortalSession,
   readViewAsRole,
   writeViewAsRole,
 } from './lib/superuserViewAs.js';
-import { buildSuperuserInternPreviewUser } from './lib/superuserInternPreview.js';
+import { buildSuperuserInternPreviewUser, resolveSuperuserInternRouteUser } from './lib/superuserInternPreview.js';
 import { hydrateOnboardingStatus, setOnboardingCompleteCache, hasCompletedOnboardingSync } from './lib/cohortOnboardingService.js';
 
 /** @param {{ children: import('react').ReactNode, label?: string }} props */
@@ -122,6 +124,8 @@ const SpikeMasterPortal = () => {
     () => getEffectiveUserRole(userRole, viewAsRole),
     [userRole, viewAsRole],
   );
+  const portalAccessRole = useMemo(() => getPortalAccessRole(userRole), [userRole]);
+  const isSuperuserSession = isSuperuserPortalSession(userRole);
   const internModuleUser = useMemo(
     () => buildSuperuserInternPreviewUser(user, userRole, viewAsRole),
     [user, userRole, viewAsRole],
@@ -1307,7 +1311,55 @@ const SpikeMasterPortal = () => {
       );
     }
 
-    if (effectiveUserRole === 'intern') {
+    if (isSuperuserSession) {
+      const internUser = resolveSuperuserInternRouteUser(user, userRole);
+      if (path === ROUTES.cohortIdentity) {
+        return <CohortIdentityPage participantId={internUser.id} />;
+      }
+      if (path === ROUTES.squadPreferences) {
+        return <SquadPreferencesPage participantId={internUser.id} />;
+      }
+      if (path === ROUTES.squad) {
+        return (
+          <SquadDashboardPage
+            participantId={internUser.id}
+            participantName={internUser.name || internUser.email || 'Participant'}
+          />
+        );
+      }
+      if (path === ROUTES.squadCharter) {
+        return (
+          <SquadCharterPage
+            participantId={internUser.id}
+            participantName={internUser.name || internUser.email || 'Participant'}
+          />
+        );
+      }
+      if (
+        path === ROUTES.ventureBlueprint
+        || path.startsWith(`${ROUTES.ventureBlueprint}/`)
+      ) {
+        return (
+          <VentureBlueprintShell
+            user={internUser}
+            onLogTraction={() => navigate(ROUTES.dashboard)}
+            onProgressRefresh={() => refreshUser()}
+          />
+        );
+      }
+      if (
+        path === ROUTES.myVenturePortfolio
+        || path.startsWith(`${ROUTES.myVenturePortfolio}/`)
+      ) {
+        return (
+          <LazyRoute label="Loading portfolio…">
+            <MyVenturePortfolioRoute user={internUser} />
+          </LazyRoute>
+        );
+      }
+    }
+
+    if (effectiveUserRole === 'intern' && !isSuperuserSession) {
       const internUser = internModuleUser ?? user;
       const needsOnboarding =
         userRole !== 'superuser'
@@ -1372,7 +1424,7 @@ const SpikeMasterPortal = () => {
         );
       }
       if (path === ROUTES.playbook) return renderPlaybook();
-      if (path === ROUTES.portfolio) {
+      if (path === ROUTES.portfolio && !isSuperuserSession) {
         return <Navigate to={ROUTES.myVenturePortfolio} replace />;
       }
       if (path === ROUTES.research) return <ResearchPage user={internUser} />;
@@ -1389,7 +1441,7 @@ const SpikeMasterPortal = () => {
       );
     }
 
-    if (isStaffUiRole(effectiveUserRole)) {
+    if (isSuperuserSession || isStaffUiRole(effectiveUserRole)) {
       if (path === ROUTES.playbook) return renderPlaybook();
       if (path === ROUTES.portfolio) return <PortfolioPage hours={internSummary.avgHours} />;
       if (path === ROUTES.research) return <ResearchPage user={user} />;
@@ -1621,7 +1673,7 @@ const SpikeMasterPortal = () => {
       )}
 
       {userRole !== 'guest' && userRole !== 'profile_error' && !authLoading && (
-        <ModuleNav userRole={effectiveUserRole} />
+        <ModuleNav userRole={portalAccessRole} />
       )}
 
       <main>
@@ -1705,9 +1757,11 @@ const SpikeMasterPortal = () => {
           </div>
         )}
 
-        {(effectiveUserRole === 'intern' || isStaffUiRole(effectiveUserRole)) &&
+        {(portalAccessRole === 'intern'
+          || isStaffUiRole(portalAccessRole)
+          || isSuperuserSession) &&
           !authLoading && (
-            <RoleRouteGuard userRole={effectiveUserRole} pathname={location.pathname}>
+            <RoleRouteGuard userRole={portalAccessRole} pathname={location.pathname}>
               <LazyRoute label="Loading module…">{renderAuthenticatedModule()}</LazyRoute>
             </RoleRouteGuard>
           )}

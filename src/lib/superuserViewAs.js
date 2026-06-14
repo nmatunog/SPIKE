@@ -44,3 +44,16 @@ export function getEffectiveUserRole(actualRole, viewAsRole) {
   if (!viewAsRole || !VIEW_AS_IDS.has(viewAsRole)) return 'superuser';
   return viewAsRole;
 }
+
+/** Superuser sessions use full portal access regardless of view-as preview. */
+export function isSuperuserPortalSession(actualRole) {
+  return actualRole === 'superuser';
+}
+
+/**
+ * Role for route guards and module nav — superuser always retains full access.
+ * @param {string} actualRole
+ */
+export function getPortalAccessRole(actualRole) {
+  return actualRole === 'superuser' ? 'superuser' : actualRole;
+}
