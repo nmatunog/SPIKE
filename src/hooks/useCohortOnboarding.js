@@ -39,10 +39,14 @@ export function useCohortOnboarding(participantId) {
       }
       setState({ ...ctx, loading: false, error: '' });
     } catch (err) {
+      const detail =
+        err && typeof err === 'object' && 'message' in err
+          ? String(err.message)
+          : 'Could not load onboarding.';
       setState((s) => ({
         ...s,
         loading: false,
-        error: err instanceof Error ? err.message : 'Could not load onboarding.',
+        error: `${detail} If this persists, run migrations 20260615 + 20260616 in Supabase SQL Editor, then Settings → API → Reload schema.`,
       }));
     }
   }, [participantId]);

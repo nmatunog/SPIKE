@@ -129,12 +129,16 @@ export async function loadOnboardingContext(participantId) {
   }
 
   const [progress, suggestion, vote, squad, finalists, tally] = await Promise.all([
-    db.fetchParticipantOnboarding(participantId),
-    db.fetchParticipantSuggestion(cohort.id, participantId),
-    db.fetchParticipantVote(cohort.id, participantId),
-    db.fetchParticipantSquad(participantId),
-    db.fetchFinalists(cohort.id),
-    db.computeVoteTally(cohort.id),
+    db.fetchParticipantOnboarding(participantId).catch(() => ({
+      onboarding_complete: false,
+      onboarding_welcomed_at: null,
+      cohort_id: null,
+    })),
+    db.fetchParticipantSuggestion(cohort.id, participantId).catch(() => null),
+    db.fetchParticipantVote(cohort.id, participantId).catch(() => null),
+    db.fetchParticipantSquad(participantId).catch(() => null),
+    db.fetchFinalists(cohort.id).catch(() => []),
+    db.computeVoteTally(cohort.id).catch(() => []),
   ]);
 
   const step = resolveOnboardingStep({ cohort, progress, suggestion, vote, squad });

@@ -79,7 +79,7 @@ import { isMockUser, shouldUseSupabaseForUser } from './lib/mockAuth.js';
 import { ForcePasswordChangeGate } from './components/ForcePasswordChangeGate.jsx';
 import { DailyActivationCodeCard } from './components/dashboard/DailyActivationCodeCard.jsx';
 import { validateInternActivationCode } from './lib/activationCodeService.js';
-import { hydrateOnboardingStatus, setOnboardingCompleteCache } from './lib/cohortOnboardingService.js';
+import { hydrateOnboardingStatus, setOnboardingCompleteCache, hasCompletedOnboardingSync } from './lib/cohortOnboardingService.js';
 
 /** @param {{ children: import('react').ReactNode, label?: string }} props */
 function LazyRoute({ children, label }) {
@@ -1163,6 +1163,14 @@ const SpikeMasterPortal = () => {
     }
 
     if (userRole === 'intern') {
+      const needsOnboarding =
+        shouldUseSupabaseForUser(user)
+        && !user?.internProgress?.onboarding_complete
+        && !hasCompletedOnboardingSync(user.id);
+      if (needsOnboarding && path !== ROUTES.cohortIdentity) {
+        return <Navigate to={ROUTES.cohortIdentity} replace />;
+      }
+
       if (path === ROUTES.cohortIdentity) {
         return <CohortIdentityPage participantId={user.id} />;
       }

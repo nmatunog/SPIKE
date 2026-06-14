@@ -26,15 +26,43 @@ function assertClient() {
 /** @returns {Promise<CohortRow | null>} */
 export async function fetchActiveCohort() {
   const client = assertClient();
-  const { data, error } = await client
+  const fullSelect =
+    'id, name, code, is_active, onboarding_phase, official_name, photo_url, motto, theme_statement';
+
+  const withActive = await client
     .from('cohorts')
-    .select('id, name, code, is_active, onboarding_phase, official_name, photo_url, motto, theme_statement')
+    .select(fullSelect)
     .eq('is_active', true)
     .order('id', { ascending: true })
     .limit(1)
     .maybeSingle();
-  if (error) throw error;
-  return data;
+  if (!withActive.error) return withActive.data;
+
+  const anyCohort = await client
+    .from('cohorts')
+    .select(fullSelect)
+    .order('id', { ascending: true })
+    .limit(1)
+    .maybeSingle();
+  if (!anyCohort.error) return anyCohort.data;
+
+  const minimal = await client
+    .from('cohorts')
+    .select('id, name, code')
+    .order('id', { ascending: true })
+    .limit(1)
+    .maybeSingle();
+  if (minimal.error) throw minimal.error;
+  if (!minimal.data) return null;
+  return {
+    ...minimal.data,
+    is_active: true,
+    onboarding_phase: 'suggestions_closed',
+    official_name: null,
+    photo_url: null,
+    motto: '',
+    theme_statement: '',
+  };
 }
 
 /** @param {number} cohortId @param {Partial<CohortRow>} patch */
@@ -192,18 +220,21 @@ export async function fetchParticipantSuggestion(cohortId, participantId) {
 /** @param {string} participantId */
 export async function fetchParticipantSquad(participantId) {
   const client = assertClient();
-  const { data, error } = await client
+  const { data: member, error: memErr } = await client
     .from('formation_squad_members')
-    .select('squad_id, role, formation_squads(id, cohort_id, name, motto, photo_url, registered_at, onboarding_complete, status, capacity)')
+    .select('squad_id, role')
     .eq('participant_id', participantId)
     .maybeSingle();
-  if (error) throw error;
-  if (!data) return null;
-  const squad = data.formation_squads;
-  return {
-    membership: { squad_id: data.squad_id, role: data.role },
-    squad,
-  };
+  if (memErr) throw memErr;
+  if (!member) return null;
+
+  const { data: squad, error: squadErr } = await client
+    .from('formation_squads')
+    .select('id, cohort_id, name, motto, photo_url, registered_at, onboarding_complete, status, capacity')
+    .eq('id', member.squad_id)
+    .maybeSingle();
+  if (squadErr) throw squadErr;
+  return { membership: member, squad };
 }
 
 /** @param {number} cohortId */
@@ -316,7 +347,19 @@ export async function fetchParticipantOnboarding(participantId) {
     .select('onboarding_complete, onboarding_welcomed_at, cohort_id')
     .eq('user_id', participantId)
     .maybeSingle();
-  if (error) throw error;
+  if (error) {
+    const { data: fallback, error: fallbackErr } = await client
+      .from('intern_progress')
+      .select('cohort_id')
+      .eq('user_id', participantId)
+      .maybeSingle();
+    if (fallbackErr) throw fallbackErr;
+    return {
+      onboarding_complete: false,
+      onboarding_welcomed_at: null,
+      cohort_id: fallback?.cohort_id ?? null,
+    };
+  }
   return data;
 }
 

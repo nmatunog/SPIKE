@@ -16,8 +16,8 @@ import { getNextBlueprintAction } from './blueprintRecommendations.js';
 export const DAY1_JOURNEY_STEPS = [
   {
     id: 'orientation',
-    label: 'Build Challenge 0',
-    shortLabel: 'Squad',
+    label: 'Founding Cohort',
+    shortLabel: 'Cohort',
     href: ROUTES.cohortIdentity,
     estMin: 5,
   },
@@ -134,7 +134,7 @@ export function deriveTodayMission(participantId, state) {
   else if (next.id === 'dream-board') title = 'Create Your Dream Board';
   else if (next.id === 'canvas') title = 'Start Your FE Canvas';
   else if (next.id === 'squad') title = 'Join Your Squad';
-  else if (next.id === 'orientation') title = 'Build Challenge 0';
+  else if (next.id === 'orientation') title = 'Name Your Founding Cohort';
 
   const continueHref =
     next.id === 'dream-board' && !isBuilderCompleted(participantId, 'dream-board')
