@@ -134,6 +134,17 @@ export async function fetchUserDirectory() {
   };
 }
 
+async function runAdminDirectoryApi(payload) {
+  const { data: sessionData } = await supabase.auth.getSession();
+  const token = sessionData.session?.access_token;
+  if (!token) throw new Error('Your session expired. Sign in again.');
+  return apiFetch('/api/admin/users', {
+    method: 'POST',
+    token,
+    body: payload,
+  });
+}
+
 async function updatePortalUser({ targetId, role, name, isSuperuser, target }) {
   assertClientTargetMutable(isSuperuser, target);
   if (role) assertClientRoleAllowed(isSuperuser, role);
@@ -221,38 +232,59 @@ export async function runUserDirectoryAction(payload, { isSuperuser, target = nu
   }
 
   if (payload.action === 'promote') {
-    await updatePortalUser({
-      targetId: payload.targetId,
-      role: payload.role,
-      isSuperuser,
-      target: resolvedTarget,
-    });
-    return { ok: true };
+    try {
+      return await runAdminDirectoryApi(payload);
+    } catch (err) {
+      if (err instanceof ApiError && (err.status === 503 || err.status === 500)) {
+        await updatePortalUser({
+          targetId: payload.targetId,
+          role: payload.role,
+          isSuperuser,
+          target: resolvedTarget,
+        });
+        return { ok: true };
+      }
+      try {
+        await updatePortalUser({
+          targetId: payload.targetId,
+          role: payload.role,
+          isSuperuser,
+          target: resolvedTarget,
+        });
+        return { ok: true };
+      } catch (clientErr) {
+        throw clientErr instanceof Error ? clientErr : err;
+      }
+    }
   }
 
   if (payload.action === 'edit') {
-    await updatePortalUser({
-      targetId: payload.targetId,
-      role: payload.role,
-      name: payload.name,
-      isSuperuser,
-      target: resolvedTarget,
-    });
-    if (payload.email) {
-      try {
-        const { data: sessionData } = await supabase.auth.getSession();
-        const token = sessionData.session?.access_token;
-        if (!token) throw new Error('Your session expired. Sign in again.');
-        return await apiFetch('/api/admin/users', {
-          method: 'POST',
-          token,
-          body: payload,
+    try {
+      return (await runAdminDirectoryApi(payload)) ?? { ok: true };
+    } catch (err) {
+      if (err instanceof ApiError && (err.status === 503 || err.status === 500)) {
+        await updatePortalUser({
+          targetId: payload.targetId,
+          role: payload.role,
+          name: payload.name,
+          isSuperuser,
+          target: resolvedTarget,
         });
-      } catch (err) {
-        throw wrapServiceKeyError(err);
+        return { ok: true };
+      }
+      try {
+        await updatePortalUser({
+          targetId: payload.targetId,
+          role: payload.role,
+          name: payload.name,
+          isSuperuser,
+          target: resolvedTarget,
+        });
+        return { ok: true };
+      } catch (clientErr) {
+        throw clientErr instanceof Error ? clientErr : err;
       }
     }
-    return { ok: true };
   }
 
   throw new Error('Unknown action.');

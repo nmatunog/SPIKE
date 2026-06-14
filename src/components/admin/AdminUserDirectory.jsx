@@ -71,6 +71,12 @@ export function AdminUserDirectory({ currentUserId = '', isSuperuser = false }) 
     }
   }
 
+  function openModal(nextModal) {
+    setError('');
+    setResultMsg('');
+    setModal(nextModal);
+  }
+
   if (loading) {
     return (
       <div className="flex items-center gap-2 text-sm text-slate-600">
@@ -104,7 +110,9 @@ export function AdminUserDirectory({ currentUserId = '', isSuperuser = false }) 
         </p>
       ) : null}
 
-      {error ? <p className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800">{error}</p> : null}
+      {error && !modal ? (
+        <p className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800">{error}</p>
+      ) : null}
       {resultMsg ? (
         <p className="mb-3 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-900">{resultMsg}</p>
       ) : null}
@@ -144,14 +152,14 @@ export function AdminUserDirectory({ currentUserId = '', isSuperuser = false }) 
                           <button
                             type="button"
                             className="text-xs font-bold text-[#8B0000] underline"
-                            onClick={() => setModal({ type: 'edit', user: u })}
+                            onClick={() => openModal({ type: 'edit', user: u })}
                           >
                             Edit
                           </button>
                           <button
                             type="button"
                             className="text-xs font-bold text-[#8B0000] underline"
-                            onClick={() => setModal({ type: 'promote', user: u })}
+                            onClick={() => openModal({ type: 'promote', user: u })}
                           >
                             Change role
                           </button>
@@ -160,7 +168,7 @@ export function AdminUserDirectory({ currentUserId = '', isSuperuser = false }) 
                               <button
                                 type="button"
                                 className="text-xs font-bold text-[#8B0000] underline"
-                                onClick={() => setModal({ type: 'password_reset', user: u })}
+                                onClick={() => openModal({ type: 'password_reset', user: u })}
                               >
                                 Reset password
                               </button>
@@ -168,7 +176,7 @@ export function AdminUserDirectory({ currentUserId = '', isSuperuser = false }) 
                                 <button
                                   type="button"
                                   className="inline-flex items-center gap-1 text-xs font-bold text-red-700 underline"
-                                  onClick={() => setModal({ type: 'delete', user: u })}
+                                  onClick={() => openModal({ type: 'delete', user: u })}
                                 >
                                   <Trash2 size={12} /> Remove
                                 </button>
@@ -196,8 +204,12 @@ export function AdminUserDirectory({ currentUserId = '', isSuperuser = false }) 
         <ActionModal
           modal={modal}
           busy={busy}
+          error={error}
           roleOptions={roleOptions}
-          onClose={() => setModal(null)}
+          onClose={() => {
+            setError('');
+            setModal(null);
+          }}
           onSubmit={runAction}
         />
       ) : null}
@@ -205,14 +217,16 @@ export function AdminUserDirectory({ currentUserId = '', isSuperuser = false }) 
   );
 }
 
-/** @param {{ modal: object, busy: string, roleOptions: string[], onClose: () => void, onSubmit: (p: object) => Promise<void> }} props */
-function ActionModal({ modal, busy, roleOptions, onClose, onSubmit }) {
+/** @param {{ modal: object, busy: string, error?: string, roleOptions: string[], onClose: () => void, onSubmit: (p: object) => Promise<void> }} props */
+function ActionModal({ modal, busy, error = '', roleOptions, onClose, onSubmit }) {
   const { type, user } = modal;
   const [reason, setReason] = useState('');
   const [name, setName] = useState(user.name ?? '');
   const [email, setEmail] = useState(user.email ?? '');
   const [role, setRole] = useState(user.role ?? 'INTERN');
   const [confirmEmail, setConfirmEmail] = useState('');
+  const reasonReady = reason.trim().length >= 3;
+  const roleChanged = type === 'promote' && role !== user.role;
 
   const titles = {
     edit: 'Edit account',
@@ -222,7 +236,7 @@ function ActionModal({ modal, busy, roleOptions, onClose, onSubmit }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 p-4">
       <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-6 shadow-xl">
         <div className="mb-4 flex items-center gap-2">
           <UserCog className="text-spike" size={20} />
@@ -273,10 +287,23 @@ function ActionModal({ modal, busy, roleOptions, onClose, onSubmit }) {
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             rows={3}
+            autoFocus
             className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
             placeholder="Why is this action needed?"
           />
         </label>
+        {!reasonReady ? (
+          <p className="mt-1 text-xs text-amber-800">
+            Type at least 3 characters in Reason to enable Confirm.
+          </p>
+        ) : null}
+        {type === 'promote' && reasonReady && !roleChanged ? (
+          <p className="mt-1 text-xs text-amber-800">Select a different role than the current one.</p>
+        ) : null}
+
+        {error ? (
+          <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800">{error}</p>
+        ) : null}
 
         <div className="mt-5 flex justify-end gap-2">
           <button type="button" className="spike-btn-secondary" onClick={onClose} disabled={Boolean(busy)}>
@@ -284,8 +311,16 @@ function ActionModal({ modal, busy, roleOptions, onClose, onSubmit }) {
           </button>
           <button
             type="button"
-            className={type === 'delete' ? 'rounded-lg bg-red-700 px-4 py-2 text-sm font-bold text-white' : 'spike-btn-primary'}
-            disabled={Boolean(busy) || reason.trim().length < 3}
+            className={
+              type === 'delete'
+                ? 'rounded-lg bg-red-700 px-4 py-2 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50'
+                : 'spike-btn-primary disabled:cursor-not-allowed disabled:opacity-50'
+            }
+            disabled={
+              Boolean(busy)
+              || !reasonReady
+              || (type === 'promote' && !roleChanged)
+            }
             onClick={() => {
               const base = { targetId: user.id, reason: reason.trim() };
               if (type === 'edit') {

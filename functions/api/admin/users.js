@@ -86,11 +86,35 @@ async function loadPortalUserDirectory(admin) {
 async function getTargetProfile(admin, targetId) {
   const { data, error } = await admin
     .from('profiles')
-    .select('id, email, role')
+    .select('id, email, name, role')
     .eq('id', targetId)
     .maybeSingle();
   if (error) throw new Error(error.message);
   return data;
+}
+
+/** @param {import('@supabase/supabase-js').SupabaseClient} admin @param {string} targetId */
+async function ensureTargetProfile(admin, targetId) {
+  const existing = await getTargetProfile(admin, targetId);
+  if (existing) return existing;
+
+  const { data: authData, error: authErr } = await admin.auth.admin.getUserById(targetId);
+  if (authErr || !authData?.user) throw new Error('Auth user not found.');
+
+  const authUser = authData.user;
+  const name =
+    (typeof authUser.user_metadata?.name === 'string' && authUser.user_metadata.name.trim()) ||
+    authUser.email?.split('@')[0] ||
+    'User';
+  const { error: insertErr } = await admin.from('profiles').insert({
+    id: targetId,
+    email: authUser.email ?? '',
+    name,
+    role: 'INTERN',
+  });
+  if (insertErr) throw new Error(insertErr.message);
+
+  return getTargetProfile(admin, targetId);
 }
 
 /** @param {{ isSuperuser: boolean }} actor @param {string | undefined} role */
@@ -102,7 +126,7 @@ function assertRoleAllowed(actor, role) {
   }
 }
 
-/** @param {{ isSuperuser: boolean }} actor @param {{ role?: string } | null} target */
+/** @param {{ role?: string } | null} target */
 function assertTargetMutable(actor, target) {
   if (!target) throw new Error('User not found.');
   if (!actor.isSuperuser && target.role === 'SUPERUSER') {
@@ -189,7 +213,7 @@ export async function onRequest(ctx) {
 
     if (action === 'promote') {
       if (!targetId) return json({ message: 'targetId is required.' }, 400);
-      const target = await getTargetProfile(admin, targetId);
+      const target = await ensureTargetProfile(admin, targetId);
       assertTargetMutable(actor, target);
 
       const role = String(body?.role ?? '').trim();
@@ -198,9 +222,17 @@ export async function onRequest(ctx) {
         return json({ message: 'You cannot demote your own superuser account here.' }, 400);
       }
 
-      const { error } = await admin.from('profiles').update({ role }).eq('id', targetId);
+      const { error } = await admin.from('profiles').upsert(
+        {
+          id: targetId,
+          email: target.email ?? '',
+          name: target.name ?? 'User',
+          role,
+        },
+        { onConflict: 'id' },
+      );
       if (error) return json({ message: error.message }, 400);
-      await logAction(admin, actor.profile.id, targetId, 'promote', reason, { role });
+      await logAction(admin, actor.profile.id, targetId, 'promote', reason, { role }).catch(() => null);
       return json({ ok: true });
     }
 
