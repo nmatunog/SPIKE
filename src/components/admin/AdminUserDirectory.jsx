@@ -6,12 +6,9 @@ import {
   runUserDirectoryAction,
 } from '../../lib/userAdminService.js';
 import { formatDbRoleLabel } from '../../lib/terminology.js';
+import { RolePicker } from './RolePicker.jsx';
 
 const SUPERUSER_ROLE_OPTIONS = ['INTERN', 'FACULTY', 'MENTOR', 'ADMIN', 'SUPERUSER'];
-
-function formatRoleOption(dbRole) {
-  return `${formatDbRoleLabel(dbRole)} (${dbRole})`;
-}
 
 /** @param {{ currentUserId?: string, isSuperuser?: boolean }} props */
 export function AdminUserDirectory({ currentUserId = '', isSuperuser = false }) {
@@ -225,20 +222,15 @@ function ActionModal({ modal, busy, roleOptions, onClose, onSubmit }) {
           <div className="space-y-3">
             <input value={name} onChange={(e) => setName(e.target.value)} className="w-full rounded-lg border px-3 py-2 text-sm" placeholder="Name" />
             <input value={email} onChange={(e) => setEmail(e.target.value)} className="w-full rounded-lg border px-3 py-2 text-sm" placeholder="Email" type="email" />
-            <select value={role} onChange={(e) => setRole(e.target.value)} className="w-full rounded-lg border px-3 py-2 text-sm">
-              {roleOptions.map((r) => (
-                <option key={r} value={r}>{formatRoleOption(r)}</option>
-              ))}
-            </select>
+            <RolePicker value={role} onChange={setRole} allowedValues={roleOptions} name="edit-role" />
           </div>
         ) : null}
 
         {type === 'promote' ? (
-          <select value={role} onChange={(e) => setRole(e.target.value)} className="mb-3 w-full rounded-lg border px-3 py-2 text-sm">
-            {roleOptions.map((r) => (
-              <option key={r} value={r}>{formatRoleOption(r)}</option>
-            ))}
-          </select>
+          <div className="mb-3">
+            <p className="mb-2 text-sm font-medium text-slate-700">New role</p>
+            <RolePicker value={role} onChange={setRole} allowedValues={roleOptions} name="promote-role" />
+          </div>
         ) : null}
 
         {type === 'delete' ? (

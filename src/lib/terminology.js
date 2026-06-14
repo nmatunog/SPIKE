@@ -12,6 +12,21 @@ export const DB_ROLE_LABELS = {
   SUPERUSER: 'Superuser',
 };
 
+/** Portal role picker options (value stays DB enum; label is user-facing). */
+export const PORTAL_DB_ROLE_OPTIONS = [
+  { value: 'INTERN', label: 'Intern' },
+  { value: 'FACULTY', label: PROGRAM_COACH_LABEL },
+  { value: 'MENTOR', label: 'Advisor (Mentor)' },
+  { value: 'ADMIN', label: 'Administrator' },
+  { value: 'SUPERUSER', label: 'Superuser' },
+];
+
+/** @param {string[]} allowedValues */
+export function portalRoleOptionsFor(allowedValues) {
+  const allowed = new Set(allowedValues);
+  return PORTAL_DB_ROLE_OPTIONS.filter((opt) => allowed.has(opt.value));
+}
+
 /** @param {string} [dbRole] */
 export function formatDbRoleLabel(dbRole) {
   return DB_ROLE_LABELS[dbRole] ?? dbRole ?? 'Unknown';
