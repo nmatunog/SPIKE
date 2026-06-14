@@ -1,15 +1,5 @@
+-- STEP 2 of 2: Run AFTER 20260703a_superuser_enum.sql has committed successfully.
 -- SUPERUSER role, staff self-signup codes, user-admin audit, profile role guard.
-
-do $$
-begin
-  if not exists (
-    select 1 from pg_enum e
-    join pg_type t on t.oid = e.enumtypid
-    where t.typname = 'app_role' and e.enumlabel = 'SUPERUSER'
-  ) then
-    alter type public.app_role add value 'SUPERUSER';
-  end if;
-end $$;
 
 create table if not exists public.staff_registration_config (
   id int primary key default 1 check (id = 1),
