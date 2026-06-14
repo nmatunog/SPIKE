@@ -1,3 +1,4 @@
+import { ClipboardCheck } from 'lucide-react';
 import { formatPlaybookAudience } from '../../lib/terminology.js';
 
 /**
