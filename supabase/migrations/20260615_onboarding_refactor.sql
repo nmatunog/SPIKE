@@ -197,9 +197,13 @@ drop policy if exists cohorts_read on public.cohorts;
 create policy cohorts_read on public.cohorts for select using (auth.uid() is not null);
 
 drop policy if exists cohorts_staff on public.cohorts;
-create policy cohorts_staff on public.cohorts for all using (
-  exists (select 1 from public.profiles p where p.id = auth.uid() and p.role in ('ADMIN', 'FACULTY', 'MENTOR'))
-);
+create policy cohorts_staff_insert on public.cohorts for insert
+  with check (public.current_role() in ('ADMIN', 'FACULTY', 'MENTOR'));
+create policy cohorts_staff_update on public.cohorts for update
+  using (public.current_role() in ('ADMIN', 'FACULTY', 'MENTOR'))
+  with check (public.current_role() in ('ADMIN', 'FACULTY', 'MENTOR'));
+create policy cohorts_staff_delete on public.cohorts for delete
+  using (public.current_role() in ('ADMIN', 'FACULTY', 'MENTOR'));
 
 drop policy if exists cohort_suggestions_own on public.cohort_suggestions;
 create policy cohort_suggestions_own on public.cohort_suggestions for all
