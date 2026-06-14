@@ -46,7 +46,7 @@ const BLOCK_PAGES = {
     description: 'Mentor objectives, coaching notes, debrief and observation guides.',
     blockType: 'mentor_guide',
   },
-  [`${ROUTES.adminContentStudio}/faculty-guides`]: {
+  [ROUTES.programCoachGuides]: {
     title: 'Program Coach Guides',
     description: 'Session overview, teaching notes, facilitation guide, timing, and expected outputs.',
     blockType: 'faculty_guide',

@@ -37,7 +37,7 @@ export function FacultyDayFrameworkPage() {
   return (
     <PageContainer>
       <Link
-        to={ROUTES.facultyPlaybook}
+        to={ROUTES.programCoachPlaybook}
         className="mb-4 inline-flex items-center gap-2 text-sm text-slate-500 hover:text-spike"
       >
         <ArrowLeft size={16} /> Program Coach Playbook
@@ -71,7 +71,7 @@ export function FacultyDayFrameworkPage() {
           Deliver in Playbook →
         </Link>
         <Link
-          to={`${ROUTES.facultyPlaybook}/${seg}/${wk}/${dy}`}
+          to={`${ROUTES.programCoachPlaybook}/${seg}/${wk}/${dy}`}
           className="inline-flex spike-btn-secondary text-sm"
         >
           Back to framework

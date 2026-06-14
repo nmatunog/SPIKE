@@ -27,7 +27,7 @@ export function FacultyPlaybookPage({ segment = 1, week = 1 }) {
 
   return (
     <PageContainer>
-      <Link to={ROUTES.facultyHome} className="mb-4 inline-flex items-center gap-2 text-sm text-slate-500 hover:text-spike">
+      <Link to={ROUTES.programCoachHome} className="mb-4 inline-flex items-center gap-2 text-sm text-slate-500 hover:text-spike">
         <ArrowLeft size={16} /> Program Coach home
       </Link>
 
@@ -56,7 +56,7 @@ export function FacultyPlaybookPage({ segment = 1, week = 1 }) {
                     {(day.learning_objectives ?? []).slice(0, 2).join(' · ')}
                   </p>
                   <Link
-                    to={`${ROUTES.facultyPlaybook}/${segment}/${week}/${day.day}`}
+                    to={`${ROUTES.programCoachPlaybook}/${segment}/${week}/${day.day}`}
                     className="mt-3 inline-flex text-sm font-semibold text-spike hover:underline"
                   >
                     Open day framework →

@@ -29,13 +29,13 @@ export function AdminFacultyPlaybookPage() {
       </PageTitle>
 
       <div className="mt-4 flex flex-wrap gap-2">
-        <Link to={ROUTES.facultyHome} className="spike-btn-secondary text-sm">
+        <Link to={ROUTES.programCoachHome} className="spike-btn-secondary text-sm">
           Program Coach dashboard
         </Link>
-        <Link to={`${ROUTES.adminContentStudio}/faculty-guides`} className="spike-btn-secondary text-sm">
+        <Link to={ROUTES.programCoachGuides} className="spike-btn-secondary text-sm">
           Content Studio — Program Coach Guides
         </Link>
-        <Link to={ROUTES.facultyPlaybook} className="spike-btn-primary text-sm">
+        <Link to={ROUTES.programCoachPlaybook} className="spike-btn-primary text-sm">
           Preview delivery view
         </Link>
       </div>

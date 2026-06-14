@@ -35,7 +35,7 @@ export function FacultyDashboardPanels({ interns }) {
                 </p>
                 <div className="mt-2 flex flex-col gap-1">
                   <Link
-                    to={`${ROUTES.facultyPlaybook}/1/1/${meta.day}`}
+                    to={`${ROUTES.programCoachPlaybook}/1/1/${meta.day}`}
                     className="text-xs font-semibold text-spike hover:underline"
                   >
                     Framework →

@@ -1340,7 +1340,7 @@ const SpikeMasterPortal = () => {
       if (path === ROUTES.analyticsCohortIdentity) {
         return <CohortIdentityAnalyticsPage />;
       }
-      if (path === `${ROUTES.facultyHome}/advisory`) {
+      if (path === `${ROUTES.programCoachHome}/advisory`) {
         return (
           <LazyRoute label="Loading advisory…">
             <StaffDashboardPage
@@ -1378,7 +1378,7 @@ const SpikeMasterPortal = () => {
           </LazyRoute>
         );
       }
-      if (path === ROUTES.facultyHome) {
+      if (path === ROUTES.programCoachHome) {
         return (
           <LazyRoute label="Loading program coach…">
             <FacultyHomePage
@@ -1389,14 +1389,14 @@ const SpikeMasterPortal = () => {
           </LazyRoute>
         );
       }
-      if (path === ROUTES.facultyPlaybook) {
+      if (path === ROUTES.programCoachPlaybook) {
         return (
           <LazyRoute label="Loading program coach playbook…">
             <FacultyPlaybookPage />
           </LazyRoute>
         );
       }
-      if (path.startsWith(`${ROUTES.facultyPlaybook}/`)) {
+      if (path.startsWith(`${ROUTES.programCoachPlaybook}/`)) {
         return (
           <LazyRoute label="Loading day framework…">
             <FacultyDayFrameworkPage />
@@ -1430,7 +1430,7 @@ const SpikeMasterPortal = () => {
           </LazyRoute>
         );
       }
-      if (path === ROUTES.adminFacultyPlaybook) {
+      if (path === ROUTES.adminProgramCoachPlaybook) {
         return (
           <LazyRoute label="Loading program coach admin…">
             <AdminFacultyPlaybookPage />
@@ -1500,7 +1500,7 @@ const SpikeMasterPortal = () => {
         );
       }
       if (path === ROUTES.dashboard && userRole === 'faculty') {
-        return <Navigate to={ROUTES.facultyHome} replace />;
+        return <Navigate to={ROUTES.programCoachHome} replace />;
       }
       if (path === ROUTES.dashboard && userRole === 'mentor') {
         return <Navigate to={ROUTES.mentorHome} replace />;

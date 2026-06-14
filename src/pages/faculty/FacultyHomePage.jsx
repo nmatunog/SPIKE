@@ -53,13 +53,13 @@ export function FacultyHomePage({ interns, internSummary, pendingLogs = [] }) {
       </div>
 
       <div className="mt-6 flex flex-wrap gap-2">
-        <Link to={ROUTES.facultyPlaybook} className="spike-btn-primary inline-flex items-center gap-2">
+        <Link to={ROUTES.programCoachPlaybook} className="spike-btn-primary inline-flex items-center gap-2">
           <GraduationCap size={18} /> Program Coach Playbook
         </Link>
-        <Link to={`${ROUTES.facultyHome}/advisory`} className="spike-btn-secondary inline-flex items-center gap-2">
+        <Link to={`${ROUTES.programCoachHome}/advisory`} className="spike-btn-secondary inline-flex items-center gap-2">
           Traction & hours
         </Link>
-        <Link to={ROUTES.adminFacultyPlaybook} className="spike-btn-secondary inline-flex items-center gap-2">
+        <Link to={ROUTES.adminProgramCoachPlaybook} className="spike-btn-secondary inline-flex items-center gap-2">
           <Layers size={18} /> Manage templates
         </Link>
         <Link to={ROUTES.adminContentStudio} className="spike-btn-secondary inline-flex items-center gap-2">

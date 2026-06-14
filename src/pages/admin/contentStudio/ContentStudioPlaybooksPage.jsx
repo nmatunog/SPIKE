@@ -16,10 +16,10 @@ export function ContentStudioPlaybooksPage() {
               Learning objectives, speaker notes, activities, worksheets, assessments, rubrics, expected outputs.
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
-              <Link to={ROUTES.adminFacultyPlaybook} className="spike-btn-primary text-sm">
+              <Link to={ROUTES.adminProgramCoachPlaybook} className="spike-btn-primary text-sm">
                 Admin templates
               </Link>
-              <Link to={ROUTES.facultyPlaybook} className="spike-btn-secondary text-sm">
+              <Link to={ROUTES.programCoachPlaybook} className="spike-btn-secondary text-sm">
                 Preview delivery
               </Link>
             </div>
@@ -41,7 +41,7 @@ export function ContentStudioPlaybooksPage() {
         </div>
         <p className="text-sm text-slate-600">
           Block-level program coach and mentor guides also live under{' '}
-          <Link to={`${ROUTES.adminContentStudio}/faculty-guides`} className="font-semibold text-spike hover:underline">
+          <Link to={ROUTES.programCoachGuides} className="font-semibold text-spike hover:underline">
             Program Coach Guides
           </Link>{' '}
           and{' '}

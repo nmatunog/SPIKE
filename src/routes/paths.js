@@ -19,11 +19,12 @@ export const ROUTES = {
   mentorVentureCoach: '/mentor/participants',
   mentorParticipant: '/mentor/participant',
   analyticsCohortIdentity: '/analytics/cohort-identity',
-  facultyHome: '/faculty',
+  programCoachHome: '/program-coach',
+  programCoachPlaybook: '/program-coach/playbook',
+  programCoachGuides: '/admin/content-studio/program-coach-guides',
+  adminProgramCoachPlaybook: '/admin/program-coach-playbook',
   mentorHome: '/mentor',
-  facultyPlaybook: '/faculty/playbook',
   mentorPlaybook: '/mentor/playbook',
-  adminFacultyPlaybook: '/admin/faculty-playbook',
   adminMentorPlaybook: '/admin/mentor-playbook',
   myVenturePortfolio: '/my-venture-portfolio',
   adminPortfolioSettings: '/admin/portfolio-settings',
@@ -86,7 +87,7 @@ export const MODULE_NAV = [
     roles: ['intern'],
   },
   {
-    path: ROUTES.facultyHome,
+    path: ROUTES.programCoachHome,
     label: 'Home',
     shortLabel: 'Home',
     icon: 'dashboard',
@@ -192,13 +193,13 @@ export function matchModulePath(pathname) {
   if (pathname === ROUTES.analyticsCohortIdentity) {
     return ROUTES.analyticsCohortIdentity;
   }
-  if (pathname === ROUTES.facultyHome || pathname.startsWith(`${ROUTES.facultyHome}/`)) {
-    return ROUTES.facultyHome;
+  if (pathname === ROUTES.programCoachHome || pathname.startsWith(`${ROUTES.programCoachHome}/`)) {
+    return ROUTES.programCoachHome;
   }
   if (pathname === ROUTES.mentorHome || pathname.startsWith(`${ROUTES.mentorHome}/`)) {
     return ROUTES.mentorHome;
   }
-  if (pathname === ROUTES.adminFacultyPlaybook) return ROUTES.adminFacultyPlaybook;
+  if (pathname === ROUTES.adminProgramCoachPlaybook) return ROUTES.adminProgramCoachPlaybook;
   if (pathname === ROUTES.adminMentorPlaybook) return ROUTES.adminMentorPlaybook;
   if (pathname === ROUTES.adminPortfolioSettings) return ROUTES.adminPortfolioSettings;
   if (pathname === ROUTES.myVenturePortfolio || pathname.startsWith(`${ROUTES.myVenturePortfolio}/`)) {
@@ -220,6 +221,20 @@ export function matchModulePath(pathname) {
   return null;
 }
 
+/** @param {string} pathname */
+export function canonicalizePathname(pathname) {
+  if (pathname === '/admin/faculty-playbook') {
+    return ROUTES.adminProgramCoachPlaybook;
+  }
+  if (pathname.startsWith('/admin/content-studio/faculty-guides')) {
+    return pathname.replace('/faculty-guides', '/program-coach-guides');
+  }
+  if (pathname === '/faculty' || pathname.startsWith('/faculty/')) {
+    return pathname.replace(/^\/faculty(?=\/|$)/, '/program-coach');
+  }
+  return pathname;
+}
+
 export function isModulePath(pathname) {
   return matchModulePath(pathname) !== null;
 }
@@ -235,9 +250,9 @@ export function rolesForRoute(pathname) {
     return ['admin', 'faculty'];
   }
   if (pathname === ROUTES.adminPortfolioSettings) return ['admin', 'faculty'];
-  if (pathname === ROUTES.adminFacultyPlaybook) return ['admin', 'faculty'];
+  if (pathname === ROUTES.adminProgramCoachPlaybook) return ['admin', 'faculty'];
   if (pathname === ROUTES.adminMentorPlaybook) return ['admin', 'mentor'];
-  if (pathname === ROUTES.facultyHome || pathname.startsWith(`${ROUTES.facultyHome}/`)) {
+  if (pathname === ROUTES.programCoachHome || pathname.startsWith(`${ROUTES.programCoachHome}/`)) {
     return ['faculty', 'admin'];
   }
   if (pathname === ROUTES.mentorHome || pathname.startsWith(`${ROUTES.mentorHome}/`)) {
@@ -268,7 +283,7 @@ export function canAccessRoute(pathname, userRole) {
 /** @param {string} [userRole] */
 export function defaultRouteForRole(userRole) {
   if (userRole === 'intern') return ROUTES.ventureBlueprint;
-  if (userRole === 'faculty') return ROUTES.facultyHome;
+  if (userRole === 'faculty') return ROUTES.programCoachHome;
   if (userRole === 'mentor') return ROUTES.mentorHome;
   return ROUTES.dashboard;
 }

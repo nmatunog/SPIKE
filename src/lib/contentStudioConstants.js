@@ -1,4 +1,5 @@
 /** Content Studio™ — Sprint 06A constants */
+import { ROUTES } from '../routes/paths.js';
 
 export const CONTENT_STATUS = {
   draft: { label: 'Draft', tone: 'bg-slate-100 text-slate-700' },
@@ -72,7 +73,7 @@ export const CONTENT_STUDIO_NAV = [
   { path: '/admin/content-studio/coaching-templates', label: 'Coaching Templates', blockType: 'coaching_template' },
   { path: '/admin/content-studio/observation-forms', label: 'Observation Forms', blockType: 'observation_form' },
   { path: '/admin/content-studio/reflection-forms', label: 'Reflection Forms', blockType: 'reflection_form' },
-  { path: '/admin/content-studio/faculty-guides', label: 'Program Coach Guides', blockType: 'faculty_guide' },
+  { path: ROUTES.programCoachGuides, label: 'Program Coach Guides', blockType: 'faculty_guide' },
   { path: '/admin/content-studio/media', label: 'Media Library', section: 'media' },
   { path: '/admin/content-studio/day-builder', label: 'Day Builder', section: 'day-builder' },
 ];
