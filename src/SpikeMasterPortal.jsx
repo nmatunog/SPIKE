@@ -79,7 +79,7 @@ import { isMockUser, shouldUseSupabaseForUser } from './lib/mockAuth.js';
 import { ForcePasswordChangeGate } from './components/ForcePasswordChangeGate.jsx';
 import { DailyActivationCodeCard } from './components/dashboard/DailyActivationCodeCard.jsx';
 import { validateInternActivationCode } from './lib/activationCodeService.js';
-import { validateStaffRegistrationCode } from './lib/staffRegistrationCodeService.js';
+import { needsStaffBootstrap } from './lib/staffRegistrationCodeService.js';
 import { StaffRegistrationCodeCard } from './components/dashboard/StaffRegistrationCodeCard.jsx';
 import { AdminUserDirectory } from './components/admin/AdminUserDirectory.jsx';
 import { hydrateOnboardingStatus, setOnboardingCompleteCache, hasCompletedOnboardingSync } from './lib/cohortOnboardingService.js';
@@ -127,6 +127,7 @@ const SpikeMasterPortal = () => {
   const [setupLoadState, setSetupLoadState] = useState('loading');
   const [setupLoadError, setSetupLoadError] = useState('');
   const [setupMeta, setSetupMeta] = useState(null);
+  const [staffBootstrapMode, setStaffBootstrapMode] = useState(false);
   const [passwordResetRequests, setPasswordResetRequests] = useState([]);
   const [passwordResetLoading, setPasswordResetLoading] = useState(false);
 
@@ -303,6 +304,18 @@ const SpikeMasterPortal = () => {
     }
   }, [token, user, userIsMock, usingSupabaseAuth]);
 
+  const loadStaffBootstrapInfo = useCallback(async () => {
+    if (!usingSupabaseAuth) {
+      setStaffBootstrapMode(false);
+      return;
+    }
+    try {
+      setStaffBootstrapMode(await needsStaffBootstrap());
+    } catch {
+      setStaffBootstrapMode(false);
+    }
+  }, [usingSupabaseAuth]);
+
   const loadSetupInfo = useCallback(async () => {
     if (STATIC_ONLY || usingSupabaseAuth || mockAuthEnabled) {
       setSetupMeta({ needsBootstrap: false, secretRequired: false });
@@ -334,7 +347,8 @@ const SpikeMasterPortal = () => {
   useEffect(() => {
     if (userRole !== 'guest' || authLoading) return;
     loadSetupInfo();
-  }, [userRole, authLoading, loadSetupInfo]);
+    loadStaffBootstrapInfo();
+  }, [userRole, authLoading, loadSetupInfo, loadStaffBootstrapInfo]);
 
   useEffect(() => {
     if (user && STAFF_ROLES.includes(user.role)) {
@@ -576,31 +590,55 @@ const SpikeMasterPortal = () => {
   );
 
   const handleStaffSignup = useCallback(
-    async ({ name, email, password, role, code }) => {
+    async ({ name, email, password, role, code, bootstrapMode }) => {
       if (!usingSupabaseAuth || !supabase) {
         throw new Error('Signup is only available in Supabase mode.');
       }
-      await validateStaffRegistrationCode(code);
 
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { name, must_change_password: true } },
+        options: { data: { name, must_change_password: false } },
       });
       if (error) throw error;
       if (!data.user?.id) {
         throw new Error('Could not create this account. The email may already be registered.');
       }
 
+      if (!data.session) {
+        const { error: signInErr } = await supabase.auth.signInWithPassword({ email, password });
+        if (signInErr) {
+          throw new Error(
+            bootstrapMode
+              ? 'Account created, but sign-in failed. In Supabase → Authentication → Providers → Email, turn off “Confirm email”, then try again.'
+              : 'Account created. Confirm your email if required, then sign in.',
+          );
+        }
+      }
+
       const { error: roleErr } = await supabase.rpc('complete_staff_signup', {
         p_role: role,
         p_name: name,
+        p_code: bootstrapMode ? null : code || null,
       });
       if (roleErr) throw roleErr;
 
+      if (bootstrapMode) {
+        setStaffBootstrapMode(false);
+        const signedIn = await login(email, password);
+        const nextRole = resolveUserRole(signedIn);
+        navigate(
+          defaultRouteForRole(
+            nextRole === 'guest' || nextRole === 'profile_error' ? 'superuser' : nextRole,
+          ),
+        );
+        showToast('Superuser account created. You are signed in.', 'success');
+        return;
+      }
+
       showToast('Staff account created. You can now sign in.', 'success');
     },
-    [usingSupabaseAuth, showToast],
+    [usingSupabaseAuth, showToast, login, navigate],
   );
 
   const handleBootstrapComplete = useCallback(
@@ -1555,6 +1593,7 @@ const SpikeMasterPortal = () => {
                 }
                 onInternSignup={handleInternSignup}
                 onStaffSignup={handleStaffSignup}
+                staffBootstrapMode={staffBootstrapMode}
               />
             </LazyRoute>
           )

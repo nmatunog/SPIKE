@@ -1,5 +1,13 @@
 import { supabase } from '../supabaseClient.js';
 
+/** True when no SUPERUSER exists yet — first staff signup skips the registration code. */
+export async function needsStaffBootstrap() {
+  if (!supabase) return false;
+  const { data, error } = await supabase.rpc('needs_staff_bootstrap');
+  if (error) throw error;
+  return data === true;
+}
+
 export async function ensureStaffRegistrationCode() {
   if (!supabase) return null;
   const { data, error } = await supabase.rpc('ensure_staff_registration_code');

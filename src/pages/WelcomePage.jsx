@@ -18,6 +18,7 @@ import { listMockAuthAccountHints } from '../lib/mockAuthUsers.js';
  *   onRequestPasswordHelp?: (email: string, note: string) => Promise<void>,
  *   onInternSignup: (payload: object) => Promise<void>,
  *   onStaffSignup: (payload: object) => Promise<void>,
+ *   staffBootstrapMode?: boolean,
  * }} props
  */
 export function WelcomePage({
@@ -32,6 +33,7 @@ export function WelcomePage({
   onRequestPasswordHelp,
   onInternSignup,
   onStaffSignup,
+  staffBootstrapMode = false,
 }) {
   return (
       <div className="relative overflow-hidden">
@@ -95,7 +97,13 @@ export function WelcomePage({
             />
 
             {usingSupabaseAuth ? <InternSignupPanel onSignup={onInternSignup} /> : null}
-            {usingSupabaseAuth ? <StaffSignupPanel onSignup={onStaffSignup} /> : null}
+            {usingSupabaseAuth ? (
+              <StaffSignupPanel
+                onSignup={onStaffSignup}
+                bootstrapMode={staffBootstrapMode}
+                defaultOpen={staffBootstrapMode}
+              />
+            ) : null}
           </div>
         ) : null}
 
