@@ -1,6 +1,8 @@
 -- Auto-generate daily intern activation codes (midnight Asia/Manila).
 -- Run in Supabase SQL Editor if not applied via migration tooling.
 
+create extension if not exists pgcrypto with schema extensions;
+
 create or replace function public.manila_today()
 returns date
 language sql
@@ -23,7 +25,7 @@ create or replace function public.random_activation_code()
 returns text
 language sql
 volatile
-set search_path = public
+set search_path = public, extensions
 as $$
   select upper(substr(encode(gen_random_bytes(8), 'hex'), 1, 6));
 $$;

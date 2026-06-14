@@ -1,6 +1,8 @@
 -- SUPERUSER: daily intern activation codes + staff registration codes (idempotent repair).
 -- Run in Supabase SQL Editor if regenerate fails with 404 or "Only administrators".
 
+create extension if not exists pgcrypto with schema extensions;
+
 -- Daily activation: allow SUPERUSER to regenerate
 create or replace function public.regenerate_daily_activation_code()
 returns public.activation_codes
@@ -70,7 +72,7 @@ create or replace function public.random_staff_code()
 returns text
 language sql
 volatile
-set search_path = public
+set search_path = public, extensions
 as $$
   select upper(substr(encode(gen_random_bytes(8), 'hex'), 1, 8));
 $$;

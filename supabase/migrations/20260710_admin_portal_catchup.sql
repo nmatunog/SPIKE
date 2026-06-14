@@ -7,6 +7,9 @@
 --
 -- After success, run separately: NOTIFY pgrst, 'reload schema';
 
+-- gen_random_bytes() lives in pgcrypto (Supabase: extensions schema)
+create extension if not exists pgcrypto with schema extensions;
+
 -- ── Daily intern activation codes ─────────────────────────────────────────────
 
 create table if not exists public.activation_codes (
@@ -56,7 +59,7 @@ create or replace function public.random_activation_code()
 returns text
 language sql
 volatile
-set search_path = public
+set search_path = public, extensions
 as $$
   select upper(substr(encode(gen_random_bytes(8), 'hex'), 1, 6));
 $$;
@@ -149,7 +152,7 @@ create or replace function public.random_staff_code()
 returns text
 language sql
 volatile
-set search_path = public
+set search_path = public, extensions
 as $$
   select upper(substr(encode(gen_random_bytes(8), 'hex'), 1, 8));
 $$;

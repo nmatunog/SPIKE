@@ -1,6 +1,8 @@
 -- STEP 2 of 2: Run AFTER 20260703a_superuser_enum.sql has committed successfully.
 -- SUPERUSER role, staff self-signup codes, user-admin audit, profile role guard.
 
+create extension if not exists pgcrypto with schema extensions;
+
 create table if not exists public.staff_registration_config (
   id int primary key default 1 check (id = 1),
   code text not null,
@@ -43,7 +45,7 @@ create or replace function public.random_staff_code()
 returns text
 language sql
 volatile
-set search_path = public
+set search_path = public, extensions
 as $$
   select upper(substr(encode(gen_random_bytes(8), 'hex'), 1, 8));
 $$;
