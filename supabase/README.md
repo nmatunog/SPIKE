@@ -37,8 +37,10 @@ Copy-paste each file into the SQL Editor and run. All migrations are idempotent 
 | **18** | [`migrations/20260629_sprint_06b_faculty_mentor_framework.sql`](./migrations/20260629_sprint_06b_faculty_mentor_framework.sql) | **Sprint 06B** — `faculty_day_templates`, `mentor_day_guides`, coaching log columns, Week 1 seed |
 | **19** | [`migrations/20260630_sprint_06c_venture_portfolio.sql`](./migrations/20260630_sprint_06c_venture_portfolio.sql) | **Sprint 06C** — `venture_portfolios`, `venture_portfolio_sections`, `portfolio_assets`, `portfolio_milestones`, `portfolio_exports` |
 | **20** | [`migrations/20260615_onboarding_refactor.sql`](./migrations/20260615_onboarding_refactor.sql) | **Onboarding refactor** — cohort suggestions/votes/finalists, formation squads (bigint cohorts), intern onboarding flags |
+| **21** | [`migrations/20260616_onboarding_hotfix.sql`](./migrations/20260616_onboarding_hotfix.sql) | Cohort seed + link interns to cohort |
+| **22** | [`migrations/20260617_fix_rls_recursion.sql`](./migrations/20260617_fix_rls_recursion.sql) | **Required** — fixes `stack depth limit exceeded` on cohorts |
 
-**Quick checklist (20 steps after project creation):**
+**Quick checklist (22 steps after project creation):**
 
 ```
 ☐  1  schema.sql
