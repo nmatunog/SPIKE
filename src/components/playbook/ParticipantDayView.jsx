@@ -41,7 +41,7 @@ export function ParticipantDayView({ bundle, participantId, onProgress }) {
           <div className="mt-4 flex flex-wrap items-center gap-4">
             <div>
               <p className="text-3xl font-bold">{day1Progress.percent}%</p>
-              <p className="text-xs text-slate-400">Mission progress</p>
+              <p className="text-xs text-slate-400">Build progress</p>
             </div>
             <Link to={BLUEPRINT_LINKS.day1Builders} className="spike-btn-primary bg-spike hover:bg-spike-light">
               <Rocket size={16} /> Open Builders

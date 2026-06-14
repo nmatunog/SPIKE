@@ -36,11 +36,11 @@ export function Day1MissionControl({ participantId, compact = false }) {
             Welcome to SPIKE
           </p>
           <h2 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
-            Mission Control
+            Build Studio
           </h2>
           <p className="mt-2 max-w-xl text-sm text-slate-300">
-            Today&apos;s mission: work with your <strong className="text-white">AI Venture Coach™</strong> through
-            guided conversations — then complete your Dream Board and squad builders.
+            Continue with your <strong className="text-white">AI Venture Coach™</strong> — then complete
+            your Dream Board and squad builders.
           </p>
         </div>
         <div className="shrink-0 rounded-2xl bg-white/10 px-5 py-4 text-center backdrop-blur">
@@ -66,7 +66,7 @@ export function Day1MissionControl({ participantId, compact = false }) {
       </Link>
 
       <p className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-400">
-        Today&apos;s Mission
+        Today&apos;s Build
       </p>
       <ul className="mb-6 grid gap-2 sm:grid-cols-2">
         {progress.builders.map((builder) => (
