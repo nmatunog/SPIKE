@@ -315,18 +315,34 @@ export async function updateFormationSquad(squadId, patch) {
 
 /** @param {string} participantId */
 export async function markParticipantWelcomed(participantId) {
-  void participantId;
   const client = assertClient();
-  const { data, error } = await client.rpc('mark_onboarding_welcomed');
+  const { data: sessionData, error: sessionError } = await client.auth.getSession();
+  if (sessionError) throw sessionError;
+  const userId = sessionData.session?.user?.id;
+  if (!userId) {
+    throw new Error('Not signed in. Sign out and sign in with your SPIKE account.');
+  }
+  if (participantId && participantId !== userId) {
+    throw new Error('Session user does not match participant.');
+  }
+  const { data, error } = await client.rpc('mark_onboarding_welcomed', { p_user_id: userId });
   if (error) throw error;
   return { onboarding_welcomed_at: data };
 }
 
 /** @param {string} participantId */
 export async function markOnboardingComplete(participantId) {
-  void participantId;
   const client = assertClient();
-  const { data, error } = await client.rpc('mark_onboarding_complete');
+  const { data: sessionData, error: sessionError } = await client.auth.getSession();
+  if (sessionError) throw sessionError;
+  const userId = sessionData.session?.user?.id;
+  if (!userId) {
+    throw new Error('Not signed in. Sign out and sign in with your SPIKE account.');
+  }
+  if (participantId && participantId !== userId) {
+    throw new Error('Session user does not match participant.');
+  }
+  const { data, error } = await client.rpc('mark_onboarding_complete', { p_user_id: userId });
   if (error) throw error;
   return { onboarding_complete: data };
 }

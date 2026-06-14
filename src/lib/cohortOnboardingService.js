@@ -3,6 +3,7 @@
  */
 import { apiUrl } from '../apiClient.js';
 import { isSupabaseConfigured } from '../supabaseClient.js';
+import { getStoredMockUser, isMockUserId, updateMockInternProgress } from './mockAuth.js';
 import { setSectionField } from './blueprintSectionStore.js';
 import {
   COHORT_NAME_EXAMPLES,
@@ -31,8 +32,26 @@ export function hasCompletedOnboardingSync(participantId) {
 }
 
 /** @param {string} participantId */
+function readMockOnboardingProgress(participantId) {
+  if (!isMockUserId(participantId)) return null;
+  const mock = getStoredMockUser();
+  if (!mock || mock.id !== participantId) return null;
+  return {
+    onboarding_complete: Boolean(mock.internProgress?.onboarding_complete),
+    onboarding_welcomed_at: mock.internProgress?.onboarding_welcomed_at ?? null,
+    cohort_id: null,
+  };
+}
+
+/** @param {string} participantId */
 export async function hydrateOnboardingStatus(participantId) {
   if (!isSupabaseConfigured) return false;
+  if (isMockUserId(participantId)) {
+    const progress = readMockOnboardingProgress(participantId);
+    const done = Boolean(progress?.onboarding_complete);
+    completeCache.set(participantId, done);
+    return done;
+  }
   try {
     const progress = await db.fetchParticipantOnboarding(participantId);
     const done = Boolean(progress?.onboarding_complete);
@@ -114,6 +133,35 @@ export function resolveOnboardingStep(ctx) {
 
 /** @param {string} participantId */
 export async function loadOnboardingContext(participantId) {
+  if (isMockUserId(participantId)) {
+    const progress = readMockOnboardingProgress(participantId) ?? {
+      onboarding_complete: false,
+      onboarding_welcomed_at: null,
+      cohort_id: null,
+    };
+    const cohort = await db.fetchActiveCohort().catch(() => null);
+    const step = resolveOnboardingStep({
+      cohort,
+      progress,
+      suggestion: null,
+      vote: null,
+      squad: null,
+    });
+    if (progress.onboarding_complete) {
+      completeCache.set(participantId, true);
+    }
+    return {
+      cohort,
+      progress,
+      suggestion: null,
+      vote: null,
+      squad: null,
+      finalists: [],
+      tally: [],
+      step,
+    };
+  }
+
   const cohort = await db.fetchActiveCohort();
   if (!cohort) {
     return {
@@ -152,6 +200,12 @@ export async function loadOnboardingContext(participantId) {
 
 /** @param {string} participantId */
 export async function completeWelcome(participantId) {
+  if (isMockUserId(participantId)) {
+    updateMockInternProgress(participantId, {
+      onboarding_welcomed_at: new Date().toISOString(),
+    });
+    return;
+  }
   await db.markParticipantWelcomed(participantId);
 }
 
@@ -216,6 +270,11 @@ export async function uploadSquadPhoto(squadId, photoUrl) {
 
 /** @param {string} participantId @param {string} squadId */
 export async function finishOnboarding(participantId, squadId) {
+  if (isMockUserId(participantId)) {
+    updateMockInternProgress(participantId, { onboarding_complete: true });
+    completeCache.set(participantId, true);
+    return;
+  }
   await db.updateFormationSquad(squadId, { onboarding_complete: true });
   await db.markOnboardingComplete(participantId);
   completeCache.set(participantId, true);
