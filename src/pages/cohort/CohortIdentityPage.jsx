@@ -85,8 +85,9 @@ export function CohortIdentityPage({ participantId }) {
 
         {stepId === 'name' ? (
           <BuilderStep
-            title="Cohort Name Builder"
-            question="What should this cohort be remembered for?"
+            title="Represent Your Squad"
+            promptLabel="Prompt"
+            question="Every Squad will propose one name that represents the identity and aspirations of this founding cohort."
             value={name}
             onChange={setName}
             examples={COHORT_NAME_EXAMPLES}
@@ -154,11 +155,18 @@ export function CohortIdentityPage({ participantId }) {
   );
 }
 
-function BuilderStep({ title, question, value, onChange, examples, onBack, onNext, canNext }) {
+function BuilderStep({ title, promptLabel, question, value, onChange, examples, onBack, onNext, canNext }) {
   return (
     <section className="spike-card space-y-4">
       <h2 className="text-xl font-semibold text-slate-900">{title}</h2>
-      <p className="text-slate-600">{question}</p>
+      {promptLabel ? (
+        <div>
+          <p className="spike-label text-slate-500">{promptLabel}</p>
+          <p className="mt-1 text-slate-700">{question}</p>
+        </div>
+      ) : (
+        <p className="text-slate-600">{question}</p>
+      )}
       <input
         type="text"
         value={value}
