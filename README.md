@@ -138,7 +138,7 @@ npm run deploy:prod
 
 **Supabase email confirmation:** If sign-up requires confirmation, either disable “Confirm email” under Authentication → Providers → Email, or confirm the user in Supabase **Authentication → Users** before they can sign in.
 
-**Self-signup (optional):** Admin → Users → **Generate today code**; interns use the activation code on the welcome page.
+**Self-signup (optional):** A new activation code is auto-generated at **midnight Asia/Manila** (also created when staff open their dashboard). Program Coach, Mentor, and Admin dashboards show today’s code; interns enter it on the welcome page. Run [`supabase/migrations/20260614_daily_activation_code_auto.sql`](./supabase/migrations/20260614_daily_activation_code_auto.sql) in Supabase SQL Editor (enable **pg_cron** extension for scheduled midnight generation).
 
 ## Supabase setup
 

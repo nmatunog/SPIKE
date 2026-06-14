@@ -77,6 +77,8 @@ import { orientationSlides } from './orientationSlideContents.jsx';
 import { AdminRegisterForm } from './components/AdminRegisterForm.jsx';
 import { isMockUser, shouldUseSupabaseForUser } from './lib/mockAuth.js';
 import { ForcePasswordChangeGate } from './components/ForcePasswordChangeGate.jsx';
+import { DailyActivationCodeCard } from './components/dashboard/DailyActivationCodeCard.jsx';
+import { validateInternActivationCode } from './lib/activationCodeService.js';
 
 /** @param {{ children: import('react').ReactNode, label?: string }} props */
 function LazyRoute({ children, label }) {
@@ -119,9 +121,6 @@ const SpikeMasterPortal = () => {
   const [setupLoadState, setSetupLoadState] = useState('loading');
   const [setupLoadError, setSetupLoadError] = useState('');
   const [setupMeta, setSetupMeta] = useState(null);
-  const [activationCode, setActivationCode] = useState(null);
-  const [activationCodeLoading, setActivationCodeLoading] = useState(false);
-  const [activationCodeGenerating, setActivationCodeGenerating] = useState(false);
   const [passwordResetRequests, setPasswordResetRequests] = useState([]);
   const [passwordResetLoading, setPasswordResetLoading] = useState(false);
 
@@ -146,30 +145,6 @@ const SpikeMasterPortal = () => {
     navigate(ROUTES.home);
     showToast('Signed out.');
   }, [logout, navigate, showToast]);
-
-  const getTodayKey = () => new Date().toISOString().slice(0, 10);
-  const generateActivationCode = () =>
-    Math.random().toString(36).toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
-
-  const loadActivationCode = useCallback(async () => {
-    if (!usingSupabaseAuth || user?.role !== 'ADMIN' || !supabase) return;
-    setActivationCodeLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('activation_codes')
-        .select('date_key, code, expires_at, generated_at')
-        .eq('date_key', getTodayKey())
-        .order('generated_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      if (error) throw error;
-      setActivationCode(data || null);
-    } catch (e) {
-      showToast(e.message || 'Failed to load activation code', 'info');
-    } finally {
-      setActivationCodeLoading(false);
-    }
-  }, [showToast, usingSupabaseAuth, user?.role]);
 
   const loadPasswordResetRequests = useCallback(async () => {
     if (!usingSupabaseAuth || user?.role !== 'ADMIN' || !supabase) return;
@@ -362,13 +337,11 @@ const SpikeMasterPortal = () => {
 
   useEffect(() => {
     if (user?.role === 'ADMIN' && usingSupabaseAuth) {
-      loadActivationCode();
       loadPasswordResetRequests();
     } else {
-      setActivationCode(null);
       setPasswordResetRequests([]);
     }
-  }, [user?.role, usingSupabaseAuth, loadActivationCode, loadPasswordResetRequests]);
+  }, [user?.role, usingSupabaseAuth, loadPasswordResetRequests]);
 
   const mentorInterns = useMemo(() => {
     if (user?.role !== 'MENTOR') return interns;
@@ -545,22 +518,7 @@ const SpikeMasterPortal = () => {
       if (!usingSupabaseAuth || !supabase) {
         throw new Error('Signup is only available in Supabase mode.');
       }
-      const todayKey = getTodayKey();
-      const { data: codeRow, error: codeError } = await supabase
-        .from('activation_codes')
-        .select('code, expires_at')
-        .eq('date_key', todayKey)
-        .order('generated_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      if (codeError) throw codeError;
-      if (!codeRow) throw new Error('No activation code is available for today.');
-      if (new Date(codeRow.expires_at).getTime() < Date.now()) {
-        throw new Error('Activation code has expired. Ask an admin for a new code.');
-      }
-      if (String(codeRow.code).toUpperCase() !== code.toUpperCase()) {
-        throw new Error('Invalid activation code.');
-      }
+      await validateInternActivationCode(code);
 
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -591,39 +549,6 @@ const SpikeMasterPortal = () => {
     },
     [usingSupabaseAuth, showToast],
   );
-
-  const handleGenerateActivationCode = useCallback(async () => {
-    if (!usingSupabaseAuth || user?.role !== 'ADMIN' || !supabase) return;
-    setActivationCodeGenerating(true);
-    try {
-      const todayKey = getTodayKey();
-      const nextCode = generateActivationCode();
-      const expiry = new Date();
-      expiry.setHours(23, 59, 59, 999);
-      const payload = {
-        date_key: todayKey,
-        code: nextCode,
-        expires_at: expiry.toISOString(),
-        generated_by: user.id,
-      };
-      const { data, error } = await supabase
-        .from('activation_codes')
-        .upsert(payload, { onConflict: 'date_key' })
-        .select('date_key, code, expires_at, generated_at')
-        .single();
-      if (error) throw error;
-      setActivationCode(data || null);
-      showToast(`Activation code generated: ${nextCode}`, 'success');
-    } catch (err) {
-      showToast(
-        err.message ||
-          'Failed to generate activation code. Ensure activation_codes table exists in Supabase.',
-        'info',
-      );
-    } finally {
-      setActivationCodeGenerating(false);
-    }
-  }, [usingSupabaseAuth, user, showToast]);
 
   const handleBootstrapComplete = useCallback(
     async (payload) => {
@@ -1065,40 +990,9 @@ const SpikeMasterPortal = () => {
               )}
             </p>
             <AdminRegisterForm onRegister={handleAdminRegister} />
-            {usingSupabaseAuth && (
-              <div className="mt-6 border-t border-gray-200 pt-6">
-                <div className="mb-2 flex items-center justify-between">
-                  <h4 className="text-sm font-bold uppercase tracking-wider text-gray-700">
-                    Intern activation code
-                  </h4>
-                  <button
-                    type="button"
-                    onClick={handleGenerateActivationCode}
-                    disabled={activationCodeGenerating}
-                    className="min-h-[44px] rounded-lg bg-gray-900 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-gray-800 disabled:opacity-60"
-                  >
-                    {activationCodeGenerating ? 'Generating…' : 'Generate today code'}
-                  </button>
-                </div>
-                {activationCodeLoading ? (
-                  <p className="text-sm text-gray-500">Loading activation code…</p>
-                ) : activationCode ? (
-                  <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
-                    <p className="text-xs text-gray-500">Current code</p>
-                    <p className="text-2xl font-black tracking-widest text-[#8B0000]">
-                      {activationCode.code}
-                    </p>
-                    <p className="mt-1 text-xs text-gray-500">
-                      Expires: {new Date(activationCode.expires_at).toLocaleString()}
-                    </p>
-                  </div>
-                ) : (
-                  <p className="text-sm text-gray-500">
-                    No code generated yet. Click “Generate today code”.
-                  </p>
-                )}
-              </div>
-            )}
+            {usingSupabaseAuth ? (
+              <DailyActivationCodeCard showRegenerate className="mt-6 border-t border-gray-200 pt-6" />
+            ) : null}
           </div>
         }
         settingsPanel={
@@ -1177,10 +1071,6 @@ const SpikeMasterPortal = () => {
     [
       handleAdminRegister,
       usingSupabaseAuth,
-      activationCode,
-      activationCodeLoading,
-      activationCodeGenerating,
-      handleGenerateActivationCode,
       showToast,
       passwordResetRequests,
       passwordResetLoading,
@@ -1203,6 +1093,7 @@ const SpikeMasterPortal = () => {
 
   const AdminDashboardHome = () => (
     <div className="container mx-auto px-4 py-6 sm:px-6 sm:py-8">
+      <DailyActivationCodeCard showRegenerate className="mb-6" />
       <RoleDashboardCards role="admin" user={user} interns={interns} internSummary={internSummary} />
       <h2 className="mb-4 text-xl font-bold text-gray-900 sm:text-2xl">Program overview</h2>
       <p className="mb-6 max-w-2xl text-sm text-gray-600">

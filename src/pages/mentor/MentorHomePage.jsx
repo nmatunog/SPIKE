@@ -13,6 +13,7 @@ import {
   groupInternsBySquad,
 } from '../../lib/facultyMentorFrameworkService.js';
 import { ROUTES } from '../../routes/paths.js';
+import { DailyActivationCodeCard } from '../../components/dashboard/DailyActivationCodeCard.jsx';
 import { BrandLexiconDashboardCard } from '../../components/resources/BrandLexiconDashboardCard.jsx';
 
 /**
@@ -44,6 +45,8 @@ export function MentorHomePage({ user, interns, internSummary, pendingLogs = [],
       </div>
 
       <BrandLexiconDashboardCard />
+
+      <DailyActivationCodeCard className="mt-4" />
 
       <RoleDashboardCards
         role="mentor"

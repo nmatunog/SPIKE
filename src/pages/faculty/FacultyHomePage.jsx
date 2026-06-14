@@ -10,6 +10,7 @@ import { ROUTES } from '../../routes/paths.js';
 import { countSubmittedSurveys } from '../../lib/surveyService.js';
 import { deriveFacultyDashboardMetrics } from '../../lib/sprint01Metrics.js';
 import { FACULTY_PHILOSOPHY } from '../../lib/facultyWeek1Constants.js';
+import { DailyActivationCodeCard } from '../../components/dashboard/DailyActivationCodeCard.jsx';
 import { BrandLexiconDashboardCard } from '../../components/resources/BrandLexiconDashboardCard.jsx';
 
 /**
@@ -39,6 +40,8 @@ export function FacultyHomePage({ interns, internSummary, pendingLogs = [] }) {
       </div>
 
       <BrandLexiconDashboardCard />
+
+      <DailyActivationCodeCard className="mt-4" />
 
       <RoleDashboardCards
         role="faculty"
