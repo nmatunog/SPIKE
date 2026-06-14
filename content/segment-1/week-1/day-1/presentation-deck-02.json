@@ -10,8 +10,36 @@
       "slide-deck02-04",
       "slide-deck02-05",
       "slide-deck02-06",
-      "slide-deck02-07"
-    ]
+      "slide-deck02-07",
+      "slide-deck02-08",
+      "slide-deck02-09",
+      "slide-deck02-10",
+      "slide-deck02-11",
+      "slide-deck02-12",
+      "slide-deck02-13",
+      "slide-deck02-14",
+      "slide-deck02-15",
+      "slide-deck02-16",
+      "slide-deck02-17",
+      "slide-deck02-18",
+      "slide-deck02-19",
+      "slide-deck02-20",
+      "slide-deck02-21",
+      "slide-deck02-22",
+      "slide-deck02-23",
+      "slide-deck02-24",
+      "slide-deck02-25",
+      "slide-deck02-26",
+      "slide-deck02-27",
+      "slide-deck02-28",
+      "slide-deck02-29",
+      "slide-deck02-30",
+      "slide-deck02-31",
+      "slide-deck02-32"
+    ],
+    "pptxUrl": "/content/segment-1/week-1/day-1/faculty-deck-02.pptx",
+    "sourceFile": "faculty-deck-02.pptx",
+    "importedAt": "2026-06-14T20:17:35.083Z"
   },
   "slides": [
     {
@@ -20,11 +48,12 @@
       "sortOrder": 1,
       "title": "Building My Future — Overview",
       "body": "Your Venture Identity is built from five pillars:\n\n1. Ambition — who you want to become\n2. Impact — who you want to serve\n3. Values — what you will never compromise\n4. Future Self — your 3-year narrative\n5. Career Direction — Agency Builder or Specialist Consultant\n\nEach pillar becomes a builder activity in Venture Blueprint™ and a section in your Venture Portfolio™.",
-      "speakerNotes": "Open Deck 02 immediately after Deck 01 close. Show the five-pillar diagram if available on screen. Tell participants they will complete each pillar today — not someday. 3 minutes.",
+      "speakerNotes": "The greatest entrepreneurs never succeed alone.\nPause.\nThey have mentors.\nPause.\nThey have partners.\nPause.\nThey have teammates.\nPause.\nThey have technology that helps them think better.\nPause.\nSPIKE gives you all four.",
       "discussionQuestions": [
         "Which pillar feels hardest to articulate right now?",
         "Why does identity come before market research?"
-      ]
+      ],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-01.png"
     },
     {
       "id": "slide-deck02-02",
@@ -32,11 +61,12 @@
       "sortOrder": 2,
       "title": "Ambition",
       "body": "Ambition is not a wish list — it is a declaration of who you are becoming.\n\nStrong ambition statements are:\n• Specific (role + outcome)\n• Personal (your words, not copied phrases)\n• Entrepreneurial (builder mindset, not employee mindset)\n\nExample: 'Become a respected Agency Director who develops leaders and builds a thriving organization.'\n\nYou will craft yours with Venture Coach™ — guided conversation, not blank forms.",
-      "speakerNotes": "Facilitate before they open the builder. Read one strong and one weak example. Weak: 'I want to be successful.' Strong: uses role + action + outcome. Launch activity-day-1-ambition-builder after this slide. 5 minutes.",
+      "speakerNotes": "One thing you'll notice throughout SPIKE is that we don't use AI to think for you.\n(Pause.)\nWe use AI to help you think better.\nContinue\nThe ideas...\nThe dreams...\nThe purpose...\nThe mission...\nThe venture...\nThey all come from you.\n(Pause.)\nAI simply helps you sharpen them.\nPoint to the Laptop\nImagine you're writing your Purpose Statement.\nYou already know what you want to say.\nBut maybe you're not sure if it's inspiring enough.\nOr clear enough.\nOr specific enough.\nPoint to the AI Suggestions\nInstead of giving you the answer...\nSPIKE asks better questions.\n\"Can you make this clearer?\"\n\"Can you compare different approaches?\"\n\"Can you strengthen your impact?\"\n\"Can you think bigger?\"\nThe Philosophy\nThat's how entrepreneurs grow.\nNot because somebody gives them answers...\nbut because somebody asks better questions.\n(Pause.)\nIn SPIKE...\nAI becomes that thinking partner.\nConnect to Mentors\nAnd that's exactly what your mentors will do as well.\nThe AI helps you think.\nYour squad helps you explore.\nYour mentors help you challenge your assumptions.\nTogether, they make your ideas stronger.\nBring it Back to the Audience\nBy the end of this week...\nyour Venture Blueprint won't be something AI created.\n(Pause.)\nIt will be something you created—\nrefined by AI,\nstrengthened by your squad,\nchallenged by your mentor,\nand inspired by your own purpose.\nTransition\nSo let's begin with the very first question every entrepreneur must answer.\n(Pause.)\nWhy do you want to build this venture?\nThen transition directly into the Venture Blueprint live demonstration",
       "discussionQuestions": [
         "Say your ambition aloud in one sentence — even if it is imperfect.",
         "What makes an ambition statement feel authentic vs performative?"
-      ]
+      ],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-02.png"
     },
     {
       "id": "slide-deck02-03",
@@ -44,11 +74,12 @@
       "sortOrder": 3,
       "title": "Impact",
       "body": "Impact answers: Who do you want to help — and how will their lives be different because of you?\n\nImpact connects AIA's protection mission to your personal venture.\n\nStrong impact statements name:\n• A specific audience (professionals, families, young parents, freelancers)\n• A transformation (peace of mind, financial clarity, protected legacy)\n\nYour impact feeds Business Plan Chapter 1 and your portfolio Identity section.",
-      "speakerNotes": "Link back to AIA Story from Deck 01. Impact is not generic 'help people' — push for specificity. Launch impact builder activity after debrief. 5 minutes.",
+      "speakerNotes": "We will be using this tool.",
       "discussionQuestions": [
         "Who is one person you already want to help — by name or by type?",
         "What problem do they face that financial planning could solve?"
-      ]
+      ],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-03.png"
     },
     {
       "id": "slide-deck02-04",
@@ -56,11 +87,12 @@
       "sortOrder": 4,
       "title": "Values",
       "body": "Values are your non-negotiables — the principles that guide decisions when pressure is high.\n\nIn SPIKE you will:\n• Select values that resonate\n• Rank your top three\n• See how they shape your venture culture\n\nValues are not decoration. They appear in your squad charter, mentor conversations, and Hour 200 Venture Board presentation.",
-      "speakerNotes": "Share one personal value and how it showed up in a hard decision. Emphasize ranking top three — forced prioritization reveals character. 4 minutes before values builder.",
+      "speakerNotes": "Finish your Squad Charter",
       "discussionQuestions": [
         "Which value would you never compromise — even if it cost you a sale?",
         "How will your squad know what you stand for?"
-      ]
+      ],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-04.png"
     },
     {
       "id": "slide-deck02-05",
@@ -68,11 +100,12 @@
       "sortOrder": 5,
       "title": "Future Self",
       "body": "Future Self is your 3-year narrative — a story of who you have become.\n\nNot a job description. A life picture:\n• Professional identity\n• Lifestyle and financial milestones\n• Relationships and team\n• Legacy and contribution\n\nVenture Coach™ helps you build this through an interactive timeline. Your Future Self anchors every Week 1 conversation with your mentor.",
-      "speakerNotes": "Read a 3-sentence future self narrative as exemplar. Warn against fantasy without discipline — future self must be aspirational AND believable. 5 minutes.",
+      "speakerNotes": "Speaker: This will be your Venture Blueprint.\n\"By the end of today, every one of you will have your own Venture Blueprint.”",
       "discussionQuestions": [
         "Describe yourself three years from now — present tense, as if it already happened.",
         "What daily habit today makes that future self possible?"
-      ]
+      ],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-05.png"
     },
     {
       "id": "slide-deck02-06",
@@ -80,11 +113,12 @@
       "sortOrder": 6,
       "title": "Career Direction",
       "body": "SPIKE offers two venture paths — exploration today, commitment by Day 5:\n\nAgency Builder — build a team, recruit, scale an organization.\nSpecialist Consultant — build deep expertise and a premium practice.\n\nNo wrong answer on Day 1. Honest exploration beats premature commitment.\n\nYour direction feeds Career Track in Venture Portfolio and canvas engines in Week 1.",
-      "speakerNotes": "Present both paths without bias. Use real district examples. Day 1 is exploration — they can change by Day 5. Launch career direction activity. 4 minutes.",
+      "speakerNotes": "Today, we're going to build all of these.",
       "discussionQuestions": [
         "Which path energizes you today — and what evidence supports that?",
         "What would you need to learn before committing to either path?"
-      ]
+      ],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-06.png"
     },
     {
       "id": "slide-deck02-07",
@@ -92,11 +126,262 @@
       "sortOrder": 7,
       "title": "Deck 02 Close — Day 1 Deliverables",
       "body": "By end of Day 1 you will have:\n\n✓ Ambition, Impact, Values, Future Self, Career Direction\n✓ Dream Board visual collage\n✓ Squad membership and signed charter\n✓ Portfolio Identity section started\n✓ Mentor snapshot for coaching\n\nProgram Coaches and mentors use Day 1 evaluation templates to observe — not grade — your engagement and clarity.",
-      "speakerNotes": "Close with clear deliverable list. Point to Week 1 Journey panel in Venture Portfolio. Confirm mentor check-ins before Day 2. 3 minutes.",
+      "speakerNotes": "Your Purpose\n\"You've just refined your ambition.\"\n(Pause.)\n\"Now we're going one level deeper.\"\n\"Ambition answers the question: What do I want to achieve?\"\n(Pause.)\n\"Purpose answers a different question.\"\n(Pause.)\n\"Why does this venture deserve to exist?\"\n\"A successful venture isn't built around a product.\"\n\"It begins with a problem worth solving and people worth serving.\"\n\"Don't worry about writing the perfect purpose statement today.\"\n\"We're still building Version 1.\"\n\"Think about someone whose life becomes better because your venture exists.\"\n(Pause.)\n\"If your venture disappeared tomorrow...\"\n\"Who would miss it?\"\n(Pause.)\n\"And why?\"\n\"Open your Venture Blueprint.\"\n\"Navigate to Purpose.\"\n\"You have twenty minutes.\"\n\"Start building.",
       "discussionQuestions": [
         "What is the one deliverable you will finish before you leave today?",
         "What will you ask your mentor at first check-in?"
-      ]
+      ],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-07.png"
+    },
+    {
+      "id": "slide-deck02-08",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 8,
+      "title": "",
+      "body": "",
+      "speakerNotes": "Instead of giving them answers, walk around the room asking questions like:\n\"Who are you trying to help?\"\n\"What frustrates them today?\"\n\"Why does this matter to you personally?\"\n\"If you could solve only one problem, what would it be?\"\n\"Why should anyone care that your venture exists?\"\nTransition to the Next Slide (Share)\nAs the timer ends:\n\"Your first draft doesn't have to be perfect.\"\n\"Now let's see how your Squad can make it stronger.\"\n\"Turn to your Squad.\"",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-08.png"
+    },
+    {
+      "id": "slide-deck02-09",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 9,
+      "title": "",
+      "body": "",
+      "speakerNotes": "Prompt\nImagine your life five years from now.\nWhere are you?\nWho are you helping?\nWhat does success look like?\nLarge inspirational image.\n20 minutes.",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-09.png"
+    },
+    {
+      "id": "slide-deck02-10",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 10,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-10.png"
+    },
+    {
+      "id": "slide-deck02-11",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 11,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-11.png"
+    },
+    {
+      "id": "slide-deck02-12",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 12,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-12.png"
+    },
+    {
+      "id": "slide-deck02-13",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 13,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-13.png"
+    },
+    {
+      "id": "slide-deck02-14",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 14,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-14.png"
+    },
+    {
+      "id": "slide-deck02-15",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 15,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-15.png"
+    },
+    {
+      "id": "slide-deck02-16",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 16,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-16.png"
+    },
+    {
+      "id": "slide-deck02-17",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 17,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-17.png"
+    },
+    {
+      "id": "slide-deck02-18",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 18,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-18.png"
+    },
+    {
+      "id": "slide-deck02-19",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 19,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-19.png"
+    },
+    {
+      "id": "slide-deck02-20",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 20,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-20.png"
+    },
+    {
+      "id": "slide-deck02-21",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 21,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-21.png"
+    },
+    {
+      "id": "slide-deck02-22",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 22,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-22.png"
+    },
+    {
+      "id": "slide-deck02-23",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 23,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-23.png"
+    },
+    {
+      "id": "slide-deck02-24",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 24,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-24.png"
+    },
+    {
+      "id": "slide-deck02-25",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 25,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-25.png"
+    },
+    {
+      "id": "slide-deck02-26",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 26,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-26.png"
+    },
+    {
+      "id": "slide-deck02-27",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 27,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-27.png"
+    },
+    {
+      "id": "slide-deck02-28",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 28,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-28.png"
+    },
+    {
+      "id": "slide-deck02-29",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 29,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-29.png"
+    },
+    {
+      "id": "slide-deck02-30",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 30,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-30.png"
+    },
+    {
+      "id": "slide-deck02-31",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 31,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-31.png"
+    },
+    {
+      "id": "slide-deck02-32",
+      "presentationId": "presentation-day-1-deck-02",
+      "sortOrder": 32,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-1/deck-02/slide-32.png"
     }
   ]
 }
