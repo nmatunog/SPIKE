@@ -96,10 +96,9 @@ async function fetchUserDirectoryViaApi(actorIsSuperuser) {
 export async function fetchUserDirectory() {
   const { actorIsSuperuser } = await getActorContext();
 
-  await supabase.rpc('sync_missing_portal_profiles').then(() => null, () => null);
-
   const { data, error } = await supabase.rpc('list_portal_users');
   if (!error) {
+    await supabase.rpc('sync_missing_portal_profiles').then(() => null, () => null);
     return {
       users: data ?? [],
       actorIsSuperuser,
