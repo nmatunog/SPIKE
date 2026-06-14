@@ -44,7 +44,13 @@ export async function onRequest(ctx) {
   try {
     admin = createServiceClient(env);
   } catch (err) {
-    return json({ message: err instanceof Error ? err.message : 'Server misconfigured.' }, 500);
+    return json(
+      {
+        message: `Server admin API is not configured. ${err instanceof Error ? err.message : 'Missing service role key.'}`,
+        code: 'MISSING_SERVICE_KEY',
+      },
+      503,
+    );
   }
 
   if (request.method === 'GET') {
