@@ -3,22 +3,22 @@
   "title": "Facilitator Guide — Day 1: Stories, Identity & Squad Formation",
   "durationHours": 4,
   "prepChecklist": [
-    "Load Faculty Deck 01 and Deck 02 — confirm speaker notes visible in faculty view",
+    "Load Program Coach Deck 01 and Deck 02 — confirm speaker notes visible in program coach view",
     "Confirm squad assignments and mentor pairings in formation admin",
     "Test Venture Blueprint Day 1 Builders access for all participants",
-    "Print or share evaluation templates: participation rubric, venture identity rubric, faculty observation form",
+    "Print or share evaluation templates: participation rubric, venture identity rubric, program coach observation form",
     "Brief mentors on Day 1 mentor guide and observation areas",
     "Prepare dream board materials (digital studio + optional physical supplies)"
   ],
   "sessionFlow": [
     {
       "time": "0:00–0:35",
-      "activity": "Faculty Deck 01 — AIA, Agency, SPIKE Stories",
+      "activity": "Program Coach Deck 01 — AIA, Agency, SPIKE Stories",
       "notes": "Deliver all six Deck 01 slides with stories, not bullet reads. Use discussion questions on slides 2–4."
     },
     {
       "time": "0:35–0:50",
-      "activity": "Faculty Deck 02 — Building My Future (overview + Ambition + Impact)",
+      "activity": "Program Coach Deck 02 — Building My Future (overview + Ambition + Impact)",
       "notes": "Slides 1–3. Transition directly into ambition and impact builders."
     },
     {
@@ -44,17 +44,17 @@
     {
       "time": "3:00–3:30",
       "activity": "Squad Charter Builder",
-      "notes": "Digital signatures required. Faculty and mentor sign-off."
+      "notes": "Digital signatures required. Program Coach and mentor sign-off."
     },
     {
       "time": "3:30–3:50",
       "activity": "Deck 02 Close + Day 1 evaluation",
-      "notes": "Faculty uses observation form and venture identity rubric. Participation assessment in app."
+      "notes": "Program Coach uses observation form and venture identity rubric. Participation assessment in app."
     },
     {
       "time": "3:50–4:00",
       "activity": "Day 1 reflection + mentor debrief",
-      "notes": "Participant reflection survey. Mentors complete debrief reflection form with faculty."
+      "notes": "Participant reflection survey. Mentors complete debrief reflection form with program coach."
     }
   ],
   "debriefQuestions": [
@@ -73,7 +73,7 @@
     "Ending without evaluation templates completed"
   ],
   "coachingTips": [
-    "Faculty and mentors use the same language: ambition, impact, values, future self, career direction",
+    "Program Coaches and mentors use the same language: ambition, impact, values, future self, career direction",
     "Link every activity output to Portfolio Identity and Business Plan Chapter 1",
     "Use Week 1 Journey panel in Venture Portfolio as live progress check",
     "Flag participants with observation form 'needs follow-up' for mentor priority on Day 2"

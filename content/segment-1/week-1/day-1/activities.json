@@ -7,15 +7,15 @@
       "durationMinutes": 25,
       "materials": [
         "Venture Blueprint app — Ambition builder",
-        "Faculty Deck 02 slide: Ambition (reference)",
+        "Program Coach Deck 02 slide: Ambition (reference)",
         "Ambition example cards (optional printed)"
       ],
       "instructions": [
-        "Faculty introduces Ambition after Deck 02 slide 2.",
+        "Program Coach introduces Ambition after Deck 02 slide 2.",
         "Participants open Venture Blueprint → Day 1 Builders → My Ambition.",
         "Venture Coach™ guides a conversation — participants respond in their own words.",
         "Coach generates a draft ambition statement; participant edits until authentic.",
-        "Submit when clarity score is acceptable or faculty calls time.",
+        "Submit when clarity score is acceptable or your program coach calls time.",
         "Mentors circulate — listen for copied language vs personal voice."
       ],
       "outputs": [
@@ -35,7 +35,7 @@
       "durationMinutes": 20,
       "materials": [
         "Venture Blueprint app — Impact builder",
-        "Faculty Deck 02 slide: Impact"
+        "Program Coach Deck 02 slide: Impact"
       ],
       "instructions": [
         "Facilitate immediately after ambition debrief.",
@@ -90,7 +90,7 @@
         "Timeline prompt cards (in-app)"
       ],
       "instructions": [
-        "Faculty reads exemplar 3-year narrative (Deck 02 slide 5).",
+        "Program Coach reads exemplar 3-year narrative (Deck 02 slide 5).",
         "Participants build future self through interactive timeline in Venture Coach™.",
         "Encourage present-tense narrative — 'I am' not 'I will'.",
         "Generate summary for portfolio and mentor snapshot.",
@@ -168,10 +168,10 @@
       "materials": [
         "Squad Formation builder in app",
         "Research market preference list",
-        "Faculty squad assignment sheet"
+        "Program Coach squad assignment sheet"
       ],
       "instructions": [
-        "Faculty announces squad assignments or guides self-selection by market interest.",
+        "Program Coach announces squad assignments or guides self-selection by market interest.",
         "Participants complete Squad Formation builder — rank research market preferences.",
         "Confirm squad roster and mentor assignment in app.",
         "Introduce squad members and exchange contact details.",
@@ -202,7 +202,7 @@
         "Co-create mission statement linking squad vision to cohort theme.",
         "Document meeting cadence, communication channel, and conflict norms.",
         "Each member signs charter digitally in app.",
-        "Faculty and mentor sign-off before session close."
+        "Program Coach and mentor sign-off before session close."
       ],
       "outputs": [
         "Signed squad charter",

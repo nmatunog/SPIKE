@@ -18,7 +18,7 @@ export const CONTENT_BLOCK_TYPES = [
   { id: 'reflection', label: 'Reflection' },
   { id: 'rubric', label: 'Rubric' },
   { id: 'activity', label: 'Activity' },
-  { id: 'faculty_guide', label: 'Faculty Guide' },
+  { id: 'faculty_guide', label: 'Program Coach Guide' },
   { id: 'mentor_guide', label: 'Mentor Guide' },
   { id: 'coaching_template', label: 'Coaching Template' },
   { id: 'observation_form', label: 'Observation Form' },
@@ -72,7 +72,7 @@ export const CONTENT_STUDIO_NAV = [
   { path: '/admin/content-studio/coaching-templates', label: 'Coaching Templates', blockType: 'coaching_template' },
   { path: '/admin/content-studio/observation-forms', label: 'Observation Forms', blockType: 'observation_form' },
   { path: '/admin/content-studio/reflection-forms', label: 'Reflection Forms', blockType: 'reflection_form' },
-  { path: '/admin/content-studio/faculty-guides', label: 'Faculty Guides', blockType: 'faculty_guide' },
+  { path: '/admin/content-studio/faculty-guides', label: 'Program Coach Guides', blockType: 'faculty_guide' },
   { path: '/admin/content-studio/media', label: 'Media Library', section: 'media' },
   { path: '/admin/content-studio/day-builder', label: 'Day Builder', section: 'day-builder' },
 ];

@@ -6,7 +6,7 @@
       "type": "rubric",
       "title": "Day 1 Participation Rubric",
       "audience": "faculty",
-      "description": "Faculty observation of engagement across squad activities and builder completion. Evidence for competency tracking — not a graded exam.",
+      "description": "Program Coach observation of engagement across squad activities and builder completion. Evidence for competency tracking — not a graded exam.",
       "criteria": [
         {
           "label": "Squad engagement",
@@ -90,16 +90,16 @@
       "id": "observation-day-1-faculty",
       "dayId": "day-segment-1-week-1-day-1",
       "type": "observation_form",
-      "title": "Faculty Day 1 Observation Form",
+      "title": "Program Coach Day 1 Observation Form",
       "audience": "faculty",
       "description": "Quick-scan observation during Deck 01/02 delivery and builder activities. Complete one row per participant.",
       "fields": [
-        { "id": "engaged_deck", "label": "Engaged during faculty decks", "type": "rating", "max": 5 },
+        { "id": "engaged_deck", "label": "Engaged during program coach decks", "type": "rating", "max": 5 },
         { "id": "builder_completion", "label": "Completed all identity builders", "type": "checkbox" },
         { "id": "squad_contribution", "label": "Contributed meaningfully in squad", "type": "rating", "max": 5 },
         { "id": "authentic_voice", "label": "Uses authentic voice (not copied)", "type": "rating", "max": 5 },
         { "id": "follow_up", "label": "Needs mentor follow-up", "type": "checkbox" },
-        { "id": "notes", "label": "Faculty notes", "type": "long_text" }
+        { "id": "notes", "label": "Program Coach notes", "type": "long_text" }
       ]
     },
     {

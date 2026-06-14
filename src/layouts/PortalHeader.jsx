@@ -1,21 +1,5 @@
 import { LogOut } from 'lucide-react';
-
-function roleLabel(userRole) {
-  switch (userRole) {
-    case 'profile_error':
-      return 'Profile pending';
-    case 'intern':
-      return 'Intern';
-    case 'mentor':
-      return 'Advisor';
-    case 'admin':
-      return 'Admin';
-    case 'faculty':
-      return 'Faculty';
-    default:
-      return 'Guest';
-  }
-}
+import { formatUiRoleLabel } from '../lib/terminology.js';
 
 export function PortalHeader({ userRole, user, setupMeta, onLogout }) {
   return (
@@ -48,7 +32,7 @@ export function PortalHeader({ userRole, user, setupMeta, onLogout }) {
               {user?.name}
             </span>
             <span className="rounded-full bg-white/15 px-2 py-0.5 text-2xs font-semibold uppercase tracking-wide text-white lg:px-2.5 lg:py-1 lg:text-xs">
-              {roleLabel(userRole)}
+              {formatUiRoleLabel(userRole)}
             </span>
             <button
               type="button"

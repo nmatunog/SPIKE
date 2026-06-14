@@ -41,7 +41,7 @@ export function CohortIdentityPage({ participantId }) {
           <Sparkles className="mx-auto mb-3 text-emerald-600" size={32} />
           <h2 className="text-xl font-bold text-emerald-950">Cohort identity submitted</h2>
           <p className="mt-2 text-sm text-emerald-800">
-            Faculty will review suggestions and announce your official cohort identity. Next, rank
+            Your program coach will review suggestions and announce your official cohort identity. Next, rank
             your squad preferences.
           </p>
           <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-center">

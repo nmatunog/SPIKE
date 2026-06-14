@@ -47,7 +47,7 @@ const BLOCK_PAGES = {
     blockType: 'mentor_guide',
   },
   [`${ROUTES.adminContentStudio}/faculty-guides`]: {
-    title: 'Faculty Guides',
+    title: 'Program Coach Guides',
     description: 'Session overview, teaching notes, facilitation guide, timing, and expected outputs.',
     blockType: 'faculty_guide',
   },

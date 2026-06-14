@@ -30,7 +30,7 @@ export function FacultyHomePage({ interns, internSummary, pendingLogs = [] }) {
   return (
     <PageContainer>
       <PageTitle subtitle="Learning Experience Leader — teach, facilitate, assess, and standardize curriculum delivery.">
-        Faculty Operating Framework
+        Program Coach Operating Framework
       </PageTitle>
 
       <div className="mb-4 rounded-xl border border-indigo-100 bg-indigo-50 px-4 py-3 text-sm text-indigo-950">
@@ -54,7 +54,7 @@ export function FacultyHomePage({ interns, internSummary, pendingLogs = [] }) {
 
       <div className="mt-6 flex flex-wrap gap-2">
         <Link to={ROUTES.facultyPlaybook} className="spike-btn-primary inline-flex items-center gap-2">
-          <GraduationCap size={18} /> Faculty Playbook
+          <GraduationCap size={18} /> Program Coach Playbook
         </Link>
         <Link to={`${ROUTES.facultyHome}/advisory`} className="spike-btn-secondary inline-flex items-center gap-2">
           Traction & hours

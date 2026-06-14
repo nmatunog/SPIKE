@@ -24,16 +24,16 @@ export function AdminFacultyPlaybookPage() {
 
   return (
     <PageContainer wide>
-      <PageTitle subtitle="Faculty delivery framework — edit templates in Supabase or Content Studio faculty guides.">
-        Faculty Playbook Admin
+      <PageTitle subtitle="Program Coach delivery framework — edit templates in Supabase or Content Studio program coach guides.">
+        Program Coach Playbook Admin
       </PageTitle>
 
       <div className="mt-4 flex flex-wrap gap-2">
         <Link to={ROUTES.facultyHome} className="spike-btn-secondary text-sm">
-          Faculty dashboard
+          Program Coach dashboard
         </Link>
         <Link to={`${ROUTES.adminContentStudio}/faculty-guides`} className="spike-btn-secondary text-sm">
-          Content Studio — Faculty Guides
+          Content Studio — Program Coach Guides
         </Link>
         <Link to={ROUTES.facultyPlaybook} className="spike-btn-primary text-sm">
           Preview delivery view

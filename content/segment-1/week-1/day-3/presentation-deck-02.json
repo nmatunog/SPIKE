@@ -2,7 +2,7 @@
   "presentation": {
     "id": "presentation-day-3-deck-02",
     "dayId": "day-segment-1-week-1-day-3",
-    "title": "Faculty Deck 02 — Persona & Opportunity Workshop",
+    "title": "Program Coach Deck 02 — Persona & Opportunity Workshop",
     "slideIds": [
       "slide-d3-02-01",
       "slide-d3-02-02",
@@ -36,7 +36,7 @@
     {
       "id": "slide-d3-02-03",
       "title": "Persona Presentation Format",
-      "body": "Each squad presents: persona, top problem, opportunity hypothesis.\n3 minutes present + 2 minutes faculty/mentor feedback.",
+      "body": "Each squad presents: persona, top problem, opportunity hypothesis.\n3 minutes present + 2 minutes program coach/mentor feedback.",
       "speakerNotes": "Set presentation rubric expectations. 3 min.",
       "discussionQuestions": [
         "Who presents for your squad?"

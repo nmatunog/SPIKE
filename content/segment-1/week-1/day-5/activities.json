@@ -10,7 +10,7 @@
       "instructions": [
         "Participants run presentation mode individually.",
         "Dyad feedback on clarity and pacing.",
-        "Faculty checks presentation-ready threshold."
+        "Program Coach checks presentation-ready threshold."
       ],
       "outputs": [
         "Presentation-ready portfolio"
@@ -18,7 +18,7 @@
       "debriefQuestions": [
         "What slide needs the most work?",
         "Is your story coherent in 5 minutes?",
-        "What question might faculty ask?"
+        "What question might your program coach ask?"
       ],
       "dayId": "day-segment-1-week-1-day-5"
     },
@@ -32,7 +32,7 @@
       ],
       "instructions": [
         "Each participant or squad rep presents Venture Portfolio.",
-        "Faculty scores with presentation rubric.",
+        "Program Coach scores with presentation rubric.",
         "Audience provides structured peer feedback."
       ],
       "outputs": [

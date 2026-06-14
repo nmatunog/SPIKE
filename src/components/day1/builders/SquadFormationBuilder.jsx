@@ -23,7 +23,7 @@ export function SquadFormationBuilder({ draft, completed, onChange, onComplete }
       <section className="spike-card">
         <h4 className="mb-1 text-lg font-semibold text-slate-900">Startup Squad Formation</h4>
         <p className="mb-2 text-sm text-slate-600">
-          Select the research markets that interest you. Faculty will finalize squad assignments.
+          Select the research markets that interest you. Your program coach will finalize squad assignments.
         </p>
         <p className="mb-6 rounded-lg bg-sky-50 px-3 py-2 text-xs text-sky-800">
           Think startup formation — you&apos;re choosing where your squad will build market intelligence.

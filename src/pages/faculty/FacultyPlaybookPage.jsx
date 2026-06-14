@@ -28,11 +28,11 @@ export function FacultyPlaybookPage({ segment = 1, week = 1 }) {
   return (
     <PageContainer>
       <Link to={ROUTES.facultyHome} className="mb-4 inline-flex items-center gap-2 text-sm text-slate-500 hover:text-spike">
-        <ArrowLeft size={16} /> Faculty home
+        <ArrowLeft size={16} /> Program Coach home
       </Link>
 
       <PageTitle subtitle="Segment → Week → Day → Session delivery framework.">
-        Faculty Playbook
+        Program Coach Playbook
       </PageTitle>
 
       {framework?.weekTheme ? (
@@ -40,7 +40,7 @@ export function FacultyPlaybookPage({ segment = 1, week = 1 }) {
       ) : null}
 
       {loading ? (
-        <p className="mt-6 text-sm text-slate-500">Loading faculty framework…</p>
+        <p className="mt-6 text-sm text-slate-500">Loading program coach framework…</p>
       ) : (
         <ul className="mt-6 grid gap-4 md:grid-cols-2">
           {(framework?.days ?? []).map((day) => (

@@ -33,7 +33,7 @@ export function SquadDashboardPage({ participantId, participantName }) {
           <Users className="mx-auto mb-3 text-spike" size={36} />
           <h2 className="text-xl font-bold text-slate-900">Squad assignment pending</h2>
           <p className="mt-2 text-sm text-slate-600">
-            Faculty is forming squads from your preferences. Check back soon — your venture team
+            Your program coach is forming squads from your preferences. Check back soon — your venture team
             dashboard will activate here.
           </p>
           <Link to={ROUTES.squadPreferences} className="mt-4 inline-flex spike-btn-primary">

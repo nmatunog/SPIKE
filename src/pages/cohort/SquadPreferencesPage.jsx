@@ -39,7 +39,7 @@ export function SquadPreferencesPage({ participantId }) {
           <p className="spike-label text-spike">Squad Formation</p>
           <h1 className="text-2xl font-bold text-slate-900">Rank your squad preferences</h1>
           <p className="mt-2 text-sm text-slate-600">
-            Theme: <strong>{theme.name}</strong> — faculty will finalize assignments from your
+            Theme: <strong>{theme.name}</strong> — your program coach will finalize assignments from your
             rankings.
           </p>
         </header>

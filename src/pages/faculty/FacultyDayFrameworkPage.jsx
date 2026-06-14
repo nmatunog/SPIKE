@@ -29,7 +29,7 @@ export function FacultyDayFrameworkPage() {
   if (!template) {
     return (
       <PageContainer>
-        <p className="text-sm text-slate-500">Loading faculty day template…</p>
+        <p className="text-sm text-slate-500">Loading program coach day template…</p>
       </PageContainer>
     );
   }
@@ -40,11 +40,11 @@ export function FacultyDayFrameworkPage() {
         to={ROUTES.facultyPlaybook}
         className="mb-4 inline-flex items-center gap-2 text-sm text-slate-500 hover:text-spike"
       >
-        <ArrowLeft size={16} /> Faculty Playbook
+        <ArrowLeft size={16} /> Program Coach Playbook
       </Link>
 
       <header className="mb-6">
-        <p className="spike-label text-indigo-700">Faculty Framework · Seg {seg} Week {wk} Day {dy}</p>
+        <p className="spike-label text-indigo-700">Program Coach Framework · Seg {seg} Week {wk} Day {dy}</p>
         <h1 className="text-2xl font-bold text-slate-900">{template.theme}</h1>
         {data?.weekTheme ? <p className="mt-1 text-sm text-slate-600">{data.weekTheme}</p> : null}
       </header>

@@ -1,7 +1,7 @@
 /** Faculty Operating Framework — Week 1 specification constants. */
 
 export const FACULTY_PHILOSOPHY =
-  'Faculty delivers content — presentations, activities, worksheets, assessments, and rubrics. You teach what participants should know; mentors coach who they become.';
+  'Program Coaches deliver content — presentations, activities, worksheets, assessments, and rubrics. You teach what participants should know; mentors coach who they become.';
 
 export const WEEK1_FACULTY_THEME = 'Dream • Discover • Decide';
 

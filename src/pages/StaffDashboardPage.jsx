@@ -311,7 +311,7 @@ export function StaffDashboardPage({
             : 'Coaching, approvals, and cohort health at a glance.'
         }
       >
-        {userRole === 'faculty' ? 'Faculty home' : 'Advisor home'}
+        {userRole === 'faculty' ? 'Program Coach home' : 'Advisor home'}
       </PageTitle>
 
       <TabBar tabs={tabs} active={tab} onChange={setTab} className="mt-5" />

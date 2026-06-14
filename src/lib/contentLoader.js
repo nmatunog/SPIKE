@@ -339,7 +339,7 @@ export function assertSegment1Week1Day1Ready() {
     throw new Error('Day 1 missing facilitator guide');
   }
   if (!bundle.presentationDeck02?.slides?.length) {
-    throw new Error('Day 1 missing Faculty Deck 02');
+    throw new Error('Day 1 missing Program Coach Deck 02');
   }
   if (!bundle.evaluations?.templates?.length) {
     throw new Error('Day 1 missing evaluation templates');
@@ -349,7 +349,7 @@ export function assertSegment1Week1Day1Ready() {
   }
   const deck01 = bundle.presentation?.presentation?.id;
   if (deck01 !== 'presentation-day-1-deck-01') {
-    throw new Error('Day 1 missing Faculty Deck 01');
+    throw new Error('Day 1 missing Program Coach Deck 01');
   }
   if (bundle.activities.activities.length < 8) {
     throw new Error('Day 1 requires 8 activity guides');
@@ -367,10 +367,10 @@ const WEEK1_DAY_SLUGS = ['day-1', 'day-2', 'day-3', 'day-4', 'day-5'];
 function assertWeek1DayBundleReady(bundle, daySlug) {
   const dayNum = bundle.day.dayNumber;
   if (!bundle.presentation?.slides?.length) {
-    throw new Error(`Day ${dayNum} missing Faculty Deck 01`);
+    throw new Error(`Day ${dayNum} missing Program Coach Deck 01`);
   }
   if (!bundle.presentationDeck02?.slides?.length) {
-    throw new Error(`Day ${dayNum} missing Faculty Deck 02`);
+    throw new Error(`Day ${dayNum} missing Program Coach Deck 02`);
   }
   if (!bundle.activities?.activities?.length || bundle.activities.activities.length < 4) {
     throw new Error(`Day ${dayNum} requires at least 4 activity guides`);

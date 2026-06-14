@@ -6,6 +6,7 @@ import { MentorGuidePanel } from './MentorGuidePanel.jsx';
 import { SessionView } from './SessionView.jsx';
 import { PresentationViewer } from './PresentationViewer.jsx';
 import { resolvePresentations } from '../../lib/contentLoader.js';
+import { PROGRAM_COACH_LABEL } from '../../lib/terminology.js';
 
 /**
  * @typedef {import('../../lib/contentLoader.js').DayContentBundle} DayContentBundle
@@ -24,7 +25,7 @@ export function FacultyPlaybookView({ bundle }) {
       <header className="border-b border-gray-100 pb-4">
         <h3 className="inline-flex items-center gap-2 text-lg font-bold text-gray-900">
           <GraduationCap size={20} className="text-indigo-700" />
-          Faculty view — {bundle.day.title}
+          {PROGRAM_COACH_LABEL} view — {bundle.day.title}
         </h3>
         <p className="mt-1 text-sm text-gray-600">
           Slides, speaker notes, facilitator guide, and debrief for delivery.

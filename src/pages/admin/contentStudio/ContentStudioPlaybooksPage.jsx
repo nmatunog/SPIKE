@@ -7,11 +7,11 @@ export function ContentStudioPlaybooksPage() {
     <ContentStudioShell>
       <ContentStudioPanel
         title="Operating Playbooks"
-        description="Sprint 06B separates Faculty (teach) from Mentor (coach). Manage day frameworks without code changes."
+        description="Sprint 06B separates Program Coaches (teach) from Mentors (coach). Manage day frameworks without code changes."
       >
         <div className="grid gap-4 md:grid-cols-2">
           <div className="rounded-xl border border-indigo-100 bg-indigo-50 p-4">
-            <h3 className="font-semibold text-indigo-950">Faculty Playbook</h3>
+            <h3 className="font-semibold text-indigo-950">Program Coach Playbook</h3>
             <p className="mt-2 text-sm text-indigo-900">
               Learning objectives, speaker notes, activities, worksheets, assessments, rubrics, expected outputs.
             </p>
@@ -40,9 +40,9 @@ export function ContentStudioPlaybooksPage() {
           </div>
         </div>
         <p className="text-sm text-slate-600">
-          Block-level faculty and mentor guides also live under{' '}
+          Block-level program coach and mentor guides also live under{' '}
           <Link to={`${ROUTES.adminContentStudio}/faculty-guides`} className="font-semibold text-spike hover:underline">
-            Faculty Guides
+            Program Coach Guides
           </Link>{' '}
           and{' '}
           <Link to={`${ROUTES.adminContentStudio}/mentor-guides`} className="font-semibold text-spike hover:underline">

@@ -18,7 +18,7 @@ export function AssessmentPanel({ assessment, rubric }) {
               </li>
             ))}
           </ul>
-          <p className="mt-3 text-xs text-gray-500">Faculty observation — scoring workflow ships later.</p>
+          <p className="mt-3 text-xs text-gray-500">Program Coach observation — scoring workflow ships later.</p>
         </div>
       ) : null}
     </section>

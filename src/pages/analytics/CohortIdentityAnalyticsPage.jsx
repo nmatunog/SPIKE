@@ -21,7 +21,7 @@ export function CohortIdentityAnalyticsPage() {
       <header className="mb-6 flex items-start gap-3">
         <BarChart3 className="mt-1 text-spike" size={28} />
         <div>
-          <p className="spike-label text-spike">Faculty Analytics</p>
+          <p className="spike-label text-spike">Program Coach Analytics</p>
           <h1 className="text-2xl font-bold text-slate-900">Cohort Identity & Venture Coach</h1>
           <p className="mt-1 text-sm text-slate-600">
             Aggregated from {analytics.profileCount} participant coach profile(s) in this browser.

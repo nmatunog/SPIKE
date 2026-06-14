@@ -1057,7 +1057,7 @@ const SpikeMasterPortal = () => {
               <h3 className="text-lg font-bold text-gray-900">Create user account</h3>
             </div>
             <p className="mb-4 text-sm text-gray-600">
-              Add another person to the portal (intern, faculty, mentor, or administrator). Interns
+              Add another person to the portal (intern, program coach, mentor, or administrator). Interns
               receive a progress record automatically.
               {usingSupabaseAuth && (
                 <> With Supabase email confirmation enabled, they must confirm before first sign-in.</>
@@ -1380,7 +1380,7 @@ const SpikeMasterPortal = () => {
       }
       if (path === ROUTES.facultyHome) {
         return (
-          <LazyRoute label="Loading faculty…">
+          <LazyRoute label="Loading program coach…">
             <FacultyHomePage
               interns={interns}
               internSummary={internSummary}
@@ -1391,7 +1391,7 @@ const SpikeMasterPortal = () => {
       }
       if (path === ROUTES.facultyPlaybook) {
         return (
-          <LazyRoute label="Loading faculty playbook…">
+          <LazyRoute label="Loading program coach playbook…">
             <FacultyPlaybookPage />
           </LazyRoute>
         );
@@ -1432,7 +1432,7 @@ const SpikeMasterPortal = () => {
       }
       if (path === ROUTES.adminFacultyPlaybook) {
         return (
-          <LazyRoute label="Loading faculty admin…">
+          <LazyRoute label="Loading program coach admin…">
             <AdminFacultyPlaybookPage />
           </LazyRoute>
         );

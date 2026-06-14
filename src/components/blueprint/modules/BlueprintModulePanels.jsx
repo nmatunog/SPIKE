@@ -579,7 +579,7 @@ export function VentureBoardPanel({ state }) {
       ) : null}
       <SectionCard title="Workflow (read-only preview)">
         <p className="text-sm text-gray-600">
-          Portfolio Ready → Mentor Review → Faculty Review → Board Scheduling → Presentation →
+          Portfolio Ready → Mentor Review → Program Coach Review → Board Scheduling → Presentation →
           Scoring → Decision
         </p>
         <PlaceholderNotice className="mt-3">

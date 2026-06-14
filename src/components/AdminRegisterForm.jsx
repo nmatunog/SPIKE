@@ -67,7 +67,7 @@ export const AdminRegisterForm = memo(function AdminRegisterForm({ onRegister })
         className="min-h-[44px] w-full rounded-lg border border-gray-300 p-2.5 text-base outline-none focus:border-[#8B0000] sm:text-sm"
       >
         <option value="INTERN">Intern</option>
-        <option value="FACULTY">Faculty</option>
+        <option value="FACULTY">Program Coach</option>
         <option value="MENTOR">Mentor (Advisory Board)</option>
         <option value="ADMIN">Admin</option>
       </select>

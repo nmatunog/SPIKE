@@ -56,7 +56,7 @@ export const MOCK_AUTH_ACCOUNTS = {
     user: {
       id: 'mock-user-faculty',
       email: 'faculty@example.com',
-      name: 'Dr. Ana Faculty',
+      name: 'Dr. Ana Reyes',
       role: 'FACULTY',
       internProgress: null,
       mustChangePassword: false,

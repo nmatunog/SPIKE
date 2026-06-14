@@ -142,7 +142,7 @@ export async function generateSquadCharterPdf(participantId, data) {
     y += 8;
     pdf.setFont('helvetica', 'bold');
     pdf.setTextColor(139, 0, 0);
-    pdf.text('Faculty Approved', margin, y);
+    pdf.text('Program Coach Approved', margin, y);
   }
 
   pdf.save(`spike-squad-charter-${squadId}.pdf`);

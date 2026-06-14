@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { formatUiRoleLabel } from '../lib/terminology.js';
 import { ArrowLeft, BookOpen, ChevronRight, Layers, PlayCircle } from 'lucide-react';
 import { PageContainer, PageTitle } from '../components/layout/PageContainer.jsx';
 import { ParticipantDayView } from '../components/playbook/ParticipantDayView.jsx';
@@ -99,7 +100,7 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [] })
 
   const roleLabel =
     userRole === 'faculty' || userRole === 'admin'
-      ? 'Faculty'
+      ? formatUiRoleLabel('faculty')
       : userRole === 'mentor'
         ? 'Mentor'
         : 'Participant';

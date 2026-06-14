@@ -1,4 +1,4 @@
-import { ClipboardCheck } from 'lucide-react';
+import { formatPlaybookAudience } from '../../lib/terminology.js';
 
 /**
  * @param {{ templates: Array<Record<string, unknown>> }} props
@@ -12,7 +12,7 @@ export function EvaluationTemplatesPanel({ templates }) {
         <ClipboardCheck size={20} /> Day 1 evaluation templates
       </h3>
       <p className="text-sm text-amber-900">
-        Rubrics and observation forms for faculty and mentor use — Day 1 only.
+        Rubrics and observation forms for program coaches and mentors — Day 1 only.
       </p>
       <div className="space-y-3">
         {templates.map((template) => (
@@ -20,7 +20,7 @@ export function EvaluationTemplatesPanel({ templates }) {
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="font-bold text-gray-900">{String(template.title)}</p>
               <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold uppercase text-amber-900">
-                {String(template.type ?? 'template')} · {String(template.audience ?? 'faculty')}
+                {String(template.type ?? 'template')} · {formatPlaybookAudience(String(template.audience ?? 'faculty'))}
               </span>
             </div>
             {template.description ? (

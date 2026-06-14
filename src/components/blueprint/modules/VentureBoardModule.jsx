@@ -7,7 +7,7 @@ import { listBusinessPlanArtifacts, listPortfolioArtifacts } from '../../../lib/
 const WORKFLOW_STEPS = [
   { id: 'portfolio_ready', label: 'Portfolio Ready', fromStatus: 'not_started' },
   { id: 'mentor_review', label: 'Mentor Review', fromStatus: 'preparing' },
-  { id: 'faculty_review', label: 'Faculty Review', fromStatus: 'preparing' },
+  { id: 'faculty_review', label: 'Program Coach Review', fromStatus: 'preparing' },
   { id: 'board_scheduling', label: 'Board Scheduling', fromStatus: 'in_progress' },
   { id: 'presentation', label: 'Presentation', fromStatus: 'in_progress' },
   { id: 'scoring', label: 'Scoring', fromStatus: 'in_progress' },

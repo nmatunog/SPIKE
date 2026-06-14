@@ -2,7 +2,7 @@
   "presentation": {
     "id": "presentation-day-5-deck-02",
     "dayId": "day-segment-1-week-1-day-5",
-    "title": "Faculty Deck 02 — Portfolio Presentation & Commitment",
+    "title": "Program Coach Deck 02 — Portfolio Presentation & Commitment",
     "slideIds": [
       "slide-d5-02-01",
       "slide-d5-02-02",
@@ -26,7 +26,7 @@
     {
       "id": "slide-d5-02-02",
       "title": "Presentation Rubric",
-      "body": "Faculty evaluates: identity, evidence, canvas, commitment, delivery.\nMentors complete Week 1 coaching summary during presentations.",
+      "body": "Program Coach evaluates: identity, evidence, canvas, commitment, delivery.\nMentors complete Week 1 coaching summary during presentations.",
       "speakerNotes": "Share rubric. 4 min.",
       "discussionQuestions": [
         "What will you improve before Hour 200?"

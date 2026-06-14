@@ -1,7 +1,7 @@
 /** Mentor Operating Framework — Week 1 specification constants. */
 
 export const MENTOR_PHILOSOPHY =
-  'Mentors do not teach — they coach. Faculty delivers content; mentors help participants process, internalize, and apply what they learned.';
+  'Mentors do not teach — they coach. Program Coaches deliver content; mentors help participants process, internalize, and apply what they learned.';
 
 export const WEEK1_MENTOR_OUTCOMES = [
   'Ambition',
