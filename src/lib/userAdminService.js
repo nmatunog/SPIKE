@@ -3,6 +3,24 @@ import { supabase } from '../supabaseClient.js';
 
 const ADMIN_MANAGEABLE_ROLES = ['INTERN', 'FACULTY', 'MENTOR', 'ADMIN'];
 
+const MIGRATION_CATCHUP_HINT =
+  'Run supabase/migrations/20260710_admin_portal_catchup.sql in the Supabase SQL Editor, then run NOTIFY pgrst, \'reload schema\'; as a separate query.';
+
+/** @param {{ code?: string; message?: string } | null | undefined} error */
+function isSchemaMissingError(error) {
+  if (!error) return false;
+  const message = error.message || '';
+  return (
+    error.code === 'PGRST202' ||
+    error.code === '42P01' ||
+    /not find|404|schema cache/i.test(message)
+  );
+}
+
+function formatSchemaMissingError(fallback) {
+  return `${fallback} ${MIGRATION_CATCHUP_HINT}`;
+}
+
 const SERVICE_KEY_HINT =
   'Add SUPABASE_SERVICE_ROLE_KEY to Cloudflare Pages → spike → Settings → Environment variables (Production), then redeploy.';
 
@@ -69,18 +87,27 @@ export async function fetchUserDirectory() {
     return {
       users: data ?? [],
       actorIsSuperuser,
+      migrationNeeded: false,
     };
   }
+
+  const migrationNeeded = isSchemaMissingError(error);
 
   const { data: profiles, error: profileErr } = await supabase
     .from('profiles')
     .select('id, email, name, role, created_at, updated_at')
     .order('created_at', { ascending: false });
-  if (profileErr) throw profileErr;
+  if (profileErr) {
+    if (isSchemaMissingError(profileErr)) {
+      throw new Error(formatSchemaMissingError('Could not load users.'));
+    }
+    throw profileErr;
+  }
 
   return {
     users: (profiles ?? []).map((row) => ({ ...row, has_profile: true })),
     actorIsSuperuser,
+    migrationNeeded,
   };
 }
 
@@ -95,7 +122,11 @@ async function updatePortalUser({ targetId, role, name, isSuperuser, target }) {
   });
   if (!rpcErr) return;
 
-  if (!target?.has_profile && target?.has_profile !== undefined) {
+  if (
+    !isSchemaMissingError(rpcErr)
+    && !target?.has_profile
+    && target?.has_profile !== undefined
+  ) {
     throw rpcErr;
   }
 

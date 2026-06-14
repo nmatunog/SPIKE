@@ -14,6 +14,7 @@ const SUPERUSER_ROLE_OPTIONS = ['INTERN', 'FACULTY', 'MENTOR', 'ADMIN', 'SUPERUS
 export function AdminUserDirectory({ currentUserId = '', isSuperuser = false }) {
   const [users, setUsers] = useState([]);
   const [actorIsSuperuser, setActorIsSuperuser] = useState(isSuperuser);
+  const [migrationNeeded, setMigrationNeeded] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState('');
@@ -26,9 +27,11 @@ export function AdminUserDirectory({ currentUserId = '', isSuperuser = false }) 
     setLoading(true);
     setError('');
     try {
-      const { users: rows, actorIsSuperuser: fromApi } = await fetchUserDirectory();
+      const { users: rows, actorIsSuperuser: fromApi, migrationNeeded: needsMigration } =
+        await fetchUserDirectory();
       setUsers(rows);
       setActorIsSuperuser(fromApi || isSuperuser);
+      setMigrationNeeded(Boolean(needsMigration));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not load users.');
     } finally {
@@ -89,6 +92,16 @@ export function AdminUserDirectory({ currentUserId = '', isSuperuser = false }) 
           </p>
         </div>
       </div>
+
+      {migrationNeeded ? (
+        <p className="mb-3 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-950">
+          Admin database functions are not installed yet (console 404 errors). Run{' '}
+          <code className="rounded bg-white px-1">20260710_admin_portal_catchup.sql</code> in the
+          Supabase SQL Editor, then{' '}
+          <code className="rounded bg-white px-1">NOTIFY pgrst, &apos;reload schema&apos;;</code>{' '}
+          and refresh this page. Role changes may still work via fallback until then.
+        </p>
+      ) : null}
 
       {error ? <p className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800">{error}</p> : null}
       {resultMsg ? (

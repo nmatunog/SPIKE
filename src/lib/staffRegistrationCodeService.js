@@ -8,7 +8,7 @@ function formatStaffCodeError(error, fallback) {
     error?.code === '42P01' ||
     /not find|404|schema cache/i.test(message);
   if (missing) {
-    return 'Staff registration is not set up in Supabase yet. Run migrations 20260703a, 20260703, and 20260709 in the SQL Editor, then run NOTIFY pgrst, \'reload schema\';';
+    return 'Database setup incomplete. Run migration 20260710_admin_portal_catchup.sql in Supabase SQL Editor, then NOTIFY pgrst, \'reload schema\';';
   }
   return message;
 }

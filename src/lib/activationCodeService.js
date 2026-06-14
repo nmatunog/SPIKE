@@ -8,10 +8,10 @@ function formatActivationCodeError(error, fallback) {
     error?.code === '42P01' ||
     /not find|404|schema cache/i.test(message);
   if (missing) {
-    return 'Daily activation codes are not set up in Supabase yet. Run migration 20260614 (and 20260709 for superuser) in the SQL Editor, then NOTIFY pgrst, \'reload schema\';';
+    return 'Database setup incomplete. Run migration 20260710_admin_portal_catchup.sql in Supabase SQL Editor, then NOTIFY pgrst, \'reload schema\';';
   }
   if (/only administrators/i.test(message)) {
-    return 'Your account cannot regenerate codes yet. Run migration 20260709 in Supabase SQL Editor, then NOTIFY pgrst, \'reload schema\';';
+    return 'Your account cannot regenerate codes yet. Run migration 20260710_admin_portal_catchup.sql in Supabase SQL Editor, then NOTIFY pgrst, \'reload schema\';';
   }
   return message;
 }
