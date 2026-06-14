@@ -3,6 +3,20 @@
 export const PROGRAM_COACH_LABEL = 'Program Coach';
 export const PROGRAM_COACH_LABEL_PLURAL = 'Program Coaches';
 
+/** Database role → staff-directory label */
+export const DB_ROLE_LABELS = {
+  INTERN: 'Intern',
+  FACULTY: PROGRAM_COACH_LABEL,
+  MENTOR: 'Advisor (Mentor)',
+  ADMIN: 'Administrator',
+  SUPERUSER: 'Superuser',
+};
+
+/** @param {string} [dbRole] */
+export function formatDbRoleLabel(dbRole) {
+  return DB_ROLE_LABELS[dbRole] ?? dbRole ?? 'Unknown';
+}
+
 /** @param {string} [userRole] */
 export function formatUiRoleLabel(userRole) {
   switch (userRole) {

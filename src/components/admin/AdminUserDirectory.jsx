@@ -5,10 +5,13 @@ import {
   fetchUserDirectory,
   runUserDirectoryAction,
 } from '../../lib/userAdminService.js';
-import { formatUiRoleLabel } from '../../lib/terminology.js';
-import { mapApiRoleToUi } from '../../lib/roles.js';
+import { formatDbRoleLabel } from '../../lib/terminology.js';
 
 const SUPERUSER_ROLE_OPTIONS = ['INTERN', 'FACULTY', 'MENTOR', 'ADMIN', 'SUPERUSER'];
+
+function formatRoleOption(dbRole) {
+  return `${formatDbRoleLabel(dbRole)} (${dbRole})`;
+}
 
 /** @param {{ currentUserId?: string, isSuperuser?: boolean }} props */
 export function AdminUserDirectory({ currentUserId = '', isSuperuser = false }) {
@@ -50,7 +53,8 @@ export function AdminUserDirectory({ currentUserId = '', isSuperuser = false }) 
     setError('');
     setResultMsg('');
     try {
-      const res = await runUserDirectoryAction(payload, { isSuperuser: actorIsSuperuser });
+      const target = users.find((u) => u.id === payload.targetId) ?? null;
+      const res = await runUserDirectoryAction(payload, { isSuperuser: actorIsSuperuser, target });
       if (res?.temporaryPassword) {
         setResultMsg(
           `Temporary password: ${res.temporaryPassword} (share securely; user must change on sign-in)`,
@@ -116,9 +120,12 @@ export function AdminUserDirectory({ currentUserId = '', isSuperuser = false }) 
                     <td className="px-2 py-3 text-gray-700">{u.email}</td>
                     <td className="px-2 py-3">
                       <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-bold text-gray-800">
-                        {formatUiRoleLabel(mapApiRoleToUi(u.role))}
+                        {formatDbRoleLabel(u.role)}
                         {u.role === 'SUPERUSER' ? ' ★' : ''}
                       </span>
+                      {u.has_profile === false ? (
+                        <span className="ml-2 text-2xs font-medium text-amber-700">No profile yet</span>
+                      ) : null}
                     </td>
                     <td className="px-2 py-3">
                       {manageable ? (
@@ -220,7 +227,7 @@ function ActionModal({ modal, busy, roleOptions, onClose, onSubmit }) {
             <input value={email} onChange={(e) => setEmail(e.target.value)} className="w-full rounded-lg border px-3 py-2 text-sm" placeholder="Email" type="email" />
             <select value={role} onChange={(e) => setRole(e.target.value)} className="w-full rounded-lg border px-3 py-2 text-sm">
               {roleOptions.map((r) => (
-                <option key={r} value={r}>{r}</option>
+                <option key={r} value={r}>{formatRoleOption(r)}</option>
               ))}
             </select>
           </div>
@@ -229,7 +236,7 @@ function ActionModal({ modal, busy, roleOptions, onClose, onSubmit }) {
         {type === 'promote' ? (
           <select value={role} onChange={(e) => setRole(e.target.value)} className="mb-3 w-full rounded-lg border px-3 py-2 text-sm">
             {roleOptions.map((r) => (
-              <option key={r} value={r}>{r}</option>
+              <option key={r} value={r}>{formatRoleOption(r)}</option>
             ))}
           </select>
         ) : null}

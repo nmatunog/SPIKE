@@ -40,7 +40,7 @@ function assertClientRoleAllowed(isSuperuser, role) {
 
 /** @param {boolean} isSuperuser @param {{ role?: string } | null | undefined} target */
 function assertClientTargetMutable(isSuperuser, target) {
-  if (!target) throw new Error('User not found.');
+  if (!target) return;
   if (!isSuperuser && target.role === 'SUPERUSER') {
     throw new Error('Only superusers can modify superuser accounts.');
   }
@@ -60,20 +60,52 @@ function wrapServiceKeyError(err) {
   return err;
 }
 
-/** Load all portal users via Supabase (no service-role API required). */
+/** Load all auth users (with profile data) for the staff directory. */
 export async function fetchUserDirectory() {
   const { actorIsSuperuser } = await getActorContext();
 
-  const { data, error } = await supabase
+  const { data, error } = await supabase.rpc('list_portal_users');
+  if (!error) {
+    return {
+      users: data ?? [],
+      actorIsSuperuser,
+    };
+  }
+
+  const { data: profiles, error: profileErr } = await supabase
     .from('profiles')
     .select('id, email, name, role, created_at, updated_at')
     .order('created_at', { ascending: false });
-  if (error) throw error;
+  if (profileErr) throw profileErr;
 
   return {
-    users: data ?? [],
+    users: (profiles ?? []).map((row) => ({ ...row, has_profile: true })),
     actorIsSuperuser,
   };
+}
+
+async function updatePortalUser({ targetId, role, name, isSuperuser, target }) {
+  assertClientTargetMutable(isSuperuser, target);
+  if (role) assertClientRoleAllowed(isSuperuser, role);
+
+  const { error: rpcErr } = await supabase.rpc('admin_update_portal_user', {
+    p_user_id: targetId,
+    p_role: role ?? null,
+    p_name: name ?? null,
+  });
+  if (!rpcErr) return;
+
+  if (!target?.has_profile && target?.has_profile !== undefined) {
+    throw rpcErr;
+  }
+
+  const patch = {};
+  if (name) patch.name = name;
+  if (role) patch.role = role;
+  if (!Object.keys(patch).length) return;
+
+  const { error } = await supabase.from('profiles').update(patch).eq('id', targetId);
+  if (error) throw error;
 }
 
 /**
@@ -86,9 +118,9 @@ export async function fetchUserDirectory() {
  *   email?: string,
  *   confirmEmail?: string,
  * }} payload
- * @param {{ isSuperuser: boolean }} options
+ * @param {{ isSuperuser: boolean, target?: object }} options
  */
-export async function runUserDirectoryAction(payload, { isSuperuser }) {
+export async function runUserDirectoryAction(payload, { isSuperuser, target = null }) {
   if (!supabase) throw new Error('Supabase is not configured.');
 
   if (payload.action === 'password_reset' || payload.action === 'delete') {
@@ -109,33 +141,35 @@ export async function runUserDirectoryAction(payload, { isSuperuser }) {
     }
   }
 
-  const { data: target, error: targetErr } = await supabase
-    .from('profiles')
-    .select('id, role')
-    .eq('id', payload.targetId)
-    .maybeSingle();
-  if (targetErr) throw targetErr;
-  assertClientTargetMutable(isSuperuser, target);
+  let resolvedTarget = target;
+  if (!resolvedTarget) {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, role')
+      .eq('id', payload.targetId)
+      .maybeSingle();
+    if (error) throw error;
+    resolvedTarget = data;
+  }
 
   if (payload.action === 'promote') {
-    assertClientRoleAllowed(isSuperuser, payload.role);
-    const { error } = await supabase
-      .from('profiles')
-      .update({ role: payload.role })
-      .eq('id', payload.targetId);
-    if (error) throw error;
+    await updatePortalUser({
+      targetId: payload.targetId,
+      role: payload.role,
+      isSuperuser,
+      target: resolvedTarget,
+    });
     return { ok: true };
   }
 
   if (payload.action === 'edit') {
-    assertClientRoleAllowed(isSuperuser, payload.role);
-    const patch = {};
-    if (payload.name) patch.name = payload.name;
-    if (payload.role) patch.role = payload.role;
-    if (Object.keys(patch).length) {
-      const { error } = await supabase.from('profiles').update(patch).eq('id', payload.targetId);
-      if (error) throw error;
-    }
+    await updatePortalUser({
+      targetId: payload.targetId,
+      role: payload.role,
+      name: payload.name,
+      isSuperuser,
+      target: resolvedTarget,
+    });
     if (payload.email) {
       try {
         const { data: sessionData } = await supabase.auth.getSession();
@@ -164,8 +198,9 @@ export async function fetchAllUsersForSuperuser() {
 
 /** @deprecated Use runUserDirectoryAction */
 export async function runSuperuserUserAction(payload) {
-  const { actorIsSuperuser } = await fetchUserDirectory();
-  return runUserDirectoryAction(payload, { isSuperuser: actorIsSuperuser });
+  const { users, actorIsSuperuser } = await fetchUserDirectory();
+  const target = users.find((u) => u.id === payload.targetId) ?? null;
+  return runUserDirectoryAction(payload, { isSuperuser: actorIsSuperuser, target });
 }
 
 export function userAdminApiAvailable() {
