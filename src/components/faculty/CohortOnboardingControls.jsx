@@ -6,9 +6,12 @@ import {
   staffGenerateAndSaveFinalists,
   staffLoadDashboard,
   staffEnsureActiveCohort,
+  staffAddInternToSquad,
+  staffDeleteFormationSquad,
   staffMarkSquadsAssigned,
   staffOpenSuggestions,
   staffPublishVoting,
+  staffRemoveInternFromSquad,
   staffRevealWinner,
   staffSaveFinalists,
   staffUploadCohortPhoto,
@@ -30,6 +33,8 @@ export function CohortOnboardingControls({ staffId, interns = [], canAssignSquad
   const [editFinalists, setEditFinalists] = useState([]);
   const [newSquadName, setNewSquadName] = useState('Squad');
   const [pickInterns, setPickInterns] = useState(['', '', '']);
+  const [addToSquadId, setAddToSquadId] = useState('');
+  const [addInternId, setAddInternId] = useState('');
 
   const refresh = useCallback(async () => {
     if (!isSupabaseConfigured) {
@@ -124,6 +129,7 @@ export function CohortOnboardingControls({ staffId, interns = [], canAssignSquad
     squads.flatMap((s) => (s.formation_squad_members ?? []).map((m) => m.participant_id)),
   );
   const unassigned = interns.filter((i) => !assignedIds.has(i.id));
+  const internNameById = new Map(interns.map((i) => [i.id, i.name]));
 
   return (
     <section className="spike-card space-y-4 p-5" id="cohort-onboarding-controls">
@@ -297,16 +303,115 @@ export function CohortOnboardingControls({ staffId, interns = [], canAssignSquad
             className="mt-2"
             onClick={() => run('assigned', () => staffMarkSquadsAssigned(cohort.id))}
           />
-          <ul className="mt-3 space-y-1 text-sm">
-            {squads.map((s) => (
-              <li key={s.id} className="rounded-lg bg-slate-50 px-3 py-2">
-                <strong>{s.name || 'Unnamed squad'}</strong>
-                <span className="text-slate-500">
-                  {' '}
-                  · {(s.formation_squad_members ?? []).length}/3 members
-                </span>
-              </li>
-            ))}
+
+          <div className="mt-4 rounded-lg border border-dashed border-slate-200 bg-white p-3">
+            <p className="mb-2 text-xs font-semibold text-slate-700">Add intern to existing squad</p>
+            <p className="mb-2 text-xs text-slate-500">
+              Use this when someone re-registered (new account) or was removed from a squad. Pick the
+              original squad — not a new one.
+            </p>
+            <div className="grid gap-2 sm:grid-cols-2">
+              <select
+                value={addToSquadId}
+                onChange={(e) => setAddToSquadId(e.target.value)}
+                className="rounded-lg border px-2 py-2 text-sm"
+              >
+                <option value="">Select squad…</option>
+                {squads.map((s) => {
+                  const count = (s.formation_squad_members ?? []).length;
+                  return (
+                    <option key={s.id} value={s.id} disabled={count >= 3}>
+                      {s.name || 'Unnamed squad'} ({count}/3)
+                    </option>
+                  );
+                })}
+              </select>
+              <select
+                value={addInternId}
+                onChange={(e) => setAddInternId(e.target.value)}
+                className="rounded-lg border px-2 py-2 text-sm"
+              >
+                <option value="">Select unassigned intern…</option>
+                {unassigned.map((i) => (
+                  <option key={i.id} value={i.id}>{i.name}</option>
+                ))}
+              </select>
+            </div>
+            <ControlButton
+              label="Add to squad"
+              busy={busy}
+              className="mt-2"
+              onClick={() =>
+                run('add-member', async () => {
+                  if (!addToSquadId || !addInternId) {
+                    throw new Error('Select a squad and an intern.');
+                  }
+                  await staffAddInternToSquad(addToSquadId, addInternId);
+                  setAddInternId('');
+                })
+              }
+            />
+          </div>
+
+          <ul className="mt-4 space-y-3 text-sm">
+            {squads.map((s) => {
+              const members = s.formation_squad_members ?? [];
+              return (
+                <li key={s.id} className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-3">
+                  <div className="flex flex-wrap items-start justify-between gap-2">
+                    <div>
+                      <strong>{s.name || 'Unnamed squad'}</strong>
+                      <span className="text-slate-500"> · {members.length}/3 members</span>
+                    </div>
+                    <button
+                      type="button"
+                      disabled={Boolean(busy)}
+                      className="text-xs font-semibold text-red-700 hover:underline disabled:opacity-50"
+                      onClick={() => {
+                        const label = s.name || 'this squad';
+                        const msg =
+                          members.length > 0
+                            ? `Delete "${label}"? Members will become unassigned.`
+                            : `Delete empty duplicate squad "${label}"?`;
+                        if (!window.confirm(msg)) return;
+                        run('delete-squad', () => staffDeleteFormationSquad(s.id));
+                      }}
+                    >
+                      Delete squad
+                    </button>
+                  </div>
+                  <ul className="mt-2 space-y-1">
+                    {members.length ? (
+                      members.map((m) => (
+                        <li
+                          key={m.participant_id}
+                          className="flex items-center justify-between rounded-md bg-white px-2 py-1.5"
+                        >
+                          <span>
+                            {internNameById.get(m.participant_id) ?? m.participant_id.slice(0, 8)}
+                            <span className="ml-1 text-xs text-slate-500">({m.role})</span>
+                          </span>
+                          <button
+                            type="button"
+                            disabled={Boolean(busy)}
+                            className="text-xs font-semibold text-slate-600 hover:text-red-700 disabled:opacity-50"
+                            onClick={() =>
+                              run('remove-member', () =>
+                                staffRemoveInternFromSquad(s.id, m.participant_id),
+                              )
+                            }
+                          >
+                            Remove
+                          </button>
+                        </li>
+                      ))
+                    ) : (
+                      <li className="text-xs text-slate-500">No members — safe to delete if duplicate.</li>
+                    )}
+                  </ul>
+                </li>
+              );
+            })}
           </ul>
         </div>
       ) : null}

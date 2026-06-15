@@ -297,6 +297,10 @@ export async function createFormationSquad(cohortId, name, memberIds) {
   if (error) throw error;
 
   if (ids.length) {
+    await assertParticipantNotInSquad(client, ids[0]);
+    for (const pid of ids.slice(1)) {
+      await assertParticipantNotInSquad(client, pid);
+    }
     const rows = ids.map((pid, idx) => ({
       squad_id: squad.id,
       participant_id: pid,
@@ -304,13 +308,40 @@ export async function createFormationSquad(cohortId, name, memberIds) {
     }));
     const { error: memErr } = await client.from('formation_squad_members').insert(rows);
     if (memErr) throw memErr;
+    for (const pid of ids) {
+      await syncInternProgressSquadLabel(client, pid, squad.name);
+    }
   }
   return squad;
+}
+
+/** @param {string} participantId */
+async function assertParticipantNotInSquad(client, participantId, exceptSquadId = null) {
+  const { data, error } = await client
+    .from('formation_squad_members')
+    .select('squad_id')
+    .eq('participant_id', participantId);
+  if (error) throw error;
+  const conflict = (data ?? []).find((row) => row.squad_id !== exceptSquadId);
+  if (conflict) {
+    throw new Error('This intern is already assigned to another squad. Remove them there first.');
+  }
+}
+
+/** @param {string} participantId @param {string | null} squadName */
+async function syncInternProgressSquadLabel(client, participantId, squadName) {
+  const { error } = await client
+    .from('intern_progress')
+    .update({ squad: squadName ?? '' })
+    .eq('user_id', participantId);
+  if (error) throw error;
 }
 
 /** @param {string} squadId @param {string} participantId */
 export async function addSquadMember(squadId, participantId) {
   const client = assertClient();
+  await assertParticipantNotInSquad(client, participantId);
+
   const { count, error: countErr } = await client
     .from('formation_squad_members')
     .select('id', { count: 'exact', head: true })
@@ -318,13 +349,52 @@ export async function addSquadMember(squadId, participantId) {
   if (countErr) throw countErr;
   if ((count ?? 0) >= 3) throw new Error('Squad already has 3 members.');
 
+  const { data: squad, error: squadErr } = await client
+    .from('formation_squads')
+    .select('name')
+    .eq('id', squadId)
+    .maybeSingle();
+  if (squadErr) throw squadErr;
+  if (!squad) throw new Error('Squad not found.');
+
   const { data, error } = await client
     .from('formation_squad_members')
     .insert({ squad_id: squadId, participant_id: participantId, role: 'Member' })
     .select()
     .single();
   if (error) throw error;
+
+  await syncInternProgressSquadLabel(client, participantId, squad.name);
   return data;
+}
+
+/** @param {string} squadId @param {string} participantId */
+export async function removeSquadMember(squadId, participantId) {
+  const client = assertClient();
+  const { error } = await client
+    .from('formation_squad_members')
+    .delete()
+    .eq('squad_id', squadId)
+    .eq('participant_id', participantId);
+  if (error) throw error;
+  await syncInternProgressSquadLabel(client, participantId, null);
+}
+
+/** @param {string} squadId */
+export async function deleteFormationSquad(squadId) {
+  const client = assertClient();
+  const { data: members, error: memErr } = await client
+    .from('formation_squad_members')
+    .select('participant_id')
+    .eq('squad_id', squadId);
+  if (memErr) throw memErr;
+
+  const { error } = await client.from('formation_squads').delete().eq('id', squadId);
+  if (error) throw error;
+
+  for (const member of members ?? []) {
+    await syncInternProgressSquadLabel(client, member.participant_id, null);
+  }
 }
 
 /** @param {string} squadId @param {{ name?: string, motto?: string, photo_url?: string, registered_at?: string, onboarding_complete?: boolean, status?: string }} patch */

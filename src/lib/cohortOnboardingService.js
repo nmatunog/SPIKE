@@ -418,6 +418,21 @@ export async function staffMarkSquadsAssigned(cohortId) {
   return db.setCohortPhase(cohortId, 'squads_assigned');
 }
 
+/** @param {string} squadId @param {string} participantId */
+export async function staffAddInternToSquad(squadId, participantId) {
+  return db.addSquadMember(squadId, participantId);
+}
+
+/** @param {string} squadId @param {string} participantId */
+export async function staffRemoveInternFromSquad(squadId, participantId) {
+  return db.removeSquadMember(squadId, participantId);
+}
+
+/** @param {string} squadId */
+export async function staffDeleteFormationSquad(squadId) {
+  return db.deleteFormationSquad(squadId);
+}
+
 export async function staffEnsureActiveCohort() {
   return db.ensureActiveCohortForStaff();
 }
