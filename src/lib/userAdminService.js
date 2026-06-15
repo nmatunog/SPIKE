@@ -21,6 +21,11 @@ function formatSchemaMissingError(fallback) {
   return `${fallback} ${MIGRATION_CATCHUP_HINT}`;
 }
 
+/** @param {string | null | undefined} role */
+function normalizePortalRole(role) {
+  return String(role ?? '').trim().toUpperCase();
+}
+
 const SERVICE_KEY_HINT =
   'Add SUPABASE_SERVICE_ROLE_KEY to Cloudflare Pages → spike → Settings → Environment variables (Production), then redeploy.';
 
@@ -147,40 +152,33 @@ async function runAdminDirectoryApi(payload) {
 
 async function updatePortalUser({ targetId, role, name, isSuperuser, target }) {
   assertClientTargetMutable(isSuperuser, target);
-  if (role) assertClientRoleAllowed(isSuperuser, role);
+  const normalizedRole = role ? normalizePortalRole(role) : null;
+  if (normalizedRole) assertClientRoleAllowed(isSuperuser, normalizedRole);
 
-  const { error: rpcErr } = await supabase.rpc('admin_update_portal_user', {
+  await supabase.rpc('sync_missing_portal_profiles').then(() => null, () => null);
+
+  const { data, error: rpcErr } = await supabase.rpc('admin_update_portal_user', {
     p_user_id: targetId,
-    p_role: role ?? null,
+    p_role: normalizedRole,
     p_name: name ?? null,
   });
-  if (!rpcErr) return;
+  if (!rpcErr) return data;
 
-  if (
-    !isSchemaMissingError(rpcErr)
-    && !target?.has_profile
-    && target?.has_profile !== undefined
-  ) {
+  if (!isSchemaMissingError(rpcErr)) {
     throw rpcErr;
   }
 
   const patch = {};
   if (name) patch.name = name;
-  if (role) patch.role = role;
+  if (normalizedRole) patch.role = normalizedRole;
   if (!Object.keys(patch).length) return;
 
-  if (target?.has_profile === false || isSchemaMissingError(rpcErr)) {
-    const { error } = await supabase.from('profiles').upsert(
-      {
-        id: targetId,
-        email: target?.email ?? '',
-        name: name ?? target?.name ?? 'User',
-        role: role ?? target?.role ?? 'INTERN',
-      },
-      { onConflict: 'id' },
+  if (target?.has_profile === false) {
+    throw new Error(
+      formatSchemaMissingError(
+        'Could not create a profile for this account. Run the admin portal migrations, then try again.',
+      ),
     );
-    if (error) throw error;
-    return;
   }
 
   const { error } = await supabase.from('profiles').update(patch).eq('id', targetId);
@@ -232,57 +230,47 @@ export async function runUserDirectoryAction(payload, { isSuperuser, target = nu
   }
 
   if (payload.action === 'promote') {
+    const role = normalizePortalRole(payload.role);
+    if (!role) throw new Error('Select a role to assign.');
+    const normalizedPayload = { ...payload, role };
+
     try {
-      return await runAdminDirectoryApi(payload);
-    } catch (err) {
-      if (err instanceof ApiError && (err.status === 503 || err.status === 500)) {
-        await updatePortalUser({
-          targetId: payload.targetId,
-          role: payload.role,
-          isSuperuser,
-          target: resolvedTarget,
-        });
-        return { ok: true };
-      }
+      await updatePortalUser({
+        targetId: payload.targetId,
+        role,
+        isSuperuser,
+        target: resolvedTarget,
+      });
+      return { ok: true };
+    } catch (rpcErr) {
       try {
-        await updatePortalUser({
-          targetId: payload.targetId,
-          role: payload.role,
-          isSuperuser,
-          target: resolvedTarget,
-        });
-        return { ok: true };
-      } catch (clientErr) {
-        throw clientErr instanceof Error ? clientErr : err;
+        return (await runAdminDirectoryApi(normalizedPayload)) ?? { ok: true };
+      } catch (apiErr) {
+        if (rpcErr instanceof Error && rpcErr.message) throw rpcErr;
+        throw wrapServiceKeyError(apiErr);
       }
     }
   }
 
   if (payload.action === 'edit') {
+    const role = payload.role ? normalizePortalRole(payload.role) : undefined;
+    const normalizedPayload = { ...payload, ...(role ? { role } : {}) };
+
     try {
-      return (await runAdminDirectoryApi(payload)) ?? { ok: true };
-    } catch (err) {
-      if (err instanceof ApiError && (err.status === 503 || err.status === 500)) {
-        await updatePortalUser({
-          targetId: payload.targetId,
-          role: payload.role,
-          name: payload.name,
-          isSuperuser,
-          target: resolvedTarget,
-        });
-        return { ok: true };
-      }
+      await updatePortalUser({
+        targetId: payload.targetId,
+        role,
+        name: payload.name,
+        isSuperuser,
+        target: resolvedTarget,
+      });
+      return { ok: true };
+    } catch (rpcErr) {
       try {
-        await updatePortalUser({
-          targetId: payload.targetId,
-          role: payload.role,
-          name: payload.name,
-          isSuperuser,
-          target: resolvedTarget,
-        });
-        return { ok: true };
-      } catch (clientErr) {
-        throw clientErr instanceof Error ? clientErr : err;
+        return (await runAdminDirectoryApi(normalizedPayload)) ?? { ok: true };
+      } catch (apiErr) {
+        if (rpcErr instanceof Error && rpcErr.message) throw rpcErr;
+        throw wrapServiceKeyError(apiErr);
       }
     }
   }

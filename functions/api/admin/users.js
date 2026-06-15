@@ -191,7 +191,7 @@ export async function onRequest(ctx) {
 
       const name = body?.name != null ? String(body.name).trim() : undefined;
       const email = body?.email != null ? String(body.email).trim().toLowerCase() : undefined;
-      const role = body?.role != null ? String(body.role) : undefined;
+      const role = body?.role != null ? String(body.role).trim().toUpperCase() : undefined;
       assertRoleAllowed(actor, role);
 
       const patch = {};
@@ -216,7 +216,7 @@ export async function onRequest(ctx) {
       const target = await ensureTargetProfile(admin, targetId);
       assertTargetMutable(actor, target);
 
-      const role = String(body?.role ?? '').trim();
+      const role = String(body?.role ?? '').trim().toUpperCase();
       assertRoleAllowed(actor, role);
       if (targetId === actor.profile.id && actor.isSuperuser && role !== 'SUPERUSER') {
         return json({ message: 'You cannot demote your own superuser account here.' }, 400);

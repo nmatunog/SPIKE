@@ -10,6 +10,11 @@ import { RolePicker } from './RolePicker.jsx';
 
 const SUPERUSER_ROLE_OPTIONS = ['INTERN', 'FACULTY', 'MENTOR', 'ADMIN', 'SUPERUSER'];
 
+/** @param {string | null | undefined} role */
+function normalizePortalRole(role) {
+  return String(role ?? 'INTERN').trim().toUpperCase();
+}
+
 /** @param {{ currentUserId?: string, isSuperuser?: boolean }} props */
 export function AdminUserDirectory({ currentUserId = '', isSuperuser = false }) {
   const [users, setUsers] = useState([]);
@@ -202,6 +207,7 @@ export function AdminUserDirectory({ currentUserId = '', isSuperuser = false }) 
 
       {modal ? (
         <ActionModal
+          key={`${modal.type}-${modal.user.id}`}
           modal={modal}
           busy={busy}
           error={error}
@@ -223,10 +229,17 @@ function ActionModal({ modal, busy, error = '', roleOptions, onClose, onSubmit }
   const [reason, setReason] = useState('');
   const [name, setName] = useState(user.name ?? '');
   const [email, setEmail] = useState(user.email ?? '');
-  const [role, setRole] = useState(user.role ?? 'INTERN');
+  const [role, setRole] = useState(normalizePortalRole(user.role));
   const [confirmEmail, setConfirmEmail] = useState('');
   const reasonReady = reason.trim().length >= 3;
-  const roleChanged = type === 'promote' && role !== user.role;
+  const currentRole = normalizePortalRole(user.role);
+  const nextRole = normalizePortalRole(role);
+  const roleChanged = type === 'promote' && nextRole !== currentRole;
+  const confirmBlockedReason = !reasonReady
+    ? 'Add a reason (at least 3 characters).'
+    : type === 'promote' && !roleChanged
+      ? `Current role is already ${formatDbRoleLabel(currentRole)} — pick a different role.`
+      : '';
 
   const titles = {
     edit: 'Edit account',
@@ -255,9 +268,17 @@ function ActionModal({ modal, busy, error = '', roleOptions, onClose, onSubmit }
         ) : null}
 
         {type === 'promote' ? (
-          <div className="mb-3">
-            <p className="mb-2 text-sm font-medium text-slate-700">New role</p>
-            <RolePicker value={role} onChange={setRole} allowedValues={roleOptions} name="promote-role" />
+          <div className="mb-3 space-y-2">
+            <p className="text-sm text-slate-600">
+              Current role: <strong>{formatDbRoleLabel(currentRole)}</strong>
+            </p>
+            <p className="text-sm font-medium text-slate-700">New role</p>
+            <RolePicker value={nextRole} onChange={setRole} allowedValues={roleOptions} name="promote-role" />
+            {roleChanged ? (
+              <p className="text-xs font-medium text-emerald-800">
+                Will change to {formatDbRoleLabel(nextRole)}.
+              </p>
+            ) : null}
           </div>
         ) : null}
 
@@ -292,13 +313,8 @@ function ActionModal({ modal, busy, error = '', roleOptions, onClose, onSubmit }
             placeholder="Why is this action needed?"
           />
         </label>
-        {!reasonReady ? (
-          <p className="mt-1 text-xs text-amber-800">
-            Type at least 3 characters in Reason to enable Confirm.
-          </p>
-        ) : null}
-        {type === 'promote' && reasonReady && !roleChanged ? (
-          <p className="mt-1 text-xs text-amber-800">Select a different role than the current one.</p>
+        {!reasonReady || (type === 'promote' && !roleChanged) ? (
+          <p className="mt-1 text-xs text-amber-800">{confirmBlockedReason}</p>
         ) : null}
 
         {error ? (
@@ -324,9 +340,9 @@ function ActionModal({ modal, busy, error = '', roleOptions, onClose, onSubmit }
             onClick={() => {
               const base = { targetId: user.id, reason: reason.trim() };
               if (type === 'edit') {
-                onSubmit({ ...base, action: 'edit', name, email, role });
+                onSubmit({ ...base, action: 'edit', name, email, role: nextRole });
               } else if (type === 'promote') {
-                onSubmit({ ...base, action: 'promote', role });
+                onSubmit({ ...base, action: 'promote', role: nextRole });
               } else if (type === 'password_reset') {
                 onSubmit({ ...base, action: 'password_reset' });
               } else if (type === 'delete') {
@@ -334,7 +350,11 @@ function ActionModal({ modal, busy, error = '', roleOptions, onClose, onSubmit }
               }
             }}
           >
-            {busy ? 'Working…' : 'Confirm'}
+            {busy
+              ? 'Working…'
+              : type === 'promote' && roleChanged
+                ? `Change to ${formatDbRoleLabel(nextRole)}`
+                : 'Confirm'}
           </button>
         </div>
       </div>
