@@ -144,6 +144,9 @@ export function writeBuilderEntry(participantId, builderId, data, completed = fa
   }
   all[participantId].builders[builderId] = entry;
   writeAll(all);
+  void import('./day1BuilderSync.js').then((m) =>
+    m.syncBuilderEntryToSupabase(participantId, builderId, entry),
+  );
   return entry;
 }
 

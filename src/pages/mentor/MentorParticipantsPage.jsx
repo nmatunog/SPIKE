@@ -2,17 +2,25 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Sparkles, Users } from 'lucide-react';
 import { PageContainer, PageTitle } from '../../components/layout/PageContainer.jsx';
 import { getCoachSummaryForMentor } from '../../lib/ventureCoachService.js';
+import { useCohortHydration } from '../../hooks/useParticipantHydration.js';
 import { ROUTES } from '../../routes/paths.js';
 
 /**
  * @param {{ interns: Array<{ id: string, name: string, segment?: number, hours?: number, squad?: string }> }} props
  */
 export function MentorParticipantsPage({ interns = [] }) {
+  const { ready, version } = useCohortHydration(interns.map((i) => i.id));
+  void version;
+
   return (
     <PageContainer>
       <PageTitle subtitle="Review Venture Coach progress and leave coaching feedback.">
         Participants
       </PageTitle>
+
+      {!ready && interns.length > 0 ? (
+        <p className="mt-4 text-sm text-slate-500">Loading participant work from the server…</p>
+      ) : null}
 
       {interns.length === 0 ? (
         <p className="mt-6 rounded-xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm text-slate-600">
@@ -50,7 +58,7 @@ export function MentorParticipantsPage({ interns = [] }) {
 
                 <div className="mt-4 flex flex-wrap gap-2">
                   <Link
-                    to={`${ROUTES.mentorParticipant}/${intern.id}`}
+                    to={`${ROUTES.mentorVentureCoach}/${intern.id}`}
                     className="inline-flex items-center gap-1 rounded-lg bg-spike px-3 py-2 text-xs font-semibold text-white hover:bg-red-900"
                   >
                     <Sparkles size={14} /> Venture Coach

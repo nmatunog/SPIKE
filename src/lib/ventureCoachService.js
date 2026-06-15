@@ -1,9 +1,9 @@
 /**
  * AI Venture Coach™ — Blueprint sync and completion.
  */
-import { setSectionField } from './blueprintSectionStore.js';
+import { setSectionField, getSectionField } from './blueprintSectionStore.js';
 import { DAY1_ID } from './day1BuilderConstants.js';
-import { writeBuilderEntry } from './day1BuilderStorage.js';
+import { writeBuilderEntry, readBuilderEntry } from './day1BuilderStorage.js';
 import { markActivityCompleted } from './playbookProgress.js';
 import { COACH_SECTIONS } from './ventureCoachConstants.js';
 import { ventureDirectionLabel } from './ventureCoachEngine.js';
@@ -210,24 +210,72 @@ function syncCoachSectionToDay1(participantId, sectionId, text, extra) {
 /** @param {string} participantId */
 export function getCoachSummaryForMentor(participantId) {
   const profile = getCoachProfile(participantId);
-  if (!profile) return null;
   const progress = getCoachProgress(participantId);
-  const valuesData = profile.sections?.values?.data ?? {};
+  const valuesData = profile?.sections?.values?.data ?? {};
   const topThree = valuesData.topThree ?? [];
+
+  const ambitionBuilder = readBuilderEntry(participantId, 'ambition-builder')?.data ?? {};
+  const impactBuilder =
+    readBuilderEntry(participantId, 'impact-builder')?.data
+    ?? readBuilderEntry(participantId, 'purpose-builder')?.data
+    ?? {};
+  const valuesBuilder = readBuilderEntry(participantId, 'values-builder')?.data ?? {};
+  const futureSelfBuilder = readBuilderEntry(participantId, 'future-self')?.data ?? {};
+
+  const ambition =
+    profile?.sections?.ambition?.data?.finalText
+    || String(ambitionBuilder.ambitionStatement ?? '').trim()
+    || getSectionField(participantId, 'vision-purpose', 'vision_statement')
+    || '';
+
+  const impact =
+    (
+      profile?.sections?.impact?.data?.finalText
+      ?? profile?.sections?.purpose?.data?.finalText
+      ?? String(impactBuilder.impactStatement ?? impactBuilder.purposeStatement ?? '').trim()
+    )
+    || getSectionField(participantId, 'vision-purpose', 'mission_statement')
+    || '';
+
+  const tagline =
+    profile?.sections?.tagline?.data?.finalText
+    || String(readBuilderEntry(participantId, 'tagline-builder')?.data?.finalText ?? '').trim()
+    || getSectionField(participantId, 'vision-purpose', 'tagline')
+    || '';
+
+  const futureSelf =
+    profile?.sections?.['future-self']?.data?.finalText
+    || String(futureSelfBuilder.futureSelfNarrative ?? '').trim()
+    || getSectionField(participantId, 'vision-purpose', 'future_self_narrative')
+    || '';
+
+  const futureSelfSummary =
+    profile?.sections?.['future-self']?.data?.futureSelfSummary
+    || String(futureSelfBuilder.futureSelfSummary ?? '').trim()
+    || '';
+
+  const resolvedTopThree = topThree.length
+    ? topThree
+    : Array.isArray(valuesBuilder.topThree)
+      ? valuesBuilder.topThree
+      : [];
+
   return {
     progress,
-    ambition: profile.sections?.ambition?.data?.finalText ?? '',
-    impact:
-      profile.sections?.impact?.data?.finalText ?? profile.sections?.purpose?.data?.finalText ?? '',
+    ambition,
+    impact,
     /** @deprecated Use impact */
-    purpose:
-      profile.sections?.impact?.data?.finalText ?? profile.sections?.purpose?.data?.finalText ?? '',
-    topThreeValues: topThree,
-    valuesProfile: valuesData.valuesProfile ?? '',
-    tagline: profile.sections?.tagline?.data?.finalText ?? '',
-    futureSelfSummary: profile.sections?.['future-self']?.data?.futureSelfSummary ?? '',
-    futureSelf: profile.sections?.['future-self']?.data?.finalText ?? '',
-    ventureDirection: profile.sections?.['venture-direction']?.data?.track ?? '',
+    purpose: impact,
+    topThreeValues: resolvedTopThree,
+    valuesProfile:
+      valuesData.valuesProfile
+      || String(valuesBuilder.valuesProfile ?? '').trim()
+      || getSectionField(participantId, 'vision-purpose', 'my_values')
+      || '',
+    tagline,
+    futureSelfSummary,
+    futureSelf,
+    ventureDirection: profile?.sections?.['venture-direction']?.data?.track ?? '',
   };
 }
 

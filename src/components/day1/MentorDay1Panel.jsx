@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { saveMentorCoachingNote } from '../../lib/coachingService.js';
 import { getDay1MissionProgress, getAllDay1BuilderData } from '../../lib/day1BuilderService.js';
 import { getParticipantCharterPreview } from '../../lib/squadCharterService.js';
+import { useCohortHydration } from '../../hooks/useParticipantHydration.js';
 import { ROUTES } from '../../routes/paths.js';
 
 /**
@@ -14,6 +15,10 @@ import { ROUTES } from '../../routes/paths.js';
  * }} props
  */
 export function MentorDay1Panel({ interns, mentorId, showToast }) {
+  const ids = interns.map((i) => i.id);
+  const { ready, version } = useCohortHydration(ids);
+  void version;
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -22,6 +27,9 @@ export function MentorDay1Panel({ interns, mentorId, showToast }) {
           Open Playbook →
         </Link>
       </div>
+      {!ready ? (
+        <p className="text-sm text-slate-500">Loading participant work from the server…</p>
+      ) : null}
       {interns.map((intern) => (
         <MentorInternDay1Card
           key={intern.id}

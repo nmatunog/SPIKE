@@ -8,6 +8,7 @@ import { buildParticipantState } from '../lib/participantState.js';
 import { getBlueprintModule, isSharedBlueprintModule } from '../lib/blueprintModules.js';
 import { ROUTES } from '../routes/paths.js';
 import { hydrateVentureBlueprint } from '../lib/ventureBlueprintSync.js';
+import { backfillLocalBuildersToSupabase } from '../lib/day1BuilderSync.js';
 import { needsCareerTrackSelection } from '../lib/careerTrackService.js';
 import {
   BlueprintOverviewPanel,
@@ -45,6 +46,7 @@ export function VentureBlueprintShell({ user, onProgressRefresh }) {
   useEffect(() => {
     let cancelled = false;
     void hydrateVentureBlueprint(user.id).then(() => {
+      void backfillLocalBuildersToSupabase(user.id);
       if (!cancelled) setHydrateGeneration((g) => g + 1);
     });
     return () => {

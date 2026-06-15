@@ -4,12 +4,16 @@ import { getDay1MissionProgress, getAllDay1BuilderData } from '../../lib/day1Bui
 import { listAllSquadCharters } from '../../lib/squadCharterService.js';
 import { getFormationFacultyStats } from '../../lib/cohortFormationService.js';
 import { RESEARCH_MARKETS } from '../../lib/day1BuilderConstants.js';
+import { useCohortHydration } from '../../hooks/useParticipantHydration.js';
 import { ROUTES } from '../../routes/paths.js';
 
 /**
  * @param {{ interns: Array<{ id: string, name: string }> }} props
  */
 export function FacultyDay1Panel({ interns }) {
+  const { ready, version } = useCohortHydration(interns.map((i) => i.id));
+  void version;
+
   const charters = listAllSquadCharters();
   const formationStats = getFormationFacultyStats();
 
@@ -40,6 +44,9 @@ export function FacultyDay1Panel({ interns }) {
 
       <div className="spike-card overflow-x-auto">
         <h3 className="mb-3 text-sm font-semibold text-slate-900">Participant engagement — Day 1 Builders</h3>
+        {!ready ? (
+          <p className="mb-3 text-sm text-slate-500">Loading participant work from the server…</p>
+        ) : null}
         <table className="w-full min-w-[640px] text-left text-sm">
           <thead>
             <tr className="border-b border-slate-200 text-2xs uppercase tracking-wide text-slate-500">

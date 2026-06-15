@@ -129,6 +129,9 @@ export function patchCoachSection(participantId, sectionId, patch, options = {})
   };
   all[participantId] = user;
   writeAll(all);
+  void import('./day1BuilderSync.js').then((m) =>
+    m.syncCoachSectionToSupabase(participantId, sectionId, user.sections[sectionId]),
+  );
   return user.sections[sectionId];
 }
 
@@ -164,6 +167,9 @@ export function completeCoachSection(participantId, sectionId, badge) {
   }
   all[participantId] = user;
   writeAll(all);
+  void import('./day1BuilderSync.js').then((m) =>
+    m.syncCoachSectionToSupabase(participantId, sectionId, section),
+  );
   return section;
 }
 
@@ -267,6 +273,38 @@ function topEntries(map, limit) {
     .sort((a, b) => b[1] - a[1])
     .slice(0, limit)
     .map(([id, count]) => ({ id, count }));
+}
+
+/**
+ * Merge a remote coach section (from Supabase) into local storage when newer.
+ * @param {string} participantId
+ * @param {string} sectionId
+ * @param {Record<string, unknown>} remote
+ */
+export function mergeCoachSectionFromRemote(participantId, sectionId, remote) {
+  const all = readAll();
+  const user = ensureCoachUser(participantId);
+  const current = user.sections[sectionId] ?? emptySection();
+  const remoteUpdated = remote.updatedAt ?? remote.completedAt;
+  const localUpdated = current.updatedAt ?? current.completedAt;
+  if (localUpdated && remoteUpdated && new Date(String(remoteUpdated)) <= new Date(String(localUpdated))) {
+    return;
+  }
+
+  user.sections[sectionId] = {
+    ...current,
+    step: Number(remote.step ?? current.step ?? 0),
+    data: { ...current.data, ...(/** @type {Record<string, unknown>} */ (remote.data ?? {})) },
+    draftVersions: Array.isArray(remote.draftVersions) ? remote.draftVersions : current.draftVersions,
+    completedAt: remote.completedAt ? String(remote.completedAt) : current.completedAt,
+    firstCompletedAt: remote.firstCompletedAt
+      ? String(remote.firstCompletedAt)
+      : current.firstCompletedAt,
+    refining: Boolean(remote.refining),
+    updatedAt: remoteUpdated ? String(remoteUpdated) : current.updatedAt,
+  };
+  all[participantId] = user;
+  writeAll(all);
 }
 
 /** @param {string} participantId @param {string} sectionId */

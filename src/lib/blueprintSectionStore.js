@@ -85,7 +85,12 @@ export async function hydrateBlueprintSectionsFromSupabase(participantId) {
     const all = ensureUser(participantId);
     for (const row of rows) {
       const section = all[participantId][row.section_slug] ?? {};
-      if (!section[row.field_key]?.updatedAt) {
+      const localUpdated = section[row.field_key]?.updatedAt;
+      const remoteUpdated = row.updated_at;
+      if (
+        !localUpdated
+        || (remoteUpdated && new Date(remoteUpdated) >= new Date(localUpdated))
+      ) {
         section[row.field_key] = {
           value: row.field_value ?? '',
           sourceType: row.source_type,

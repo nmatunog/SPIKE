@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 import { PageContainer } from '../../components/layout/PageContainer.jsx';
 import {
   MentorCoachingHistory,
@@ -13,6 +13,7 @@ import { MentorWeeklyAssessmentPanel } from '../../components/mentor/MentorWeekl
 import { hydrateCoachingFromSupabase, listCoachingNotesForParticipant } from '../../lib/coachingService.js';
 import { hydrateWeeklyAssessmentFromSupabase } from '../../lib/weeklyAssessmentService.js';
 import { getCoachSummaryForMentor } from '../../lib/ventureCoachService.js';
+import { useParticipantHydration } from '../../hooks/useParticipantHydration.js';
 import { COACH_VALUE_CARDS, VENTURE_DIRECTION_CARDS } from '../../lib/ventureCoachConstants.js';
 import { labelFor } from '../../lib/ventureCoachEngine.js';
 import { ROUTES } from '../../routes/paths.js';
@@ -34,9 +35,11 @@ export function MentorVentureCoachPage({
 }) {
   const { participantId } = useParams();
   const intern = interns.find((i) => i.id === participantId);
+  const { ready: dataReady, version: dataVersion } = useParticipantHydration(participantId);
   const summary = participantId ? getCoachSummaryForMentor(participantId) : null;
   const [historyKey, setHistoryKey] = useState(0);
   const history = participantId ? listCoachingNotesForParticipant(participantId) : [];
+  void dataVersion;
 
   useEffect(() => {
     if (!participantId) return;
@@ -57,6 +60,17 @@ export function MentorVentureCoachPage({
     return (
       <PageContainer>
         <p className="text-sm text-slate-600">Select a participant to open their coaching card.</p>
+      </PageContainer>
+    );
+  }
+
+  if (!dataReady) {
+    return (
+      <PageContainer>
+        <div className="flex items-center gap-2 text-sm text-slate-600">
+          <Loader2 className="animate-spin text-spike" size={18} />
+          Loading participant work…
+        </div>
       </PageContainer>
     );
   }
