@@ -19,6 +19,7 @@ import {
 import { hasCompletedOnboardingSync } from './cohortOnboardingService.js';
 import { isSupabaseConfigured } from '../supabaseClient.js';
 import { isMockUserId } from './mockAuth.js';
+import { getParticipantSquadLabel } from './participantSquadCache.js';
 
 /**
  * @typedef {{
@@ -520,7 +521,19 @@ function syncSquadMembershipToBlueprint(participantId, squad, role) {
 /** @param {string} participantId */
 export function getParticipantSquad(participantId) {
   const squads = ensureFormationStore().squads;
-  return squads.find((s) => s.members?.some((m) => m.participantId === participantId)) ?? null;
+  const fromStore = squads.find((s) => s.members?.some((m) => m.participantId === participantId));
+  if (fromStore) return fromStore;
+
+  const label = getParticipantSquadLabel(participantId);
+  if (label) {
+    return {
+      id: `remote-${participantId}`,
+      name: label,
+      members: [{ participantId }],
+    };
+  }
+
+  return null;
 }
 
 /** @param {string} squadId */

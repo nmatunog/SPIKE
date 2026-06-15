@@ -16,9 +16,9 @@ export function InternSignInSyncBanner() {
         <Loader2 className="h-4 w-4 shrink-0 animate-spin text-sky-600" aria-hidden />
         <CloudUpload className="h-4 w-4 shrink-0 text-sky-600" aria-hidden />
         <p>
-          <span className="font-semibold">Uploading your Day 1 work to the cloud…</span>
+          <span className="font-semibold">Uploading your work to the cloud…</span>
           {' '}
-          Please keep this tab open for a moment so mentors and coaches can see your progress.
+          Please keep this tab open so mentors and coaches can see your Day 1 progress, surveys, and canvas.
         </p>
       </div>
     </div>

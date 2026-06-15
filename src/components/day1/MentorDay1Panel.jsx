@@ -16,7 +16,7 @@ import { ROUTES } from '../../routes/paths.js';
  */
 export function MentorDay1Panel({ interns, mentorId, showToast }) {
   const ids = interns.map((i) => i.id);
-  const { ready, version } = useCohortHydration(ids);
+  const { ready, version } = useCohortHydration(ids, { interns });
   void version;
 
   return (

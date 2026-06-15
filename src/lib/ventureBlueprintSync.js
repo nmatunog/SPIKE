@@ -41,7 +41,7 @@ export async function hydrateVentureBlueprint(participantId, opts = {}) {
   if (!participantId || String(participantId).startsWith('mock-')) return;
   await Promise.all([
     hydrateBlueprintSectionsFromSupabase(participantId, opts),
-    hydrateCanvasFromSupabase(participantId),
+    hydrateCanvasFromSupabase(participantId, opts),
     hydrateCanvasSummaryFromSupabase(participantId),
     hydrateLeadershipJournalFromSupabase(participantId),
   ]);

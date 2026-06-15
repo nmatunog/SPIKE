@@ -3,9 +3,12 @@
  * @typedef {import('../types/playbook').SurveyQuestion} SurveyQuestion
  */
 
-import { upsertSurveyResponse } from './supabase/surveyResponses.js';
+import { upsertSurveyResponse, fetchAllSurveyResponses } from './supabase/surveyResponses.js';
 
 const STORAGE_KEY = 'spike_survey_responses';
+
+/** @type {Set<string>} */
+const hydratedParticipants = new Set();
 
 function readAll() {
   try {
@@ -101,4 +104,67 @@ export function formatSurveyAnswersForDisplay(questions, answers) {
       return `${q.prompt}\n${display}`;
     })
     .join('\n\n');
+}
+
+/**
+ * Push local survey responses to Supabase (sign-in backfill).
+ * @param {string} participantId
+ */
+export async function backfillLocalSurveysToSupabase(participantId) {
+  if (!participantId || String(participantId).startsWith('mock-')) return;
+
+  const user = readAll()[participantId];
+  if (!user) return;
+
+  for (const [surveyId, entry] of Object.entries(user)) {
+    const answers = entry?.answers ?? {};
+    const payload = Object.entries(answers).map(([questionId, value]) => ({
+      questionId,
+      value,
+    }));
+    await upsertSurveyResponse(participantId, surveyId, entry?.dayId, payload);
+  }
+}
+
+/**
+ * Merge Supabase survey_responses into local cache for staff review.
+ * @param {string} participantId
+ * @param {{ force?: boolean, preferRemote?: boolean }} [opts]
+ */
+export async function hydrateSurveysFromSupabase(participantId, opts = {}) {
+  if (!participantId || String(participantId).startsWith('mock-')) return;
+  if (opts.force) hydratedParticipants.delete(participantId);
+  if (!opts.force && hydratedParticipants.has(participantId)) return;
+
+  const rows = await fetchAllSurveyResponses(participantId);
+  if (!rows.length) {
+    hydratedParticipants.add(participantId);
+    return;
+  }
+
+  const all = readAll();
+  const user = all[participantId] ?? {};
+
+  for (const row of rows) {
+    const surveyId = String(row.survey_id);
+    const local = user[surveyId];
+    if (!opts.preferRemote && local) continue;
+
+    /** @type {Record<string, unknown>} */
+    const answers = {};
+    for (const item of row.survey_response_answers ?? []) {
+      answers[item.question_id] = item.answer;
+    }
+
+    user[surveyId] = {
+      surveyId,
+      dayId: row.day_id ?? undefined,
+      answers,
+      submittedAt: row.submitted_at ?? new Date().toISOString(),
+    };
+  }
+
+  all[participantId] = user;
+  writeAll(all);
+  hydratedParticipants.add(participantId);
 }

@@ -47,6 +47,23 @@ export async function upsertSurveyResponse(userId, surveyId, dayId, answers) {
   return responseRow.id;
 }
 
+/** @param {string} userId */
+export async function fetchAllSurveyResponses(userId) {
+  if (!isSupabaseConfigured || !supabase || !userId) return [];
+
+  const { data, error } = await supabase
+    .from('survey_responses')
+    .select('survey_id, day_id, submitted_at, survey_response_answers(question_id, answer)')
+    .eq('user_id', userId);
+
+  if (error) {
+    console.warn('[surveyResponses] fetch all failed:', error.message);
+    return [];
+  }
+
+  return data ?? [];
+}
+
 /** @param {string} userId @param {string} surveyId */
 export async function fetchSurveyResponse(userId, surveyId) {
   if (!isSupabaseConfigured || !supabase || !userId) return null;

@@ -102,7 +102,26 @@ export function saveCanvasFieldDebounced(participantId, engineKey, fieldKey, val
 }
 
 /** @param {string} participantId */
-export async function hydrateCanvasFromSupabase(participantId) {
+export async function backfillLocalCanvasToSupabase(participantId) {
+  if (!participantId || String(participantId).startsWith('mock-')) return;
+
+  const user = readAll()[participantId];
+  if (!user) return;
+
+  for (const [engineKey, engine] of Object.entries(user)) {
+    for (const [fieldKey, value] of Object.entries(engine ?? {})) {
+      if (!String(value ?? '').trim()) continue;
+      try {
+        await upsertCanvasEntry(participantId, engineKey, fieldKey, String(value));
+      } catch {
+        /* best-effort */
+      }
+    }
+  }
+}
+
+/** @param {string} participantId @param {{ preferRemote?: boolean }} [opts] */
+export async function hydrateCanvasFromSupabase(participantId, opts = {}) {
   if (!participantId) return;
   try {
     const rows = await fetchCanvasEntries(participantId);
@@ -111,7 +130,10 @@ export async function hydrateCanvasFromSupabase(participantId) {
     const user = all[participantId] ?? {};
     for (const row of rows) {
       const engine = user[row.engine_key] ?? {};
-      if (!engine[row.field_key]) engine[row.field_key] = row.field_value ?? '';
+      const remoteVal = row.field_value ?? '';
+      if (opts.preferRemote || !String(engine[row.field_key] ?? '').trim()) {
+        engine[row.field_key] = remoteVal;
+      }
       user[row.engine_key] = engine;
     }
     all[participantId] = user;

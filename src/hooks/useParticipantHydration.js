@@ -36,13 +36,16 @@ export function useParticipantHydration(participantId, opts = {}) {
 /**
  * Hydrate an entire cohort for mentor / program-coach dashboards.
  * @param {string[]} participantIds
- * @param {{ enabled?: boolean }} [opts]
+ * @param {{ enabled?: boolean, interns?: Array<{ id: string, squad?: string }> }} [opts]
  */
 export function useCohortHydration(participantIds, opts = {}) {
   const enabled = opts.enabled !== false;
   const [ready, setReady] = useState(false);
   const [version, setVersion] = useState(0);
   const key = participantIds.join(',');
+  const internKey = (opts.interns ?? [])
+    .map((i) => `${i.id}:${i.squad ?? ''}`)
+    .join('|');
 
   useEffect(() => {
     if (!enabled || !participantIds.length) {
@@ -52,7 +55,7 @@ export function useCohortHydration(participantIds, opts = {}) {
     let cancelled = false;
     setReady(false);
     (async () => {
-      await hydrateCohortForStaffView(participantIds, { force: true });
+      await hydrateCohortForStaffView(participantIds, { force: true, interns: opts.interns });
       if (!cancelled) {
         setReady(true);
         setVersion((v) => v + 1);
@@ -61,7 +64,7 @@ export function useCohortHydration(participantIds, opts = {}) {
     return () => {
       cancelled = true;
     };
-  }, [key, enabled]);
+  }, [key, internKey, enabled]);
 
   return { ready, version };
 }

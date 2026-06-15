@@ -9,7 +9,7 @@ import { ROUTES } from '../../routes/paths.js';
  * @param {{ interns: Array<{ id: string, name: string, segment?: number, hours?: number, squad?: string }> }} props
  */
 export function MentorParticipantsPage({ interns = [] }) {
-  const { ready, version } = useCohortHydration(interns.map((i) => i.id));
+  const { ready, version } = useCohortHydration(interns.map((i) => i.id), { interns });
   void version;
 
   return (

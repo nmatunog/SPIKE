@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { BookOpen, CalendarDays, CheckCircle2, ClipboardCheck, Users } from 'lucide-react';
+import { BookOpen, CalendarDays, CheckCircle2, ClipboardCheck, Loader2, Users } from 'lucide-react';
 import {
   deriveFacultyAssessmentCoverage,
   deriveFacultyParticipantSubmissions,
@@ -7,11 +7,25 @@ import {
 } from '../../lib/facultyFrameworkService.js';
 import { WEEK1_FACULTY_DAY_META } from '../../lib/facultyWeek1Constants.js';
 import { ROUTES } from '../../routes/paths.js';
+import { useCohortHydration } from '../../hooks/useParticipantHydration.js';
 
 /**
  * @param {{ interns: Array<{ id: string, name: string, squad?: string }> }} props
  */
 export function FacultyDashboardPanels({ interns }) {
+  const cohortIds = interns.map((i) => i.id);
+  const { ready, version } = useCohortHydration(cohortIds, { enabled: interns.length > 0, interns });
+  void version;
+
+  if (interns.length > 0 && !ready) {
+    return (
+      <section className="spike-card flex items-center gap-2 text-sm text-slate-600">
+        <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+        Loading participant work from cloud…
+      </section>
+    );
+  }
+
   const submissions = deriveFacultyParticipantSubmissions(interns);
   const summary = deriveFacultySubmissionSummary(interns);
   const coverage = deriveFacultyAssessmentCoverage(interns);

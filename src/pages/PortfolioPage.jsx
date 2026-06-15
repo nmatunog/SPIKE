@@ -103,6 +103,7 @@ export function PortfolioPage({ hours = 0, interns = [] }) {
   const cohortIds = useMemo(() => interns.map((i) => i.id), [interns]);
   const { ready: cohortReady, version: cohortVersion } = useCohortHydration(cohortIds, {
     enabled: interns.length > 0,
+    interns,
   });
   const { ready: participantReady, version: participantVersion } = useParticipantHydration(
     participantId || null,

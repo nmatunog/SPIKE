@@ -11,7 +11,7 @@ import { ROUTES } from '../../routes/paths.js';
  * @param {{ interns: Array<{ id: string, name: string }> }} props
  */
 export function FacultyDay1Panel({ interns }) {
-  const { ready, version } = useCohortHydration(interns.map((i) => i.id));
+  const { ready, version } = useCohortHydration(interns.map((i) => i.id), { interns });
   void version;
 
   const charters = listAllSquadCharters();

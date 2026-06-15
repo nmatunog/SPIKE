@@ -4,6 +4,9 @@
 import { backfillLocalBuildersToSupabase } from './day1BuilderSync.js';
 import { readBlueprintStore } from './blueprintSectionStore.js';
 import { upsertBlueprintEntry } from './supabase/blueprintEntries.js';
+import { backfillLocalPlaybookToSupabase } from './playbookProgressSync.js';
+import { backfillLocalSurveysToSupabase } from './surveyService.js';
+import { backfillLocalCanvasToSupabase } from './canvasService.js';
 import { isMockUserId } from './mockAuth.js';
 
 /** 1 hour after sign-in — delayed full upload safety net */
@@ -32,7 +35,7 @@ async function syncLocalBlueprintEntriesToSupabase(participantId) {
 }
 
 /**
- * Upload all local Day 1 + blueprint data to Supabase (idempotent).
+ * Upload all local participant work to Supabase (idempotent).
  * @param {string} participantId
  */
 export async function syncInternLocalWorkToSupabase(participantId) {
@@ -41,6 +44,9 @@ export async function syncInternLocalWorkToSupabase(participantId) {
   await Promise.all([
     backfillLocalBuildersToSupabase(participantId),
     syncLocalBlueprintEntriesToSupabase(participantId),
+    backfillLocalPlaybookToSupabase(participantId),
+    backfillLocalSurveysToSupabase(participantId),
+    backfillLocalCanvasToSupabase(participantId),
   ]);
 }
 

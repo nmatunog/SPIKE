@@ -7,6 +7,7 @@ import { WEEK1_DAY_META, WEEK1_MENTOR_OUTCOMES } from './mentorWeek1Constants.js
 import { countSubmittedSurveys } from './surveyService.js';
 import { getCoachSummaryForMentor, getCoachProgress } from './ventureCoachService.js';
 import { ensureFormationStore } from './cohortFormationStorage.js';
+import { hasAssignedSquad } from './participantSquadCache.js';
 
 /** @typedef {{ id: string, label: string, done: boolean, href?: string }} Week1Deliverable */
 
@@ -82,6 +83,7 @@ export function getWeek1RequiredOutputs(participantId) {
 
 /** @param {string} participantId */
 function hasSquadMembership(participantId) {
+  if (hasAssignedSquad(participantId)) return true;
   for (const squad of ensureFormationStore().squads) {
     const inSquad = (squad.members ?? []).some((m) => m.participantId === participantId);
     if (inSquad && squad.name) return true;

@@ -55,11 +55,10 @@ export function FacultyCohortSyncPanel({ interns }) {
           <CloudUpload className="mt-0.5 shrink-0 text-sky-700" size={20} />
         )}
         <div>
-          <h3 className="text-sm font-semibold text-slate-900">Day 1 cloud sync (production)</h3>
+          <h3 className="text-sm font-semibold text-slate-900">Cloud sync (production)</h3>
           <p className="mt-1 text-sm text-slate-700">
-            {status.synced}/{status.total} participants have work in Supabase (
-            <code className="text-xs">day1_builder_progress</code> /{' '}
-            <code className="text-xs">venture_blueprint_entries</code>).
+            {status.synced}/{status.total} participants have work in Supabase (Day 1 builders, blueprint,
+            playbook, surveys, canvas).
           </p>
           {noneSynced ? (
             <p className="mt-2 text-sm text-amber-900">
