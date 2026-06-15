@@ -8,16 +8,16 @@ import { ROUTES } from '../../routes/paths.js';
  */
 export function CoachProgressSidebar({ progress, activeSection }) {
   return (
-    <aside className="spike-card space-y-4 p-4">
+    <aside className="spike-card space-y-4 p-4 lg:sticky lg:top-24">
       <div>
         <p className="spike-label">Venture Blueprint Completion</p>
-        <p className="text-3xl font-bold text-slate-900">{progress.percent}%</p>
+        <p className="text-2xl font-bold text-slate-900 lg:text-3xl">{progress.percent}%</p>
         <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-100">
           <div className="h-full rounded-full bg-spike transition-all" style={{ width: `${progress.percent}%` }} />
         </div>
       </div>
 
-      <ul className="space-y-1">
+      <ul className="hidden space-y-1 lg:block">
         {COACH_SECTIONS.map((section) => {
           const done = progress.sections.find((s) => s.id === section.id)?.completed;
           const active = activeSection === section.id;

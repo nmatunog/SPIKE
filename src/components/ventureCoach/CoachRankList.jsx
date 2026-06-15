@@ -29,13 +29,13 @@ export function CoachRankList({ items, options, onChange, title = 'Use arrows to
             <span className="text-sm font-semibold text-slate-800">
               {idx + 1}. {labelFor(id, options)}
             </span>
-            <div className="flex gap-1">
+            <div className="flex shrink-0 gap-1.5">
               <button
                 type="button"
                 disabled={idx === 0}
                 aria-label="Move up"
                 onClick={() => move(idx, -1)}
-                className="rounded-lg border border-slate-200 px-2 py-1 text-xs font-semibold text-slate-600 hover:border-spike/40 disabled:opacity-30"
+                className="inline-flex min-h-[44px] min-w-[44px] touch-manipulation items-center justify-center rounded-xl border border-slate-200 text-base font-semibold text-slate-600 hover:border-spike/40 disabled:opacity-30"
               >
                 ↑
               </button>
@@ -44,7 +44,7 @@ export function CoachRankList({ items, options, onChange, title = 'Use arrows to
                 disabled={idx === items.length - 1}
                 aria-label="Move down"
                 onClick={() => move(idx, 1)}
-                className="rounded-lg border border-slate-200 px-2 py-1 text-xs font-semibold text-slate-600 hover:border-spike/40 disabled:opacity-30"
+                className="inline-flex min-h-[44px] min-w-[44px] touch-manipulation items-center justify-center rounded-xl border border-slate-200 text-base font-semibold text-slate-600 hover:border-spike/40 disabled:opacity-30"
               >
                 ↓
               </button>

@@ -197,7 +197,7 @@ export function Day1BuildersShell({
             />
           ) : null}
 
-          <div className="mt-6 flex justify-between gap-3">
+          <div className="sticky bottom-[var(--spike-bottom-nav-offset,calc(4.75rem+env(safe-area-inset-bottom,0px)))] z-30 mt-6 flex justify-between gap-3 border-t border-slate-200/90 bg-slate-50/95 py-3 backdrop-blur lg:static lg:border-0 lg:bg-transparent lg:py-0 lg:backdrop-blur-none">
             <button
               type="button"
               disabled={activeIndex === 0}

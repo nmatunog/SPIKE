@@ -49,7 +49,8 @@
   }
 
   .spike-app-shell--compact-nav {
-    padding-bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px));
+    --spike-bottom-nav-offset: calc(5.25rem + env(safe-area-inset-bottom, 0px));
+    padding-bottom: var(--spike-bottom-nav-offset);
   }
 
   .spike-app-shell--desktop-nav {

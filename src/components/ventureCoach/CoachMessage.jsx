@@ -102,7 +102,7 @@ export function CoachCardGrid({ options, selected, onToggle, maxSelections, exac
             type="button"
             disabled={atLimit}
             onClick={() => onToggle(opt.id)}
-            className={`rounded-xl border-2 px-3 py-3 text-left text-sm font-medium transition hover:shadow-md disabled:cursor-not-allowed disabled:opacity-45 ${
+            className={`min-h-[48px] touch-manipulation rounded-xl border-2 px-3 py-3 text-left text-sm font-medium transition hover:shadow-md disabled:cursor-not-allowed disabled:opacity-45 ${
               active
                 ? 'border-spike bg-spike-muted text-spike shadow-sm ring-2 ring-spike/15'
                 : 'border-slate-200 bg-white text-slate-800 hover:border-spike/30'

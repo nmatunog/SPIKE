@@ -1,3 +1,5 @@
+import { useCompactNav } from '../../hooks/useCompactNav.js';
+
 /**
  * @param {{
  *   onBack?: () => void,
@@ -6,6 +8,7 @@
  *   forwardLabel?: string,
  *   backDisabled?: boolean,
  *   forwardDisabled?: boolean,
+ *   sticky?: boolean,
  * }} props
  */
 export function CoachStepNav({
@@ -15,9 +18,19 @@ export function CoachStepNav({
   forwardLabel = 'Continue',
   backDisabled = false,
   forwardDisabled = false,
+  sticky = true,
 }) {
+  const compactNav = useCompactNav();
+  const pinActions = sticky && compactNav && (onBack || onForward);
+
   return (
-    <div className="flex flex-wrap items-center gap-3">
+    <div
+      className={
+        pinActions
+          ? 'sticky bottom-[var(--spike-bottom-nav-offset,calc(4.75rem+env(safe-area-inset-bottom,0px)))] z-30 -mx-1 flex flex-wrap items-center gap-3 border-t border-slate-200/90 bg-slate-50/95 px-1 py-3 backdrop-blur supports-[backdrop-filter]:bg-slate-50/90 sm:-mx-2 sm:px-2 lg:static lg:z-auto lg:mx-0 lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none'
+          : 'flex flex-wrap items-center gap-3'
+      }
+    >
       {onBack ? (
         <button type="button" onClick={onBack} disabled={backDisabled} className="spike-btn-secondary disabled:opacity-50">
           {backLabel}
@@ -28,7 +41,7 @@ export function CoachStepNav({
           type="button"
           onClick={onForward}
           disabled={forwardDisabled}
-          className="spike-btn-primary disabled:opacity-50"
+          className="spike-btn-primary min-w-[9rem] flex-1 disabled:opacity-50 sm:flex-none"
         >
           {forwardLabel}
         </button>

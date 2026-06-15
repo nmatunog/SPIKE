@@ -68,9 +68,13 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
   const stored = getCoachSection(participantId, 'ambition');
   const [step, setStep] = useState(stored.data.step ?? 1);
   const [selected, setSelected] = useState(/** @type {string[]} */ (stored.data.selectedMotivators ?? []));
-  const [ranked, setRanked] = useState(
-    /** @type {string[]} */ (stored.data.rankedMotivators ?? stored.data.selectedMotivators ?? []),
-  );
+  const [ranked, setRanked] = useState(() => {
+    const fromRank = /** @type {string[]} */ (stored.data.rankedMotivators ?? []);
+    if (fromRank.length === AMBITION_EXACT) return fromRank;
+    const fromSelected = /** @type {string[]} */ (stored.data.selectedMotivators ?? []);
+    if (fromSelected.length === AMBITION_EXACT) return fromSelected;
+    return fromRank.length ? fromRank : fromSelected;
+  });
   const [roleArchetypeId, setRoleArchetypeId] = useState(
     String(stored.data.roleArchetypeId ?? AMBITION_ROLE_ARCHETYPES[0].id),
   );
@@ -320,7 +324,8 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
         </>
       ) : null}
 
-      {step === 4 && draft ? (
+      {step === 4 ? (
+        draft ? (
         <>
           <CoachSectionHeader
             step={4}
@@ -372,6 +377,22 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
           />
           <CoachStepNav backLabel="Back to role" onBack={() => setStep(3)} />
         </>
+        ) : (
+          <>
+            <CoachSectionHeader
+              step={4}
+              total={AMBITION_STEPS}
+              title="Compose and finalize"
+              description="Your draft did not load. Tap below to generate your ambition statement from your choices."
+            />
+            <CoachStepNav
+              backLabel="Back to role"
+              forwardLabel="Compose my ambition statement"
+              onBack={() => setStep(3)}
+              onForward={beginComposeStep}
+            />
+          </>
+        )
       ) : null}
     </div>
   );

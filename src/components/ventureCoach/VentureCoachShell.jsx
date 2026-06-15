@@ -148,8 +148,7 @@ export function VentureCoachShell({ participantId, section }) {
       </Link>
 
       <div className="grid w-full min-w-0 grid-cols-1 gap-6 lg:grid-cols-[minmax(220px,260px)_minmax(0,1fr)]">
-        <CoachProgressSidebar progress={progress} activeSection={section} />
-        <div className="min-w-0 w-full space-y-4">
+        <div className="order-2 min-w-0 w-full space-y-4 lg:order-none">
           <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <p className="spike-label text-spike">AI Venture Coach™</p>
@@ -164,6 +163,9 @@ export function VentureCoachShell({ participantId, section }) {
           </header>
           <CoachSectionNav activeSection={section} />
           {renderSection()}
+        </div>
+        <div className="order-1 lg:order-none">
+          <CoachProgressSidebar progress={progress} activeSection={section} />
         </div>
       </div>
     </div>

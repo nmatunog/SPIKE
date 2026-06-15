@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useCompactNav } from '../../hooks/useCompactNav.js';
 import {
   countWords,
   evaluateStatement,
@@ -50,6 +51,7 @@ export function CoachComposerPanel({
   uniquenessWarning = null,
   rows = 4,
 }) {
+  const compactNav = useCompactNav();
   const [refineNote, setRefineNote] = useState('');
   const [undoDraft, setUndoDraft] = useState(null);
   const evaluation = evaluateStatement(draft, wordLimits);
@@ -209,14 +211,22 @@ export function CoachComposerPanel({
         </div>
       </div>
 
-      <button
-        type="button"
-        disabled={acceptDisabled}
-        onClick={onAccept}
-        className="spike-btn-primary w-full disabled:opacity-50 sm:w-auto"
+      <div
+        className={
+          compactNav
+            ? 'sticky bottom-[var(--spike-bottom-nav-offset,calc(4.75rem+env(safe-area-inset-bottom,0px)))] z-30 -mx-1 border-t border-slate-200/90 bg-white/95 px-1 py-3 backdrop-blur sm:-mx-2 sm:px-2 lg:static lg:mx-0 lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none'
+            : ''
+        }
       >
-        {acceptLabel}
-      </button>
+        <button
+          type="button"
+          disabled={acceptDisabled}
+          onClick={onAccept}
+          className="spike-btn-primary w-full disabled:opacity-50 sm:w-auto"
+        >
+          {acceptLabel}
+        </button>
+      </div>
     </section>
   );
 }
