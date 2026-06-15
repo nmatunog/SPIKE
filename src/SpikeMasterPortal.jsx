@@ -79,6 +79,7 @@ import { isMockUser, shouldUseSupabaseForUser } from './lib/mockAuth.js';
 import { ForcePasswordChangeGate } from './components/ForcePasswordChangeGate.jsx';
 import { DailyActivationCodeCard } from './components/dashboard/DailyActivationCodeCard.jsx';
 import { validateInternActivationCode } from './lib/activationCodeService.js';
+import { registerInternViaApi, isInternSignupApiUnavailable } from './lib/internSignupService.js';
 import { needsStaffBootstrap } from './lib/staffRegistrationCodeService.js';
 import {
   bootstrapSuperuserAccount,
@@ -621,6 +622,17 @@ const SpikeMasterPortal = () => {
       if (!usingSupabaseAuth || !supabase) {
         throw new Error('Signup is only available in Supabase mode.');
       }
+
+      try {
+        await registerInternViaApi({ name, email, password, university, squad, code });
+        showToast('Account created. Sign in with your email and password — no confirmation email needed.', 'success');
+        return;
+      } catch (apiErr) {
+        if (!isInternSignupApiUnavailable(apiErr)) {
+          throw new Error(formatAuthEmailError(apiErr));
+        }
+      }
+
       await validateInternActivationCode(code);
 
       const { data, error } = await supabase.auth.signUp({
@@ -628,7 +640,7 @@ const SpikeMasterPortal = () => {
         password,
         options: { data: { name, must_change_password: false } },
       });
-      if (error) throw error;
+      if (error) throw new Error(formatAuthEmailError(error));
 
       if (data.user?.id) {
         await supabase
@@ -647,7 +659,12 @@ const SpikeMasterPortal = () => {
         }
       }
 
-      showToast('Account created. You can now sign in.', 'success');
+      showToast(
+        data.session
+          ? 'Account created. You are signed in.'
+          : 'Account created. Confirm your email if required, then sign in.',
+        'success',
+      );
     },
     [usingSupabaseAuth, showToast],
   );

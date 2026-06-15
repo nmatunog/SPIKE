@@ -74,6 +74,9 @@ export const InternSignupPanel = memo(function InternSignupPanel({ onSignup }) {
           <input value={university} onChange={(e) => setUniversity(e.target.value)} className={fieldClass} placeholder="University (optional)" />
           <input value={squad} onChange={(e) => setSquad(e.target.value)} className={fieldClass} placeholder="Squad (optional)" />
           <input required value={code} onChange={(e) => setCode(e.target.value)} className={`${fieldClass} uppercase`} placeholder="Daily activation code" />
+          <p className="text-xs text-slate-500">
+            No confirmation email — sign in right away after creating your account.
+          </p>
           <button type="submit" disabled={submitting} className="spike-btn-primary w-full">
             {submitting ? 'Creating account…' : 'Sign up as intern'}
           </button>
