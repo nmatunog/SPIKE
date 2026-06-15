@@ -1,10 +1,12 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Briefcase, ChevronRight, Users } from 'lucide-react';
+import { Briefcase, ChevronRight, LayoutGrid, Users } from 'lucide-react';
 import { PageContainer, PageTitle } from '../components/layout/PageContainer.jsx';
 import { getPortfolioSections } from '../lib/playbookSeeds.js';
 import { listPortfolioArtifacts } from '../lib/blueprintArtifacts.js';
 import { ArtifactDraftCard } from '../components/blueprint/ArtifactDraftCard.jsx';
+import { DreamBoardCollage } from '../components/venturePortfolio/DreamBoardCollage.jsx';
+import { DreamBoardSlideCollage } from '../components/venturePortfolio/DreamBoardSlideCollage.jsx';
 import { BLUEPRINT_LINKS, ROUTES, mentorParticipantReviewHref } from '../routes/paths.js';
 import { useCohortHydration, useParticipantHydration } from '../hooks/useParticipantHydration.js';
 import { generateVenturePortfolio } from '../services/portfolioGenerator.js';
@@ -124,8 +126,8 @@ export function PortfolioPage({ hours = 0, interns = [] }) {
       <div className="mb-6 sm:mb-8">
         <PageTitle>Venture Portfolio</PageTitle>
         <p className="mt-1 text-sm text-gray-600 sm:text-base">
-          Review compiled participant portfolios. Day 1 identity work appears under{' '}
-          <strong>Identity &amp; Purpose</strong> after you select a participant. Interns edit in{' '}
+          Review compiled participant portfolios. Select someone to see their dream board collage, identity
+          work, and playbook outputs. Interns edit in{' '}
           <Link to={ROUTES.ventureBlueprint} className="font-bold text-[#8B0000] hover:underline">
             Venture Blueprint
           </Link>
@@ -213,6 +215,59 @@ export function PortfolioPage({ hours = 0, interns = [] }) {
 
       {participantId && !participantReady ? (
         <p className="mb-4 text-sm text-slate-500">Loading {selectedIntern?.name ?? 'participant'} portfolio…</p>
+      ) : null}
+
+      {participantId && participantReady && portfolio ? (
+        <section className="mb-6 spike-card space-y-4">
+          <div className="flex flex-wrap items-start justify-between gap-2">
+            <div>
+              <p className="spike-label text-spike">Dream Board</p>
+              <h2 className="text-lg font-bold text-slate-900">
+                {selectedIntern?.name ?? 'Participant'}&apos;s vision collage
+              </h2>
+              <p className="mt-1 text-sm text-slate-600">
+                Lifestyle, career, family, business, and impact dreams from Day 1 Dream Board Studio.
+              </p>
+            </div>
+            <span
+              className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-bold ${
+                portfolio.dreamBoard.completed
+                  ? 'bg-emerald-100 text-emerald-800'
+                  : 'bg-slate-100 text-slate-600'
+              }`}
+            >
+              {portfolio.dreamBoard.completed
+                ? `${portfolio.dreamBoard.assets.length} card${portfolio.dreamBoard.assets.length === 1 ? '' : 's'}`
+                : 'In progress'}
+            </span>
+          </div>
+
+          <DreamBoardSlideCollage
+            assets={portfolio.dreamBoard.assets}
+            title={`${portfolio.cover.participantName}'s Dream Board`}
+          />
+
+          {portfolio.dreamBoard.assets.length > 0 ? (
+            <details className="rounded-xl border border-slate-200 bg-slate-50/80 p-4">
+              <summary className="inline-flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-spike marker:content-none">
+                <LayoutGrid size={16} />
+                View all cards with captions
+              </summary>
+              <div className="mt-4">
+                <DreamBoardCollage
+                  assets={portfolio.dreamBoard.assets}
+                  showMeta
+                  emptyMessage="No dream cards with photos or captions yet."
+                />
+              </div>
+            </details>
+          ) : (
+            <p className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+              This participant has not published dream board cards yet. Ask them to complete Dream Board Studio
+              in Venture Blueprint and sign in so their work syncs to the cloud.
+            </p>
+          )}
+        </section>
       ) : null}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
