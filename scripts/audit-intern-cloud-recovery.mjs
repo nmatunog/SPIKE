@@ -6,7 +6,10 @@
  *   set -a && source .env && set +a
  *   SUPABASE_SERVICE_ROLE_KEY=eyJ... node scripts/audit-intern-cloud-recovery.mjs
  *
- * Optional: --json for machine-readable output
+ * Optional:
+ *   --json                         machine-readable output
+ *   --emails=a@x.com,b@y.com       only audit these accounts
+ *   node scripts/audit-intern-cloud-recovery.mjs a@x.com b@y.com
  */
 import { createClient } from '@supabase/supabase-js';
 import { readFileSync, existsSync } from 'node:fs';
@@ -15,6 +18,27 @@ import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const jsonOut = process.argv.includes('--json');
+
+function parseEmailFilter(argv) {
+  /** @type {Set<string>} */
+  const emails = new Set();
+  for (const arg of argv) {
+    if (arg === '--json') continue;
+    if (arg.startsWith('--emails=')) {
+      for (const part of arg.slice('--emails='.length).split(/[,;\s]+/)) {
+        const email = part.trim().toLowerCase();
+        if (email.includes('@')) emails.add(email);
+      }
+      continue;
+    }
+    if (arg.startsWith('--')) continue;
+    const email = arg.trim().toLowerCase();
+    if (email.includes('@')) emails.add(email);
+  }
+  return emails;
+}
+
+const emailFilter = parseEmailFilter(process.argv.slice(2));
 
 function loadEnvFile() {
   const envPath = resolve(root, '.env');
@@ -157,7 +181,22 @@ async function assessParticipant(userId) {
 }
 
 async function main() {
-  const interns = await fetchInternRoster();
+  const roster = await fetchInternRoster();
+  let interns = roster;
+
+  if (emailFilter.size > 0) {
+    interns = roster.filter((intern) => emailFilter.has(String(intern.email ?? '').toLowerCase()));
+    const found = new Set(interns.map((i) => String(i.email).toLowerCase()));
+    const missing = [...emailFilter].filter((email) => !found.has(email));
+    if (missing.length) {
+      console.warn(`\nWarning: no INTERN profile found for: ${missing.join(', ')}\n`);
+    }
+    if (!interns.length) {
+      console.error('No matching intern accounts in Supabase for the emails provided.');
+      process.exit(1);
+    }
+  }
+
   const results = [];
 
   for (const intern of interns) {
@@ -191,7 +230,12 @@ async function main() {
     return;
   }
 
-  console.log(`\nSPIKE intern cloud recovery audit — ${summary.auditedAt}\n`);
+  console.log(`\nSPIKE intern cloud recovery audit — ${summary.auditedAt}`);
+  if (emailFilter.size > 0) {
+    console.log(`Filtered to ${emailFilter.size} email(s) — ${results.length} matched in Supabase\n`);
+  } else {
+    console.log('');
+  }
   console.log(`Total interns:        ${summary.totalInterns}`);
   console.log(`Recoverable in cloud: ${summary.recoverableInCloud} (substantive Day 1 / blueprint / playbook data)`);
   console.log(`Partial cloud only:   ${summary.partialCloud}`);
@@ -201,7 +245,7 @@ async function main() {
     console.log('── Recoverable (ask intern to sign in once; app restores from cloud) ──');
     for (const row of recoverable) {
       console.log(
-        `  ${row.name}${row.squad ? ` (${row.squad})` : ''} — score ${row.cloud.substantiveScore}`
+        `  ${row.name} <${row.email}>${row.squad ? ` (${row.squad})` : ''} — score ${row.cloud.substantiveScore}`
         + ` | builders ${row.cloud.substantiveBuilders}`
         + ` | blueprint ${row.cloud.substantiveBlueprint}`
         + ` | playbook ${row.cloud.substantivePlaybook}`,
@@ -213,7 +257,7 @@ async function main() {
   if (partial.length) {
     console.log('── Partial cloud (may be incomplete) ──');
     for (const row of partial) {
-      console.log(`  ${row.name} — score ${row.cloud.substantiveScore}`);
+      console.log(`  ${row.name} <${row.email}> — score ${row.cloud.substantiveScore}`);
     }
     console.log('');
   }
@@ -221,7 +265,7 @@ async function main() {
   if (empty.length) {
     console.log('── No cloud backup (work may only exist on device, or never uploaded) ──');
     for (const row of empty) {
-      console.log(`  ${row.name}${row.squad ? ` (${row.squad})` : ''}`);
+      console.log(`  ${row.name} <${row.email}>${row.squad ? ` (${row.squad})` : ''}`);
     }
     console.log('');
   }
