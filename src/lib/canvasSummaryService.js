@@ -19,6 +19,20 @@ export function emptyCanvasSummary() {
     year2_goal: '',
     year3_goal: '',
     updated_at: null,
+    canvas_schema_version: 'v2',
+    migrated_at: null,
+    unified_venture_proposition: '',
+    uvp_is_auto: true,
+    roadmap_12mo: '',
+    roadmap_24mo: '',
+    roadmap_36mo: '',
+    success_narrative: '',
+    success_revenue: '',
+    success_customers: '',
+    success_families_protected: '',
+    success_jobs: '',
+    success_annual_profit: '',
+    scorecard_manual_overrides: {},
   };
 }
 
@@ -65,6 +79,20 @@ export function saveCanvasSummary(participantId, patch) {
     year1_goal: next.year1_goal,
     year2_goal: next.year2_goal,
     year3_goal: next.year3_goal,
+    canvas_schema_version: next.canvas_schema_version,
+    migrated_at: next.migrated_at,
+    unified_venture_proposition: next.unified_venture_proposition,
+    uvp_is_auto: next.uvp_is_auto,
+    roadmap_12mo: next.roadmap_12mo,
+    roadmap_24mo: next.roadmap_24mo,
+    roadmap_36mo: next.roadmap_36mo,
+    success_narrative: next.success_narrative,
+    success_revenue: next.success_revenue,
+    success_customers: next.success_customers,
+    success_families_protected: next.success_families_protected,
+    success_jobs: next.success_jobs,
+    success_annual_profit: next.success_annual_profit,
+    scorecard_manual_overrides: next.scorecard_manual_overrides,
   });
 }
 
@@ -141,6 +169,20 @@ export async function hydrateCanvasSummaryFromSupabase(participantId) {
       year2_goal: row.year2_goal ?? '',
       year3_goal: row.year3_goal ?? '',
       updated_at: row.updated_at ?? null,
+      canvas_schema_version: row.canvas_schema_version ?? 'v1',
+      migrated_at: row.migrated_at ?? null,
+      unified_venture_proposition: row.unified_venture_proposition ?? '',
+      uvp_is_auto: row.uvp_is_auto ?? true,
+      roadmap_12mo: row.roadmap_12mo ?? '',
+      roadmap_24mo: row.roadmap_24mo ?? '',
+      roadmap_36mo: row.roadmap_36mo ?? '',
+      success_narrative: row.success_narrative ?? '',
+      success_revenue: row.success_revenue ?? '',
+      success_customers: row.success_customers ?? '',
+      success_families_protected: row.success_families_protected ?? '',
+      success_jobs: row.success_jobs ?? '',
+      success_annual_profit: row.success_annual_profit ?? '',
+      scorecard_manual_overrides: row.scorecard_manual_overrides ?? {},
     };
     writeAll(all);
   } catch {

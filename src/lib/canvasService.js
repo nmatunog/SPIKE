@@ -49,11 +49,11 @@ export function saveCanvasField(participantId, engineKey, fieldKey, value) {
 
   void upsertCanvasEntry(participantId, engineKey, fieldKey, value);
 
-  // Mirror talent/leadership fields into recruitment/leadership sections
-  if (engineKey === 'talent_growth') {
+  // Mirror talent/leadership fields into recruitment/leadership sections (v1 + agency v2)
+  if (engineKey === 'talent_growth' || engineKey === 'agency_talent') {
     setSectionField(participantId, 'recruitment-growth', fieldKey, value, { sourceType: 'canvas' });
   }
-  if (engineKey === 'leadership_growth') {
+  if (engineKey === 'leadership_growth' || engineKey === 'agency_leadership') {
     setSectionField(participantId, 'leadership-growth', fieldKey, value, { sourceType: 'canvas' });
   }
 

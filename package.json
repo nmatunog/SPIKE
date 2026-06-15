@@ -23,6 +23,7 @@
     "simulate:week1": "node scripts/simulate-week1.mjs",
     "smoke:week1-content": "node scripts/smoke-week1-content.mjs",
     "smoke:canvas-pptx": "node scripts/smoke-canvas-pptx.mjs",
+    "smoke:fec-canvas-schema": "node scripts/smoke-fec-canvas-schema.mjs",
     "smoke:coach-compose": "node scripts/smoke-coach-compose.mjs",
     "smoke:mentor-week1": "node scripts/smoke-mentor-week1.mjs",
     "smoke:faculty-week1": "node scripts/smoke-faculty-week1.mjs",

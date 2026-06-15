@@ -24,7 +24,22 @@ const EXECUTIVE_MAX_CHARS = 300;
  *   year1_goal: string,
  *   year2_goal: string,
  *   year3_goal: string,
+ *   year3_goal: string,
  *   updated_at: string | null,
+ *   canvas_schema_version?: 'v1' | 'v2',
+ *   migrated_at?: string | null,
+ *   unified_venture_proposition?: string,
+ *   uvp_is_auto?: boolean,
+ *   roadmap_12mo?: string,
+ *   roadmap_24mo?: string,
+ *   roadmap_36mo?: string,
+ *   success_narrative?: string,
+ *   success_revenue?: string,
+ *   success_customers?: string,
+ *   success_families_protected?: string,
+ *   success_jobs?: string,
+ *   success_annual_profit?: string,
+ *   scorecard_manual_overrides?: Record<string, boolean>,
  * }} CanvasSummaryRecord */
 
 export const ACS_CAREER_LADDER = [

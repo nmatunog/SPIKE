@@ -22,6 +22,7 @@ import {
 } from './blueprintSectionStore.js';
 import { hydrateCanvasFromSupabase } from './canvasService.js';
 import { hydrateCanvasSummaryFromSupabase } from './canvasSummaryService.js';
+import { prepareFecCanvas } from './fecCanvasService.js';
 import { hydrateLeadershipJournalFromSupabase } from './leadershipJournalService.js';
 
 export {
@@ -43,6 +44,7 @@ export async function hydrateVentureBlueprint(participantId) {
     hydrateCanvasSummaryFromSupabase(participantId),
     hydrateLeadershipJournalFromSupabase(participantId),
   ]);
+  prepareFecCanvas(participantId);
 }
 
 /**

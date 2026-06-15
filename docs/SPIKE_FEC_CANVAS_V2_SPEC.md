@@ -195,7 +195,7 @@ Existing participant data preserved; `canvas_schema_version: 'v2'` after migrati
 
 | Phase | Scope | Gate |
 |-------|--------|------|
-| **1** | Schema, constants, migration script | After explicit go on Phase 1 |
+| **1** | Schema, constants, migration script | **Complete** (2026-06-15) |
 | **2** | Editor UX (center-first + flow + extensions) | Staging review |
 | **3** | FEC board + PNG/PDF/PPT exports | Export review |
 | **4** | Day 4 curriculum + coach decks | Content review |
