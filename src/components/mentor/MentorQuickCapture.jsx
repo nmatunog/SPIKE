@@ -1,6 +1,7 @@
 import { Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { getMentorDayTemplates, RATING_HINTS } from '../../lib/mentorEncodingTemplates.js';
+import { RATING_HINTS } from '../../lib/mentorEncodingTemplates.js';
+import { useMentorDayTemplates } from '../../hooks/useMentorDayTemplates.js';
 import {
   getMentorEncoding,
   hydrateMentorEncodingFromSupabase,
@@ -356,7 +357,7 @@ export function MentorParticipantEncodingPanel({
   onSaved,
 }) {
   const [day, setDay] = useState(1);
-  const { observation } = useMemo(() => getMentorDayTemplates(day), [day]);
+  const { observation, loading } = useMentorDayTemplates(day);
 
   return (
     <div className="spike-card space-y-4">
@@ -389,7 +390,7 @@ export function MentorParticipantEncodingPanel({
         mentorId={mentorId}
         participantId={participantId}
         participantName={participantName}
-        template={observation}
+        template={loading ? null : observation}
         day={day}
         showToast={showToast}
         onSaved={onSaved}

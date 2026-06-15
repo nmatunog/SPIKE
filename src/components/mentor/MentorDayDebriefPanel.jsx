@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import { getMentorDayTemplates } from '../../lib/mentorEncodingTemplates.js';
+import { useState } from 'react';
+import { useMentorDayTemplates } from '../../hooks/useMentorDayTemplates.js';
 import { WEEK1_DAY_META } from '../../lib/mentorWeek1Constants.js';
 import { MentorDayDebriefCapture } from './MentorQuickCapture.jsx';
 
@@ -9,7 +9,7 @@ import { MentorDayDebriefCapture } from './MentorQuickCapture.jsx';
  */
 export function MentorDayDebriefPanel({ mentorId, showToast }) {
   const [day, setDay] = useState(1);
-  const { debrief } = useMemo(() => getMentorDayTemplates(day), [day]);
+  const { debrief, loading } = useMentorDayTemplates(day);
 
   if (!mentorId) return null;
 
@@ -40,7 +40,12 @@ export function MentorDayDebriefPanel({ mentorId, showToast }) {
         ))}
       </div>
 
-      <MentorDayDebriefCapture mentorId={mentorId} template={debrief} day={day} showToast={showToast} />
+      <MentorDayDebriefCapture
+        mentorId={mentorId}
+        template={loading ? null : debrief}
+        day={day}
+        showToast={showToast}
+      />
     </section>
   );
 }
