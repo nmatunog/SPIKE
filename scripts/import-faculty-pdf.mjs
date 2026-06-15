@@ -133,7 +133,6 @@ for (let i = 1; i <= slideCount; i++) {
   const extracted = extractPageText(args.pdf, i - 1);
   const imageName = `slide-${String(i).padStart(2, '0')}.png`;
   const imageUrl = `/content/${args.segment}/${args.week}/${args.day}/${deckSlug}/${imageName}`;
-  const deckId = deckSlug.replace('-', '');
 
   const dayCode = args.day.replace('day-', 'd');
   const deckNum = String(args.deck).padStart(2, '0');
