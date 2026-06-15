@@ -53,6 +53,10 @@
     padding-bottom: var(--spike-bottom-nav-offset);
   }
 
+  .spike-app-shell--compact-nav.spike-app-shell--superuser-preview {
+    --spike-bottom-nav-offset: calc(8rem + env(safe-area-inset-bottom, 0px));
+  }
+
   .spike-app-shell--desktop-nav {
     @apply pb-8 lg:pb-10 2xl:pb-12;
   }

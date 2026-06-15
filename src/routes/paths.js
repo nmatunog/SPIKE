@@ -223,14 +223,55 @@ export const MODULE_NAV = [
   },
 ];
 
+/** Curated nav when signed in as superuser (not role-preview). */
+const SUPERUSER_MODULE_NAV = [
+  {
+    path: ROUTES.dashboard,
+    label: 'Home',
+    shortLabel: 'Home',
+    icon: 'dashboard',
+  },
+  {
+    path: ROUTES.admin,
+    label: 'Admin',
+    shortLabel: 'Admin',
+    icon: 'admin',
+  },
+  {
+    path: ROUTES.adminContentStudio,
+    label: 'Content Studio',
+    shortLabel: 'Studio',
+    icon: 'admin',
+  },
+  {
+    path: ROUTES.playbook,
+    label: 'Playbook',
+    shortLabel: 'Playbook',
+    icon: 'playbook',
+  },
+  {
+    path: ROUTES.portfolio,
+    label: 'Portfolio',
+    shortLabel: 'Portfolio',
+    icon: 'portfolio',
+  },
+  {
+    path: ROUTES.mentorVentureCoach,
+    label: 'Participants',
+    shortLabel: 'People',
+    icon: 'people',
+  },
+  {
+    path: ROUTES.analyticsCohortIdentity,
+    label: 'Analytics',
+    shortLabel: 'Stats',
+    icon: 'analytics',
+  },
+];
+
 export function moduleNavForRole(userRole) {
   if (userRole === 'superuser') {
-    const seen = new Set();
-    return MODULE_NAV.filter((item) => {
-      if (seen.has(item.path)) return false;
-      seen.add(item.path);
-      return true;
-    });
+    return SUPERUSER_MODULE_NAV;
   }
   return MODULE_NAV.filter((item) => item.roles.includes(userRole));
 }

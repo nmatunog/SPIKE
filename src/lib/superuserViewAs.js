@@ -50,10 +50,17 @@ export function isSuperuserPortalSession(actualRole) {
   return actualRole === 'superuser';
 }
 
-/**
- * Role for route guards and module nav — superuser always retains full access.
- * @param {string} actualRole
- */
 export function getPortalAccessRole(actualRole) {
   return actualRole === 'superuser' ? 'superuser' : actualRole;
+}
+
+/**
+ * Role for module nav — superuser uses a slim ops menu unless previewing another role.
+ * @param {string} actualRole
+ * @param {string | null | undefined} viewAsRole
+ */
+export function moduleNavRoleForUser(actualRole, viewAsRole) {
+  if (actualRole !== 'superuser') return actualRole;
+  if (viewAsRole && VIEW_AS_IDS.has(viewAsRole)) return viewAsRole;
+  return 'superuser';
 }

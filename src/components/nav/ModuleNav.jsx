@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useCompactNav } from '../../hooks/useCompactNav.js';
 import { moduleNavForRole } from '../../routes/paths.js';
+import { SuperuserPreviewPills } from './SuperuserPreviewPills.jsx';
 
 const ICONS = {
   dashboard: LayoutDashboard,
@@ -61,30 +62,46 @@ function NavItems({ userRole, variant }) {
   });
 }
 
-export function ModuleNav({ userRole }) {
+/**
+ * @param {{ userRole: string, superuserPreview?: { viewAsRole: string | null, onViewAs: (role: string) => void } }} props
+ */
+export function ModuleNav({ userRole, superuserPreview }) {
   const compact = useCompactNav();
   const items = moduleNavForRole(userRole);
   if (items.length === 0) return null;
 
   if (compact) {
     return (
-      <nav
-        aria-label="Main navigation"
-        className="safe-bottom fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white/95 shadow-nav backdrop-blur supports-[backdrop-filter]:bg-white/90"
-        style={{ WebkitTransform: 'translateZ(0)' }}
-      >
-        <div className="mx-auto flex max-w-projection items-stretch justify-around px-1 sm:px-2">
-          <NavItems userRole={userRole} variant="mobile" />
-        </div>
-      </nav>
+      <>
+        {superuserPreview ? (
+          <div
+            className="safe-bottom fixed inset-x-0 bottom-[calc(3.25rem+env(safe-area-inset-bottom,0px))] z-50 border-t border-amber-200/80 bg-amber-50/95 backdrop-blur"
+            style={{ WebkitTransform: 'translateZ(0)' }}
+          >
+            <SuperuserPreviewPills {...superuserPreview} compact />
+          </div>
+        ) : null}
+        <nav
+          aria-label="Main navigation"
+          className="safe-bottom fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white/95 shadow-nav backdrop-blur supports-[backdrop-filter]:bg-white/90"
+          style={{ WebkitTransform: 'translateZ(0)' }}
+        >
+          <div className="mx-auto flex max-w-projection items-stretch justify-around px-1 sm:px-2">
+            <NavItems userRole={userRole} variant="mobile" />
+          </div>
+        </nav>
+      </>
     );
   }
 
   return (
     <nav aria-label="Main navigation" className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/95 backdrop-blur">
       <div className="mx-auto max-w-projection px-4 sm:px-6 lg:px-8 2xl:px-10">
-        <div className="scrollbar-thin flex gap-1 overflow-x-auto py-2.5 sm:gap-2 lg:py-3">
-          <NavItems userRole={userRole} variant="desktop" />
+        <div className="scrollbar-thin flex items-center gap-2 overflow-x-auto py-2.5 sm:gap-3 lg:py-3">
+          {superuserPreview ? <SuperuserPreviewPills {...superuserPreview} /> : null}
+          <div className="flex min-w-0 flex-1 gap-1 sm:gap-2">
+            <NavItems userRole={userRole} variant="desktop" />
+          </div>
         </div>
       </div>
     </nav>

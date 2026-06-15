@@ -90,11 +90,11 @@ import {
 import { StaffRegistrationCodeCard } from './components/dashboard/StaffRegistrationCodeCard.jsx';
 import { AdminUserDirectory } from './components/admin/AdminUserDirectory.jsx';
 import { createPortalUserViaApi, formatAuthEmailError } from './lib/userAdminService.js';
-import { SuperuserViewAsBar } from './components/admin/SuperuserViewAsBar.jsx';
 import {
   getEffectiveUserRole,
   getPortalAccessRole,
   isSuperuserPortalSession,
+  moduleNavRoleForUser,
   readViewAsRole,
   writeViewAsRole,
 } from './lib/superuserViewAs.js';
@@ -130,6 +130,10 @@ const SpikeMasterPortal = () => {
     [userRole, viewAsRole],
   );
   const portalAccessRole = useMemo(() => getPortalAccessRole(userRole), [userRole]);
+  const moduleNavRole = useMemo(
+    () => moduleNavRoleForUser(userRole, viewAsRole),
+    [userRole, viewAsRole],
+  );
   const isSuperuserSession = isSuperuserPortalSession(userRole);
   const internModuleUser = useMemo(
     () => buildSuperuserInternPreviewUser(user, userRole, viewAsRole),
@@ -1733,7 +1737,9 @@ const SpikeMasterPortal = () => {
     <div
       className={`spike-app-shell ${
         compactNav ? 'spike-app-shell--compact-nav' : 'spike-app-shell--desktop-nav'
-      }${internCloudSyncing ? ' spike-app-shell--cloud-syncing' : ''}`}
+      }${isSuperuserSession && compactNav ? ' spike-app-shell--superuser-preview' : ''}${
+        internCloudSyncing ? ' spike-app-shell--cloud-syncing' : ''
+      }`}
     >
       <InternSignInSyncBanner />
       <PortalHeader
@@ -1744,12 +1750,13 @@ const SpikeMasterPortal = () => {
         onLogout={handleLogout}
       />
 
-      {userRole === 'superuser' && !authLoading && (
-        <SuperuserViewAsBar viewAsRole={viewAsRole} onViewAs={handleViewAs} />
-      )}
-
       {userRole !== 'guest' && userRole !== 'profile_error' && !authLoading && (
-        <ModuleNav userRole={portalAccessRole} />
+        <ModuleNav
+          userRole={moduleNavRole}
+          superuserPreview={
+            isSuperuserSession ? { viewAsRole, onViewAs: handleViewAs } : undefined
+          }
+        />
       )}
 
       <main>
