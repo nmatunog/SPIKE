@@ -20,21 +20,26 @@ export async function fetchBlueprintEntries(userId) {
  */
 export async function upsertBlueprintEntry(userId, sectionSlug, fieldKey, fieldValue, meta = {}) {
   if (!supabase || !userId) return null;
-  const { data, error } = await supabase
-    .from('venture_blueprint_entries')
-    .upsert(
-      {
-        user_id: userId,
-        section_slug: sectionSlug,
-        field_key: fieldKey,
-        field_value: fieldValue,
-        source_type: meta.sourceType ?? null,
-        source_id: meta.sourceId ?? null,
-      },
-      { onConflict: 'user_id,section_slug,field_key' },
-    )
-    .select()
-    .single();
-  if (error) throw error;
-  return data;
+  try {
+    const { data, error } = await supabase
+      .from('venture_blueprint_entries')
+      .upsert(
+        {
+          user_id: userId,
+          section_slug: sectionSlug,
+          field_key: fieldKey,
+          field_value: fieldValue,
+          source_type: meta.sourceType ?? null,
+          source_id: meta.sourceId ?? null,
+        },
+        { onConflict: 'user_id,section_slug,field_key' },
+      )
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  } catch (err) {
+    console.warn('[blueprintEntries] upsert failed:', err instanceof Error ? err.message : err);
+    return null;
+  }
 }

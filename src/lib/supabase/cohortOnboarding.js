@@ -388,7 +388,18 @@ export async function ensureInternProgress(opts = {}) {
     p_university: opts.university ?? null,
     p_squad: opts.squad ?? null,
   });
-  if (error) throw error;
+  if (error) {
+    const missingRpc =
+      error.code === 'PGRST202'
+      || /ensure_intern_progress|not find|schema cache/i.test(String(error.message ?? ''));
+    if (missingRpc) {
+      console.warn(
+        '[internProgress] ensure_intern_progress RPC missing — run supabase/migrations/20260713_intern_progress_catchup.sql',
+      );
+      return null;
+    }
+    throw error;
+  }
   return data;
 }
 

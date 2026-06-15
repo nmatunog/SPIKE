@@ -2,6 +2,9 @@
  * AI Venture Coach™ — Blueprint sync and completion.
  */
 import { setSectionField } from './blueprintSectionStore.js';
+import { DAY1_ID } from './day1BuilderConstants.js';
+import { writeBuilderEntry } from './day1BuilderStorage.js';
+import { markActivityCompleted } from './playbookProgress.js';
 import { COACH_SECTIONS } from './ventureCoachConstants.js';
 import { ventureDirectionLabel } from './ventureCoachEngine.js';
 import {
@@ -68,6 +71,7 @@ export function acceptCoachSection(participantId, sectionId, finalText, extra = 
   }
 
   syncSectionToBlueprint(participantId, sectionId, polished, extra);
+  syncCoachSectionToDay1(participantId, sectionId, polished, extra);
   completeCoachSection(participantId, sectionId, meta?.badge ?? '');
 
   const trainingSection = coachTrainingSectionType(sectionId);
@@ -140,6 +144,66 @@ function syncSectionToBlueprint(participantId, sectionId, text, extra) {
     }
     default:
       break;
+  }
+}
+
+const DAY1_COACH_BUILDERS = {
+  ambition: 'ambition-builder',
+  impact: 'impact-builder',
+  purpose: 'impact-builder',
+  values: 'values-builder',
+  tagline: 'tagline-builder',
+  'future-self': 'future-self',
+  'venture-direction': 'future-venture',
+};
+
+const DAY1_COACH_ACTIVITIES = {
+  ambition: {
+    id: 'activity-day-1-ambition-builder',
+    title: 'Ambition Builder — Venture Coach™',
+    outputs: ['Submitted ambition statement in Venture Blueprint'],
+  },
+  impact: {
+    id: 'activity-day-1-impact-builder',
+    title: 'Impact Builder — Venture Coach™',
+    outputs: ['Submitted impact statement in Venture Blueprint'],
+  },
+  purpose: {
+    id: 'activity-day-1-impact-builder',
+    title: 'Impact Builder — Venture Coach™',
+    outputs: ['Submitted impact statement in Venture Blueprint'],
+  },
+  values: {
+    id: 'activity-day-1-values-builder',
+    title: 'Values Builder — Venture Coach™',
+    outputs: ['Submitted values profile in Venture Blueprint'],
+  },
+};
+
+/** @param {string} participantId @param {string} sectionId @param {string} text @param {Record<string, unknown>} extra */
+function syncCoachSectionToDay1(participantId, sectionId, text, extra) {
+  const builderId = DAY1_COACH_BUILDERS[sectionId];
+  if (!builderId) return;
+
+  writeBuilderEntry(
+    participantId,
+    builderId,
+    {
+      via: 'ai_venture_coach',
+      sectionId,
+      finalText: text,
+      ...extra,
+    },
+    true,
+    { force: true },
+  );
+
+  const activity = DAY1_COACH_ACTIVITIES[sectionId];
+  if (activity) {
+    markActivityCompleted(participantId, activity.id, DAY1_ID, {
+      title: activity.title,
+      outputs: activity.outputs,
+    });
   }
 }
 

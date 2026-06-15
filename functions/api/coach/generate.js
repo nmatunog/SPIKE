@@ -1,13 +1,23 @@
 import { generateCoachText } from '../../../shared/coachAi/generate.js';
 
-/** @param {Request} request @param {Record<string, unknown>} env */
-export async function onRequestPost({ request, env }) {
+/** @param {{ request: Request, env: Record<string, string> }} context */
+export async function onRequest(context) {
+  const { request } = context;
   if (request.method === 'OPTIONS') {
     return new Response(null, {
       status: 204,
       headers: corsHeaders(),
     });
   }
+  if (request.method === 'POST') {
+    return onRequestPost(context);
+  }
+  return json({ message: 'Method not allowed.' }, 405);
+}
+
+/** @param {{ request: Request, env: Record<string, string> }} ctx */
+export async function onRequestPost(ctx) {
+  const { request, env } = ctx;
 
   let body;
   try {

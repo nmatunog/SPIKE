@@ -139,7 +139,13 @@ export async function insertCoachTrainingEvent(participantId, event) {
   });
 
   if (error) {
-    console.warn('[coachTraining] insert failed:', error.message);
+    const missing =
+      error.code === 'PGRST202' ||
+      error.code === '42P01' ||
+      /not find|404|schema cache/i.test(String(error.message ?? ''));
+    if (!missing) {
+      console.warn('[coachTraining] insert failed:', error.message);
+    }
     return null;
   }
 
@@ -166,7 +172,13 @@ export async function fetchCoachRagExamplesForPrompt(sectionType, queryLabels, t
   });
 
   if (error) {
-    console.warn('[coachTraining] RAG fetch failed:', error.message);
+    const missing =
+      error.code === 'PGRST202' ||
+      error.code === '42P01' ||
+      /not find|404|schema cache/i.test(String(error.message ?? ''));
+    if (!missing) {
+      console.warn('[coachTraining] RAG fetch failed:', error.message);
+    }
     return [];
   }
 

@@ -1471,15 +1471,6 @@ const SpikeMasterPortal = () => {
         path === ROUTES.ventureBlueprint
         || path.startsWith(`${ROUTES.ventureBlueprint}/`)
       ) {
-        if (!internUser?.internProgress && !hasCompletedOnboardingSync(internUser.id)) {
-          return (
-            <div className="container mx-auto px-6 py-12 text-center text-gray-700">
-              <p className="font-medium">
-                Your account has no intern progress record. Contact an administrator.
-              </p>
-            </div>
-          );
-        }
         return (
           <VentureBlueprintShell
             user={internUser}
