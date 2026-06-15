@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Import a faculty PPTX into SPIKE content:
- * - Copies PPTX to public/content/.../
+ * - Copies PPTX to public/content/.../ when under Cloudflare Pages 25MB limit, else content/.../source/
  * - Extracts slide images + speaker notes
  * - Updates presentation.json (deck 01) or presentation-deck-02.json (deck 02)
  *
@@ -12,13 +12,14 @@
  * By default --overwrite replaces title/body/speaker notes/discussion questions from the PPTX.
  * Pass --preserve-text to keep existing JSON text when re-importing.
  */
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tmpdir } from 'node:os';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+const MAX_PUBLIC_PPTX_BYTES = 25 * 1024 * 1024;
 
 /** @param {string[]} argv */
 function parseArgs(argv) {
@@ -109,6 +110,8 @@ const publicDir = join(root, 'public', 'content', args.segment, args.week, args.
 const imageDir = join(publicDir, deckSlug);
 const pptxName = `faculty-${deckSlug}.pptx`;
 const pptxDest = join(publicDir, pptxName);
+const sourceDir = join(root, 'content', args.segment, args.week, args.day, 'source');
+const sourcePptxDest = join(sourceDir, pptxName);
 const jsonFile =
   args.deck === 1
     ? join(root, 'content', args.segment, args.week, args.day, 'presentation.json')
@@ -116,6 +119,7 @@ const jsonFile =
 
 mkdirSync(publicDir, { recursive: true });
 mkdirSync(imageDir, { recursive: true });
+mkdirSync(sourceDir, { recursive: true });
 
 const tmp = mkdtempSync(join(tmpdir(), 'spike-import-pptx-'));
 try {
@@ -127,7 +131,14 @@ try {
     process.exit(1);
   }
 
-  cpSync(args.pptx, pptxDest);
+  cpSync(args.pptx, sourcePptxDest);
+  const pptxBytes = statSync(args.pptx).size;
+  const canPublishPptx = pptxBytes <= MAX_PUBLIC_PPTX_BYTES;
+  if (canPublishPptx) {
+    cpSync(args.pptx, pptxDest);
+  } else if (existsSync(pptxDest)) {
+    rmSync(pptxDest, { force: true });
+  }
   const speakerNotes = readSpeakerNotes(tmp, slideCount);
 
   const existing = JSON.parse(readFileSync(jsonFile, 'utf8'));
@@ -172,21 +183,33 @@ try {
   }
 
   const slideIds = slides.map((s) => s.id);
+  const contentBase = `content/${args.segment}/${args.week}/${args.day}`;
+  /** @type {Record<string, unknown>} */
+  const presentationMeta = {
+    ...existing.presentation,
+    slideIds,
+    sourceFile: pptxName,
+    sourcePath: `${contentBase}/source/${pptxName}`,
+    importedAt: new Date().toISOString(),
+  };
+  if (canPublishPptx) {
+    presentationMeta.pptxUrl = `/content/${args.segment}/${args.week}/${args.day}/${pptxName}`;
+  } else {
+    delete presentationMeta.pptxUrl;
+    presentationMeta.deployNote =
+      'PPTX exceeds Cloudflare Pages 25MB limit; stored in repo source only. Slides render from PNG exports.';
+  }
+
   const next = {
-    presentation: {
-      ...existing.presentation,
-      slideIds,
-      pptxUrl: `/content/${args.segment}/${args.week}/${args.day}/${pptxName}`,
-      sourceFile: pptxName,
-      importedAt: new Date().toISOString(),
-    },
+    presentation: presentationMeta,
     slides,
   };
 
   writeFileSync(jsonFile, `${JSON.stringify(next, null, 2)}\n`);
 
   console.log('import-faculty-pptx OK');
-  console.log(`  pptx: ${pptxDest}`);
+  console.log(`  pptx source: ${sourcePptxDest}`);
+  console.log(`  pptx public: ${canPublishPptx ? pptxDest : '(skipped — exceeds 25MB deploy limit)'}`);
   console.log(`  images: ${slideCount} → ${imageDir}`);
   console.log(`  json: ${jsonFile}`);
 } finally {

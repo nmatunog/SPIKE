@@ -37,9 +37,10 @@
       "slide-deck02-31",
       "slide-deck02-32"
     ],
-    "pptxUrl": "/content/segment-1/week-1/day-1/faculty-deck-02.pptx",
+    "importedAt": "2026-06-14T20:20:26.775Z",
     "sourceFile": "faculty-deck-02.pptx",
-    "importedAt": "2026-06-14T20:20:26.775Z"
+    "sourcePath": "content/segment-1/week-1/day-1/source/faculty-deck-02.pptx",
+    "deployNote": "PPTX kept in repo source only (>25MB). Slides render from PNG exports in the portal."
   },
   "slides": [
     {
