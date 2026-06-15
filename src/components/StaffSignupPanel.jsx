@@ -76,7 +76,7 @@ export const StaffSignupPanel = memo(function StaffSignupPanel({ onSignup }) {
           <PasswordInput required minLength={8} value={password2} onChange={(e) => setPassword2(e.target.value)} className={fieldClass} placeholder="Confirm password" autoComplete="new-password" />
           <input required value={code} onChange={(e) => setCode(e.target.value)} className={`${fieldClass} uppercase`} placeholder="Staff registration code" />
           <p className="text-xs text-slate-500">
-            Ask an administrator for the staff registration code. You will sign in after creating your account.
+            Ask an administrator for the staff registration code. No confirmation email — you sign in right after signup.
           </p>
           <button type="submit" disabled={submitting} className="spike-btn-primary w-full">
             {submitting ? 'Creating account…' : 'Sign up as staff'}

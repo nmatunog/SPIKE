@@ -136,7 +136,7 @@ npm run deploy:prod
 4. Click **Create account**.
 5. Open **Reports** — the new intern should appear with hours `0/600` and Sprint 01 metric columns.
 
-**Supabase email confirmation (interns):** Intern self-signup uses `/api/auth/intern-signup` with `email_confirm: true` when `SUPABASE_SERVICE_ROLE_KEY` is set on Cloudflare — no confirmation email is sent. You do **not** need to disable “Confirm email” in Supabase for interns if the service key is configured. If the API is unavailable, either disable “Confirm email” under Authentication → Providers → Email, or confirm the user in Supabase **Authentication → Users** before first sign-in.
+**Email confirmation:** All portal signups (intern, staff, admin-created) use Cloudflare APIs with `email_confirm: true` when `SUPABASE_SERVICE_ROLE_KEY` is set — accounts are pre-confirmed and **no signup email is sent**. You can leave Supabase “Confirm email” on or off; the APIs bypass it. Set the service key on Cloudflare Pages (Production). Without it, legacy `signUp` fallbacks may still send mail and hit Supabase rate limits.
 
 **Self-signup (optional):** A new activation code is auto-generated at **midnight Asia/Manila** (also created when staff open their dashboard). Program Coach, Mentor, and Admin dashboards show today’s code; interns enter it on the welcome page. Run [`supabase/migrations/20260614_daily_activation_code_auto.sql`](./supabase/migrations/20260614_daily_activation_code_auto.sql) in Supabase SQL Editor (enable **pg_cron** extension for scheduled midnight generation).
 

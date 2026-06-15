@@ -80,6 +80,7 @@ import { ForcePasswordChangeGate } from './components/ForcePasswordChangeGate.js
 import { DailyActivationCodeCard } from './components/dashboard/DailyActivationCodeCard.jsx';
 import { validateInternActivationCode } from './lib/activationCodeService.js';
 import { registerInternViaApi, isInternSignupApiUnavailable } from './lib/internSignupService.js';
+import { registerStaffViaApi, isStaffSignupApiUnavailable } from './lib/staffSignupService.js';
 import { needsStaffBootstrap } from './lib/staffRegistrationCodeService.js';
 import {
   bootstrapSuperuserAccount,
@@ -700,12 +701,29 @@ const SpikeMasterPortal = () => {
         throw new Error('Signup is only available in Supabase mode.');
       }
 
+      try {
+        await registerStaffViaApi({ name, email, password, role, code });
+        const { error: signInErr } = await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password,
+        });
+        if (signInErr) {
+          throw new Error('Account created. Sign in with your email and password — no confirmation email needed.');
+        }
+        showToast('Staff account created. You are signed in.', 'success');
+        return;
+      } catch (apiErr) {
+        if (!isStaffSignupApiUnavailable(apiErr)) {
+          throw new Error(formatAuthEmailError(apiErr));
+        }
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: { data: { name, must_change_password: true } },
       });
-      if (error) throw error;
+      if (error) throw new Error(formatAuthEmailError(error));
       if (!data.user?.id) {
         throw new Error('Could not create this account. The email may already be registered.');
       }
@@ -843,8 +861,8 @@ const SpikeMasterPortal = () => {
 
           const createdMsg =
             body.role === 'ADMIN'
-              ? 'Added another administrator. They sign in with this email and the password you set (confirm email in Supabase first, if your project requires it).'
-              : 'Account created. They sign in with this email and the password you set (confirm email in Supabase first, if your project requires it).';
+              ? 'Added another administrator. They can sign in with the email and password you set.'
+              : 'Account created. They can sign in with the email and password you set.';
           showToast(createdMsg);
           await loadInterns();
           try {
@@ -1201,10 +1219,7 @@ const SpikeMasterPortal = () => {
             </div>
             <p className="mb-4 text-sm text-gray-600">
               Add another person to the portal (intern, program coach, mentor, or administrator). Interns
-              receive a progress record automatically.
-              {usingSupabaseAuth && (
-                <> With Supabase email confirmation enabled, they must confirm before first sign-in.</>
-              )}
+              receive a progress record automatically. Accounts are pre-confirmed — no signup email required.
             </p>
             <AdminRegisterForm onRegister={handleAdminRegister} />
             {usingSupabaseAuth ? (
