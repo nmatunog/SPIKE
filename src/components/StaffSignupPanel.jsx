@@ -1,11 +1,8 @@
 import React, { memo, useState } from 'react';
 import { PasswordInput } from './PasswordInput.jsx';
+import { MENTOR_LABEL, PROGRAM_COACH_LABEL, portalRoleOptionsFor } from '../lib/terminology.js';
 
-const STAFF_ROLES = [
-  { value: 'FACULTY', label: 'Program Coach' },
-  { value: 'MENTOR', label: 'Advisor (Mentor)' },
-  { value: 'ADMIN', label: 'Administrator' },
-];
+const STAFF_ROLES = portalRoleOptionsFor(['FACULTY', 'MENTOR', 'ADMIN']);
 
 export const StaffSignupPanel = memo(function StaffSignupPanel({ onSignup }) {
   const [show, setShow] = useState(false);
@@ -53,7 +50,9 @@ export const StaffSignupPanel = memo(function StaffSignupPanel({ onSignup }) {
   return (
     <div className="w-full rounded-2xl border border-dashed border-indigo-200 bg-indigo-50/40 p-4">
       <div className="flex items-center justify-between gap-2">
-        <p className="text-sm font-medium text-slate-700">Program Coach, Advisor, or Admin?</p>
+        <p className="text-sm font-medium text-slate-700">
+          {PROGRAM_COACH_LABEL}, {MENTOR_LABEL}, or Admin?
+        </p>
         <button type="button" onClick={() => setShow((v) => !v)} className="text-sm font-semibold text-spike hover:underline">
           {show ? 'Hide signup' : 'Create staff account'}
         </button>

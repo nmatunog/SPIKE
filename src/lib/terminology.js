@@ -2,12 +2,14 @@
 
 export const PROGRAM_COACH_LABEL = 'Program Coach';
 export const PROGRAM_COACH_LABEL_PLURAL = 'Program Coaches';
+export const MENTOR_LABEL = 'Mentor';
+export const MENTOR_LABEL_PLURAL = 'Mentors';
 
 /** Database role → staff-directory label */
 export const DB_ROLE_LABELS = {
   INTERN: 'Intern',
   FACULTY: PROGRAM_COACH_LABEL,
-  MENTOR: 'Advisor (Mentor)',
+  MENTOR: MENTOR_LABEL,
   ADMIN: 'Administrator',
   SUPERUSER: 'Superuser',
 };
@@ -16,7 +18,7 @@ export const DB_ROLE_LABELS = {
 export const PORTAL_DB_ROLE_OPTIONS = [
   { value: 'INTERN', label: 'Intern' },
   { value: 'FACULTY', label: PROGRAM_COACH_LABEL },
-  { value: 'MENTOR', label: 'Advisor (Mentor)' },
+  { value: 'MENTOR', label: MENTOR_LABEL },
   { value: 'ADMIN', label: 'Administrator' },
   { value: 'SUPERUSER', label: 'Superuser' },
 ];
@@ -42,7 +44,7 @@ export function formatUiRoleLabel(userRole) {
     case 'faculty':
       return PROGRAM_COACH_LABEL;
     case 'mentor':
-      return 'Advisor';
+      return MENTOR_LABEL;
     case 'admin':
       return 'Admin';
     case 'superuser':
@@ -55,6 +57,6 @@ export function formatUiRoleLabel(userRole) {
 /** @param {string} [audience] */
 export function formatPlaybookAudience(audience) {
   if (audience === 'faculty') return PROGRAM_COACH_LABEL;
-  if (audience === 'mentor') return 'Mentor';
+  if (audience === 'mentor') return MENTOR_LABEL;
   return String(audience ?? PROGRAM_COACH_LABEL);
 }

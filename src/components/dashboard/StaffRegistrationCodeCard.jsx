@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { KeyRound, RefreshCw } from 'lucide-react';
 import {
+  MENTOR_LABEL_PLURAL,
+  PROGRAM_COACH_LABEL_PLURAL,
+} from '../../lib/terminology.js';
+import {
   loadStaffRegistrationCode,
   regenerateStaffRegistrationCode,
 } from '../../lib/staffRegistrationCodeService.js';
@@ -39,7 +43,7 @@ export function StaffRegistrationCodeCard({ className = '', canRegenerate = true
         <KeyRound size={16} /> Staff registration code
       </p>
       <p className="mt-1 text-sm text-indigo-950/80">
-        Share with new Program Coaches, Advisors, and Admins so they can self-register on the welcome page.
+        Share with new {PROGRAM_COACH_LABEL_PLURAL}, {MENTOR_LABEL_PLURAL}, and Admins so they can self-register on the welcome page.
       </p>
       {loading ? (
         <p className="mt-4 text-sm text-slate-500">Loading…</p>

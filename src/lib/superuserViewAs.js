@@ -1,12 +1,14 @@
 /** Superuser portal preview — session-only; does not change DB role. */
 
+import { MENTOR_LABEL } from './terminology.js';
+
 export const VIEW_AS_STORAGE_KEY = 'spike_superuser_view_as';
 
 /** @type {{ id: string; label: string }[]} */
 export const VIEW_AS_ROLE_OPTIONS = [
   { id: 'intern', label: 'Intern' },
   { id: 'faculty', label: 'Program Coach' },
-  { id: 'mentor', label: 'Advisor' },
+  { id: 'mentor', label: MENTOR_LABEL },
   { id: 'admin', label: 'Admin' },
 ];
 

@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { PageContainer, PageTitle } from '../components/layout/PageContainer.jsx';
 import { TabBar } from '../components/ui/TabBar.jsx';
+import { MENTOR_LABEL, PROGRAM_COACH_LABEL } from '../lib/terminology.js';
 import { RoleDashboardCards } from '../components/dashboard/RoleDashboardCards.jsx';
 import { PendingLogCard } from '../components/traction/PendingLogCard.jsx';
 import { ROUTES } from '../routes/paths.js';
@@ -35,7 +36,7 @@ const FACULTY_TABS = [
 
 const MENTOR_TABS = [
   { id: 'overview', label: 'Overview', icon: BarChart3 },
-  { id: 'advisory', label: 'Advisory', icon: Users },
+  { id: 'advisory', label: 'Traction & hours', icon: Users },
 ];
 
 function SegmentSummary({ internSummary }) {
@@ -311,7 +312,7 @@ export function StaffDashboardPage({
             : 'Coaching, approvals, and cohort health at a glance.'
         }
       >
-        {userRole === 'faculty' ? 'Program Coach home' : 'Advisor home'}
+        {userRole === 'faculty' ? `${PROGRAM_COACH_LABEL} home` : `${MENTOR_LABEL} home`}
       </PageTitle>
 
       <TabBar tabs={tabs} active={tab} onChange={setTab} className="mt-5" />

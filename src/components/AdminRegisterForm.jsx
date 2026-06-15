@@ -1,5 +1,6 @@
 import React, { memo, useState } from 'react';
 import { PasswordInput } from './PasswordInput.jsx';
+import { MENTOR_LABEL } from '../lib/terminology.js';
 
 export const AdminRegisterForm = memo(function AdminRegisterForm({ onRegister }) {
   const [name, setName] = useState('');
@@ -68,7 +69,7 @@ export const AdminRegisterForm = memo(function AdminRegisterForm({ onRegister })
       >
         <option value="INTERN">Intern</option>
         <option value="FACULTY">Program Coach</option>
-        <option value="MENTOR">Mentor (Advisory Board)</option>
+        <option value="MENTOR">{MENTOR_LABEL}</option>
         <option value="ADMIN">Admin</option>
       </select>
       {role === 'INTERN' && (
