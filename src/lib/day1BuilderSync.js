@@ -197,7 +197,9 @@ export async function backfillLocalBuildersToSupabase(participantId) {
 
   const builders = readDay1BuilderStore()[participantId]?.builders ?? {};
   for (const [builderId, entry] of Object.entries(builders)) {
-    if (entry) await syncBuilderEntryToSupabase(participantId, builderId, entry);
+    if (entry && builderEntryHasContent(entry)) {
+      await syncBuilderEntryToSupabase(participantId, builderId, entry);
+    }
   }
 
   const coach = readCoachStore()[participantId];

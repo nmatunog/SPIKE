@@ -5,6 +5,7 @@
 import { fetchDay1BuilderProgress } from './supabase/day1BuilderProgress.js';
 import { fetchBlueprintEntries } from './supabase/blueprintEntries.js';
 import { DAY1_BUILDERS } from './day1BuilderConstants.js';
+import { fieldHasContent } from './syncMergeUtils.js';
 
 const COACH_PREFIX = 'coach:';
 
@@ -55,6 +56,90 @@ function visionFieldsFromBlueprint(blueprintRows) {
     }
   }
   return fields;
+}
+
+/** @param {Record<string, unknown> | null | undefined} payload */
+function remotePayloadHasContent(payload) {
+  if (!payload || typeof payload !== 'object') return false;
+  if (fieldHasContent(payload.data)) return true;
+  return fieldHasContent(payload);
+}
+
+/**
+ * Rich cloud assessment for recovery decisions (intern device or staff audit).
+ * @param {string} participantId
+ */
+export async function fetchRemoteWorkAssessment(participantId) {
+  if (!participantId || String(participantId).startsWith('mock-')) {
+    return {
+      hasSubstantiveData: false,
+      substantiveScore: 0,
+      builderRowCount: 0,
+      substantiveBuilderRows: 0,
+      blueprintRowCount: 0,
+      substantiveBlueprintRows: 0,
+      playbookRowCount: 0,
+      surveyRowCount: 0,
+      canvasRowCount: 0,
+    };
+  }
+
+  const { fetchPlaybookCompletions } = await import('./supabase/playbookProgress.js');
+  const { fetchAllSurveyResponses } = await import('./supabase/surveyResponses.js');
+  const { fetchCanvasEntries } = await import('./supabase/canvasEntries.js');
+
+  const [builderRows, blueprintRows, playbookRows, surveyRows, canvasRows] = await Promise.all([
+    fetchDay1BuilderProgress(participantId).catch(() => []),
+    fetchBlueprintEntries(participantId).catch(() => []),
+    fetchPlaybookCompletions(participantId).catch(() => []),
+    fetchAllSurveyResponses(participantId).catch(() => []),
+    fetchCanvasEntries(participantId).catch(() => []),
+  ]);
+
+  const substantiveBuilderRows = builderRows.filter((row) =>
+    remotePayloadHasContent(row.payload),
+  ).length;
+  const substantiveBlueprintRows = blueprintRows.filter((row) =>
+    fieldHasContent(row.field_value),
+  ).length;
+  const substantivePlaybookRows = playbookRows.filter((row) =>
+    fieldHasContent(row.payload),
+  ).length;
+  const substantiveSurveyRows = surveyRows.filter((row) =>
+    (row.survey_response_answers ?? []).some((a) => fieldHasContent(a.answer)),
+  ).length;
+  const substantiveCanvasRows = canvasRows.filter((row) =>
+    fieldHasContent(row.field_value),
+  ).length;
+
+  const substantiveScore =
+    substantiveBuilderRows * 12
+    + substantiveBlueprintRows * 4
+    + substantivePlaybookRows * 3
+    + substantiveSurveyRows * 3
+    + substantiveCanvasRows * 2;
+
+  const summary = await fetchRemoteParticipantSummary(participantId);
+
+  return {
+    hasSubstantiveData:
+      substantiveScore > 0
+      || Boolean(summary.ambition || summary.impact || summary.tagline),
+    substantiveScore,
+    builderRowCount: builderRows.length,
+    substantiveBuilderRows,
+    blueprintRowCount: blueprintRows.length,
+    substantiveBlueprintRows,
+    playbookRowCount: playbookRows.length,
+    substantivePlaybookRows,
+    surveyRowCount: surveyRows.length,
+    substantiveSurveyRows,
+    canvasRowCount: canvasRows.length,
+    substantiveCanvasRows,
+    ambition: summary.ambition,
+    impact: summary.impact,
+    progressPercent: summary.progressPercent,
+  };
 }
 
 /**

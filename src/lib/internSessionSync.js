@@ -12,6 +12,9 @@ import { hydrateParticipantBuilderData } from './day1BuilderSync.js';
 import { hydratePlaybookProgressFromSupabase } from './playbookProgressSync.js';
 import { hydrateSurveysFromSupabase } from './surveyService.js';
 import { hydrateVentureBlueprint } from './ventureBlueprintSync.js';
+import { assessLocalInternWork } from './internLocalWorkAssessment.js';
+import { fetchRemoteWorkAssessment } from './participantRemoteData.js';
+import { needsCloudRecovery, recoverInternWorkFromSupabase } from './internCloudRecovery.js';
 
 /** @type {Map<string, Promise<{ skipped?: boolean, uploaded?: boolean, alreadyDone?: boolean }>>} */
 const signInUploadByUser = new Map();
@@ -112,8 +115,19 @@ export async function runInternSignInCloudUpload(participantId) {
       /* private mode */
     }
 
+    const local = assessLocalInternWork(participantId);
+    const remote = await fetchRemoteWorkAssessment(participantId);
+    let recovered = false;
+
+    if (needsCloudRecovery(local, remote)) {
+      await recoverInternWorkFromSupabase(participantId);
+      recovered = true;
+    }
+
     await syncInternLocalWorkToSupabase(participantId);
-    await hydrateInternWorkFromSupabase(participantId);
+    if (!recovered) {
+      await hydrateInternWorkFromSupabase(participantId);
+    }
 
     try {
       sessionStorage.setItem(SIGNIN_UPLOAD_DONE_KEY, participantId);
@@ -121,7 +135,7 @@ export async function runInternSignInCloudUpload(participantId) {
       /* private mode */
     }
 
-    return { uploaded: true };
+    return { uploaded: true, recovered };
   })();
 
   signInUploadByUser.set(participantId, promise);

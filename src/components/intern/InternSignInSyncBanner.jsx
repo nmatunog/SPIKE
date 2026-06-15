@@ -16,9 +16,10 @@ export function InternSignInSyncBanner() {
         <Loader2 className="h-4 w-4 shrink-0 animate-spin text-sky-600" aria-hidden />
         <CloudUpload className="h-4 w-4 shrink-0 text-sky-600" aria-hidden />
         <p>
-          <span className="font-semibold">Uploading your work to the cloud…</span>
+          <span className="font-semibold">Syncing your work with the cloud…</span>
           {' '}
-          Please keep this tab open so mentors and coaches can see your Day 1 progress, surveys, and canvas.
+          Please keep this tab open. If your Day 1 work disappeared after login, we restore it from
+          the cloud automatically when a backup exists.
         </p>
       </div>
     </div>

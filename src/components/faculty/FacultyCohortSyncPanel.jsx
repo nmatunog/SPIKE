@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { AlertTriangle, CloudUpload } from 'lucide-react';
-import { fetchCohortRemoteSyncStatus } from '../../lib/participantRemoteData.js';
+import { fetchCohortRemoteSyncStatus, fetchRemoteWorkAssessment } from '../../lib/participantRemoteData.js';
 
 /**
  * Shows how many interns have Day 1 work synced to Supabase (production store).
@@ -10,13 +10,28 @@ export function FacultyCohortSyncPanel({ interns }) {
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const [recoveryHints, setRecoveryHints] = useState([]);
+
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     (async () => {
       const result = await fetchCohortRemoteSyncStatus(interns.map((i) => i.id));
+      const hints = await Promise.all(
+        result.participants
+          .filter((p) => p.hasRemoteData)
+          .map(async (p) => {
+            const assessment = await fetchRemoteWorkAssessment(p.id);
+            return {
+              id: p.id,
+              recoverable: assessment.hasSubstantiveData && assessment.substantiveScore >= 12,
+              score: assessment.substantiveScore,
+            };
+          }),
+      );
       if (!cancelled) {
         setStatus(result);
+        setRecoveryHints(hints.filter((h) => h.recoverable));
         setLoading(false);
       }
     })();
@@ -72,6 +87,13 @@ export function FacultyCohortSyncPanel({ interns }) {
           ) : (
             <p className="mt-2 text-sm text-emerald-900">All participants synced — mentor views should show their outputs.</p>
           )}
+          {recoveryHints.length > 0 ? (
+            <p className="mt-2 text-sm text-sky-900">
+              {recoveryHints.length} participant(s) have a cloud backup. If their device shows empty
+              work after login, ask them to <strong>sign in again</strong> and keep the tab open — the
+              app restores from Supabase automatically.
+            </p>
+          ) : null}
         </div>
       </div>
 
