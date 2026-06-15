@@ -70,11 +70,11 @@ export const MENTOR_RECOMMENDATIONS = [
 
 /** @type {Array<{ day: number, theme: string, objective: string, expectedOutput: string }>} */
 export const WEEK1_DAY_META = [
-  { day: 1, theme: 'Identity', objective: 'Connect opportunity to personal ambition.', expectedOutput: 'Participant Snapshot' },
-  { day: 2, theme: 'Opportunity', objective: 'Connect industry opportunity to personal goals.', expectedOutput: 'Opportunity Reflection' },
-  { day: 3, theme: 'Customer', objective: 'Develop empathy and customer awareness.', expectedOutput: 'Customer Understanding Assessment' },
-  { day: 4, theme: 'Entrepreneur', objective: 'Explore venture paths.', expectedOutput: 'Career Track Assessment' },
-  { day: 5, theme: 'Commitment', objective: 'Create clarity and commitment.', expectedOutput: 'Week 1 Coaching Summary' },
+  { day: 1, theme: 'Identity', playbookTitle: 'Stories, Identity & Squad Formation', objective: 'Connect opportunity to personal ambition.', expectedOutput: 'Participant Snapshot' },
+  { day: 2, theme: 'Opportunity', playbookTitle: 'Discover The Industry', objective: 'Connect industry opportunity to personal goals.', expectedOutput: 'Opportunity Reflection' },
+  { day: 3, theme: 'Customer', playbookTitle: 'Discover The Market', objective: 'Develop empathy and customer awareness.', expectedOutput: 'Customer Understanding Assessment' },
+  { day: 4, theme: 'Entrepreneur', playbookTitle: 'Financial Entrepreneurship', objective: 'Explore venture paths.', expectedOutput: 'Career Track Assessment' },
+  { day: 5, theme: 'Commitment', playbookTitle: 'My Venture Direction', objective: 'Create clarity and commitment.', expectedOutput: 'Week 1 Coaching Summary' },
 ];
 
 export const COACHING_QUEUE_BUCKETS = [

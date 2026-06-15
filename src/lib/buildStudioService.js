@@ -8,9 +8,10 @@ import { getDay1MissionProgress, isBuilderCompleted } from './day1BuilderService
 import { isCoachSectionComplete } from './ventureCoachStorage.js';
 import { listBlueprintTimelineEvents } from './blueprintTimeline.js';
 import { generateVenturePortfolio } from '../services/portfolioGenerator.js';
-import { week1CompletionPct } from './week1JourneyService.js';
-import { isDay1MissionActive } from './day1BuilderService.js';
+import { week1CompletionPct, getWeek1DayProgress } from './week1JourneyService.js';
+import { isDay1MissionActive, isWeek1PlaybookDaysActive } from './day1BuilderService.js';
 import { getNextBlueprintAction } from './blueprintRecommendations.js';
+import { WEEK1_DAY_META } from './mentorWeek1Constants.js';
 
 /** Day 1 journey steps — participant-facing order. */
 export const DAY1_JOURNEY_STEPS = [
@@ -104,10 +105,41 @@ export function deriveDay1Journey(participantId) {
 
 /**
  * @param {string} participantId
- * @param {{ week: number, segment: number, blueprint_completion?: number }} [state]
+ * @param {{ week: number, day: number, segment: number, blueprint_completion?: number }} state
+ */
+function deriveWeek1PlaybookMission(participantId, state) {
+  const day = Math.min(5, Math.max(2, state.day ?? 2));
+  const meta = WEEK1_DAY_META.find((d) => d.day === day) ?? WEEK1_DAY_META[1];
+  const dayProgress = getWeek1DayProgress(participantId);
+  const today = dayProgress.find((d) => d.day === day);
+  const completedBefore = dayProgress.filter((d) => d.day < day && d.complete).length;
+
+  return {
+    title: meta.playbookTitle ?? meta.theme,
+    stepLabel: `Week ${state.week}`,
+    href: ROUTES.playbook,
+    estimatedMinutes: 240,
+    coachReady: false,
+    progressPercent: today?.complete
+      ? 100
+      : Math.min(95, Math.round(((completedBefore + 0.25) / 5) * 100)),
+    journey: [],
+    allComplete: Boolean(today?.complete),
+    day1: false,
+    playbookDay: true,
+    continueLabel: `Continue Day ${day}`,
+  };
+}
+
+/**
+ * @param {string} participantId
+ * @param {{ week: number, segment: number, day?: number, blueprint_completion?: number }} [state]
  */
 export function deriveTodayMission(participantId, state) {
-  if (state && !isDay1MissionActive(state.week, state.segment)) {
+  if (state && isWeek1PlaybookDaysActive(state.week, state.segment, state.day ?? 1)) {
+    return deriveWeek1PlaybookMission(participantId, state);
+  }
+  if (state && !isDay1MissionActive(state.week, state.segment, state.day ?? 1)) {
     const next = getNextBlueprintAction(state, participantId);
     return {
       title: next.title,
@@ -119,6 +151,7 @@ export function deriveTodayMission(participantId, state) {
       journey: [],
       allComplete: false,
       day1: false,
+      continueLabel: next.title,
     };
   }
 
@@ -151,6 +184,7 @@ export function deriveTodayMission(participantId, state) {
     journey,
     allComplete: journey.every((s) => s.complete),
     day1: true,
+    continueLabel: 'Continue Day 1',
   };
 }
 

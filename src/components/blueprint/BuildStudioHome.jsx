@@ -19,15 +19,17 @@ import { ROUTES } from '../../routes/paths.js';
  */
 export function BuildStudioHome({ participantId, participantName = 'Builder', state }) {
   const firstName = firstNameFromUser(participantName);
-  const day1Active = isDay1MissionActive(state.week, state.segment);
+  const day1Active = isDay1MissionActive(state.week, state.segment, state.day);
   const mission = deriveTodayMission(participantId, state);
   const journey = day1Active ? deriveDay1Journey(participantId) : mission.journey;
   const recentWin = deriveRecentWin(participantId);
   const portfolio = derivePortfolioPages(participantId);
-  const dayLabel = `Day ${state.day}`;
+  const dayLabel = mission.continueLabel ?? `Continue Day ${state.day}`;
   const heroLine = day1Active
     ? "Today you'll build your Venture Blueprint."
-    : "Today you'll take another step toward building your venture.";
+    : mission.playbookDay
+      ? "Today you'll discover your industry and opportunity."
+      : "Today you'll take another step toward building your venture.";
 
   return (
     <div className="space-y-8">
@@ -45,7 +47,7 @@ export function BuildStudioHome({ participantId, participantName = 'Builder', st
           to={mission.href}
           className="mt-8 inline-flex min-h-[52px] items-center gap-2 rounded-2xl bg-spike px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-spike/25 transition hover:bg-spike-light hover:shadow-spike/30"
         >
-          Continue {dayLabel}
+          {mission.continueLabel ?? dayLabel}
           <ArrowRight size={20} />
         </Link>
       </section>
@@ -68,7 +70,9 @@ export function BuildStudioHome({ participantId, participantName = 'Builder', st
 
           <div className="mt-6 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <div className="min-w-0 flex-1">
-              <p className="text-sm text-slate-400">{dayLabel} · {mission.stepLabel}</p>
+              <p className="text-sm text-slate-400">
+                Day {state.day} · {mission.stepLabel}
+              </p>
               <h2 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">
                 {mission.title}
               </h2>
@@ -94,7 +98,7 @@ export function BuildStudioHome({ participantId, participantName = 'Builder', st
 
           <div className="mt-8">
             <div className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-slate-400">
-              <span>{dayLabel} progress</span>
+              <span>Day {state.day} progress</span>
               <span className="text-white">{mission.progressPercent}%</span>
             </div>
             <div className="h-3 overflow-hidden rounded-full bg-white/10 backdrop-blur">

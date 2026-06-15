@@ -246,7 +246,12 @@ async function syncSquadCharter(participantId, data) {
   );
 }
 
-/** @param {number} week @param {number} segment */
-export function isDay1MissionActive(week, segment) {
-  return segment === 1 && week <= 1;
+/** @param {number} week @param {number} segment @param {number} [day] */
+export function isDay1MissionActive(week, segment, day = 1) {
+  return segment === 1 && week <= 1 && day <= 1;
+}
+
+/** Week 1 playbook days 2–5 (segment 1) — industry, market, entrepreneur, commitment. */
+export function isWeek1PlaybookDaysActive(week, segment, day = 1) {
+  return segment === 1 && week <= 1 && day >= 2 && day <= 5;
 }

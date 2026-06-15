@@ -19,19 +19,19 @@ import {
 import { COACH_SECTIONS } from './ventureCoachConstants.js';
 
 export const SUPERUSER_INTERN_PREVIEW_PARTICIPANT_ID = 'mock-superuser-intern-preview';
-export const SUPERUSER_INTERN_PREVIEW_SEED_VERSION = 'v2';
+export const SUPERUSER_INTERN_PREVIEW_SEED_VERSION = 'v3';
 const SEEDED_MARKER_KEY = 'spike_superuser_intern_preview_seed';
 
 export const SUPERUSER_INTERN_PREVIEW_PROGRESS = {
-  segment: 2,
-  hours: 248,
-  licensed: true,
+  segment: 1,
+  hours: 12,
+  licensed: false,
   squad: 'Squad Catalyst',
   university: 'SPIKE Founding Cohort 2026',
-  career_track: 'agency_builder',
-  career_track_selected_at: '2026-03-15T10:00:00.000Z',
-  current_week: 6,
-  current_day: 3,
+  career_track: 'undecided',
+  career_track_selected_at: null,
+  current_week: 1,
+  current_day: 2,
   onboarding_complete: true,
   onboarding_welcomed_at: '2026-02-01T08:00:00.000Z',
   cohort_id: 'cohort-sample-2026',

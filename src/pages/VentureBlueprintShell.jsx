@@ -76,7 +76,7 @@ export function VentureBlueprintShell({ user, onProgressRefresh }) {
   const activeModule = getBlueprintModule(moduleSlug) ?? getBlueprintModule('overview');
   const showTrackPicker = needsCareerTrackSelection(user.id, progress);
   const isOverview = moduleSlug === 'overview';
-  const day1Active = isDay1MissionActive(state.week, state.segment);
+  const day1Active = isDay1MissionActive(state.week, state.segment, state.day);
   const headerVariant = isOverview ? 'none' : 'compact';
 
   function handleTrackComplete(nextProgress) {
