@@ -7,7 +7,7 @@ import { CareerTrackPicker } from '../components/blueprint/CareerTrackPicker.jsx
 import { buildParticipantState } from '../lib/participantState.js';
 import { getBlueprintModule, isSharedBlueprintModule } from '../lib/blueprintModules.js';
 import { ROUTES } from '../routes/paths.js';
-import { hydrateVentureBlueprint } from '../lib/ventureBlueprintSync.js';
+import { whenInternSignInUploadDone } from '../lib/internSessionSync.js';
 import { needsCareerTrackSelection } from '../lib/careerTrackService.js';
 import {
   BlueprintOverviewPanel,
@@ -44,7 +44,7 @@ export function VentureBlueprintShell({ user, onProgressRefresh }) {
 
   useEffect(() => {
     let cancelled = false;
-    void hydrateVentureBlueprint(user.id).then(() => {
+    void whenInternSignInUploadDone(user.id).then(() => {
       if (!cancelled) setHydrateGeneration((g) => g + 1);
     });
     return () => {

@@ -2,6 +2,7 @@
  * Playbook completions — Supabase backfill + staff hydration.
  */
 import { fetchPlaybookCompletions, upsertPlaybookCompletion } from './supabase/playbookProgress.js';
+import { fieldHasContent } from './syncMergeUtils.js';
 
 const STORAGE_KEY = 'spike_playbook_progress_v1';
 
@@ -61,7 +62,7 @@ export async function backfillLocalPlaybookToSupabase(participantId) {
 /**
  * Merge Supabase playbook_completions into local cache for staff review.
  * @param {string} participantId
- * @param {{ force?: boolean, preferRemote?: boolean }} [opts]
+ * @param {{ force?: boolean, preferRemote?: boolean, preferLocal?: boolean }} [opts]
  */
 export async function hydratePlaybookProgressFromSupabase(participantId, opts = {}) {
   if (!participantId || String(participantId).startsWith('mock-')) return;
@@ -86,10 +87,16 @@ export async function hydratePlaybookProgressFromSupabase(participantId, opts = 
 
     if (itemType === 'worksheet') {
       const local = user.worksheets[itemId];
+      const remoteAnswers = payload.answers ?? {};
+      const remoteHasContent = fieldHasContent(remoteAnswers);
+      if (opts.preferLocal && local && fieldHasContent(local.answers) && !remoteHasContent) {
+        continue;
+      }
       if (opts.preferRemote || !local) {
+        if (!remoteHasContent && local) continue;
         user.worksheets[itemId] = {
           completedAt,
-          answers: payload.answers ?? {},
+          answers: remoteAnswers,
         };
       }
     } else if (itemType === 'activity') {
@@ -98,18 +105,30 @@ export async function hydratePlaybookProgressFromSupabase(participantId, opts = 
       }
     } else if (itemType === 'reflection') {
       const local = user.reflections[itemId];
+      const remoteResponses = payload.responses ?? {};
+      const remoteHasContent = fieldHasContent(remoteResponses);
+      if (opts.preferLocal && local && fieldHasContent(local.responses) && !remoteHasContent) {
+        continue;
+      }
       if (opts.preferRemote || !local) {
+        if (!remoteHasContent && local) continue;
         user.reflections[itemId] = {
           completedAt,
-          responses: payload.responses ?? {},
+          responses: remoteResponses,
         };
       }
     } else if (itemType === 'survey') {
       const local = user.surveys[itemId];
+      const remoteAnswers = payload.answers ?? {};
+      const remoteHasContent = fieldHasContent(remoteAnswers);
+      if (opts.preferLocal && local && fieldHasContent(local.answers) && !remoteHasContent) {
+        continue;
+      }
       if (opts.preferRemote || !local) {
+        if (!remoteHasContent && local) continue;
         user.surveys[itemId] = {
           completedAt,
-          answers: payload.answers ?? {},
+          answers: remoteAnswers,
         };
       }
     }

@@ -3,6 +3,7 @@
  */
 import { fetchCanvasSummary, upsertCanvasSummary } from './supabase/canvasSummary.js';
 import { generateStrategyStatement } from './executiveCanvasModel.js';
+import { fieldHasContent, shouldApplyRemoteField } from './syncMergeUtils.js';
 
 const STORAGE_KEY = 'spike_canvas_summary';
 const debounceTimers = new Map();
@@ -152,14 +153,17 @@ export function ensureDefaultYearGoals(participantId, careerTrack) {
   return getCanvasSummary(participantId);
 }
 
-/** @param {string} participantId */
-export async function hydrateCanvasSummaryFromSupabase(participantId) {
+/** @param {string} participantId @param {{ preferRemote?: boolean, preferLocal?: boolean }} [opts] */
+export async function hydrateCanvasSummaryFromSupabase(participantId, opts = {}) {
   if (!participantId || String(participantId).startsWith('mock-')) return;
   try {
     const row = await fetchCanvasSummary(participantId);
     if (!row) return;
     const all = readAll();
-    all[participantId] = {
+    const local = all[participantId] ?? emptyCanvasSummary();
+
+    /** @type {Record<string, unknown>} */
+    const remote = {
       strategy_statement: row.strategy_statement ?? '',
       strategy_is_auto: row.strategy_is_auto ?? true,
       priority_1: row.priority_1 ?? '',
@@ -184,6 +188,34 @@ export async function hydrateCanvasSummaryFromSupabase(participantId) {
       success_annual_profit: row.success_annual_profit ?? '',
       scorecard_manual_overrides: row.scorecard_manual_overrides ?? {},
     };
+
+    if (opts.preferRemote && !opts.preferLocal) {
+      all[participantId] = /** @type {import('./executiveCanvasModel.js').CanvasSummaryRecord} */ (remote);
+      writeAll(all);
+      return;
+    }
+
+    /** @type {Record<string, unknown>} */
+    const merged = { ...local };
+    for (const [key, remoteVal] of Object.entries(remote)) {
+      if (key === 'updated_at') continue;
+      const localVal = local[key];
+      if (
+        shouldApplyRemoteField(
+          localVal,
+          remoteVal,
+          local.updated_at,
+          row.updated_at,
+          opts,
+        )
+      ) {
+        merged[key] = remoteVal;
+      }
+    }
+    if (fieldHasContent(row.updated_at)) {
+      merged.updated_at = row.updated_at;
+    }
+    all[participantId] = /** @type {import('./executiveCanvasModel.js').CanvasSummaryRecord} */ (merged);
     writeAll(all);
   } catch {
     /* offline */

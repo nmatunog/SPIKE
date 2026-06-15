@@ -5,6 +5,7 @@ import { CANVAS_ENGINES } from './blueprintSectionConstants.js';
 import { upsertCanvasEntry, fetchCanvasEntries } from './supabase/canvasEntries.js';
 import { setSectionField } from './blueprintSectionStore.js';
 import { appendTimelineEvent } from './timelineService.js';
+import { shouldApplyRemoteField } from './syncMergeUtils.js';
 
 const STORAGE_KEY = 'spike_canvas_entries';
 const MILESTONE_KEY = 'spike_canvas_milestone_30';
@@ -120,7 +121,7 @@ export async function backfillLocalCanvasToSupabase(participantId) {
   }
 }
 
-/** @param {string} participantId @param {{ preferRemote?: boolean }} [opts] */
+/** @param {string} participantId @param {{ preferRemote?: boolean, preferLocal?: boolean }} [opts] */
 export async function hydrateCanvasFromSupabase(participantId, opts = {}) {
   if (!participantId) return;
   try {
@@ -130,8 +131,9 @@ export async function hydrateCanvasFromSupabase(participantId, opts = {}) {
     const user = all[participantId] ?? {};
     for (const row of rows) {
       const engine = user[row.engine_key] ?? {};
+      const localVal = engine[row.field_key] ?? '';
       const remoteVal = row.field_value ?? '';
-      if (opts.preferRemote || !String(engine[row.field_key] ?? '').trim()) {
+      if (shouldApplyRemoteField(localVal, remoteVal, null, row.updated_at, opts)) {
         engine[row.field_key] = remoteVal;
       }
       user[row.engine_key] = engine;

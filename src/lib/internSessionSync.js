@@ -8,6 +8,13 @@ import { backfillLocalPlaybookToSupabase } from './playbookProgressSync.js';
 import { backfillLocalSurveysToSupabase } from './surveyService.js';
 import { backfillLocalCanvasToSupabase } from './canvasService.js';
 import { isMockUserId } from './mockAuth.js';
+import { hydrateParticipantBuilderData } from './day1BuilderSync.js';
+import { hydratePlaybookProgressFromSupabase } from './playbookProgressSync.js';
+import { hydrateSurveysFromSupabase } from './surveyService.js';
+import { hydrateVentureBlueprint } from './ventureBlueprintSync.js';
+
+/** @type {Map<string, Promise<{ skipped?: boolean, uploaded?: boolean, alreadyDone?: boolean }>>} */
+const signInUploadByUser = new Map();
 
 /** 1 hour after sign-in — delayed full upload safety net */
 export const INTERN_DELAYED_UPLOAD_MS = 60 * 60 * 1000;
@@ -50,6 +57,40 @@ export async function syncInternLocalWorkToSupabase(participantId) {
   ]);
 }
 
+const internHydrateOpts = { preferLocal: true };
+
+/**
+ * After upload, merge cloud rows into local cache without wiping device work.
+ * @param {string} participantId
+ */
+export async function hydrateInternWorkFromSupabase(participantId) {
+  if (!participantId || isMockUserId(participantId)) return;
+
+  await Promise.all([
+    hydrateParticipantBuilderData(participantId, { force: true }),
+    hydrateVentureBlueprint(participantId, internHydrateOpts),
+    hydratePlaybookProgressFromSupabase(participantId, { force: true, ...internHydrateOpts }),
+    hydrateSurveysFromSupabase(participantId, { force: true, ...internHydrateOpts }),
+  ]);
+}
+
+/** @param {string} participantId */
+export function whenInternSignInUploadDone(participantId) {
+  if (!participantId || isMockUserId(participantId)) {
+    return Promise.resolve({ skipped: true });
+  }
+  const inFlight = signInUploadByUser.get(participantId);
+  if (inFlight) return inFlight;
+  try {
+    if (sessionStorage.getItem(SIGNIN_UPLOAD_DONE_KEY) === participantId) {
+      return Promise.resolve({ alreadyDone: true });
+    }
+  } catch {
+    /* private mode */
+  }
+  return Promise.resolve({ skipped: true });
+}
+
 /**
  * First sign-in this tab session: upload all local Day 1 + blueprint work to Supabase.
  * @param {string} participantId
@@ -59,23 +100,36 @@ export async function runInternSignInCloudUpload(participantId) {
     return { skipped: true };
   }
 
-  try {
-    if (sessionStorage.getItem(SIGNIN_UPLOAD_DONE_KEY) === participantId) {
-      return { skipped: true, alreadyDone: true };
+  const existing = signInUploadByUser.get(participantId);
+  if (existing) return existing;
+
+  const promise = (async () => {
+    try {
+      if (sessionStorage.getItem(SIGNIN_UPLOAD_DONE_KEY) === participantId) {
+        return { skipped: true, alreadyDone: true };
+      }
+    } catch {
+      /* private mode */
     }
-  } catch {
-    /* private mode */
-  }
 
-  await syncInternLocalWorkToSupabase(participantId);
+    await syncInternLocalWorkToSupabase(participantId);
+    await hydrateInternWorkFromSupabase(participantId);
 
+    try {
+      sessionStorage.setItem(SIGNIN_UPLOAD_DONE_KEY, participantId);
+    } catch {
+      /* private mode */
+    }
+
+    return { uploaded: true };
+  })();
+
+  signInUploadByUser.set(participantId, promise);
   try {
-    sessionStorage.setItem(SIGNIN_UPLOAD_DONE_KEY, participantId);
-  } catch {
-    /* private mode */
+    return await promise;
+  } finally {
+    signInUploadByUser.delete(participantId);
   }
-
-  return { uploaded: true };
 }
 
 /** Clear delayed-upload timer and session markers (sign-out). */
@@ -84,6 +138,7 @@ export function clearInternDelayedUploadSchedule() {
     clearTimeout(delayedUploadTimer);
     delayedUploadTimer = null;
   }
+  signInUploadByUser.clear();
   try {
     sessionStorage.removeItem(SESSION_SIGNED_IN_AT_KEY);
     sessionStorage.removeItem(SIGNIN_UPLOAD_DONE_KEY);
@@ -99,7 +154,10 @@ export function clearInternDelayedUploadSchedule() {
  * @returns {() => void} cancel
  */
 export function scheduleInternDelayedUpload(participantId) {
-  clearInternDelayedUploadSchedule();
+  if (delayedUploadTimer) {
+    clearTimeout(delayedUploadTimer);
+    delayedUploadTimer = null;
+  }
 
   if (!participantId || isMockUserId(participantId)) {
     return () => {};

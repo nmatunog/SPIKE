@@ -3,6 +3,7 @@
  */
 import { upsertBlueprintEntry, fetchBlueprintEntries } from './supabase/blueprintEntries.js';
 import { supabase } from '../supabaseClient.js';
+import { shouldApplyRemoteField } from './syncMergeUtils.js';
 
 const STORAGE_KEY = 'spike_blueprint_section_entries';
 
@@ -116,7 +117,7 @@ export async function setSectionFieldCloudFirst(participantId, sectionSlug, fiel
   return writeSectionFieldLocal(participantId, sectionSlug, fieldKey, nextValue, opts);
 }
 
-/** @param {string} participantId @param {{ preferRemote?: boolean }} [opts] */
+/** @param {string} participantId @param {{ preferRemote?: boolean, preferLocal?: boolean }} [opts] */
 export async function hydrateBlueprintSectionsFromSupabase(participantId, opts = {}) {
   if (!participantId) return;
   try {
@@ -125,12 +126,17 @@ export async function hydrateBlueprintSectionsFromSupabase(participantId, opts =
     const all = ensureUser(participantId);
     for (const row of rows) {
       const section = all[participantId][row.section_slug] ?? {};
-      const localUpdated = section[row.field_key]?.updatedAt;
+      const localEntry = section[row.field_key];
+      const localUpdated = localEntry?.updatedAt;
       const remoteUpdated = row.updated_at;
       if (
-        opts.preferRemote
-        || !localUpdated
-        || (remoteUpdated && new Date(remoteUpdated) >= new Date(localUpdated))
+        shouldApplyRemoteField(
+          localEntry?.value,
+          row.field_value ?? '',
+          localUpdated,
+          remoteUpdated,
+          opts,
+        )
       ) {
         section[row.field_key] = {
           value: row.field_value ?? '',

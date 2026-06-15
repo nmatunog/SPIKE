@@ -15,6 +15,7 @@ import {
   upsertDay1BuilderProgress,
   upsertDay1BuilderProgressSoft,
 } from './supabase/day1BuilderProgress.js';
+import { builderEntryHasContent, shouldApplyRemoteField } from './syncMergeUtils.js';
 
 const COACH_PREFIX = 'coach:';
 
@@ -24,13 +25,17 @@ const hydratedParticipants = new Set();
 /**
  * @param {Record<string, unknown> | null | undefined} local
  * @param {{ completed_at?: string, payload?: Record<string, unknown> }} remote
+ * @param {{ preferLocal?: boolean, preferRemote?: boolean }} [opts]
  */
-function shouldPreferRemote(local, remote) {
+function shouldPreferRemote(local, remote, opts = {}) {
+  const remoteEntry = rowToBuilderEntry(remote);
+  if (!builderEntryHasContent(remoteEntry)) return false;
+
+  if (!local || !builderEntryHasContent(local)) return true;
+
   const remoteUpdated = remote.payload?.updatedAt ?? remote.completed_at;
   const localUpdated = local?.updatedAt ?? local?.completedAt;
-  if (!localUpdated) return true;
-  if (!remoteUpdated) return false;
-  return new Date(String(remoteUpdated)) > new Date(String(localUpdated));
+  return shouldApplyRemoteField(local.data, remoteEntry.data, localUpdated, remoteUpdated, opts);
 }
 
 /**
@@ -137,8 +142,8 @@ export async function syncCoachSectionToSupabase(participantId, sectionId, secti
   });
 }
 
-/** @param {string} participantId */
-export async function hydrateDay1BuildersFromSupabase(participantId) {
+/** @param {string} participantId @param {{ preferLocal?: boolean, preferRemote?: boolean }} [opts] */
+export async function hydrateDay1BuildersFromSupabase(participantId, opts = {}) {
   if (!participantId || String(participantId).startsWith('mock-')) return;
 
   try {
@@ -151,13 +156,13 @@ export async function hydrateDay1BuildersFromSupabase(participantId) {
     for (const row of rows) {
       if (String(row.builder_id).startsWith(COACH_PREFIX)) {
         const sectionId = String(row.builder_id).slice(COACH_PREFIX.length);
-        mergeCoachSectionFromRemote(participantId, sectionId, row.payload ?? {});
+        mergeCoachSectionFromRemote(participantId, sectionId, row.payload ?? {}, opts);
         continue;
       }
 
       const local = user.builders[row.builder_id];
       const remoteEntry = rowToBuilderEntry(row);
-      if (!local || shouldPreferRemote(local, row)) {
+      if ((!local && builderEntryHasContent(remoteEntry)) || shouldPreferRemote(local, row, opts)) {
         user.builders[row.builder_id] = remoteEntry;
       }
     }
@@ -168,13 +173,13 @@ export async function hydrateDay1BuildersFromSupabase(participantId) {
   }
 }
 
-/** @param {string} participantId @param {{ force?: boolean }} [opts] */
+/** @param {string} participantId @param {{ force?: boolean, preferLocal?: boolean, preferRemote?: boolean }} [opts] */
 export async function hydrateParticipantBuilderData(participantId, opts = {}) {
   if (!participantId || String(participantId).startsWith('mock-')) return;
   if (opts.force) hydratedParticipants.delete(participantId);
   if (hydratedParticipants.has(participantId)) return;
 
-  await hydrateDay1BuildersFromSupabase(participantId);
+  await hydrateDay1BuildersFromSupabase(participantId, opts);
   hydratedParticipants.add(participantId);
 }
 

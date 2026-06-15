@@ -35,14 +35,14 @@ export {
 
 /**
  * @param {string} participantId
- * @param {{ preferRemote?: boolean }} [opts]
+ * @param {{ preferRemote?: boolean, preferLocal?: boolean }} [opts]
  */
 export async function hydrateVentureBlueprint(participantId, opts = {}) {
   if (!participantId || String(participantId).startsWith('mock-')) return;
   await Promise.all([
     hydrateBlueprintSectionsFromSupabase(participantId, opts),
     hydrateCanvasFromSupabase(participantId, opts),
-    hydrateCanvasSummaryFromSupabase(participantId),
+    hydrateCanvasSummaryFromSupabase(participantId, opts),
     hydrateLeadershipJournalFromSupabase(participantId),
   ]);
   prepareFecCanvas(participantId);

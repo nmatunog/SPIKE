@@ -3,6 +3,7 @@
  */
 import { COACH_SECTIONS } from './ventureCoachConstants.js';
 import { canEditPortfolioInput, isPortfolioInputEditLocked } from './portfolioEditWindow.js';
+import { fieldHasContent } from './syncMergeUtils.js';
 
 const STORAGE_KEY = 'spike_venture_coach_v1';
 
@@ -280,21 +281,35 @@ function topEntries(map, limit) {
  * @param {string} participantId
  * @param {string} sectionId
  * @param {Record<string, unknown>} remote
+ * @param {{ preferLocal?: boolean, preferRemote?: boolean }} [opts]
  */
-export function mergeCoachSectionFromRemote(participantId, sectionId, remote) {
+export function mergeCoachSectionFromRemote(participantId, sectionId, remote, opts = {}) {
   const all = readAll();
   const user = ensureCoachUser(participantId);
   const current = user.sections[sectionId] ?? emptySection();
   const remoteUpdated = remote.updatedAt ?? remote.completedAt;
   const localUpdated = current.updatedAt ?? current.completedAt;
-  if (localUpdated && remoteUpdated && new Date(String(remoteUpdated)) <= new Date(String(localUpdated))) {
+  const remoteData = /** @type {Record<string, unknown>} */ (remote.data ?? {});
+  const remoteHasContent = fieldHasContent(remoteData);
+  const localHasContent = fieldHasContent(current.data);
+
+  if (!remoteHasContent && localHasContent) return;
+
+  if (opts.preferLocal && localHasContent) {
+    if (!localUpdated) return;
+    if (!remoteUpdated || new Date(String(remoteUpdated)) <= new Date(String(localUpdated))) {
+      return;
+    }
+  } else if (localUpdated && remoteUpdated && new Date(String(remoteUpdated)) <= new Date(String(localUpdated))) {
     return;
   }
 
   user.sections[sectionId] = {
     ...current,
     step: Number(remote.step ?? current.step ?? 0),
-    data: { ...current.data, ...(/** @type {Record<string, unknown>} */ (remote.data ?? {})) },
+    data: remoteHasContent
+      ? { ...current.data, ...remoteData }
+      : current.data,
     draftVersions: Array.isArray(remote.draftVersions) ? remote.draftVersions : current.draftVersions,
     completedAt: remote.completedAt ? String(remote.completedAt) : current.completedAt,
     firstCompletedAt: remote.firstCompletedAt

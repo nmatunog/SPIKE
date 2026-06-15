@@ -4,6 +4,7 @@
  */
 
 import { upsertSurveyResponse, fetchAllSurveyResponses } from './supabase/surveyResponses.js';
+import { fieldHasContent } from './syncMergeUtils.js';
 
 const STORAGE_KEY = 'spike_survey_responses';
 
@@ -129,7 +130,7 @@ export async function backfillLocalSurveysToSupabase(participantId) {
 /**
  * Merge Supabase survey_responses into local cache for staff review.
  * @param {string} participantId
- * @param {{ force?: boolean, preferRemote?: boolean }} [opts]
+ * @param {{ force?: boolean, preferRemote?: boolean, preferLocal?: boolean }} [opts]
  */
 export async function hydrateSurveysFromSupabase(participantId, opts = {}) {
   if (!participantId || String(participantId).startsWith('mock-')) return;
@@ -148,13 +149,19 @@ export async function hydrateSurveysFromSupabase(participantId, opts = {}) {
   for (const row of rows) {
     const surveyId = String(row.survey_id);
     const local = user[surveyId];
-    if (!opts.preferRemote && local) continue;
 
     /** @type {Record<string, unknown>} */
     const answers = {};
     for (const item of row.survey_response_answers ?? []) {
       answers[item.question_id] = item.answer;
     }
+
+    const remoteHasContent = fieldHasContent(answers);
+    if (opts.preferLocal && local && fieldHasContent(local.answers) && !remoteHasContent) {
+      continue;
+    }
+    if (!opts.preferRemote && local && !opts.preferLocal) continue;
+    if (!remoteHasContent && local) continue;
 
     user[surveyId] = {
       surveyId,
