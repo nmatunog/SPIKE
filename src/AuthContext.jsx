@@ -17,7 +17,7 @@ import {
 } from './lib/mockAuth.js';
 import { setOnboardingCompleteCache } from './lib/cohortOnboardingService.js';
 import { ensureInternProgress } from './lib/supabase/cohortOnboarding.js';
-import { syncInternLocalWorkToSupabase } from './lib/internSessionSync.js';
+import { syncInternLocalWorkToSupabase, scheduleInternDelayedUpload, clearInternDelayedUploadSchedule } from './lib/internSessionSync.js';
 import { isSupabaseConfigured, supabase } from './supabaseClient';
 
 const AuthContext = createContext(null);
@@ -71,6 +71,14 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     userRef.current = user;
   }, [user]);
+
+  useEffect(() => {
+    if (user?.role === 'INTERN' && user?.id) {
+      return scheduleInternDelayedUpload(user.id);
+    }
+    clearInternDelayedUploadSchedule();
+    return undefined;
+  }, [user?.id, user?.role]);
 
   const fetchSupabaseUser = useCallback(async (authUser) => {
     if (!authUser || !supabase) return null;
@@ -418,6 +426,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   const logout = useCallback(() => {
+    clearInternDelayedUploadSchedule();
     clearMockUser();
     if (USE_SUPABASE) {
       supabase.auth.signOut();
