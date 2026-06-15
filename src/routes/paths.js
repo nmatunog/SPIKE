@@ -63,9 +63,27 @@ export const BLUEPRINT_LINKS = {
 export function portfolioSectionFromPath(pathname, validSectionIds) {
   if (pathname === ROUTES.myVenturePortfolio) return 'overview';
   const prefix = `${ROUTES.myVenturePortfolio}/`;
-  if (!pathname.startsWith(prefix)) return 'overview';
+  if (!pathname.startsWith(prefix)) return null;
   const slug = pathname.slice(prefix.length).split('/').filter(Boolean)[0] ?? 'overview';
   return validSectionIds.includes(slug) ? slug : 'overview';
+}
+
+/**
+ * Parse framework day URLs — /base/:segment/:week/:day
+ * (SpikeMasterPortal uses a catch-all route; useParams does not receive these segments.)
+ * @param {string} pathname
+ * @param {string} basePath
+ */
+export function parseFrameworkDayPath(pathname, basePath) {
+  const prefix = `${basePath.replace(/\/$/, '')}/`;
+  if (!pathname.startsWith(prefix)) return null;
+  const parts = pathname.slice(prefix.length).split('/').filter(Boolean);
+  if (parts.length < 3) return null;
+  const segment = Number(parts[0]);
+  const week = Number(parts[1]);
+  const day = Number(parts[2]);
+  if (!Number.isFinite(segment) || !Number.isFinite(week) || !Number.isFinite(day)) return null;
+  return { segment, week, day };
 }
 
 const INTERN_FORMATION_ROUTES = [

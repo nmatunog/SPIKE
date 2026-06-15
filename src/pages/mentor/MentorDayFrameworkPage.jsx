@@ -1,16 +1,19 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { PageContainer } from '../../components/layout/PageContainer.jsx';
 import { FrameworkBulletList, FrameworkSection } from '../../components/framework/FrameworkSections.jsx';
 import { loadMentorDayFramework } from '../../lib/facultyMentorFrameworkService.js';
-import { ROUTES } from '../../routes/paths.js';
+import { ROUTES, parseFrameworkDayPath } from '../../routes/paths.js';
 
 export function MentorDayFrameworkPage() {
-  const { segment = '1', week = '1', day = '1' } = useParams();
-  const seg = Number(segment);
-  const wk = Number(week);
-  const dy = Number(day);
+  const { pathname } = useLocation();
+  const coords = parseFrameworkDayPath(pathname, ROUTES.mentorPlaybook) ?? {
+    segment: 1,
+    week: 1,
+    day: 1,
+  };
+  const { segment: seg, week: wk, day: dy } = coords;
   const [data, setData] = useState(null);
 
   useEffect(() => {
