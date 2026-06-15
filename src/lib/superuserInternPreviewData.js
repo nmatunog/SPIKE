@@ -8,7 +8,7 @@ import { setSectionField } from './blueprintSectionStore.js';
 import { ensureFormationStore, writeFormationStore } from './cohortFormationStorage.js';
 import { saveCanvasField } from './canvasService.js';
 import { saveCanvasSummary } from './canvasSummaryService.js';
-import { writeBuilderEntry } from './day1BuilderStorage.js';
+import { clearBuilderEntry, writeBuilderEntry } from './day1BuilderStorage.js';
 import { savePortfolioSettings } from './portfolioStorage.js';
 import { saveSurveyResponseLocal } from './surveyService.js';
 import {
@@ -19,7 +19,7 @@ import {
 import { COACH_SECTIONS } from './ventureCoachConstants.js';
 
 export const SUPERUSER_INTERN_PREVIEW_PARTICIPANT_ID = 'mock-superuser-intern-preview';
-export const SUPERUSER_INTERN_PREVIEW_SEED_VERSION = 'v1';
+export const SUPERUSER_INTERN_PREVIEW_SEED_VERSION = 'v2';
 const SEEDED_MARKER_KEY = 'spike_superuser_intern_preview_seed';
 
 export const SUPERUSER_INTERN_PREVIEW_PROGRESS = {
@@ -99,30 +99,6 @@ const CANVAS_SAMPLE = {
       'Office stipend, marketing fund, training subscriptions, travel for field visits, and technology tools.',
   },
 };
-
-const DREAM_BOARD_ASSETS = [
-  {
-    id: 'dream-agency',
-    category: 'career',
-    caption: 'Leading a district agency that transforms how families plan for the future.',
-    imageUrl:
-      'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=640&h=480&fit=crop',
-  },
-  {
-    id: 'dream-family',
-    category: 'lifestyle',
-    caption: 'Providing security so my family can travel, learn, and give back every year.',
-    imageUrl:
-      'https://images.unsplash.com/photo-1511895426328-dc871419ed00?w=640&h=480&fit=crop',
-  },
-  {
-    id: 'dream-community',
-    category: 'impact',
-    caption: 'Hosting financial literacy workshops for young professionals in my community.',
-    imageUrl:
-      'https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=640&h=480&fit=crop',
-  },
-];
 
 const RESEARCH_ARTIFACTS = [
   {
@@ -210,12 +186,6 @@ function seedBlueprintSections(participantId) {
   setSectionField(participantId, 'vision-purpose', 'personal_tagline', SAMPLE_TAGLINE);
   setSectionField(participantId, 'vision-purpose', 'future_self_narrative', SAMPLE_FUTURE_SELF);
   setSectionField(participantId, 'vision-purpose', 'future_self_summary', SAMPLE_FUTURE_SELF_SUMMARY);
-  setSectionField(
-    participantId,
-    'vision-purpose',
-    'dream_board',
-    'Dream board captures agency leadership, family security, and community education impact.',
-  );
   setSectionField(
     participantId,
     'vision-purpose',
@@ -316,12 +286,6 @@ function seedCanvas(participantId) {
 
 /** @param {string} participantId */
 function seedDay1Builders(participantId) {
-  writeBuilderEntry(
-    participantId,
-    'dream-board',
-    { assets: DREAM_BOARD_ASSETS, notes: 'Sample dream board for superuser intern preview.' },
-    true,
-  );
   writeBuilderEntry(
     participantId,
     'squad-charter',
@@ -492,4 +456,17 @@ export function isSuperuserInternPreviewSeeded() {
   } catch {
     return false;
   }
+}
+
+/** Clear Alex Rivera sample dream board so the builder can be demoed fresh. */
+export function resetSuperuserInternDreamBoard(
+  participantId = SUPERUSER_INTERN_PREVIEW_PARTICIPANT_ID,
+) {
+  if (typeof localStorage === 'undefined') return false;
+  clearBuilderEntry(participantId, 'dream-board');
+  setSectionField(participantId, 'vision-purpose', 'dream_board', '', {
+    sourceType: 'day1_builder',
+    sourceId: 'dream-board',
+  });
+  return true;
 }

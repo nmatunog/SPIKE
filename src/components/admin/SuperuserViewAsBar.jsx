@@ -1,10 +1,16 @@
 import { Eye } from 'lucide-react';
 import { formatUiRoleLabel } from '../../lib/terminology.js';
 import { VIEW_AS_ROLE_OPTIONS } from '../../lib/superuserViewAs.js';
+import { resetSuperuserInternDreamBoard } from '../../lib/superuserInternPreviewData.js';
 
 export function SuperuserViewAsBar({ viewAsRole, onViewAs }) {
   const activeRole = viewAsRole ?? 'superuser';
   const viewingLabel = formatUiRoleLabel(activeRole);
+
+  function handleResetDreamBoard() {
+    resetSuperuserInternDreamBoard();
+    window.location.assign('/venture-blueprint/day-1-builders');
+  }
 
   return (
     <div className="sticky top-0 z-40 border-b border-amber-300/80 bg-amber-50 text-amber-950 shadow-sm">
@@ -69,6 +75,15 @@ export function SuperuserViewAsBar({ viewAsRole, onViewAs }) {
           >
             Superuser
           </button>
+          {viewAsRole === 'intern' ? (
+            <button
+              type="button"
+              onClick={handleResetDreamBoard}
+              className="min-h-[36px] touch-manipulation rounded-lg bg-white px-2.5 py-1 text-xs font-bold text-amber-900 ring-1 ring-amber-300/80 hover:bg-amber-100 sm:px-3 sm:text-sm"
+            >
+              Reset dream board
+            </button>
+          ) : null}
         </div>
       </div>
     </div>
