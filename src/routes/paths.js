@@ -105,6 +105,22 @@ export function mentorParticipantReviewHref(participantId) {
   return `${ROUTES.mentorVentureCoach}/${participantId}`;
 }
 
+/**
+ * Parse /portfolio/:slug (public share). Catch-all route — do not use useParams().
+ * @param {string} pathname
+ */
+export function parsePublicPortfolioSlug(pathname) {
+  const prefix = `${ROUTES.portfolio}/`;
+  if (!pathname.startsWith(prefix) || pathname === ROUTES.portfolio) return null;
+  const slug = pathname.slice(prefix.length).split('/').filter(Boolean)[0];
+  return slug || null;
+}
+
+/** @param {string} pathname */
+export function isPublicPortfolioPath(pathname) {
+  return Boolean(parsePublicPortfolioSlug(pathname));
+}
+
 const INTERN_FORMATION_ROUTES = [
   ROUTES.cohortIdentity,
   ROUTES.squadPreferences,
@@ -256,6 +272,13 @@ export function matchModulePath(pathname) {
   if (pathname === ROUTES.programCoachHome || pathname.startsWith(`${ROUTES.programCoachHome}/`)) {
     return ROUTES.programCoachHome;
   }
+  if (
+    pathname === ROUTES.mentorVentureCoach
+    || pathname.startsWith(`${ROUTES.mentorVentureCoach}/`)
+    || pathname.startsWith(`${ROUTES.mentorParticipant}/`)
+  ) {
+    return ROUTES.mentorVentureCoach;
+  }
   if (pathname === ROUTES.mentorHome || pathname.startsWith(`${ROUTES.mentorHome}/`)) {
     return ROUTES.mentorHome;
   }
@@ -265,11 +288,8 @@ export function matchModulePath(pathname) {
   if (pathname === ROUTES.myVenturePortfolio || pathname.startsWith(`${ROUTES.myVenturePortfolio}/`)) {
     return ROUTES.myVenturePortfolio;
   }
-  if (
-    pathname.startsWith(`${ROUTES.mentorVentureCoach}/`)
-    || pathname.startsWith(`${ROUTES.mentorParticipant}/`)
-  ) {
-    return ROUTES.mentorVentureCoach;
+  if (isPublicPortfolioPath(pathname)) {
+    return ROUTES.portfolio;
   }
 
   for (const route of Object.values(ROUTES)) {
@@ -303,6 +323,7 @@ const AUTHENTICATED_ROLES = ['intern', 'faculty', 'mentor', 'admin', 'superuser'
 
 /** Roles allowed on a module route (single source of truth with MODULE_NAV). */
 export function rolesForRoute(pathname) {
+  if (isPublicPortfolioPath(pathname)) return AUTHENTICATED_ROLES;
   if (INTERN_FORMATION_ROUTES.includes(pathname)) return ['intern'];
   if (pathname === ROUTES.adminCohorts || pathname === ROUTES.adminSquadThemes) return ['admin', 'superuser'];
   if (pathname === ROUTES.adminSquads) return ['admin', 'superuser', 'faculty'];
@@ -315,11 +336,6 @@ export function rolesForRoute(pathname) {
   if (pathname === ROUTES.programCoachHome || pathname.startsWith(`${ROUTES.programCoachHome}/`)) {
     return ['faculty', 'admin', 'superuser'];
   }
-  if (pathname === ROUTES.mentorHome || pathname.startsWith(`${ROUTES.mentorHome}/`)) {
-    return ['mentor', 'admin', 'superuser'];
-  }
-  if (pathname === ROUTES.analyticsCohortIdentity) return ['faculty', 'admin', 'mentor', 'superuser'];
-  if (pathname === ROUTES.brandLexicon) return ['faculty', 'mentor', 'admin', 'superuser'];
   if (
     pathname === ROUTES.mentorVentureCoach
     || pathname.startsWith(`${ROUTES.mentorVentureCoach}/`)
@@ -327,6 +343,11 @@ export function rolesForRoute(pathname) {
   ) {
     return ['mentor', 'faculty', 'admin', 'superuser'];
   }
+  if (pathname === ROUTES.mentorHome || pathname.startsWith(`${ROUTES.mentorHome}/`)) {
+    return ['mentor', 'admin', 'superuser'];
+  }
+  if (pathname === ROUTES.analyticsCohortIdentity) return ['faculty', 'admin', 'mentor', 'superuser'];
+  if (pathname === ROUTES.brandLexicon) return ['faculty', 'mentor', 'admin', 'superuser'];
 
   const route = matchModulePath(pathname);
   if (!route) return [];
@@ -337,6 +358,7 @@ export function rolesForRoute(pathname) {
 }
 
 export function canAccessRoute(pathname, userRole) {
+  if (isPublicPortfolioPath(pathname)) return true;
   if (!AUTHENTICATED_ROLES.includes(userRole)) return false;
   if (userRole === 'superuser') {
     if (INTERN_FORMATION_ROUTES.includes(pathname)) return true;

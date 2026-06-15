@@ -28,7 +28,7 @@ import { RoleDashboardCards } from './components/dashboard/RoleDashboardCards.js
 import { BlueprintTimelineFeed } from './components/blueprint/BlueprintTimelineFeed.jsx';
 import { PageLoader } from './components/ui/PageLoader.jsx';
 import { RoleRouteGuard } from './components/routing/RoleRouteGuard.jsx';
-import { ROUTES, brandLexiconBackHrefForRole, defaultRouteForRole, isVentureBlueprintPath } from './routes/paths.js';
+import { ROUTES, brandLexiconBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath } from './routes/paths.js';
 import {
   AdminCohortsPage,
   AdminFacultyPlaybookPage,
@@ -120,6 +120,7 @@ const SpikeMasterPortal = () => {
     login,
     logout,
     refreshUser,
+    internCloudSyncing,
     completeBootstrapSetup,
   } = useAuth();
   const userRole = resolveUserRole(user);
@@ -210,7 +211,7 @@ const SpikeMasterPortal = () => {
       const next = role === 'superuser' ? null : role;
       setViewAsRole(next);
       writeViewAsRole(next);
-      navigate(defaultRouteForRole(next ?? 'superuser'));
+      navigate(defaultRouteForRole(next ?? 'superuser'), { replace: true });
     },
     [navigate],
   );
@@ -1525,7 +1526,12 @@ const SpikeMasterPortal = () => {
         );
       }
       if (path === ROUTES.analyticsCohortIdentity) {
-        return <CohortIdentityAnalyticsPage />;
+        return (
+          <CohortIdentityAnalyticsPage
+            userRole={effectiveUserRole}
+            backHref={brandLexiconBackHrefForRole(effectiveUserRole)}
+          />
+        );
       }
       if (path === ROUTES.brandLexicon) {
         return (
@@ -1727,7 +1733,7 @@ const SpikeMasterPortal = () => {
     <div
       className={`spike-app-shell ${
         compactNav ? 'spike-app-shell--compact-nav' : 'spike-app-shell--desktop-nav'
-      }`}
+      }${internCloudSyncing ? ' spike-app-shell--cloud-syncing' : ''}`}
     >
       <InternSignInSyncBanner />
       <PortalHeader
@@ -1747,7 +1753,13 @@ const SpikeMasterPortal = () => {
       )}
 
       <main>
-        {userRole === 'guest' && (
+        {userRole === 'guest' && isPublicPortfolioPath(location.pathname) ? (
+          <LazyRoute label="Loading portfolio…">
+            <PublicPortfolioPage />
+          </LazyRoute>
+        ) : null}
+
+        {userRole === 'guest' && !isPublicPortfolioPath(location.pathname) && (
           STATIC_ONLY ? (
             <div className="container mx-auto px-6 py-8">
               <div className="mb-6 rounded-xl border border-gray-200 bg-white p-5">

@@ -43,7 +43,7 @@ function PathPill({ active, children, onClick, className = '' }) {
  */
 function ContentCurriculum({ participantId, userRole = 'intern', interns = [] }) {
   const [dataSource, setDataSource] = useState(() => getCurriculumDataSource());
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [, setRefreshKey] = useState(0);
 
   useEffect(() => {
     let active = true;
@@ -107,17 +107,15 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [] })
 
   const dayContent = bundle ? (
     userRole === 'faculty' || userRole === 'admin' ? (
-      <FacultyPlaybookView key={refreshKey} bundle={bundle} />
+      <FacultyPlaybookView bundle={bundle} />
     ) : userRole === 'mentor' ? (
       <MentorPlaybookView
-        key={refreshKey}
         bundle={bundle}
         interns={interns}
         mentorId={userRole === 'mentor' || userRole === 'admin' ? participantId : undefined}
       />
     ) : (
       <ParticipantDayView
-        key={refreshKey}
         bundle={bundle}
         participantId={participantId}
         onProgress={() => setRefreshKey((k) => k + 1)}

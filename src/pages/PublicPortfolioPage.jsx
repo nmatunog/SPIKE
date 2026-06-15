@@ -1,13 +1,14 @@
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { findParticipantIdByPortfolioSlug } from '../lib/portfolioStorage.js';
 import { generateVenturePortfolio } from '../services/portfolioGenerator.js';
 import { DreamBoardSlideCollage } from '../components/venturePortfolio/DreamBoardSlideCollage.jsx';
 import { SpikeLogo } from '../components/brand/SpikeLogo.jsx';
-import { ROUTES } from '../routes/paths.js';
+import { ROUTES, parsePublicPortfolioSlug } from '../routes/paths.js';
 
 /** Public read-only portfolio showcase — `/portfolio/:slug` */
 export function PublicPortfolioPage() {
-  const { slug } = useParams();
+  const { pathname } = useLocation();
+  const slug = parsePublicPortfolioSlug(pathname);
   const participantId = findParticipantIdByPortfolioSlug(slug ?? '');
 
   if (!participantId) {

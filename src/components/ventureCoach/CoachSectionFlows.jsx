@@ -375,7 +375,7 @@ export function AmbitionCoachFlow({ participantId, onProgress, onSectionComplete
             }}
             onAccept={handleAccept}
           />
-          <CoachStepNav backLabel="Back to role" onBack={() => setStep(3)} />
+          <CoachStepNav backLabel="Back to role" onBack={() => setStep(3)} sticky={false} />
         </>
         ) : (
           <>
@@ -522,7 +522,8 @@ export function ImpactCoachFlow({ participantId, onProgress, onSectionComplete }
         </>
       ) : null}
 
-      {step === 2 && draft ? (
+      {step === 2 ? (
+        draft ? (
         <>
           <CoachSectionHeader
             step={2}
@@ -568,8 +569,24 @@ export function ImpactCoachFlow({ participantId, onProgress, onSectionComplete }
             onAccept={handleAccept}
             acceptLabel="Accept impact statement"
           />
-          <CoachStepNav backLabel="Back to audiences" onBack={() => setStep(1)} />
+          <CoachStepNav backLabel="Back to audiences" onBack={() => setStep(1)} sticky={false} />
         </>
+        ) : (
+          <>
+            <CoachSectionHeader
+              step={2}
+              total={IMPACT_STEPS}
+              title="Compose and finalize"
+              description="Your draft did not load. Tap below to generate your impact statement from your audiences."
+            />
+            <CoachStepNav
+              backLabel="Back to audiences"
+              forwardLabel="Compose my impact statement"
+              onBack={() => setStep(1)}
+              onForward={beginComposeStep}
+            />
+          </>
+        )
       ) : null}
     </div>
   );
@@ -700,7 +717,8 @@ export function ValuesCoachFlow({ participantId, onProgress, onSectionComplete }
         </>
       ) : null}
 
-      {step === 4 && profile ? (
+      {step === 4 ? (
+        profile ? (
         <>
           <CoachMessage>
             <p className="font-semibold">Values Profile</p>
@@ -717,6 +735,28 @@ export function ValuesCoachFlow({ participantId, onProgress, onSectionComplete }
             }}
           />
         </>
+        ) : (
+          <>
+            <CoachSectionHeader
+              step={4}
+              total={4}
+              title="Values profile"
+              description="Your profile did not load. Go back and generate it from your top three values."
+            />
+            <CoachStepNav
+              backLabel="Back"
+              forwardLabel="Generate values profile"
+              forwardDisabled={topThree.length !== 3}
+              onBack={() => setStep(3)}
+              onForward={() => {
+                const nextProfile = generateValuesProfile(topThree);
+                setProfile(nextProfile);
+                persist({ valuesProfile: nextProfile, topThree, step: 4 });
+                setStep(4);
+              }}
+            />
+          </>
+        )
       ) : null}
     </div>
   );
@@ -749,11 +789,17 @@ export function TaglineCoachFlow({ participantId, onProgress, onSectionComplete 
 
     let cancelled = false;
     (async () => {
-      const { text } = await generateTaglineWithAi(taglineContext);
-      if (cancelled) return;
-      setDraft(text);
-      persist({ draft: text });
-      setDraftLoading(false);
+      try {
+        const { text } = await generateTaglineWithAi(taglineContext);
+        if (cancelled) return;
+        setDraft(text);
+        persist({ draft: text });
+      } catch (err) {
+        console.warn('[tagline] AI generation failed', err);
+        if (!cancelled) setDraft('');
+      } finally {
+        if (!cancelled) setDraftLoading(false);
+      }
     })();
 
     return () => {
@@ -982,7 +1028,8 @@ export function FutureSelfCoachFlow({ participantId, onProgress, onSectionComple
         </>
       ) : null}
 
-      {step === 4 && draft ? (
+      {step === 4 ? (
+        draft ? (
         <>
           <CoachMessage>
             <p>Your Future Self narrative (250–400 words) plus a one-sentence summary for mentors and presentations.</p>
@@ -1064,8 +1111,19 @@ export function FutureSelfCoachFlow({ participantId, onProgress, onSectionComple
               <p className="text-sm text-amber-800">{summaryError}</p>
             ) : null}
           </div>
-          <CoachStepNav backLabel="Back to vision inputs" onBack={() => setStep(3)} />
+          <CoachStepNav backLabel="Back to vision inputs" onBack={() => setStep(3)} sticky={false} />
         </>
+        ) : (
+          <>
+            <CoachSectionHeader
+              step={4}
+              total={4}
+              title="Future Self narrative"
+              description="Your narrative did not load. Go back and generate it from your vision inputs."
+            />
+            <CoachStepNav backLabel="Back to vision inputs" onBack={() => setStep(3)} />
+          </>
+        )
       ) : null}
     </div>
   );

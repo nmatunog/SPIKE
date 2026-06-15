@@ -10,19 +10,29 @@ export function useParticipantHydration(participantId, opts = {}) {
   const enabled = opts.enabled !== false;
   const [ready, setReady] = useState(false);
   const [version, setVersion] = useState(0);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!enabled || !participantId) {
       setReady(false);
+      setError(null);
       return;
     }
     let cancelled = false;
     setReady(false);
+    setError(null);
     (async () => {
-      await hydrateParticipantForStaffView(participantId, { force: true });
-      if (!cancelled) {
-        setReady(true);
-        setVersion((v) => v + 1);
+      try {
+        await hydrateParticipantForStaffView(participantId, { force: true });
+        if (!cancelled) {
+          setReady(true);
+          setVersion((v) => v + 1);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : 'Failed to load participant data');
+          setReady(true);
+        }
       }
     })();
     return () => {
@@ -30,7 +40,7 @@ export function useParticipantHydration(participantId, opts = {}) {
     };
   }, [participantId, enabled]);
 
-  return { ready, version };
+  return { ready, version, error };
 }
 
 /**
@@ -42,6 +52,7 @@ export function useCohortHydration(participantIds, opts = {}) {
   const enabled = opts.enabled !== false;
   const [ready, setReady] = useState(false);
   const [version, setVersion] = useState(0);
+  const [error, setError] = useState(null);
   const key = participantIds.join(',');
   const internKey = (opts.interns ?? [])
     .map((i) => `${i.id}:${i.squad ?? ''}`)
@@ -50,15 +61,24 @@ export function useCohortHydration(participantIds, opts = {}) {
   useEffect(() => {
     if (!enabled || !participantIds.length) {
       setReady(false);
+      setError(null);
       return;
     }
     let cancelled = false;
     setReady(false);
+    setError(null);
     (async () => {
-      await hydrateCohortForStaffView(participantIds, { force: true, interns: opts.interns });
-      if (!cancelled) {
-        setReady(true);
-        setVersion((v) => v + 1);
+      try {
+        await hydrateCohortForStaffView(participantIds, { force: true, interns: opts.interns });
+        if (!cancelled) {
+          setReady(true);
+          setVersion((v) => v + 1);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : 'Failed to load cohort data');
+          setReady(true);
+        }
       }
     })();
     return () => {
@@ -66,5 +86,5 @@ export function useCohortHydration(participantIds, opts = {}) {
     };
   }, [key, internKey, enabled]);
 
-  return { ready, version };
+  return { ready, version, error };
 }

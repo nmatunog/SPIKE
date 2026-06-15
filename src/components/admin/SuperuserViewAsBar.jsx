@@ -1,15 +1,18 @@
+import { useNavigate } from 'react-router-dom';
 import { Eye } from 'lucide-react';
 import { formatUiRoleLabel } from '../../lib/terminology.js';
 import { VIEW_AS_ROLE_OPTIONS } from '../../lib/superuserViewAs.js';
 import { resetSuperuserInternDreamBoard } from '../../lib/superuserInternPreviewData.js';
+import { ROUTES } from '../../routes/paths.js';
 
 export function SuperuserViewAsBar({ viewAsRole, onViewAs }) {
+  const navigate = useNavigate();
   const activeRole = viewAsRole ?? 'superuser';
   const viewingLabel = formatUiRoleLabel(activeRole);
 
   function handleResetDreamBoard() {
     resetSuperuserInternDreamBoard();
-    window.location.assign('/venture-blueprint/day-1-builders');
+    navigate(`${ROUTES.ventureBlueprint}/day-1-builders`, { replace: true });
   }
 
   return (

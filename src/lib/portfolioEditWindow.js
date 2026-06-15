@@ -50,7 +50,7 @@ export function portfolioEditGraceRemainingLabel(completedAt, firstCompletedAt =
 export function isDay1BuilderEditLocked(entry) {
   if (!entry?.completedAt) return false;
   if (entry.refining) return false;
-  return true;
+  return !canEditPortfolioInput(entry.completedAt, entry.firstCompletedAt);
 }
 
 /** @param {{ completedAt?: string | null, refining?: boolean }} entry */

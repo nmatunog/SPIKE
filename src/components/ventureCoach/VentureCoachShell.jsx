@@ -139,7 +139,7 @@ export function VentureCoachShell({ participantId, section }) {
   }
 
   return (
-    <div className="space-y-4" key={refreshKey}>
+    <div className="space-y-4">
       <Link
         to={section ? `${ROUTES.ventureBlueprint}/coach` : ROUTES.ventureBlueprint}
         className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-spike"
@@ -165,7 +165,7 @@ export function VentureCoachShell({ participantId, section }) {
           {renderSection()}
         </div>
         <div className="order-1 lg:order-none">
-          <CoachProgressSidebar progress={progress} activeSection={section} />
+          <CoachProgressSidebar key={refreshKey} progress={getCoachProgress(participantId)} activeSection={section} />
         </div>
       </div>
     </div>

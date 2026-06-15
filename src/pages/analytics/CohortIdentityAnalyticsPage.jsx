@@ -7,15 +7,26 @@ import {
   COACH_VALUE_CARDS,
   IMPACT_AUDIENCES,
 } from '../../lib/ventureCoachConstants.js';
-import { ROUTES } from '../../routes/paths.js';
+import { brandLexiconBackHrefForRole } from '../../routes/paths.js';
 
-export function CohortIdentityAnalyticsPage() {
+/**
+ * @param {{ backHref?: string, backLabel?: string, userRole?: string }} [props]
+ */
+export function CohortIdentityAnalyticsPage({ backHref, backLabel, userRole }) {
   const analytics = aggregateCoachAnalytics();
+  const href = backHref ?? brandLexiconBackHrefForRole(userRole);
+  const label =
+    backLabel ??
+    (userRole === 'mentor'
+      ? 'Back to Mentor home'
+      : userRole === 'faculty'
+        ? 'Back to Program Coach home'
+        : 'Back to dashboard');
 
   return (
     <PageContainer wide>
-      <Link to={ROUTES.dashboard} className="mb-4 inline-flex items-center gap-2 text-sm text-slate-500 hover:text-spike">
-        <ArrowLeft size={16} /> Back to dashboard
+      <Link to={href} className="mb-4 inline-flex items-center gap-2 text-sm text-slate-500 hover:text-spike">
+        <ArrowLeft size={16} /> {label}
       </Link>
 
       <header className="mb-6 flex items-start gap-3">

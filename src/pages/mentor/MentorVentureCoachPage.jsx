@@ -37,7 +37,7 @@ export function MentorVentureCoachPage({
   const { pathname } = useLocation();
   const participantId = parseMentorParticipantPath(pathname);
   const intern = interns.find((i) => i.id === participantId);
-  const { ready: dataReady, version: dataVersion } = useParticipantHydration(participantId);
+  const { ready: dataReady, version: dataVersion, error: hydrationError } = useParticipantHydration(participantId);
   const localSummary = participantId ? getCoachSummaryForMentor(participantId) : null;
   const [remoteSummary, setRemoteSummary] = useState(null);
   const [historyKey, setHistoryKey] = useState(0);
@@ -118,6 +118,11 @@ export function MentorVentureCoachPage({
 
   return (
     <PageContainer>
+      {hydrationError ? (
+        <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+          Could not load all participant data from the cloud. Showing whatever is available on this device.
+        </div>
+      ) : null}
       <Link
         to={ROUTES.mentorVentureCoach}
         className="mb-4 inline-flex items-center gap-2 text-sm text-slate-500 hover:text-spike"

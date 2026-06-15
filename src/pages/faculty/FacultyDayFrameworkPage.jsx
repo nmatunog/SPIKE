@@ -8,15 +8,17 @@ import { ROUTES, parseFrameworkDayPath } from '../../routes/paths.js';
 
 export function FacultyDayFrameworkPage() {
   const { pathname } = useLocation();
-  const coords = parseFrameworkDayPath(pathname, ROUTES.programCoachPlaybook) ?? {
-    segment: 1,
-    week: 1,
-    day: 1,
-  };
-  const { segment: seg, week: wk, day: dy } = coords;
+  const coords = parseFrameworkDayPath(pathname, ROUTES.programCoachPlaybook);
+  const seg = coords?.segment;
+  const wk = coords?.week;
+  const dy = coords?.day;
   const [data, setData] = useState(null);
 
   useEffect(() => {
+    if (seg == null || wk == null || dy == null) {
+      setData(null);
+      return undefined;
+    }
     let cancelled = false;
     (async () => {
       const result = await loadFacultyDayFramework(seg, wk, dy);
@@ -26,6 +28,23 @@ export function FacultyDayFrameworkPage() {
       cancelled = true;
     };
   }, [seg, wk, dy]);
+
+  if (!coords) {
+    return (
+      <PageContainer>
+        <p className="text-sm font-medium text-red-700">Invalid day URL.</p>
+        <p className="mt-1 text-sm text-slate-600">
+          Use a path like <code className="rounded bg-slate-100 px-1">/program-coach-playbook/1/1/1</code>.
+        </p>
+        <Link
+          to={ROUTES.programCoachPlaybook}
+          className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-spike hover:underline"
+        >
+          <ArrowLeft size={16} /> Program Coach Playbook
+        </Link>
+      </PageContainer>
+    );
+  }
 
   const template = data?.template;
 

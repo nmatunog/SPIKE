@@ -1,4 +1,5 @@
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import { ContentStudioBlocksPage } from './ContentStudioBlocksPage.jsx';
 import { ContentStudioDayBuilderPage } from './ContentStudioDayBuilderPage.jsx';
 import { ContentStudioHomePage } from './ContentStudioHomePage.jsx';
@@ -99,5 +100,16 @@ export function ContentStudioPage() {
     );
   }
 
-  return <ContentStudioHomePage />;
+  return (
+    <div className="mx-auto max-w-lg px-6 py-16 text-center">
+      <h1 className="text-xl font-bold text-slate-900">Content studio page not found</h1>
+      <p className="mt-2 text-sm text-slate-600">That URL is not a valid content studio section.</p>
+      <Link
+        to={ROUTES.adminContentStudio}
+        className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-spike hover:underline"
+      >
+        <ArrowLeft size={16} /> Content Studio home
+      </Link>
+    </div>
+  );
 }

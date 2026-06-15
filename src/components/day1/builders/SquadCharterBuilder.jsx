@@ -70,7 +70,8 @@ export function SquadCharterBuilder({
     && fields.teamCommitment.trim().length >= 10;
 
   return (
-    <div className={`space-y-6 ${editLocked ? 'pointer-events-none opacity-75' : ''}`}>
+    <div className="space-y-6">
+      <div className={`space-y-6 ${editLocked ? 'pointer-events-none opacity-75' : ''}`}>
       <section className="spike-card space-y-4">
         <h4 className="text-lg font-semibold text-slate-900">Squad Charter Builder</h4>
         <p className="text-sm text-slate-600">
@@ -113,13 +114,25 @@ export function SquadCharterBuilder({
       </section>
 
       {(committed || completed) && !refining ? (
-        <>
-          <section className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
-            <p className="font-semibold text-emerald-900">✓ Digital signature recorded</p>
-            <p className="mt-1 text-sm text-emerald-800">
-              Signed by {participantName}. Charter PDF generated — check your downloads.
-            </p>
-          </section>
+        <section className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+          <p className="font-semibold text-emerald-900">✓ Digital signature recorded</p>
+          <p className="mt-1 text-sm text-emerald-800">
+            Signed by {participantName}. Charter PDF generated — check your downloads.
+          </p>
+        </section>
+      ) : (
+        <button
+          type="button"
+          disabled={!canCommit}
+          onClick={handleCommit}
+          className="spike-btn-primary w-full sm:w-auto disabled:opacity-50"
+        >
+          <PenLine size={18} /> I Commit — Sign Charter
+        </button>
+      )}
+      </div>
+
+      {(committed || completed) && !refining ? (
           <BuilderSubmissionFooter
             completed={completed}
             editLocked={editLocked}
@@ -132,17 +145,7 @@ export function SquadCharterBuilder({
             savedLabel="Charter saved to your portfolio"
             onComplete={handleCommit}
           />
-        </>
-      ) : (
-        <button
-          type="button"
-          disabled={!canCommit}
-          onClick={handleCommit}
-          className="spike-btn-primary w-full sm:w-auto disabled:opacity-50"
-        >
-          <PenLine size={18} /> I Commit — Sign Charter
-        </button>
-      )}
+      ) : null}
     </div>
   );
 }

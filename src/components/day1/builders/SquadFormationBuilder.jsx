@@ -35,7 +35,8 @@ export function SquadFormationBuilder({
   }
 
   return (
-    <div className={`space-y-6 ${editLocked ? 'pointer-events-none opacity-75' : ''}`}>
+    <div className="space-y-6">
+      <div className={`space-y-6 ${editLocked ? 'pointer-events-none opacity-75' : ''}`}>
       <section className="spike-card">
         <h4 className="mb-1 text-lg font-semibold text-slate-900">Startup Squad Formation</h4>
         <p className="mb-2 text-sm text-slate-600">
@@ -75,6 +76,7 @@ export function SquadFormationBuilder({
             .join(', ')}
         </p>
       ) : null}
+      </div>
 
       <BuilderSubmissionFooter
         completed={completed}

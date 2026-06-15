@@ -18,7 +18,7 @@ import {
   generateVenturePortfolio,
   PORTFOLIO_NAV_SECTIONS,
 } from '../services/portfolioGenerator.js';
-import { ROUTES, portfolioSectionFromPath } from '../routes/paths.js';
+import { ROUTES, defaultRouteForRole, portfolioSectionFromPath } from '../routes/paths.js';
 import { isSuperuserInternPreviewUser } from '../lib/superuserInternPreview.js';
 
 /**
@@ -145,7 +145,7 @@ export function MyVenturePortfolioRoute({ user }) {
     'present',
   ]);
   if (!user?.internProgress) {
-    return <Navigate to={ROUTES.home} replace />;
+    return <Navigate to={defaultRouteForRole('intern')} replace />;
   }
   return <MyVenturePortfolioShell user={user} section={section} />;
 }
