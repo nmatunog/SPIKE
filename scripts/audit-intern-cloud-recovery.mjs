@@ -276,6 +276,15 @@ async function main() {
 }
 
 main().catch((err) => {
+  const cause = err?.cause;
   console.error('audit-intern-cloud-recovery failed:', err.message || err);
+  if (cause) {
+    console.error('  cause:', cause.code || cause.message || cause);
+  }
+  console.error(`  supabase url: ${url || '(not set)'}`);
+  console.error(`  service key length: ${serviceKey ? serviceKey.length : 0} (expect ~200+ chars, one line in .env)`);
+  if (serviceKey?.includes('SUPABASE_SERVICE_ROLE_KEY')) {
+    console.error('  fix: .env has a duplicated key on one line — keep only one SUPABASE_SERVICE_ROLE_KEY=...');
+  }
   process.exit(1);
 });
