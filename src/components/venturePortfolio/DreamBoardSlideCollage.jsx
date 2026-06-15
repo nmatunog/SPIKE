@@ -1,15 +1,18 @@
 import { dreamBoardCategoryMeta } from '../../lib/venturePortfolioService.js';
+import { dreamBoardSlideGridClass, getDreamBoardMaxCards } from '../../lib/dreamBoardConfig.js';
 
 /**
  * 16:9 presentation slide collage for dream board assets with category tags and captions.
  * @param {{
  *   assets: Array<{ id: string, category: string, caption: string, imageUrl?: string }>,
  *   title?: string,
+ *   maxCards?: number,
  * }} props
  */
-export function DreamBoardSlideCollage({ assets, title = 'My Dream Board' }) {
+export function DreamBoardSlideCollage({ assets, title = 'My Dream Board', maxCards }) {
+  const slideMax = maxCards ?? getDreamBoardMaxCards();
   const cards = assets.filter((asset) => asset.imageUrl || asset.caption?.trim());
-  const count = Math.min(cards.length, 6);
+  const count = Math.min(cards.length, slideMax);
 
   if (!count) {
     return (
@@ -19,16 +22,7 @@ export function DreamBoardSlideCollage({ assets, title = 'My Dream Board' }) {
     );
   }
 
-  const layoutClass =
-    count === 1
-      ? 'grid-cols-1 grid-rows-1'
-      : count === 2
-        ? 'grid-cols-2 grid-rows-1'
-        : count === 3
-          ? 'grid-cols-3 grid-rows-1'
-          : count === 4
-            ? 'grid-cols-2 grid-rows-2'
-            : 'grid-cols-3 grid-rows-2';
+  const layoutClass = dreamBoardSlideGridClass(count);
 
   return (
     <figure className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-900 shadow-projection">
@@ -36,7 +30,7 @@ export function DreamBoardSlideCollage({ assets, title = 'My Dream Board' }) {
         <figcaption className="text-sm font-bold tracking-wide text-white">{title}</figcaption>
       </div>
       <div className={`grid aspect-video w-full gap-1 p-1 ${layoutClass}`}>
-        {cards.slice(0, 6).map((asset) => {
+        {cards.slice(0, slideMax).map((asset) => {
           const category = dreamBoardCategoryMeta(asset.category);
           return (
             <div key={asset.id} className="relative min-h-0 overflow-hidden rounded-lg bg-slate-800">

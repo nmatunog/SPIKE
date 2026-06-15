@@ -1,9 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { ChevronDown, ChevronUp, ImagePlus, Plus, Trash2, Upload } from 'lucide-react';
 import { DREAM_BOARD_CATEGORIES } from '../../../lib/day1BuilderConstants.js';
+import {
+  DREAM_BOARD_MIN_COMPLETE_CARDS,
+  getDreamBoardMaxCards,
+} from '../../../lib/dreamBoardConfig.js';
+import { readDreamBoardImageFile } from '../../../lib/dreamBoardImage.js';
 import { BuilderSubmissionFooter } from '../BuilderSubmissionFooter.jsx';
 
-const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
 
 /** @returns {string} */
 function newAssetId() {
@@ -11,24 +15,6 @@ function newAssetId() {
     return `asset-${crypto.randomUUID()}`;
   }
   return `asset-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-}
-
-/** @param {File} file */
-function readImageFile(file) {
-  return new Promise((resolve, reject) => {
-    if (!file.type.startsWith('image/')) {
-      reject(new Error('Please choose an image file (JPG, PNG, or WebP).'));
-      return;
-    }
-    if (file.size > MAX_IMAGE_BYTES) {
-      reject(new Error('Image must be under 2 MB.'));
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result ?? ''));
-    reader.onerror = () => reject(new Error('Could not read image.'));
-    reader.readAsDataURL(file);
-  });
 }
 
 /**
@@ -51,7 +37,7 @@ function DreamBoardImageUpload({ assetId, imageUrl, disabled = false, onImage, o
     if (!file) return;
     busyRef.current = true;
     try {
-      const dataUrl = await readImageFile(file);
+      const dataUrl = await readDreamBoardImageFile(file);
       onImage(dataUrl);
     } catch (err) {
       onError(err instanceof Error ? err.message : 'Upload failed.');
@@ -201,6 +187,7 @@ export function DreamBoardStudio({
     ),
   );
   const [activeCategory, setActiveCategory] = useState(DREAM_BOARD_CATEGORIES[0].id);
+  const maxCards = getDreamBoardMaxCards();
   const [uploadError, setUploadError] = useState('');
 
   useEffect(() => {
@@ -210,10 +197,20 @@ export function DreamBoardStudio({
 
   function sync(next) {
     setAssets(next);
-    onChange({ assets: next });
+    try {
+      onChange({ assets: next });
+      setUploadError('');
+    } catch (err) {
+      if (err instanceof Error && err.name === 'QuotaExceededError') {
+        setUploadError(err.message);
+        return;
+      }
+      throw err;
+    }
   }
 
   function addCard() {
+    if (assets.length >= maxCards) return;
     sync([
       ...assets,
       {
@@ -229,7 +226,16 @@ export function DreamBoardStudio({
   function updateAsset(id, patch) {
     setAssets((prev) => {
       const next = prev.map((a) => (a.id === id ? { ...a, ...patch } : a));
-      onChange({ assets: next });
+      try {
+        onChange({ assets: next });
+        setUploadError('');
+      } catch (err) {
+        if (err instanceof Error && err.name === 'QuotaExceededError') {
+          setUploadError(err.message);
+          return prev;
+        }
+        throw err;
+      }
       return next;
     });
   }
@@ -237,7 +243,16 @@ export function DreamBoardStudio({
   function removeAsset(id) {
     setAssets((prev) => {
       const next = prev.filter((a) => a.id !== id);
-      onChange({ assets: next });
+      try {
+        onChange({ assets: next });
+        setUploadError('');
+      } catch (err) {
+        if (err instanceof Error && err.name === 'QuotaExceededError') {
+          setUploadError(err.message);
+          return prev;
+        }
+        throw err;
+      }
       return next;
     });
   }
@@ -261,7 +276,9 @@ export function DreamBoardStudio({
     });
   }
 
-  const canComplete = assets.filter((a) => a.caption.trim().length >= 3).length >= 3;
+  const canComplete =
+    assets.filter((a) => a.caption.trim().length >= 3).length >= DREAM_BOARD_MIN_COMPLETE_CARDS;
+  const atCardLimit = assets.length >= maxCards;
   const readOnly = editLocked;
 
   return (
@@ -270,7 +287,12 @@ export function DreamBoardStudio({
         <h4 className="mb-1 text-lg font-semibold text-slate-900">Dream Board Studio</h4>
         <p className="mb-4 text-sm text-slate-600">
           Add dream cards by category. Each card stays in its category — deleting one card never moves
-          another into the wrong group.
+          another into the wrong group. You can add up to {maxCards} cards ({DREAM_BOARD_MIN_COMPLETE_CARDS}{' '}
+          with captions required to publish).
+        </p>
+
+        <p className="mb-4 text-xs font-semibold text-slate-500">
+          {assets.length} / {maxCards} dream cards
         </p>
 
         {uploadError ? (
@@ -296,9 +318,19 @@ export function DreamBoardStudio({
           ))}
         </div>
 
-        <button type="button" onClick={addCard} className="spike-btn-secondary mb-6">
+        <button
+          type="button"
+          onClick={addCard}
+          disabled={atCardLimit}
+          className="spike-btn-secondary mb-6 disabled:cursor-not-allowed disabled:opacity-50"
+        >
           <Plus size={16} /> Add dream card to {DREAM_BOARD_CATEGORIES.find((c) => c.id === activeCategory)?.label}
         </button>
+        {atCardLimit ? (
+          <p className="-mt-4 mb-6 text-xs text-amber-800">
+            Card limit reached ({maxCards}). Remove a card or ask your facilitator to raise the limit.
+          </p>
+        ) : null}
 
         <div className="space-y-8">
           {DREAM_BOARD_CATEGORIES.map((cat) => {

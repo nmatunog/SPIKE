@@ -19,7 +19,18 @@ function readAll() {
 }
 
 function writeAll(data) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch (err) {
+    if (err instanceof DOMException && (err.name === 'QuotaExceededError' || err.code === 22)) {
+      const quotaError = new Error(
+        'Device storage is full. Remove a dream card photo or use smaller images, then try again.',
+      );
+      quotaError.name = 'QuotaExceededError';
+      throw quotaError;
+    }
+    throw err;
+  }
 }
 
 /** @param {string} participantId */
