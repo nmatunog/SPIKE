@@ -564,6 +564,8 @@ export function subscribeToCohortOnboarding(cohortId, onChange) {
     .on('postgres_changes', { event: '*', schema: 'public', table: 'cohort_votes', filter: `cohort_id=eq.${cohortId}` }, onChange)
     .on('postgres_changes', { event: '*', schema: 'public', table: 'cohort_finalists', filter: `cohort_id=eq.${cohortId}` }, onChange)
     .on('postgres_changes', { event: '*', schema: 'public', table: 'formation_squads', filter: `cohort_id=eq.${cohortId}` }, onChange)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'formation_squad_members' }, onChange)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'cohort_suggestions', filter: `cohort_id=eq.${cohortId}` }, onChange)
     .subscribe();
   return channel;
 }
