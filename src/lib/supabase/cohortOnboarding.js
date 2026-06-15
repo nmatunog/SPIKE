@@ -352,6 +352,68 @@ async function syncInternProgressSquadLabel(client, participantId, squadName) {
   if (error) throw error;
 }
 
+/** @param {string} squadId */
+export async function syncFormationSquadMemberLabels(squadId) {
+  const client = assertClient();
+  const { data: squad, error: squadErr } = await client
+    .from('formation_squads')
+    .select('name')
+    .eq('id', squadId)
+    .maybeSingle();
+  if (squadErr) throw squadErr;
+
+  const { data: members, error: memErr } = await client
+    .from('formation_squad_members')
+    .select('participant_id')
+    .eq('squad_id', squadId);
+  if (memErr) throw memErr;
+
+  for (const member of members ?? []) {
+    await syncInternProgressSquadLabel(client, member.participant_id, squad?.name ?? null);
+  }
+}
+
+/**
+ * Canonical squad labels from formation_squad_members + formation_squads.
+ * @param {string[]} participantIds
+ */
+export async function fetchFormationSquadLabels(participantIds) {
+  const client = assertClient();
+  const ids = participantIds.filter(Boolean);
+  if (!ids.length) return {};
+
+  const { data, error } = await client
+    .from('formation_squad_members')
+    .select('participant_id, formation_squads(name)')
+    .in('participant_id', ids);
+  if (error) throw error;
+
+  /** @type {Record<string, string>} */
+  const labels = {};
+  for (const row of data ?? []) {
+    const name = row.formation_squads?.name;
+    if (row.participant_id && name) {
+      labels[row.participant_id] = String(name);
+    }
+  }
+  return labels;
+}
+
+/**
+ * Backfill intern_progress.squad from formation tables when stale or empty.
+ * @param {string[]} participantIds
+ */
+export async function reconcileFormationSquadLabels(participantIds) {
+  const client = assertClient();
+  const labels = await fetchFormationSquadLabels(participantIds);
+  await Promise.all(
+    Object.entries(labels).map(([participantId, squadName]) =>
+      syncInternProgressSquadLabel(client, participantId, squadName),
+    ),
+  );
+  return labels;
+}
+
 /** @param {string} squadId @param {string} participantId */
 export async function addSquadMember(squadId, participantId) {
   const client = assertClient();
@@ -422,6 +484,9 @@ export async function updateFormationSquad(squadId, patch) {
     .select()
     .single();
   if (error) throw error;
+  if (patch.name) {
+    await syncFormationSquadMemberLabels(squadId);
+  }
   return data;
 }
 

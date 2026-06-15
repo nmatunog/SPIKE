@@ -23,9 +23,9 @@ import { isSupabaseConfigured } from '../../supabaseClient.js';
 
 /**
  * Program Coach / Mentor controls for cohort-first onboarding.
- * @param {{ staffId: string, interns?: Array<{ id: string, name: string }>, canAssignSquads?: boolean, photoOnly?: boolean }} props
+ * @param {{ staffId: string, interns?: Array<{ id: string, name: string }>, canAssignSquads?: boolean, photoOnly?: boolean, onSquadChanged?: () => void }} props
  */
-export function CohortOnboardingControls({ staffId, interns = [], canAssignSquads = false, photoOnly = false }) {
+export function CohortOnboardingControls({ staffId, interns = [], canAssignSquads = false, photoOnly = false, onSquadChanged }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState('');
@@ -63,6 +63,7 @@ export function CohortOnboardingControls({ staffId, interns = [], canAssignSquad
     try {
       await fn();
       await refresh();
+      if (canAssignSquads) onSquadChanged?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Action failed.');
     } finally {

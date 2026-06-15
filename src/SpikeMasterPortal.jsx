@@ -1588,6 +1588,7 @@ const SpikeMasterPortal = () => {
               internSummary={internSummary}
               pendingLogs={pendingLogs}
               staffId={user?.id ?? ''}
+              onSquadChanged={loadInterns}
             />
           </LazyRoute>
         );

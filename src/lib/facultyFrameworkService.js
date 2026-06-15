@@ -22,7 +22,7 @@ export function deriveFacultyParticipantSubmissions(interns) {
     return {
       id: intern.id,
       name: intern.name,
-      squad: intern.squad ?? 'Unassigned',
+      squad: intern.squad?.trim() || 'Unassigned',
       week1Pct: week1CompletionPct(intern.id),
       dayStatus,
       daysComplete: dayStatus.filter((d) => d.complete).length,

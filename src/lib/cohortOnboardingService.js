@@ -328,10 +328,12 @@ export async function updateSquadSetup(squadId, patch) {
 
 /** @param {string} squadId */
 export async function registerSquad(squadId) {
-  return db.updateFormationSquad(squadId, {
+  const squad = await db.updateFormationSquad(squadId, {
     registered_at: new Date().toISOString(),
     status: 'active',
   });
+  await db.syncFormationSquadMemberLabels(squadId);
+  return squad;
 }
 
 /** @param {string} squadId @param {string} photoUrl */
@@ -356,6 +358,7 @@ export async function finishOnboarding(participantId, squadId) {
   } catch (err) {
     console.warn('[onboarding] markOnboardingComplete failed:', err);
   }
+  await db.syncFormationSquadMemberLabels(squadId);
   completeCache.set(participantId, true);
 }
 

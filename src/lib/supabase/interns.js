@@ -1,7 +1,17 @@
 import { supabase } from '../../supabaseClient.js';
 import { segmentFromHours } from '../segment.js';
+import {
+  fetchFormationSquadLabels,
+  reconcileFormationSquadLabels,
+} from './cohortOnboarding.js';
 
-function mapInternRow(profile, progress) {
+/**
+ * @param {object} profile
+ * @param {object | undefined} progress
+ * @param {string | undefined} formationSquad
+ */
+function mapInternRow(profile, progress, formationSquad) {
+  const squad = formationSquad?.trim() || progress?.squad?.trim() || null;
   return {
     id: profile.id,
     name: profile.name,
@@ -10,7 +20,7 @@ function mapInternRow(profile, progress) {
     segment: progress?.segment ?? 1,
     hours: progress?.hours ?? 0,
     licensed: progress?.licensed ?? false,
-    squad: progress?.squad ?? null,
+    squad,
     university: progress?.university ?? null,
   };
 }
@@ -26,17 +36,34 @@ export async function fetchInterns() {
   const list = profiles || [];
   const ids = list.map((p) => p.id);
   let progressByUser = {};
+  let formationByUser = {};
 
   if (ids.length > 0) {
-    const { data: progRows, error: progErr } = await supabase
-      .from('intern_progress')
-      .select('user_id, segment, hours, licensed, squad, university')
-      .in('user_id', ids);
+    const [{ data: progRows, error: progErr }, formationLabels] = await Promise.all([
+      supabase
+        .from('intern_progress')
+        .select('user_id, segment, hours, licensed, squad, university')
+        .in('user_id', ids),
+      fetchFormationSquadLabels(ids).catch(() => ({})),
+    ]);
     if (progErr) throw progErr;
     progressByUser = Object.fromEntries((progRows || []).map((r) => [r.user_id, r]));
+    formationByUser = formationLabels;
+
+    const needsReconcile = ids.some((id) => {
+      const formation = formationByUser[id]?.trim();
+      const cached = progressByUser[id]?.squad?.trim();
+      return formation && formation !== cached;
+    });
+    if (needsReconcile) {
+      const reconciled = await reconcileFormationSquadLabels(ids).catch(() => formationByUser);
+      formationByUser = { ...formationByUser, ...reconciled };
+    }
   }
 
-  return list.map((row) => mapInternRow(row, progressByUser[row.id]));
+  return list.map((row) =>
+    mapInternRow(row, progressByUser[row.id], formationByUser[row.id]),
+  );
 }
 
 /**

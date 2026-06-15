@@ -20,9 +20,10 @@ import { CohortOnboardingControls } from '../../components/faculty/CohortOnboard
  *   internSummary: object,
  *   pendingLogs: Array<object>,
  *   staffId?: string,
+ *   onSquadChanged?: () => void,
  * }} props
  */
-export function FacultyHomePage({ interns, internSummary, pendingLogs = [], staffId = '' }) {
+export function FacultyHomePage({ interns, internSummary, pendingLogs = [], staffId = '', onSquadChanged }) {
   const licensedCount = interns.filter((i) => i.licensed).length;
   const metrics = deriveFacultyDashboardMetrics(internSummary, {
     pendingLogs: pendingLogs.length,
@@ -51,6 +52,7 @@ export function FacultyHomePage({ interns, internSummary, pendingLogs = [], staf
             staffId={staffId}
             interns={interns.map((i) => ({ id: i.id, name: i.name }))}
             canAssignSquads
+            onSquadChanged={onSquadChanged}
           />
         </div>
       ) : (
