@@ -7,12 +7,20 @@ import {
 
 /**
  * @param {{
- *   reflection: { id: string, title: string, prompts: string[] },
+ *   reflection: { id: string, title: string, prompts: string[], dayId?: string },
  *   participantId?: string,
  *   onCompleted?: () => void,
+ *   submitLabel?: string,
+ *   savedMessage?: string,
  * }} props
  */
-export function ReflectionViewer({ reflection, participantId, onCompleted }) {
+export function ReflectionViewer({
+  reflection,
+  participantId,
+  onCompleted,
+  submitLabel = 'Save reflection',
+  savedMessage = 'Reflection recorded for mentor review.',
+}) {
   const [responses, setResponses] = useState({});
   const [submitted, setSubmitted] = useState(
     () => participantId && isReflectionCompleted(participantId, reflection.id),
@@ -73,10 +81,10 @@ export function ReflectionViewer({ reflection, participantId, onCompleted }) {
             type="submit"
             className="min-h-[44px] rounded-lg bg-amber-700 px-4 py-2 text-sm font-bold text-white hover:bg-amber-800"
           >
-            Save reflection
+            {submitLabel}
           </button>
         ) : (
-          <p className="text-sm text-gray-600">Reflection recorded for mentor review.</p>
+          <p className="text-sm text-gray-600">{savedMessage}</p>
         )}
       </form>
     </article>

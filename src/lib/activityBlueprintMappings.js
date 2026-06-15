@@ -77,7 +77,39 @@ export const SURVEY_BLUEPRINT_MAPPINGS = {
 
 /** @param {string} reflectionId */
 export function getReflectionMapping(reflectionId) {
-  return REFLECTION_BLUEPRINT_MAPPINGS[reflectionId] ?? null;
+  if (REFLECTION_BLUEPRINT_MAPPINGS[reflectionId]) {
+    return REFLECTION_BLUEPRINT_MAPPINGS[reflectionId];
+  }
+
+  const dayMatch = reflectionId.match(/^reflection-day-(\d+)-close$/);
+  if (!dayMatch) return null;
+
+  const dayNum = Number(dayMatch[1]);
+  /** @type {Record<number, string>} */
+  const portfolioByDay = {
+    1: 'portfolio-identity-purpose',
+    2: 'portfolio-market-intelligence',
+    3: 'portfolio-market-intelligence',
+    4: 'portfolio-financial-blueprint',
+    5: 'portfolio-three-year-blueprint',
+  };
+  /** @type {Record<number, string>} */
+  const chapterByDay = {
+    1: 'bp-chapter-1',
+    2: 'bp-chapter-2',
+    3: 'bp-chapter-2',
+    4: 'bp-chapter-3',
+    5: 'bp-chapter-5',
+  };
+
+  return {
+    portfolioSectionId: portfolioByDay[dayNum] ?? 'portfolio-identity-purpose',
+    businessPlanChapterId: chapterByDay[dayNum] ?? 'bp-chapter-1',
+    blueprintModule: dayNum <= 2 ? 'vision' : 'client-growth',
+    completionWeight: 2,
+    artifactTitle: `Day ${dayNum} Closing Reflection`,
+    sourceDayId: `day-segment-1-week-1-day-${dayNum}`,
+  };
 }
 
 /** @param {string} surveyId */

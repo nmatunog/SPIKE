@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import { Rocket } from 'lucide-react';
 import { resolvePresentations } from '../../lib/contentLoader.js';
 import { BLUEPRINT_LINKS } from '../../routes/paths.js';
+import { isDayClosingReflection } from '../../lib/dayClosingReflection.js';
 
 /**
  * @typedef {import('../../lib/contentLoader.js').DayContentBundle} DayContentBundle
@@ -45,8 +46,8 @@ export function SessionView({
     session.worksheetIds.includes(w.id),
   );
 
-  const sessionReflections = (reflections?.reflections ?? []).filter((r) =>
-    session.reflectionIds.includes(r.id),
+  const sessionReflections = (reflections?.reflections ?? []).filter(
+    (r) => session.reflectionIds.includes(r.id) && !isDayClosingReflection(r.id),
   );
 
   const showAssessment =

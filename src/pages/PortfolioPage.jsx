@@ -3,9 +3,8 @@ import { Link } from 'react-router-dom';
 import { Briefcase, ChevronRight, Users } from 'lucide-react';
 import { PageContainer, PageTitle } from '../components/layout/PageContainer.jsx';
 import { getPortfolioSections } from '../lib/playbookSeeds.js';
-import { listPortfolioArtifacts } from '../lib/blueprintArtifacts.js';
-import { ArtifactDraftCard } from '../components/blueprint/ArtifactDraftCard.jsx';
 import { StaffParticipantDreamBoardSection } from '../components/portfolio/StaffParticipantDreamBoardSection.jsx';
+import { listParticipantClosingReflections } from '../lib/dayClosingReflection.js';
 import { BLUEPRINT_LINKS, ROUTES, mentorParticipantReviewHref } from '../routes/paths.js';
 import { useCohortHydration, useParticipantHydration } from '../hooks/useParticipantHydration.js';
 import { generateVenturePortfolio } from '../services/portfolioGenerator.js';
@@ -125,12 +124,11 @@ export function PortfolioPage({ hours = 0, interns = [] }) {
       <div className="mb-6 sm:mb-8">
         <PageTitle>Venture Portfolio</PageTitle>
         <p className="mt-1 text-sm text-gray-600 sm:text-base">
-          Review compiled participant portfolios. Select someone to see their dream board collage, identity
-          work, and playbook outputs. Interns edit in{' '}
+          Review compiled participant portfolios. Identity work comes from{' '}
           <Link to={ROUTES.ventureBlueprint} className="font-bold text-[#8B0000] hover:underline">
             Venture Blueprint
           </Link>
-          .
+          ; each Playbook day ends with a <strong>closing reflection</strong> in the matching section below.
         </p>
       </div>
 
@@ -226,9 +224,10 @@ export function PortfolioPage({ hours = 0, interns = [] }) {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {sections.map((section) => {
-          const drafts = participantId && participantReady
-            ? listPortfolioArtifacts(participantId, section.id)
-            : [];
+          const closingReflections =
+            participantId && participantReady
+              ? listParticipantClosingReflections(participantId, section.id)
+              : [];
           const completion = portfolio ? sectionCompletionPct(section.id, portfolio) : 0;
           const previews = portfolio ? sectionPreviewLines(section.id, portfolio) : [];
 
@@ -250,13 +249,15 @@ export function PortfolioPage({ hours = 0, interns = [] }) {
                 ) : null}
               </div>
 
-              <p className="mb-2 text-xs font-bold text-gray-500">
-                {participantId
-                  ? participantReady
-                    ? `${drafts.length} playbook draft${drafts.length === 1 ? '' : 's'}`
-                    : 'Loading…'
-                  : 'Select a participant above'}
-              </p>
+              {participantId && participantReady ? (
+                <p className="mb-2 text-xs font-bold text-gray-500">
+                  {closingReflections.length
+                    ? `${closingReflections.length} day closing reflection${closingReflections.length === 1 ? '' : 's'}`
+                    : 'No day closing reflections in this section yet'}
+                </p>
+              ) : (
+                <p className="mb-2 text-xs font-bold text-gray-500">Select a participant above</p>
+              )}
 
               {previews.length > 0 ? (
                 <ul className="mb-3 space-y-2 text-sm text-slate-700">
@@ -268,26 +269,29 @@ export function PortfolioPage({ hours = 0, interns = [] }) {
                 </ul>
               ) : null}
 
-              {drafts.length > 0 ? (
+              {closingReflections.length > 0 ? (
                 <div className="space-y-2">
-                  {drafts.map((a) => (
-                    <ArtifactDraftCard
-                      key={a.id}
-                      title={a.title}
-                      content={a.content}
-                      status={a.status}
-                      sourceType={a.sourceType}
-                      updatedAt={a.updatedAt}
-                    />
+                  {closingReflections.map((reflection) => (
+                    <article
+                      key={reflection.id}
+                      className="rounded-lg border border-amber-200/80 bg-amber-50/50 px-3 py-3"
+                    >
+                      <p className="text-sm font-semibold text-slate-900">{reflection.title}</p>
+                      {reflection.summary ? (
+                        <p className="mt-1 line-clamp-4 text-sm text-slate-700">{reflection.summary}</p>
+                      ) : (
+                        <p className="mt-1 text-sm text-slate-500">Submitted</p>
+                      )}
+                    </article>
                   ))}
                 </div>
               ) : previews.length === 0 ? (
                 <p className="rounded-lg border border-dashed border-gray-200 bg-gray-50 p-3 text-sm text-gray-500">
                   {participantId
                     ? participantReady
-                      ? 'No outputs in this section yet — check back after more playbook and builder work.'
+                      ? 'Blueprint work may appear above after sync. Closing reflections are submitted at the end of each Playbook day.'
                       : 'Loading participant data…'
-                    : 'Pick a participant to see their ambition, impact, values, and other portfolio outputs.'}
+                    : 'Pick a participant to see identity work and day closing reflections.'}
                 </p>
               ) : null}
             </div>

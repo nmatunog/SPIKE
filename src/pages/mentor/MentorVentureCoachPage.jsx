@@ -19,6 +19,7 @@ import { fetchRemoteParticipantSummary } from '../../lib/participantRemoteData.j
 import { COACH_VALUE_CARDS, VENTURE_DIRECTION_CARDS } from '../../lib/ventureCoachConstants.js';
 import { labelFor } from '../../lib/ventureCoachEngine.js';
 import { ROUTES, parseMentorParticipantPath } from '../../routes/paths.js';
+import { listParticipantClosingReflections } from '../../lib/dayClosingReflection.js';
 
 /**
  * Participant Coaching Card — 360° profile for mentors.
@@ -112,6 +113,7 @@ export function MentorVentureCoachPage({
     'Exploring';
 
   const topThreeLabels = (summary?.topThreeValues ?? []).map((id) => labelFor(id, COACH_VALUE_CARDS));
+  const closingReflections = listParticipantClosingReflections(participantId);
 
   function refreshHistory() {
     setHistoryKey((k) => k + 1);
@@ -167,6 +169,20 @@ export function MentorVentureCoachPage({
         participantName={intern?.name ?? 'Participant'}
         className="mb-6"
       />
+
+      {closingReflections.length > 0 ? (
+        <section className="mb-6 spike-card space-y-3">
+          <h2 className="text-sm font-bold uppercase tracking-wide text-slate-500">Playbook closing reflections</h2>
+          {closingReflections.map((reflection) => (
+            <article key={reflection.id} className="rounded-xl border border-amber-200/80 bg-amber-50/40 px-4 py-3">
+              <p className="text-sm font-semibold text-slate-900">{reflection.title}</p>
+              <p className="mt-1 whitespace-pre-wrap text-sm text-slate-700">
+                {reflection.summary || 'Submitted'}
+              </p>
+            </article>
+          ))}
+        </section>
+      ) : null}
 
       <section className="mb-6">
         <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">Current outputs</h2>

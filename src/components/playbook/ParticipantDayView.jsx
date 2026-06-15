@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Rocket, Target, LayoutGrid } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { SessionView } from './SessionView.jsx';
+import { DayClosingReflectionSection } from './DayClosingReflectionSection.jsx';
 import { DayCompletionBar } from './DayCompletionBar.jsx';
 import { DayContributionChips } from './DayContributionChips.jsx';
 import { getDayCompletionSummary } from '../../lib/playbookProgress.js';
@@ -99,6 +100,12 @@ export function ParticipantDayView({ bundle, participantId, onProgress }) {
       ) : (
         <p className="text-sm text-gray-500">No sessions published for this day.</p>
       )}
+
+      <DayClosingReflectionSection
+        bundle={bundle}
+        participantId={participantId}
+        onCompleted={onProgress}
+      />
 
       <div className="rounded-xl border border-spike/15 bg-spike-muted/40 p-4">
         <h4 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-spike">
