@@ -86,6 +86,25 @@ export function parseFrameworkDayPath(pathname, basePath) {
   return { segment, week, day };
 }
 
+/**
+ * Parse /mentor/participants/:id or /mentor/participant/:id from pathname.
+ * @param {string} pathname
+ */
+export function parseMentorParticipantPath(pathname) {
+  for (const base of [ROUTES.mentorVentureCoach, ROUTES.mentorParticipant]) {
+    const prefix = `${base.replace(/\/$/, '')}/`;
+    if (!pathname.startsWith(prefix)) continue;
+    const id = pathname.slice(prefix.length).split('/').filter(Boolean)[0];
+    if (id) return id;
+  }
+  return null;
+}
+
+/** @param {string} participantId */
+export function mentorParticipantReviewHref(participantId) {
+  return `${ROUTES.mentorVentureCoach}/${participantId}`;
+}
+
 const INTERN_FORMATION_ROUTES = [
   ROUTES.cohortIdentity,
   ROUTES.squadPreferences,
@@ -170,7 +189,7 @@ export const MODULE_NAV = [
     label: 'Participants',
     shortLabel: 'People',
     icon: 'people',
-    roles: ['mentor', 'admin', 'superuser'],
+    roles: ['mentor', 'faculty', 'admin', 'superuser'],
   },
   {
     path: ROUTES.analyticsCohortIdentity,
@@ -306,7 +325,7 @@ export function rolesForRoute(pathname) {
     || pathname.startsWith(`${ROUTES.mentorVentureCoach}/`)
     || pathname.startsWith(`${ROUTES.mentorParticipant}/`)
   ) {
-    return ['mentor', 'admin', 'superuser'];
+    return ['mentor', 'faculty', 'admin', 'superuser'];
   }
 
   const route = matchModulePath(pathname);

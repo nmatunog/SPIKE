@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { PageContainer } from '../../components/layout/PageContainer.jsx';
 import {
@@ -17,7 +17,7 @@ import { useParticipantHydration } from '../../hooks/useParticipantHydration.js'
 import { fetchRemoteParticipantSummary } from '../../lib/participantRemoteData.js';
 import { COACH_VALUE_CARDS, VENTURE_DIRECTION_CARDS } from '../../lib/ventureCoachConstants.js';
 import { labelFor } from '../../lib/ventureCoachEngine.js';
-import { ROUTES } from '../../routes/paths.js';
+import { ROUTES, parseMentorParticipantPath } from '../../routes/paths.js';
 
 /**
  * Participant Coaching Card — 360° profile for mentors.
@@ -34,7 +34,8 @@ export function MentorVentureCoachPage({
   readOnly = false,
   showToast,
 }) {
-  const { participantId } = useParams();
+  const { pathname } = useLocation();
+  const participantId = parseMentorParticipantPath(pathname);
   const intern = interns.find((i) => i.id === participantId);
   const { ready: dataReady, version: dataVersion } = useParticipantHydration(participantId);
   const localSummary = participantId ? getCoachSummaryForMentor(participantId) : null;

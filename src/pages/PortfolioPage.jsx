@@ -5,7 +5,7 @@ import { PageContainer, PageTitle } from '../components/layout/PageContainer.jsx
 import { getPortfolioSections } from '../lib/playbookSeeds.js';
 import { listPortfolioArtifacts } from '../lib/blueprintArtifacts.js';
 import { ArtifactDraftCard } from '../components/blueprint/ArtifactDraftCard.jsx';
-import { BLUEPRINT_LINKS, ROUTES } from '../routes/paths.js';
+import { BLUEPRINT_LINKS, ROUTES, mentorParticipantReviewHref } from '../routes/paths.js';
 import { useCohortHydration, useParticipantHydration } from '../hooks/useParticipantHydration.js';
 import { generateVenturePortfolio } from '../services/portfolioGenerator.js';
 import { getCoachSummaryForMentor } from '../lib/ventureCoachService.js';
@@ -187,7 +187,7 @@ export function PortfolioPage({ hours = 0, interns = [] }) {
                         <td className="px-3 py-3">{summary?.progress?.percent ?? 0}%</td>
                         <td className="px-3 py-3 text-right">
                           <Link
-                            to={`${ROUTES.mentorVentureCoach}/${intern.id}`}
+                            to={mentorParticipantReviewHref(intern.id)}
                             className="inline-flex items-center gap-1 text-xs font-semibold text-spike hover:underline"
                           >
                             Review &amp; assess <ChevronRight size={14} />
@@ -289,7 +289,7 @@ export function PortfolioPage({ hours = 0, interns = [] }) {
       {participantId && participantReady && portfolio ? (
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
-            to={`${ROUTES.mentorVentureCoach}/${participantId}`}
+            to={mentorParticipantReviewHref(participantId)}
             className="spike-btn-primary text-sm"
           >
             Open coaching card — rate &amp; assess

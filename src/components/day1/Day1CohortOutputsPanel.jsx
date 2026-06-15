@@ -3,7 +3,7 @@ import { CheckCircle, ChevronDown, ChevronUp, Clock, ExternalLink } from 'lucide
 import { Link } from 'react-router-dom';
 import { useCohortHydration } from '../../hooks/useParticipantHydration.js';
 import { summarizeCohortDay1Outputs } from '../../lib/day1Outputs.js';
-import { ROUTES } from '../../routes/paths.js';
+import { ROUTES, mentorParticipantReviewHref } from '../../routes/paths.js';
 
 /**
  * Cohort table of Day 1 venture identity outputs for mentors and program coaches.
@@ -94,7 +94,7 @@ export function Day1CohortOutputsPanel({ interns, viewerRole = 'faculty' }) {
  * }} props
  */
 function Day1OutputRow({ intern, outputs, expanded, viewerRole, onToggle }) {
-  const reviewHref = `${ROUTES.mentorParticipant}/${intern.id}`;
+  const reviewHref = mentorParticipantReviewHref(intern.id);
   void viewerRole;
 
   return (
