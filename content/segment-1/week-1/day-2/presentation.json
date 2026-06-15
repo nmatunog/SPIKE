@@ -8,64 +8,161 @@
       "slide-d2-01-02",
       "slide-d2-01-03",
       "slide-d2-01-04",
-      "slide-d2-01-05"
-    ]
+      "slide-d2-01-05",
+      "slide-d2-01-06",
+      "slide-d2-01-07",
+      "slide-d2-01-08",
+      "slide-d2-01-09",
+      "slide-d2-01-10",
+      "slide-d2-01-11",
+      "slide-d2-01-12",
+      "slide-d2-01-13"
+    ],
+    "sourceFile": "faculty-deck-01.pdf",
+    "sourcePath": "content/segment-1/week-1/day-2/source/faculty-deck-01.pdf",
+    "importedAt": "2026-06-15T15:56:21.912Z",
+    "pdfUrl": "/content/segment-1/week-1/day-2/faculty-deck-01.pdf"
   },
   "slides": [
     {
       "id": "slide-d2-01-01",
+      "presentationId": "presentation-day-2-deck-01",
+      "sortOrder": 1,
       "title": "Day 2 Opening — From Identity to Industry",
       "body": "Yesterday you defined who you are becoming.\nToday we ask: what industry will you build in?\n\nFinancial services is one of the largest, most stable, and most impact-driven sectors in the Philippines.",
       "speakerNotes": "Bridge from Day 1 identity. Reference participant ambition statements. 3 min.",
       "discussionQuestions": [
         "How does your ambition connect to an industry — not just a job?"
       ],
-      "presentationId": "presentation-day-2-deck-01",
-      "sortOrder": 1
+      "imageUrl": "/content/segment-1/week-1/day-2/deck-01/slide-01.png"
     },
     {
       "id": "slide-d2-01-02",
+      "presentationId": "presentation-day-2-deck-01",
+      "sortOrder": 2,
       "title": "Financial Services Ecosystem",
       "body": "Banks · Insurance · Investments · Financial Planning · Fintech\n\nProtection products (life, health, VUL) fund education, retirement, and legacy.\nAdvisors and agency builders are entrepreneurs within this ecosystem.",
       "speakerNotes": "Use local examples. Avoid product pitch — this is landscape. 6 min.",
       "discussionQuestions": [
         "Which part of the ecosystem interests you most?"
       ],
-      "presentationId": "presentation-day-2-deck-01",
-      "sortOrder": 2
+      "imageUrl": "/content/segment-1/week-1/day-2/deck-01/slide-02.png"
     },
     {
       "id": "slide-d2-01-03",
+      "presentationId": "presentation-day-2-deck-01",
+      "sortOrder": 3,
       "title": "Insurance & Protection Story",
       "body": "Insurance is not a transaction — it is a promise.\n\nAIA's protection mission: help people live Healthier, Longer, Better Lives.\n\nThe opportunity: millions of Filipinos are underinsured. Financial entrepreneurs close the protection gap.",
       "speakerNotes": "Connect to AIA Day 1 story. 5 min.",
       "discussionQuestions": [
         "Would you personally buy protection today? Why or why not?"
       ],
-      "presentationId": "presentation-day-2-deck-01",
-      "sortOrder": 3
+      "imageUrl": "/content/segment-1/week-1/day-2/deck-01/slide-03.png"
     },
     {
       "id": "slide-d2-01-04",
+      "presentationId": "presentation-day-2-deck-01",
+      "sortOrder": 4,
       "title": "Career Opportunities in Financial Entrepreneurship",
       "body": "Advisor → Unit Manager → Agency Director\nSpecialist Consultant → Practice Owner\n\nSPIKE prepares you for both agency building and specialist consulting paths.",
       "speakerNotes": "Link to Day 1 career direction exploration. 4 min.",
       "discussionQuestions": [
         "Where do you see yourself adding value in this industry?"
       ],
-      "presentationId": "presentation-day-2-deck-01",
-      "sortOrder": 4
+      "imageUrl": "/content/segment-1/week-1/day-2/deck-01/slide-04.png"
     },
     {
       "id": "slide-d2-01-05",
+      "presentationId": "presentation-day-2-deck-01",
+      "sortOrder": 5,
       "title": "Deck 01 Close — Industry Immersion Begins",
       "body": "Next: Deck 02 — Connecting Industry to Your Ambition.\nThen: practitioner interviews, squad debrief, and research plan.",
       "speakerNotes": "Transition to Deck 02. 2 min.",
       "discussionQuestions": [
         "What do you want to learn from a practitioner today?"
       ],
+      "imageUrl": "/content/segment-1/week-1/day-2/deck-01/slide-05.png"
+    },
+    {
+      "id": "slide-d2-01-06",
       "presentationId": "presentation-day-2-deck-01",
-      "sortOrder": 5
+      "sortOrder": 6,
+      "title": "Slide 6",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-2/deck-01/slide-06.png"
+    },
+    {
+      "id": "slide-d2-01-07",
+      "presentationId": "presentation-day-2-deck-01",
+      "sortOrder": 7,
+      "title": "Slide 7",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-2/deck-01/slide-07.png"
+    },
+    {
+      "id": "slide-d2-01-08",
+      "presentationId": "presentation-day-2-deck-01",
+      "sortOrder": 8,
+      "title": "Slide 8",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-2/deck-01/slide-08.png"
+    },
+    {
+      "id": "slide-d2-01-09",
+      "presentationId": "presentation-day-2-deck-01",
+      "sortOrder": 9,
+      "title": "Slide 9",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-2/deck-01/slide-09.png"
+    },
+    {
+      "id": "slide-d2-01-10",
+      "presentationId": "presentation-day-2-deck-01",
+      "sortOrder": 10,
+      "title": "Slide 10",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-2/deck-01/slide-10.png"
+    },
+    {
+      "id": "slide-d2-01-11",
+      "presentationId": "presentation-day-2-deck-01",
+      "sortOrder": 11,
+      "title": "Slide 11",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-2/deck-01/slide-11.png"
+    },
+    {
+      "id": "slide-d2-01-12",
+      "presentationId": "presentation-day-2-deck-01",
+      "sortOrder": 12,
+      "title": "Slide 12",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-2/deck-01/slide-12.png"
+    },
+    {
+      "id": "slide-d2-01-13",
+      "presentationId": "presentation-day-2-deck-01",
+      "sortOrder": 13,
+      "title": "Slide 13",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-2/deck-01/slide-13.png"
     }
   ]
 }

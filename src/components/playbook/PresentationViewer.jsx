@@ -7,7 +7,7 @@ import { SlideNavigator } from './SlideNavigator.jsx';
 
 /**
  * @param {{
- *   presentation: { title: string, pptxUrl?: string },
+ *   presentation: { title: string, pptxUrl?: string, pdfUrl?: string },
  *   slides: Array<{ title: string, body: string, speakerNotes: string, discussionQuestions: string[], imageUrl?: string }>,
  *   facultyMode?: boolean,
  * }} props
@@ -41,7 +41,15 @@ export function PresentationViewer({ presentation, slides, facultyMode = false }
             Facilitator view
           </span>
         ) : null}
-        {presentation.pptxUrl ? (
+        {presentation.pdfUrl ? (
+          <a
+            href={presentation.pdfUrl}
+            download
+            className="inline-flex items-center gap-1.5 rounded-lg border border-indigo-200 bg-white px-3 py-1.5 text-xs font-semibold text-indigo-800 hover:bg-indigo-50"
+          >
+            <Download size={14} /> Download PDF
+          </a>
+        ) : presentation.pptxUrl ? (
           <a
             href={presentation.pptxUrl}
             download
