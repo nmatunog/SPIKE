@@ -30,6 +30,24 @@ export function BuilderSubmissionFooter({
   savedLabel,
 }) {
   if (editLocked) {
+    if (canRefine) {
+      return (
+        <div className="space-y-3">
+          <p className="text-sm font-semibold text-emerald-700">{savedLabel}</p>
+          <p className="text-sm text-slate-600">
+            Your portfolio is saved. Tap refine when you want to add, remove, or update cards.
+          </p>
+          <button
+            type="button"
+            onClick={onStartRefine}
+            className="inline-flex items-center gap-2 rounded-xl border border-spike/30 bg-spike-muted/40 px-4 py-2 text-sm font-semibold text-spike transition hover:border-spike/50 hover:bg-spike-muted/60"
+          >
+            <Pencil size={16} />
+            Refine your answer
+          </button>
+        </div>
+      );
+    }
     return (
       <div className="space-y-3">
         <PortfolioEditGraceBanner locked />

@@ -23,7 +23,7 @@ export function DreamBoardCollage({
   }
 
   return (
-    <div className="columns-1 gap-4 sm:columns-2 lg:columns-3 xl:columns-4">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {cards.map((asset) => {
         const category = dreamBoardCategoryMeta(asset.category);
         const addedLabel = asset.addedAt
@@ -33,7 +33,7 @@ export function DreamBoardCollage({
         return (
           <article
             key={asset.id}
-            className={`mb-4 break-inside-avoid overflow-hidden rounded-2xl border shadow-card transition hover:shadow-projection ${category.color}`}
+            className={`overflow-hidden rounded-2xl border shadow-card transition hover:shadow-projection ${category.color}`}
           >
             {asset.imageUrl ? (
               <img

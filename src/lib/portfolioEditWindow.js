@@ -47,6 +47,20 @@ export function portfolioEditGraceRemainingLabel(completedAt, firstCompletedAt =
 /**
  * @param {{ completedAt?: string | null, firstCompletedAt?: string | null, refining?: boolean }} entry
  */
+export function isDay1BuilderEditLocked(entry) {
+  if (!entry?.completedAt) return false;
+  if (entry.refining) return false;
+  return true;
+}
+
+/** @param {{ completedAt?: string | null, refining?: boolean }} entry */
+export function canRefineDay1Builder(entry) {
+  return Boolean(entry?.completedAt && !entry.refining);
+}
+
+/**
+ * @param {{ completedAt?: string | null, firstCompletedAt?: string | null, refining?: boolean }} entry
+ */
 export function isPortfolioInputEditLocked(entry) {
   if (!entry?.completedAt) return false;
   if (entry.refining) return false;

@@ -4,8 +4,8 @@
 import { DAY1_BUILDERS, DAY1_BUILDER_COACH_MAP, LEGACY_BUILDER_IDS } from './day1BuilderConstants.js';
 import { isCoachSectionComplete, isCoachSectionEditLocked, resetCoachSection } from './ventureCoachStorage.js';
 import {
-  canRefinePortfolioInput,
-  isPortfolioInputEditLocked,
+  canRefineDay1Builder,
+  isDay1BuilderEditLocked,
 } from './portfolioEditWindow.js';
 
 const STORAGE_KEY = 'spike_day1_builders';
@@ -53,7 +53,7 @@ export function isBuilderCompleted(participantId, builderId) {
 /** @param {string} participantId @param {string} builderId */
 export function isBuilderEditLocked(participantId, builderId) {
   const entry = readBuilderEntry(participantId, builderId);
-  if (entry) return isPortfolioInputEditLocked(entry);
+  if (entry) return isDay1BuilderEditLocked(entry);
   const coachSection = DAY1_BUILDER_COACH_MAP[builderId];
   if (coachSection) return isCoachSectionEditLocked(participantId, coachSection);
   return false;
@@ -62,14 +62,14 @@ export function isBuilderEditLocked(participantId, builderId) {
 /** @param {string} participantId @param {string} builderId */
 export function canRefineBuilder(participantId, builderId) {
   const entry = readBuilderEntry(participantId, builderId);
-  if (entry) return canRefinePortfolioInput(entry);
+  if (entry) return canRefineDay1Builder(entry);
   return false;
 }
 
 /** @param {string} participantId @param {string} builderId */
 export function startBuilderRefinement(participantId, builderId) {
   const entry = readBuilderEntry(participantId, builderId);
-  if (!entry || !canRefinePortfolioInput(entry)) return entry;
+  if (!entry || !canRefineDay1Builder(entry)) return entry;
   return writeBuilderEntry(participantId, builderId, entry.data, false, { refining: true, force: true });
 }
 
@@ -103,7 +103,7 @@ export function getAllDay1BuilderData(participantId) {
  */
 export function writeBuilderEntry(participantId, builderId, data, completed = false, options = {}) {
   const existing = readBuilderEntry(participantId, builderId);
-  if (!options.force && existing && isPortfolioInputEditLocked(existing)) {
+  if (!options.force && existing && isDay1BuilderEditLocked(existing)) {
     return existing;
   }
 
