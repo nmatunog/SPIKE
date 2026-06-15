@@ -351,7 +351,11 @@ export async function finishOnboarding(participantId, squadId) {
     return;
   }
   await db.updateFormationSquad(squadId, { onboarding_complete: true });
-  await db.markOnboardingComplete(participantId);
+  try {
+    await db.markOnboardingComplete(participantId);
+  } catch (err) {
+    console.warn('[onboarding] markOnboardingComplete failed:', err);
+  }
   completeCache.set(participantId, true);
 }
 

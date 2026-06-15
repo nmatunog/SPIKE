@@ -34,6 +34,14 @@ export const ROUTES = {
 /** Redirect target after onboarding completes — Build Challenge 1 (Ambition). */
 export const ONBOARDING_EXIT_HREF = `${ROUTES.ventureBlueprint}/coach/ambition`;
 
+/** @param {string} pathname */
+export function isVentureBlueprintPath(pathname) {
+  return (
+    pathname === ROUTES.ventureBlueprint
+    || pathname.startsWith(`${ROUTES.ventureBlueprint}/`)
+  );
+}
+
 /** Blueprint sub-routes (PR4) — Business Plan, Milestones, Venture Board live inside the OS. */
 export const BLUEPRINT_LINKS = {
   businessPlan: '/venture-blueprint/canvas',

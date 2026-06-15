@@ -28,7 +28,7 @@ import { RoleDashboardCards } from './components/dashboard/RoleDashboardCards.js
 import { BlueprintTimelineFeed } from './components/blueprint/BlueprintTimelineFeed.jsx';
 import { PageLoader } from './components/ui/PageLoader.jsx';
 import { RoleRouteGuard } from './components/routing/RoleRouteGuard.jsx';
-import { ROUTES, brandLexiconBackHrefForRole, defaultRouteForRole } from './routes/paths.js';
+import { ROUTES, brandLexiconBackHrefForRole, defaultRouteForRole, isVentureBlueprintPath } from './routes/paths.js';
 import {
   AdminCohortsPage,
   AdminFacultyPlaybookPage,
@@ -194,6 +194,7 @@ const SpikeMasterPortal = () => {
     let cancelled = false;
     hydrateOnboardingStatus(user.id).then((done) => {
       if (cancelled || done) return;
+      if (isVentureBlueprintPath(location.pathname)) return;
       if (location.pathname !== ROUTES.cohortIdentity) {
         navigate(ROUTES.cohortIdentity, { replace: true });
       }
@@ -1441,7 +1442,7 @@ const SpikeMasterPortal = () => {
         && shouldUseSupabaseForUser(internUser)
         && !internUser?.internProgress?.onboarding_complete
         && !hasCompletedOnboardingSync(internUser.id);
-      if (needsOnboarding && path !== ROUTES.cohortIdentity) {
+      if (needsOnboarding && path !== ROUTES.cohortIdentity && !isVentureBlueprintPath(path)) {
         return <Navigate to={ROUTES.cohortIdentity} replace />;
       }
 

@@ -1,4 +1,19 @@
 import { supabase, isSupabaseConfigured } from '../../supabaseClient.js';
+import {
+  bootstrapInternProgressViaApi,
+  isInternProgressApiUnavailable,
+} from '../internProgressApi.js';
+
+/** @param {{ code?: string, message?: string }} error */
+function isMissingRpcError(error) {
+  if (!error) return false;
+  const message = String(error.message ?? '');
+  return (
+    error.code === 'PGRST202'
+    || error.code === '42P01'
+    || /not find|404|schema cache/i.test(message)
+  );
+}
 
 /** @typedef {'suggestions_closed' | 'suggestions_open' | 'finalists_ready' | 'voting_open' | 'voting_closed' | 'winner_revealed' | 'cohort_photo_complete' | 'squads_assigned' | 'onboarding_complete'} OnboardingPhase */
 
@@ -410,6 +425,19 @@ export async function updateFormationSquad(squadId, patch) {
   return data;
 }
 
+/** @param {import('@supabase/supabase-js').SupabaseClient} client @param {string} userId */
+async function fetchInternProgressRow(client, userId) {
+  const { data, error } = await client
+    .from('intern_progress')
+    .select(
+      'segment, hours, licensed, squad, university, career_track, career_track_selected_at, current_week, current_day, onboarding_complete, onboarding_welcomed_at, cohort_id',
+    )
+    .eq('user_id', userId)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
 /** @param {string} participantId */
 export async function markParticipantWelcomed(participantId) {
   const client = assertClient();
@@ -423,8 +451,29 @@ export async function markParticipantWelcomed(participantId) {
     throw new Error('Session user does not match participant.');
   }
   const { data, error } = await client.rpc('mark_onboarding_welcomed', { p_user_id: userId });
-  if (error) throw error;
-  return { onboarding_welcomed_at: data };
+  if (!error) {
+    return { onboarding_welcomed_at: data };
+  }
+  if (isMissingRpcError(error)) {
+    try {
+      const progress = await bootstrapInternProgressViaApi('welcome');
+      if (progress?.onboarding_welcomed_at) {
+        return { onboarding_welcomed_at: progress.onboarding_welcomed_at };
+      }
+    } catch (apiErr) {
+      if (!isInternProgressApiUnavailable(apiErr)) {
+        console.warn('[internProgress] welcome API fallback failed:', apiErr);
+      }
+    }
+    const row = await fetchInternProgressRow(client, userId).catch(() => null);
+    if (row?.onboarding_welcomed_at) {
+      return { onboarding_welcomed_at: row.onboarding_welcomed_at };
+    }
+    throw new Error(
+      'Could not save welcome progress. Ask your Program Coach to run migration 20260713_intern_progress_catchup.sql in Supabase.',
+    );
+  }
+  throw error;
 }
 
 /** @param {string} participantId */
@@ -440,8 +489,29 @@ export async function markOnboardingComplete(participantId) {
     throw new Error('Session user does not match participant.');
   }
   const { data, error } = await client.rpc('mark_onboarding_complete', { p_user_id: userId });
-  if (error) throw error;
-  return { onboarding_complete: data };
+  if (!error) {
+    return { onboarding_complete: data };
+  }
+  if (isMissingRpcError(error)) {
+    try {
+      const progress = await bootstrapInternProgressViaApi('complete');
+      if (progress) {
+        return { onboarding_complete: Boolean(progress.onboarding_complete) };
+      }
+    } catch (apiErr) {
+      if (!isInternProgressApiUnavailable(apiErr)) {
+        console.warn('[internProgress] complete API fallback failed:', apiErr);
+      }
+    }
+    const row = await fetchInternProgressRow(client, userId).catch(() => null);
+    if (row?.onboarding_complete) {
+      return { onboarding_complete: true };
+    }
+    throw new Error(
+      'Could not mark onboarding complete. Ask your Program Coach to run migration 20260713_intern_progress_catchup.sql in Supabase.',
+    );
+  }
+  throw error;
 }
 
 /**
@@ -458,19 +528,25 @@ export async function ensureInternProgress(opts = {}) {
     p_university: opts.university ?? null,
     p_squad: opts.squad ?? null,
   });
-  if (error) {
-    const missingRpc =
-      error.code === 'PGRST202'
-      || /ensure_intern_progress|not find|schema cache/i.test(String(error.message ?? ''));
-    if (missingRpc) {
-      console.warn(
-        '[internProgress] ensure_intern_progress RPC missing — run supabase/migrations/20260713_intern_progress_catchup.sql',
-      );
-      return null;
+  if (!error) return data;
+
+  if (isMissingRpcError(error)) {
+    console.warn(
+      '[internProgress] ensure_intern_progress RPC missing — trying API fallback. Run supabase/migrations/20260713_intern_progress_catchup.sql',
+    );
+    try {
+      const progress = await bootstrapInternProgressViaApi('ensure', opts);
+      if (progress) return progress;
+    } catch (apiErr) {
+      if (!isInternProgressApiUnavailable(apiErr)) {
+        console.warn('[internProgress] ensure API fallback failed:', apiErr);
+      }
     }
-    throw error;
+    const row = await fetchInternProgressRow(client, userId).catch(() => null);
+    if (row) return row;
+    return null;
   }
-  return data;
+  throw error;
 }
 
 /** @param {string} participantId */

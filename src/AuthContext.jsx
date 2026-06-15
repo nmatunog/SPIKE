@@ -110,7 +110,33 @@ export function AuthProvider({ children }) {
       try {
         internProgress = await ensureInternProgress();
       } catch {
-        /* RPC may be unavailable until migration 20260708 is applied */
+        /* RPC/API may be unavailable until migration 20260713 is applied */
+      }
+      if (!internProgress) {
+        try {
+          const { data: fallbackRow } = await supabase
+            .from('intern_progress')
+            .select(
+              'segment, hours, licensed, squad, university, career_track, career_track_selected_at, current_week, current_day, onboarding_complete, onboarding_welcomed_at, cohort_id',
+            )
+            .eq('user_id', authUser.id)
+            .maybeSingle();
+          internProgress = fallbackRow;
+        } catch {
+          /* read-only fallback failed */
+        }
+      }
+      if (!internProgress) {
+        internProgress = {
+          segment: 1,
+          hours: 0,
+          licensed: false,
+          squad: null,
+          university: null,
+          onboarding_complete: false,
+          onboarding_welcomed_at: null,
+          cohort_id: null,
+        };
       }
     }
 
