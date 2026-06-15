@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowLeft, ArrowRight, Check, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { DAY1_BUILDERS, isCoachBackedBuilder } from '../../lib/day1BuilderConstants.js';
@@ -21,6 +21,7 @@ import { DreamBoardStudio } from './builders/DreamBoardStudio.jsx';
 import { SquadFormationBuilder } from './builders/SquadFormationBuilder.jsx';
 import { SquadCharterBuilder } from './builders/SquadCharterBuilder.jsx';
 import { ROUTES } from '../../routes/paths.js';
+import { syncInternLocalWorkToSupabase } from '../../lib/internSessionSync.js';
 
 const CLASSIC_BUILDERS = {
   'dream-board': DreamBoardStudio,
@@ -42,6 +43,10 @@ export function Day1BuildersShell({
   squadName,
   initialBuilder,
 }) {
+  useEffect(() => {
+    void syncInternLocalWorkToSupabase(participantId);
+  }, [participantId]);
+
   const firstIncompleteId = getDay1MissionProgress(participantId).builders.find((b) => !b.completed)?.id
     ?? 'ambition-builder';
   const [activeId, setActiveId] = useState(initialBuilder ?? firstIncompleteId);

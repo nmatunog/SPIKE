@@ -14,6 +14,7 @@ import { hydrateCoachingFromSupabase, listCoachingNotesForParticipant } from '..
 import { hydrateWeeklyAssessmentFromSupabase } from '../../lib/weeklyAssessmentService.js';
 import { getCoachSummaryForMentor } from '../../lib/ventureCoachService.js';
 import { useParticipantHydration } from '../../hooks/useParticipantHydration.js';
+import { fetchRemoteParticipantSummary } from '../../lib/participantRemoteData.js';
 import { COACH_VALUE_CARDS, VENTURE_DIRECTION_CARDS } from '../../lib/ventureCoachConstants.js';
 import { labelFor } from '../../lib/ventureCoachEngine.js';
 import { ROUTES } from '../../routes/paths.js';
@@ -36,10 +37,38 @@ export function MentorVentureCoachPage({
   const { participantId } = useParams();
   const intern = interns.find((i) => i.id === participantId);
   const { ready: dataReady, version: dataVersion } = useParticipantHydration(participantId);
-  const summary = participantId ? getCoachSummaryForMentor(participantId) : null;
+  const localSummary = participantId ? getCoachSummaryForMentor(participantId) : null;
+  const [remoteSummary, setRemoteSummary] = useState(null);
   const [historyKey, setHistoryKey] = useState(0);
   const history = participantId ? listCoachingNotesForParticipant(participantId) : [];
   void dataVersion;
+
+  useEffect(() => {
+    if (!participantId || !dataReady) return;
+    let cancelled = false;
+    (async () => {
+      const remote = await fetchRemoteParticipantSummary(participantId);
+      if (!cancelled) setRemoteSummary(remote);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [participantId, dataReady, dataVersion]);
+
+  const summary = {
+    ...(localSummary ?? {}),
+    ambition: remoteSummary?.ambition || localSummary?.ambition || '',
+    impact: remoteSummary?.impact || localSummary?.impact || localSummary?.purpose || '',
+    purpose: remoteSummary?.impact || localSummary?.impact || localSummary?.purpose || '',
+    tagline: remoteSummary?.tagline || localSummary?.tagline || '',
+    futureSelf: remoteSummary?.futureSelf || localSummary?.futureSelf || '',
+    futureSelfSummary: remoteSummary?.futureSelfSummary || localSummary?.futureSelfSummary || '',
+    topThreeValues: remoteSummary?.topThreeValues?.length
+      ? remoteSummary.topThreeValues
+      : localSummary?.topThreeValues ?? [],
+    ventureDirection: remoteSummary?.ventureDirection || localSummary?.ventureDirection || '',
+    progress: localSummary?.progress,
+  };
 
   useEffect(() => {
     if (!participantId) return;
@@ -100,9 +129,16 @@ export function MentorVentureCoachPage({
         <h1 className="text-2xl font-bold text-slate-900">{intern?.name ?? 'Participant'}</h1>
         <p className="mt-1 text-sm text-slate-600">
           {intern?.squad ? `${intern.squad} · ` : ''}
-          Venture Coach {summary?.progress?.percent ?? 0}% · {trackLabel}
+          Day 1 {remoteSummary?.progressPercent ?? summary?.progress?.percent ?? 0}% · {trackLabel}
         </p>
       </header>
+
+      {remoteSummary && !remoteSummary.hasRemoteData ? (
+        <div className="mb-6 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+          This participant&apos;s Day 1 work is not in the cloud yet. Ask them to{' '}
+          <strong>sign in once</strong> on the device where they completed Day 1 — work uploads automatically.
+        </div>
+      ) : null}
 
       <section className="mb-6">
         <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">Venture identity</h2>

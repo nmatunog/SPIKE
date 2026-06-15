@@ -8,7 +8,7 @@ import { hydrateVentureBlueprint } from './ventureBlueprintSync.js';
 export async function hydrateParticipantForStaffView(participantId, opts = {}) {
   if (!participantId || String(participantId).startsWith('mock-')) return;
   await Promise.all([
-    hydrateVentureBlueprint(participantId),
+    hydrateVentureBlueprint(participantId, { preferRemote: true }),
     hydrateParticipantBuilderData(participantId, opts),
   ]);
 }
@@ -18,7 +18,7 @@ export async function hydrateCohortForStaffView(participantIds, opts = {}) {
   const ids = participantIds.filter((id) => id && !String(id).startsWith('mock-'));
   if (!ids.length) return;
   await Promise.all([
-    ...ids.map((id) => hydrateVentureBlueprint(id)),
+    ...ids.map((id) => hydrateVentureBlueprint(id, { preferRemote: true })),
     hydrateCohortBuilderData(ids, opts),
   ]);
 }

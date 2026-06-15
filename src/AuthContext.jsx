@@ -17,6 +17,7 @@ import {
 } from './lib/mockAuth.js';
 import { setOnboardingCompleteCache } from './lib/cohortOnboardingService.js';
 import { ensureInternProgress } from './lib/supabase/cohortOnboarding.js';
+import { syncInternLocalWorkToSupabase } from './lib/internSessionSync.js';
 import { isSupabaseConfigured, supabase } from './supabaseClient';
 
 const AuthContext = createContext(null);
@@ -143,6 +144,11 @@ export function AuthProvider({ children }) {
     if (internProgress?.onboarding_complete) {
       setOnboardingCompleteCache(profile.id, true);
     }
+
+    if (profile.role === 'INTERN') {
+      void syncInternLocalWorkToSupabase(profile.id);
+    }
+
     return {
       id: profile.id,
       email: profile.email,

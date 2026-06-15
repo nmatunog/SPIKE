@@ -76,8 +76,8 @@ export function setSectionField(participantId, sectionSlug, fieldKey, value, opt
   return nextValue;
 }
 
-/** @param {string} participantId */
-export async function hydrateBlueprintSectionsFromSupabase(participantId) {
+/** @param {string} participantId @param {{ preferRemote?: boolean }} [opts] */
+export async function hydrateBlueprintSectionsFromSupabase(participantId, opts = {}) {
   if (!participantId) return;
   try {
     const rows = await fetchBlueprintEntries(participantId);
@@ -88,7 +88,8 @@ export async function hydrateBlueprintSectionsFromSupabase(participantId) {
       const localUpdated = section[row.field_key]?.updatedAt;
       const remoteUpdated = row.updated_at;
       if (
-        !localUpdated
+        opts.preferRemote
+        || !localUpdated
         || (remoteUpdated && new Date(remoteUpdated) >= new Date(localUpdated))
       ) {
         section[row.field_key] = {
@@ -105,3 +106,5 @@ export async function hydrateBlueprintSectionsFromSupabase(participantId) {
     /* offline / migration not applied */
   }
 }
+
+export { readAll as readBlueprintStore };

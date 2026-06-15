@@ -35,11 +35,12 @@ export {
 
 /**
  * @param {string} participantId
+ * @param {{ preferRemote?: boolean }} [opts]
  */
-export async function hydrateVentureBlueprint(participantId) {
+export async function hydrateVentureBlueprint(participantId, opts = {}) {
   if (!participantId || String(participantId).startsWith('mock-')) return;
   await Promise.all([
-    hydrateBlueprintSectionsFromSupabase(participantId),
+    hydrateBlueprintSectionsFromSupabase(participantId, opts),
     hydrateCanvasFromSupabase(participantId),
     hydrateCanvasSummaryFromSupabase(participantId),
     hydrateLeadershipJournalFromSupabase(participantId),

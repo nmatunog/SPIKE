@@ -12,6 +12,7 @@ import { deriveFacultyDashboardMetrics } from '../../lib/sprint01Metrics.js';
 import { FACULTY_PHILOSOPHY } from '../../lib/facultyWeek1Constants.js';
 import { DailyActivationCodeCard } from '../../components/dashboard/DailyActivationCodeCard.jsx';
 import { BrandLexiconDashboardCard } from '../../components/resources/BrandLexiconDashboardCard.jsx';
+import { FacultyCohortSyncPanel } from '../../components/faculty/FacultyCohortSyncPanel.jsx';
 import { CohortOnboardingControls } from '../../components/faculty/CohortOnboardingControls.jsx';
 
 /**
@@ -95,6 +96,7 @@ export function FacultyHomePage({ interns, internSummary, pendingLogs = [], staf
       </div>
 
       <div className="mt-6 space-y-6">
+        <FacultyCohortSyncPanel interns={interns.map((i) => ({ id: i.id, name: i.name }))} />
         <FacultyWeek1ProgressPanel interns={interns} />
         <FacultyDashboardPanels interns={interns} />
         <FacultyDay1Panel interns={interns.map((i) => ({ id: i.id, name: i.name }))} />
