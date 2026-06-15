@@ -29,6 +29,19 @@ function normalizePortalRole(role) {
 const SERVICE_KEY_HINT =
   'Add SUPABASE_SERVICE_ROLE_KEY to Cloudflare Pages → spike → Settings → Environment variables (Production), then redeploy.';
 
+/** @param {unknown} err */
+export function formatAuthEmailError(err) {
+  const message = err instanceof Error ? err.message : String(err ?? '');
+  if (!/rate limit|over_email_send_rate_limit|email.*limit/i.test(message)) {
+    return message || 'Request failed.';
+  }
+  return [
+    'Supabase email rate limit reached (usually ~4 emails/hour on the default mailer).',
+    'Wait about an hour, or use Registered users → Change role on an existing account (no email sent).',
+    `For new accounts without confirmation emails, set ${SERVICE_KEY_HINT}`,
+  ].join(' ');
+}
+
 async function getActorContext() {
   if (!supabase) throw new Error('Supabase is not configured.');
 
@@ -147,6 +160,34 @@ async function runAdminDirectoryApi(payload) {
     method: 'POST',
     token,
     body: payload,
+  });
+}
+
+/**
+ * Create a portal account without sending Supabase confirmation emails (service role API).
+ * @param {{
+ *   name: string,
+ *   email: string,
+ *   password: string,
+ *   role: string,
+ *   reason?: string,
+ *   university?: string,
+ *   squad?: string,
+ * }} payload
+ */
+export async function createPortalUserViaApi(payload) {
+  const role = normalizePortalRole(payload.role);
+  if (!role) throw new Error('Select a role for the new account.');
+
+  return runAdminDirectoryApi({
+    action: 'create',
+    reason: payload.reason?.trim() || 'Admin created account',
+    name: payload.name.trim(),
+    email: payload.email.trim().toLowerCase(),
+    password: payload.password,
+    role,
+    university: payload.university,
+    squad: payload.squad,
   });
 }
 

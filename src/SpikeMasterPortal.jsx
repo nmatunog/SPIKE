@@ -86,6 +86,7 @@ import {
 } from './lib/bootstrapSuperuserService.js';
 import { StaffRegistrationCodeCard } from './components/dashboard/StaffRegistrationCodeCard.jsx';
 import { AdminUserDirectory } from './components/admin/AdminUserDirectory.jsx';
+import { createPortalUserViaApi, formatAuthEmailError } from './lib/userAdminService.js';
 import { SuperuserViewAsBar } from './components/admin/SuperuserViewAsBar.jsx';
 import {
   getEffectiveUserRole,
@@ -732,6 +733,39 @@ const SpikeMasterPortal = () => {
             throw new Error('Only administrators can create accounts.');
           }
 
+          try {
+            await createPortalUserViaApi({
+              name: body.name,
+              email: body.email,
+              password: body.password,
+              role: body.role,
+              university: body.university,
+              squad: body.squad,
+              reason: 'Admin register form',
+            });
+            const createdMsg =
+              body.role === 'ADMIN'
+                ? 'Added another administrator. They can sign in with the email and password you set.'
+                : 'Account created. They can sign in with the email and password you set.';
+            showToast(createdMsg);
+            await loadInterns();
+            try {
+              await refreshUser();
+            } catch {
+              /* session still valid */
+            }
+            return;
+          } catch (apiErr) {
+            const apiMessage = apiErr instanceof Error ? apiErr.message : '';
+            const useSignUpFallback =
+              apiMessage.includes('MISSING_SERVICE_KEY')
+              || apiMessage.includes('Server admin API')
+              || apiMessage.includes('503');
+            if (!useSignUpFallback) {
+              throw new Error(formatAuthEmailError(apiErr));
+            }
+          }
+
           const { data: sessionData } = await supabase.auth.getSession();
           const adminSession = sessionData.session;
           if (!adminSession?.user?.id) {
@@ -744,7 +778,7 @@ const SpikeMasterPortal = () => {
             password: body.password,
             options: { data: { name: body.name.trim(), must_change_password: true } },
           });
-          if (signErr) throw signErr;
+          if (signErr) throw new Error(formatAuthEmailError(signErr));
 
           const newUser = signData.user;
           if (!newUser?.id) {
@@ -817,7 +851,7 @@ const SpikeMasterPortal = () => {
         );
         await loadInterns();
       } catch (err) {
-        showToast(err.message || 'Registration failed', 'info');
+        showToast(formatAuthEmailError(err), 'info');
         throw err;
       }
     },

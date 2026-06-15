@@ -1,4 +1,5 @@
 import { createServiceClient } from '../../_shared/supabaseAdmin.js';
+import { findAuthUserByEmail } from '../../_shared/bootstrapSuperuser.js';
 import { corsPreflight, json, randomPassword, verifyAdminActor } from '../../_shared/verifySuperuser.js';
 
 const ALL_ROLES = ['INTERN', 'FACULTY', 'MENTOR', 'ADMIN', 'SUPERUSER'];
@@ -184,6 +185,75 @@ export async function onRequest(ctx) {
   }
 
   try {
+    if (action === 'create') {
+      const name = String(body?.name ?? '').trim();
+      const email = String(body?.email ?? '').trim().toLowerCase();
+      const password = String(body?.password ?? '');
+      const role = String(body?.role ?? 'INTERN').trim().toUpperCase();
+      assertRoleAllowed(actor, role);
+
+      if (name.length < 2) return json({ message: 'Name is required.' }, 400);
+      if (!email) return json({ message: 'Email is required.' }, 400);
+      if (password.length < 8) {
+        return json({ message: 'Password must be at least 8 characters.' }, 400);
+      }
+
+      let userId = null;
+      const existingAuth = await findAuthUserByEmail(admin, email);
+
+      if (existingAuth) {
+        userId = existingAuth.id;
+        const { error: pwErr } = await admin.auth.admin.updateUserById(userId, {
+          password,
+          email_confirm: true,
+          user_metadata: { name, must_change_password: true },
+        });
+        if (pwErr) return json({ message: pwErr.message }, 400);
+      } else {
+        const { data: created, error: createErr } = await admin.auth.admin.createUser({
+          email,
+          password,
+          email_confirm: true,
+          user_metadata: { name, must_change_password: true },
+        });
+        if (createErr) return json({ message: createErr.message }, 400);
+        userId = created.user.id;
+      }
+
+      const { error: profileErr } = await admin.from('profiles').upsert(
+        {
+          id: userId,
+          email,
+          name,
+          role,
+        },
+        { onConflict: 'id' },
+      );
+      if (profileErr) return json({ message: profileErr.message }, 400);
+
+      if (role === 'INTERN') {
+        const university = body?.university ? String(body.university).trim() : null;
+        const squad = body?.squad ? String(body.squad).trim() : null;
+        const { error: progErr } = await admin.from('intern_progress').upsert(
+          {
+            user_id: userId,
+            segment: 1,
+            hours: 0,
+            licensed: false,
+            university,
+            squad,
+          },
+          { onConflict: 'user_id' },
+        );
+        if (progErr) return json({ message: progErr.message }, 400);
+      }
+
+      await logAction(admin, actor.profile.id, userId, 'create', reason, { email, role, name }).catch(
+        () => null,
+      );
+      return json({ ok: true, userId });
+    }
+
     if (action === 'edit') {
       if (!targetId) return json({ message: 'targetId is required.' }, 400);
       const target = await getTargetProfile(admin, targetId);
@@ -201,8 +271,11 @@ export async function onRequest(ctx) {
         const { error } = await admin.from('profiles').update(patch).eq('id', targetId);
         if (error) return json({ message: error.message }, 400);
       }
-      if (email) {
-        const { error: authErr } = await admin.auth.admin.updateUserById(targetId, { email });
+      if (email && email !== String(target.email ?? '').toLowerCase()) {
+        const { error: authErr } = await admin.auth.admin.updateUserById(targetId, {
+          email,
+          email_confirm: true,
+        });
         if (authErr) return json({ message: authErr.message }, 400);
         await admin.from('profiles').update({ email }).eq('id', targetId);
       }

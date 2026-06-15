@@ -87,6 +87,10 @@ export const AdminRegisterForm = memo(function AdminRegisterForm({ onRegister })
           />
         </>
       )}
+      <p className="text-xs text-slate-500">
+        Creates the login without a confirmation email when the server admin API is configured.
+        To promote an existing user instead, use Registered users → Change role (no email).
+      </p>
       <button
         type="submit"
         disabled={submitting}

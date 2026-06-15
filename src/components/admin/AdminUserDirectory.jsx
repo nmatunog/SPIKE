@@ -4,6 +4,7 @@ import {
   ADMIN_MANAGEABLE_ROLES,
   fetchUserDirectory,
   runUserDirectoryAction,
+  formatAuthEmailError,
 } from '../../lib/userAdminService.js';
 import { formatDbRoleLabel } from '../../lib/terminology.js';
 import { RolePicker } from './RolePicker.jsx';
@@ -70,7 +71,7 @@ export function AdminUserDirectory({ currentUserId = '', isSuperuser = false }) 
       setModal(null);
       await refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Action failed.');
+      setError(formatAuthEmailError(err));
     } finally {
       setBusy('');
     }
