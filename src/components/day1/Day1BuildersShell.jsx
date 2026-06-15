@@ -48,7 +48,6 @@ export function Day1BuildersShell({
   const [draft, setDraft] = useState(() => getBuilderData(participantId, activeId) ?? {});
   const [refreshKey, setRefreshKey] = useState(0);
   const [builderMountKey, setBuilderMountKey] = useState(0);
-  const [saving, setSaving] = useState(false);
 
   const activeBuilder = DAY1_BUILDERS.find((b) => b.id === activeId) ?? DAY1_BUILDERS[0];
   const activeIndex = DAY1_BUILDERS.findIndex((b) => b.id === activeId);
@@ -73,14 +72,11 @@ export function Day1BuildersShell({
   }
 
   async function handleClassicComplete(next) {
-    setSaving(true);
     try {
       await completeDay1Builder(participantId, activeId, next);
       advanceToNext();
     } catch (err) {
       console.warn('[Day1Builders] complete failed:', err instanceof Error ? err.message : err);
-    } finally {
-      setSaving(false);
     }
   }
 

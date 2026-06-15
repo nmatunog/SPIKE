@@ -3,7 +3,7 @@ import { CheckCircle, ChevronDown, ChevronUp, Clock, ExternalLink } from 'lucide
 import { Link } from 'react-router-dom';
 import { useCohortHydration } from '../../hooks/useParticipantHydration.js';
 import { summarizeCohortDay1Outputs } from '../../lib/day1Outputs.js';
-import { ROUTES, mentorParticipantReviewHref } from '../../routes/paths.js';
+import { mentorParticipantReviewHref } from '../../routes/paths.js';
 
 /**
  * Cohort table of Day 1 venture identity outputs for mentors and program coaches.
