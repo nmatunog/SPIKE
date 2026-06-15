@@ -1510,7 +1510,7 @@ const SpikeMasterPortal = () => {
 
     if (isSuperuserSession || isStaffUiRole(effectiveUserRole)) {
       if (path === ROUTES.playbook) return renderPlaybook();
-      if (path === ROUTES.portfolio) return <PortfolioPage hours={internSummary.avgHours} />;
+      if (path === ROUTES.portfolio) return <PortfolioPage hours={internSummary.avgHours} interns={interns} />;
       if (path === ROUTES.research) return <ResearchPage user={user} />;
       if (path === ROUTES.reports) {
         return (
