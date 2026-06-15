@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { BookOpen, GraduationCap, Layers, Sparkles } from 'lucide-react';
 import { PageContainer, PageTitle } from '../../components/layout/PageContainer.jsx';
 import { RoleDashboardCards } from '../../components/dashboard/RoleDashboardCards.jsx';
+import { Day1CohortOutputsPanel } from '../../components/day1/Day1CohortOutputsPanel.jsx';
 import { FacultyDay1Panel } from '../../components/day1/FacultyDay1Panel.jsx';
 import { FacultyDashboardPanels } from '../../components/faculty/FacultyDashboardPanels.jsx';
 import { FacultyWeek1ProgressPanel } from '../../components/faculty/FacultyWeek1ProgressPanel.jsx';
@@ -96,6 +97,10 @@ export function FacultyHomePage({ interns, internSummary, pendingLogs = [], staf
       </div>
 
       <div className="mt-6 space-y-6">
+        <Day1CohortOutputsPanel
+          interns={interns.map((i) => ({ id: i.id, name: i.name, squad: i.squad }))}
+          viewerRole="faculty"
+        />
         <FacultyCohortSyncPanel interns={interns.map((i) => ({ id: i.id, name: i.name }))} />
         <FacultyWeek1ProgressPanel interns={interns} />
         <FacultyDashboardPanels interns={interns} />

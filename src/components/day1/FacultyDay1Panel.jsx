@@ -1,9 +1,9 @@
 import { CheckCircle, Clock, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { getDay1MissionProgress, getAllDay1BuilderData } from '../../lib/day1BuilderStorage.js';
+import { getDay1MissionProgress } from '../../lib/day1BuilderService.js';
+import { getParticipantDay1Outputs } from '../../lib/day1Outputs.js';
 import { listAllSquadCharters } from '../../lib/squadCharterService.js';
 import { getFormationFacultyStats } from '../../lib/cohortFormationService.js';
-import { RESEARCH_MARKETS } from '../../lib/day1BuilderConstants.js';
 import { useCohortHydration } from '../../hooks/useParticipantHydration.js';
 import { ROUTES } from '../../routes/paths.js';
 
@@ -19,8 +19,8 @@ export function FacultyDay1Panel({ interns }) {
 
   const rows = interns.map((intern) => {
     const progress = getDay1MissionProgress(intern.id);
-    const data = getAllDay1BuilderData(intern.id);
-    return { intern, progress, data };
+    const outputs = getParticipantDay1Outputs(intern.id);
+    return { intern, progress, outputs };
   });
 
   const avgCompletion = rows.length
@@ -47,40 +47,41 @@ export function FacultyDay1Panel({ interns }) {
         {!ready ? (
           <p className="mb-3 text-sm text-slate-500">Loading participant work from the server…</p>
         ) : null}
-        <table className="w-full min-w-[640px] text-left text-sm">
+        <table className="w-full min-w-[720px] text-left text-sm">
           <thead>
             <tr className="border-b border-slate-200 text-2xs uppercase tracking-wide text-slate-500">
               <th className="py-2 pr-4">Participant</th>
               <th className="py-2 pr-4">Completion</th>
+              <th className="py-2 pr-4">Ambition</th>
+              <th className="py-2 pr-4">Impact</th>
               <th className="py-2 pr-4">Dream Board</th>
-              <th className="py-2 pr-4">Squad markets</th>
               <th className="py-2">Charter</th>
             </tr>
           </thead>
           <tbody>
-            {rows.map(({ intern, progress, data }) => (
-              <tr key={intern.id} className="border-b border-slate-100">
+            {rows.map(({ intern, progress, outputs }) => (
+              <tr key={intern.id} className="border-b border-slate-100 align-top">
                 <td className="py-3 pr-4 font-medium text-slate-900">{intern.name}</td>
                 <td className="py-3 pr-4">
                   <span className="rounded-full bg-spike-muted px-2 py-1 text-xs font-bold text-spike">
                     {progress.percent}%
                   </span>
                 </td>
+                <td className="max-w-[12rem] py-3 pr-4 text-xs text-slate-700">
+                  {outputs.preview.ambition || '—'}
+                </td>
+                <td className="max-w-[12rem] py-3 pr-4 text-xs text-slate-700">
+                  {outputs.preview.impact || '—'}
+                </td>
                 <td className="py-3 pr-4">
-                  {data['dream-board']?.completedAt ? (
+                  {outputs.dreamBoardDone ? (
                     <CheckCircle size={16} className="text-emerald-600" />
                   ) : (
                     <Clock size={16} className="text-slate-400" />
                   )}
                 </td>
-                <td className="py-3 pr-4 text-xs text-slate-600">
-                  {(data['squad-formation']?.data?.marketPreferences ?? [])
-                    .map((id) => RESEARCH_MARKETS.find((m) => m.id === id)?.label)
-                    .filter(Boolean)
-                    .join(', ') || '—'}
-                </td>
                 <td className="py-3">
-                  {data['squad-charter']?.completedAt ? (
+                  {outputs.charterDone ? (
                     <span className="text-xs font-semibold text-emerald-700">Signed</span>
                   ) : (
                     <span className="text-xs text-slate-400">Pending</span>

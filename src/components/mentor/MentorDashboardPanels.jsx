@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { AlertTriangle, CalendarCheck, ClipboardList, Users } from 'lucide-react';
+import { AlertTriangle, CalendarCheck, ClipboardList, Loader2, Users } from 'lucide-react';
 import {
   deriveAssignedParticipants,
   deriveCoachingQueue,
@@ -8,22 +8,41 @@ import {
   groupInternsBySquad,
 } from '../../lib/mentorFrameworkService.js';
 import { getPortfolioSettings } from '../../lib/portfolioStorage.js';
+import { useCohortHydration } from '../../hooks/useParticipantHydration.js';
 import { ROUTES } from '../../routes/paths.js';
 
 /**
  * @param {{ interns: Array<{ id: string, name: string, hours?: number, squad?: string, licensed?: boolean }> }} props
  */
 export function MentorDashboardPanels({ interns }) {
-  const participants = deriveAssignedParticipants(interns);
-  const squads = deriveSquadSummaries(groupInternsBySquad(interns));
-  const queue = deriveCoachingQueue(interns);
-  const weekProgress = deriveWeek1DayProgress(interns);
+  const ids = interns.map((i) => i.id);
+  const { ready, version } = useCohortHydration(ids, { enabled: interns.length > 0, interns });
+  void version;
+
+  const participants = ready ? deriveAssignedParticipants(interns) : [];
+  const squads = ready ? deriveSquadSummaries(groupInternsBySquad(interns)) : [];
+  const queue = ready ? deriveCoachingQueue(interns) : {
+    needs_review: [],
+    needs_follow_up: [],
+    at_risk: [],
+    incomplete_outputs: [],
+  };
+  const weekProgress = ready ? deriveWeek1DayProgress(interns) : [];
 
   const queueTotal =
     queue.needs_review.length +
     queue.needs_follow_up.length +
     queue.at_risk.length +
     queue.incomplete_outputs.length;
+
+  if (!ready && interns.length > 0) {
+    return (
+      <section className="mt-6 spike-card flex items-center gap-2 text-sm text-slate-600">
+        <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+        Loading participant progress from cloud…
+      </section>
+    );
+  }
 
   return (
     <div className="mt-6 space-y-6">

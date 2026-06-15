@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { AlertTriangle, BookOpen, Sparkles, Users } from 'lucide-react';
 import { PageContainer, PageTitle } from '../../components/layout/PageContainer.jsx';
 import { RoleDashboardCards } from '../../components/dashboard/RoleDashboardCards.jsx';
+import { Day1CohortOutputsPanel } from '../../components/day1/Day1CohortOutputsPanel.jsx';
 import { MentorDay1Panel } from '../../components/day1/MentorDay1Panel.jsx';
 import { MentorDayDebriefPanel } from '../../components/mentor/MentorDayDebriefPanel.jsx';
 import { MentorWeek1QuickPanel } from '../../components/mentor/MentorWeek1QuickPanel.jsx';
@@ -85,6 +86,11 @@ export function MentorHomePage({ user, interns, internSummary, pendingLogs = [],
           <Users size={18} /> Playbook progress
         </Link>
       </div>
+
+      <Day1CohortOutputsPanel
+        interns={interns.map((i) => ({ id: i.id, name: i.name, squad: i.squad }))}
+        viewerRole="mentor"
+      />
 
       <MentorDashboardPanels interns={interns} />
 

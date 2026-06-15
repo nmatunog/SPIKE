@@ -2,8 +2,8 @@ import { MessageSquare } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { saveMentorCoachingNote } from '../../lib/coachingService.js';
-import { getDay1MissionProgress, getAllDay1BuilderData } from '../../lib/day1BuilderService.js';
-import { getParticipantCharterPreview } from '../../lib/squadCharterService.js';
+import { getDay1MissionProgress } from '../../lib/day1BuilderService.js';
+import { getParticipantDay1Outputs } from '../../lib/day1Outputs.js';
 import { useCohortHydration } from '../../hooks/useParticipantHydration.js';
 import { ROUTES } from '../../routes/paths.js';
 
@@ -22,7 +22,7 @@ export function MentorDay1Panel({ interns, mentorId, showToast }) {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="text-sm font-semibold text-slate-900">Day 1 builder previews</h3>
+        <h3 className="text-sm font-semibold text-slate-900">Day 1 coaching notes</h3>
         <Link to={ROUTES.playbook} className="text-sm font-semibold text-spike hover:underline">
           Open Playbook →
         </Link>
@@ -51,11 +51,7 @@ export function MentorDay1Panel({ interns, mentorId, showToast }) {
  */
 function MentorInternDay1Card({ intern, mentorId, showToast }) {
   const progress = getDay1MissionProgress(intern.id);
-  const data = getAllDay1BuilderData(intern.id);
-  const purpose = data['impact-builder']?.data ?? data['purpose-builder']?.data ?? data['discover-why']?.data;
-  const ambition = data['ambition-builder']?.data;
-  const values = data['values-builder']?.data;
-  const charter = getParticipantCharterPreview(intern.id);
+  const outputs = getParticipantDay1Outputs(intern.id);
   const [comment, setComment] = useState('');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -96,38 +92,35 @@ function MentorInternDay1Card({ intern, mentorId, showToast }) {
         <div className="rounded-xl bg-slate-50 p-3">
           <p className="spike-label">My Ambition</p>
           <p className="mt-1 line-clamp-3 text-sm text-slate-700">
-            {ambition?.ambitionStatement ? String(ambition.ambitionStatement) : 'Not started'}
+            {outputs.ambition || 'Not started'}
           </p>
         </div>
         <div className="rounded-xl bg-slate-50 p-3">
           <p className="spike-label">My Impact</p>
           <p className="mt-1 line-clamp-3 text-sm text-slate-700">
-            {purpose?.purposeStatement
-              ? String(purpose.purposeStatement)
-              : purpose?.joinReason
-                ? String(purpose.joinReason)
-                : 'Not started'}
+            {outputs.impact || 'Not started'}
           </p>
         </div>
         <div className="rounded-xl bg-slate-50 p-3">
           <p className="spike-label">My Values</p>
           <p className="mt-1 line-clamp-3 text-sm text-slate-700">
-            {values?.valuesProfile ? String(values.valuesProfile) : 'Not started'}
+            {outputs.values || 'Not started'}
           </p>
         </div>
         <div className="rounded-xl bg-slate-50 p-3">
           <p className="spike-label">Dream board</p>
           <p className="mt-1 text-sm text-slate-700">
-            {data['dream-board']?.completedAt
-              ? `${(data['dream-board']?.data?.assets ?? []).length} dream cards`
+            {outputs.dreamBoardDone
+              ? `${outputs.dreamBoardCount} dream card(s)`
               : 'Not started'}
           </p>
         </div>
       </div>
 
-      {charter ? (
+      {outputs.charterSquadName ? (
         <p className="mb-3 text-xs text-slate-600">
-          Squad: <strong>{charter.squadName}</strong> · Motto: {charter.teamMotto}
+          Squad charter: <strong>{outputs.charterSquadName}</strong>
+          {outputs.charterDone ? ' · Signed' : ' · Draft'}
         </p>
       ) : null}
 
