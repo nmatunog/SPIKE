@@ -17,7 +17,7 @@ import {
 } from './lib/mockAuth.js';
 import { setOnboardingCompleteCache } from './lib/cohortOnboardingService.js';
 import { ensureInternProgress } from './lib/supabase/cohortOnboarding.js';
-import { syncInternLocalWorkToSupabase, scheduleInternDelayedUpload, clearInternDelayedUploadSchedule } from './lib/internSessionSync.js';
+import { scheduleInternDelayedUpload, clearInternDelayedUploadSchedule, runInternSignInCloudUpload } from './lib/internSessionSync.js';
 import { isSupabaseConfigured, supabase } from './supabaseClient';
 
 const AuthContext = createContext(null);
@@ -67,6 +67,7 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(
     USE_SUPABASE ? true : !!localStorage.getItem('spike_token'),
   );
+  const [internCloudSyncing, setInternCloudSyncing] = useState(false);
 
   useEffect(() => {
     userRef.current = user;
@@ -78,6 +79,29 @@ export function AuthProvider({ children }) {
     }
     clearInternDelayedUploadSchedule();
     return undefined;
+  }, [user?.id, user?.role]);
+
+  useEffect(() => {
+    if (user?.role !== 'INTERN' || !user?.id) {
+      setInternCloudSyncing(false);
+      return undefined;
+    }
+
+    let cancelled = false;
+    (async () => {
+      setInternCloudSyncing(true);
+      try {
+        await runInternSignInCloudUpload(user.id);
+      } catch (err) {
+        console.warn('[auth] intern sign-in cloud upload failed:', err instanceof Error ? err.message : err);
+      } finally {
+        if (!cancelled) setInternCloudSyncing(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [user?.id, user?.role]);
 
   const fetchSupabaseUser = useCallback(async (authUser) => {
@@ -151,10 +175,6 @@ export function AuthProvider({ children }) {
 
     if (internProgress?.onboarding_complete) {
       setOnboardingCompleteCache(profile.id, true);
-    }
-
-    if (profile.role === 'INTERN') {
-      void syncInternLocalWorkToSupabase(profile.id);
     }
 
     return {
@@ -475,6 +495,7 @@ export function AuthProvider({ children }) {
       token,
       user,
       loading,
+      internCloudSyncing,
       isSupabaseConfigured,
       usingSupabaseAuth: USE_SUPABASE,
       mockAuthEnabled: isMockAuthEnabled(),
@@ -487,6 +508,7 @@ export function AuthProvider({ children }) {
       token,
       user,
       loading,
+      internCloudSyncing,
       login,
       completeBootstrapSetup,
       logout,

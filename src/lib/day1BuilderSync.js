@@ -3,10 +3,18 @@
  */
 import {
   ensureDay1User,
+  readBuilderEntry,
+  readDay1BuilderStore,
+  writeBuilderEntry,
+  writeDay1BuilderStore,
 } from './day1BuilderStorage.js';
-import { readDay1BuilderStore, writeDay1BuilderStore } from './day1BuilderStorage.js';
+import { isDay1BuilderEditLocked } from './portfolioEditWindow.js';
 import { mergeCoachSectionFromRemote, readCoachStore } from './ventureCoachStorage.js';
-import { fetchDay1BuilderProgress, upsertDay1BuilderProgress } from './supabase/day1BuilderProgress.js';
+import {
+  fetchDay1BuilderProgress,
+  upsertDay1BuilderProgress,
+  upsertDay1BuilderProgressSoft,
+} from './supabase/day1BuilderProgress.js';
 
 const COACH_PREFIX = 'coach:';
 
@@ -44,14 +52,71 @@ function rowToBuilderEntry(row) {
  * @param {string} builderId
  * @param {Record<string, unknown>} entry
  */
-export async function syncBuilderEntryToSupabase(participantId, builderId, entry) {
-  if (!participantId || String(participantId).startsWith('mock-')) return;
-  await upsertDay1BuilderProgress(participantId, builderId, {
+function entryToCloudPayload(entry) {
+  return {
     data: /** @type {Record<string, unknown>} */ (entry.data ?? {}),
     completedAt: entry.completedAt ? String(entry.completedAt) : null,
     firstCompletedAt: entry.firstCompletedAt ? String(entry.firstCompletedAt) : undefined,
     refining: Boolean(entry.refining),
-  });
+    updatedAt: entry.updatedAt ? String(entry.updatedAt) : new Date().toISOString(),
+  };
+}
+
+export async function syncBuilderEntryToSupabase(participantId, builderId, entry) {
+  if (!participantId || String(participantId).startsWith('mock-')) return;
+  await upsertDay1BuilderProgressSoft(participantId, builderId, entryToCloudPayload(entry));
+}
+
+/**
+ * Cloud-first: Supabase upsert, then local cache.
+ * @param {string} participantId
+ * @param {string} builderId
+ * @param {Record<string, unknown>} data
+ * @param {boolean} [completed]
+ * @param {{ refining?: boolean, force?: boolean }} [options]
+ */
+export async function persistBuilderEntryCloudFirst(
+  participantId,
+  builderId,
+  data,
+  completed = false,
+  options = {},
+) {
+  if (!participantId || String(participantId).startsWith('mock-')) {
+    return writeBuilderEntry(participantId, builderId, data, completed, options);
+  }
+
+  const existing = readBuilderEntry(participantId, builderId);
+  if (!options.force && existing && isDay1BuilderEditLocked(existing)) {
+    return existing;
+  }
+
+  const now = new Date().toISOString();
+  const firstCompletedAt =
+    existing?.firstCompletedAt ?? (completed || existing?.completedAt ? now : undefined);
+
+  /** @type {Record<string, unknown>} */
+  let previewEntry;
+  if (completed) {
+    previewEntry = {
+      data,
+      updatedAt: now,
+      firstCompletedAt: firstCompletedAt ?? now,
+      completedAt: now,
+      refining: false,
+    };
+  } else {
+    previewEntry = {
+      data,
+      updatedAt: now,
+      ...(firstCompletedAt ? { firstCompletedAt } : {}),
+      ...(existing?.completedAt ? { completedAt: existing.completedAt } : {}),
+      refining: options.refining ?? existing?.refining ?? false,
+    };
+  }
+
+  await upsertDay1BuilderProgress(participantId, builderId, entryToCloudPayload(previewEntry));
+  return writeBuilderEntry(participantId, builderId, data, completed, options);
 }
 
 /**
@@ -61,13 +126,14 @@ export async function syncBuilderEntryToSupabase(participantId, builderId, entry
  */
 export async function syncCoachSectionToSupabase(participantId, sectionId, section) {
   if (!participantId || String(participantId).startsWith('mock-')) return;
-  await upsertDay1BuilderProgress(participantId, `${COACH_PREFIX}${sectionId}`, {
+  await upsertDay1BuilderProgressSoft(participantId, `${COACH_PREFIX}${sectionId}`, {
     data: section.data ?? {},
     completedAt: section.completedAt ?? null,
     firstCompletedAt: section.firstCompletedAt ?? null,
     refining: Boolean(section.refining),
     step: section.step ?? 0,
     draftVersions: section.draftVersions ?? [],
+    updatedAt: new Date().toISOString(),
   });
 }
 

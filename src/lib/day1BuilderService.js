@@ -2,7 +2,7 @@
  * Venture Blueprint Builders™ — Day 1 completion and Blueprint sync.
  */
 import { DAY1_ID } from './day1BuilderConstants.js';
-import { setSectionField } from './blueprintSectionStore.js';
+import { setSectionFieldCloudFirst } from './blueprintSectionStore.js';
 import {
   markActivityCompleted,
   markWorksheetCompleted,
@@ -19,6 +19,25 @@ import {
   writeBuilderEntry,
   clearBuilderEntry,
 } from './day1BuilderStorage.js';
+import { persistBuilderEntryCloudFirst } from './day1BuilderSync.js';
+
+const DRAFT_CLOUD_DEBOUNCE_MS = 2000;
+
+/** @type {Map<string, ReturnType<typeof setTimeout>>} */
+const draftCloudTimers = new Map();
+
+function draftTimerKey(participantId, builderId) {
+  return `${participantId}:${builderId}`;
+}
+
+function clearDraftCloudTimer(participantId, builderId) {
+  const key = draftTimerKey(participantId, builderId);
+  const timer = draftCloudTimers.get(key);
+  if (timer) {
+    clearTimeout(timer);
+    draftCloudTimers.delete(key);
+  }
+}
 
 export {
   getDay1MissionProgress,
@@ -47,6 +66,20 @@ export function getBuilderData(participantId, builderId) {
  */
 export function saveBuilderDraft(participantId, builderId, data) {
   writeBuilderEntry(participantId, builderId, data, false);
+
+  const key = draftTimerKey(participantId, builderId);
+  const existing = draftCloudTimers.get(key);
+  if (existing) clearTimeout(existing);
+
+  draftCloudTimers.set(
+    key,
+    setTimeout(() => {
+      draftCloudTimers.delete(key);
+      void persistBuilderEntryCloudFirst(participantId, builderId, data, false).catch((err) => {
+        console.warn('[day1Builder] draft cloud save failed:', err instanceof Error ? err.message : err);
+      });
+    }, DRAFT_CLOUD_DEBOUNCE_MS),
+  );
 }
 
 /**
@@ -54,9 +87,10 @@ export function saveBuilderDraft(participantId, builderId, data) {
  * @param {string} builderId
  * @param {Record<string, unknown>} data
  */
-export function completeDay1Builder(participantId, builderId, data) {
-  writeBuilderEntry(participantId, builderId, data, true);
-  syncBuilderToBlueprint(participantId, builderId, data);
+export async function completeDay1Builder(participantId, builderId, data) {
+  clearDraftCloudTimer(participantId, builderId);
+  await persistBuilderEntryCloudFirst(participantId, builderId, data, true);
+  await syncBuilderToBlueprint(participantId, builderId, data);
 }
 
 /**
@@ -64,32 +98,32 @@ export function completeDay1Builder(participantId, builderId, data) {
  * @param {string} builderId
  * @param {Record<string, unknown>} data
  */
-function syncBuilderToBlueprint(participantId, builderId, data) {
+async function syncBuilderToBlueprint(participantId, builderId, data) {
   switch (builderId) {
     case 'ambition-builder':
-      syncAmbition(participantId, data);
+      await syncAmbition(participantId, data);
       break;
     case 'impact-builder':
     case 'purpose-builder':
-      syncImpact(participantId, data);
+      await syncImpact(participantId, data);
       break;
     case 'values-builder':
-      syncValues(participantId, data);
+      await syncValues(participantId, data);
       break;
     case 'future-self':
-      syncFutureSelf(participantId, data);
+      await syncFutureSelf(participantId, data);
       break;
     case 'dream-board':
-      syncDreamBoard(participantId, data);
+      await syncDreamBoard(participantId, data);
       break;
     case 'future-venture':
-      syncFutureVenture(participantId, data);
+      await syncFutureVenture(participantId, data);
       break;
     case 'squad-formation':
-      syncSquadFormation(participantId, data);
+      await syncSquadFormation(participantId, data);
       break;
     case 'squad-charter':
-      syncSquadCharter(participantId, data);
+      await syncSquadCharter(participantId, data);
       break;
     default:
       break;
@@ -97,18 +131,18 @@ function syncBuilderToBlueprint(participantId, builderId, data) {
 }
 
 /** @param {string} participantId @param {Record<string, unknown>} data */
-function syncAmbition(participantId, data) {
+async function syncAmbition(participantId, data) {
   const statement = String(data.ambitionStatement ?? '').trim();
-  setSectionField(participantId, 'vision-purpose', 'vision_statement', statement, {
+  await setSectionFieldCloudFirst(participantId, 'vision-purpose', 'vision_statement', statement, {
     sourceType: 'day1_builder',
     sourceId: 'ambition-builder',
   });
 }
 
 /** @param {string} participantId @param {Record<string, unknown>} data */
-function syncImpact(participantId, data) {
+async function syncImpact(participantId, data) {
   const impact = String(data.impactStatement ?? data.purposeStatement ?? '').trim();
-  setSectionField(participantId, 'vision-purpose', 'mission_statement', impact, {
+  await setSectionFieldCloudFirst(participantId, 'vision-purpose', 'mission_statement', impact, {
     sourceType: 'day1_builder',
     sourceId: 'impact-builder',
   });
@@ -129,28 +163,28 @@ function syncImpact(participantId, data) {
 }
 
 /** @param {string} participantId @param {Record<string, unknown>} data */
-function syncValues(participantId, data) {
+async function syncValues(participantId, data) {
   const profile = String(data.valuesProfile ?? '').trim();
-  setSectionField(participantId, 'vision-purpose', 'my_values', profile, {
+  await setSectionFieldCloudFirst(participantId, 'vision-purpose', 'my_values', profile, {
     sourceType: 'day1_builder',
     sourceId: 'values-builder',
   });
 }
 
 /** @param {string} participantId @param {Record<string, unknown>} data */
-function syncFutureSelf(participantId, data) {
+async function syncFutureSelf(participantId, data) {
   const narrative = String(data.futureSelfNarrative ?? '').trim();
-  setSectionField(participantId, 'vision-purpose', 'future_self_narrative', narrative, {
+  await setSectionFieldCloudFirst(participantId, 'vision-purpose', 'future_self_narrative', narrative, {
     sourceType: 'day1_builder',
     sourceId: 'future-self',
   });
 }
 
 /** @param {string} participantId @param {Record<string, unknown>} data */
-function syncDreamBoard(participantId, data) {
+async function syncDreamBoard(participantId, data) {
   const assets = /** @type {Array<{ category: string, caption: string }>} */ (data.assets ?? []);
   const summary = assets.map((a) => `• [${a.category}] ${a.caption}`).join('\n');
-  setSectionField(participantId, 'vision-purpose', 'dream_board', summary, {
+  await setSectionFieldCloudFirst(participantId, 'vision-purpose', 'dream_board', summary, {
     sourceType: 'day1_builder',
     sourceId: 'dream-board',
   });
@@ -161,7 +195,7 @@ function syncDreamBoard(participantId, data) {
 }
 
 /** @param {string} participantId @param {Record<string, unknown>} data */
-function syncFutureVenture(participantId, data) {
+async function syncFutureVenture(participantId, data) {
   const path = String(data.pathPreference ?? 'undecided');
   const label =
     path === 'agency_builder'
@@ -169,16 +203,16 @@ function syncFutureVenture(participantId, data) {
       : path === 'specialist_consultant'
         ? 'Specialist Consultant — build expertise and niche practice'
         : 'Still exploring career path options';
-  setSectionField(participantId, 'career-accelerator', 'career_interest_explored', label, {
+  await setSectionFieldCloudFirst(participantId, 'career-accelerator', 'career_interest_explored', label, {
     sourceType: 'day1_builder',
     sourceId: 'future-venture',
   });
 }
 
 /** @param {string} participantId @param {Record<string, unknown>} data */
-function syncSquadFormation(participantId, data) {
+async function syncSquadFormation(participantId, data) {
   const markets = /** @type {string[]} */ (data.marketPreferences ?? []);
-  setSectionField(
+  await setSectionFieldCloudFirst(
     participantId,
     'vision-purpose',
     'squad_market_preferences',
@@ -188,7 +222,7 @@ function syncSquadFormation(participantId, data) {
 }
 
 /** @param {string} participantId @param {Record<string, unknown>} data */
-function syncSquadCharter(participantId, data) {
+async function syncSquadCharter(participantId, data) {
   const charterText = [
     `Squad: ${data.squadName}`,
     `Mission: ${data.mission}`,
@@ -197,7 +231,7 @@ function syncSquadCharter(participantId, data) {
     `Signed: ${data.signatureName} on ${data.signedAt ?? new Date().toISOString()}`,
   ].join('\n');
 
-  setSectionField(participantId, 'vision-purpose', 'squad_charter', charterText, {
+  await setSectionFieldCloudFirst(participantId, 'vision-purpose', 'squad_charter', charterText, {
     sourceType: 'day1_builder',
     sourceId: 'squad-charter',
   });

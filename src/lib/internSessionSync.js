@@ -6,10 +6,11 @@ import { readBlueprintStore } from './blueprintSectionStore.js';
 import { upsertBlueprintEntry } from './supabase/blueprintEntries.js';
 import { isMockUserId } from './mockAuth.js';
 
-/** 1 hour after sign-in — delayed full upload */
+/** 1 hour after sign-in — delayed full upload safety net */
 export const INTERN_DELAYED_UPLOAD_MS = 60 * 60 * 1000;
 
 const SESSION_SIGNED_IN_AT_KEY = 'spike_intern_signed_in_at';
+const SIGNIN_UPLOAD_DONE_KEY = 'spike_intern_signin_upload_done';
 
 /** @type {ReturnType<typeof setTimeout> | null} */
 let delayedUploadTimer = null;
@@ -43,7 +44,35 @@ export async function syncInternLocalWorkToSupabase(participantId) {
   ]);
 }
 
-/** Clear delayed-upload timer and session marker (sign-out). */
+/**
+ * First sign-in this tab session: upload all local Day 1 + blueprint work to Supabase.
+ * @param {string} participantId
+ */
+export async function runInternSignInCloudUpload(participantId) {
+  if (!participantId || isMockUserId(participantId)) {
+    return { skipped: true };
+  }
+
+  try {
+    if (sessionStorage.getItem(SIGNIN_UPLOAD_DONE_KEY) === participantId) {
+      return { skipped: true, alreadyDone: true };
+    }
+  } catch {
+    /* private mode */
+  }
+
+  await syncInternLocalWorkToSupabase(participantId);
+
+  try {
+    sessionStorage.setItem(SIGNIN_UPLOAD_DONE_KEY, participantId);
+  } catch {
+    /* private mode */
+  }
+
+  return { uploaded: true };
+}
+
+/** Clear delayed-upload timer and session markers (sign-out). */
 export function clearInternDelayedUploadSchedule() {
   if (delayedUploadTimer) {
     clearTimeout(delayedUploadTimer);
@@ -51,6 +80,7 @@ export function clearInternDelayedUploadSchedule() {
   }
   try {
     sessionStorage.removeItem(SESSION_SIGNED_IN_AT_KEY);
+    sessionStorage.removeItem(SIGNIN_UPLOAD_DONE_KEY);
   } catch {
     /* private mode */
   }

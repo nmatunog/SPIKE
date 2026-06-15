@@ -2,6 +2,7 @@
  * Venture Blueprint section entries — localStorage + Supabase (Sprint 05).
  */
 import { upsertBlueprintEntry, fetchBlueprintEntries } from './supabase/blueprintEntries.js';
+import { supabase } from '../supabaseClient.js';
 
 const STORAGE_KEY = 'spike_blueprint_section_entries';
 
@@ -51,14 +52,18 @@ export function getSectionFields(participantId, sectionSlug) {
  * @param {string} value
  * @param {{ sourceType?: string, sourceId?: string, append?: boolean }} [opts]
  */
-export function setSectionField(participantId, sectionSlug, fieldKey, value, opts = {}) {
+function computeSectionFieldValue(participantId, sectionSlug, fieldKey, value, opts = {}) {
   const all = ensureUser(participantId);
   const section = all[participantId][sectionSlug] ?? {};
   const prev = section[fieldKey]?.value ?? '';
-  const nextValue = opts.append && prev
+  return opts.append && prev
     ? `${prev.trim()}\n\n---\n${String(value).trim()}`
     : String(value);
+}
 
+function writeSectionFieldLocal(participantId, sectionSlug, fieldKey, nextValue, opts = {}) {
+  const all = ensureUser(participantId);
+  const section = all[participantId][sectionSlug] ?? {};
   section[fieldKey] = {
     value: nextValue,
     sourceType: opts.sourceType ?? section[fieldKey]?.sourceType,
@@ -67,6 +72,19 @@ export function setSectionField(participantId, sectionSlug, fieldKey, value, opt
   };
   all[participantId][sectionSlug] = section;
   writeAll(all);
+  return nextValue;
+}
+
+/**
+ * @param {string} participantId
+ * @param {string} sectionSlug
+ * @param {string} fieldKey
+ * @param {string} value
+ * @param {{ sourceType?: string, sourceId?: string, append?: boolean }} [opts]
+ */
+export function setSectionField(participantId, sectionSlug, fieldKey, value, opts = {}) {
+  const nextValue = computeSectionFieldValue(participantId, sectionSlug, fieldKey, value, opts);
+  writeSectionFieldLocal(participantId, sectionSlug, fieldKey, nextValue, opts);
 
   void upsertBlueprintEntry(participantId, sectionSlug, fieldKey, nextValue, {
     sourceType: opts.sourceType,
@@ -74,6 +92,28 @@ export function setSectionField(participantId, sectionSlug, fieldKey, value, opt
   });
 
   return nextValue;
+}
+
+/**
+ * Cloud-first: Supabase upsert, then local cache.
+ * @param {string} participantId
+ * @param {string} sectionSlug
+ * @param {string} fieldKey
+ * @param {string} value
+ * @param {{ sourceType?: string, sourceId?: string, append?: boolean }} [opts]
+ */
+export async function setSectionFieldCloudFirst(participantId, sectionSlug, fieldKey, value, opts = {}) {
+  const nextValue = computeSectionFieldValue(participantId, sectionSlug, fieldKey, value, opts);
+  if (supabase && participantId) {
+    const result = await upsertBlueprintEntry(participantId, sectionSlug, fieldKey, nextValue, {
+      sourceType: opts.sourceType,
+      sourceId: opts.sourceId,
+    });
+    if (!result) {
+      throw new Error('Blueprint cloud save failed');
+    }
+  }
+  return writeSectionFieldLocal(participantId, sectionSlug, fieldKey, nextValue, opts);
 }
 
 /** @param {string} participantId @param {{ preferRemote?: boolean }} [opts] */

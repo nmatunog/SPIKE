@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ArrowLeft, ArrowRight, Check, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { DAY1_BUILDERS, isCoachBackedBuilder } from '../../lib/day1BuilderConstants.js';
@@ -21,7 +21,6 @@ import { DreamBoardStudio } from './builders/DreamBoardStudio.jsx';
 import { SquadFormationBuilder } from './builders/SquadFormationBuilder.jsx';
 import { SquadCharterBuilder } from './builders/SquadCharterBuilder.jsx';
 import { ROUTES } from '../../routes/paths.js';
-import { syncInternLocalWorkToSupabase } from '../../lib/internSessionSync.js';
 
 const CLASSIC_BUILDERS = {
   'dream-board': DreamBoardStudio,
@@ -43,16 +42,13 @@ export function Day1BuildersShell({
   squadName,
   initialBuilder,
 }) {
-  useEffect(() => {
-    void syncInternLocalWorkToSupabase(participantId);
-  }, [participantId]);
-
   const firstIncompleteId = getDay1MissionProgress(participantId).builders.find((b) => !b.completed)?.id
     ?? 'ambition-builder';
   const [activeId, setActiveId] = useState(initialBuilder ?? firstIncompleteId);
   const [draft, setDraft] = useState(() => getBuilderData(participantId, activeId) ?? {});
   const [refreshKey, setRefreshKey] = useState(0);
   const [builderMountKey, setBuilderMountKey] = useState(0);
+  const [saving, setSaving] = useState(false);
 
   const activeBuilder = DAY1_BUILDERS.find((b) => b.id === activeId) ?? DAY1_BUILDERS[0];
   const activeIndex = DAY1_BUILDERS.findIndex((b) => b.id === activeId);
@@ -76,9 +72,16 @@ export function Day1BuildersShell({
     saveBuilderDraft(participantId, activeId, next);
   }
 
-  function handleClassicComplete(next) {
-    completeDay1Builder(participantId, activeId, next);
-    advanceToNext();
+  async function handleClassicComplete(next) {
+    setSaving(true);
+    try {
+      await completeDay1Builder(participantId, activeId, next);
+      advanceToNext();
+    } catch (err) {
+      console.warn('[Day1Builders] complete failed:', err instanceof Error ? err.message : err);
+    } finally {
+      setSaving(false);
+    }
   }
 
   function advanceToNext() {

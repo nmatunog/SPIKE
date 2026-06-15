@@ -62,6 +62,7 @@ import {
   PublicPortfolioPage,
   PortfolioSettingsPage,
 } from './routes/lazyPages.js';
+import { InternSignInSyncBanner } from './components/intern/InternSignInSyncBanner.jsx';
 import { useAuth } from './AuthContext.jsx';
 import { apiFetch } from './apiClient.js';
 import {
@@ -1728,6 +1729,7 @@ const SpikeMasterPortal = () => {
         compactNav ? 'spike-app-shell--compact-nav' : 'spike-app-shell--desktop-nav'
       }`}
     >
+      <InternSignInSyncBanner />
       <PortalHeader
         userRole={userRole}
         viewAsRole={viewAsRole}
