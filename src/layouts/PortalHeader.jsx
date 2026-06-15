@@ -1,4 +1,5 @@
 import { LogOut } from 'lucide-react';
+import { SpikeLogo } from '../components/brand/SpikeLogo.jsx';
 import { formatUiRoleLabel } from '../lib/terminology.js';
 
 export function PortalHeader({ userRole, user, setupMeta, onLogout, viewAsRole }) {
@@ -8,18 +9,8 @@ export function PortalHeader({ userRole, user, setupMeta, onLogout, viewAsRole }
     <header className="safe-top relative z-50 border-b border-spike-dark/20 bg-spike text-white">
       <div className="mx-auto flex max-w-projection flex-col gap-2 px-4 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:py-3 2xl:px-10 2xl:py-3.5">
         <div className="flex min-w-0 items-center gap-2.5 lg:gap-3">
-          <div
-            aria-hidden
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-sm font-bold text-spike shadow-sm lg:h-10 lg:w-10 lg:text-base 2xl:h-11 2xl:w-11"
-          >
-            S
-          </div>
-          <div className="min-w-0">
-            <p className="truncate text-sm font-semibold leading-tight sm:text-base lg:text-lg 2xl:text-xl">
-              SPIKE
-            </p>
-            <p className="truncate text-2xs text-red-100/90 lg:text-xs">AIA PH Matunog District</p>
-          </div>
+          <SpikeLogo size="md" className="h-9 lg:h-10 2xl:h-11" />
+          <p className="hidden truncate text-2xs text-red-100/90 sm:block lg:text-xs">AIA PH Matunog District</p>
         </div>
 
         {userRole === 'guest' ? (

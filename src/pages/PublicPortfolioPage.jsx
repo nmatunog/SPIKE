@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom';
 import { findParticipantIdByPortfolioSlug } from '../lib/portfolioStorage.js';
 import { generateVenturePortfolio } from '../services/portfolioGenerator.js';
 import { DreamBoardSlideCollage } from '../components/venturePortfolio/DreamBoardSlideCollage.jsx';
+import { SpikeLogo } from '../components/brand/SpikeLogo.jsx';
 import { ROUTES } from '../routes/paths.js';
 
 /** Public read-only portfolio showcase — `/portfolio/:slug` */
@@ -37,17 +38,20 @@ export function PublicPortfolioPage() {
   return (
     <div className="min-h-screen bg-slate-50">
       <header className="bg-gradient-to-br from-slate-900 to-spike-dark px-6 py-12 text-white">
-        <div className="mx-auto flex max-w-4xl items-start gap-6">
+        <div className="mx-auto max-w-4xl">
+          <SpikeLogo size="md" className="mb-6 h-10" />
+          <div className="flex items-start gap-6">
           {portfolio.cover.photoUrl ? (
             <img src={portfolio.cover.photoUrl} alt="" className="h-24 w-24 rounded-2xl object-cover" />
           ) : null}
           <div>
-          <p className="text-sm font-bold uppercase tracking-widest text-spike-light">SPIKE Venture Portfolio™</p>
+          <p className="text-sm font-bold uppercase tracking-widest text-spike-light">Venture Portfolio™</p>
           <h1 className="mt-2 text-3xl font-bold">{portfolio.cover.participantName}</h1>
           <p className="mt-2 text-lg text-spike-light">{portfolio.cover.tagline}</p>
           <p className="mt-3 text-sm text-slate-300">
             {portfolio.cover.cohort} · {portfolio.cover.squad}
           </p>
+          </div>
           </div>
         </div>
       </header>

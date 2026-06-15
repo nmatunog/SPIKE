@@ -1,4 +1,5 @@
 import { Loader2, Shield } from 'lucide-react';
+import { SpikeLogo } from '../components/brand/SpikeLogo.jsx';
 import { GuestBootstrapForm } from '../components/GuestBootstrapForm.jsx';
 import { GuestLoginForm } from '../components/GuestLoginForm.jsx';
 import { InternSignupPanel } from '../components/InternSignupPanel.jsx';
@@ -49,12 +50,10 @@ export function WelcomePage({
       />
 
       <div className="relative mx-auto flex w-full max-w-md flex-col items-center px-4 py-10 sm:max-w-lg sm:py-14 lg:max-w-xl lg:py-16 2xl:max-w-2xl">
-        <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-spike text-xl font-bold text-white shadow-card">
-          S
-        </div>
+        <SpikeLogo size="lg" className="mb-6 h-14 sm:h-16" />
 
         <h1 className="text-center text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl lg:text-4xl">
-          Welcome to SPIKE
+          Welcome
         </h1>
         <p className="mt-2 text-center text-sm leading-relaxed text-slate-600 sm:text-base lg:text-lg">
           {usingSupabaseAuth
