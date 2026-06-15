@@ -10,6 +10,7 @@ import { MentorParticipantOutputs } from '../../components/mentor/MentorParticip
 import { MentorParticipantEncodingPanel } from '../../components/mentor/MentorQuickCapture.jsx';
 import { MentorWeek1SummaryPanel } from '../../components/mentor/MentorWeek1SummaryPanel.jsx';
 import { MentorWeeklyAssessmentPanel } from '../../components/mentor/MentorWeeklyAssessmentPanel.jsx';
+import { StaffParticipantDreamBoardSection } from '../../components/portfolio/StaffParticipantDreamBoardSection.jsx';
 import { hydrateCoachingFromSupabase, listCoachingNotesForParticipant } from '../../lib/coachingService.js';
 import { hydrateWeeklyAssessmentFromSupabase } from '../../lib/weeklyAssessmentService.js';
 import { getCoachSummaryForMentor } from '../../lib/ventureCoachService.js';
@@ -160,6 +161,12 @@ export function MentorVentureCoachPage({
         <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">Venture direction</h2>
         <SummaryCard title="Career track" text={trackLabel} />
       </section>
+
+      <StaffParticipantDreamBoardSection
+        participantId={participantId}
+        participantName={intern?.name ?? 'Participant'}
+        className="mb-6"
+      />
 
       <section className="mb-6">
         <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">Current outputs</h2>
