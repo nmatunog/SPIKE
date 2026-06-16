@@ -1,8 +1,9 @@
 import { supabase } from '../../supabaseClient.js';
+import { isInvalidUuidError, shouldSkipSupabaseUserWrite } from './writeGuards.js';
 
 /** @param {string} userId */
 export async function fetchBlueprintEntries(userId) {
-  if (!supabase || !userId) return [];
+  if (!supabase || shouldSkipSupabaseUserWrite(userId)) return [];
   const { data, error } = await supabase
     .from('venture_blueprint_entries')
     .select('section_slug, field_key, field_value, source_type, source_id, updated_at')
@@ -19,7 +20,7 @@ export async function fetchBlueprintEntries(userId) {
  * @param {{ sourceType?: string, sourceId?: string }} [meta]
  */
 export async function upsertBlueprintEntry(userId, sectionSlug, fieldKey, fieldValue, meta = {}) {
-  if (!supabase || !userId) return null;
+  if (!supabase || shouldSkipSupabaseUserWrite(userId)) return null;
   try {
     const { data, error } = await supabase
       .from('venture_blueprint_entries')
@@ -39,7 +40,9 @@ export async function upsertBlueprintEntry(userId, sectionSlug, fieldKey, fieldV
     if (error) throw error;
     return data;
   } catch (err) {
-    console.warn('[blueprintEntries] upsert failed:', err instanceof Error ? err.message : err);
+    if (!isInvalidUuidError(err)) {
+      console.warn('[blueprintEntries] upsert failed:', err instanceof Error ? err.message : err);
+    }
     return null;
   }
 }

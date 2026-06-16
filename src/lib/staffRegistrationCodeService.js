@@ -13,11 +13,28 @@ function formatStaffCodeError(error, fallback) {
   return message;
 }
 
+const STAFF_BOOTSTRAP_RPC_MISSING_KEY = 'spike_staff_bootstrap_rpc_missing';
+
 /** True when no SUPERUSER exists yet — first staff signup skips the registration code. */
 export async function needsStaffBootstrap() {
   if (!supabase) return false;
+  try {
+    if (sessionStorage.getItem(STAFF_BOOTSTRAP_RPC_MISSING_KEY) === '1') return false;
+  } catch {
+    /* private mode */
+  }
   const { data, error } = await supabase.rpc('needs_staff_bootstrap');
-  if (error) throw error;
+  if (error) {
+    if (error.code === 'PGRST202' || /not find|404|schema cache/i.test(error.message || '')) {
+      try {
+        sessionStorage.setItem(STAFF_BOOTSTRAP_RPC_MISSING_KEY, '1');
+      } catch {
+        /* private mode */
+      }
+      return false;
+    }
+    throw error;
+  }
   return data === true;
 }
 

@@ -3,6 +3,7 @@
  */
 import { upsertBlueprintEntry, fetchBlueprintEntries } from './supabase/blueprintEntries.js';
 import { supabase } from '../supabaseClient.js';
+import { isMockUserId } from './mockAuth.js';
 import { shouldApplyRemoteField } from './syncMergeUtils.js';
 
 const STORAGE_KEY = 'spike_blueprint_section_entries';
@@ -87,6 +88,8 @@ export function setSectionField(participantId, sectionSlug, fieldKey, value, opt
   const nextValue = computeSectionFieldValue(participantId, sectionSlug, fieldKey, value, opts);
   writeSectionFieldLocal(participantId, sectionSlug, fieldKey, nextValue, opts);
 
+  if (isMockUserId(participantId)) return nextValue;
+
   void upsertBlueprintEntry(participantId, sectionSlug, fieldKey, nextValue, {
     sourceType: opts.sourceType,
     sourceId: opts.sourceId,
@@ -105,6 +108,9 @@ export function setSectionField(participantId, sectionSlug, fieldKey, value, opt
  */
 export async function setSectionFieldCloudFirst(participantId, sectionSlug, fieldKey, value, opts = {}) {
   const nextValue = computeSectionFieldValue(participantId, sectionSlug, fieldKey, value, opts);
+  if (isMockUserId(participantId)) {
+    return writeSectionFieldLocal(participantId, sectionSlug, fieldKey, nextValue, opts);
+  }
   if (supabase && participantId) {
     const result = await upsertBlueprintEntry(participantId, sectionSlug, fieldKey, nextValue, {
       sourceType: opts.sourceType,

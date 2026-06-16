@@ -24,6 +24,7 @@ import { hydrateCanvasFromSupabase } from './canvasService.js';
 import { hydrateCanvasSummaryFromSupabase } from './canvasSummaryService.js';
 import { prepareFecCanvas } from './fecCanvasService.js';
 import { hydrateLeadershipJournalFromSupabase } from './leadershipJournalService.js';
+import { isMockUserId } from './mockAuth.js';
 
 export {
   syncPlaybookWorksheet,
@@ -38,7 +39,7 @@ export {
  * @param {{ preferRemote?: boolean, preferLocal?: boolean }} [opts]
  */
 export async function hydrateVentureBlueprint(participantId, opts = {}) {
-  if (!participantId || String(participantId).startsWith('mock-')) return;
+  if (!participantId || isMockUserId(participantId)) return;
   await Promise.all([
     hydrateBlueprintSectionsFromSupabase(participantId, opts),
     hydrateCanvasFromSupabase(participantId, opts),

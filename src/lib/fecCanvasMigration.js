@@ -4,6 +4,7 @@
 import { CANVAS_ENGINES } from './blueprintSectionConstants.js';
 import { getCanvasSummary, saveCanvasSummary } from './canvasSummaryService.js';
 import { getCanvasField, saveCanvasField } from './canvasService.js';
+import { isMockUserId } from './mockAuth.js';
 
 /** @type {Array<{ v1Engine: string, v1Field: string, v2Engine: string, v2Field: string }>} */
 export const FEC_V1_TO_V2_ENTRY_MAP = [
@@ -115,6 +116,7 @@ export function resolveInitialCanvasSchemaVersion(participantId) {
  * @returns {import('./fecCanvasConstants.js').FecSchemaVersion}
  */
 export function ensureFecCanvasV2(participantId) {
+  if (!participantId || isMockUserId(participantId)) return 'v2';
   const current = getCanvasSummary(participantId).canvas_schema_version;
   if (current === 'v2') return 'v2';
 

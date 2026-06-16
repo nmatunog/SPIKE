@@ -3,6 +3,7 @@
  */
 import { CANVAS_ENGINES } from './blueprintSectionConstants.js';
 import { upsertCanvasEntry, fetchCanvasEntries } from './supabase/canvasEntries.js';
+import { isMockUserId } from './mockAuth.js';
 import { setSectionField } from './blueprintSectionStore.js';
 import { appendTimelineEvent } from './timelineService.js';
 import { shouldApplyRemoteField } from './syncMergeUtils.js';
@@ -48,7 +49,9 @@ export function saveCanvasField(participantId, engineKey, fieldKey, value) {
   all[participantId] = user;
   writeAll(all);
 
-  void upsertCanvasEntry(participantId, engineKey, fieldKey, value);
+  if (!isMockUserId(participantId)) {
+    void upsertCanvasEntry(participantId, engineKey, fieldKey, value);
+  }
 
   // Mirror talent/leadership fields into recruitment/leadership sections (v1 + agency v2)
   if (engineKey === 'talent_growth' || engineKey === 'agency_talent') {
@@ -123,7 +126,7 @@ export async function backfillLocalCanvasToSupabase(participantId) {
 
 /** @param {string} participantId @param {{ preferRemote?: boolean, preferLocal?: boolean }} [opts] */
 export async function hydrateCanvasFromSupabase(participantId, opts = {}) {
-  if (!participantId) return;
+  if (!participantId || isMockUserId(participantId)) return;
   try {
     const rows = await fetchCanvasEntries(participantId);
     if (!rows.length) return;

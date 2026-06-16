@@ -4,6 +4,7 @@
 import { fetchCanvasSummary, upsertCanvasSummary } from './supabase/canvasSummary.js';
 import { generateStrategyStatement } from './executiveCanvasModel.js';
 import { fieldHasContent, shouldApplyRemoteField } from './syncMergeUtils.js';
+import { isMockUserId } from './mockAuth.js';
 
 const STORAGE_KEY = 'spike_canvas_summary';
 const debounceTimers = new Map();
@@ -71,7 +72,8 @@ export function saveCanvasSummary(participantId, patch) {
   all[participantId] = next;
   writeAll(all);
 
-  void upsertCanvasSummary(participantId, {
+  if (!isMockUserId(participantId)) {
+    void upsertCanvasSummary(participantId, {
     strategy_statement: next.strategy_statement,
     strategy_is_auto: next.strategy_is_auto,
     priority_1: next.priority_1,
@@ -94,7 +96,8 @@ export function saveCanvasSummary(participantId, patch) {
     success_jobs: next.success_jobs,
     success_annual_profit: next.success_annual_profit,
     scorecard_manual_overrides: next.scorecard_manual_overrides,
-  });
+    });
+  }
 }
 
 /**
@@ -155,7 +158,7 @@ export function ensureDefaultYearGoals(participantId, careerTrack) {
 
 /** @param {string} participantId @param {{ preferRemote?: boolean, preferLocal?: boolean }} [opts] */
 export async function hydrateCanvasSummaryFromSupabase(participantId, opts = {}) {
-  if (!participantId || String(participantId).startsWith('mock-')) return;
+  if (!participantId || isMockUserId(participantId)) return;
   try {
     const row = await fetchCanvasSummary(participantId);
     if (!row) return;
