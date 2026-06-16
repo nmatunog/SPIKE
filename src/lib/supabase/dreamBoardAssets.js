@@ -1,4 +1,5 @@
 import { isSupabaseConfigured, supabase } from '../../supabaseClient.js';
+import { shouldSkipSupabaseUserWrite } from './writeGuards.js';
 
 /**
  * @typedef {{
@@ -14,7 +15,7 @@ import { isSupabaseConfigured, supabase } from '../../supabaseClient.js';
 
 /** @param {string} userId */
 export async function fetchDreamBoardAssets(userId) {
-  if (!isSupabaseConfigured || !supabase || !userId) return [];
+  if (!isSupabaseConfigured || !supabase || shouldSkipSupabaseUserWrite(userId)) return [];
 
   const { data, error } = await supabase
     .from('dream_board_assets')
@@ -35,7 +36,7 @@ export async function fetchDreamBoardAssets(userId) {
  * @param {Array<{ id: string, category: string, caption: string, imageUrl?: string }>} assets
  */
 export async function syncDreamBoardAssets(userId, assets) {
-  if (!isSupabaseConfigured || !supabase || !userId) return { ok: false };
+  if (!isSupabaseConfigured || !supabase || shouldSkipSupabaseUserWrite(userId)) return { ok: false };
 
   const list = Array.isArray(assets) ? assets : [];
   const keepClientIds = [];

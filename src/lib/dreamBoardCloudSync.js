@@ -19,6 +19,15 @@ export function dreamBoardMetadataForCloud(data) {
   };
 }
 
+/** Drop inline base64 blobs — staff devices should only keep http(s) image URLs. */
+export function stripInlineDreamBoardImage(asset) {
+  const imageUrl = String(asset?.imageUrl ?? '');
+  if (!imageUrl || imageUrl.startsWith('data:')) {
+    return { ...asset, imageUrl: '' };
+  }
+  return asset;
+}
+
 /**
  * @param {Array<{ id: string, category: string, caption: string, imageUrl?: string }>} localAssets
  * @param {Awaited<ReturnType<typeof fetchDreamBoardAssets>>} cloudRows
@@ -60,6 +69,10 @@ export async function syncDreamBoardToCloud(participantId, data) {
  * @param {string} participantId
  * @param {{ preferLocalImages?: boolean }} [opts]
  */
+function isStaffReadHydration(opts = {}) {
+  return Boolean(opts.readOnly || opts.preferRemote);
+}
+
 export async function hydrateDreamBoardImagesFromCloud(participantId, opts = {}) {
   const cloudRows = await fetchDreamBoardAssets(participantId);
   if (!cloudRows.length) return false;
@@ -68,9 +81,10 @@ export async function hydrateDreamBoardImagesFromCloud(participantId, opts = {})
   const localAssets = /** @type {Array<{ id: string, category: string, caption: string, imageUrl?: string }>} */ (
     entry?.data?.assets ?? []
   );
+  const staffRead = isStaffReadHydration(opts);
 
   let merged;
-  if (opts.preferLocalImages && localAssets.some((asset) => asset.imageUrl)) {
+  if (!staffRead && opts.preferLocalImages && localAssets.some((asset) => asset.imageUrl)) {
     merged = mergeDreamBoardAssetLists(localAssets, cloudRows);
     merged = merged.map((asset) => {
       const local = localAssets.find((item) => item.id === asset.id);
@@ -80,12 +94,20 @@ export async function hydrateDreamBoardImagesFromCloud(participantId, opts = {})
     merged = mergeDreamBoardAssetLists(localAssets, cloudRows);
   }
 
+  if (staffRead) {
+    merged = merged.map(stripInlineDreamBoardImage);
+  }
+
   if (!merged.length && !localAssets.length) return false;
 
   const nextData = {
     ...(entry?.data ?? {}),
-    assets: merged.length ? merged : localAssets,
+    assets: merged.length ? merged : localAssets.map(stripInlineDreamBoardImage),
   };
+
+  if (staffRead) {
+    return true;
+  }
 
   writeBuilderEntry(participantId, 'dream-board', nextData, Boolean(entry?.completedAt), {
     force: true,
@@ -93,4 +115,23 @@ export async function hydrateDreamBoardImagesFromCloud(participantId, opts = {})
   });
 
   return true;
+}
+
+/**
+ * Dream board assets for staff review — cloud rows + metadata, no localStorage writes.
+ * @param {string} participantId
+ */
+export async function fetchDreamBoardForStaffView(participantId) {
+  if (!participantId || String(participantId).startsWith('mock-')) return [];
+
+  const [cloudRows, entry] = await Promise.all([
+    fetchDreamBoardAssets(participantId),
+    Promise.resolve(readBuilderEntry(participantId, 'dream-board')),
+  ]);
+
+  const localAssets = /** @type {Array<{ id: string, category: string, caption: string, imageUrl?: string }>} */ (
+    entry?.data?.assets ?? []
+  ).map(stripInlineDreamBoardImage);
+
+  return mergeDreamBoardAssetLists(localAssets, cloudRows).map(stripInlineDreamBoardImage);
 }

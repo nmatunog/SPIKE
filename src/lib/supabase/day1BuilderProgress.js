@@ -1,8 +1,9 @@
 import { supabase } from '../../supabaseClient.js';
+import { shouldSkipSupabaseUserWrite } from './writeGuards.js';
 
 /** @param {string} userId */
 export async function fetchDay1BuilderProgress(userId) {
-  if (!supabase || !userId) return [];
+  if (!supabase || shouldSkipSupabaseUserWrite(userId)) return [];
   const { data, error } = await supabase
     .from('day1_builder_progress')
     .select('builder_id, completed_at, payload')
@@ -17,7 +18,7 @@ export async function fetchDay1BuilderProgress(userId) {
  * @param {Record<string, unknown>} entry
  */
 export async function upsertDay1BuilderProgress(userId, builderId, entry) {
-  if (!supabase || !userId || !builderId) return null;
+  if (!supabase || shouldSkipSupabaseUserWrite(userId) || !builderId) return null;
   const completedAt = entry.completedAt ? String(entry.completedAt) : new Date().toISOString();
   const { data, error } = await supabase
     .from('day1_builder_progress')

@@ -19,6 +19,7 @@ import { builderEntryHasContent, shouldApplyRemoteField } from './syncMergeUtils
 import {
   dreamBoardMetadataForCloud,
   hydrateDreamBoardImagesFromCloud,
+  stripInlineDreamBoardImage,
   syncDreamBoardToCloud,
 } from './dreamBoardCloudSync.js';
 import { fetchDreamBoardAssets } from './supabase/dreamBoardAssets.js';
@@ -70,6 +71,22 @@ function entryToCloudPayload(entry) {
     firstCompletedAt: entry.firstCompletedAt ? String(entry.firstCompletedAt) : undefined,
     refining: Boolean(entry.refining),
     updatedAt: entry.updatedAt ? String(entry.updatedAt) : new Date().toISOString(),
+  };
+}
+
+function isStaffReadHydration(opts = {}) {
+  return Boolean(opts.readOnly || opts.preferRemote);
+}
+
+/**
+ * @param {string} builderId
+ * @param {Record<string, unknown>} data
+ */
+function sanitizeBuilderDataForStaffCache(builderId, data) {
+  if (builderId !== 'dream-board' || !Array.isArray(data?.assets)) return data;
+  return {
+    ...data,
+    assets: data.assets.map(stripInlineDreamBoardImage),
   };
 }
 
@@ -166,8 +183,13 @@ export async function hydrateDay1BuildersFromSupabase(participantId, opts = {}) 
     const all = ensureDay1User(participantId);
     const user = all[participantId];
 
+    const staffRead = isStaffReadHydration(opts);
+
     for (const row of rows) {
-      if (String(row.builder_id) === 'dream-board') {
+      if (
+        !staffRead
+        && String(row.builder_id) === 'dream-board'
+      ) {
         const inlineAssets = row.payload?.data?.assets;
         if (
           Array.isArray(inlineAssets)
@@ -197,14 +219,24 @@ export async function hydrateDay1BuildersFromSupabase(participantId, opts = {}) 
       const local = user.builders[row.builder_id];
       const remoteEntry = rowToBuilderEntry(row);
       if ((!local && builderEntryHasContent(remoteEntry)) || shouldPreferRemote(local, row, opts)) {
-        user.builders[row.builder_id] = remoteEntry;
+        const data = staffRead
+          ? sanitizeBuilderDataForStaffCache(String(row.builder_id), remoteEntry.data)
+          : remoteEntry.data;
+        user.builders[row.builder_id] = { ...remoteEntry, data };
       }
     }
 
-    writeDay1BuilderStore(all);
+    if (!staffRead) {
+      writeDay1BuilderStore(all);
+    }
     await hydrateDreamBoardImagesFromCloud(participantId, {
       preferLocalImages: Boolean(opts.preferLocal) && !opts.preferRemote,
+      readOnly: staffRead,
+      preferRemote: opts.preferRemote,
     });
+    if (staffRead) {
+      writeDay1BuilderStore(all);
+    }
   } catch (err) {
     console.warn('[day1BuilderSync] hydrate failed:', err instanceof Error ? err.message : err);
   }

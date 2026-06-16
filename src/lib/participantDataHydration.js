@@ -8,7 +8,8 @@ import { hydrateSurveysFromSupabase } from './surveyService.js';
 import { hydrateCanvasFromSupabase } from './canvasService.js';
 import { syncParticipantSquadCacheFromInterns } from './participantSquadCache.js';
 
-const remoteOpts = { preferRemote: true };
+/** Staff review — cloud is source of truth; never upsert participant rows from a coach device. */
+const remoteOpts = { preferRemote: true, readOnly: true };
 
 /** @param {string} participantId @param {{ force?: boolean }} [opts] */
 export async function hydrateParticipantForStaffView(participantId, opts = {}) {

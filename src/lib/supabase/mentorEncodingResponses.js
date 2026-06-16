@@ -1,4 +1,23 @@
 import { isSupabaseConfigured, supabase } from '../../supabaseClient.js';
+import { isMissingSchemaError } from './writeGuards.js';
+
+const MENTOR_ENCODING_TABLE_MISSING_KEY = 'spike_mentor_encoding_table_missing';
+
+function mentorEncodingTableMissing() {
+  try {
+    return sessionStorage.getItem(MENTOR_ENCODING_TABLE_MISSING_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function markMentorEncodingTableMissing() {
+  try {
+    sessionStorage.setItem(MENTOR_ENCODING_TABLE_MISSING_KEY, '1');
+  } catch {
+    /* private mode */
+  }
+}
 
 /**
  * @param {string} staffId
@@ -12,7 +31,7 @@ import { isSupabaseConfigured, supabase } from '../../supabaseClient.js';
  * }} entry
  */
 export async function upsertMentorEncodingResponse(staffId, entry) {
-  if (!isSupabaseConfigured || !supabase || !staffId) return null;
+  if (!isSupabaseConfigured || !supabase || !staffId || mentorEncodingTableMissing()) return null;
 
   const existing = await fetchMentorEncodingResponse(
     staffId,
@@ -41,6 +60,10 @@ export async function upsertMentorEncodingResponse(staffId, entry) {
       .select('id')
       .single();
     if (error) {
+      if (isMissingSchemaError(error)) {
+        markMentorEncodingTableMissing();
+        return null;
+      }
       console.warn('[mentorEncodingResponses] update failed:', error.message);
       return null;
     }
@@ -53,6 +76,10 @@ export async function upsertMentorEncodingResponse(staffId, entry) {
     .select('id')
     .single();
   if (error) {
+    if (isMissingSchemaError(error)) {
+      markMentorEncodingTableMissing();
+      return null;
+    }
     console.warn('[mentorEncodingResponses] insert failed:', error.message);
     return null;
   }
@@ -67,7 +94,7 @@ export async function upsertMentorEncodingResponse(staffId, entry) {
  * @param {string} formType
  */
 export async function fetchMentorEncodingResponse(staffId, participantId, week, day, formType) {
-  if (!isSupabaseConfigured || !supabase || !staffId) return null;
+  if (!isSupabaseConfigured || !supabase || !staffId || mentorEncodingTableMissing()) return null;
 
   let query = supabase
     .from('mentor_encoding_responses')
@@ -85,6 +112,10 @@ export async function fetchMentorEncodingResponse(staffId, participantId, week, 
 
   const { data, error } = await query.maybeSingle();
   if (error) {
+    if (isMissingSchemaError(error)) {
+      markMentorEncodingTableMissing();
+      return null;
+    }
     console.warn('[mentorEncodingResponses] fetch failed:', error.message);
     return null;
   }
