@@ -69,7 +69,8 @@ jobs:
           command: pages deploy dist --project-name spike
 
       - name: Purge portal CDN cache
+        continue-on-error: true
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: bash scripts/purge-portal-cache.sh
+        run: bash scripts/purge-portal-cache.sh || echo "purge-portal-cache skipped"

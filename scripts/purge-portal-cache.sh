@@ -19,32 +19,50 @@ if [[ -z "${CLOUDFLARE_API_TOKEN:-}" ]]; then
 fi
 
 api() {
-  curl -fsS -X "$1" "https://api.cloudflare.com/client/v4$2" \
-    -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-    -H "Content-Type: application/json" \
-    "${@:3}"
+  local method="$1"
+  local path="$2"
+  local data="${3:-}"
+  if [[ -n "$data" ]]; then
+    curl -fsS -X "$method" "https://api.cloudflare.com/client/v4${path}" \
+      -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+      -H "Content-Type: application/json" \
+      --data "$data"
+  else
+    curl -fsS -X "$method" "https://api.cloudflare.com/client/v4${path}" \
+      -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+      -H "Content-Type: application/json"
+  fi
 }
 
 ZONE_ID="$(api GET "/zones?name=${ZONE_NAME}&status=active" | node -e "
   let d=''; process.stdin.on('data',c=>d+=c); process.stdin.on('end',()=>{
-    const j=JSON.parse(d);
-    const z=j?.result?.[0]?.id;
-    if(!z){ process.exit(1); }
-    process.stdout.write(z);
+    try {
+      const j=JSON.parse(d);
+      const z=j?.result?.[0]?.id;
+      if(!z){ process.exit(1); }
+      process.stdout.write(z);
+    } catch { process.exit(1); }
   });
 " 2>/dev/null || true)"
 
 if [[ -z "$ZONE_ID" ]]; then
-  echo "purge-portal-cache: zone ${ZONE_NAME} not found — trying purge_everything on Pages host only"
-  api POST "/zones" --data '{"purge_everything":true}' >/dev/null 2>&1 || true
+  echo "purge-portal-cache: zone ${ZONE_NAME} not found — skipping (new asset hashes still bypass poisoned URLs)"
   exit 0
 fi
 
 echo "purge-portal-cache: purging ${HOST} (zone ${ZONE_ID})..."
-api POST "/zones/${ZONE_ID}/purge_cache" --data "{\"hosts\":[\"${HOST}\"]}" | node -e "
+if ! api POST "/zones/${ZONE_ID}/purge_cache" "{\"hosts\":[\"${HOST}\"]}" | node -e "
   let d=''; process.stdin.on('data',c=>d+=c); process.stdin.on('end',()=>{
-    const j=JSON.parse(d);
-    if(!j.success){ console.error(JSON.stringify(j)); process.exit(1); }
-    console.log('purge-portal-cache OK');
+    try {
+      const j=JSON.parse(d);
+      if(!j.success){ console.error(JSON.stringify(j)); process.exit(1); }
+      console.log('purge-portal-cache OK');
+    } catch (e) {
+      console.error('purge-portal-cache: invalid API response');
+      process.exit(1);
+    }
   });
-"
+"; then
+  echo "purge-portal-cache: purge failed (token may lack Cache Purge) — new asset hashes still apply"
+  exit 0
+fi
