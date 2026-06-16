@@ -7,53 +7,204 @@
       "slide-d2-02-01",
       "slide-d2-02-02",
       "slide-d2-02-03",
-      "slide-d2-02-04"
-    ]
+      "slide-d2-02-04",
+      "slide-d2-02-05",
+      "slide-d2-02-06",
+      "slide-d2-02-07",
+      "slide-d2-02-08",
+      "slide-d2-02-09",
+      "slide-d2-02-10",
+      "slide-d2-02-11",
+      "slide-d2-02-12",
+      "slide-d2-02-13",
+      "slide-d2-02-14",
+      "slide-d2-02-15",
+      "slide-d2-02-16",
+      "slide-d2-02-17"
+    ],
+    "sourceFile": "faculty-deck-02.pdf",
+    "sourcePath": "content/segment-1/week-1/day-2/source/faculty-deck-02.pdf",
+    "importedAt": "2026-06-16T18:07:24.206Z",
+    "pdfUrl": "/content/segment-1/week-1/day-2/faculty-deck-02.pdf"
   },
   "slides": [
     {
       "id": "slide-d2-02-01",
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 1,
       "title": "Ambition Meets Industry",
       "body": "Your ambition statement is not abstract — it lives in a real market.\n\nToday you will:\n• Interview or observe a practitioner\n• Capture industry insights for your squad\n• Draft your opportunity reflection",
       "speakerNotes": "Show example connection: ambition → industry niche. 4 min.",
       "discussionQuestions": [
         "Read your ambition — what industry segment fits?"
       ],
-      "presentationId": "presentation-day-2-deck-02",
-      "sortOrder": 1
+      "imageUrl": "/content/segment-1/week-1/day-2/deck-02/slide-01.png"
     },
     {
       "id": "slide-d2-02-02",
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 2,
       "title": "Interview & Observation Protocol",
       "body": "Prepare 5 questions before you speak to a practitioner.\nListen for: client problems, career path, daily habits, industry changes.\nCapture quotes — your business plan will use this evidence.",
       "speakerNotes": "Distribute interview worksheet. 5 min.",
       "discussionQuestions": [
         "What is one question you are afraid to ask?"
       ],
-      "presentationId": "presentation-day-2-deck-02",
-      "sortOrder": 2
+      "imageUrl": "/content/segment-1/week-1/day-2/deck-02/slide-02.png"
     },
     {
       "id": "slide-d2-02-03",
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 3,
       "title": "Squad Research Plan",
       "body": "Squads will research a market segment this week.\nDocument: target segment, key questions, interview schedule, roles.\nLead presents research plan at debrief.",
       "speakerNotes": "Squad breakout follows. 4 min.",
       "discussionQuestions": [
         "What segment will your squad investigate?"
       ],
-      "presentationId": "presentation-day-2-deck-02",
-      "sortOrder": 3
+      "imageUrl": "/content/segment-1/week-1/day-2/deck-02/slide-03.png"
     },
     {
       "id": "slide-d2-02-04",
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 4,
       "title": "Day 2 Deliverables",
       "body": "✓ Interview notes\n✓ Industry insights (squad)\n✓ Research plan\n✓ Opportunity reflection → Portfolio",
       "speakerNotes": "Close with deliverable checklist. 3 min.",
       "discussionQuestions": [
         "What is one action before Day 3 market observation?"
       ],
+      "imageUrl": "/content/segment-1/week-1/day-2/deck-02/slide-04.png"
+    },
+    {
+      "id": "slide-d2-02-05",
       "presentationId": "presentation-day-2-deck-02",
-      "sortOrder": 4
+      "sortOrder": 5,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-2/deck-02/slide-05.png"
+    },
+    {
+      "id": "slide-d2-02-06",
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 6,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-2/deck-02/slide-06.png"
+    },
+    {
+      "id": "slide-d2-02-07",
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 7,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-2/deck-02/slide-07.png"
+    },
+    {
+      "id": "slide-d2-02-08",
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 8,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-2/deck-02/slide-08.png"
+    },
+    {
+      "id": "slide-d2-02-09",
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 9,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-2/deck-02/slide-09.png"
+    },
+    {
+      "id": "slide-d2-02-10",
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 10,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-2/deck-02/slide-10.png"
+    },
+    {
+      "id": "slide-d2-02-11",
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 11,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-2/deck-02/slide-11.png"
+    },
+    {
+      "id": "slide-d2-02-12",
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 12,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-2/deck-02/slide-12.png"
+    },
+    {
+      "id": "slide-d2-02-13",
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 13,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-2/deck-02/slide-13.png"
+    },
+    {
+      "id": "slide-d2-02-14",
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 14,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-2/deck-02/slide-14.png"
+    },
+    {
+      "id": "slide-d2-02-15",
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 15,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-2/deck-02/slide-15.png"
+    },
+    {
+      "id": "slide-d2-02-16",
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 16,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-2/deck-02/slide-16.png"
+    },
+    {
+      "id": "slide-d2-02-17",
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 17,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-2/deck-02/slide-17.png"
     }
   ]
 }
