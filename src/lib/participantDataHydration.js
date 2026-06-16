@@ -14,12 +14,13 @@ const remoteOpts = { preferRemote: true, readOnly: true };
 /** @param {string} participantId @param {{ force?: boolean }} [opts] */
 export async function hydrateParticipantForStaffView(participantId, opts = {}) {
   if (!participantId || String(participantId).startsWith('mock-')) return;
+  const staffOpts = { ...remoteOpts, ...opts };
   await Promise.all([
-    hydrateVentureBlueprint(participantId, remoteOpts),
-    hydrateParticipantBuilderData(participantId, opts),
-    hydratePlaybookProgressFromSupabase(participantId, { ...opts, ...remoteOpts }),
-    hydrateSurveysFromSupabase(participantId, { ...opts, ...remoteOpts }),
-    hydrateCanvasFromSupabase(participantId, remoteOpts),
+    hydrateVentureBlueprint(participantId, staffOpts),
+    hydrateParticipantBuilderData(participantId, staffOpts),
+    hydratePlaybookProgressFromSupabase(participantId, staffOpts),
+    hydrateSurveysFromSupabase(participantId, staffOpts),
+    hydrateCanvasFromSupabase(participantId, staffOpts),
   ]);
 }
 
@@ -27,14 +28,15 @@ export async function hydrateParticipantForStaffView(participantId, opts = {}) {
 export async function hydrateCohortForStaffView(participantIds, opts = {}) {
   const ids = participantIds.filter((id) => id && !String(id).startsWith('mock-'));
   if (!ids.length) return;
-  if (opts.interns?.length) {
-    syncParticipantSquadCacheFromInterns(opts.interns);
+  const staffOpts = { ...remoteOpts, ...opts };
+  if (staffOpts.interns?.length) {
+    syncParticipantSquadCacheFromInterns(staffOpts.interns);
   }
   await Promise.all([
-    ...ids.map((id) => hydrateVentureBlueprint(id, remoteOpts)),
-    ...ids.map((id) => hydratePlaybookProgressFromSupabase(id, { ...opts, ...remoteOpts })),
-    ...ids.map((id) => hydrateSurveysFromSupabase(id, { ...opts, ...remoteOpts })),
-    ...ids.map((id) => hydrateCanvasFromSupabase(id, remoteOpts)),
-    hydrateCohortBuilderData(ids, opts),
+    ...ids.map((id) => hydrateVentureBlueprint(id, staffOpts)),
+    ...ids.map((id) => hydratePlaybookProgressFromSupabase(id, staffOpts)),
+    ...ids.map((id) => hydrateSurveysFromSupabase(id, staffOpts)),
+    ...ids.map((id) => hydrateCanvasFromSupabase(id, staffOpts)),
+    hydrateCohortBuilderData(ids, staffOpts),
   ]);
 }

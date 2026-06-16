@@ -1,5 +1,5 @@
 import { supabase } from '../../supabaseClient.js';
-import { isInvalidUuidError, shouldSkipSupabaseUserWrite } from './writeGuards.js';
+import { isInvalidUuidError, shouldSkipSupabaseUserWrite, canWriteParticipantRow } from './writeGuards.js';
 
 /** @param {string} userId */
 export async function fetchBlueprintEntries(userId) {
@@ -20,7 +20,7 @@ export async function fetchBlueprintEntries(userId) {
  * @param {{ sourceType?: string, sourceId?: string }} [meta]
  */
 export async function upsertBlueprintEntry(userId, sectionSlug, fieldKey, fieldValue, meta = {}) {
-  if (!supabase || shouldSkipSupabaseUserWrite(userId)) return null;
+  if (!supabase || !(await canWriteParticipantRow(userId))) return null;
   try {
     const { data, error } = await supabase
       .from('venture_blueprint_entries')

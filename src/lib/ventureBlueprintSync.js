@@ -46,7 +46,9 @@ export async function hydrateVentureBlueprint(participantId, opts = {}) {
     hydrateCanvasSummaryFromSupabase(participantId, opts),
     hydrateLeadershipJournalFromSupabase(participantId),
   ]);
-  prepareFecCanvas(participantId);
+  if (!opts.readOnly && !opts.preferRemote) {
+    prepareFecCanvas(participantId);
+  }
 }
 
 /**

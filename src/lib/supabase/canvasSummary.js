@@ -1,5 +1,5 @@
 import { supabase } from '../../supabaseClient.js';
-import { isInvalidUuidError, isMissingSchemaError, shouldSkipSupabaseUserWrite } from './writeGuards.js';
+import { isInvalidUuidError, isMissingSchemaError, shouldSkipSupabaseUserWrite, canWriteParticipantRow } from './writeGuards.js';
 import { toLegacyCanvasSummaryPatch } from './canvasSummaryFields.js';
 
 /** When production DB has not run 20260713_fec_canvas_v2.sql yet. */
@@ -22,7 +22,7 @@ export async function fetchCanvasSummary(userId) {
  * @param {Record<string, unknown>} patch
  */
 export async function upsertCanvasSummary(userId, patch) {
-  if (!supabase || shouldSkipSupabaseUserWrite(userId)) return null;
+  if (!supabase || !(await canWriteParticipantRow(userId))) return null;
 
   const write = async (payload) =>
     supabase

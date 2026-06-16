@@ -1,5 +1,5 @@
 import { supabase } from '../../supabaseClient.js';
-import { isInvalidUuidError, shouldSkipSupabaseUserWrite } from './writeGuards.js';
+import { isInvalidUuidError, shouldSkipSupabaseUserWrite, canWriteParticipantRow } from './writeGuards.js';
 
 /** @param {string} userId */
 export async function fetchCanvasEntries(userId) {
@@ -19,7 +19,7 @@ export async function fetchCanvasEntries(userId) {
  * @param {string} fieldValue
  */
 export async function upsertCanvasEntry(userId, engineKey, fieldKey, fieldValue) {
-  if (!supabase || shouldSkipSupabaseUserWrite(userId)) return null;
+  if (!supabase || !(await canWriteParticipantRow(userId))) return null;
   try {
     const { data, error } = await supabase
       .from('canvas_entries')

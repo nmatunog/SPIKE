@@ -1,5 +1,5 @@
 import { isSupabaseConfigured, supabase } from '../../supabaseClient.js';
-import { shouldSkipSupabaseUserWrite } from './writeGuards.js';
+import { shouldSkipSupabaseUserWrite, canWriteParticipantRow, isRlsViolationError } from './writeGuards.js';
 
 /**
  * @typedef {{
@@ -36,7 +36,9 @@ export async function fetchDreamBoardAssets(userId) {
  * @param {Array<{ id: string, category: string, caption: string, imageUrl?: string }>} assets
  */
 export async function syncDreamBoardAssets(userId, assets) {
-  if (!isSupabaseConfigured || !supabase || shouldSkipSupabaseUserWrite(userId)) return { ok: false };
+  if (!isSupabaseConfigured || !supabase || !(await canWriteParticipantRow(userId))) {
+    return { ok: false };
+  }
 
   const list = Array.isArray(assets) ? assets : [];
   const keepClientIds = [];
@@ -61,7 +63,7 @@ export async function syncDreamBoardAssets(userId, assets) {
       { onConflict: 'user_id,client_asset_id' },
     );
 
-    if (error) {
+    if (error && !isRlsViolationError(error)) {
       console.warn('[dreamBoardAssets] upsert failed:', asset.id, error.message);
     }
   }
@@ -73,7 +75,7 @@ export async function syncDreamBoardAssets(userId, assets) {
 
   if (staleIds.length) {
     const { error } = await supabase.from('dream_board_assets').delete().in('id', staleIds);
-    if (error) {
+    if (error && !isRlsViolationError(error)) {
       console.warn('[dreamBoardAssets] delete stale failed:', error.message);
     }
   }
