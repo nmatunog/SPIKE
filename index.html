@@ -11,6 +11,26 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="theme-color" content="#8B0000" />
     <title>SPIKE Venture Studio</title>
+    <script>
+      (function () {
+        var key = 'spike_preload_reload';
+        window.addEventListener('vite:preloadError', function (event) {
+          event.preventDefault();
+          if (sessionStorage.getItem(key) === '1') return;
+          sessionStorage.setItem(key, '1');
+          window.location.reload();
+        });
+        window.addEventListener('error', function (event) {
+          var target = event.target;
+          if (!target || target.tagName !== 'SCRIPT') return;
+          var src = target.src || '';
+          if (!/\/assets\/.*\\.js/.test(src)) return;
+          if (sessionStorage.getItem(key) === '1') return;
+          sessionStorage.setItem(key, '1');
+          window.location.reload();
+        }, true);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
