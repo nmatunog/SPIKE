@@ -24,7 +24,7 @@
           var target = event.target;
           if (!target || target.tagName !== 'SCRIPT') return;
           var src = target.src || '';
-          if (!/\/assets\/.*\\.js/.test(src)) return;
+          if (!/\/assets\/.*\.js/.test(src)) return;
           if (sessionStorage.getItem(key) === '1') return;
           sessionStorage.setItem(key, '1');
           window.location.reload();
