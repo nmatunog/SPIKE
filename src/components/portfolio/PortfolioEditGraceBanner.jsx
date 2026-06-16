@@ -1,5 +1,9 @@
 import { Clock, Lock } from 'lucide-react';
-import { portfolioEditGraceRemainingLabel } from '../../lib/portfolioEditWindow.js';
+import {
+  cohortEditCutoffLabel,
+  isWithinCohortEditWindow,
+  portfolioEditGraceRemainingLabel,
+} from '../../lib/portfolioEditWindow.js';
 
 /**
  * @param {{
@@ -16,7 +20,9 @@ export function PortfolioEditGraceBanner({ completedAt, firstCompletedAt, locked
         <div>
           <p className="font-semibold text-slate-900">Editing closed</p>
           <p className="mt-0.5 text-slate-600">
-            Your 24-hour refinement window has ended. Contact your coach if you need changes.
+            {isWithinCohortEditWindow()
+              ? `Editing closed after ${cohortEditCutoffLabel()}. Contact your coach if you need changes.`
+              : 'Your refinement window has ended. Contact your coach if you need changes.'}
           </p>
         </div>
       </div>
@@ -32,7 +38,23 @@ export function PortfolioEditGraceBanner({ completedAt, firstCompletedAt, locked
       <div>
         <p className="font-semibold">Refinement window open</p>
         <p className="mt-0.5 text-amber-900/90">
-          You can refine this for about <strong>{remaining}</strong> more. After that it locks into your portfolio.
+          {isWithinCohortEditWindow() ? (
+            <>
+              You can refine this until <strong>{cohortEditCutoffLabel()}</strong>
+              {remaining ? (
+                <>
+                  {' '}
+                  (about <strong>{remaining}</strong> left)
+                </>
+              ) : null}
+              . After that it locks into your portfolio.
+            </>
+          ) : (
+            <>
+              You can refine this for about <strong>{remaining}</strong> more. After that it locks into your
+              portfolio.
+            </>
+          )}
         </p>
       </div>
     </div>
