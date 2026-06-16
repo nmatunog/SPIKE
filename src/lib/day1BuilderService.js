@@ -246,8 +246,11 @@ async function syncSquadCharter(participantId, data) {
   );
 }
 
+import { UNLOCK_WEEK1_DAY2_PLUS } from './programUnlocks.js';
+
 /** @param {number} week @param {number} segment @param {number} [day] */
 export function isDay1MissionActive(week, segment, day = 1) {
+  if (UNLOCK_WEEK1_DAY2_PLUS && segment === 1 && week <= 1) return false;
   return segment === 1 && week <= 1 && day <= 1;
 }
 

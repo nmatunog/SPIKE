@@ -20,7 +20,8 @@ import {
   VentureDirectionCoachFlow,
 } from './CoachSectionFlows.jsx';
 import { CoachIdentityTriangle } from './CoachIdentityTriangle.jsx';
-import { ROUTES } from '../../routes/paths.js';
+import { ROUTES, playbookHref } from '../../routes/paths.js';
+import { UNLOCK_WEEK1_DAY2_PLUS } from '../../lib/programUnlocks.js';
 
 const SECTION_TITLES = {
   ambition: 'My Ambition',
@@ -162,6 +163,14 @@ export function VentureCoachShell({ participantId, section }) {
             />
           </header>
           <CoachSectionNav activeSection={section} />
+          {UNLOCK_WEEK1_DAY2_PLUS && section === 'ambition' ? (
+            <p className="rounded-xl border border-indigo-100 bg-indigo-50 px-4 py-3 text-sm text-indigo-950">
+              Day 2 Playbook is open even if Day 1 is incomplete.{' '}
+              <Link to={playbookHref({ week: 1, day: 2 })} className="font-semibold text-spike hover:underline">
+                Open Day 2 Playbook →
+              </Link>
+            </p>
+          ) : null}
           {renderSection()}
         </div>
         <div className="order-1 lg:order-none">

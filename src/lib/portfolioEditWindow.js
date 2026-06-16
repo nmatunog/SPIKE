@@ -1,5 +1,5 @@
-/** Grace period for refining portfolio inputs after first submission. */
-export const PORTFOLIO_EDIT_WINDOW_MS = 24 * 60 * 60 * 1000;
+/** Grace period for refining portfolio inputs after first submission (7 days during pilot). */
+export const PORTFOLIO_EDIT_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
 
 /**
  * @param {string | null | undefined} completedAt

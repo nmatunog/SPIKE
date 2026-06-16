@@ -168,12 +168,13 @@ export function PortfolioDreamBoardSection({ portfolio }) {
         ) : null}
       </header>
       <DreamBoardSlideCollage assets={dreamBoard.assets} title={`${portfolio.cover.participantName}'s Dream Board`} />
-      <details className="spike-card group">
-        <summary className="cursor-pointer text-sm font-semibold text-spike">View card grid</summary>
+      <section className="spike-card">
+        <h3 className="text-sm font-semibold text-slate-900">All dream cards</h3>
+        <p className="mt-1 text-xs text-slate-500">Tap any card for full-size view with complete caption.</p>
         <div className="mt-4">
           <DreamBoardCollage assets={dreamBoard.assets} showMeta />
         </div>
-      </details>
+      </section>
       {dreamBoard.evolution.length ? (
         <section className="spike-card space-y-4">
           <p className="spike-label text-spike">Dream Evolution</p>

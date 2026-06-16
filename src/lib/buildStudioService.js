@@ -10,6 +10,8 @@ import { listBlueprintTimelineEvents } from './blueprintTimeline.js';
 import { generateVenturePortfolio } from '../services/portfolioGenerator.js';
 import { week1CompletionPct, getWeek1DayProgress } from './week1JourneyService.js';
 import { isDay1MissionActive, isWeek1PlaybookDaysActive } from './day1BuilderService.js';
+import { UNLOCK_WEEK1_DAY2_PLUS } from './programUnlocks.js';
+import { playbookHref } from '../routes/paths.js';
 import { getNextBlueprintAction } from './blueprintRecommendations.js';
 import { WEEK1_DAY_META } from './mentorWeek1Constants.js';
 
@@ -117,7 +119,7 @@ function deriveWeek1PlaybookMission(participantId, state) {
   return {
     title: meta.playbookTitle ?? meta.theme,
     stepLabel: `Week ${state.week}`,
-    href: ROUTES.playbook,
+    href: playbookHref({ week: state.week, day }),
     estimatedMinutes: 240,
     coachReady: false,
     progressPercent: today?.complete
@@ -136,6 +138,15 @@ function deriveWeek1PlaybookMission(participantId, state) {
  * @param {{ week: number, segment: number, day?: number, blueprint_completion?: number }} [state]
  */
 export function deriveTodayMission(participantId, state) {
+  if (
+    state
+    && UNLOCK_WEEK1_DAY2_PLUS
+    && state.segment === 1
+    && state.week <= 1
+  ) {
+    const day = Math.max(2, state.day ?? 2);
+    return deriveWeek1PlaybookMission(participantId, { ...state, day });
+  }
   if (state && isWeek1PlaybookDaysActive(state.week, state.segment, state.day ?? 1)) {
     return deriveWeek1PlaybookMission(participantId, state);
   }

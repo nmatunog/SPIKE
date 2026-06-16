@@ -60,6 +60,22 @@ export const BLUEPRINT_LINKS = {
   venturePortfolio: '/my-venture-portfolio',
 };
 
+/**
+ * Deep link to Playbook curriculum day.
+ * @param {{ segment?: number, week?: number, day?: number }} [opts]
+ */
+export function playbookHref(opts = {}) {
+  const segment = opts.segment ?? 1;
+  const week = opts.week ?? 1;
+  const day = opts.day ?? 1;
+  const params = new URLSearchParams({
+    segment: String(segment),
+    week: String(week),
+    day: String(day),
+  });
+  return `${ROUTES.playbook}?${params.toString()}`;
+}
+
 /** @param {string} pathname @param {string[]} validSectionIds */
 export function portfolioSectionFromPath(pathname, validSectionIds) {
   if (pathname === ROUTES.myVenturePortfolio) return 'overview';

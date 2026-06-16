@@ -1,5 +1,5 @@
-import { Pencil } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Pencil } from 'lucide-react';
 import { PortfolioEditGraceBanner } from '../portfolio/PortfolioEditGraceBanner.jsx';
 import {
   canRefinePortfolioInput,
@@ -7,7 +7,8 @@ import {
 } from '../../lib/portfolioEditWindow.js';
 import { COACH_SECTIONS } from '../../lib/ventureCoachConstants.js';
 import { reopenCoachSectionForRefinement } from '../../lib/ventureCoachService.js';
-import { ROUTES } from '../../routes/paths.js';
+import { ROUTES, playbookHref } from '../../routes/paths.js';
+import { UNLOCK_WEEK1_DAY2_PLUS } from '../../lib/programUnlocks.js';
 
 /** @param {string} sectionId */
 function nextCoachSection(sectionId) {
@@ -69,6 +70,14 @@ export function CoachSectionCompletePanel({
             className="mt-3 inline-flex min-h-[44px] w-full items-center justify-center rounded-xl bg-spike px-4 py-2.5 text-sm font-semibold text-white hover:bg-spike-light sm:w-auto"
           >
             Continue to {nextSection.label} →
+          </Link>
+        ) : null}
+        {UNLOCK_WEEK1_DAY2_PLUS ? (
+          <Link
+            to={playbookHref({ week: 1, day: 2 })}
+            className="mt-2 inline-flex min-h-[44px] w-full items-center justify-center rounded-xl border border-indigo-200 bg-indigo-50 px-4 py-2.5 text-sm font-semibold text-indigo-900 hover:bg-indigo-100 sm:w-auto"
+          >
+            Open Day 2 Playbook →
           </Link>
         ) : null}
       </div>

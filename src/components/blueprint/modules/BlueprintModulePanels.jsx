@@ -34,6 +34,7 @@ import { FnaEngineModule } from '../../fna/FnaEngineModule.jsx';
 import { AutoSaveField } from '../AutoSaveField.jsx';
 import { hasSubmittedCohortIdentity, getSquadPreferences } from '../../../lib/cohortFormationService.js';
 import { getDay1MissionProgress } from '../../../lib/day1BuilderStorage.js';
+import { UNLOCK_WEEK1_DAY2_PLUS } from '../../../lib/programUnlocks.js';
 
 function SectionCard({ title, children, className = '' }) {
   return (
@@ -112,9 +113,14 @@ export function VisionPurposePanel({ participantId }) {
         {section?.description ?? 'Design your ambition, impact, and venture identity.'} Day 1 Venture
         Blueprint Builders™ auto-fill this module — no duplicate entry.
       </p>
-      {day1 && day1.percent < 100 ? (
+      {day1 && day1.percent < 100 && !UNLOCK_WEEK1_DAY2_PLUS ? (
         <Link to={BLUEPRINT_LINKS.day1Builders} className="spike-btn-primary inline-flex">
           Continue Day 1 Builders ({day1.percent}%)
+        </Link>
+      ) : null}
+      {UNLOCK_WEEK1_DAY2_PLUS ? (
+        <Link to={ROUTES.playbook} className="spike-btn-primary inline-flex">
+          Open Playbook (Day 2+ unlocked)
         </Link>
       ) : null}
       <Link to={BLUEPRINT_LINKS.ventureCoach} className="spike-btn-secondary inline-flex">

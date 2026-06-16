@@ -1,18 +1,23 @@
+import { useState } from 'react';
 import { dreamBoardCategoryMeta } from '../../lib/venturePortfolioService.js';
+import { DreamBoardLightbox } from './DreamBoardLightbox.jsx';
 
 /**
  * @param {{
  *   assets: Array<{ id: string, category: string, caption: string, imageUrl?: string, addedAt?: string | null }>,
  *   emptyMessage?: string,
  *   showMeta?: boolean,
+ *   enableLightbox?: boolean,
  * }} props
  */
 export function DreamBoardCollage({
   assets,
   emptyMessage = 'Complete Dream Board Studio to add your vision cards.',
   showMeta = true,
+  enableLightbox = true,
 }) {
   const cards = assets.filter((asset) => asset.caption?.trim() || asset.imageUrl);
+  const [lightboxAsset, setLightboxAsset] = useState(null);
 
   if (!cards.length) {
     return (
@@ -23,6 +28,7 @@ export function DreamBoardCollage({
   }
 
   return (
+    <>
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {cards.map((asset) => {
         const category = dreamBoardCategoryMeta(asset.category);
@@ -30,10 +36,16 @@ export function DreamBoardCollage({
           ? new Date(asset.addedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
           : null;
 
+        const CardTag = enableLightbox ? 'button' : 'article';
+
         return (
-          <article
+          <CardTag
             key={asset.id}
-            className={`overflow-hidden rounded-2xl border shadow-card transition hover:shadow-projection ${category.color}`}
+            type={enableLightbox ? 'button' : undefined}
+            onClick={enableLightbox ? () => setLightboxAsset(asset) : undefined}
+            className={`overflow-hidden rounded-2xl border text-left shadow-card transition hover:shadow-projection ${category.color} ${
+              enableLightbox ? 'cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-spike' : ''
+            }`}
           >
             {asset.imageUrl ? (
               <img
@@ -65,9 +77,11 @@ export function DreamBoardCollage({
                 <p className="text-2xs font-semibold uppercase tracking-wide text-emerald-700">Captured</p>
               ) : null}
             </div>
-          </article>
+          </CardTag>
         );
       })}
     </div>
+    <DreamBoardLightbox asset={lightboxAsset} onClose={() => setLightboxAsset(null)} />
+    </>
   );
 }

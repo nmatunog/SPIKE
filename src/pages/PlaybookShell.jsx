@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { formatUiRoleLabel } from '../lib/terminology.js';
 import { ArrowLeft, BookOpen, ChevronRight, Layers, PlayCircle } from 'lucide-react';
 import { PageContainer, PageTitle } from '../components/layout/PageContainer.jsx';
@@ -13,6 +14,8 @@ import {
   listSegments,
   listWeeks,
 } from '../lib/curriculumService.js';
+import { resolveInternPlaybookDay } from '../lib/programUnlocks.js';
+import { useInternWorkHydration } from '../hooks/useInternWorkHydration.js';
 
 const TABS = [
   { id: 'curriculum', label: 'Curriculum', icon: Layers, roles: ['intern', 'faculty', 'mentor', 'admin'] },
@@ -39,11 +42,39 @@ function PathPill({ active, children, onClick, className = '' }) {
  *   participantId?: string,
  *   userRole?: string,
  *   interns?: Array<{ id: string, name: string }>,
+ *   internProgress?: object | null,
  * }} props
  */
-function ContentCurriculum({ participantId, userRole = 'intern', interns = [] }) {
+function ContentCurriculum({ participantId, userRole = 'intern', interns = [], internProgress = null }) {
+  const [searchParams] = useSearchParams();
+  const { version: hydrateVersion } = useInternWorkHydration(
+    userRole === 'intern' ? participantId : null,
+  );
   const [dataSource, setDataSource] = useState(() => getCurriculumDataSource());
   const [, setRefreshKey] = useState(0);
+
+  const entryDay = useMemo(() => {
+    const fromQuery = Number.parseInt(searchParams.get('day') ?? '', 10);
+    if (Number.isFinite(fromQuery) && fromQuery >= 1 && fromQuery <= 5) {
+      return fromQuery;
+    }
+    if (userRole === 'intern') {
+      return resolveInternPlaybookDay(internProgress);
+    }
+    return 1;
+  }, [searchParams, userRole, internProgress]);
+
+  const entryWeek = useMemo(() => {
+    const fromQuery = Number.parseInt(searchParams.get('week') ?? '', 10);
+    if (Number.isFinite(fromQuery) && fromQuery >= 1) return fromQuery;
+    return internProgress?.current_week ?? 1;
+  }, [searchParams, internProgress]);
+
+  const entrySegment = useMemo(() => {
+    const fromQuery = Number.parseInt(searchParams.get('segment') ?? '', 10);
+    if (Number.isFinite(fromQuery) && fromQuery >= 1) return fromQuery;
+    return internProgress?.segment ?? 1;
+  }, [searchParams, internProgress]);
 
   useEffect(() => {
     let active = true;
@@ -57,12 +88,22 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [] })
   }, []);
 
   const segments = useMemo(() => listSegments(), []);
-  const [segmentSlug, setSegmentSlug] = useState(segments[0]?.slug ?? 'segment-1');
+  const [segmentSlug, setSegmentSlug] = useState(`segment-${entrySegment}`);
   const weeks = useMemo(() => listWeeks(segmentSlug), [segmentSlug]);
-  const [weekSlug, setWeekSlug] = useState(weeks[0]?.slug ?? 'week-1');
+  const [weekSlug, setWeekSlug] = useState(`week-${entryWeek}`);
   const days = useMemo(() => listDays(segmentSlug, weekSlug), [segmentSlug, weekSlug]);
-  const [daySlug, setDaySlug] = useState(days[0]?.slug ?? 'day-1');
+  const [daySlug, setDaySlug] = useState(`day-${entryDay}`);
   const [mobilePanel, setMobilePanel] = useState('content');
+
+  useEffect(() => {
+    setSegmentSlug(`segment-${entrySegment}`);
+    setWeekSlug(`week-${entryWeek}`);
+    setDaySlug(`day-${entryDay}`);
+  }, [entrySegment, entryWeek, entryDay]);
+
+  useEffect(() => {
+    setRefreshKey((k) => k + hydrateVersion);
+  }, [hydrateVersion]);
 
   const selectedSegment = segments.find((s) => s.slug === segmentSlug);
   const selectedWeek = weeks.find((w) => w.slug === weekSlug);
@@ -223,6 +264,13 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [] })
         Playbook
       </PageTitle>
 
+      {userRole === 'intern' ? (
+        <p className="mt-3 rounded-xl border border-indigo-100 bg-indigo-50/80 px-4 py-3 text-sm text-indigo-950">
+          All Week 1 days are open — Day 1 completion is not required to work on Day 2 Playbook or portfolio
+          inputs. Your saved work syncs when you sign in; refresh if yesterday&apos;s entries look incomplete.
+        </p>
+      ) : null}
+
       {showSegmentPicker ? (
         <div className="mb-4 mt-5 flex gap-2 overflow-x-auto pb-1 scrollbar-thin">
           {segments.map(({ slug, segment }) => (
@@ -280,6 +328,7 @@ export function PlaybookShell({
   participantId,
   userRole = 'intern',
   interns = [],
+  internProgress = null,
 }) {
   const [tab, setTab] = useState('curriculum');
   const visibleTabs = useMemo(
@@ -319,6 +368,7 @@ export function PlaybookShell({
           participantId={participantId}
           userRole={userRole}
           interns={interns}
+          internProgress={internProgress}
         />
       )}
       {tab === 'orientation' && orientationView}

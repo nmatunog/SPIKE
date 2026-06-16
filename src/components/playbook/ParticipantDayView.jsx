@@ -7,7 +7,8 @@ import { DayCompletionBar } from './DayCompletionBar.jsx';
 import { DayContributionChips } from './DayContributionChips.jsx';
 import { getDayCompletionSummary } from '../../lib/playbookProgress.js';
 import { getDay1MissionProgress } from '../../lib/day1BuilderStorage.js';
-import { BLUEPRINT_LINKS } from '../../routes/paths.js';
+import { BLUEPRINT_LINKS, playbookHref, ROUTES } from '../../routes/paths.js';
+import { UNLOCK_WEEK1_DAY2_PLUS } from '../../lib/programUnlocks.js';
 
 /**
  * @typedef {import('../../lib/contentLoader.js').DayContentBundle} DayContentBundle
@@ -60,6 +61,14 @@ export function ParticipantDayView({ bundle, participantId, onProgress }) {
             </p>
             <h3 className="text-lg font-bold text-gray-900 sm:text-xl">{bundle.day.title}</h3>
             <p className="mt-1 text-sm text-gray-600">{bundle.day.theme}</p>
+            {isDay1 && UNLOCK_WEEK1_DAY2_PLUS ? (
+              <Link
+                to={playbookHref({ week: 1, day: 2 })}
+                className="mt-3 inline-flex text-sm font-semibold text-spike hover:underline"
+              >
+                Continue to Day 2 Playbook →
+              </Link>
+            ) : null}
           </div>
         </div>
       </header>

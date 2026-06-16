@@ -7,7 +7,7 @@ import { CareerTrackPicker } from '../components/blueprint/CareerTrackPicker.jsx
 import { buildParticipantState } from '../lib/participantState.js';
 import { getBlueprintModule, isSharedBlueprintModule } from '../lib/blueprintModules.js';
 import { ROUTES } from '../routes/paths.js';
-import { whenInternSignInUploadDone } from '../lib/internSessionSync.js';
+import { useInternWorkHydration } from '../hooks/useInternWorkHydration.js';
 import { needsCareerTrackSelection } from '../lib/careerTrackService.js';
 import {
   BlueprintOverviewPanel,
@@ -35,22 +35,12 @@ import { VentureCoachShell } from '../components/ventureCoach/VentureCoachShell.
 export function VentureBlueprintShell({ user, onProgressRefresh }) {
   const participantName = user.name || user.email || 'Participant';
   const location = useLocation();
-  const [, setHydrateGeneration] = useState(0);
+  const { version: hydrateVersion } = useInternWorkHydration(user.id);
   const [progress, setProgress] = useState(user.internProgress);
 
   useEffect(() => {
     setProgress(user.internProgress);
   }, [user.internProgress]);
-
-  useEffect(() => {
-    let cancelled = false;
-    void whenInternSignInUploadDone(user.id).then(() => {
-      if (!cancelled) setHydrateGeneration((g) => g + 1);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [user.id]);
 
   const state = buildParticipantState(user.id, progress);
 
@@ -127,6 +117,7 @@ export function VentureBlueprintShell({ user, onProgressRefresh }) {
       case 'day-1-builders':
         return (
           <Day1BuildersShell
+            key={hydrateVersion}
             participantId={user.id}
             participantName={participantName}
             squadName={progress?.squad ?? user.internProgress?.squad}
@@ -136,6 +127,7 @@ export function VentureBlueprintShell({ user, onProgressRefresh }) {
       default:
         return (
           <BlueprintOverviewPanel
+            key={hydrateVersion}
             state={state}
             participantId={user.id}
             participantName={participantName}

@@ -91,7 +91,7 @@ export function whenInternSignInUploadDone(participantId) {
   } catch {
     /* private mode */
   }
-  return Promise.resolve({ skipped: true });
+  return runInternSignInCloudUpload(participantId);
 }
 
 /**

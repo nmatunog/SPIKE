@@ -1333,17 +1333,24 @@ const SpikeMasterPortal = () => {
     ],
   );
 
-  const renderPlaybook = () => (
+  const renderPlaybook = () => {
+    const playbookUser =
+      effectiveUserRole === 'intern' && !isSuperuserSession
+        ? internModuleUser ?? user
+        : user;
+    return (
     <LazyRoute label="Loading playbook…">
       <PlaybookShell
         orientationView={<OrientationModule />}
         syllabusView={<MasterSyllabusView />}
-        participantId={user?.id}
+        participantId={playbookUser?.id}
         userRole={effectiveUserRole}
         interns={interns}
+        internProgress={playbookUser?.internProgress ?? null}
       />
     </LazyRoute>
-  );
+    );
+  };
 
   const AdminDashboardHome = () => (
     <div className="container mx-auto px-4 py-6 sm:px-6 sm:py-8">

@@ -1,6 +1,7 @@
 import { Link, Navigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Briefcase } from 'lucide-react';
 import { PageContainer } from '../components/layout/PageContainer.jsx';
+import { useInternWorkHydration } from '../hooks/useInternWorkHydration.js';
 import {
   PortfolioCanvasSection,
   PortfolioCareerSection,
@@ -29,6 +30,7 @@ import { isSuperuserInternPreviewUser } from '../lib/superuserInternPreview.js';
  */
 export function MyVenturePortfolioShell({ user, section = 'overview' }) {
   const participantName = user.name || user.email || 'Participant';
+  const { version: hydrateVersion } = useInternWorkHydration(user.id);
   const portfolio = generateVenturePortfolio(user.id, {
     participantName,
     internProgress: user.internProgress,
@@ -88,7 +90,9 @@ export function MyVenturePortfolioShell({ user, section = 'overview' }) {
           </nav>
         </aside>
 
-        <main className="min-w-0">{renderSection(activeSection, portfolio, user.id, participantName)}</main>
+        <main className="min-w-0" key={hydrateVersion}>
+          {renderSection(activeSection, portfolio, user.id, participantName)}
+        </main>
       </div>
     </PageContainer>
   );
