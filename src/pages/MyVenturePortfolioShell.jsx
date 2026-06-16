@@ -20,6 +20,7 @@ import {
   generateVenturePortfolio,
 } from '../services/portfolioGenerator.js';
 import { ROUTES, defaultRouteForRole, portfolioTabFromPath, PORTFOLIO_TABS } from '../routes/paths.js';
+import { InternWorkHydrationAlert } from '../components/intern/InternWorkHydrationAlert.jsx';
 import { isSuperuserInternPreviewUser } from '../lib/superuserInternPreview.js';
 
 /**
@@ -30,7 +31,7 @@ import { isSuperuserInternPreviewUser } from '../lib/superuserInternPreview.js';
  */
 export function MyVenturePortfolioShell({ user, section = 'overview' }) {
   const participantName = user.name || user.email || 'Participant';
-  const { version: hydrateVersion } = useInternWorkHydration(user.id);
+  const { version: hydrateVersion, ready: hydrateReady, error: hydrateError } = useInternWorkHydration(user.id);
   const portfolio = generateVenturePortfolio(user.id, {
     participantName,
     internProgress: user.internProgress,
@@ -55,6 +56,7 @@ export function MyVenturePortfolioShell({ user, section = 'overview' }) {
           </p>
         </div>
       ) : null}
+      <InternWorkHydrationAlert ready={hydrateReady} error={hydrateError} />
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <Link
           to={ROUTES.ventureBlueprint}
@@ -82,6 +84,7 @@ export function MyVenturePortfolioShell({ user, section = 'overview' }) {
                     ? 'bg-spike text-white shadow-sm'
                     : 'text-slate-700 hover:bg-spike-muted hover:text-spike'
                 }`}
+                aria-current={activeTab === tab.id && section !== 'present' ? 'page' : undefined}
               >
                 {tab.label}
               </Link>

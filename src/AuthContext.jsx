@@ -18,6 +18,7 @@ import {
 import { setOnboardingCompleteCache } from './lib/cohortOnboardingService.js';
 import { ensureInternProgress } from './lib/supabase/cohortOnboarding.js';
 import { scheduleInternDelayedUpload, clearInternDelayedUploadSchedule, runInternSignInCloudUpload } from './lib/internSessionSync.js';
+import { runInternLogoutBackup } from './lib/internLogoutBackup.js';
 import { isSupabaseConfigured, supabase } from './supabaseClient';
 
 const AuthContext = createContext(null);
@@ -68,6 +69,12 @@ export function AuthProvider({ children }) {
     USE_SUPABASE ? true : !!localStorage.getItem('spike_token'),
   );
   const [internCloudSyncing, setInternCloudSyncing] = useState(false);
+  const [internWorkStatus, setInternWorkStatus] = useState({
+    phase: 'idle',
+    message: '',
+    error: null,
+    showBanner: false,
+  });
 
   useEffect(() => {
     userRef.current = user;
@@ -448,6 +455,7 @@ export function AuthProvider({ children }) {
   const logout = useCallback(() => {
     clearInternDelayedUploadSchedule();
     clearMockUser();
+    setInternWorkStatus({ phase: 'idle', message: '', error: null, showBanner: false });
     if (USE_SUPABASE) {
       supabase.auth.signOut();
       setToken(null);
@@ -458,6 +466,55 @@ export function AuthProvider({ children }) {
     setToken(null);
     setUser(null);
   }, []);
+
+  const logoutWithBackup = useCallback(async () => {
+    const current = userRef.current;
+    if (current?.role !== 'INTERN' || !current?.id) {
+      logout();
+      return;
+    }
+
+    const participantId = current.id;
+    setInternWorkStatus({
+      phase: 'cloud_sync',
+      message: 'Saving playbook, portfolio, and deliverables to the cloud…',
+      error: null,
+      showBanner: true,
+    });
+
+    try {
+      await runInternLogoutBackup(participantId, (status) => {
+        setInternWorkStatus({
+          phase: status.phase,
+          message: status.message,
+          error: status.error ?? null,
+          showBanner: true,
+        });
+      });
+      setInternWorkStatus({
+        phase: 'completed',
+        message: 'Cloud save and device backup complete.',
+        error: null,
+        showBanner: true,
+      });
+      await new Promise((resolve) => {
+        setTimeout(resolve, 900);
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      setInternWorkStatus({
+        phase: 'error',
+        message: 'Sign-out backup had issues. Your work remains on this device.',
+        error: message,
+        showBanner: true,
+      });
+      await new Promise((resolve) => {
+        setTimeout(resolve, 1200);
+      });
+    } finally {
+      logout();
+    }
+  }, [logout]);
 
   const refreshUser = useCallback(async () => {
     const storedMock = getStoredMockUser();
@@ -496,12 +553,14 @@ export function AuthProvider({ children }) {
       user,
       loading,
       internCloudSyncing,
+      internWorkStatus,
       isSupabaseConfigured,
       usingSupabaseAuth: USE_SUPABASE,
       mockAuthEnabled: isMockAuthEnabled(),
       login,
       completeBootstrapSetup,
       logout,
+      logoutWithBackup,
       refreshUser,
     }),
     [
@@ -509,9 +568,11 @@ export function AuthProvider({ children }) {
       user,
       loading,
       internCloudSyncing,
+      internWorkStatus,
       login,
       completeBootstrapSetup,
       logout,
+      logoutWithBackup,
       refreshUser,
     ],
   );

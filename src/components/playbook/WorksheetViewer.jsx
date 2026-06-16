@@ -54,24 +54,27 @@ export function WorksheetViewer({ worksheet, questions, participantId, onComplet
       <div className="mb-4 flex items-center justify-between gap-2">
         <h4 className="font-bold text-gray-900">{worksheet.title}</h4>
         {submitted && !editing ? (
-          <span className="inline-flex items-center gap-1 text-xs font-bold text-green-700">
-            <CheckCircle size={14} /> Submitted — updates Venture Blueprint
+          <span className="inline-flex items-center gap-1 text-xs font-bold text-green-700" role="status" aria-live="polite">
+            <CheckCircle size={14} aria-hidden /> Submitted — updates Venture Blueprint
           </span>
         ) : null}
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {sorted.map((q) => (
+        {sorted.map((q) => {
+          const fieldId = `worksheet-${worksheet.id}-${q.id}`;
+          return (
           <div key={q.id}>
-            <label className="mb-1.5 block text-sm font-semibold text-gray-800">
+            <label htmlFor={fieldId} className="mb-1.5 block text-sm font-semibold text-gray-800">
               {q.prompt}
               {q.required ? <span className="text-[#8B0000]"> *</span> : null}
             </label>
-            {renderField(q, answers[q.id], (val) => setAnswer(q.id, val), readOnly)}
+            {renderField(q, fieldId, answers[q.id], (val) => setAnswer(q.id, val), readOnly)}
           </div>
-        ))}
+        );
+        })}
 
-        {error ? <p className="text-sm font-medium text-red-600">{error}</p> : null}
+        {error ? <p className="text-sm font-medium text-red-600" role="alert">{error}</p> : null}
 
         {!submitted || editing ? (
           <button
@@ -101,7 +104,7 @@ export function WorksheetViewer({ worksheet, questions, participantId, onComplet
   );
 }
 
-function renderField(question, value, onChange, disabled) {
+function renderField(question, fieldId, value, onChange, disabled) {
   const common =
     'w-full rounded-lg border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-50 disabled:text-gray-600';
 
@@ -109,6 +112,7 @@ function renderField(question, value, onChange, disabled) {
     case 'long_text':
       return (
         <textarea
+          id={fieldId}
           rows={4}
           className={common}
           value={value || ''}
@@ -118,20 +122,23 @@ function renderField(question, value, onChange, disabled) {
       );
     case 'rating':
       return (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2" role="radiogroup" aria-labelledby={fieldId}>
+          <span id={fieldId} className="sr-only">{question.prompt} rating</span>
           {[1, 2, 3, 4, 5].map((n) => (
             <button
               key={n}
               type="button"
               disabled={disabled}
               onClick={() => onChange(n)}
+              aria-pressed={Number(value) === n}
               className={`min-h-[44px] min-w-[44px] rounded-lg border text-sm font-bold ${
                 Number(value) === n
                   ? 'border-[#8B0000] bg-red-50 text-[#8B0000]'
                   : 'border-gray-300 bg-white text-gray-700'
               }`}
             >
-              {n}
+              <span className="sr-only">Rating {n} of 5</span>
+              <span aria-hidden>{n}</span>
             </button>
           ))}
         </div>
@@ -140,6 +147,7 @@ function renderField(question, value, onChange, disabled) {
       return (
         <label className="flex min-h-[44px] cursor-pointer items-center gap-2 text-sm text-gray-700">
           <input
+            id={fieldId}
             type="checkbox"
             checked={Boolean(value)}
             onChange={(e) => onChange(e.target.checked)}
@@ -152,7 +160,9 @@ function renderField(question, value, onChange, disabled) {
     case 'file_upload':
       return (
         <input
+          id={fieldId}
           type="file"
+          aria-label={question.prompt}
           className="block w-full text-sm text-gray-600 file:mr-3 file:rounded-lg file:border-0 file:bg-gray-100 file:px-3 file:py-2 file:text-sm file:font-bold"
           disabled={disabled}
           onChange={(e) => onChange(e.target.files?.[0]?.name || '')}
@@ -162,6 +172,7 @@ function renderField(question, value, onChange, disabled) {
     default:
       return (
         <input
+          id={fieldId}
           type="text"
           className={common}
           value={value || ''}

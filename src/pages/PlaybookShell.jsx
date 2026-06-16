@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { formatUiRoleLabel } from '../lib/terminology.js';
 import { ArrowLeft, BookOpen, ChevronRight, Layers, PlayCircle } from 'lucide-react';
 import { PageContainer, PageTitle } from '../components/layout/PageContainer.jsx';
+import { InternWorkHydrationAlert } from '../components/intern/InternWorkHydrationAlert.jsx';
 import { ParticipantDayView } from '../components/playbook/ParticipantDayView.jsx';
 import { FacultyPlaybookView } from '../components/playbook/FacultyPlaybookView.jsx';
 import { MentorPlaybookView } from '../components/playbook/MentorPlaybookView.jsx';
@@ -47,7 +48,7 @@ function PathPill({ active, children, onClick, className = '' }) {
  */
 function ContentCurriculum({ participantId, userRole = 'intern', interns = [], internProgress = null }) {
   const [searchParams] = useSearchParams();
-  const { version: hydrateVersion } = useInternWorkHydration(
+  const { version: hydrateVersion, ready: hydrateReady, error: hydrateError } = useInternWorkHydration(
     userRole === 'intern' ? participantId : null,
   );
   const [dataSource, setDataSource] = useState(() => getCurriculumDataSource());
@@ -297,6 +298,10 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
       <PageTitle presentation subtitle={`${roleLabel} view — pick a week and day to open sessions.`}>
         Playbook
       </PageTitle>
+
+      {userRole === 'intern' ? (
+        <InternWorkHydrationAlert ready={hydrateReady} error={hydrateError} />
+      ) : null}
 
       {internTodayHeader}
 

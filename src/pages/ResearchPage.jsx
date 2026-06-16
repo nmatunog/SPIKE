@@ -72,6 +72,7 @@ export function ResearchPage({ user }) {
   const [squadContext, setSquadContext] = useState(null);
   const [analytics, setAnalytics] = useState(null);
   const [message, setMessage] = useState('');
+  const [syncError, setSyncError] = useState('');
 
   let daySurvey = null;
   try {
@@ -121,6 +122,7 @@ export function ResearchPage({ user }) {
     if (!participantId || !squadContext?.squad?.id) return;
     setSyncing(true);
     setMessage('');
+    setSyncError('');
     try {
       await generateResearchDeliverables(
         participantId,
@@ -131,6 +133,8 @@ export function ResearchPage({ user }) {
       );
       setMessage('Deliverables synced to Market Intelligence in your Blueprint.');
       await loadDashboard();
+    } catch (err) {
+      setSyncError(err instanceof Error ? err.message : 'Sync failed.');
     } finally {
       setSyncing(false);
     }
@@ -212,7 +216,15 @@ export function ResearchPage({ user }) {
               Open Market Intelligence
             </Link>
           </div>
-          {message ? <p className="mt-3 text-sm font-medium text-emerald-700">{message}</p> : null}
+          <div
+            className="mt-3 space-y-2"
+            role="status"
+            aria-live="polite"
+          >
+            {syncing ? <p className="text-sm text-slate-600">Syncing deliverables…</p> : null}
+            {syncError ? <p className="text-sm font-medium text-red-700" role="alert">{syncError}</p> : null}
+            {message ? <p className="text-sm font-medium text-emerald-700">{message}</p> : null}
+          </div>
         </SectionCard>
       ) : null}
     </div>

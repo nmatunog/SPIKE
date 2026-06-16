@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, Navigate, useLocation } from 'react-router-dom';
 import { PageContainer } from '../components/layout/PageContainer.jsx';
+import { InternWorkHydrationAlert } from '../components/intern/InternWorkHydrationAlert.jsx';
 import { BlueprintStateHeader } from '../components/blueprint/BlueprintStateHeader.jsx';
 import { BlueprintModuleNav } from '../components/blueprint/BlueprintModuleNav.jsx';
 import { CareerTrackPicker } from '../components/blueprint/CareerTrackPicker.jsx';
@@ -35,7 +36,7 @@ import { isWeek1BuildSimplifiedMode } from '../lib/programContext.js';
 export function VentureBlueprintShell({ user, onProgressRefresh }) {
   const participantName = user.name || user.email || 'Participant';
   const location = useLocation();
-  const { version: hydrateVersion } = useInternWorkHydration(user.id);
+  const { version: hydrateVersion, ready: hydrateReady, error: hydrateError } = useInternWorkHydration(user.id);
   const [progress, setProgress] = useState(user.internProgress);
 
   useEffect(() => {
@@ -180,6 +181,10 @@ export function VentureBlueprintShell({ user, onProgressRefresh }) {
           internProgress={progress}
           onComplete={handleTrackComplete}
         />
+      ) : null}
+
+      {hydrateError || !hydrateReady ? (
+        <InternWorkHydrationAlert ready={hydrateReady} error={hydrateError} />
       ) : null}
 
       {headerVariant !== 'none' ? (

@@ -113,6 +113,15 @@ export function PortfolioDeliverablesSection({ participantId }) {
 
       <PortfolioEditGraceBanner locked={!canEdit} />
 
+      {(error || message || loading || uploading) ? (
+        <div role="status" aria-live="polite" className="space-y-2">
+          {loading ? <p className="text-sm text-slate-600">Loading deliverables…</p> : null}
+          {uploading ? <p className="text-sm font-medium text-spike">Uploading deliverable…</p> : null}
+          {error ? <p className="text-sm font-medium text-red-700" role="alert">{error}</p> : null}
+          {message ? <p className="text-sm font-medium text-emerald-800">{message}</p> : null}
+        </div>
+      ) : null}
+
       <section className="spike-card space-y-4">
         <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
           <Upload size={18} className="text-spike" />
@@ -190,9 +199,13 @@ export function PortfolioDeliverablesSection({ participantId }) {
         <div
           role="button"
           tabIndex={canEdit && !uploading ? 0 : -1}
+          aria-label="Choose deliverable file to upload"
           onKeyDown={(e) => {
             if (!canEdit || uploading) return;
-            if (e.key === 'Enter') inputRef.current?.click();
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              inputRef.current?.click();
+            }
           }}
           onDragEnter={(e) => {
             e.preventDefault();
@@ -243,9 +256,10 @@ export function PortfolioDeliverablesSection({ participantId }) {
 
         <input
           ref={inputRef}
+          id="portfolio-deliverable-file"
           type="file"
           accept={PORTFOLIO_DELIVERABLE_ACCEPT}
-          className="hidden"
+          className="sr-only"
           disabled={!canEdit || uploading}
           onChange={(e) => {
             const file = e.target.files?.[0];
@@ -279,22 +293,18 @@ export function PortfolioDeliverablesSection({ participantId }) {
           ) : null}
         </div>
 
-        {error ? <p className="text-sm font-medium text-red-700">{error}</p> : null}
-        {message ? <p className="text-sm font-medium text-emerald-700">{message}</p> : null}
       </section>
 
       <section className="spike-card">
         <div className="mb-4 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-            <FileText size={18} className="text-spike" />
+            <FileText size={18} className="text-spike" aria-hidden />
             Your uploads
           </div>
           <span className="text-xs text-slate-500">{items.length} file{items.length === 1 ? '' : 's'}</span>
         </div>
 
-        {loading ? (
-          <p className="text-sm text-slate-500">Loading deliverables…</p>
-        ) : items.length === 0 ? (
+        {items.length === 0 ? (
           <p className="text-sm text-slate-500">
             No files yet. Upload research summaries, presentation decks, or worksheet outputs above.
           </p>

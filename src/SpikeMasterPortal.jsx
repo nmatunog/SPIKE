@@ -64,7 +64,7 @@ import {
   PublicPortfolioPage,
   PortfolioSettingsPage,
 } from './routes/lazyPages.js';
-import { InternSignInSyncBanner } from './components/intern/InternSignInSyncBanner.jsx';
+import { InternWorkStatusBanner } from './components/intern/InternWorkStatusBanner.jsx';
 import { useAuth } from './AuthContext.jsx';
 import { apiFetch } from './apiClient.js';
 import {
@@ -123,8 +123,10 @@ const SpikeMasterPortal = () => {
     mockAuthEnabled,
     login,
     logout,
+    logoutWithBackup,
     refreshUser,
     internCloudSyncing,
+    internWorkStatus,
     completeBootstrapSetup,
   } = useAuth();
   const userRole = resolveUserRole(user);
@@ -224,12 +226,17 @@ const SpikeMasterPortal = () => {
     [navigate],
   );
 
-  const handleLogout = useCallback(() => {
+  const handleLogout = useCallback(async () => {
     writeViewAsRole(null);
-    logout();
+    const isIntern = user?.role === 'INTERN' || (isSuperuserSession && viewAsRole === 'intern');
+    if (isIntern && user?.id) {
+      await logoutWithBackup();
+    } else {
+      logout();
+    }
     navigate(ROUTES.home);
     showToast('Signed out.');
-  }, [logout, navigate, showToast]);
+  }, [logout, logoutWithBackup, navigate, showToast, user?.id, user?.role, isSuperuserSession, viewAsRole]);
 
   const loadPasswordResetRequests = useCallback(async () => {
     if (!usingSupabaseAuth || !isAdminLikeRole(resolveUserRole(user)) || !supabase) return;
@@ -1769,10 +1776,10 @@ const SpikeMasterPortal = () => {
       className={`spike-app-shell ${
         compactNav ? 'spike-app-shell--compact-nav' : 'spike-app-shell--desktop-nav'
       }${isSuperuserSession && compactNav ? ' spike-app-shell--superuser-preview' : ''}${
-        internCloudSyncing ? ' spike-app-shell--cloud-syncing' : ''
+        internCloudSyncing || internWorkStatus?.showBanner ? ' spike-app-shell--cloud-syncing' : ''
       }`}
     >
-      <InternSignInSyncBanner />
+      <InternWorkStatusBanner />
       <PortalHeader
         userRole={userRole}
         viewAsRole={viewAsRole}

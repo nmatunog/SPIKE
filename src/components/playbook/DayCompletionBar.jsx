@@ -14,7 +14,14 @@ export function DayCompletionBar({ percent, completedItems, totalItems }) {
           {completedItems}/{totalItems} items · {percent}%
         </span>
       </div>
-      <div className="h-2 overflow-hidden rounded-full bg-emerald-100">
+      <div
+        className="h-2 overflow-hidden rounded-full bg-emerald-100"
+        role="progressbar"
+        aria-valuenow={percent}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label={`Day completion, ${percent} percent`}
+      >
         <div
           className="h-full rounded-full bg-emerald-600 transition-all"
           style={{ width: `${percent}%` }}

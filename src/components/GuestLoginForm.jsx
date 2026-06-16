@@ -88,7 +88,7 @@ export const GuestLoginForm = memo(function GuestLoginForm({
       ) : null}
 
       {error ? (
-        <p className="rounded-xl bg-red-50 p-2.5 text-center text-sm text-red-700">{error}</p>
+        <p className="rounded-xl bg-red-50 p-2.5 text-center text-sm text-red-700" role="alert">{error}</p>
       ) : null}
 
       <label className="block">

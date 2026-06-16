@@ -65,15 +65,36 @@ export const InternSignupPanel = memo(function InternSignupPanel({ onSignup }) {
       {show ? (
         <form className="mt-4 space-y-3" onSubmit={handleSubmit}>
           {error ? (
-            <p className="rounded-xl bg-red-50 p-2.5 text-center text-sm text-red-700">{error}</p>
+            <p className="rounded-xl bg-red-50 p-2.5 text-center text-sm text-red-700" role="alert">{error}</p>
           ) : null}
-          <input required value={name} onChange={(e) => setName(e.target.value)} className={fieldClass} placeholder="Full name" />
-          <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={fieldClass} placeholder="Email" />
-          <PasswordInput required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} className={fieldClass} placeholder="Password (min 8 chars)" autoComplete="new-password" />
-          <PasswordInput required minLength={8} value={password2} onChange={(e) => setPassword2(e.target.value)} className={fieldClass} placeholder="Confirm password" autoComplete="new-password" />
-          <input value={university} onChange={(e) => setUniversity(e.target.value)} className={fieldClass} placeholder="University (optional)" />
-          <input value={squad} onChange={(e) => setSquad(e.target.value)} className={fieldClass} placeholder="Squad (optional)" />
-          <input required value={code} onChange={(e) => setCode(e.target.value)} className={`${fieldClass} uppercase`} placeholder="Daily activation code" />
+          <label className="block text-sm">
+            <span className="mb-1 block font-medium text-slate-700">Full name</span>
+            <input required id="intern-signup-name" value={name} onChange={(e) => setName(e.target.value)} className={fieldClass} autoComplete="name" />
+          </label>
+          <label className="block text-sm">
+            <span className="mb-1 block font-medium text-slate-700">Email</span>
+            <input required id="intern-signup-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={fieldClass} autoComplete="email" />
+          </label>
+          <label className="block text-sm">
+            <span className="mb-1 block font-medium text-slate-700">Password</span>
+            <PasswordInput required minLength={8} id="intern-signup-password" value={password} onChange={(e) => setPassword(e.target.value)} className={fieldClass} autoComplete="new-password" />
+          </label>
+          <label className="block text-sm">
+            <span className="mb-1 block font-medium text-slate-700">Confirm password</span>
+            <PasswordInput required minLength={8} id="intern-signup-password2" value={password2} onChange={(e) => setPassword2(e.target.value)} className={fieldClass} autoComplete="new-password" />
+          </label>
+          <label className="block text-sm">
+            <span className="mb-1 block font-medium text-slate-700">University (optional)</span>
+            <input id="intern-signup-university" value={university} onChange={(e) => setUniversity(e.target.value)} className={fieldClass} autoComplete="organization" />
+          </label>
+          <label className="block text-sm">
+            <span className="mb-1 block font-medium text-slate-700">Squad (optional)</span>
+            <input id="intern-signup-squad" value={squad} onChange={(e) => setSquad(e.target.value)} className={fieldClass} />
+          </label>
+          <label className="block text-sm">
+            <span className="mb-1 block font-medium text-slate-700">Daily activation code</span>
+            <input required id="intern-signup-code" value={code} onChange={(e) => setCode(e.target.value)} className={`${fieldClass} uppercase`} autoComplete="one-time-code" />
+          </label>
           <p className="text-xs text-slate-500">
             No confirmation email — sign in right away after creating your account.
           </p>

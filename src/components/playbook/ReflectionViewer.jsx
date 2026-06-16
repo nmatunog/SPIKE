@@ -63,17 +63,22 @@ export function ReflectionViewer({
           {reflection.title}
         </h4>
         {submitted && !editing ? (
-          <span className="inline-flex items-center gap-1 text-xs font-bold text-green-700">
-            <CheckCircle size={14} /> Saved
+          <span className="inline-flex items-center gap-1 text-xs font-bold text-green-700" role="status" aria-live="polite">
+            <CheckCircle size={14} aria-hidden /> Saved
           </span>
         ) : null}
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {reflection.prompts.map((prompt) => (
+        {reflection.prompts.map((prompt, index) => {
+          const fieldId = `reflection-${reflection.id}-${index}`;
+          return (
           <div key={prompt}>
-            <label className="mb-1.5 block text-sm font-semibold text-gray-800">{prompt}</label>
+            <label htmlFor={fieldId} className="mb-1.5 block text-sm font-semibold text-gray-800">
+              {prompt}
+            </label>
             <textarea
+              id={fieldId}
               rows={3}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-50 disabled:text-gray-600"
               value={responses[prompt] || ''}
@@ -81,9 +86,10 @@ export function ReflectionViewer({
               disabled={readOnly}
             />
           </div>
-        ))}
+        );
+        })}
 
-        {error ? <p className="text-sm font-medium text-red-600">{error}</p> : null}
+        {error ? <p className="text-sm font-medium text-red-600" role="alert">{error}</p> : null}
 
         {!submitted || editing ? (
           <button

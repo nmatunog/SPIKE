@@ -32,7 +32,12 @@ export function AutoSaveField({ label, value, onSave, rows = 3, placeholder }) {
     <label className="block">
       <span className="mb-1 flex items-center justify-between text-xs font-bold uppercase tracking-wide text-gray-500">
         {label}
-        <span className="font-normal normal-case text-gray-400">
+        <span
+          className="font-normal normal-case text-gray-400"
+          role="status"
+          aria-live="polite"
+          aria-busy={status === 'typing' ? 'true' : 'false'}
+        >
           {status === 'typing' ? 'Saving…' : 'Saved'}
         </span>
       </span>
