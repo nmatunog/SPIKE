@@ -52,6 +52,9 @@ jobs:
           VITE_STATIC_ONLY: 'false'
           VITE_MOCK_AUTH: 'false'
 
+      - name: Verify dist assets
+        run: node scripts/verify-dist-assets.mjs
+
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         env:
