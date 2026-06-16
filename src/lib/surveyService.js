@@ -69,6 +69,10 @@ export function countSubmittedSurveys(participantId) {
 export async function submitSurveyResponse(participantId, surveyId, answers, dayId, questions) {
   const local = saveSurveyResponseLocal(participantId, surveyId, answers, dayId);
 
+  if (String(participantId ?? '').startsWith('mock-')) {
+    return local;
+  }
+
   const payload = questions.map((q) => ({
     questionId: q.id,
     value: answers[q.id],

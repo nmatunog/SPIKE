@@ -1343,7 +1343,7 @@ const SpikeMasterPortal = () => {
 
   const renderPlaybook = () => {
     const playbookUser =
-      effectiveUserRole === 'intern' && !isSuperuserSession
+      effectiveUserRole === 'intern'
         ? internModuleUser ?? user
         : user;
     return (
@@ -1461,6 +1461,7 @@ const SpikeMasterPortal = () => {
           </LazyRoute>
         );
       }
+      if (path === ROUTES.playbook) return renderPlaybook();
     }
 
     if (effectiveUserRole === 'intern' && !isSuperuserSession) {
