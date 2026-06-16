@@ -19,7 +19,7 @@ export function VentureStudioLaunchCard({
   const location = useLocation();
   const state = useMemo(
     () => (participantId ? loadVentureStudioState(participantId) : null),
-    [participantId, location.key],
+    [participantId, location.pathname],
   );
   const percent = state ? ventureStudioProgressPercent(state) : 0;
   const href = presentMode

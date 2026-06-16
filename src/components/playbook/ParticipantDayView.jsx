@@ -33,7 +33,7 @@ export function ParticipantDayView({ bundle, participantId, onProgress }) {
   const day1Progress = participantId ? getDay1MissionProgress(participantId) : null;
   const ventureStudioState = useMemo(
     () => (participantId ? loadVentureStudioState(participantId) : null),
-    [participantId, location.key],
+    [participantId, location.pathname],
   );
   const ventureStudioPercent = ventureStudioState
     ? ventureStudioProgressPercent(ventureStudioState)
