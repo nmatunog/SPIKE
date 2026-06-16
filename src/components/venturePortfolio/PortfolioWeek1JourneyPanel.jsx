@@ -27,10 +27,7 @@ export function PortfolioWeek1JourneyPanel({ participantId }) {
         </div>
         <Link
           to={`${ROUTES.myVenturePortfolio}/present`}
-          className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold ${
-            ready ? 'bg-spike text-white hover:bg-red-900' : 'bg-slate-100 text-slate-500 pointer-events-none'
-          }`}
-          aria-disabled={!ready}
+          className="inline-flex items-center gap-2 rounded-xl bg-spike px-4 py-2.5 text-sm font-semibold text-white hover:bg-red-900"
         >
           <Presentation size={16} /> Present portfolio
         </Link>
@@ -72,8 +69,9 @@ export function PortfolioWeek1JourneyPanel({ participantId }) {
       </ul>
 
       {!ready ? (
-        <p className="text-xs text-amber-800">
-          Complete identity, dream board, canvas, and portfolio sections to unlock Day 5 presentation mode.
+        <p className="text-xs text-slate-600">
+          {pct}% complete — you can keep editing any section until the end of June 2026. Presentation
+          mode is always available.
         </p>
       ) : null}
     </section>

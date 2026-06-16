@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { BookMarked, CheckCircle } from 'lucide-react';
 import {
+  getReflectionSubmission,
   isReflectionCompleted,
   markReflectionCompleted,
 } from '../../lib/playbookProgress.js';
+import { isWithinCohortEditWindow } from '../../lib/portfolioEditWindow.js';
 
 /**
  * @param {{
@@ -21,11 +23,17 @@ export function ReflectionViewer({
   submitLabel = 'Save reflection',
   savedMessage = 'Reflection recorded for mentor review.',
 }) {
-  const [responses, setResponses] = useState({});
+  const saved = participantId ? getReflectionSubmission(participantId, reflection.id) : null;
+  const canReopen = isWithinCohortEditWindow();
+
+  const [responses, setResponses] = useState(() => saved?.responses ?? {});
   const [submitted, setSubmitted] = useState(
     () => participantId && isReflectionCompleted(participantId, reflection.id),
   );
+  const [editing, setEditing] = useState(false);
   const [error, setError] = useState('');
+
+  const readOnly = submitted && !editing;
 
   function setResponse(prompt, value) {
     setResponses((prev) => ({ ...prev, [prompt]: value }));
@@ -42,6 +50,7 @@ export function ReflectionViewer({
       markReflectionCompleted(participantId, reflection.id, responses, reflection.dayId, reflection);
     }
     setSubmitted(true);
+    setEditing(false);
     setError('');
     onCompleted?.();
   }
@@ -53,7 +62,7 @@ export function ReflectionViewer({
           <BookMarked size={18} className="text-amber-700" />
           {reflection.title}
         </h4>
-        {submitted ? (
+        {submitted && !editing ? (
           <span className="inline-flex items-center gap-1 text-xs font-bold text-green-700">
             <CheckCircle size={14} /> Saved
           </span>
@@ -66,25 +75,36 @@ export function ReflectionViewer({
             <label className="mb-1.5 block text-sm font-semibold text-gray-800">{prompt}</label>
             <textarea
               rows={3}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-50"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-50 disabled:text-gray-600"
               value={responses[prompt] || ''}
               onChange={(e) => setResponse(prompt, e.target.value)}
-              disabled={submitted}
+              disabled={readOnly}
             />
           </div>
         ))}
 
         {error ? <p className="text-sm font-medium text-red-600">{error}</p> : null}
 
-        {!submitted ? (
+        {!submitted || editing ? (
           <button
             type="submit"
-            className="min-h-[44px] rounded-lg bg-amber-700 px-4 py-2 text-sm font-bold text-white hover:bg-amber-800"
+            className="min-h-[44px] rounded-lg bg-amber-800 px-4 py-2 text-sm font-bold text-white hover:bg-amber-900"
           >
-            {submitLabel}
+            {submitted ? 'Save changes' : submitLabel}
           </button>
         ) : (
-          <p className="text-sm text-gray-600">{savedMessage}</p>
+          <div className="space-y-2">
+            <p className="text-sm text-gray-600">{savedMessage}</p>
+            {canReopen ? (
+              <button
+                type="button"
+                onClick={() => setEditing(true)}
+                className="text-sm font-semibold text-spike hover:underline"
+              >
+                Edit reflection
+              </button>
+            ) : null}
+          </div>
         )}
       </form>
     </article>

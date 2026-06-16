@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { CheckCircle } from 'lucide-react';
-import { completeWorksheet, isWorksheetCompleted } from '../../lib/playbookProgress.js';
+import { completeWorksheet, getWorksheetSubmission, isWorksheetCompleted } from '../../lib/playbookProgress.js';
+import { isWithinCohortEditWindow } from '../../lib/portfolioEditWindow.js';
 
 /**
  * @param {{
@@ -16,11 +17,17 @@ export function WorksheetViewer({ worksheet, questions, participantId, onComplet
     [questions],
   );
 
-  const [answers, setAnswers] = useState({});
+  const saved = participantId ? getWorksheetSubmission(participantId, worksheet.id) : null;
+  const canReopen = isWithinCohortEditWindow();
+
+  const [answers, setAnswers] = useState(() => saved?.answers ?? {});
   const [submitted, setSubmitted] = useState(
     () => participantId && isWorksheetCompleted(participantId, worksheet.id),
   );
+  const [editing, setEditing] = useState(false);
   const [error, setError] = useState('');
+
+  const readOnly = submitted && !editing;
 
   function setAnswer(id, value) {
     setAnswers((prev) => ({ ...prev, [id]: value }));
@@ -37,6 +44,7 @@ export function WorksheetViewer({ worksheet, questions, participantId, onComplet
       completeWorksheet(participantId, worksheet.id, answers, worksheet.dayId, sorted);
     }
     setSubmitted(true);
+    setEditing(false);
     setError('');
     onCompleted?.();
   }
@@ -45,7 +53,7 @@ export function WorksheetViewer({ worksheet, questions, participantId, onComplet
     <article className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
       <div className="mb-4 flex items-center justify-between gap-2">
         <h4 className="font-bold text-gray-900">{worksheet.title}</h4>
-        {submitted ? (
+        {submitted && !editing ? (
           <span className="inline-flex items-center gap-1 text-xs font-bold text-green-700">
             <CheckCircle size={14} /> Submitted — updates Venture Blueprint
           </span>
@@ -59,23 +67,34 @@ export function WorksheetViewer({ worksheet, questions, participantId, onComplet
               {q.prompt}
               {q.required ? <span className="text-[#8B0000]"> *</span> : null}
             </label>
-            {renderField(q, answers[q.id], (val) => setAnswer(q.id, val), submitted)}
+            {renderField(q, answers[q.id], (val) => setAnswer(q.id, val), readOnly)}
           </div>
         ))}
 
         {error ? <p className="text-sm font-medium text-red-600">{error}</p> : null}
 
-        {!submitted ? (
+        {!submitted || editing ? (
           <button
             type="submit"
             className="min-h-[44px] rounded-lg bg-[#8B0000] px-4 py-2 text-sm font-bold text-white hover:bg-[#6B0000]"
           >
-            Submit worksheet
+            {submitted ? 'Save changes' : 'Submit worksheet'}
           </button>
         ) : (
-          <p className="text-sm text-gray-600">
-            Your responses contribute to Ambition &amp; Purpose in My Venture Blueprint.
-          </p>
+          <div className="space-y-2">
+            <p className="text-sm text-gray-600">
+              Your responses contribute to Ambition &amp; Purpose in My Venture Blueprint.
+            </p>
+            {canReopen ? (
+              <button
+                type="button"
+                onClick={() => setEditing(true)}
+                className="text-sm font-semibold text-spike hover:underline"
+              >
+                Edit responses
+              </button>
+            ) : null}
+          </div>
         )}
       </form>
     </article>

@@ -170,7 +170,7 @@ export function VentureCoachShell({ participantId, section }) {
           <CoachSectionNav activeSection={section} />
           {UNLOCK_WEEK1_DAY2_PLUS && section === 'ambition' ? (
             <p className="rounded-xl border border-indigo-100 bg-indigo-50 px-4 py-3 text-sm text-indigo-950">
-              Day 2 Playbook is open even if Day 1 is incomplete.{' '}
+              All Week 1 Playbook days are open — prior days do not need to be finished first.{' '}
               <Link to={playbookHref({ week: 1, day: 2 })} className="font-semibold text-spike hover:underline">
                 Open Day 2 Playbook →
               </Link>

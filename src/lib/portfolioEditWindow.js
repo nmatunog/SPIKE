@@ -1,38 +1,40 @@
-/** Fallback grace after cohort Friday cutoff (per-item window). */
+/** Fallback grace after the program edit window closes (per-item window). */
 export const PORTFOLIO_EDIT_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
 
+/** Default open-edit deadline for the founding cohort pilot. */
+export const DEFAULT_PROGRAM_EDIT_UNTIL = '2026-06-30';
+
 /**
- * End of Friday 23:59:59.999 for the current Mon–Sun week (local time).
+ * End of program edit window (local 23:59:59.999).
  * Override with `VITE_PORTFOLIO_EDIT_UNTIL=YYYY-MM-DD` when needed.
  * @param {Date} [now]
  */
-export function cohortEditCutoffFriday(now = new Date()) {
-  const explicit = import.meta.env.VITE_PORTFOLIO_EDIT_UNTIL;
-  if (explicit) {
-    const parsed = new Date(`${explicit}T23:59:59.999`);
-    if (!Number.isNaN(parsed.getTime())) return parsed;
-  }
+export function programEditCutoff(now = new Date()) {
+  void now;
+  const explicit = import.meta.env.VITE_PORTFOLIO_EDIT_UNTIL ?? DEFAULT_PROGRAM_EDIT_UNTIL;
+  const parsed = new Date(`${explicit}T23:59:59.999`);
+  if (!Number.isNaN(parsed.getTime())) return parsed;
 
-  const d = new Date(now);
-  const day = d.getDay();
-  const mondayOffset = day === 0 ? -6 : 1 - day;
-  const friday = new Date(d);
-  friday.setDate(d.getDate() + mondayOffset + 4);
-  friday.setHours(23, 59, 59, 999);
-  return friday;
+  const fallback = new Date(`${DEFAULT_PROGRAM_EDIT_UNTIL}T23:59:59.999`);
+  return fallback;
+}
+
+/** @deprecated Use programEditCutoff — kept for existing imports. */
+export function cohortEditCutoffFriday(now = new Date()) {
+  return programEditCutoff(now);
 }
 
 /** @param {Date} [now] */
 export function isWithinCohortEditWindow(now = new Date()) {
-  return now.getTime() <= cohortEditCutoffFriday(now).getTime();
+  return now.getTime() <= programEditCutoff(now).getTime();
 }
 
-/** Human label for the cohort cutoff, e.g. "Friday, Jun 20". */
+/** Human label for the program cutoff, e.g. "June 30, 2026". */
 export function cohortEditCutoffLabel(now = new Date()) {
-  return cohortEditCutoffFriday(now).toLocaleDateString(undefined, {
-    weekday: 'long',
-    month: 'short',
+  return programEditCutoff(now).toLocaleDateString(undefined, {
+    month: 'long',
     day: 'numeric',
+    year: 'numeric',
   });
 }
 
@@ -53,7 +55,7 @@ export function canEditPortfolioInput(completedAt, firstCompletedAt = null) {
  * @param {string | null | undefined} [firstCompletedAt]
  */
 export function portfolioEditDeadline(completedAt, firstCompletedAt = null) {
-  if (isWithinCohortEditWindow()) return cohortEditCutoffFriday();
+  if (isWithinCohortEditWindow()) return programEditCutoff();
   const anchor = firstCompletedAt ?? completedAt;
   if (!anchor) return null;
   return new Date(new Date(anchor).getTime() + PORTFOLIO_EDIT_WINDOW_MS);
@@ -65,7 +67,7 @@ export function portfolioEditDeadline(completedAt, firstCompletedAt = null) {
  */
 export function portfolioEditGraceRemainingLabel(completedAt, firstCompletedAt = null) {
   if (isWithinCohortEditWindow()) {
-    const remainingMs = cohortEditCutoffFriday().getTime() - Date.now();
+    const remainingMs = programEditCutoff().getTime() - Date.now();
     if (remainingMs <= 0) return null;
     const totalHours = Math.ceil(remainingMs / (60 * 60 * 1000));
     if (totalHours >= 48) {

@@ -141,6 +141,11 @@ export function isReflectionCompleted(participantId, reflectionId) {
   return Boolean(readAll()[participantId]?.reflections?.[reflectionId]);
 }
 
+/** @param {string} participantId @param {string} reflectionId */
+export function getReflectionSubmission(participantId, reflectionId) {
+  return readAll()[participantId]?.reflections?.[reflectionId] ?? null;
+}
+
 /**
  * @param {string} participantId
  * @param {string} surveyId

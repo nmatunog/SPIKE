@@ -20,9 +20,7 @@ export function PortfolioEditGraceBanner({ completedAt, firstCompletedAt, locked
         <div>
           <p className="font-semibold text-slate-900">Editing closed</p>
           <p className="mt-0.5 text-slate-600">
-            {isWithinCohortEditWindow()
-              ? `Editing closed after ${cohortEditCutoffLabel()}. Contact your coach if you need changes.`
-              : 'Your refinement window has ended. Contact your coach if you need changes.'}
+            Editing closed after {cohortEditCutoffLabel()}. Contact your coach if you need changes.
           </p>
         </div>
       </div>

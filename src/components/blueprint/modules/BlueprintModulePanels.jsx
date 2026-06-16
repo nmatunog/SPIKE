@@ -120,7 +120,7 @@ export function VisionPurposePanel({ participantId }) {
       ) : null}
       {UNLOCK_WEEK1_DAY2_PLUS ? (
         <Link to={ROUTES.playbook} className="spike-btn-primary inline-flex">
-          Open Playbook (Day 2+ unlocked)
+          Open Playbook — all Week 1 days open
         </Link>
       ) : null}
       <Link to={BLUEPRINT_LINKS.ventureCoach} className="spike-btn-secondary inline-flex">

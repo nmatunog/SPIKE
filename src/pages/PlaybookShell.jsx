@@ -302,7 +302,8 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
 
       {userRole === 'intern' && !browseAllDays ? (
         <p className="mt-3 text-sm text-slate-600">
-          Saved work syncs when you sign in; refresh if yesterday&apos;s entries look incomplete.
+          All Week 1 days stay open — prior days do not need to be finished first. Work saves when you
+          sign in.
         </p>
       ) : null}
 
