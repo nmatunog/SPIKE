@@ -21,7 +21,7 @@ export default defineConfig({
             || id.includes('canvg')
             || id.includes('dompurify')
           ) {
-            return 'export-vendor'
+            return 'spike-export'
           }
           if (id.includes('@supabase')) {
             return 'supabase-vendor'
