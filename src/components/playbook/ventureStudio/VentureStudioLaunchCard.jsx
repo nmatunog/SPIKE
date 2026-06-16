@@ -1,5 +1,6 @@
 import { ArrowRight, FlaskConical, Sparkles } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { useMemo } from 'react';
 import {
   loadVentureStudioState,
   ventureStudioProgressPercent,
@@ -15,7 +16,11 @@ export function VentureStudioLaunchCard({
   facultyMode = false,
   presentMode = false,
 }) {
-  const state = participantId ? loadVentureStudioState(participantId) : null;
+  const location = useLocation();
+  const state = useMemo(
+    () => (participantId ? loadVentureStudioState(participantId) : null),
+    [participantId, location.key],
+  );
   const percent = state ? ventureStudioProgressPercent(state) : 0;
   const href = presentMode
     ? `${ROUTES.playbookVentureStudio}?present=1`

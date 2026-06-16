@@ -29,7 +29,7 @@ import { RoleDashboardCards } from './components/dashboard/RoleDashboardCards.js
 import { BlueprintTimelineFeed } from './components/blueprint/BlueprintTimelineFeed.jsx';
 import { PageLoader } from './components/ui/PageLoader.jsx';
 import { RoleRouteGuard } from './components/routing/RoleRouteGuard.jsx';
-import { ROUTES, brandLexiconBackHrefForRole, facilitatorsReferenceBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath } from './routes/paths.js';
+import { ROUTES, brandLexiconBackHrefForRole, facilitatorsReferenceBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath, isPlaybookPath } from './routes/paths.js';
 import {
   AdminCohortsPage,
   AdminFacultyPlaybookPage,
@@ -207,7 +207,7 @@ const SpikeMasterPortal = () => {
     let cancelled = false;
     hydrateOnboardingStatus(user.id).then((done) => {
       if (cancelled || done) return;
-      if (isVentureBlueprintPath(location.pathname)) return;
+      if (isVentureBlueprintPath(location.pathname) || isPlaybookPath(location.pathname)) return;
       if (location.pathname !== ROUTES.cohortIdentity) {
         navigate(ROUTES.cohortIdentity, { replace: true });
       }
@@ -1363,7 +1363,10 @@ const SpikeMasterPortal = () => {
 
   const renderVentureStudioDay3 = (pageUser, { readOnly = false } = {}) => (
     <LazyRoute label="Loading Venture Studio…">
-      <VentureStudioDay3Page participantId={pageUser?.id} readOnly={readOnly} />
+      <VentureStudioDay3Page
+        participantId={readOnly ? undefined : pageUser?.id}
+        readOnly={readOnly}
+      />
     </LazyRoute>
   );
 
@@ -1481,7 +1484,7 @@ const SpikeMasterPortal = () => {
         && shouldUseSupabaseForUser(internUser)
         && !internUser?.internProgress?.onboarding_complete
         && !hasCompletedOnboardingSync(internUser.id);
-      if (needsOnboarding && path !== ROUTES.cohortIdentity && !isVentureBlueprintPath(path)) {
+      if (needsOnboarding && path !== ROUTES.cohortIdentity && !isVentureBlueprintPath(path) && !isPlaybookPath(path)) {
         return <Navigate to={ROUTES.cohortIdentity} replace />;
       }
 

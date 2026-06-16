@@ -33,6 +33,7 @@
     "smoke:week1-journey": "node scripts/smoke-week1-journey.mjs",
     "smoke:participant-hydration": "node scripts/smoke-participant-hydration.mjs",
     "smoke:intern-logout-backup": "node scripts/smoke-intern-logout-backup.mjs",
+    "smoke:venture-studio": "node scripts/smoke-venture-studio.mjs",
     "audit:intern-recovery": "node scripts/audit-intern-cloud-recovery.mjs",
     "cap:sync": "CAPACITOR=true npm run build && npx cap sync",
     "cap:ios": "npm run cap:sync && npx cap open ios",

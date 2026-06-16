@@ -44,6 +44,11 @@ export function isVentureBlueprintPath(pathname) {
   );
 }
 
+/** @param {string} pathname */
+export function isPlaybookPath(pathname) {
+  return pathname === ROUTES.playbook || pathname === ROUTES.playbookVentureStudio;
+}
+
 /** Blueprint sub-routes (PR4) — Business Plan, Milestones, Venture Board live inside the OS. */
 export const BLUEPRINT_LINKS = {
   businessPlan: '/venture-blueprint/canvas',

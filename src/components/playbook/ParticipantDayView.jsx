@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Rocket, Target, LayoutGrid, FlaskConical } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { SessionView } from './SessionView.jsx';
 import { DayClosingReflectionSection } from './DayClosingReflectionSection.jsx';
 import { DayCompletionBar } from './DayCompletionBar.jsx';
@@ -26,11 +26,15 @@ import { UNLOCK_WEEK1_DAY2_PLUS } from '../../lib/programUnlocks.js';
  * }} props
  */
 export function ParticipantDayView({ bundle, participantId, onProgress }) {
+  const location = useLocation();
   const sessions = bundle.sessions?.sessions ?? [];
   const [sessionIndex, setSessionIndex] = useState(0);
   const completion = getDayCompletionSummary(participantId, bundle);
   const day1Progress = participantId ? getDay1MissionProgress(participantId) : null;
-  const ventureStudioState = participantId ? loadVentureStudioState(participantId) : null;
+  const ventureStudioState = useMemo(
+    () => (participantId ? loadVentureStudioState(participantId) : null),
+    [participantId, location.key],
+  );
   const ventureStudioPercent = ventureStudioState
     ? ventureStudioProgressPercent(ventureStudioState)
     : 0;

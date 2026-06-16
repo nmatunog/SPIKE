@@ -10,6 +10,7 @@ import {
   Sparkles,
   FileText,
   ArrowRight,
+  ArrowLeft,
   Target,
   ImagePlus,
   X,
@@ -28,6 +29,7 @@ import {
 } from '../../../lib/ventureStudioStorage.js';
 import { VENTURE_STUDIO_STEPS, GOAL_LABELS } from '../../../lib/ventureStudioTypes.js';
 import { markActivityCompleted } from '../../../lib/playbookProgress.js';
+import { isMockUserId } from '../../../lib/mockAuth.js';
 import { BLUEPRINT_LINKS, playbookHref } from '../../../routes/paths.js';
 
 const STEP_ICONS = {
@@ -98,17 +100,27 @@ export function VentureStudioDay3({
   }, [participantId]);
 
   useEffect(() => {
+    if (readOnly) return undefined;
     const timer = setTimeout(() => {
       saveVentureStudioState(participantId, state);
     }, 400);
     return () => clearTimeout(timer);
-  }, [participantId, state]);
+  }, [readOnly, participantId, state]);
 
   useEffect(() => {
-    if (readOnly || !state.isCanvasComplete || !participantId || completedMarkedRef.current) return;
+    if (
+      readOnly
+      || !state.isCanvasComplete
+      || !participantId
+      || isMockUserId(participantId)
+      || completedMarkedRef.current
+    ) {
+      return;
+    }
     completedMarkedRef.current = true;
     markActivityCompleted(participantId, 'activity-day-3-persona-workshop', DAY3_PLAYBOOK_ID, {
       title: 'Venture Studio',
+      outputs: ['Customer persona artifact', 'Venture opportunity report'],
     });
     onComplete?.();
   }, [readOnly, state.isCanvasComplete, participantId, onComplete]);
@@ -141,8 +153,8 @@ export function VentureStudioDay3({
   );
 
   const handleStart = useCallback(() => {
-    patchState({ isStarted: true });
-  }, [patchState]);
+    setState((prev) => ({ ...prev, isStarted: true }));
+  }, []);
 
   const handleSimulateAI = useCallback(() => {
     setShowAiFeedback(true);
@@ -182,10 +194,9 @@ export function VentureStudioDay3({
   );
 
   const handleGenerateDay4 = useCallback(() => {
-    if (readOnly) return;
     setIsGeneratingDay4(true);
     setGenMessageIndex(0);
-  }, [readOnly]);
+  }, []);
 
   const handleGoalToggle = useCallback(
     /** @param {string} goalKey */
@@ -364,18 +375,25 @@ export function VentureStudioDay3({
         <button
           type="button"
           onClick={handleSimulateAI}
-          disabled={disabled}
-          className="mt-6 flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl bg-slate-900 py-4 font-bold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-6 flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl bg-slate-900 py-4 font-bold text-white transition hover:bg-slate-800"
         >
           <Sparkles size={18} className="shrink-0 text-yellow-400" aria-hidden />
           <span className="truncate">{label}</span>
         </button>
       ) : null,
-    [showAiFeedback, handleSimulateAI, disabled],
+    [showAiFeedback, handleSimulateAI],
   );
 
   const renderLandingPage = () => (
     <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-slate-50 p-4 md:p-8">
+      <Link
+        to={playbookHref({ segment: 1, week: 1, day: 3 })}
+        className="absolute left-4 top-4 z-20 inline-flex min-h-[44px] items-center gap-2 rounded-lg bg-white/90 px-3 py-2 text-sm font-semibold text-spike shadow-sm backdrop-blur-sm transition hover:bg-white md:left-8 md:top-8"
+      >
+        <ArrowLeft size={16} aria-hidden />
+        <span className="hidden sm:inline">Back to Playbook</span>
+        <span className="sm:hidden">Back</span>
+      </Link>
       <div className="pointer-events-none absolute inset-0 z-0 flex scale-110 items-center justify-center overflow-hidden opacity-[0.15]">
         <div className="w-full max-w-5xl rotate-[-2deg] space-y-4 blur-[2px]">
           <div className="h-16 w-full rounded-xl border-l-8 border-blue-500 bg-white shadow-lg md:h-24" />
@@ -456,8 +474,7 @@ export function VentureStudioDay3({
             <button
               type="button"
               onClick={handleStart}
-              disabled={disabled}
-              className="group inline-flex min-h-[48px] w-full items-center justify-center gap-3 rounded-2xl bg-spike px-8 py-4 text-lg font-black text-white shadow-xl shadow-spike/30 transition hover:-translate-y-0.5 hover:bg-spike-dark md:w-auto md:px-12 md:py-5 md:text-xl disabled:cursor-not-allowed disabled:opacity-60"
+              className="group inline-flex min-h-[48px] w-full items-center justify-center gap-3 rounded-2xl bg-spike px-8 py-4 text-lg font-black text-white shadow-xl shadow-spike/30 transition hover:-translate-y-0.5 hover:bg-spike-dark md:w-auto md:px-12 md:py-5 md:text-xl"
             >
               Enter Venture Studio
               <ArrowRight
@@ -1043,8 +1060,7 @@ export function VentureStudioDay3({
           <button
             type="button"
             onClick={handleGenerateDay4}
-            disabled={disabled}
-            className="group relative flex min-h-[48px] w-full items-center justify-center gap-3 overflow-hidden rounded-2xl bg-spike px-10 py-5 text-lg font-black text-white shadow-xl shadow-spike/20 transition hover:scale-[1.02] hover:bg-spike-dark sm:w-auto disabled:cursor-not-allowed disabled:opacity-60"
+            className="group relative flex min-h-[48px] w-full items-center justify-center gap-3 overflow-hidden rounded-2xl bg-spike px-10 py-5 text-lg font-black text-white shadow-xl shadow-spike/20 transition hover:scale-[1.02] hover:bg-spike-dark sm:w-auto"
           >
             <span className="absolute inset-0 w-full bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
             <Zap size={22} className="shrink-0" aria-hidden />
@@ -1063,7 +1079,14 @@ export function VentureStudioDay3({
   );
 
   const renderDay4Generation = () => (
-    <div className="flex min-h-[70vh] flex-col items-center justify-center p-8 text-center opacity-100 transition-opacity duration-500">
+    <div className="relative flex min-h-[70vh] flex-col items-center justify-center p-8 text-center opacity-100 transition-opacity duration-500">
+      <Link
+        to={playbookHref({ segment: 1, week: 1, day: 3 })}
+        className="absolute left-4 top-4 inline-flex min-h-[44px] items-center gap-2 text-sm font-semibold text-spike hover:underline md:left-8 md:top-8"
+      >
+        <ArrowLeft size={16} aria-hidden />
+        Back
+      </Link>
       <div className="relative mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-red-100">
         <div className="absolute inset-0 animate-spin rounded-full border-4 border-spike border-t-transparent" />
         <Sparkles size={32} className="animate-pulse text-spike" aria-hidden />
@@ -1081,7 +1104,14 @@ export function VentureStudioDay3({
   );
 
   const renderDay4CanvasView = () => (
-    <div className="mx-auto w-full max-w-5xl opacity-100 transition-opacity duration-700">
+    <div className="relative mx-auto w-full max-w-5xl px-4 py-6 opacity-100 transition-opacity duration-700 md:px-6 md:py-8">
+      <Link
+        to={playbookHref({ segment: 1, week: 1, day: 3 })}
+        className="mb-4 inline-flex min-h-[44px] items-center gap-2 text-sm font-semibold text-spike hover:underline"
+      >
+        <ArrowLeft size={16} aria-hidden />
+        Back to Playbook
+      </Link>
       <div className="relative overflow-hidden rounded-t-3xl bg-spike p-8 text-center text-white md:p-12">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/10 to-transparent" />
         <span className="relative z-10 mb-6 inline-block rounded-full border border-white/30 bg-white/20 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-white backdrop-blur-sm">
@@ -1383,9 +1413,11 @@ export function VentureStudioDay3({
 
           <Link
             to={playbookHref({ segment: 1, week: 1, day: 3 })}
-            className="hidden min-h-[44px] items-center text-xs font-semibold text-spike hover:underline sm:inline-flex md:text-sm"
+            className="inline-flex min-h-[44px] shrink-0 items-center gap-1.5 text-xs font-semibold text-spike hover:underline md:gap-2 md:text-sm"
           >
-            Back to Playbook
+            <ArrowLeft size={16} className="sm:hidden" aria-hidden />
+            <span className="hidden sm:inline">Back to Playbook</span>
+            <span className="sm:hidden">Back</span>
           </Link>
         </div>
       </header>

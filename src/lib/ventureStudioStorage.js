@@ -51,7 +51,27 @@ function readAll() {
 }
 
 function writeAll(data) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch (err) {
+    console.warn('[ventureStudio] save failed:', err instanceof Error ? err.message : err);
+  }
+}
+
+/** @param {unknown[]} stored @param {import('./ventureStudioTypes.js').VentureStudioState['step3']} fallback */
+function normalizeStep3(stored, fallback) {
+  if (!Array.isArray(stored)) return fallback;
+  return fallback.map((item, index) => ({ ...item, ...(stored[index] ?? {}) }));
+}
+
+/** @param {unknown[]} stored @param {import('./ventureStudioTypes.js').VentureStudioState['step4']} fallback */
+function normalizeStep4(stored, fallback) {
+  if (!Array.isArray(stored) || stored.length === 0) return fallback;
+  const template = fallback[0];
+  return stored.map((item) => ({
+    ...template,
+    ...(typeof item === 'object' && item ? item : {}),
+  }));
 }
 
 /** @param {string | undefined | null} participantId */
@@ -73,8 +93,8 @@ export function loadVentureStudioState(participantId) {
         ...(stored.step2?.goals ?? {}),
       },
     },
-    step3: Array.isArray(stored.step3) ? stored.step3 : emptyVentureStudioState().step3,
-    step4: Array.isArray(stored.step4) ? stored.step4 : emptyVentureStudioState().step4,
+    step3: normalizeStep3(stored.step3, emptyVentureStudioState().step3),
+    step4: normalizeStep4(stored.step4, emptyVentureStudioState().step4),
     step5: { ...emptyVentureStudioState().step5, ...(stored.step5 ?? {}) },
     evidenceList: Array.isArray(stored.evidenceList) ? stored.evidenceList : [],
   };
