@@ -4,6 +4,7 @@
  */
 import { fetchDay1BuilderProgress } from './supabase/day1BuilderProgress.js';
 import { fetchBlueprintEntries } from './supabase/blueprintEntries.js';
+import { fetchDreamBoardAssets } from './supabase/dreamBoardAssets.js';
 import { DAY1_BUILDERS } from './day1BuilderConstants.js';
 import { fieldHasContent } from './syncMergeUtils.js';
 
@@ -148,6 +149,7 @@ export async function fetchRemoteWorkAssessment(participantId) {
  */
 export async function fetchRemoteParticipantSummary(participantId) {
   const { builderRows, blueprintRows } = await fetchRemoteDay1Rows(participantId);
+  const dreamBoardRows = await fetchDreamBoardAssets(participantId).catch(() => []);
   const { builders, coachSections } = buildersFromRows(builderRows);
   const vision = visionFieldsFromBlueprint(blueprintRows);
 
@@ -207,9 +209,12 @@ export async function fetchRemoteParticipantSummary(participantId) {
     topThreeValues: Array.isArray(topThree) ? topThree : [],
     valuesProfile: String(coachValues.valuesProfile ?? valuesBuilder.valuesProfile ?? vision.my_values ?? '').trim(),
     ventureDirection: String(coachSections['venture-direction']?.data?.track ?? '').trim(),
-    dreamBoardAssetCount: Array.isArray(builders['dream-board']?.data?.assets)
-      ? builders['dream-board'].data.assets.length
-      : 0,
+    dreamBoardAssetCount: Math.max(
+      dreamBoardRows.filter((row) => row.image_url || row.caption).length,
+      Array.isArray(builders['dream-board']?.data?.assets)
+        ? builders['dream-board'].data.assets.length
+        : 0,
+    ),
     squadCharterSigned: Boolean(builders['squad-charter']?.completedAt),
   };
 }

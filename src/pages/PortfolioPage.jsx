@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Briefcase, ChevronRight, Users } from 'lucide-react';
 import { PageContainer, PageTitle } from '../components/layout/PageContainer.jsx';
+import { FacultyCohortSyncPanel } from '../components/faculty/FacultyCohortSyncPanel.jsx';
 import { getPortfolioSections } from '../lib/playbookSeeds.js';
 import { StaffParticipantDreamBoardSection } from '../components/portfolio/StaffParticipantDreamBoardSection.jsx';
 import { listParticipantClosingReflections } from '../lib/dayClosingReflection.js';
@@ -133,6 +134,12 @@ export function PortfolioPage({ hours = 0, interns = [] }) {
       </div>
 
       {interns.length > 0 ? (
+        <div className="mb-6">
+          <FacultyCohortSyncPanel interns={interns} />
+        </div>
+      ) : null}
+
+      {interns.length > 0 ? (
         <div className="mb-6 spike-card space-y-4">
           <label className="block">
             <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-900">
@@ -172,6 +179,7 @@ export function PortfolioPage({ hours = 0, interns = [] }) {
                     <th className="px-3 py-2">Participant</th>
                     <th className="px-3 py-2">Day 1</th>
                     <th className="px-3 py-2">Coach</th>
+                    <th className="px-3 py-2">Dream board</th>
                     <th className="px-3 py-2" />
                   </tr>
                 </thead>
@@ -179,11 +187,17 @@ export function PortfolioPage({ hours = 0, interns = [] }) {
                   {interns.map((intern) => {
                     const summary = getCoachSummaryForMentor(intern.id);
                     const day1 = getDay1MissionProgress(intern.id);
+                    const dreamCards =
+                      generateVenturePortfolio(intern.id, { participantName: intern.name }).dreamBoard.assets
+                        .length;
                     return (
                       <tr key={intern.id} className="border-b border-slate-100">
                         <td className="px-3 py-3 font-medium text-slate-900">{intern.name}</td>
                         <td className="px-3 py-3">{day1.percent}%</td>
                         <td className="px-3 py-3">{summary?.progress?.percent ?? 0}%</td>
+                        <td className="px-3 py-3">
+                          {dreamCards ? `${dreamCards} card${dreamCards === 1 ? '' : 's'}` : '—'}
+                        </td>
                         <td className="px-3 py-3 text-right">
                           <Link
                             to={mentorParticipantReviewHref(intern.id)}

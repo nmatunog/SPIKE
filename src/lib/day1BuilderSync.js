@@ -16,6 +16,12 @@ import {
   upsertDay1BuilderProgressSoft,
 } from './supabase/day1BuilderProgress.js';
 import { builderEntryHasContent, shouldApplyRemoteField } from './syncMergeUtils.js';
+import {
+  dreamBoardMetadataForCloud,
+  hydrateDreamBoardImagesFromCloud,
+  syncDreamBoardToCloud,
+} from './dreamBoardCloudSync.js';
+import { fetchDreamBoardAssets } from './supabase/dreamBoardAssets.js';
 
 const COACH_PREFIX = 'coach:';
 
@@ -120,7 +126,14 @@ export async function persistBuilderEntryCloudFirst(
     };
   }
 
-  await upsertDay1BuilderProgress(participantId, builderId, entryToCloudPayload(previewEntry));
+  const cloudData = builderId === 'dream-board' ? dreamBoardMetadataForCloud(data) : data;
+  const cloudEntry = { ...previewEntry, data: cloudData };
+
+  if (builderId === 'dream-board') {
+    await syncDreamBoardToCloud(participantId, data);
+  }
+
+  await upsertDay1BuilderProgress(participantId, builderId, entryToCloudPayload(cloudEntry));
   return writeBuilderEntry(participantId, builderId, data, completed, options);
 }
 
@@ -154,6 +167,27 @@ export async function hydrateDay1BuildersFromSupabase(participantId, opts = {}) 
     const user = all[participantId];
 
     for (const row of rows) {
+      if (String(row.builder_id) === 'dream-board') {
+        const inlineAssets = row.payload?.data?.assets;
+        if (
+          Array.isArray(inlineAssets)
+          && inlineAssets.some((asset) => asset?.imageUrl)
+        ) {
+          const cloudRows = await fetchDreamBoardAssets(participantId);
+          if (!cloudRows.some((cloudRow) => cloudRow.image_url)) {
+            await syncDreamBoardToCloud(participantId, { assets: inlineAssets });
+            await upsertDay1BuilderProgressSoft(
+              participantId,
+              'dream-board',
+              entryToCloudPayload({
+                ...rowToBuilderEntry(row),
+                data: dreamBoardMetadataForCloud({ assets: inlineAssets }),
+              }),
+            );
+          }
+        }
+      }
+
       if (String(row.builder_id).startsWith(COACH_PREFIX)) {
         const sectionId = String(row.builder_id).slice(COACH_PREFIX.length);
         mergeCoachSectionFromRemote(participantId, sectionId, row.payload ?? {}, opts);
@@ -168,6 +202,9 @@ export async function hydrateDay1BuildersFromSupabase(participantId, opts = {}) 
     }
 
     writeDay1BuilderStore(all);
+    await hydrateDreamBoardImagesFromCloud(participantId, {
+      preferLocalImages: Boolean(opts.preferLocal) && !opts.preferRemote,
+    });
   } catch (err) {
     console.warn('[day1BuilderSync] hydrate failed:', err instanceof Error ? err.message : err);
   }
@@ -198,7 +235,15 @@ export async function backfillLocalBuildersToSupabase(participantId) {
   const builders = readDay1BuilderStore()[participantId]?.builders ?? {};
   for (const [builderId, entry] of Object.entries(builders)) {
     if (entry && builderEntryHasContent(entry)) {
-      await syncBuilderEntryToSupabase(participantId, builderId, entry);
+      if (builderId === 'dream-board' && entry.data?.assets) {
+        await syncDreamBoardToCloud(participantId, entry.data);
+        await syncBuilderEntryToSupabase(participantId, builderId, {
+          ...entry,
+          data: dreamBoardMetadataForCloud(entry.data),
+        });
+      } else {
+        await syncBuilderEntryToSupabase(participantId, builderId, entry);
+      }
     }
   }
 
