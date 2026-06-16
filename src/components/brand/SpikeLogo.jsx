@@ -1,5 +1,6 @@
 /** Official SPIKE Venture Studio logo — served from /public/spike-logo.png */
 export const SPIKE_LOGO_SRC = '/spike-logo.png';
+export const SPIKE_LOGO_ON_DARK_SRC = '/spike-logo-on-dark.png';
 
 const SIZE_CLASS = {
   sm: 'h-8',
@@ -11,18 +12,22 @@ const SIZE_CLASS = {
 /**
  * @param {{
  *   size?: 'sm' | 'md' | 'lg' | 'xl',
+ *   variant?: 'default' | 'onDark',
  *   className?: string,
  *   alt?: string,
  * }} props
  */
 export function SpikeLogo({
   size = 'md',
+  variant = 'default',
   className = '',
   alt = 'SPIKE Venture Studio',
 }) {
+  const src = variant === 'onDark' ? SPIKE_LOGO_ON_DARK_SRC : SPIKE_LOGO_SRC;
+
   return (
     <img
-      src={SPIKE_LOGO_SRC}
+      src={src}
       alt={alt}
       width={320}
       height={80}

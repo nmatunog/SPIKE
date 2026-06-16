@@ -40,7 +40,7 @@ export function PublicPortfolioPage() {
     <div className="min-h-screen bg-slate-50">
       <header className="bg-gradient-to-br from-slate-900 to-spike-dark px-6 py-12 text-white">
         <div className="mx-auto max-w-4xl">
-          <SpikeLogo size="md" className="mb-6 h-10" />
+          <SpikeLogo variant="onDark" size="md" className="mb-6 h-10" />
           <div className="flex items-start gap-6">
           {portfolio.cover.photoUrl ? (
             <img src={portfolio.cover.photoUrl} alt="" className="h-24 w-24 rounded-2xl object-cover" />
