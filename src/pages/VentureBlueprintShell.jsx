@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Link, Navigate, useLocation } from 'react-router-dom';
 import { PageContainer } from '../components/layout/PageContainer.jsx';
 import { BlueprintStateHeader } from '../components/blueprint/BlueprintStateHeader.jsx';
 import { BlueprintModuleNav } from '../components/blueprint/BlueprintModuleNav.jsx';
@@ -26,8 +26,8 @@ import { MilestonesModule } from '../components/blueprint/modules/MilestonesModu
 import { VentureBoardModule } from '../components/blueprint/modules/VentureBoardModule.jsx';
 import { BlueprintJourneyNav } from '../components/blueprint/BlueprintJourneyNav.jsx';
 import { Day1BuildersShell } from '../components/day1/Day1BuildersShell.jsx';
-import { isDay1MissionActive } from '../lib/day1BuilderService.js';
 import { VentureCoachShell } from '../components/ventureCoach/VentureCoachShell.jsx';
+import { isWeek1BuildSimplifiedMode } from '../lib/programContext.js';
 
 /**
  * @param {{ user: { id: string, internProgress?: object | null }, onLogTraction?: () => void, onProgressRefresh?: (progress: object) => void }} props
@@ -66,8 +66,10 @@ export function VentureBlueprintShell({ user, onProgressRefresh }) {
   const activeModule = getBlueprintModule(moduleSlug) ?? getBlueprintModule('overview');
   const showTrackPicker = needsCareerTrackSelection(user.id, progress);
   const isOverview = moduleSlug === 'overview';
-  const day1Active = isDay1MissionActive(state.week, state.segment, state.day);
+  const week1Simplified = isWeek1BuildSimplifiedMode(progress);
   const headerVariant = isOverview ? 'none' : 'compact';
+  const showJourneyNav = week1Simplified && (isOverview || isDay1Builders || isCoach);
+  const showFullModuleNav = !week1Simplified && !isDay1Builders && !isExecutiveSummary && !isCoach && !isPortfolio;
 
   function handleTrackComplete(nextProgress) {
     setProgress(nextProgress);
@@ -190,14 +192,18 @@ export function VentureBlueprintShell({ user, onProgressRefresh }) {
 
       {!isDay1Builders && !isExecutiveSummary && !isCoach && !isPortfolio ? (
       <div className="mb-4 space-y-3 lg:hidden">
-        {isOverview && day1Active ? (
+        {showJourneyNav ? (
           <BlueprintJourneyNav participantId={user.id} day={state.day} />
-        ) : (
+        ) : showFullModuleNav ? (
         <BlueprintModuleNav
           careerTrack={state.career_track}
           activeSlug={moduleSlug}
           variant="select"
         />
+        ) : (
+          <Link to={ROUTES.ventureBlueprint} className="text-sm font-semibold text-spike hover:underline">
+            ← Build home
+          </Link>
         )}
       </div>
       ) : null}
@@ -213,14 +219,20 @@ export function VentureBlueprintShell({ user, onProgressRefresh }) {
       >
         {!isDay1Builders && !isExecutiveSummary && !isCoach && !isPortfolio ? (
         <aside className="hidden lg:block">
-          {isOverview && day1Active ? (
+          {showJourneyNav ? (
             <div className="sticky top-24">
               <BlueprintJourneyNav participantId={user.id} day={state.day} />
             </div>
-          ) : (
+          ) : showFullModuleNav ? (
           <div className="sticky top-[4.5rem] rounded-2xl border border-slate-200/80 bg-white p-3 shadow-card lg:top-24 xl:p-4 2xl:top-28">
             <BlueprintModuleNav careerTrack={state.career_track} activeSlug={moduleSlug} />
           </div>
+          ) : (
+            <div className="sticky top-24 space-y-3">
+              <Link to={ROUTES.ventureBlueprint} className="text-sm font-semibold text-spike hover:underline">
+                ← Build home
+              </Link>
+            </div>
           )}
         </aside>
         ) : null}

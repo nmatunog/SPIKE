@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import {
   BarChart,
   BookOpen,
@@ -11,7 +11,7 @@ import {
   Users,
 } from 'lucide-react';
 import { useCompactNav } from '../../hooks/useCompactNav.js';
-import { moduleNavForRole } from '../../routes/paths.js';
+import { internNavActiveModule, moduleNavForRole } from '../../routes/paths.js';
 import { SuperuserPreviewPills } from './SuperuserPreviewPills.jsx';
 
 const ICONS = {
@@ -41,13 +41,23 @@ function linkClass(isActive, isMobile) {
 function NavItems({ userRole, variant }) {
   const items = moduleNavForRole(userRole);
   const isMobile = variant === 'mobile';
+  const { pathname } = useLocation();
+  const internActive = userRole === 'intern' ? internNavActiveModule(pathname) : null;
 
   return items.map(({ path, label, shortLabel, icon }) => {
     const Icon = ICONS[icon] || LayoutDashboard;
     const displayLabel = isMobile ? (shortLabel ?? label) : label;
+    const isActive = userRole === 'intern' ? internActive === path : undefined;
 
     return (
-      <NavLink key={`${variant}-${path}`} to={path} className={({ isActive }) => linkClass(isActive, isMobile)}>
+      <NavLink
+        key={`${variant}-${path}`}
+        to={path}
+        end={path === '/venture-blueprint'}
+        className={({ isActive: linkActive }) =>
+          linkClass(userRole === 'intern' ? isActive : linkActive, isMobile)
+        }
+      >
         <Icon
           size={isMobile ? 20 : 16}
           strokeWidth={isMobile ? 2 : 2.25}

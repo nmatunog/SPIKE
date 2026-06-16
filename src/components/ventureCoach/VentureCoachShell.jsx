@@ -22,6 +22,7 @@ import {
 import { CoachIdentityTriangle } from './CoachIdentityTriangle.jsx';
 import { ROUTES, playbookHref } from '../../routes/paths.js';
 import { UNLOCK_WEEK1_DAY2_PLUS } from '../../lib/programUnlocks.js';
+import { getNextCoachSectionLabel, getNextCoachSectionRoute } from '../../lib/programContext.js';
 
 const SECTION_TITLES = {
   ambition: 'My Ambition',
@@ -47,6 +48,10 @@ export function VentureCoachShell({ participantId, section }) {
   }
 
   if (!section) {
+    const nextRoute = getNextCoachSectionRoute(participantId);
+    const nextLabel = getNextCoachSectionLabel(participantId);
+    const resume = progress.startedAt && nextRoute && progress.percent < 100;
+
     return (
       <div className="mx-auto max-w-3xl space-y-8 py-4">
           <CoachIdentityTriangle />
@@ -63,11 +68,11 @@ export function VentureCoachShell({ participantId, section }) {
             type="button"
             onClick={() => {
               markCoachStarted(participantId);
-              navigate(`${ROUTES.ventureBlueprint}/coach/ambition`);
+              navigate(resume ? nextRoute : `${ROUTES.ventureBlueprint}/coach/ambition`);
             }}
             className="mt-8 inline-flex min-h-[48px] items-center rounded-xl bg-spike px-6 py-3 text-sm font-semibold text-white hover:bg-spike-light"
           >
-            Start My Journey
+            {resume ? `Continue: ${nextLabel}` : 'Start My Journey'}
           </button>
         </section>
 
@@ -145,7 +150,7 @@ export function VentureCoachShell({ participantId, section }) {
         to={section ? `${ROUTES.ventureBlueprint}/coach` : ROUTES.ventureBlueprint}
         className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-spike"
       >
-        <ArrowLeft size={16} /> Coach home
+        <ArrowLeft size={16} /> {section ? 'Coach home' : 'Build home'}
       </Link>
 
       <div className="grid w-full min-w-0 grid-cols-1 gap-6 lg:grid-cols-[minmax(220px,260px)_minmax(0,1fr)]">

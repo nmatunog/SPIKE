@@ -20,6 +20,7 @@ import {
   Bell,
 } from 'lucide-react';
 import { ModuleNav } from './components/nav/ModuleNav.jsx';
+import { ProgramWeekRibbon } from './components/nav/ProgramWeekRibbon.jsx';
 import { useCompactNav } from './hooks/useCompactNav.js';
 import { PortalHeader } from './layouts/PortalHeader.jsx';
 import { filterInternsForMentor } from './lib/mentorAssignmentService.js';
@@ -1788,6 +1789,13 @@ const SpikeMasterPortal = () => {
           }
         />
       )}
+
+      {(effectiveUserRole === 'intern' || (isSuperuserSession && viewAsRole === 'intern')) && !authLoading ? (
+        <ProgramWeekRibbon
+          internProgress={(internModuleUser ?? user)?.internProgress}
+          participantId={(internModuleUser ?? user)?.id ?? ''}
+        />
+      ) : null}
 
       <main>
         {userRole === 'guest' && isPublicPortfolioPath(location.pathname) ? (

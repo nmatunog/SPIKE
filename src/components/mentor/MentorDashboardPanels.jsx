@@ -29,11 +29,17 @@ export function MentorDashboardPanels({ interns }) {
   };
   const weekProgress = ready ? deriveWeek1DayProgress(interns) : [];
 
-  const queueTotal =
-    queue.needs_review.length +
-    queue.needs_follow_up.length +
-    queue.at_risk.length +
-    queue.incomplete_outputs.length;
+  const needsAttention = [
+    ...queue.needs_review,
+    ...queue.needs_follow_up,
+    ...queue.at_risk,
+  ];
+  const attentionIds = new Set();
+  const uniqueAttention = needsAttention.filter((item) => {
+    if (attentionIds.has(item.id)) return false;
+    attentionIds.add(item.id);
+    return true;
+  });
 
   if (!ready && interns.length > 0) {
     return (
@@ -109,15 +115,15 @@ export function MentorDashboardPanels({ interns }) {
       <section className="spike-card">
         <h3 className="flex items-center gap-2 text-sm font-semibold text-slate-900">
           <ClipboardList size={16} className="text-amber-700" /> Coaching queue
-          {queueTotal ? (
-            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-900">{queueTotal}</span>
+          {uniqueAttention.length + queue.incomplete_outputs.length ? (
+            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-900">
+              {uniqueAttention.length + queue.incomplete_outputs.length}
+            </span>
           ) : null}
         </h3>
-        <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <QueueColumn title="Needs Review" items={queue.needs_review} />
-          <QueueColumn title="Needs Follow-Up" items={queue.needs_follow_up} />
-          <QueueColumn title="At Risk" items={queue.at_risk} accent="text-red-700" />
-          <QueueColumn title="Incomplete Outputs" items={queue.incomplete_outputs} />
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <QueueColumn title="Needs attention" items={uniqueAttention} accent="text-amber-800" />
+          <QueueColumn title="Incomplete outputs" items={queue.incomplete_outputs} />
         </div>
       </section>
 

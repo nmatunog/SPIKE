@@ -146,9 +146,10 @@ export function blueprintModulesForTrack(careerTrack) {
   return BLUEPRINT_MODULES.filter((mod) => mod.tracks.includes(careerTrack));
 }
 
-/** @param {string} careerTrack */
-export function blueprintModulesGroupedForTrack(careerTrack) {
-  const modules = blueprintModulesForTrack(careerTrack);
+/** @param {string} careerTrack @param {{ excludeSlugs?: string[] }} [options] */
+export function blueprintModulesGroupedForTrack(careerTrack, options = {}) {
+  const exclude = new Set(options.excludeSlugs ?? ['portfolio']);
+  const modules = blueprintModulesForTrack(careerTrack).filter((mod) => !exclude.has(mod.slug));
   return BLUEPRINT_NAV_GROUPS.map((group) => ({
     ...group,
     modules: modules.filter((mod) => mod.navGroup === group.id),

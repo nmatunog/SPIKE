@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { deriveDay1Journey } from '../../lib/buildStudioService.js';
-import { ROUTES } from '../../routes/paths.js';
+import { ROUTES, playbookHref } from '../../routes/paths.js';
 
 /**
  * Day 1 journey sidebar — replaces LMS-style module list on Build Studio home.
@@ -38,10 +38,10 @@ export function BlueprintJourneyNav({ participantId, day = 1 }) {
       ))}
       <div className="mt-4 border-t border-slate-100 pt-4">
         <Link
-          to={ROUTES.playbook}
+          to={playbookHref({ week: 1, day: Math.max(2, day) })}
           className="block rounded-xl px-3 py-2 text-xs font-semibold text-slate-500 hover:bg-slate-50 hover:text-spike"
         >
-          All modules →
+          Open Playbook →
         </Link>
       </div>
     </nav>

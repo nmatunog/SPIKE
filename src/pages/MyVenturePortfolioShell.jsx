@@ -18,9 +18,8 @@ import {
 import { PortfolioPresentationView } from '../components/venturePortfolio/PortfolioPresentationView.jsx';
 import {
   generateVenturePortfolio,
-  PORTFOLIO_NAV_SECTIONS,
 } from '../services/portfolioGenerator.js';
-import { ROUTES, defaultRouteForRole, portfolioSectionFromPath } from '../routes/paths.js';
+import { ROUTES, defaultRouteForRole, portfolioTabFromPath, PORTFOLIO_TABS } from '../routes/paths.js';
 import { isSuperuserInternPreviewUser } from '../lib/superuserInternPreview.js';
 
 /**
@@ -37,11 +36,10 @@ export function MyVenturePortfolioShell({ user, section = 'overview' }) {
     internProgress: user.internProgress,
   });
 
-  const activeSection = PORTFOLIO_NAV_SECTIONS.some((item) => item.id === section)
-    ? section
-    : section === 'present'
-      ? 'present'
-      : 'overview';
+  const activeTab = portfolioTabFromPath(
+    section === 'present' ? `${ROUTES.myVenturePortfolio}/present` : `${ROUTES.myVenturePortfolio}/${section}`,
+  );
+  const activeSection = section === 'present' ? 'present' : section;
 
   if (section === 'present') {
     return <PortfolioPresentationView portfolio={portfolio} />;
@@ -62,7 +60,7 @@ export function MyVenturePortfolioShell({ user, section = 'overview' }) {
           to={ROUTES.ventureBlueprint}
           className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-spike"
         >
-          <ArrowLeft size={16} /> Blueprint
+          <ArrowLeft size={16} /> Build
         </Link>
         <div className="flex items-center gap-2 text-sm text-slate-500">
           <Briefcase size={16} className="text-spike" />
@@ -75,58 +73,67 @@ export function MyVenturePortfolioShell({ user, section = 'overview' }) {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(200px,240px)_1fr]">
         <aside className="lg:sticky lg:top-24 lg:self-start">
           <nav className="spike-card space-y-1 p-2" aria-label="Portfolio sections">
-            {PORTFOLIO_NAV_SECTIONS.map((item) => (
+            {PORTFOLIO_TABS.map((tab) => (
               <Link
-                key={item.id}
-                to={`${ROUTES.myVenturePortfolio}/${item.id}`}
+                key={tab.id}
+                to={`${ROUTES.myVenturePortfolio}/${tab.id}`}
                 className={`block rounded-xl px-3 py-2.5 text-sm font-medium transition ${
-                  activeSection === item.id
+                  activeTab === tab.id && section !== 'present'
                     ? 'bg-spike text-white shadow-sm'
                     : 'text-slate-700 hover:bg-spike-muted hover:text-spike'
                 }`}
               >
-                {item.label}
+                {tab.label}
               </Link>
             ))}
           </nav>
         </aside>
 
         <main className="min-w-0" key={hydrateVersion}>
-          {renderSection(activeSection, portfolio, user.id, participantName)}
+          {renderTab(activeTab, activeSection, portfolio, user.id, participantName)}
         </main>
       </div>
     </PageContainer>
   );
 }
 
-/** @param {string} sectionId @param {ReturnType<typeof generateVenturePortfolio>} portfolio @param {string} participantId @param {string} participantName */
-function renderSection(sectionId, portfolio, participantId, participantName) {
-  switch (sectionId) {
+/** @param {string} tabId @param {string} sectionId @param {ReturnType<typeof generateVenturePortfolio>} portfolio @param {string} participantId @param {string} participantName */
+function renderTab(tabId, sectionId, portfolio, participantId, participantName) {
+  if (sectionId === 'present') {
+    return <PortfolioPresentationView portfolio={portfolio} />;
+  }
+
+  const tab = PORTFOLIO_TABS.find((item) => item.id === tabId) ?? PORTFOLIO_TABS[0];
+
+  switch (tab.id) {
     case 'identity':
-      return <PortfolioIdentitySection portfolio={portfolio} />;
-    case 'dream-board':
-      return <PortfolioDreamBoardSection portfolio={portfolio} />;
-    case 'career':
-      return <PortfolioCareerSection portfolio={portfolio} />;
-    case 'canvas':
-      return <PortfolioCanvasSection portfolio={portfolio} />;
-    case 'research':
-      return <PortfolioResearchSection portfolio={portfolio} />;
-    case 'deliverables':
-      return <PortfolioDeliverablesSection participantId={participantId} />;
-    case 'milestones':
-      return <PortfolioMilestonesSection portfolio={portfolio} />;
-    case 'presentations':
-      return <PortfolioPresentationsSection portfolio={portfolio} participantId={participantId} />;
-    case 'certifications':
-      return <PortfolioCertificationsSection portfolio={portfolio} />;
-    case 'export':
       return (
-        <PortfolioExportSection
-          portfolio={portfolio}
-          participantId={participantId}
-          participantName={participantName}
-        />
+        <div className="space-y-8">
+          <PortfolioIdentitySection portfolio={portfolio} />
+          <PortfolioDreamBoardSection portfolio={portfolio} />
+          <PortfolioCareerSection portfolio={portfolio} />
+        </div>
+      );
+    case 'work':
+      return (
+        <div className="space-y-8">
+          <PortfolioCanvasSection portfolio={portfolio} />
+          <PortfolioResearchSection portfolio={portfolio} />
+          <PortfolioDeliverablesSection participantId={participantId} />
+        </div>
+      );
+    case 'share':
+      return (
+        <div className="space-y-8">
+          <PortfolioPresentationsSection portfolio={portfolio} participantId={participantId} />
+          <PortfolioCertificationsSection portfolio={portfolio} />
+          <PortfolioMilestonesSection portfolio={portfolio} />
+          <PortfolioExportSection
+            portfolio={portfolio}
+            participantId={participantId}
+            participantName={participantName}
+          />
+        </div>
       );
     case 'overview':
     default:
@@ -147,10 +154,33 @@ function renderSection(sectionId, portfolio, participantId, participantName) {
  */
 export function MyVenturePortfolioRoute({ user }) {
   const { pathname } = useLocation();
-  const section = portfolioSectionFromPath(pathname, [
-    ...PORTFOLIO_NAV_SECTIONS.map((item) => item.id),
-    'present',
-  ]);
+  if (pathname.endsWith('/present')) {
+    return <MyVenturePortfolioShell user={user} section="present" />;
+  }
+  if (pathname === ROUTES.myVenturePortfolio) {
+    if (!user?.internProgress) {
+      return <Navigate to={defaultRouteForRole('intern')} replace />;
+    }
+    return <MyVenturePortfolioShell user={user} section="overview" />;
+  }
+  const slug = pathname.slice(`${ROUTES.myVenturePortfolio}/`.length).split('/').filter(Boolean)[0] ?? 'overview';
+  const tab = portfolioTabFromPath(pathname);
+  const legacySectionIds = [
+    'identity',
+    'dream-board',
+    'career',
+    'canvas',
+    'research',
+    'deliverables',
+    'milestones',
+    'presentations',
+    'certifications',
+    'export',
+  ];
+  if (legacySectionIds.includes(slug) && slug !== tab) {
+    return <Navigate to={`${ROUTES.myVenturePortfolio}/${tab}`} replace />;
+  }
+  const section = PORTFOLIO_TABS.some((item) => item.id === slug) ? slug : tab;
   if (!user?.internProgress) {
     return <Navigate to={defaultRouteForRole('intern')} replace />;
   }

@@ -94,12 +94,14 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
   const days = useMemo(() => listDays(segmentSlug, weekSlug), [segmentSlug, weekSlug]);
   const [daySlug, setDaySlug] = useState(`day-${entryDay}`);
   const [mobilePanel, setMobilePanel] = useState('content');
+  const [browseAllDays, setBrowseAllDays] = useState(userRole !== 'intern');
 
   useEffect(() => {
     setSegmentSlug(`segment-${entrySegment}`);
     setWeekSlug(`week-${entryWeek}`);
     setDaySlug(`day-${entryDay}`);
-  }, [entrySegment, entryWeek, entryDay]);
+    if (userRole === 'intern') setBrowseAllDays(false);
+  }, [entrySegment, entryWeek, entryDay, userRole]);
 
   useEffect(() => {
     setRefreshKey((k) => k + hydrateVersion);
@@ -167,6 +169,38 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
       Pick a week and day with published content.
     </p>
   );
+
+  const internTodayHeader = userRole === 'intern' && selectedDay ? (
+    <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-indigo-100 bg-indigo-50/80 px-4 py-3">
+      <p className="text-sm text-indigo-950">
+        <span className="font-semibold">
+          Today — Week {selectedWeek?.week.weekNumber ?? entryWeek} · Day {selectedDay.day.dayNumber}
+        </span>
+        {selectedDay.day.title ? (
+          <span className="text-indigo-800"> · {selectedDay.day.title}</span>
+        ) : null}
+      </p>
+      {!browseAllDays ? (
+        <button
+          type="button"
+          onClick={() => setBrowseAllDays(true)}
+          className="text-sm font-semibold text-spike hover:underline"
+        >
+          Browse all days
+        </button>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setBrowseAllDays(false)}
+          className="text-sm font-semibold text-spike hover:underline"
+        >
+          Back to today
+        </button>
+      )}
+    </div>
+  ) : null;
+
+  const showPathBar = userRole !== 'intern' || browseAllDays;
 
   const pathBarMobile = (
     <div className="spike-card space-y-3">
@@ -264,14 +298,15 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
         Playbook
       </PageTitle>
 
-      {userRole === 'intern' ? (
-        <p className="mt-3 rounded-xl border border-indigo-100 bg-indigo-50/80 px-4 py-3 text-sm text-indigo-950">
-          All Week 1 days are open — Day 1 completion is not required to work on Day 2 Playbook or portfolio
-          inputs. Your saved work syncs when you sign in; refresh if yesterday&apos;s entries look incomplete.
+      {internTodayHeader}
+
+      {userRole === 'intern' && !browseAllDays ? (
+        <p className="mt-3 text-sm text-slate-600">
+          Saved work syncs when you sign in; refresh if yesterday&apos;s entries look incomplete.
         </p>
       ) : null}
 
-      {showSegmentPicker ? (
+      {showSegmentPicker && (userRole !== 'intern' || browseAllDays) ? (
         <div className="mb-4 mt-5 flex gap-2 overflow-x-auto pb-1 scrollbar-thin">
           {segments.map(({ slug, segment }) => (
             <PathPill
@@ -299,14 +334,14 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
           </>
         ) : (
           <>
-            {pathBarMobile}
+            {showPathBar ? pathBarMobile : null}
             <div className="spike-card lg:p-6 2xl:p-8">{dayContent}</div>
           </>
         )}
       </div>
 
       <div className="mt-5 hidden space-y-4 lg:block">
-        {pathBarDesktop}
+        {showPathBar ? pathBarDesktop : null}
         <div className="spike-card xl:p-8 2xl:p-10">{dayContent}</div>
       </div>
 

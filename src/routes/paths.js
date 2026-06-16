@@ -149,23 +149,23 @@ const INTERN_FORMATION_ROUTES = [
 export const MODULE_NAV = [
   {
     path: ROUTES.ventureBlueprint,
-    label: 'Blueprint',
-    shortLabel: 'Blueprint',
+    label: 'Build',
+    shortLabel: 'Build',
     icon: 'blueprint',
     roles: ['intern'],
   },
   {
-    path: ROUTES.myVenturePortfolio,
-    label: 'My Portfolio',
-    shortLabel: 'Portfolio',
-    icon: 'portfolio',
-    roles: ['intern'],
+    path: ROUTES.playbook,
+    label: 'Playbook',
+    shortLabel: 'Playbook',
+    icon: 'playbook',
+    roles: ['intern', 'faculty', 'mentor', 'admin', 'superuser'],
   },
   {
-    path: ROUTES.squad,
-    label: 'Squad',
-    shortLabel: 'Squad',
-    icon: 'research',
+    path: ROUTES.myVenturePortfolio,
+    label: 'Portfolio',
+    shortLabel: 'Portfolio',
+    icon: 'portfolio',
     roles: ['intern'],
   },
   {
@@ -190,11 +190,11 @@ export const MODULE_NAV = [
     roles: ['admin', 'superuser'],
   },
   {
-    path: ROUTES.playbook,
-    label: 'Playbook',
-    shortLabel: 'Playbook',
-    icon: 'playbook',
-    roles: ['intern', 'faculty', 'mentor', 'admin', 'superuser'],
+    path: ROUTES.mentorVentureCoach,
+    label: 'People',
+    shortLabel: 'People',
+    icon: 'people',
+    roles: ['mentor', 'faculty'],
   },
   {
     path: ROUTES.portfolio,
@@ -204,32 +204,11 @@ export const MODULE_NAV = [
     roles: ['faculty', 'mentor', 'admin', 'superuser'],
   },
   {
-    path: ROUTES.research,
-    label: 'Research',
-    shortLabel: 'Research',
-    icon: 'research',
-    roles: ['intern', 'faculty', 'mentor', 'admin', 'superuser'],
-  },
-  {
-    path: ROUTES.reports,
-    label: 'Reports',
-    shortLabel: 'Reports',
-    icon: 'reports',
-    roles: ['faculty', 'mentor', 'admin', 'superuser'],
-  },
-  {
     path: ROUTES.mentorVentureCoach,
-    label: 'Participants',
+    label: 'People',
     shortLabel: 'People',
     icon: 'people',
-    roles: ['mentor', 'faculty', 'admin', 'superuser'],
-  },
-  {
-    path: ROUTES.analyticsCohortIdentity,
-    label: 'Analytics',
-    shortLabel: 'Stats',
-    icon: 'analytics',
-    roles: ['faculty', 'mentor', 'admin', 'superuser'],
+    roles: ['admin', 'superuser'],
   },
   {
     path: ROUTES.admin,
@@ -249,16 +228,10 @@ const SUPERUSER_MODULE_NAV = [
     icon: 'dashboard',
   },
   {
-    path: ROUTES.admin,
-    label: 'Admin',
-    shortLabel: 'Admin',
-    icon: 'admin',
-  },
-  {
-    path: ROUTES.adminContentStudio,
-    label: 'Content Studio',
-    shortLabel: 'Studio',
-    icon: 'admin',
+    path: ROUTES.mentorVentureCoach,
+    label: 'People',
+    shortLabel: 'People',
+    icon: 'people',
   },
   {
     path: ROUTES.playbook,
@@ -273,16 +246,10 @@ const SUPERUSER_MODULE_NAV = [
     icon: 'portfolio',
   },
   {
-    path: ROUTES.mentorVentureCoach,
-    label: 'Participants',
-    shortLabel: 'People',
-    icon: 'people',
-  },
-  {
-    path: ROUTES.analyticsCohortIdentity,
-    label: 'Analytics',
-    shortLabel: 'Stats',
-    icon: 'analytics',
+    path: ROUTES.admin,
+    label: 'Admin',
+    shortLabel: 'Admin',
+    icon: 'admin',
   },
 ];
 
@@ -290,7 +257,56 @@ export function moduleNavForRole(userRole) {
   if (userRole === 'superuser') {
     return SUPERUSER_MODULE_NAV;
   }
-  return MODULE_NAV.filter((item) => item.roles.includes(userRole));
+  const seen = new Set();
+  return MODULE_NAV.filter((item) => {
+    if (!item.roles.includes(userRole)) return false;
+    if (seen.has(item.path)) return false;
+    seen.add(item.path);
+    return true;
+  });
+}
+
+/** Active top-nav module for interns (Build includes squad + formation routes). */
+export function internNavActiveModule(pathname) {
+  if (
+    pathname === ROUTES.ventureBlueprint
+    || pathname.startsWith(`${ROUTES.ventureBlueprint}/`)
+    || INTERN_FORMATION_ROUTES.includes(pathname)
+  ) {
+    return ROUTES.ventureBlueprint;
+  }
+  if (pathname === ROUTES.playbook) return ROUTES.playbook;
+  if (pathname === ROUTES.myVenturePortfolio || pathname.startsWith(`${ROUTES.myVenturePortfolio}/`)) {
+    return ROUTES.myVenturePortfolio;
+  }
+  return matchModulePath(pathname);
+}
+
+/** Portfolio primary tabs (Phase 2 — fewer sidebar items). */
+export const PORTFOLIO_TABS = [
+  { id: 'overview', label: 'Overview', sections: ['overview'] },
+  { id: 'identity', label: 'Identity', sections: ['identity', 'dream-board', 'career'] },
+  { id: 'work', label: 'Work', sections: ['canvas', 'research', 'deliverables'] },
+  { id: 'share', label: 'Share', sections: ['presentations', 'certifications', 'export', 'milestones'] },
+];
+
+const PORTFOLIO_SECTION_TO_TAB = Object.fromEntries(
+  PORTFOLIO_TABS.flatMap((tab) => tab.sections.map((section) => [section, tab.id])),
+);
+
+/** @param {string} sectionId */
+export function portfolioTabForSection(sectionId) {
+  return PORTFOLIO_SECTION_TO_TAB[sectionId] ?? 'overview';
+}
+
+/** @param {string} pathname */
+export function portfolioTabFromPath(pathname) {
+  if (pathname === ROUTES.myVenturePortfolio) return 'overview';
+  const prefix = `${ROUTES.myVenturePortfolio}/`;
+  if (!pathname.startsWith(prefix)) return 'overview';
+  const slug = pathname.slice(prefix.length).split('/').filter(Boolean)[0] ?? 'overview';
+  if (PORTFOLIO_TABS.some((tab) => tab.id === slug)) return slug;
+  return portfolioTabForSection(slug);
 }
 
 const BLUEPRINT_ALIAS_PATHS = Object.values(BLUEPRINT_LINKS);
@@ -408,6 +424,8 @@ export function rolesForRoute(pathname) {
     return ['mentor', 'admin', 'superuser'];
   }
   if (pathname === ROUTES.analyticsCohortIdentity) return ['faculty', 'admin', 'mentor', 'superuser'];
+  if (pathname === ROUTES.research) return ['intern', 'faculty', 'admin', 'mentor', 'superuser'];
+  if (pathname === ROUTES.reports) return ['faculty', 'admin', 'mentor', 'superuser'];
   if (pathname === ROUTES.brandLexicon) return ['faculty', 'mentor', 'admin', 'superuser'];
   if (pathname === ROUTES.facilitatorsReference) return ['faculty', 'mentor', 'admin', 'superuser'];
 
