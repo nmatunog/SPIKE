@@ -8,7 +8,8 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build && bash scripts/strip-oversized-pages-assets.sh",
+    "build": "node scripts/build-facilitators-content-reference.mjs && vite build && bash scripts/strip-oversized-pages-assets.sh",
+    "build:facilitators-reference": "node scripts/build-facilitators-content-reference.mjs",
     "postbuild": "bash scripts/postbuild-ship.sh",
     "ship": "npm run lint && npm run build",
     "lint": "eslint .",

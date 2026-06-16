@@ -28,7 +28,7 @@ import { RoleDashboardCards } from './components/dashboard/RoleDashboardCards.js
 import { BlueprintTimelineFeed } from './components/blueprint/BlueprintTimelineFeed.jsx';
 import { PageLoader } from './components/ui/PageLoader.jsx';
 import { RoleRouteGuard } from './components/routing/RoleRouteGuard.jsx';
-import { ROUTES, brandLexiconBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath } from './routes/paths.js';
+import { ROUTES, brandLexiconBackHrefForRole, facilitatorsReferenceBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath } from './routes/paths.js';
 import {
   AdminCohortsPage,
   AdminFacultyPlaybookPage,
@@ -52,6 +52,7 @@ import {
   ProgressReportsPage,
   ResearchPage,
   SpikeBrandLexiconPage,
+  FacilitatorsContentReferencePage,
   SquadCharterPage,
   SquadDashboardPage,
   SquadPreferencesPage,
@@ -79,6 +80,8 @@ import { AdminRegisterForm } from './components/AdminRegisterForm.jsx';
 import { isMockUser, shouldUseSupabaseForUser } from './lib/mockAuth.js';
 import { ForcePasswordChangeGate } from './components/ForcePasswordChangeGate.jsx';
 import { DailyActivationCodeCard } from './components/dashboard/DailyActivationCodeCard.jsx';
+import { BrandLexiconDashboardCard } from './components/resources/BrandLexiconDashboardCard.jsx';
+import { FacilitatorsContentReferenceDashboardCard } from './components/resources/FacilitatorsContentReferenceDashboardCard.jsx';
 import { validateInternActivationCode } from './lib/activationCodeService.js';
 import { registerInternViaApi, isInternSignupApiUnavailable } from './lib/internSignupService.js';
 import { registerStaffViaApi, isStaffSignupApiUnavailable } from './lib/staffSignupService.js';
@@ -1345,6 +1348,10 @@ const SpikeMasterPortal = () => {
   const AdminDashboardHome = () => (
     <div className="container mx-auto px-4 py-6 sm:px-6 sm:py-8">
       <DailyActivationCodeCard showRegenerate className="mb-6" />
+      <div className="mb-6 space-y-4">
+        <FacilitatorsContentReferenceDashboardCard />
+        <BrandLexiconDashboardCard />
+      </div>
       <RoleDashboardCards role="admin" user={user} interns={interns} internSummary={internSummary} />
       <h2 className="mb-4 text-xl font-bold text-gray-900 sm:text-2xl">Program overview</h2>
       <p className="mb-6 max-w-2xl text-sm text-gray-600">
@@ -1542,6 +1549,22 @@ const SpikeMasterPortal = () => {
           <LazyRoute label="Loading brand lexicon…">
             <SpikeBrandLexiconPage
               backHref={brandLexiconBackHrefForRole(effectiveUserRole)}
+              backLabel={
+                effectiveUserRole === 'mentor'
+                  ? 'Back to Mentor home'
+                  : effectiveUserRole === 'faculty'
+                    ? 'Back to Program Coach home'
+                    : 'Back to dashboard'
+              }
+            />
+          </LazyRoute>
+        );
+      }
+      if (path === ROUTES.facilitatorsReference) {
+        return (
+          <LazyRoute label="Loading facilitators reference…">
+            <FacilitatorsContentReferencePage
+              backHref={facilitatorsReferenceBackHrefForRole(effectiveUserRole)}
               backLabel={
                 effectiveUserRole === 'mentor'
                   ? 'Back to Mentor home'

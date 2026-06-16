@@ -29,6 +29,7 @@ export const ROUTES = {
   myVenturePortfolio: '/my-venture-portfolio',
   adminPortfolioSettings: '/admin/portfolio-settings',
   brandLexicon: '/brand-lexicon',
+  facilitatorsReference: '/facilitators-content-reference',
 };
 
 /** Redirect target after onboarding completes — Build Challenge 1 (Ambition). */
@@ -310,6 +311,9 @@ export function matchModulePath(pathname) {
   if (pathname === ROUTES.brandLexicon) {
     return ROUTES.brandLexicon;
   }
+  if (pathname === ROUTES.facilitatorsReference) {
+    return ROUTES.facilitatorsReference;
+  }
   if (pathname === ROUTES.programCoachHome || pathname.startsWith(`${ROUTES.programCoachHome}/`)) {
     return ROUTES.programCoachHome;
   }
@@ -389,6 +393,7 @@ export function rolesForRoute(pathname) {
   }
   if (pathname === ROUTES.analyticsCohortIdentity) return ['faculty', 'admin', 'mentor', 'superuser'];
   if (pathname === ROUTES.brandLexicon) return ['faculty', 'mentor', 'admin', 'superuser'];
+  if (pathname === ROUTES.facilitatorsReference) return ['faculty', 'mentor', 'admin', 'superuser'];
 
   const route = matchModulePath(pathname);
   if (!route) return [];
@@ -413,6 +418,11 @@ export function brandLexiconBackHrefForRole(userRole) {
   if (userRole === 'mentor') return ROUTES.mentorHome;
   if (userRole === 'faculty') return ROUTES.programCoachHome;
   return ROUTES.dashboard;
+}
+
+/** @param {string} [userRole] */
+export function facilitatorsReferenceBackHrefForRole(userRole) {
+  return brandLexiconBackHrefForRole(userRole);
 }
 export function defaultRouteForRole(userRole) {
   if (userRole === 'intern') return ROUTES.ventureBlueprint;

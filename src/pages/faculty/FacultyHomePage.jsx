@@ -13,6 +13,7 @@ import { deriveFacultyDashboardMetrics } from '../../lib/sprint01Metrics.js';
 import { FACULTY_PHILOSOPHY } from '../../lib/facultyWeek1Constants.js';
 import { DailyActivationCodeCard } from '../../components/dashboard/DailyActivationCodeCard.jsx';
 import { BrandLexiconDashboardCard } from '../../components/resources/BrandLexiconDashboardCard.jsx';
+import { FacilitatorsContentReferenceDashboardCard } from '../../components/resources/FacilitatorsContentReferenceDashboardCard.jsx';
 import { FacultyCohortSyncPanel } from '../../components/faculty/FacultyCohortSyncPanel.jsx';
 import { CohortOnboardingControls } from '../../components/faculty/CohortOnboardingControls.jsx';
 
@@ -45,6 +46,10 @@ export function FacultyHomePage({ interns, internSummary, pendingLogs = [], staf
       </div>
 
       <BrandLexiconDashboardCard />
+
+      <div className="mt-4">
+        <FacilitatorsContentReferenceDashboardCard />
+      </div>
 
       <DailyActivationCodeCard className="mt-4" />
 

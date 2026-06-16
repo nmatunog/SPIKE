@@ -102,6 +102,10 @@ export const SpikeBrandLexiconPage = lazyNamed(
   () => import('../pages/resources/SpikeBrandLexiconPage.jsx'),
   'SpikeBrandLexiconPage',
 );
+export const FacilitatorsContentReferencePage = lazyNamed(
+  () => import('../pages/resources/FacilitatorsContentReferencePage.jsx'),
+  'FacilitatorsContentReferencePage',
+);
 export const MyVenturePortfolioRoute = lazyNamed(
   () => import('../pages/MyVenturePortfolioShell.jsx'),
   'MyVenturePortfolioRoute',
