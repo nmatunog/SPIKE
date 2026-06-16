@@ -34,6 +34,7 @@ export const PORTFOLIO_NAV_SECTIONS = [
   { id: 'career', label: 'Career Direction' },
   { id: 'canvas', label: 'Financial Canvas' },
   { id: 'research', label: 'Research Journey' },
+  { id: 'deliverables', label: 'Upload Deliverables' },
   { id: 'milestones', label: 'Milestones' },
   { id: 'presentations', label: 'Presentations' },
   { id: 'certifications', label: 'Certifications' },

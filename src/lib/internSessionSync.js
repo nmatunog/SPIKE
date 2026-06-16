@@ -15,6 +15,7 @@ import { hydrateVentureBlueprint } from './ventureBlueprintSync.js';
 import { assessLocalInternWork } from './internLocalWorkAssessment.js';
 import { fetchRemoteWorkAssessment } from './participantRemoteData.js';
 import { needsCloudRecovery, recoverInternWorkFromSupabase } from './internCloudRecovery.js';
+import { syncLocalPortfolioDeliverablesToSupabase } from './portfolioDeliverableService.js';
 
 /** @type {Map<string, Promise<{ skipped?: boolean, uploaded?: boolean, alreadyDone?: boolean }>>} */
 const signInUploadByUser = new Map();
@@ -57,6 +58,7 @@ export async function syncInternLocalWorkToSupabase(participantId) {
     backfillLocalPlaybookToSupabase(participantId),
     backfillLocalSurveysToSupabase(participantId),
     backfillLocalCanvasToSupabase(participantId),
+    syncLocalPortfolioDeliverablesToSupabase(participantId),
   ]);
 }
 

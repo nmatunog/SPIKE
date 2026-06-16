@@ -344,6 +344,12 @@ export function PortfolioResearchSection({ portfolio }) {
           Complete Playbook surveys and squad research to auto-fill this section.
         </p>
       )}
+      <Link
+        to={`${ROUTES.myVenturePortfolio}/deliverables`}
+        className="inline-flex text-sm font-semibold text-spike hover:underline"
+      >
+        Upload research files & presentation decks →
+      </Link>
     </div>
   );
 }

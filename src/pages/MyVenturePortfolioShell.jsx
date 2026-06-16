@@ -2,6 +2,7 @@ import { Link, Navigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Briefcase } from 'lucide-react';
 import { PageContainer } from '../components/layout/PageContainer.jsx';
 import { useInternWorkHydration } from '../hooks/useInternWorkHydration.js';
+import { PortfolioDeliverablesSection } from '../components/venturePortfolio/PortfolioDeliverablesSection.jsx';
 import {
   PortfolioCanvasSection,
   PortfolioCareerSection,
@@ -111,6 +112,8 @@ function renderSection(sectionId, portfolio, participantId, participantName) {
       return <PortfolioCanvasSection portfolio={portfolio} />;
     case 'research':
       return <PortfolioResearchSection portfolio={portfolio} />;
+    case 'deliverables':
+      return <PortfolioDeliverablesSection participantId={participantId} />;
     case 'milestones':
       return <PortfolioMilestonesSection portfolio={portfolio} />;
     case 'presentations':
