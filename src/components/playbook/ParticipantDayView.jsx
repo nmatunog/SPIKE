@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Rocket, Target, LayoutGrid } from 'lucide-react';
+import { Rocket, Target, LayoutGrid, FlaskConical } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { SessionView } from './SessionView.jsx';
 import { DayClosingReflectionSection } from './DayClosingReflectionSection.jsx';
@@ -7,6 +7,10 @@ import { DayCompletionBar } from './DayCompletionBar.jsx';
 import { DayContributionChips } from './DayContributionChips.jsx';
 import { getDayCompletionSummary } from '../../lib/playbookProgress.js';
 import { getDay1MissionProgress } from '../../lib/day1BuilderStorage.js';
+import {
+  loadVentureStudioState,
+  ventureStudioProgressPercent,
+} from '../../lib/ventureStudioStorage.js';
 import { BLUEPRINT_LINKS, playbookHref, ROUTES } from '../../routes/paths.js';
 import { UNLOCK_WEEK1_DAY2_PLUS } from '../../lib/programUnlocks.js';
 
@@ -26,8 +30,13 @@ export function ParticipantDayView({ bundle, participantId, onProgress }) {
   const [sessionIndex, setSessionIndex] = useState(0);
   const completion = getDayCompletionSummary(participantId, bundle);
   const day1Progress = participantId ? getDay1MissionProgress(participantId) : null;
+  const ventureStudioState = participantId ? loadVentureStudioState(participantId) : null;
+  const ventureStudioPercent = ventureStudioState
+    ? ventureStudioProgressPercent(ventureStudioState)
+    : 0;
   const activeSession = sessions[sessionIndex];
   const isDay1 = bundle.day.id === 'day-segment-1-week-1-day-1';
+  const isDay3 = bundle.day.id === 'day-segment-1-week-1-day-3';
 
   return (
     <div className="space-y-6">
@@ -47,6 +56,34 @@ export function ParticipantDayView({ bundle, participantId, onProgress }) {
             </div>
             <Link to={BLUEPRINT_LINKS.day1Builders} className="spike-btn-primary bg-spike hover:bg-spike-light">
               <Rocket size={16} /> Open Builders
+            </Link>
+          </div>
+        </section>
+      ) : null}
+
+      {isDay3 ? (
+        <section className="overflow-hidden rounded-2xl border border-spike/20 bg-gradient-to-br from-slate-900 to-spike-dark p-5 text-white shadow-card sm:p-6">
+          <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-red-200/90">
+            <FlaskConical size={16} aria-hidden />
+            Day 3 interactive module
+          </p>
+          <h3 className="mt-2 text-xl font-bold">Venture Studio — Market Discovery</h3>
+          <p className="mt-2 text-sm text-slate-300">
+            Replace Deck 02 slides with a guided squad workspace: five steps, evidence library, coach
+            feedback, and a Day 4 canvas draft.
+          </p>
+          <div className="mt-4 flex flex-wrap items-center gap-4">
+            {participantId && ventureStudioPercent > 0 ? (
+              <div>
+                <p className="text-3xl font-bold">{ventureStudioPercent}%</p>
+                <p className="text-xs text-slate-400">Studio progress</p>
+              </div>
+            ) : null}
+            <Link
+              to={ROUTES.playbookVentureStudio}
+              className="spike-btn-primary inline-flex min-h-[48px] items-center bg-white text-spike hover:bg-red-50"
+            >
+              <FlaskConical size={16} aria-hidden /> Enter Venture Studio
             </Link>
           </div>
         </section>
@@ -74,8 +111,16 @@ export function ParticipantDayView({ bundle, participantId, onProgress }) {
       </header>
 
       <DayCompletionBar
-        percent={isDay1 && day1Progress ? day1Progress.percent : completion.percent}
-        completedItems={isDay1 && day1Progress ? day1Progress.completed : completion.completedItems}
+        percent={
+          isDay1 && day1Progress
+            ? day1Progress.percent
+            : isDay3 && ventureStudioPercent > 0
+              ? Math.max(completion.percent, ventureStudioPercent)
+              : completion.percent
+        }
+        completedItems={
+          isDay1 && day1Progress ? day1Progress.completed : completion.completedItems
+        }
         totalItems={isDay1 && day1Progress ? day1Progress.total : completion.totalItems}
       />
 
@@ -105,6 +150,7 @@ export function ParticipantDayView({ bundle, participantId, onProgress }) {
           participantId={participantId}
           onProgress={onProgress}
           hideWorksheets={isDay1}
+          hidePersonaWorksheet={isDay3}
         />
       ) : (
         <p className="text-sm text-gray-500">No sessions published for this day.</p>
@@ -126,6 +172,11 @@ export function ParticipantDayView({ bundle, participantId, onProgress }) {
           {isDay1 ? (
             <Link to={BLUEPRINT_LINKS.day1Builders} className="spike-btn-primary inline-flex">
               Venture Blueprint Builders™
+            </Link>
+          ) : null}
+          {isDay3 ? (
+            <Link to={ROUTES.playbookVentureStudio} className="spike-btn-primary inline-flex">
+              Venture Studio
             </Link>
           ) : null}
           <Link to={BLUEPRINT_LINKS.businessPlan} className="spike-btn-secondary inline-flex">

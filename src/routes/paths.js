@@ -3,6 +3,7 @@ export const ROUTES = {
   dashboard: '/dashboard',
   ventureBlueprint: '/venture-blueprint',
   playbook: '/playbook',
+  playbookVentureStudio: '/playbook/venture-studio/day-3',
   portfolio: '/portfolio',
   research: '/research',
   reports: '/reports',

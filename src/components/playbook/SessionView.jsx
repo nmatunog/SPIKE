@@ -4,11 +4,15 @@ import { WorksheetViewer } from './WorksheetViewer.jsx';
 import { AssessmentPanel } from './AssessmentPanel.jsx';
 import { ReflectionViewer } from './ReflectionViewer.jsx';
 import { SurveyViewer } from './SurveyViewer.jsx';
+import { VentureStudioLaunchCard } from './ventureStudio/VentureStudioLaunchCard.jsx';
 import { Link } from 'react-router-dom';
 import { Rocket } from 'lucide-react';
 import { resolvePresentations } from '../../lib/contentLoader.js';
-import { BLUEPRINT_LINKS } from '../../routes/paths.js';
+import { BLUEPRINT_LINKS, ROUTES } from '../../routes/paths.js';
 import { isDayClosingReflection } from '../../lib/dayClosingReflection.js';
+
+const DAY3_ID = 'day-segment-1-week-1-day-3';
+const VENTURE_STUDIO_ACTIVITY_ID = 'activity-day-3-persona-workshop';
 
 /**
  * @typedef {import('../../lib/contentLoader.js').DayContentBundle} DayContentBundle
@@ -23,6 +27,7 @@ import { isDayClosingReflection } from '../../lib/dayClosingReflection.js';
  *   onProgress?: () => void,
  *   showSpeakerNotes?: boolean,
  *   hideWorksheets?: boolean,
+ *   hidePersonaWorksheet?: boolean,
  * }} props
  */
 export function SessionView({
@@ -32,18 +37,32 @@ export function SessionView({
   onProgress,
   showSpeakerNotes = false,
   hideWorksheets = false,
+  hidePersonaWorksheet = false,
 }) {
   const { activities, worksheets, assessment, reflections, survey } = bundle;
+  const isDay3 = bundle.day.id === DAY3_ID;
+  const showVentureStudio =
+    isDay3
+    && (session.activityIds.includes(VENTURE_STUDIO_ACTIVITY_ID)
+      || session.presentationIds.includes('presentation-day-3-deck-02'));
 
   const sessionPresentations =
-    session.presentationIds.length > 0 ? resolvePresentations(bundle, session.presentationIds) : [];
+    session.presentationIds.length > 0
+      ? resolvePresentations(bundle, session.presentationIds).filter(
+          (pres) => pres.presentation.id !== 'presentation-day-3-deck-02',
+        )
+      : [];
 
   const sessionActivities = (activities?.activities ?? []).filter((a) =>
     session.activityIds.includes(a.id),
   );
 
+  const hadPersonaWorksheet =
+    hidePersonaWorksheet && session.worksheetIds.includes('worksheet-day-3-persona');
+
   const sessionWorksheets = (worksheets?.worksheets ?? []).filter((w) =>
-    session.worksheetIds.includes(w.id),
+    session.worksheetIds.includes(w.id)
+    && !(hidePersonaWorksheet && w.id === 'worksheet-day-3-persona'),
   );
 
   const sessionReflections = (reflections?.reflections ?? []).filter(
@@ -80,6 +99,16 @@ export function SessionView({
         </section>
       ))}
 
+      {showVentureStudio ? (
+        <section aria-label="Venture Studio interactive module">
+          <VentureStudioLaunchCard
+            participantId={participantId}
+            facultyMode={showSpeakerNotes}
+            presentMode={showSpeakerNotes}
+          />
+        </section>
+      ) : null}
+
       {sessionActivities.length > 0 ? (
         <section>
           <h4 className="mb-2 text-xs font-bold uppercase tracking-wider text-gray-500">
@@ -92,6 +121,9 @@ export function SessionView({
                 activity={activity}
                 participantId={participantId}
                 onCompleted={onProgress}
+                ventureStudioHref={
+                  activity.id === VENTURE_STUDIO_ACTIVITY_ID ? ROUTES.playbookVentureStudio : undefined
+                }
               />
             ))}
           </div>
@@ -114,6 +146,19 @@ export function SessionView({
               />
             ))}
           </div>
+        </section>
+      ) : null}
+
+      {hadPersonaWorksheet ? (
+        <section className="rounded-2xl border border-spike/20 bg-spike-muted/50 p-5">
+          <h4 className="mb-2 text-sm font-bold text-spike">Persona worksheet replaced</h4>
+          <p className="mb-4 text-sm text-slate-700">
+            The persona canvas worksheet is replaced by Venture Studio. Complete all five steps to
+            capture your customer segment, problems, and opportunity.
+          </p>
+          <Link to={ROUTES.playbookVentureStudio} className="spike-btn-primary inline-flex">
+            Open Venture Studio
+          </Link>
         </section>
       ) : null}
 

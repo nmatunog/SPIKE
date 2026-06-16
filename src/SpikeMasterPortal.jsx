@@ -49,6 +49,7 @@ import {
   MentorPlaybookPage,
   MentorVentureCoachPage,
   PlaybookShell,
+  VentureStudioDay3Page,
   PortfolioPage,
   ProgressReportsPage,
   ResearchPage,
@@ -1360,6 +1361,12 @@ const SpikeMasterPortal = () => {
     );
   };
 
+  const renderVentureStudioDay3 = (pageUser, { readOnly = false } = {}) => (
+    <LazyRoute label="Loading Venture Studio…">
+      <VentureStudioDay3Page participantId={pageUser?.id} readOnly={readOnly} />
+    </LazyRoute>
+  );
+
   const AdminDashboardHome = () => (
     <div className="container mx-auto px-4 py-6 sm:px-6 sm:py-8">
       <DailyActivationCodeCard showRegenerate className="mb-6" />
@@ -1461,6 +1468,9 @@ const SpikeMasterPortal = () => {
           </LazyRoute>
         );
       }
+      if (path === ROUTES.playbookVentureStudio) {
+        return renderVentureStudioDay3(internUser, { readOnly: false });
+      }
       if (path === ROUTES.playbook) return renderPlaybook();
     }
 
@@ -1519,6 +1529,9 @@ const SpikeMasterPortal = () => {
           </LazyRoute>
         );
       }
+      if (path === ROUTES.playbookVentureStudio) {
+        return renderVentureStudioDay3(internUser, { readOnly: false });
+      }
       if (path === ROUTES.playbook) return renderPlaybook();
       if (path === ROUTES.portfolio && !isSuperuserSession) {
         return <Navigate to={ROUTES.myVenturePortfolio} replace />;
@@ -1538,6 +1551,13 @@ const SpikeMasterPortal = () => {
     }
 
     if (isSuperuserSession || isStaffUiRole(effectiveUserRole)) {
+      if (path === ROUTES.playbookVentureStudio) {
+        const studioUser =
+          effectiveUserRole === 'intern' ? internModuleUser ?? user : user;
+        return renderVentureStudioDay3(studioUser, {
+          readOnly: effectiveUserRole !== 'intern',
+        });
+      }
       if (path === ROUTES.playbook) return renderPlaybook();
       if (path === ROUTES.portfolio) return <PortfolioPage hours={internSummary.avgHours} interns={interns} />;
       if (path === ROUTES.research) return <ResearchPage user={user} />;

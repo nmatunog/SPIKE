@@ -1,4 +1,5 @@
-import { CheckCircle, Clock, Package } from 'lucide-react';
+import { CheckCircle, Clock, Package, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import {
   isActivityCompleted,
   markActivityCompleted,
@@ -16,9 +17,10 @@ import {
  * },
  *   participantId?: string,
  *   onCompleted?: () => void,
+ *   ventureStudioHref?: string,
  * }} props
  */
-export function ActivityViewer({ activity, participantId, onCompleted }) {
+export function ActivityViewer({ activity, participantId, onCompleted, ventureStudioHref }) {
   const completed = participantId && isActivityCompleted(participantId, activity.id);
 
   function handleComplete() {
@@ -81,7 +83,25 @@ export function ActivityViewer({ activity, participantId, onCompleted }) {
       ) : null}
 
       {participantId ? (
-        completed ? (
+        ventureStudioHref ? (
+          completed ? (
+            <span className="inline-flex items-center gap-1 text-xs font-bold text-green-700">
+              <CheckCircle size={14} /> Completed in Venture Studio
+            </span>
+          ) : (
+            <div className="space-y-2">
+              <p className="text-sm text-gray-600">
+                Complete all five Venture Studio steps — this activity marks done automatically.
+              </p>
+              <Link
+                to={ventureStudioHref}
+                className="inline-flex min-h-[44px] items-center gap-2 rounded-lg bg-spike px-4 py-2 text-sm font-bold text-white hover:bg-spike-light"
+              >
+                Open Venture Studio <ArrowRight size={16} aria-hidden />
+              </Link>
+            </div>
+          )
+        ) : completed ? (
           <span className="inline-flex items-center gap-1 text-xs font-bold text-green-700">
             <CheckCircle size={14} /> Activity marked complete
           </span>

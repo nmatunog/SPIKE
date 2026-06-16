@@ -25,15 +25,16 @@
     },
     {
       "id": "activity-day-3-persona-workshop",
-      "title": "Customer Persona Workshop",
+      "title": "Customer Persona Workshop (Venture Studio)",
       "durationMinutes": 60,
       "materials": [
-        "Persona canvas worksheet"
+        "Venture Studio interactive module",
+        "Field observation notes"
       ],
       "instructions": [
-        "Squads build persona canvas from observation + Day 2 insights.",
-        "Complete worksheet in app.",
-        "Peer review within squad for evidence quality."
+        "Open Venture Studio from the Day 3 Playbook session.",
+        "Complete all five steps as a squad — evidence library boosts your coach score.",
+        "Finish with the Venture Opportunity Report (auto-saves to your squad workspace)."
       ],
       "outputs": [
         "Customer persona artifact"

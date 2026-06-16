@@ -26,6 +26,9 @@
     "presentation-day-3-deck-01",
     "presentation-day-3-deck-02"
   ],
+  "interactiveModules": [
+    "venture-studio-day-3"
+  ],
   "activities": [
     "activity-day-3-market-observation",
     "activity-day-3-persona-workshop",

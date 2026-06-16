@@ -10,6 +10,10 @@ export const VentureBlueprintShell = lazyNamed(
   'VentureBlueprintShell',
 );
 export const PlaybookShell = lazyNamed(() => import('../pages/PlaybookShell.jsx'), 'PlaybookShell');
+export const VentureStudioDay3Page = lazyNamed(
+  () => import('../pages/VentureStudioDay3Page.jsx'),
+  'VentureStudioDay3Page',
+);
 export const ResearchPage = lazyNamed(() => import('../pages/ResearchPage.jsx'), 'ResearchPage');
 export const PortfolioPage = lazyNamed(() => import('../pages/PortfolioPage.jsx'), 'PortfolioPage');
 export const ProgressReportsPage = lazyNamed(

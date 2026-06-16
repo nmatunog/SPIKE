@@ -2,58 +2,22 @@
   "presentation": {
     "id": "presentation-day-3-deck-02",
     "dayId": "day-segment-1-week-1-day-3",
-    "title": "Program Coach Deck 02 — Persona & Opportunity Workshop",
+    "title": "Program Coach Deck 02 — Venture Studio (Interactive)",
     "slideIds": [
-      "slide-d3-02-01",
-      "slide-d3-02-02",
-      "slide-d3-02-03",
-      "slide-d3-02-04"
+      "slide-d3-02-01"
     ]
   },
   "slides": [
     {
       "id": "slide-d3-02-01",
-      "title": "Building Evidence-Based Personas",
-      "body": "A persona is not fiction — it is compressed evidence.\n\nInclude: name, segment, problems, goals, fears, financial behaviors.",
-      "speakerNotes": "Show exemplar persona on screen. 5 min.",
+      "title": "Venture Studio — Interactive Workshop",
+      "body": "Deck 02 is now an in-app interactive module.\n\nOpen Venture Studio from the Playbook Day 3 session. Squads work through five guided steps with coach feedback and an evidence library.\n\nFacilitators: use “Open for projection” to display the squad workspace on screen.",
+      "speakerNotes": "Direct squads to Playbook → Day 3 → Enter Venture Studio. Use present mode for projection. 3 min orientation.",
       "discussionQuestions": [
-        "What evidence do you already have?"
+        "What evidence will your squad capture in the field today?"
       ],
       "presentationId": "presentation-day-3-deck-02",
       "sortOrder": 1
-    },
-    {
-      "id": "slide-d3-02-02",
-      "title": "Market Observation Protocol",
-      "body": "Observe in pairs: public spaces, campus, community.\nNote exact language people use — not your interpretation.",
-      "speakerNotes": "Safety and ethics reminder. 4 min.",
-      "discussionQuestions": [
-        "Where will your squad observe today?"
-      ],
-      "presentationId": "presentation-day-3-deck-02",
-      "sortOrder": 2
-    },
-    {
-      "id": "slide-d3-02-03",
-      "title": "Persona Presentation Format",
-      "body": "Each squad presents: persona, top problem, opportunity hypothesis.\n3 minutes present + 2 minutes program coach/mentor feedback.",
-      "speakerNotes": "Set presentation rubric expectations. 3 min.",
-      "discussionQuestions": [
-        "Who presents for your squad?"
-      ],
-      "presentationId": "presentation-day-3-deck-02",
-      "sortOrder": 3
-    },
-    {
-      "id": "slide-d3-02-04",
-      "title": "Day 3 Deliverables",
-      "body": "✓ Customer persona canvas\n✓ Market insight log\n✓ Needs analysis survey plan\n✓ Portfolio market intelligence update",
-      "speakerNotes": "3 min close.",
-      "discussionQuestions": [
-        "What survey will you launch before Day 4?"
-      ],
-      "presentationId": "presentation-day-3-deck-02",
-      "sortOrder": 4
     }
   ]
 }

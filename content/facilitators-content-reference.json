@@ -1506,50 +1506,20 @@
             },
             {
               "id": "presentation-day-3-deck-02",
-              "title": "Program Coach Deck 02 — Persona & Opportunity Workshop",
+              "title": "Program Coach Deck 02 — Venture Studio (Interactive)",
               "purpose": "",
-              "slideCount": 4,
+              "slideCount": 1,
               "status": "published",
               "pptxUrl": null,
               "pdfUrl": null,
               "slides": [
                 {
                   "number": 1,
-                  "title": "Building Evidence-Based Personas",
-                  "summary": "A persona is not fiction — it is compressed evidence. Include: name, segment, problems, goals, fears, financial behaviors.",
-                  "facilitatorNotes": "Show exemplar persona on screen. 5 min.",
+                  "title": "Venture Studio — Interactive Workshop",
+                  "summary": "Deck 02 is now an in-app interactive module. Open Venture Studio from the Playbook Day 3 session. Squads work through five guided steps with coach feedback and an evidence library. Facilitators: use “Open for projection”…",
+                  "facilitatorNotes": "Direct squads to Playbook → Day 3 → Enter Venture Studio. Use present mode for projection. 3 min orientation.",
                   "discussionQuestions": [
-                    "What evidence do you already have?"
-                  ],
-                  "imageUrl": null
-                },
-                {
-                  "number": 2,
-                  "title": "Market Observation Protocol",
-                  "summary": "Observe in pairs: public spaces, campus, community. Note exact language people use — not your interpretation.",
-                  "facilitatorNotes": "Safety and ethics reminder. 4 min.",
-                  "discussionQuestions": [
-                    "Where will your squad observe today?"
-                  ],
-                  "imageUrl": null
-                },
-                {
-                  "number": 3,
-                  "title": "Persona Presentation Format",
-                  "summary": "Each squad presents: persona, top problem, opportunity hypothesis. 3 minutes present + 2 minutes program coach/mentor feedback.",
-                  "facilitatorNotes": "Set presentation rubric expectations. 3 min.",
-                  "discussionQuestions": [
-                    "Who presents for your squad?"
-                  ],
-                  "imageUrl": null
-                },
-                {
-                  "number": 4,
-                  "title": "Day 3 Deliverables",
-                  "summary": "✓ Customer persona canvas ✓ Market insight log ✓ Needs analysis survey plan ✓ Portfolio market intelligence update",
-                  "facilitatorNotes": "3 min close.",
-                  "discussionQuestions": [
-                    "What survey will you launch before Day 4?"
+                    "What evidence will your squad capture in the field today?"
                   ],
                   "imageUrl": null
                 }
@@ -1562,8 +1532,7 @@
               "title": "Customer Discovery & Observation",
               "durationMinutes": 130,
               "presentationIds": [
-                "presentation-day-3-deck-01",
-                "presentation-day-3-deck-02"
+                "presentation-day-3-deck-01"
               ],
               "activityIds": [
                 "activity-day-3-market-observation",
@@ -1600,8 +1569,8 @@
           "sessionFlow": [
             {
               "time": "0:00–0:25",
-              "activity": "Decks 01–02",
-              "notes": "Problems before solutions."
+              "activity": "Deck 01 + Venture Studio",
+              "notes": "Deck 02 is interactive — project Venture Studio for squads."
             },
             {
               "time": "0:25–1:15",
@@ -1642,15 +1611,16 @@
               ]
             },
             {
-              "title": "Customer Persona Workshop",
+              "title": "Customer Persona Workshop (Venture Studio)",
               "durationMinutes": 60,
               "instructions": [
-                "Squads build persona canvas from observation + Day 2 insights.",
-                "Complete worksheet in app.",
-                "Peer review within squad for evidence quality."
+                "Open Venture Studio from the Day 3 Playbook session.",
+                "Complete all five steps as a squad — evidence library boosts your coach score.",
+                "Finish with the Venture Opportunity Report (auto-saves to your squad workspace)."
               ],
               "materials": [
-                "Persona canvas worksheet"
+                "Venture Studio interactive module",
+                "Field observation notes"
               ],
               "outputs": [
                 "Customer persona artifact"
