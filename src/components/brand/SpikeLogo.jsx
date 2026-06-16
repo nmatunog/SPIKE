@@ -31,7 +31,7 @@ export function SpikeLogo({
       alt={alt}
       width={320}
       height={80}
-      className={`w-auto shrink-0 object-contain object-left ${SIZE_CLASS[size]} ${className}`}
+      className={`w-auto shrink-0 object-contain object-left ${variant === 'onDark' ? 'drop-shadow-md' : ''} ${SIZE_CLASS[size]} ${className}`}
     />
   );
 }
