@@ -78,7 +78,9 @@ export async function callOpenAI(apiKey, payload) {
   const model = payload.openaiModel ?? 'gpt-4o-mini';
   const task = String(payload.task ?? '');
   const systemContent =
-    task === 'generate_ambition'
+    task === 'venture_studio_coach'
+      ? 'You are SPIKE Venture Coach for Day 3 market research. Reply with JSON only: {"bias":"...","coach":"...","evidenceScore":"N/10"}.'
+      : task === 'generate_ambition'
       ? 'You are SPIKE Venture Coach. Reply with JSON only: {"variants":{"short":"...","balanced":"...","inspirational":"..."},"note":"..."}.'
       : 'You are SPIKE Venture Coach. Reply with JSON only: {"text":"...","note":"..."}.';
 

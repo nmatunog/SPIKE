@@ -14,6 +14,10 @@ function buildRules(payload) {
     lines.push(
       'Return ONLY valid JSON: {"text":"...","summary":"one sentence under 25 words","note":"..."} with no markdown.',
     );
+  } else if (task === 'venture_studio_coach') {
+    lines.push('Return ONLY valid JSON: {"bias":"short bias label","coach":"2-3 sentences","evidenceScore":"N/10"} — no markdown.');
+    lines.push('Coach must reference the squad\'s actual words and segment. Never give generic advice that ignores their input.');
+    lines.push('Bias is a sharp diagnostic label (max 12 words). Coach is a probing question or challenge in second person.');
   } else if (task === 'generate_ambition') {
     lines.push(`Short variant: max 15 words. Balanced: max ${wordLimit} words. Inspirational: max ${wordLimit} words.`);
     lines.push(
@@ -155,6 +159,33 @@ export function buildCoachPrompt(payload) {
     ].join('\n');
   }
 
+  if (task === 'venture_studio_coach') {
+    const step = payload.stepIndex ?? fields.step ?? '1';
+    const hint = payload.localHint
+      ? `Local coach draft (improve, do not copy verbatim):\nBias: ${payload.localHint.bias}\nCoach: ${payload.localHint.coach}`
+      : '';
+    return [
+      prefix,
+      `You are SPIKE Venture Coach reviewing Day 3 Market Discovery — Step ${step} of 5.`,
+      hint,
+      `Squad: ${fields.squadName || 'unnamed'}`,
+      `Target segment: ${fields.targetSegment || '(empty)'}`,
+      `Life stage: ${fields.stage || '(empty)'}`,
+      `Day-in-life (money): ${fields.dayInLife || '(empty)'}`,
+      `Squad surprise: ${fields.surprise || '(empty)'}`,
+      `Goals from evidence: ${fields.goals || '(none)'}`,
+      `Why emotionally: ${fields.whyImportant || '(empty)'}`,
+      `Problems:\n${fields.problems || '(none)'}`,
+      `Current solutions:\n${fields.solutions || '(none)'}`,
+      `Insight: ${fields.insight || '(empty)'}`,
+      `Unmet need: ${fields.unmetNeed || '(empty)'}`,
+      `Value proposition: ${fields.valueCreation || '(empty)'}`,
+      `Evidence library (${fields.evidenceCount} items): ${fields.evidenceNotes || '(no notes)'}`,
+      'Challenge the squad with specifics from THEIR inputs. Quote or paraphrase their segment/problems.',
+      rules,
+    ].join('\n');
+  }
+
   return [`${prefix}Improve this coach draft.\nDraft: ${currentDraft}\n`, rules].join('\n');
 }
 
@@ -178,7 +209,19 @@ export function parseModelJson(raw) {
       return { text, variants, summary: String(parsed.summary ?? '').trim(), note };
     }
 
-    const text = String(parsed.text ?? '').trim();
+    const text = String(parsed.text ?? parsed.coach ?? '').trim();
+    const bias = String(parsed.bias ?? '').trim();
+    const evidenceScore = String(parsed.evidenceScore ?? '').trim();
+    if (!text && !parsed.variants) return null;
+    if (bias) {
+      return {
+        text,
+        bias,
+        evidenceScore,
+        summary: String(parsed.summary ?? '').trim(),
+        note: String(parsed.note ?? '').trim(),
+      };
+    }
     if (!text) return null;
     return {
       text,

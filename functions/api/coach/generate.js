@@ -49,6 +49,9 @@ export async function onRequestPost(ctx) {
 
   return json({
     text: result.text,
+    coach: result.text,
+    bias: result.bias,
+    evidenceScore: result.evidenceScore,
     note: result.note,
     provider: result.provider,
     variants: result.variants,

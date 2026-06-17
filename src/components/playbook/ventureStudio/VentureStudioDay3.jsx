@@ -19,6 +19,7 @@ import {
   AlertTriangle,
   Link as LinkIcon,
   Star,
+  Loader2,
   Zap,
 } from 'lucide-react';
 import {
@@ -30,6 +31,10 @@ import {
 import { VENTURE_STUDIO_STEPS, GOAL_LABELS } from '../../../lib/ventureStudioTypes.js';
 import { markActivityCompleted } from '../../../lib/playbookProgress.js';
 import { isMockUserId } from '../../../lib/mockAuth.js';
+import {
+  evaluateVentureStudioStepLocally,
+  requestVentureStudioCoachFeedback,
+} from '../../../lib/ventureStudioCoachService.js';
 import { BLUEPRINT_LINKS, playbookHref } from '../../../routes/paths.js';
 
 const STEP_ICONS = {
@@ -67,6 +72,10 @@ export function VentureStudioDay3({
 }) {
   const [state, setState] = useState(() => loadVentureStudioState(participantId));
   const [showAiFeedback, setShowAiFeedback] = useState(false);
+  const [coachLoading, setCoachLoading] = useState(false);
+  const [coachFeedback, setCoachFeedback] = useState(
+    /** @type {import('../../../lib/ventureStudioCoachService.js').VentureStudioCoachFeedback | null} */ (null),
+  );
   const [isGeneratingDay4, setIsGeneratingDay4] = useState(false);
   const [viewingImage, setViewingImage] = useState(/** @type {string | null} */ (null));
   const [newEvidence, setNewEvidence] = useState('');
@@ -95,6 +104,8 @@ export function VentureStudioDay3({
   useEffect(() => {
     setState(loadVentureStudioState(participantId));
     setShowAiFeedback(false);
+    setCoachFeedback(null);
+    setCoachLoading(false);
     setIsGeneratingDay4(false);
     completedMarkedRef.current = false;
   }, [participantId]);
@@ -156,12 +167,25 @@ export function VentureStudioDay3({
     setState((prev) => ({ ...prev, isStarted: true }));
   }, []);
 
-  const handleSimulateAI = useCallback(() => {
+  const handleSimulateAI = useCallback(async () => {
     setShowAiFeedback(true);
+    setCoachLoading(true);
+    setCoachFeedback(null);
+    const feedback = await requestVentureStudioCoachFeedback(currentStep, state);
+    setCoachFeedback(feedback);
+    setCoachLoading(false);
+  }, [currentStep, state]);
+
+  const handleRefineCoachAnswer = useCallback(() => {
+    setShowAiFeedback(false);
+    setCoachFeedback(null);
+    setCoachLoading(false);
   }, []);
 
   const handleNextStep = useCallback(() => {
     setShowAiFeedback(false);
+    setCoachFeedback(null);
+    setCoachLoading(false);
     if (currentStep < 5) {
       const nextStep = currentStep + 1;
       setState((prev) => ({
@@ -187,6 +211,8 @@ export function VentureStudioDay3({
           showDay4Canvas: false,
         }));
         setShowAiFeedback(false);
+        setCoachFeedback(null);
+        setCoachLoading(false);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     },
@@ -270,93 +296,86 @@ export function VentureStudioDay3({
   const renderAIFeedback = useCallback(
     /** @param {number} stepIndex */
     (stepIndex) => {
-      const evidenceScore =
-        evidenceList.length > 3 ? '9/10' : evidenceList.length > 0 ? '5/10' : '2/10';
+      const feedback =
+        coachFeedback ?? evaluateVentureStudioStepLocally(stepIndex, state);
+      const evidenceScore = feedback.evidenceScore;
       const evidenceColor =
-        evidenceList.length > 3
+        Number.parseInt(evidenceScore, 10) >= 8
           ? 'text-green-400'
-          : evidenceList.length > 0
+          : Number.parseInt(evidenceScore, 10) >= 5
             ? 'text-yellow-400'
             : 'text-red-400';
-
-      /** @type {{ bias: string, coach: string }} */
-      let feedbackContent;
-      if (stepIndex === 1) {
-        feedbackContent = {
-          bias: 'Demographic Bias Detected: Your description focuses mostly on demographics (age/location).',
-          coach: `I notice your description of "${targetSegment || 'your segment'}" lacks behavioral insight. How exactly do they interact with money daily? What is the very first thing they do when a paycheck or client payment clears? Dig into behaviors.`,
-        };
-      } else if (stepIndex === 2) {
-        feedbackContent = {
-          bias: 'Priority Dilution Detected: Too many equal priorities selected.',
-          coach:
-            'You selected multiple goals. While it\'s true they want all of these, what is their absolute #1 emotional priority? If they had to sacrifice one goal to achieve another, which survives?',
-        };
-      } else if (stepIndex === 3) {
-        feedbackContent = {
-          bias: 'Symptom vs. Disease Confusion: Ensure you are tracking root causes.',
-          coach: `You listed "${step3[0]?.problem || 'Problem 1'}" as a top challenge. Is that the actual root problem, or is the real issue a lack of financial systems to handle it? Don't confuse the symptom with the disease.`,
-        };
-      } else if (stepIndex === 4) {
-        feedbackContent = {
-          bias: 'Gap Analysis Flag: Solutions do not align with fears.',
-          coach: `Earlier you noted their biggest challenge was "${step3[0]?.problem || 'budgeting'}". Yet you listed "${step4[0]?.solution || 'basic savings'}" as their current solution. If the limitations are so obvious, why haven't they switched? Is it a trust issue, education, or access?`,
-        };
-      } else {
-        feedbackContent = {
-          bias: 'Product-Centric Pitch Detected: Avoid selling policies in your statement.',
-          coach:
-            'Your opportunity statement is strong, but slightly product-focused. Remember, you aren\'t just selling an AIA policy; you are selling an emotional transformation. Rewrite the last section to emphasize how you change their life.',
-        };
-      }
 
       return (
         <div
           className="relative mt-6 overflow-hidden rounded-2xl border border-slate-700 bg-slate-900 p-5 text-white opacity-100 shadow-2xl transition-opacity duration-300 md:p-6"
           role="region"
           aria-label="Venture Coach feedback"
+          aria-busy={coachLoading}
         >
           <div className="absolute right-0 top-0 h-32 w-32 rounded-full bg-blue-500/10 blur-3xl" />
           <div className="relative z-10">
             <div className="mb-5 flex items-start justify-between">
               <div className="flex items-center gap-3">
                 <div className="rounded-xl border border-blue-500/30 bg-blue-600/20 p-2 text-blue-400">
-                  <Sparkles size={24} aria-hidden />
+                  {coachLoading ? (
+                    <Loader2 size={24} className="animate-spin" aria-hidden />
+                  ) : (
+                    <Sparkles size={24} aria-hidden />
+                  )}
                 </div>
                 <div>
                   <h4 className="text-lg font-bold leading-none text-white">SPIKE Venture Coach</h4>
-                  <p className="mt-1 text-xs text-slate-400">AI Evaluation Engine</p>
+                  <p className="mt-1 text-xs text-slate-400">
+                    {coachLoading
+                      ? 'Reading your squad inputs…'
+                      : feedback.provider === 'ai'
+                        ? 'AI evaluation'
+                        : 'Contextual coach engine'}
+                  </p>
                 </div>
               </div>
               <div className="flex flex-col items-end rounded-lg border border-slate-700 bg-slate-800 px-3 py-1.5">
                 <span className="mb-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">
                   Evidence Strength
                 </span>
-                <span className={`text-sm font-black ${evidenceColor}`}>{evidenceScore}</span>
+                <span className={`text-sm font-black ${evidenceColor}`}>
+                  {coachLoading ? '…' : evidenceScore}
+                </span>
               </div>
             </div>
 
-            <div className="mb-5 flex items-start gap-3 rounded-xl border border-amber-900/50 bg-amber-900/20 p-3 text-sm text-amber-300 md:text-base">
-              <AlertTriangle size={18} className="mt-0.5 shrink-0" aria-hidden />
-              <span className="font-medium leading-snug">{feedbackContent.bias}</span>
-            </div>
+            {coachLoading ? (
+              <p className="mb-6 text-base text-slate-300 md:text-lg">
+                Reviewing &ldquo;{targetSegment || 'your segment'}&rdquo; and your field notes…
+              </p>
+            ) : (
+              <>
+                <div className="mb-5 flex items-start gap-3 rounded-xl border border-amber-900/50 bg-amber-900/20 p-3 text-sm text-amber-300 md:text-base">
+                  <AlertTriangle size={18} className="mt-0.5 shrink-0" aria-hidden />
+                  <span className="font-medium leading-snug">{feedback.bias}</span>
+                </div>
 
-            <p className="mb-6 border-l-4 border-blue-500 pl-2 text-base font-medium leading-relaxed text-slate-200 md:text-lg">
-              &ldquo;{feedbackContent.coach}&rdquo;
-            </p>
+                <p className="mb-6 border-l-4 border-blue-500 pl-2 text-base font-medium leading-relaxed text-slate-200 md:text-lg">
+                  &ldquo;{feedback.coach}&rdquo;
+                </p>
+              </>
+            )}
 
             <div className="flex flex-col gap-3 border-t border-slate-800 pt-4 sm:flex-row">
               <button
                 type="button"
-                onClick={() => setShowAiFeedback(false)}
-                className="min-h-[44px] w-full rounded-xl border border-slate-600 bg-slate-800 px-5 py-3 text-center text-sm font-bold text-white transition hover:bg-slate-700 sm:w-auto sm:py-2.5"
+                onClick={handleRefineCoachAnswer}
+                disabled={coachLoading}
+                className="min-h-[44px] w-full rounded-xl border border-slate-600 bg-slate-800 px-5 py-3 text-center text-sm font-bold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:py-2.5"
               >
                 Refine Squad Answer
               </button>
               <button
                 type="button"
                 onClick={handleNextStep}
-                className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold shadow-lg shadow-blue-900/50 transition hover:bg-blue-500 sm:w-auto sm:py-2.5"
+                disabled={coachLoading}
+                className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold shadow-lg shadow-blue-900/50 transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:py-2.5"
               >
                 Looks Good, Continue <ChevronRight size={16} aria-hidden />
               </button>
@@ -365,7 +384,7 @@ export function VentureStudioDay3({
         </div>
       );
     },
-    [evidenceList.length, targetSegment, step3, step4, handleNextStep],
+    [coachFeedback, coachLoading, state, targetSegment, handleNextStep, handleRefineCoachAnswer],
   );
 
   const coachButton = useCallback(

@@ -36,6 +36,8 @@ export async function generateCoachText(payload, keys = {}) {
       ok: true,
       provider: attempt.provider,
       text: result.text,
+      bias: result.bias,
+      evidenceScore: result.evidenceScore,
       note: result.note,
       variants: result.variants,
       summary: result.summary,

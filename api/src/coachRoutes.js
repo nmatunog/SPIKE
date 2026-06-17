@@ -13,6 +13,7 @@ const coachGenerateSchema = z.object({
     'regenerate_purpose',
     'regenerate_tagline',
     'refine_statement',
+    'venture_studio_coach',
   ]),
   variant: z.enum(['short', 'balanced', 'inspirational']).optional(),
   fields: z.record(z.string()).optional(),
@@ -57,6 +58,9 @@ export function registerCoachRoutes(app) {
 
     return res.json({
       text: result.text,
+      coach: result.text,
+      bias: result.bias,
+      evidenceScore: result.evidenceScore,
       note: result.note,
       provider: result.provider,
       variants: result.variants,
