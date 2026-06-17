@@ -2,7 +2,6 @@ import {
   ArrowRight,
   Briefcase,
   CheckCircle,
-  CheckSquare,
   ChevronRight,
   Database,
   Download,
@@ -11,16 +10,15 @@ import {
   Layout,
   Lightbulb,
   Loader2,
-  Lock,
   RefreshCw,
   Save,
   Sparkles,
-  Target,
   Unlock,
   User,
 } from 'lucide-react';
 import { BRAND_PERSONALITY_TRAITS, VENTURE_DESIGN_KEYWORDS } from '../../lib/ventureDesignStudioConstants.js';
 import { VentureDesignKeywordChips } from './VentureDesignKeywordChips.jsx';
+import { FecCanvasLayout } from './FecCanvasLayout.jsx';
 
 const inputClass =
   'w-full rounded-xl border-2 border-stone-200 bg-stone-50 p-4 font-medium text-stone-800 outline-none transition-all focus:border-spike focus:bg-white focus:ring-4 focus:ring-red-900/10';
@@ -182,38 +180,30 @@ export function VentureDesignStep4({ draft, readOnly, onChange, onAppend, onTogg
 
 /** @param {{ draft: import('../../lib/ventureDesignStudioService.js').VentureDesignIndividualDraft }} props */
 export function VentureDesignStep5({ draft }) {
+  const uvp = `We help ${draft.step3.synthesisA || '…'} achieve ${draft.step3.synthesisB || '…'} through ${draft.step3.synthesisC || '…'}.`;
+
   return (
     <div>
-      <VentureDesignStepHeader icon={<Layout size={24} />} title="Financial Entrepreneurship Canvas" subtitle="UVP is the core — more engines unlock soon." />
-      <div className="overflow-x-auto rounded-2xl border border-stone-200 bg-stone-100 p-4 md:p-6">
-        <div className="grid h-[450px] min-w-[700px] grid-cols-5 gap-4">
-          <div className="col-span-1 flex flex-col gap-4">
-            {['Key Partners', 'Key Resources'].map((label) => (
-              <div key={label} className="relative flex flex-1 flex-col items-center justify-center rounded-xl border-2 border-dashed border-stone-300 bg-white p-4">
-                <span className="absolute top-4 text-xs font-bold uppercase text-stone-400">{label}</span>
-                <Lock size={24} className="mb-2 text-stone-300" /><span className="text-xs text-stone-400">Week 3</span>
-              </div>
-            ))}
-          </div>
-          <div className="col-span-1 flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-stone-300 bg-white p-4">
-            <Lock size={24} className="text-stone-300" /><span className="text-xs text-stone-400">Week 2</span>
-          </div>
-          <div className="col-span-1 flex flex-col rounded-xl border-2 border-red-950 bg-spike p-6 text-white shadow-2xl">
-            <span className="mb-4 flex w-fit items-center gap-1 rounded bg-black/20 px-2 py-1 text-[10px] font-bold uppercase text-yellow-400"><CheckSquare size={12} /> Done</span>
-            <h4 className="mb-4 text-xl font-black">Unique Venture Proposition</h4>
-            <p className="border-l-2 border-yellow-500 pl-3 text-sm italic text-red-100">We help {draft.step3.synthesisA || '…'} achieve {draft.step3.synthesisB || '…'} through {draft.step3.synthesisC || '…'}.</p>
-          </div>
-          <div className="col-span-1 flex flex-col gap-4">
-            {['Relationships', 'Channels'].map((label) => (
-              <div key={label} className="flex flex-1 flex-col items-center justify-center rounded-xl border-2 border-dashed border-stone-300 bg-white p-4"><Lock size={24} className="text-stone-300" /></div>
-            ))}
-          </div>
-          <div className="col-span-1 flex flex-col rounded-xl border-2 border-stone-300 bg-stone-200 p-6">
-            <span className="mb-4 flex w-fit items-center gap-1 rounded bg-white px-2 py-1 text-[10px] font-bold uppercase"><Database size={12} /> Imported</span>
-            <h4 className="mb-3 font-black text-stone-800">Customer Segments</h4>
-            <p className="text-sm text-stone-600">{draft.step1.customer || 'From research'}</p>
-          </div>
-        </div>
+      <VentureDesignStepHeader
+        icon={<Layout size={24} />}
+        title="Financial Entrepreneurship Canvas"
+        subtitle="UVP is the heart — every box supports your proposition."
+      />
+      <div className="overflow-x-auto">
+        <FecCanvasLayout
+          mode="full"
+          variant="embedded"
+          showHeader
+          showFooter
+          centerContent={uvp}
+          uvpDetailContent={uvp}
+          boxContents={{
+            who_we_serve: draft.step1.customer || undefined,
+            problem_we_solve: draft.step1.problem || undefined,
+            client_experience: draft.step4.clientFeeling || undefined,
+            uvp_detail: uvp,
+          }}
+        />
       </div>
     </div>
   );

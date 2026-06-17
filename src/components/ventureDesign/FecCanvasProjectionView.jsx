@@ -1,55 +1,17 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Layout, Monitor } from 'lucide-react';
-import {
-  FEC_AGENCY_BUILDER_EXTENSIONS,
-  FEC_CANVAS_TITLE,
-  FEC_TOP_BANNER,
-  FEC_UVP_HELPER,
-  FEC_V2_PILLARS,
-  FEC_VENTURE_SCORECARD,
-} from '../../lib/fecCanvasConstants.js';
+import { ArrowLeft, Monitor } from 'lucide-react';
+import { FEC_TOP_BANNER } from '../../lib/fecCanvasConstants.js';
 import {
   FEC_CANVAS_EXEMPLAR_ENGINES,
   FEC_CANVAS_EXEMPLAR_SUMMARY,
 } from '../../lib/fecCanvasExemplar.js';
 import { BLUEPRINT_LINKS } from '../../routes/paths.js';
 import { PROGRAM_COACH_LABEL } from '../../lib/terminology.js';
-
-/**
- * @param {{
- *   label: string,
- *   fields: Array<{ key: string, label: string }>,
- *   mode: 'blank' | 'full',
- *   engineKey: string,
- * }} props
- */
-function PillarCard({ label, fields, mode, engineKey }) {
-  const exemplar = FEC_CANVAS_EXEMPLAR_ENGINES[engineKey] ?? {};
-
-  return (
-    <div className="flex h-full flex-col rounded-2xl border-2 border-stone-200 bg-white p-4 shadow-sm md:p-5">
-      <p className="mb-3 text-[10px] font-black uppercase tracking-[0.2em] text-spike">{label}</p>
-      <div className="flex flex-1 flex-col gap-3">
-        {fields.map((field) => (
-          <div key={field.key}>
-            <p className="text-xs font-bold uppercase tracking-wide text-stone-500">{field.label}</p>
-            {mode === 'full' ? (
-              <p className="mt-1 text-sm leading-relaxed text-stone-800">
-                {exemplar[field.key] ?? '—'}
-              </p>
-            ) : (
-              <div className="mt-1 min-h-[3rem] rounded-lg border-2 border-dashed border-stone-200 bg-stone-50" />
-            )}
-          </div>
-        ))}
-      </div>
-      {engineKey === 'prove_value' && mode === 'blank' ? (
-        <p className="mt-3 text-xs text-stone-400">Venture scorecard unlocks as squads prove traction.</p>
-      ) : null}
-    </div>
-  );
-}
+import {
+  FecCanvasLayout,
+} from './FecCanvasLayout.jsx';
+import { buildFecLayoutExemplarContent } from '../../lib/fecCanvasLayoutContent.js';
 
 /**
  * FEC overview projection — blank/full toggle for Program Coach and mentors only.
@@ -73,6 +35,14 @@ export function FecCanvasProjectionView({
       ? 'Mentor projection'
       : 'FEC overview';
 
+  const exemplar =
+    displayMode === 'full'
+      ? buildFecLayoutExemplarContent({
+          summary: FEC_CANVAS_EXEMPLAR_SUMMARY,
+          engines: FEC_CANVAS_EXEMPLAR_ENGINES,
+        })
+      : null;
+
   return (
     <div className="-mx-4 min-h-screen bg-stone-950 font-sans text-white md:-mx-0">
       <header className="sticky top-0 z-50 border-b border-stone-800 bg-stone-950/95 px-4 py-3 backdrop-blur md:px-8">
@@ -83,7 +53,7 @@ export function FecCanvasProjectionView({
               <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-amber-400">
                 {projectionLabel}
               </p>
-              <h1 className="truncate text-sm font-bold md:text-base">{FEC_CANVAS_TITLE}</h1>
+              <h1 className="truncate text-sm font-bold md:text-base">Financial Entrepreneurship Canvas</h1>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -133,110 +103,18 @@ export function FecCanvasProjectionView({
       </header>
 
       <div className="mx-auto max-w-[100rem] px-4 py-6 md:px-8 md:py-10">
-        <p className="mb-8 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-5 py-4 text-center text-sm font-medium text-amber-100 md:text-base">
+        <p className="mb-6 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-5 py-4 text-center text-sm font-medium text-amber-100 md:text-base">
           {FEC_TOP_BANNER}
         </p>
 
-        <section className="mb-6 rounded-3xl border-4 border-spike bg-gradient-to-br from-spike to-spike-dark p-6 text-center shadow-2xl md:p-10">
-          <p className="mb-2 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-yellow-300">
-            <Layout size={16} aria-hidden />
-            Center — Unified Venture Proposition
-          </p>
-          <p className="mb-4 text-sm text-red-100 md:text-base">
-            <span className="font-semibold text-yellow-300">Model:</span>{' '}
-            We help <span className="text-yellow-200">[who]</span> achieve{' '}
-            <span className="text-yellow-200">[outcome]</span> through{' '}
-            <span className="text-yellow-200">[how]</span>.
-          </p>
-          <p className="mb-4 text-xs text-red-200/80">{FEC_UVP_HELPER}</p>
-          {displayMode === 'full' ? (
-            <p className="mx-auto max-w-3xl text-lg font-semibold leading-relaxed text-white md:text-xl">
-              {FEC_CANVAS_EXEMPLAR_SUMMARY.unified_venture_proposition}
-            </p>
-          ) : (
-            <div className="mx-auto max-w-2xl min-h-[4rem] rounded-xl border-2 border-dashed border-white/40 bg-white/5" />
-          )}
-        </section>
-
-        <div className="mb-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {Object.entries(FEC_V2_PILLARS).map(([engineKey, pillar]) => (
-            <PillarCard
-              key={engineKey}
-              engineKey={engineKey}
-              label={pillar.label}
-              fields={
-                engineKey === 'prove_value'
-                  ? Object.values(FEC_VENTURE_SCORECARD.categories).flatMap((cat) =>
-                      cat.fields.map((f) => ({ ...f, label: `${cat.label}: ${f.label}` })),
-                    )
-                  : pillar.fields
-              }
-              mode={displayMode}
-            />
-          ))}
-        </div>
-
-        {displayMode === 'full' ? (
-          <div className="mb-6 grid gap-4 lg:grid-cols-2">
-            {Object.entries(FEC_AGENCY_BUILDER_EXTENSIONS).map(([engineKey, section]) => (
-              <PillarCard
-                key={engineKey}
-                engineKey={engineKey}
-                label={section.label}
-                fields={section.fields}
-                mode="full"
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="mb-6 grid gap-4 lg:grid-cols-2">
-            {Object.entries(FEC_AGENCY_BUILDER_EXTENSIONS).map(([engineKey, section]) => (
-              <div
-                key={engineKey}
-                className="rounded-2xl border-2 border-dashed border-stone-700 bg-stone-900/50 p-5 text-center"
-              >
-                <p className="text-xs font-bold uppercase tracking-widest text-stone-500">
-                  {section.label}
-                </p>
-                <p className="mt-2 text-sm text-stone-500">Agency builder track — Week 3+</p>
-              </div>
-            ))}
-          </div>
-        )}
-
-        <section className="rounded-2xl border border-stone-700 bg-stone-900 p-5 md:p-8">
-          <h2 className="mb-4 text-sm font-black uppercase tracking-widest text-stone-300">
-            3-year roadmap &amp; success picture
-          </h2>
-          {displayMode === 'full' ? (
-            <div className="grid gap-4 md:grid-cols-3">
-              {[
-                ['12 months', FEC_CANVAS_EXEMPLAR_SUMMARY.roadmap_12mo],
-                ['24 months', FEC_CANVAS_EXEMPLAR_SUMMARY.roadmap_24mo],
-                ['36 months', FEC_CANVAS_EXEMPLAR_SUMMARY.roadmap_36mo],
-              ].map(([title, body]) => (
-                <div key={title} className="rounded-xl bg-stone-800 p-4">
-                  <p className="text-xs font-bold uppercase text-amber-400">{title}</p>
-                  <p className="mt-2 text-sm text-stone-200">{body}</p>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="grid gap-4 md:grid-cols-3">
-              {['12 months', '24 months', '36 months'].map((title) => (
-                <div
-                  key={title}
-                  className="min-h-[5rem] rounded-xl border-2 border-dashed border-stone-700 bg-stone-950"
-                />
-              ))}
-            </div>
-          )}
-          {displayMode === 'full' ? (
-            <p className="mt-4 text-sm italic text-stone-400">
-              {FEC_CANVAS_EXEMPLAR_SUMMARY.success_narrative}
-            </p>
-          ) : null}
-        </section>
+        <FecCanvasLayout
+          mode={displayMode}
+          variant="poster"
+          centerContent={exemplar?.centerContent}
+          uvpDetailContent={exemplar?.uvpDetailContent}
+          boxContents={exemplar?.boxContents}
+          complexContents={exemplar?.complexContents}
+        />
       </div>
     </div>
   );

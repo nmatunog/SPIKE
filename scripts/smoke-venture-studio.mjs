@@ -72,9 +72,28 @@ for (const file of [
   'src/components/playbook/ventureDesign/VentureDesignLaunchCard.jsx',
   'src/components/playbook/ventureDesign/Day4VentureDesignHero.jsx',
   'src/components/ventureDesign/FecCanvasProjectionView.jsx',
+  'src/components/ventureDesign/FecCanvasLayout.jsx',
+  'src/lib/fecCanvasLayout.js',
   'src/lib/fecCanvasExemplar.js',
 ]) {
   if (!existsSync(join(ROOT, file))) fail(`missing ${file}`);
+}
+
+const fecLayout = readFileSync(join(ROOT, 'src/lib/fecCanvasLayout.js'), 'utf8');
+for (const label of [
+  'WHO WE SERVE',
+  'PROBLEM WE SOLVE',
+  'CLIENT EXPERIENCE',
+  'MEASUREMENT DASHBOARD',
+  'Primary segments',
+  'What gets measured gets managed.',
+]) {
+  if (!fecLayout.includes(label)) fail(`fecCanvasLayout missing label: ${label}`);
+}
+
+const projection = readFileSync(join(ROOT, 'src/components/ventureDesign/FecCanvasProjectionView.jsx'), 'utf8');
+if (!projection.includes('FecCanvasLayout')) {
+  fail('FecCanvasProjectionView should render FecCanvasLayout');
 }
 
 const ventureDesignPage = readFileSync(join(ROOT, 'src/pages/VentureDesignStudio.jsx'), 'utf8');
