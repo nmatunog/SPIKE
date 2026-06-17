@@ -36,6 +36,9 @@ export function StaffParticipantDreamBoardSection({
 
   const completed = isBuilderCompleted(participantId, 'dream-board') || assets.length > 0;
   const cardCount = normalizeDreamBoardCards(assets).length;
+  const incompleteCards = assets.filter(
+    (asset) => !String(asset.caption ?? '').trim() && !asset.imageUrl,
+  ).length;
 
   return (
     <section className={`spike-card space-y-4 ${className}`}>
@@ -71,6 +74,14 @@ export function StaffParticipantDreamBoardSection({
             title={`${participantName}'s Dream Board`}
             layout="grid"
           />
+
+          {incompleteCards > 0 ? (
+            <p className="text-sm text-amber-800">
+              {incompleteCards} card{incompleteCards === 1 ? '' : 's'} still missing a caption or photo in the
+              cloud. Ask {participantName.split(' ')[0] || 'them'} to open Dream Board Studio on their device and
+              tap <strong>Update Dream Board</strong> to sync.
+            </p>
+          ) : null}
 
           <details className="rounded-xl border border-slate-200 bg-slate-50/80 p-4" open>
             <summary className="inline-flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-spike marker:content-none">

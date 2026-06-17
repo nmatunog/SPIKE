@@ -2,11 +2,12 @@
  * Dream board images sync per-card to Supabase (avoids oversized day1_builder_progress JSON).
  */
 import { readBuilderEntry, writeBuilderEntry } from './day1BuilderStorage.js';
+import { fetchDay1BuilderProgress } from './supabase/day1BuilderProgress.js';
 import { fetchDreamBoardAssets, syncDreamBoardAssets } from './supabase/dreamBoardAssets.js';
-import { mergeDreamBoardAssetLists } from './dreamBoardMerge.js';
+import { mergeDreamBoardAssetLists, enrichDreamBoardFromMetadata } from './dreamBoardMerge.js';
 import { normalizeDreamBoardCards } from './dreamBoardConfig.js';
 
-export { mergeDreamBoardAssetLists } from './dreamBoardMerge.js';
+export { mergeDreamBoardAssetLists, enrichDreamBoardFromMetadata } from './dreamBoardMerge.js';
 
 /**
  * @param {Record<string, unknown>} data
@@ -100,16 +101,24 @@ export async function hydrateDreamBoardImagesFromCloud(participantId, opts = {})
 export async function fetchDreamBoardForStaffView(participantId) {
   if (!participantId || String(participantId).startsWith('mock-')) return [];
 
-  const [cloudRows, entry] = await Promise.all([
+  const [cloudRows, entry, builderRows] = await Promise.all([
     fetchDreamBoardAssets(participantId),
     Promise.resolve(readBuilderEntry(participantId, 'dream-board')),
+    fetchDay1BuilderProgress(participantId).catch(() => []),
   ]);
+
+  const metadataAssets = /** @type {Array<{ id?: string, category?: string, caption?: string }>} */ (
+    builderRows.find((row) => row.builder_id === 'dream-board')?.payload?.data?.assets ?? []
+  );
 
   const localAssets = /** @type {Array<{ id: string, category: string, caption: string, imageUrl?: string }>} */ (
     entry?.data?.assets ?? []
   ).map(stripInlineDreamBoardImage);
 
-  return normalizeDreamBoardCards(
+  const merged = enrichDreamBoardFromMetadata(
     mergeDreamBoardAssetLists(localAssets, cloudRows).map(stripInlineDreamBoardImage),
+    metadataAssets,
   );
+
+  return normalizeDreamBoardCards(merged);
 }

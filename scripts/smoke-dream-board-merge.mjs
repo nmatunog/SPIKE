@@ -41,4 +41,14 @@ if (deduped.length !== 2 || deduped[0].caption !== 'First') {
   fail('normalizeDreamBoardCards should dedupe by id');
 }
 
+import { enrichDreamBoardFromMetadata } from '../src/lib/dreamBoardMerge.js';
+
+const enriched = enrichDreamBoardFromMetadata(
+  [{ id: 'c1', category: 'career', caption: 'The', imageUrl: '' }],
+  [{ id: 'c1', category: 'career', caption: 'The career I want is to lead my own agency team.' }],
+);
+if (enriched[0].caption.length <= 3) {
+  fail('enrichDreamBoardFromMetadata should prefer longer metadata caption');
+}
+
 console.log('smoke:dream-board-merge OK');

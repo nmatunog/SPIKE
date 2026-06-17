@@ -57,3 +57,43 @@ export function mergeDreamBoardAssetLists(localAssets, cloudRows) {
     }))
     .sort((a, b) => (sortByClientId.get(a.id) ?? 0) - (sortByClientId.get(b.id) ?? 0));
 }
+
+/**
+ * Prefer longer captions/categories from day1_builder_progress metadata (text-only cloud row).
+ * @param {Array<{ id: string, category: string, caption: string, imageUrl?: string }>} assets
+ * @param {Array<{ id?: string, category?: string, caption?: string }>} metadataAssets
+ */
+export function enrichDreamBoardFromMetadata(assets, metadataAssets) {
+  const metaById = new Map(
+    (metadataAssets ?? [])
+      .filter((row) => row?.id)
+      .map((row) => [String(row.id), row]),
+  );
+
+  const merged = assets.map((asset) => {
+    const meta = metaById.get(asset.id);
+    if (!meta) return asset;
+    const metaCaption = String(meta.caption ?? '').trim();
+    const currentCaption = String(asset.caption ?? '').trim();
+    return {
+      ...asset,
+      category: asset.category || meta.category || 'lifestyle',
+      caption: metaCaption.length > currentCaption.length ? metaCaption : currentCaption,
+    };
+  });
+
+  const seen = new Set(merged.map((asset) => asset.id));
+  for (const meta of metadataAssets ?? []) {
+    const id = String(meta?.id ?? '').trim();
+    if (!id || seen.has(id)) continue;
+    seen.add(id);
+    merged.push({
+      id,
+      category: meta.category ?? 'lifestyle',
+      caption: String(meta.caption ?? ''),
+      imageUrl: '',
+    });
+  }
+
+  return merged;
+}
