@@ -5,6 +5,7 @@ import {
   FEC_AGENCY_BUILDER_EXTENSIONS,
   FEC_CANVAS_TITLE,
   FEC_TOP_BANNER,
+  FEC_UVP_HELPER,
   FEC_V2_PILLARS,
   FEC_VENTURE_SCORECARD,
 } from '../../lib/fecCanvasConstants.js';
@@ -141,12 +142,19 @@ export function FecCanvasProjectionView({
             <Layout size={16} aria-hidden />
             Center — Unified Venture Proposition
           </p>
+          <p className="mb-4 text-sm text-red-100 md:text-base">
+            <span className="font-semibold text-yellow-300">Model:</span>{' '}
+            We help <span className="text-yellow-200">[who]</span> achieve{' '}
+            <span className="text-yellow-200">[outcome]</span> through{' '}
+            <span className="text-yellow-200">[how]</span>.
+          </p>
+          <p className="mb-4 text-xs text-red-200/80">{FEC_UVP_HELPER}</p>
           {displayMode === 'full' ? (
-            <p className="mx-auto max-w-4xl text-lg font-semibold leading-relaxed text-white md:text-2xl">
+            <p className="mx-auto max-w-3xl text-lg font-semibold leading-relaxed text-white md:text-xl">
               {FEC_CANVAS_EXEMPLAR_SUMMARY.unified_venture_proposition}
             </p>
           ) : (
-            <div className="mx-auto max-w-3xl min-h-[5rem] rounded-xl border-2 border-dashed border-white/40 bg-white/5" />
+            <div className="mx-auto max-w-2xl min-h-[4rem] rounded-xl border-2 border-dashed border-white/40 bg-white/5" />
           )}
         </section>
 

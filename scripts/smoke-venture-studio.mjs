@@ -96,8 +96,12 @@ const exemplar = readFileSync(join(ROOT, 'src/lib/fecCanvasExemplar.js'), 'utf8'
 if (/sun\s*life/i.test(exemplar)) {
   fail('fecCanvasExemplar must not reference Sun Life — use AIA Philippines');
 }
-if (!exemplar.includes('AIA Philippines')) {
-  fail('fecCanvasExemplar missing AIA Philippines branding');
+const uvpDecl = exemplar.match(/export const FEC_CANVAS_EXEMPLAR_UVP[\s\S]*?;/);
+if (!uvpDecl?.[0]?.includes('FEC_UVP_SUGGESTIVE_EXAMPLE')) {
+  fail('fecCanvasExemplar should derive UVP from FEC_UVP_SUGGESTIVE_EXAMPLE');
+}
+if (uvpDecl?.[0]?.includes('Healthier, Longer, Better Lives')) {
+  fail('fecCanvasExemplar UVP should not use long tagline copy');
 }
 
 const facultyView = readFileSync(join(ROOT, 'src/components/playbook/FacultyPlaybookView.jsx'), 'utf8');
