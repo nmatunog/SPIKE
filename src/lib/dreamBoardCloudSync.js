@@ -3,6 +3,9 @@
  */
 import { readBuilderEntry, writeBuilderEntry } from './day1BuilderStorage.js';
 import { fetchDreamBoardAssets, syncDreamBoardAssets } from './supabase/dreamBoardAssets.js';
+import { mergeDreamBoardAssetLists } from './dreamBoardMerge.js';
+
+export { mergeDreamBoardAssetLists } from './dreamBoardMerge.js';
 
 /**
  * @param {Record<string, unknown>} data
@@ -26,34 +29,6 @@ export function stripInlineDreamBoardImage(asset) {
     return { ...asset, imageUrl: '' };
   }
   return asset;
-}
-
-/**
- * @param {Array<{ id: string, category: string, caption: string, imageUrl?: string }>} localAssets
- * @param {Awaited<ReturnType<typeof fetchDreamBoardAssets>>} cloudRows
- */
-export function mergeDreamBoardAssetLists(localAssets, cloudRows) {
-  const imageByClientId = new Map(
-    cloudRows
-      .filter((row) => row.client_asset_id && row.image_url)
-      .map((row) => [String(row.client_asset_id), String(row.image_url)]),
-  );
-
-  if (localAssets.length) {
-    return localAssets.map((asset) => ({
-      ...asset,
-      imageUrl: asset.imageUrl || imageByClientId.get(asset.id) || '',
-    }));
-  }
-
-  return cloudRows
-    .filter((row) => row.client_asset_id)
-    .map((row) => ({
-      id: String(row.client_asset_id),
-      category: row.category,
-      caption: row.caption ?? '',
-      imageUrl: row.image_url ?? '',
-    }));
 }
 
 /** @param {string} participantId @param {Record<string, unknown>} data */

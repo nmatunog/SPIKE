@@ -18,7 +18,9 @@ import { DreamBoardLightbox } from './DreamBoardLightbox.jsx';
  */
 export function DreamBoardSlideCollage({ assets, title = 'My Dream Board', maxCards, enableLightbox = true }) {
   const slideMax = maxCards ?? getDreamBoardMaxCards();
-  const cards = assets.filter((asset) => asset.imageUrl || asset.caption?.trim());
+  const cards = assets.filter(
+    (asset) => asset.imageUrl || String(asset.caption ?? '').trim() || asset.category,
+  );
   const count = Math.min(cards.length, slideMax);
   const [lightboxAsset, setLightboxAsset] = useState(null);
   const hiddenCount = Math.max(0, cards.length - slideMax);
@@ -39,6 +41,13 @@ export function DreamBoardSlideCollage({ assets, title = 'My Dream Board', maxCa
       <figure className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-900 shadow-projection">
         <div className="border-b border-white/10 bg-gradient-to-r from-spike to-spike-dark px-4 py-2">
           <figcaption className="text-sm font-bold tracking-wide text-white">{title}</figcaption>
+          {cards.length > 0 ? (
+            <p className="mt-0.5 text-[11px] font-medium text-red-100/90">
+              {count < cards.length
+                ? `Showing ${count} of ${cards.length} cards`
+                : `${cards.length} dream card${cards.length === 1 ? '' : 's'}`}
+            </p>
+          ) : null}
         </div>
         <div className={`grid aspect-video w-full gap-1.5 p-1.5 sm:gap-2 sm:p-2 ${layoutClass}`}>
           {cards.slice(0, slideMax).map((asset) => {

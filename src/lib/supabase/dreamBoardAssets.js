@@ -46,7 +46,9 @@ export async function syncDreamBoardAssets(userId, assets) {
   for (let index = 0; index < list.length; index += 1) {
     const asset = list[index];
     if (!asset?.id) continue;
-    if (!asset.imageUrl && !String(asset.caption ?? '').trim()) continue;
+    // Keep row if it has any content — avoids dropping the last card when caption is still being typed.
+    const caption = String(asset.caption ?? '').trim();
+    if (!asset.imageUrl && !caption) continue;
 
     keepClientIds.push(asset.id);
 
