@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { LayoutTemplate } from 'lucide-react';
+import { ArrowLeft, LayoutTemplate } from 'lucide-react';
 import { CANVAS_ENGINES } from '../../../lib/blueprintSectionConstants.js';
 import {
   computeCanvasCompletionPct,
@@ -11,7 +11,7 @@ import { AutoSaveField } from '../AutoSaveField.jsx';
 import { CircularProgress } from '../CircularProgress.jsx';
 import { listBusinessPlanArtifacts } from '../../../lib/blueprintArtifacts.js';
 import { ArtifactDraftCard } from '../ArtifactDraftCard.jsx';
-import { ROUTES } from '../../../routes/paths.js';
+import { BLUEPRINT_LINKS, ROUTES } from '../../../routes/paths.js';
 
 function SectionCard({ title, children }) {
   return (
@@ -34,6 +34,16 @@ export function CanvasEditorModule({ participantId, state }) {
 
   return (
     <div className="space-y-4">
+      <div className="flex flex-wrap items-center gap-3">
+        <Link
+          to={BLUEPRINT_LINKS.businessPlan}
+          className="inline-flex items-center gap-1 text-sm font-semibold text-spike hover:underline"
+        >
+          <ArrowLeft size={16} />
+          FEC intro
+        </Link>
+      </div>
+
       <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-spike-muted/30 p-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-sm text-gray-600">
