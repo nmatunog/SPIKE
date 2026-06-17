@@ -4,7 +4,10 @@
  */
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { evaluateVentureStudioStepLocally } from '../src/lib/ventureStudioCoachLocal.js';
+import {
+  getVentureStudioCoachFeedback,
+  VENTURE_STUDIO_COACH_BY_STEP,
+} from '../src/lib/ventureStudioCoachPrompts.js';
 import { emptyVentureStudioState } from '../src/lib/ventureStudioStorage.js';
 
 const ROOT = join(import.meta.dirname, '..');
@@ -35,6 +38,7 @@ for (const file of [
   'src/components/playbook/ventureStudio/VentureStudioDay3.jsx',
   'src/components/playbook/ventureStudio/VentureStudioLaunchCard.jsx',
   'src/lib/ventureStudioStorage.js',
+  'src/lib/ventureStudioCoachPrompts.js',
 ]) {
   if (!existsSync(join(ROOT, file))) fail(`missing ${file}`);
 }
@@ -60,33 +64,31 @@ if (!day3.interactiveModules?.includes('venture-studio-day-3')) {
 
 console.log('smoke:venture-studio OK');
 
-const bpoCtx = {
+const baseCtx = {
   ...emptyVentureStudioState(),
   targetSegment: 'Young Professionals in BPO',
-  step1: {
-    description: '',
-    stage: 'Early career, living with parents',
-    dayInLife: '',
-    surprise: '',
-  },
 };
 
-const richCtx = {
-  ...bpoCtx,
-  step1: {
-    ...bpoCtx.step1,
-    dayInLife:
-      'After graveyard shift they check GCash first, send half to mother, then pay loan before spending on food.',
-    surprise: 'They save in multiple wallets to hide money from family requests.',
-  },
-};
+const step1a = getVentureStudioCoachFeedback(1, baseCtx);
+const step1b = getVentureStudioCoachFeedback(1, {
+  ...baseCtx,
+  step1: { description: 'totally different', stage: 'x', dayInLife: 'y', surprise: 'z' },
+});
+if (step1a.coach !== step1b.coach || step1a.bias !== step1b.bias) {
+  fail('Step 1 coach should be deterministic regardless of other fields');
+}
+if (!step1a.coach.includes('Young Professionals in BPO')) {
+  fail('Step 1 coach should interpolate target segment');
+}
+if (!step1a.coach.includes('behavioral insight')) {
+  fail('Step 1 coach should use the DISCOVER step prompt');
+}
 
-const sparse = evaluateVentureStudioStepLocally(1, bpoCtx);
-const rich = evaluateVentureStudioStepLocally(1, richCtx);
-if (sparse.coach === rich.coach) {
-  fail('Step 1 coach feedback should differ for sparse vs rich inputs');
+const step2 = getVentureStudioCoachFeedback(2, baseCtx);
+if (step1a.coach === step2.coach) {
+  fail('Each step should have a distinct coach prompt');
 }
-if (!sparse.coach.includes('BPO') && !sparse.coach.includes('Young Professionals')) {
-  fail('Sparse BPO feedback should reference the segment');
+if (Object.keys(VENTURE_STUDIO_COACH_BY_STEP).length !== 5) {
+  fail('Expected five step-specific coach prompts');
 }
-console.log('smoke:venture-studio coach OK — contextual feedback varies by input');
+console.log('smoke:venture-studio coach OK — deterministic per-step prompts');

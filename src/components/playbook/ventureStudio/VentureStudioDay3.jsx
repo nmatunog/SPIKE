@@ -32,7 +32,7 @@ import { VENTURE_STUDIO_STEPS, GOAL_LABELS } from '../../../lib/ventureStudioTyp
 import { markActivityCompleted } from '../../../lib/playbookProgress.js';
 import { isMockUserId } from '../../../lib/mockAuth.js';
 import {
-  evaluateVentureStudioStepLocally,
+  getVentureStudioCoachFeedback,
   requestVentureStudioCoachFeedback,
 } from '../../../lib/ventureStudioCoachService.js';
 import { BLUEPRINT_LINKS, playbookHref } from '../../../routes/paths.js';
@@ -297,7 +297,7 @@ export function VentureStudioDay3({
     /** @param {number} stepIndex */
     (stepIndex) => {
       const feedback =
-        coachFeedback ?? evaluateVentureStudioStepLocally(stepIndex, state);
+        coachFeedback ?? getVentureStudioCoachFeedback(stepIndex, state);
       const evidenceScore = feedback.evidenceScore;
       const evidenceColor =
         Number.parseInt(evidenceScore, 10) >= 8
@@ -329,9 +329,7 @@ export function VentureStudioDay3({
                   <p className="mt-1 text-xs text-slate-400">
                     {coachLoading
                       ? 'Reading your squad inputs…'
-                      : feedback.provider === 'ai'
-                        ? 'AI evaluation'
-                        : 'Contextual coach engine'}
+                      : 'Prototype coach — step-guided feedback'}
                   </p>
                 </div>
               </div>
