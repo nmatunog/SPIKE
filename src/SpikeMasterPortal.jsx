@@ -104,7 +104,7 @@ import {
   writeViewAsRole,
 } from './lib/superuserViewAs.js';
 import { buildSuperuserInternPreviewUser, resolveSuperuserInternRouteUser } from './lib/superuserInternPreview.js';
-import { hydrateOnboardingStatus, setOnboardingCompleteCache, hasCompletedOnboardingSync } from './lib/cohortOnboardingService.js';
+import { hydrateOnboardingStatus, setOnboardingCompleteCache, shouldGateInternOnboarding, isInternOnboardingSatisfied } from './lib/cohortOnboardingService.js';
 
 /** @param {{ children: import('react').ReactNode, label?: string }} props */
 function LazyRoute({ children, label }) {
@@ -200,7 +200,7 @@ const SpikeMasterPortal = () => {
     if (authLoading || effectiveUserRole !== 'intern' || !user?.id) return;
     if (userRole === 'superuser') return;
     if (!shouldUseSupabaseForUser(user)) return;
-    if (user.internProgress?.onboarding_complete) {
+    if (user.internProgress?.onboarding_complete || isInternOnboardingSatisfied(user.internProgress)) {
       setOnboardingCompleteCache(user.id, true);
       return;
     }
@@ -1482,8 +1482,7 @@ const SpikeMasterPortal = () => {
       const needsOnboarding =
         userRole !== 'superuser'
         && shouldUseSupabaseForUser(internUser)
-        && !internUser?.internProgress?.onboarding_complete
-        && !hasCompletedOnboardingSync(internUser.id);
+        && shouldGateInternOnboarding(internUser.id, internUser?.internProgress);
       if (needsOnboarding && path !== ROUTES.cohortIdentity && !isVentureBlueprintPath(path) && !isPlaybookPath(path)) {
         return <Navigate to={ROUTES.cohortIdentity} replace />;
       }

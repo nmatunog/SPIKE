@@ -70,6 +70,29 @@ export function hasCompletedOnboardingSync(participantId) {
   return Boolean(completeCache.get(participantId));
 }
 
+/**
+ * Sync guard — interns who finished squad setup but lack the DB flag (RPC/migration miss).
+ * @param {{ onboarding_complete?: boolean, onboarding_welcomed_at?: string | null, cohort_id?: string | null, squad?: string | null } | null | undefined} progress
+ */
+export function isInternOnboardingSatisfied(progress) {
+  if (!progress) return false;
+  if (progress.onboarding_complete) return true;
+  return Boolean(
+    progress.onboarding_welcomed_at?.trim()
+    && progress.cohort_id
+    && progress.squad?.trim(),
+  );
+}
+
+/**
+ * @param {string} participantId
+ * @param {{ onboarding_complete?: boolean, onboarding_welcomed_at?: string | null, cohort_id?: string | null, squad?: string | null } | null | undefined} progress
+ */
+export function shouldGateInternOnboarding(participantId, progress) {
+  if (hasCompletedOnboardingSync(participantId)) return false;
+  return !isInternOnboardingSatisfied(progress);
+}
+
 /** @param {string} participantId */
 function readMockOnboardingProgress(participantId) {
   if (!isMockUserId(participantId)) return null;
@@ -101,9 +124,16 @@ export async function hydrateOnboardingStatus(participantId) {
     return done;
   }
   try {
-    const progress = await db.fetchParticipantOnboarding(participantId);
-    const done = Boolean(progress?.onboarding_complete);
+    const ctx = await loadOnboardingContext(participantId);
+    const done =
+      Boolean(ctx.progress?.onboarding_complete) || ctx.step === 'complete';
     completeCache.set(participantId, done);
+    if (ctx.step === 'complete' && !ctx.progress?.onboarding_complete) {
+      const squadId = ctx.squad?.membership?.squad_id;
+      if (squadId) {
+        void finishOnboarding(participantId, squadId).catch(() => {});
+      }
+    }
     return done;
   } catch {
     return false;
@@ -198,7 +228,7 @@ export async function loadOnboardingContext(participantId) {
       vote: null,
       squad: null,
     });
-    if (progress.onboarding_complete) {
+    if (progress.onboarding_complete || step === 'complete') {
       completeCache.set(participantId, true);
     }
     return {
@@ -251,7 +281,7 @@ export async function loadOnboardingContext(participantId) {
 
   const step = resolveOnboardingStep({ cohort, progress, suggestion, vote, squad });
 
-  if (progress?.onboarding_complete) {
+  if (progress?.onboarding_complete || step === 'complete') {
     completeCache.set(participantId, true);
   }
 

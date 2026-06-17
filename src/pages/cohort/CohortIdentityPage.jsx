@@ -44,10 +44,23 @@ export function CohortIdentityPage({ participantId }) {
 
   const displayStep =
     welcomedOverride && step === 'welcome' ? 'waiting' : step;
+  const squadId = squad?.membership?.squad_id;
 
   useEffect(() => {
     setWelcomedOverride(hasAcknowledgedWelcome(participantId));
   }, [participantId]);
+
+  useEffect(() => {
+    if (displayStep !== 'complete' || !participantId || !squadId) return;
+    void (async () => {
+      try {
+        await finishOnboarding(participantId, squadId);
+        await refreshUser();
+      } catch {
+        /* DB flag may already be set; route guards use step cache */
+      }
+    })();
+  }, [displayStep, participantId, squadId, refreshUser]);
 
   async function runAction(fn) {
     setBusy(true);
@@ -126,7 +139,6 @@ export function CohortIdentityPage({ participantId }) {
 
   const phase = cohort?.onboarding_phase ?? 'suggestions_closed';
   const squadRow = squad?.squad;
-  const squadId = squad?.membership?.squad_id;
 
   return (
     <PageContainer wide>

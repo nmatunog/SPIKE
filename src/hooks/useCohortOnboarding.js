@@ -34,7 +34,7 @@ export function useCohortOnboarding(participantId) {
     }
     try {
       const ctx = await loadOnboardingContext(participantId);
-      if (ctx.progress?.onboarding_complete) {
+      if (ctx.progress?.onboarding_complete || ctx.step === 'complete') {
         setOnboardingCompleteCache(participantId, true);
       }
       setState({ ...ctx, loading: false, error: '' });

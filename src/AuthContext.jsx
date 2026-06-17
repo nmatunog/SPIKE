@@ -15,7 +15,7 @@ import {
   isMockAuthEnabled,
   persistMockUser,
 } from './lib/mockAuth.js';
-import { setOnboardingCompleteCache } from './lib/cohortOnboardingService.js';
+import { setOnboardingCompleteCache, isInternOnboardingSatisfied } from './lib/cohortOnboardingService.js';
 import { ensureInternProgress } from './lib/supabase/cohortOnboarding.js';
 import { scheduleInternDelayedUpload, clearInternDelayedUploadSchedule, runInternSignInCloudUpload } from './lib/internSessionSync.js';
 import { runInternLogoutBackup } from './lib/internLogoutBackup.js';
@@ -132,7 +132,7 @@ export function AuthProvider({ children }) {
 
     if (profileError) throw profileError;
     if (!profile) {
-      if (internProgress?.onboarding_complete) {
+      if (internProgress?.onboarding_complete || isInternOnboardingSatisfied(internProgress)) {
         setOnboardingCompleteCache(authUser.id, true);
       }
       return {
@@ -180,7 +180,7 @@ export function AuthProvider({ children }) {
       }
     }
 
-    if (internProgress?.onboarding_complete) {
+    if (internProgress?.onboarding_complete || isInternOnboardingSatisfied(internProgress)) {
       setOnboardingCompleteCache(profile.id, true);
     }
 
