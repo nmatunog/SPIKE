@@ -17,23 +17,16 @@ export const FEC_PROCESS_STEPS = [
 ];
 
 export const FEC_LAYOUT_CENTER = {
-  icon: 'Sparkles',
+  icon: 'Heart',
   title: 'UNIQUE VENTURE PROPOSITION',
-  tagline: 'The heart of your venture. Everything flows from and supports this.',
+  tagline: 'The heart of your venture.',
+  prompt: 'What unique value do you deliver and to whom?',
+  labels: ['Your promise to clients', 'What makes you different', 'Why it matters'],
+  output: 'Clear statement of your unique value and difference.',
 };
 
-/** @type {Array<{ id: string, number: number, title: string, icon: FecLayoutIcon, prompt: string, labels: string[], output?: string, grid: 'top' | 'left' | 'right' | 'bottom' | 'wide' | 'center-detail' }>} */
+/** @type {Array<{ id: string, number: number, title: string, icon: FecLayoutIcon, prompt: string, labels: string[], output?: string, grid: 'top' | 'below-center' }>} */
 export const FEC_LAYOUT_SIMPLE_BOXES = [
-  {
-    id: 'uvp_detail',
-    number: 1,
-    title: 'UNIQUE VENTURE PROPOSITION',
-    icon: 'Gem',
-    prompt: 'What unique value do you deliver and to whom?',
-    labels: ['Your promise to clients', 'What makes you different', 'Why it matters'],
-    output: 'Clear statement of your unique value and difference.',
-    grid: 'center-detail',
-  },
   {
     id: 'who_we_serve',
     number: 2,
@@ -61,7 +54,7 @@ export const FEC_LAYOUT_SIMPLE_BOXES = [
     prompt: 'How will you create an amazing experience?',
     labels: ['Before engagement', 'During engagement', 'After engagement', 'Service standards'],
     output: 'Signature experience that drives trust and loyalty.',
-    grid: 'right',
+    grid: 'top',
   },
   {
     id: 'winning_strategy',
@@ -76,7 +69,7 @@ export const FEC_LAYOUT_SIMPLE_BOXES = [
       'Retention & referral strategy',
     ],
     output: 'Strategy to acquire, deliver, and retain clients profitably.',
-    grid: 'right',
+    grid: 'top',
   },
   {
     id: 'key_partners',
@@ -85,7 +78,7 @@ export const FEC_LAYOUT_SIMPLE_BOXES = [
     icon: 'Handshake',
     prompt: 'Who are the key partners that will help you win?',
     labels: ['Strategic partners', 'Centers of influence', 'Alliances & networks', 'Ecosystem enablers'],
-    grid: 'left',
+    grid: 'below-center',
   },
 ];
 

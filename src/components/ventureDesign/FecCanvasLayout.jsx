@@ -104,6 +104,74 @@ function BoxBody({ mode, content, minHeight = '3.5rem' }) {
   );
 }
 
+function FecUvpCenter({ mode, centerContent, uvpDetailContent }) {
+  const content = centerContent ?? uvpDetailContent;
+  return (
+    <section className="flex h-full flex-col rounded-xl border-2 border-spike bg-spike p-4 text-center text-white shadow-lg md:p-5">
+      <Heart size={22} className="mx-auto mb-2 text-white" aria-hidden />
+      <h3 className="text-xs font-black uppercase tracking-wide md:text-sm">{FEC_LAYOUT_CENTER.title}</h3>
+      <p className="mt-1 text-[11px] text-red-100">{FEC_LAYOUT_CENTER.tagline}</p>
+      <p className="mt-3 text-[10px] italic text-red-200/90">{FEC_LAYOUT_CENTER.prompt}</p>
+      <SuggestiveLabels
+        labels={FEC_LAYOUT_CENTER.labels}
+        className="mt-2 text-left text-[10px] text-red-100 [&_li>span:first-child]:text-yellow-300 [&_li>span:last-child]:text-red-100"
+      />
+      <div className="mt-auto pt-3">
+        {mode === 'full' && content ? (
+          <p className="rounded-lg bg-black/20 px-3 py-2 text-sm font-semibold leading-relaxed text-yellow-100">
+            {content}
+          </p>
+        ) : (
+          <div className="min-h-[4rem] rounded-lg border-2 border-dashed border-white/40 bg-white/10" />
+        )}
+        <p className="mt-2 text-[10px] font-semibold text-yellow-300">{FEC_LAYOUT_CENTER.output}</p>
+        <p className="mt-2 text-[10px] text-red-200/80">{FEC_UVP_HELPER}</p>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * @param {{
+ *   box: typeof FEC_GROWTH_ENGINES_BOX | typeof FEC_FINANCIAL_ENGINE_BOX,
+ *   mode: 'blank' | 'full',
+ *   columnContent: Record<string, string>,
+ *   compact?: boolean,
+ * }} props
+ */
+function FecSideComplexBox({ box, mode, columnContent, compact = false }) {
+  return (
+    <article className="flex h-full flex-col rounded-xl border-2 border-slate-200 bg-white p-3 shadow-sm md:p-4">
+      <div className="mb-2 flex items-start gap-2">
+        <span className="flex h-6 w-6 shrink-0 items-center justify-center bg-spike text-[11px] font-black text-white">
+          {box.number}
+        </span>
+        <div className="min-w-0">
+          {'icon' in box && box.icon ? (
+            <div className="flex items-center gap-2">
+              <FecIcon name={box.icon} size={16} />
+              <h3 className="text-[10px] font-black uppercase tracking-wide text-slate-900">{box.title}</h3>
+            </div>
+          ) : (
+            <h3 className="text-[10px] font-black uppercase tracking-wide text-slate-900">{box.title}</h3>
+          )}
+          <p className="mt-1 text-[10px] italic text-slate-500">{box.prompt}</p>
+        </div>
+      </div>
+      <div className={`grid flex-1 gap-2 ${compact ? 'grid-cols-1' : 'md:grid-cols-3'}`}>
+        {box.columns.map((col) => (
+          <div key={col.title} className="rounded-lg border border-slate-100 bg-slate-50 p-2">
+            <p className="mb-1 text-[9px] font-black uppercase text-[#001F3F]">{col.title}</p>
+            <SuggestiveLabels labels={col.labels} className="text-[10px]" />
+            <BoxBody mode={mode} content={columnContent[col.title]} minHeight="2rem" />
+          </div>
+        ))}
+      </div>
+      {box.output ? <p className="mt-2 text-[10px] font-semibold text-spike">{box.output}</p> : null}
+    </article>
+  );
+}
+
 /**
  * @param {{
  *   number: number,
@@ -177,12 +245,8 @@ export function FecCanvasLayout({
   showFooter = true,
   variant = 'poster',
 }) {
-  const boxesByGrid = {
-    top: FEC_LAYOUT_SIMPLE_BOXES.filter((b) => b.grid === 'top'),
-    left: FEC_LAYOUT_SIMPLE_BOXES.filter((b) => b.grid === 'left'),
-    right: FEC_LAYOUT_SIMPLE_BOXES.filter((b) => b.grid === 'right'),
-    centerDetail: FEC_LAYOUT_SIMPLE_BOXES.find((b) => b.grid === 'center-detail'),
-  };
+  const topBoxes = FEC_LAYOUT_SIMPLE_BOXES.filter((b) => b.grid === 'top');
+  const partnersBox = FEC_LAYOUT_SIMPLE_BOXES.find((b) => b.grid === 'below-center');
 
   const growthContent = complexContents.growth_engines ?? {};
   const financialContent = complexContents.financial_engine ?? {};
@@ -240,131 +304,44 @@ export function FecCanvasLayout({
       ) : null}
 
       <div className="p-3 md:p-5">
-        <div className="grid gap-3 lg:grid-cols-12 lg:grid-rows-[auto_auto_auto]">
-          {/* Top row: WHO + PROBLEM */}
-          <div className="grid gap-3 sm:grid-cols-2 lg:col-span-5 lg:col-start-1 lg:row-start-1">
-            {boxesByGrid.top.map((box) => (
-              <FecSimpleBox
-                key={box.id}
-                {...box}
-                mode={mode}
-                content={boxContents[box.id]}
-              />
-            ))}
+        <div className="grid gap-3 lg:grid-cols-12">
+          {/* Row 1 — four customer/strategy boxes */}
+          {topBoxes.map((box) => (
+            <div key={box.id} className="lg:col-span-3">
+              <FecSimpleBox {...box} mode={mode} content={boxContents[box.id]} />
+            </div>
+          ))}
+
+          {/* Row 2 — Growth | UVP center | Financial */}
+          <div className="lg:col-span-4 lg:row-start-2">
+            <FecSideComplexBox
+              box={FEC_GROWTH_ENGINES_BOX}
+              mode={mode}
+              columnContent={growthContent}
+              compact
+            />
+          </div>
+          <div className="lg:col-span-4 lg:col-start-5 lg:row-start-2">
+            <FecUvpCenter mode={mode} centerContent={centerContent} uvpDetailContent={uvpDetailContent} />
+          </div>
+          <div className="lg:col-span-4 lg:col-start-9 lg:row-start-2">
+            <FecSideComplexBox
+              box={FEC_FINANCIAL_ENGINE_BOX}
+              mode={mode}
+              columnContent={financialContent}
+              compact
+            />
           </div>
 
-          {/* Right column: EXPERIENCE + STRATEGY */}
-          <div className="grid gap-3 sm:grid-cols-2 lg:col-span-4 lg:col-start-9 lg:row-start-1 lg:row-span-2">
-            {boxesByGrid.right.map((box) => (
-              <FecSimpleBox
-                key={box.id}
-                {...box}
-                mode={mode}
-                content={boxContents[box.id]}
-              />
-            ))}
-          </div>
-
-          {/* Center hub + box 1 detail */}
-          <section className="flex flex-col lg:col-span-4 lg:col-start-5 lg:row-start-1 lg:row-span-2">
-            <div className="flex flex-1 flex-col items-center justify-center rounded-full border-4 border-[#001F3F] bg-[#001F3F] px-6 py-8 text-center text-white shadow-lg lg:min-h-[240px]">
-              <FecIcon name={FEC_LAYOUT_CENTER.icon} size={22} className="mb-2 text-spike" />
-              <h3 className="text-sm font-black uppercase tracking-wide md:text-base">
-                {FEC_LAYOUT_CENTER.title}
-              </h3>
-              <p className="mt-2 max-w-xs text-xs leading-relaxed text-slate-200 md:text-sm">
-                {FEC_LAYOUT_CENTER.tagline}
-              </p>
-              {mode === 'full' && centerContent ? (
-                <p className="mt-4 max-w-sm text-sm font-semibold leading-relaxed text-yellow-100">
-                  {centerContent}
-                </p>
-              ) : (
-                <div className="mt-4 w-full max-w-xs min-h-[3rem] rounded-lg border-2 border-dashed border-white/30 bg-white/5" />
-              )}
+          {/* Row 3 — Key partners under UVP */}
+          {partnersBox ? (
+            <div className="lg:col-span-4 lg:col-start-5 lg:row-start-3">
+              <FecSimpleBox {...partnersBox} mode={mode} content={boxContents[partnersBox.id]} />
             </div>
-            {boxesByGrid.centerDetail ? (
-              <div className="mt-3">
-                <FecSimpleBox
-                  {...boxesByGrid.centerDetail}
-                  mode={mode}
-                  content={uvpDetailContent ?? boxContents[boxesByGrid.centerDetail.id]}
-                />
-                <p className="mt-2 text-center text-[10px] text-slate-400">{FEC_UVP_HELPER}</p>
-              </div>
-            ) : null}
-          </section>
+          ) : null}
 
-          {/* Left: KEY PARTNERS */}
-          <div className="lg:col-span-3 lg:col-start-1 lg:row-start-2">
-            {boxesByGrid.left.map((box) => (
-              <FecSimpleBox
-                key={box.id}
-                {...box}
-                mode={mode}
-                content={boxContents[box.id]}
-              />
-            ))}
-          </div>
-
-          {/* Box 6 — GROWTH ENGINES */}
-          <article className="rounded-xl border-2 border-slate-200 bg-white p-3 shadow-sm md:p-4 lg:col-span-12 lg:row-start-3">
-            <div className="mb-3 flex items-start gap-2">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center bg-spike text-[11px] font-black text-white">
-                {FEC_GROWTH_ENGINES_BOX.number}
-              </span>
-              <div>
-                <div className="flex items-center gap-2">
-                  <FecIcon name={FEC_GROWTH_ENGINES_BOX.icon} size={16} />
-                  <h3 className="text-[10px] font-black uppercase tracking-wide text-slate-900 md:text-xs">
-                    {FEC_GROWTH_ENGINES_BOX.title}
-                  </h3>
-                </div>
-                <p className="mt-1 text-xs italic text-slate-500">{FEC_GROWTH_ENGINES_BOX.prompt}</p>
-              </div>
-            </div>
-            <div className="grid gap-3 md:grid-cols-3">
-              {FEC_GROWTH_ENGINES_BOX.columns.map((col) => (
-                <div key={col.title} className="rounded-lg border border-slate-100 bg-slate-50 p-3">
-                  <div className="mb-2 flex items-center gap-2">
-                    <FecIcon name={col.icon} size={14} />
-                    <p className="text-[10px] font-black uppercase text-slate-800">{col.title}</p>
-                  </div>
-                  <SuggestiveLabels labels={col.labels} />
-                  <BoxBody mode={mode} content={growthContent[col.title]} minHeight="2.5rem" />
-                </div>
-              ))}
-            </div>
-            <p className="mt-2 text-[10px] font-semibold text-spike">{FEC_GROWTH_ENGINES_BOX.output}</p>
-          </article>
-
-          {/* Box 8 — FINANCIAL ENGINE */}
-          <article className="rounded-xl border-2 border-slate-200 bg-white p-3 shadow-sm md:p-4 lg:col-span-12 lg:row-start-4">
-            <div className="mb-3 flex items-start gap-2">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center bg-spike text-[11px] font-black text-white">
-                {FEC_FINANCIAL_ENGINE_BOX.number}
-              </span>
-              <div>
-                <h3 className="text-[10px] font-black uppercase tracking-wide text-slate-900 md:text-xs">
-                  {FEC_FINANCIAL_ENGINE_BOX.title}
-                </h3>
-                <p className="mt-1 text-xs italic text-slate-500">{FEC_FINANCIAL_ENGINE_BOX.prompt}</p>
-              </div>
-            </div>
-            <div className="grid gap-3 md:grid-cols-3">
-              {FEC_FINANCIAL_ENGINE_BOX.columns.map((col) => (
-                <div key={col.title} className="rounded-lg border border-slate-100 bg-slate-50 p-3">
-                  <p className="mb-2 text-[10px] font-black uppercase text-[#001F3F]">{col.title}</p>
-                  <SuggestiveLabels labels={col.labels} />
-                  <BoxBody mode={mode} content={financialContent[col.title]} minHeight="2.5rem" />
-                </div>
-              ))}
-            </div>
-            <p className="mt-2 text-[10px] font-semibold text-spike">{FEC_FINANCIAL_ENGINE_BOX.output}</p>
-          </article>
-
-          {/* Box 9 — ROADMAP */}
-          <article className="overflow-hidden rounded-xl border-2 border-slate-200 bg-white shadow-sm lg:col-span-12 lg:row-start-5">
+          {/* Row 4 — Roadmap + Dashboard side by side */}
+          <article className="overflow-hidden rounded-xl border-2 border-slate-200 bg-white shadow-sm lg:col-span-6 lg:row-start-4">
             <div className="bg-[#001F3F] px-4 py-2">
               <div className="flex items-center gap-2">
                 <span className="flex h-5 w-5 items-center justify-center bg-spike text-[10px] font-black text-white">
@@ -395,8 +372,7 @@ export function FecCanvasLayout({
             </p>
           </article>
 
-          {/* Box 10 — DASHBOARD */}
-          <article className="overflow-hidden rounded-xl border-2 border-slate-200 bg-white shadow-sm lg:col-span-12 lg:row-start-6">
+          <article className="overflow-hidden rounded-xl border-2 border-slate-200 bg-white shadow-sm lg:col-span-6 lg:col-start-7 lg:row-start-4">
             <div className="bg-[#001F3F] px-4 py-2">
               <div className="flex items-center gap-2">
                 <span className="flex h-5 w-5 items-center justify-center bg-spike text-[10px] font-black text-white">
@@ -408,7 +384,7 @@ export function FecCanvasLayout({
               </div>
               <p className="text-[10px] text-slate-300">{FEC_DASHBOARD_BOX.subtitle}</p>
             </div>
-            <div className="grid gap-2 p-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 md:p-4">
+            <div className="grid gap-2 p-3 sm:grid-cols-2 lg:grid-cols-3 md:p-4">
               {FEC_DASHBOARD_BOX.columns.map((col) => (
                 <div key={col.title} className="rounded-lg border border-slate-100 bg-slate-50 p-2.5">
                   <div className="mb-1.5 flex items-center gap-1.5">

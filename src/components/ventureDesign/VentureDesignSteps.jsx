@@ -201,7 +201,6 @@ export function VentureDesignStep5({ draft }) {
             who_we_serve: draft.step1.customer || undefined,
             problem_we_solve: draft.step1.problem || undefined,
             client_experience: draft.step4.clientFeeling || undefined,
-            uvp_detail: uvp,
           }}
         />
       </div>

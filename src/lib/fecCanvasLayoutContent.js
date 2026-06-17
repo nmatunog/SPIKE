@@ -26,7 +26,6 @@ export function buildFecLayoutExemplarContent({ summary, engines }) {
       winning_strategy:
         'Trusted AIA advisor positioning — digital-first discovery, milestone-based planning, and referral-led growth.',
       key_partners: enable.key_partners,
-      uvp_detail: summary.unified_venture_proposition,
     },
     complexContents: {
       growth_engines: {
