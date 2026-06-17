@@ -50,6 +50,7 @@ import {
   MentorVentureCoachPage,
   PlaybookShell,
   VentureStudioDay3Page,
+  FecCanvasProjectionPage,
   PortfolioPage,
   ProgressReportsPage,
   ResearchPage,
@@ -1374,6 +1375,12 @@ const SpikeMasterPortal = () => {
     </LazyRoute>
   );
 
+  const renderFecProjection = (viewerRole) => (
+    <LazyRoute label="Loading FEC projection…">
+      <FecCanvasProjectionPage viewerRole={viewerRole} />
+    </LazyRoute>
+  );
+
   const AdminDashboardHome = () => (
     <div className="container mx-auto px-4 py-6 sm:px-6 sm:py-8">
       <DailyActivationCodeCard showRegenerate className="mb-6" />
@@ -1460,6 +1467,7 @@ const SpikeMasterPortal = () => {
         return (
           <VentureBlueprintShell
             user={internUser}
+            viewerRole={viewAsRole ?? 'intern'}
             onLogTraction={() => navigate(ROUTES.dashboard)}
             onProgressRefresh={() => refreshUser()}
           />
@@ -1474,6 +1482,10 @@ const SpikeMasterPortal = () => {
             <MyVenturePortfolioRoute user={internUser} />
           </LazyRoute>
         );
+      }
+      if (path === ROUTES.playbookFecProjection) {
+        const projectionRole = viewAsRole ?? (userRole === 'superuser' ? 'faculty' : userRole);
+        return renderFecProjection(projectionRole);
       }
       if (path === ROUTES.playbookVentureStudio) {
         return renderVentureStudioDay3(internUser, { readOnly: false });
@@ -1520,6 +1532,7 @@ const SpikeMasterPortal = () => {
         return (
           <VentureBlueprintShell
             user={internUser}
+            viewerRole="intern"
             onLogTraction={() => navigate(ROUTES.dashboard)}
             onProgressRefresh={() => refreshUser()}
           />
@@ -1534,6 +1547,9 @@ const SpikeMasterPortal = () => {
             <MyVenturePortfolioRoute user={internUser} />
           </LazyRoute>
         );
+      }
+      if (path === ROUTES.playbookFecProjection) {
+        return renderFecProjection('intern');
       }
       if (path === ROUTES.playbookVentureStudio) {
         return renderVentureStudioDay3(internUser, { readOnly: false });
@@ -1557,6 +1573,9 @@ const SpikeMasterPortal = () => {
     }
 
     if (isSuperuserSession || isStaffUiRole(effectiveUserRole)) {
+      if (path === ROUTES.playbookFecProjection) {
+        return renderFecProjection(effectiveUserRole);
+      }
       if (path === ROUTES.playbookVentureStudio) {
         const studioUser =
           effectiveUserRole === 'intern' ? internModuleUser ?? user : user;

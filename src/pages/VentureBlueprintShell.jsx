@@ -32,9 +32,9 @@ import { VentureCoachShell } from '../components/ventureCoach/VentureCoachShell.
 import { isWeek1BuildSimplifiedMode } from '../lib/programContext.js';
 
 /**
- * @param {{ user: { id: string, internProgress?: object | null }, onLogTraction?: () => void, onProgressRefresh?: (progress: object) => void }} props
+ * @param {{ user: { id: string, internProgress?: object | null }, viewerRole?: string, onLogTraction?: () => void, onProgressRefresh?: (progress: object) => void }} props
  */
-export function VentureBlueprintShell({ user, onProgressRefresh }) {
+export function VentureBlueprintShell({ user, viewerRole = 'intern', onProgressRefresh }) {
   const participantName = user.name || user.email || 'Participant';
   const location = useLocation();
   const { version: hydrateVersion, ready: hydrateReady, error: hydrateError } = useInternWorkHydration(user.id);
@@ -103,6 +103,7 @@ export function VentureBlueprintShell({ user, onProgressRefresh }) {
             participantName={participantName}
             squadNameFallback={progress?.squad ?? user.internProgress?.squad ?? ''}
             careerTrack={state.career_track}
+            viewerRole={viewerRole}
           />
         );
       case 'market-intelligence':

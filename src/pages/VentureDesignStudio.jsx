@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { FecCanvasProjectionView } from '../components/ventureDesign/FecCanvasProjectionView.jsx';
 import { VentureDesignStudioWorkspace } from '../components/ventureDesign/VentureDesignStudioWorkspace.jsx';
+import { canToggleFecCanvasMode } from '../lib/fecProjectionAccess.js';
 import { prepareFecCanvas } from '../lib/fecCanvasService.js';
 import { loadVentureDesignRecord, saveVentureDesignRecord } from '../lib/ventureDesignStudioService.js';
 
@@ -14,6 +15,7 @@ import { loadVentureDesignRecord, saveVentureDesignRecord } from '../lib/venture
  *   careerTrack?: string,
  *   coachMode?: boolean,
  *   readOnly?: boolean,
+ *   viewerRole?: string,
  * }} props
  */
 export function VentureDesignStudio({
@@ -22,6 +24,7 @@ export function VentureDesignStudio({
   squadNameFallback = '',
   coachMode: coachModeProp = false,
   readOnly: readOnlyProp = false,
+  viewerRole = 'intern',
 }) {
   const [searchParams] = useSearchParams();
   const projectMode = searchParams.get('project') === '1';
@@ -40,7 +43,12 @@ export function VentureDesignStudio({
   }, [participantId, searchParams, projectMode]);
 
   if (projectMode) {
-    return <FecCanvasProjectionView />;
+    return (
+      <FecCanvasProjectionView
+        canToggleMode={canToggleFecCanvasMode(viewerRole)}
+        viewerRole={viewerRole}
+      />
+    );
   }
 
   return (

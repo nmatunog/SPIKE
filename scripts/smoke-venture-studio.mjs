@@ -83,8 +83,18 @@ if (!ventureDesignPage.includes('project') || !ventureDesignPage.includes('FecCa
 }
 
 const hero = readFileSync(join(ROOT, 'src/components/playbook/ventureDesign/Day4VentureDesignHero.jsx'), 'utf8');
-if (!hero.includes('project=1') || !hero.includes('variant')) {
-  fail('Day4VentureDesignHero missing projection link or role variants');
+if (!hero.includes('playbookFecProjection') || !hero.includes('variant')) {
+  fail('Day4VentureDesignHero missing playbook projection link or role variants');
+}
+
+const access = readFileSync(join(ROOT, 'src/lib/fecProjectionAccess.js'), 'utf8');
+if (!access.includes('faculty') || !access.includes('mentor')) {
+  fail('fecProjectionAccess missing faculty/mentor gate');
+}
+
+const projection = readFileSync(join(ROOT, 'src/components/ventureDesign/FecCanvasProjectionView.jsx'), 'utf8');
+if (!projection.includes('canToggleMode')) {
+  fail('FecCanvasProjectionView missing canToggleMode gate');
 }
 
 const facultyView = readFileSync(join(ROOT, 'src/components/playbook/FacultyPlaybookView.jsx'), 'utf8');

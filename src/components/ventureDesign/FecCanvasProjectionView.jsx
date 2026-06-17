@@ -13,10 +13,10 @@ import {
   FEC_CANVAS_EXEMPLAR_SUMMARY,
 } from '../../lib/fecCanvasExemplar.js';
 import { BLUEPRINT_LINKS } from '../../routes/paths.js';
+import { PROGRAM_COACH_LABEL } from '../../lib/terminology.js';
 
 /**
  * @param {{
- *   pillarKey: string,
  *   label: string,
  *   fields: Array<{ key: string, label: string }>,
  *   mode: 'blank' | 'full',
@@ -51,10 +51,26 @@ function PillarCard({ label, fields, mode, engineKey }) {
 }
 
 /**
- * Program Coach projection — full FEC overview with blank vs exemplar toggle.
+ * FEC overview projection — blank/full toggle for Program Coach and mentors only.
+ * @param {{
+ *   canToggleMode?: boolean,
+ *   exitHref?: string,
+ *   viewerRole?: string,
+ * }} props
  */
-export function FecCanvasProjectionView() {
+export function FecCanvasProjectionView({
+  canToggleMode = false,
+  exitHref = BLUEPRINT_LINKS.businessPlan,
+  viewerRole = 'intern',
+}) {
   const [mode, setMode] = useState(/** @type {'blank' | 'full'} */ ('blank'));
+  const displayMode = canToggleMode ? mode : 'blank';
+  const isFaculty = viewerRole === 'faculty';
+  const projectionLabel = isFaculty
+    ? `${PROGRAM_COACH_LABEL} projection`
+    : viewerRole === 'mentor'
+      ? 'Mentor projection'
+      : 'FEC overview';
 
   return (
     <div className="-mx-4 min-h-screen bg-stone-950 font-sans text-white md:-mx-0">
@@ -64,44 +80,48 @@ export function FecCanvasProjectionView() {
             <Monitor size={20} className="shrink-0 text-amber-400" aria-hidden />
             <div className="min-w-0">
               <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-amber-400">
-                Program Coach projection
+                {projectionLabel}
               </p>
               <h1 className="truncate text-sm font-bold md:text-base">{FEC_CANVAS_TITLE}</h1>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <div
-              className="inline-flex rounded-xl border border-stone-700 bg-stone-900 p-1"
-              role="group"
-              aria-label="Canvas display mode"
-            >
-              <button
-                type="button"
-                onClick={() => setMode('blank')}
-                className={`min-h-[40px] rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wide transition ${
-                  mode === 'blank' ? 'bg-white text-stone-900' : 'text-stone-400 hover:text-white'
-                }`}
+            {canToggleMode ? (
+              <div
+                className="inline-flex rounded-xl border border-stone-700 bg-stone-900 p-1"
+                role="group"
+                aria-label="Canvas display mode"
               >
-                Blank canvas
-              </button>
-              <button
-                type="button"
-                onClick={() => setMode('full')}
-                className={`min-h-[40px] rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wide transition ${
-                  mode === 'full' ? 'bg-amber-400 text-stone-900' : 'text-stone-400 hover:text-white'
-                }`}
+                <button
+                  type="button"
+                  onClick={() => setMode('blank')}
+                  className={`min-h-[40px] rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wide transition ${
+                    displayMode === 'blank' ? 'bg-white text-stone-900' : 'text-stone-400 hover:text-white'
+                  }`}
+                >
+                  Blank canvas
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMode('full')}
+                  className={`min-h-[40px] rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wide transition ${
+                    displayMode === 'full' ? 'bg-amber-400 text-stone-900' : 'text-stone-400 hover:text-white'
+                  }`}
+                >
+                  Full canvas
+                </button>
+              </div>
+            ) : null}
+            {canToggleMode ? (
+              <Link
+                to={`${BLUEPRINT_LINKS.businessPlan}?start=1`}
+                className="hidden min-h-[40px] items-center rounded-xl border border-stone-600 px-4 py-2 text-xs font-semibold text-stone-200 hover:bg-stone-800 sm:inline-flex"
               >
-                Full canvas
-              </button>
-            </div>
+                Open workshop
+              </Link>
+            ) : null}
             <Link
-              to={`${BLUEPRINT_LINKS.businessPlan}?start=1`}
-              className="hidden min-h-[40px] items-center rounded-xl border border-stone-600 px-4 py-2 text-xs font-semibold text-stone-200 hover:bg-stone-800 sm:inline-flex"
-            >
-              Open workshop
-            </Link>
-            <Link
-              to={BLUEPRINT_LINKS.businessPlan}
+              to={exitHref}
               className="inline-flex min-h-[40px] items-center gap-1 rounded-xl border border-stone-600 px-3 py-2 text-xs font-semibold text-stone-300 hover:bg-stone-800"
             >
               <ArrowLeft size={14} aria-hidden />
@@ -121,7 +141,7 @@ export function FecCanvasProjectionView() {
             <Layout size={16} aria-hidden />
             Center — Unified Venture Proposition
           </p>
-          {mode === 'full' ? (
+          {displayMode === 'full' ? (
             <p className="mx-auto max-w-4xl text-lg font-semibold leading-relaxed text-white md:text-2xl">
               {FEC_CANVAS_EXEMPLAR_SUMMARY.unified_venture_proposition}
             </p>
@@ -143,12 +163,12 @@ export function FecCanvasProjectionView() {
                     )
                   : pillar.fields
               }
-              mode={mode}
+              mode={displayMode}
             />
           ))}
         </div>
 
-        {mode === 'full' ? (
+        {displayMode === 'full' ? (
           <div className="mb-6 grid gap-4 lg:grid-cols-2">
             {Object.entries(FEC_AGENCY_BUILDER_EXTENSIONS).map(([engineKey, section]) => (
               <PillarCard
@@ -180,7 +200,7 @@ export function FecCanvasProjectionView() {
           <h2 className="mb-4 text-sm font-black uppercase tracking-widest text-stone-300">
             3-year roadmap &amp; success picture
           </h2>
-          {mode === 'full' ? (
+          {displayMode === 'full' ? (
             <div className="grid gap-4 md:grid-cols-3">
               {[
                 ['12 months', FEC_CANVAS_EXEMPLAR_SUMMARY.roadmap_12mo],
@@ -203,7 +223,7 @@ export function FecCanvasProjectionView() {
               ))}
             </div>
           )}
-          {mode === 'full' ? (
+          {displayMode === 'full' ? (
             <p className="mt-4 text-sm italic text-stone-400">
               {FEC_CANVAS_EXEMPLAR_SUMMARY.success_narrative}
             </p>

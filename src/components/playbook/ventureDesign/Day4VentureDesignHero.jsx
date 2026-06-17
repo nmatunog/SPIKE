@@ -1,6 +1,6 @@
 import { ArrowRight, Layout, Monitor, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { BLUEPRINT_LINKS } from '../../../routes/paths.js';
+import { BLUEPRINT_LINKS, ROUTES } from '../../../routes/paths.js';
 
 const WORKSHOP_STEPS = [
   'Target Insight',
@@ -11,7 +11,7 @@ const WORKSHOP_STEPS = [
 ];
 
 const WORKSHOP_HREF = `${BLUEPRINT_LINKS.businessPlan}?start=1`;
-const PROJECTION_HREF = `${BLUEPRINT_LINKS.businessPlan}?project=1`;
+const PROJECTION_HREF = ROUTES.playbookFecProjection;
 const COACH_WORKSHOP_HREF = `${BLUEPRINT_LINKS.businessPlan}?coach=1&start=1`;
 
 /**

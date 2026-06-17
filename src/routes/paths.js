@@ -4,6 +4,7 @@ export const ROUTES = {
   ventureBlueprint: '/venture-blueprint',
   playbook: '/playbook',
   playbookVentureStudio: '/playbook/venture-studio/day-3',
+  playbookFecProjection: '/playbook/venture-design/fec-projection',
   portfolio: '/portfolio',
   research: '/research',
   reports: '/reports',
@@ -46,7 +47,11 @@ export function isVentureBlueprintPath(pathname) {
 
 /** @param {string} pathname */
 export function isPlaybookPath(pathname) {
-  return pathname === ROUTES.playbook || pathname === ROUTES.playbookVentureStudio;
+  return (
+    pathname === ROUTES.playbook
+    || pathname === ROUTES.playbookVentureStudio
+    || pathname === ROUTES.playbookFecProjection
+  );
 }
 
 /** Blueprint sub-routes (PR4) — Business Plan, Milestones, Venture Board live inside the OS. */
