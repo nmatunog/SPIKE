@@ -1832,50 +1832,20 @@
             },
             {
               "id": "presentation-day-4-deck-02",
-              "title": "Program Coach Deck 02 — FE Canvas Workshop",
+              "title": "Program Coach Deck 02 — Venture Design Studio (Interactive)",
               "purpose": "",
-              "slideCount": 4,
+              "slideCount": 1,
               "status": "published",
               "pptxUrl": null,
               "pdfUrl": null,
               "slides": [
                 {
                   "number": 1,
-                  "title": "Financial Entrepreneurship Canvas",
-                  "summary": "Your canvas is your operating model — not a one-page plan. Engines: financial, client, talent, leadership, marketing, operations. Day 4 goal: 30%+ completion = FE Canvas v1.",
-                  "facilitatorNotes": "Show canvas in app. 5 min.",
+                  "title": "Venture Design Studio — Interactive Workshop",
+                  "summary": "Deck 02 is now an in-app interactive module. Open Venture Design Studio from the Playbook Day 4 session. Squads work through five guided steps with coach feedback and FEC canvas sync. Facilitators: use “Open for projecti…",
+                  "facilitatorNotes": "Direct squads to Playbook → Day 4 → Enter Venture Design Studio. Use coach projection mode for screen display. 3 min orientation.",
                   "discussionQuestions": [
-                    "Which engine feels most unfamiliar?"
-                  ],
-                  "imageUrl": null
-                },
-                {
-                  "number": 2,
-                  "title": "Strategy Statement & Priorities",
-                  "summary": "Draft your strategy statement: who you serve + how you win. Set priority 1–3 for Week 2 execution.",
-                  "facilitatorNotes": "Workshop begins after slide. 4 min.",
-                  "discussionQuestions": [
-                    "What is priority #1 on your canvas?"
-                  ],
-                  "imageUrl": null
-                },
-                {
-                  "number": 3,
-                  "title": "Canvas Peer Review",
-                  "summary": "Dyads review each other's canvas for clarity and gaps. Mentors coach — do not grade.",
-                  "facilitatorNotes": "4 min intro then activity.",
-                  "discussionQuestions": [
-                    "What gap did your partner identify?"
-                  ],
-                  "imageUrl": null
-                },
-                {
-                  "number": 4,
-                  "title": "Day 4 Deliverables",
-                  "summary": "✓ Canvas v1 (30%+) ✓ Career direction checkpoint ✓ Portfolio canvas section updated",
-                  "facilitatorNotes": "3 min.",
-                  "discussionQuestions": [
-                    "What will you present on Day 5?"
+                    "Which FEC engine will your squad prioritize first?"
                   ],
                   "imageUrl": null
                 }
@@ -1888,8 +1858,7 @@
               "title": "Entrepreneur Paths & Canvas",
               "durationMinutes": 140,
               "presentationIds": [
-                "presentation-day-4-deck-01",
-                "presentation-day-4-deck-02"
+                "presentation-day-4-deck-01"
               ],
               "activityIds": [
                 "activity-day-4-track-clinic",
@@ -1926,8 +1895,8 @@
           "sessionFlow": [
             {
               "time": "0:00–0:25",
-              "activity": "Decks 01–02 intro",
-              "notes": "No path prescription."
+              "activity": "Deck 01 intro + Venture Design Studio launch",
+              "notes": "Deck 02 is in-app — open from Playbook, not slides."
             },
             {
               "time": "0:25–0:65",
@@ -1970,12 +1939,12 @@
               "title": "FE Canvas Workshop",
               "durationMinutes": 75,
               "instructions": [
-                "Participants complete canvas engines in Venture Blueprint.",
-                "Program Coach targets 30% completion minimum.",
-                "Mentors help with strategy statement clarity."
+                "Open Venture Design Studio from Playbook Day 4 Session 1.",
+                "Complete all five steps — individual inputs consolidate to squad FEC draft.",
+                "Commit to portfolio; Program Coach targets 30% FEC completion minimum."
               ],
               "materials": [
-                "Canvas editor in app"
+                "Venture Design Studio in Playbook (replaces Deck 02)"
               ],
               "outputs": [
                 "FE Canvas v1 in portfolio"

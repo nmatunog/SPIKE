@@ -50,10 +50,50 @@ const sessions = JSON.parse(
 const morning = sessions.sessions?.find((s) => s.id === 'session-day-3-morning');
 if (!morning) fail('day-3 morning session missing');
 if (morning.presentationIds.includes('presentation-day-3-deck-02')) {
-  fail('deck-02 should be removed from morning session presentations');
+  fail('day-3 deck-02 should be removed from morning session presentations');
 }
 if (!morning.activityIds.includes('activity-day-3-persona-workshop')) {
   fail('persona workshop activity missing from morning session');
+}
+
+const day4Sessions = JSON.parse(
+  readFileSync(join(ROOT, 'content/segment-1/week-1/day-4/sessions.json'), 'utf8'),
+);
+const day4Morning = day4Sessions.sessions?.find((s) => s.id === 'session-day-4-morning');
+if (!day4Morning) fail('day-4 morning session missing');
+if (day4Morning.presentationIds.includes('presentation-day-4-deck-02')) {
+  fail('day-4 deck-02 should be removed from morning session presentations');
+}
+if (!day4Morning.activityIds.includes('activity-day-4-canvas-workshop')) {
+  fail('canvas workshop activity missing from day-4 morning session');
+}
+
+for (const file of [
+  'src/components/playbook/ventureDesign/VentureDesignLaunchCard.jsx',
+]) {
+  if (!existsSync(join(ROOT, file))) fail(`missing ${file}`);
+}
+
+const sessionView = readFileSync(join(ROOT, 'src/components/playbook/SessionView.jsx'), 'utf8');
+if (!sessionView.includes('VentureDesignLaunchCard')) {
+  fail('SessionView missing Venture Design Studio launch card');
+}
+if (!sessionView.includes('presentation-day-4-deck-02')) {
+  fail('SessionView missing day-4 deck-02 filter');
+}
+
+const day4 = JSON.parse(
+  readFileSync(join(ROOT, 'content/segment-1/week-1/day-4/day.json'), 'utf8'),
+);
+if (!day4.interactiveModules?.includes('venture-design-day-4')) {
+  fail('day-4 day.json missing interactiveModules venture-design-day-4');
+}
+
+const deck4 = JSON.parse(
+  readFileSync(join(ROOT, 'content/segment-1/week-1/day-4/presentation-deck-02.json'), 'utf8'),
+);
+if (!deck4.presentation?.title?.includes('Venture Design Studio')) {
+  fail('day-4 deck-02 should describe Venture Design Studio interactive module');
 }
 
 const day3 = JSON.parse(

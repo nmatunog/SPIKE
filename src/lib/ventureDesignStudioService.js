@@ -10,6 +10,8 @@ import { emptyIndividualDraft } from './ventureDesignStudioConstants.js';
 
 const STORAGE_KEY = 'spike_venture_design_studio';
 
+export const VENTURE_DESIGN_DAY4_MODULE_ID = 'venture-design-day-4';
+
 /**
  * @typedef {ReturnType<typeof emptyIndividualDraft>} VentureDesignIndividualDraft
  * @typedef {{

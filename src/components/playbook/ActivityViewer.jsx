@@ -18,9 +18,19 @@ import {
  *   participantId?: string,
  *   onCompleted?: () => void,
  *   ventureStudioHref?: string,
+ *   interactiveModule?: { href: string, name: string },
  * }} props
  */
-export function ActivityViewer({ activity, participantId, onCompleted, ventureStudioHref }) {
+export function ActivityViewer({
+  activity,
+  participantId,
+  onCompleted,
+  ventureStudioHref,
+  interactiveModule,
+}) {
+  const moduleLink =
+    interactiveModule
+    ?? (ventureStudioHref ? { href: ventureStudioHref, name: 'Venture Studio' } : undefined);
   const completed = participantId && isActivityCompleted(participantId, activity.id);
 
   function handleComplete() {
@@ -83,21 +93,21 @@ export function ActivityViewer({ activity, participantId, onCompleted, ventureSt
       ) : null}
 
       {participantId ? (
-        ventureStudioHref ? (
+        moduleLink ? (
           completed ? (
             <span className="inline-flex items-center gap-1 text-xs font-bold text-green-700">
-              <CheckCircle size={14} /> Completed in Venture Studio
+              <CheckCircle size={14} /> Completed in {moduleLink.name}
             </span>
           ) : (
             <div className="space-y-2">
               <p className="text-sm text-gray-600">
-                Complete all five Venture Studio steps — this activity marks done automatically.
+                Complete all five {moduleLink.name} steps — this activity marks done automatically.
               </p>
               <Link
-                to={ventureStudioHref}
+                to={moduleLink.href}
                 className="inline-flex min-h-[44px] items-center gap-2 rounded-lg bg-spike px-4 py-2 text-sm font-bold text-white hover:bg-spike-light"
               >
-                Open Venture Studio <ArrowRight size={16} aria-hidden />
+                Open {moduleLink.name} <ArrowRight size={16} aria-hidden />
               </Link>
             </div>
           )

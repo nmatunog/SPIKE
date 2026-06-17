@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Rocket, Target, LayoutGrid, FlaskConical } from 'lucide-react';
+import { Rocket, Target, LayoutGrid, FlaskConical, Layout } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { SessionView } from './SessionView.jsx';
 import { DayClosingReflectionSection } from './DayClosingReflectionSection.jsx';
@@ -12,6 +12,10 @@ import {
   loadVentureStudioState,
   ventureStudioProgressPercent,
 } from '../../lib/ventureStudioStorage.js';
+import {
+  loadVentureDesignRecord,
+  ventureDesignProgressPercent,
+} from '../../lib/ventureDesignStudioService.js';
 import { BLUEPRINT_LINKS, playbookHref, ROUTES } from '../../routes/paths.js';
 import { UNLOCK_WEEK1_DAY2_PLUS } from '../../lib/programUnlocks.js';
 
@@ -49,9 +53,18 @@ export function ParticipantDayView({
   const ventureStudioPercent = ventureStudioState
     ? ventureStudioProgressPercent(ventureStudioState)
     : 0;
+  const ventureDesignState = useMemo(
+    () => (participantId ? loadVentureDesignRecord(participantId) : null),
+    [participantId, location.pathname],
+  );
+  const ventureDesignPercent = ventureDesignState
+    ? ventureDesignProgressPercent(ventureDesignState)
+    : 0;
   const activeSession = sessions[sessionIndex];
   const isDay1 = bundle.day.id === 'day-segment-1-week-1-day-1';
   const isDay3 = bundle.day.id === 'day-segment-1-week-1-day-3';
+  const isDay4 = bundle.day.id === 'day-segment-1-week-1-day-4';
+  const ventureDesignHref = `${BLUEPRINT_LINKS.businessPlan}?start=1`;
 
   return (
     <div className="space-y-6">
@@ -130,6 +143,36 @@ export function ParticipantDayView({
         </section>
       ) : null}
 
+      {isDay4 ? (
+        <section className="overflow-hidden rounded-2xl border border-spike/20 bg-gradient-to-br from-slate-900 to-spike-dark p-5 text-white shadow-card sm:p-6">
+          <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-red-200/90">
+            <Layout size={16} aria-hidden />
+            Day 4 interactive module
+          </p>
+          <h3 className="mt-2 text-xl font-bold">Venture Design Studio — FEC Workshop</h3>
+          <p className="mt-2 text-sm text-slate-300">
+            {staffPreview
+              ? 'Preview the squad workspace interns use: five steps, research hydration, coach feedback, and FEC canvas sync.'
+              : 'Replace Deck 02 slides with a guided workshop: target insight, brand identity, and Financial Entrepreneurship Canvas preview.'}
+          </p>
+          <div className="mt-4 flex flex-wrap items-center gap-4">
+            {participantId && ventureDesignPercent > 0 ? (
+              <div>
+                <p className="text-3xl font-bold">{ventureDesignPercent}%</p>
+                <p className="text-xs text-slate-400">Design progress</p>
+              </div>
+            ) : null}
+            <Link
+              to={ventureDesignHref}
+              className="spike-btn-primary inline-flex min-h-[48px] items-center bg-white text-spike hover:bg-red-50"
+            >
+              <Layout size={16} aria-hidden />
+              {staffPreview ? 'Preview Venture Design Studio' : 'Enter Venture Design Studio'}
+            </Link>
+          </div>
+        </section>
+      ) : null}
+
       <header className="border-b border-gray-100 pb-5">
         <div className="flex flex-wrap items-start gap-3">
           <Target className="mt-1 shrink-0 text-[#8B0000]" size={20} />
@@ -158,7 +201,9 @@ export function ParticipantDayView({
               ? day1Progress.percent
               : isDay3 && ventureStudioPercent > 0
                 ? Math.max(completion.percent, ventureStudioPercent)
-                : completion.percent
+                : isDay4 && ventureDesignPercent > 0
+                  ? Math.max(completion.percent, ventureDesignPercent)
+                  : completion.percent
           }
           completedItems={
             isDay1 && day1Progress ? day1Progress.completed : completion.completedItems
@@ -232,6 +277,11 @@ export function ParticipantDayView({
                 Venture Studio
               </Link>
             ) : null}
+            {isDay4 ? (
+              <Link to={ventureDesignHref} className="spike-btn-primary inline-flex">
+                Venture Design Studio
+              </Link>
+            ) : null}
             <Link to={BLUEPRINT_LINKS.businessPlan} className="spike-btn-secondary inline-flex">
               Financial Canvas
             </Link>
@@ -240,6 +290,12 @@ export function ParticipantDayView({
           <div className="mt-3">
             <Link to={ROUTES.playbookVentureStudio} className="spike-btn-primary inline-flex">
               Preview Venture Studio
+            </Link>
+          </div>
+        ) : isDay4 ? (
+          <div className="mt-3">
+            <Link to={ventureDesignHref} className="spike-btn-primary inline-flex">
+              Preview Venture Design Studio
             </Link>
           </div>
         ) : null}

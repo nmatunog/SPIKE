@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle, Layout, Lock, Sparkles } from 'lucide-react';
 import { VentureDesignSquadPanel } from './VentureDesignSquadPanel.jsx';
@@ -30,6 +30,11 @@ import {
   saveVentureDesignRecord,
 } from '../../lib/ventureDesignStudioService.js';
 import { BLUEPRINT_LINKS } from '../../routes/paths.js';
+import { markActivityCompleted } from '../../lib/playbookProgress.js';
+import { isMockUserId } from '../../lib/mockAuth.js';
+
+const DAY4_CANVAS_WORKSHOP_ID = 'activity-day-4-canvas-workshop';
+const DAY4_PLAYBOOK_ID = 'day-segment-1-week-1-day-4';
 
 /**
  * @param {{
@@ -65,6 +70,7 @@ export function VentureDesignStudioWorkspace({
   const [coachLoading, setCoachLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveComplete, setSaveComplete] = useState(false);
+  const completedMarkedRef = useRef(false);
 
   const activeDraft = coachMode ? squadRecord.consolidated : record.individual;
   const effectiveReadOnly = readOnly || (coachMode === false && false);
@@ -91,6 +97,24 @@ export function VentureDesignStudioWorkspace({
     if (!squadName && hydratedMeta.squadName) setSquadName(hydratedMeta.squadName);
     setSquadRecord(loadSquadDesignRecord(squadCtx.squadId));
   }, [participantId, squadNameFallback, squadCtx.squadId]);
+
+  useEffect(() => {
+    if (
+      readOnly
+      || coachMode
+      || !isComplete
+      || !participantId
+      || isMockUserId(participantId)
+      || completedMarkedRef.current
+    ) {
+      return;
+    }
+    completedMarkedRef.current = true;
+    markActivityCompleted(participantId, DAY4_CANVAS_WORKSHOP_ID, DAY4_PLAYBOOK_ID, {
+      title: 'Venture Design Studio',
+      outputs: ['FEC canvas draft', 'Brand identity snapshot'],
+    });
+  }, [readOnly, coachMode, isComplete, participantId]);
 
   const persistRecord = useCallback(
     (patch) => {

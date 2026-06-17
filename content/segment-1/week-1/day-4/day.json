@@ -26,6 +26,9 @@
     "presentation-day-4-deck-01",
     "presentation-day-4-deck-02"
   ],
+  "interactiveModules": [
+    "venture-design-day-4"
+  ],
   "activities": [
     "activity-day-4-track-clinic",
     "activity-day-4-canvas-workshop",

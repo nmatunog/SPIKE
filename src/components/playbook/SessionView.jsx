@@ -5,6 +5,7 @@ import { AssessmentPanel } from './AssessmentPanel.jsx';
 import { ReflectionViewer } from './ReflectionViewer.jsx';
 import { SurveyViewer } from './SurveyViewer.jsx';
 import { VentureStudioLaunchCard } from './ventureStudio/VentureStudioLaunchCard.jsx';
+import { VentureDesignLaunchCard } from './ventureDesign/VentureDesignLaunchCard.jsx';
 import { Link } from 'react-router-dom';
 import { Rocket } from 'lucide-react';
 import { resolvePresentations } from '../../lib/contentLoader.js';
@@ -12,7 +13,10 @@ import { BLUEPRINT_LINKS, ROUTES } from '../../routes/paths.js';
 import { isDayClosingReflection } from '../../lib/dayClosingReflection.js';
 
 const DAY3_ID = 'day-segment-1-week-1-day-3';
+const DAY4_ID = 'day-segment-1-week-1-day-4';
 const VENTURE_STUDIO_ACTIVITY_ID = 'activity-day-3-persona-workshop';
+const VENTURE_DESIGN_ACTIVITY_ID = 'activity-day-4-canvas-workshop';
+const VENTURE_DESIGN_DECK_ID = 'presentation-day-4-deck-02';
 
 /**
  * @typedef {import('../../lib/contentLoader.js').DayContentBundle} DayContentBundle
@@ -43,15 +47,22 @@ export function SessionView({
 }) {
   const { activities, worksheets, assessment, reflections, survey } = bundle;
   const isDay3 = bundle.day.id === DAY3_ID;
+  const isDay4 = bundle.day.id === DAY4_ID;
   const showVentureStudio =
     isDay3
     && (session.activityIds.includes(VENTURE_STUDIO_ACTIVITY_ID)
       || session.presentationIds.includes('presentation-day-3-deck-02'));
+  const showVentureDesign =
+    isDay4
+    && (session.activityIds.includes(VENTURE_DESIGN_ACTIVITY_ID)
+      || session.presentationIds.includes(VENTURE_DESIGN_DECK_ID));
 
   const sessionPresentations =
     session.presentationIds.length > 0
       ? resolvePresentations(bundle, session.presentationIds).filter(
-          (pres) => pres.presentation.id !== 'presentation-day-3-deck-02',
+          (pres) =>
+            pres.presentation.id !== 'presentation-day-3-deck-02'
+            && pres.presentation.id !== VENTURE_DESIGN_DECK_ID,
         )
       : [];
 
@@ -111,6 +122,16 @@ export function SessionView({
         </section>
       ) : null}
 
+      {showVentureDesign ? (
+        <section aria-label="Venture Design Studio interactive module">
+          <VentureDesignLaunchCard
+            participantId={participantId}
+            facultyMode={showSpeakerNotes}
+            presentMode={showSpeakerNotes}
+          />
+        </section>
+      ) : null}
+
       {sessionActivities.length > 0 ? (
         <section>
           <h4 className="mb-2 text-xs font-bold uppercase tracking-wider text-gray-500">
@@ -123,8 +144,15 @@ export function SessionView({
                 activity={activity}
                 participantId={participantId}
                 onCompleted={onProgress}
-                ventureStudioHref={
-                  activity.id === VENTURE_STUDIO_ACTIVITY_ID ? ROUTES.playbookVentureStudio : undefined
+                interactiveModule={
+                  activity.id === VENTURE_STUDIO_ACTIVITY_ID
+                    ? { href: ROUTES.playbookVentureStudio, name: 'Venture Studio' }
+                    : activity.id === VENTURE_DESIGN_ACTIVITY_ID
+                      ? {
+                          href: `${BLUEPRINT_LINKS.businessPlan}?start=1`,
+                          name: 'Venture Design Studio',
+                        }
+                      : undefined
                 }
               />
             ))}
