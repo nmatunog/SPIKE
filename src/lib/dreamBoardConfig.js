@@ -37,3 +37,15 @@ export function dreamBoardSlideGridClass(count) {
   if (count <= 12) return 'grid-cols-4 grid-rows-3';
   return 'grid-cols-4 grid-rows-4';
 }
+
+/**
+ * Tailwind line-clamp for slide captions — more lines when fewer cards on screen.
+ * @param {number} count
+ */
+export function dreamBoardCaptionClampClass(count) {
+  if (count <= 1) return 'line-clamp-8';
+  if (count === 2) return 'line-clamp-6';
+  if (count <= 4) return 'line-clamp-5';
+  if (count <= 6) return 'line-clamp-4';
+  return 'line-clamp-3';
+}

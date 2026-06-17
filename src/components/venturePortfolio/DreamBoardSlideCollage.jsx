@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { dreamBoardCategoryMeta } from '../../lib/venturePortfolioService.js';
-import { dreamBoardSlideGridClass, getDreamBoardMaxCards } from '../../lib/dreamBoardConfig.js';
+import {
+  dreamBoardCaptionClampClass,
+  dreamBoardSlideGridClass,
+  getDreamBoardMaxCards,
+} from '../../lib/dreamBoardConfig.js';
 import { DreamBoardLightbox } from './DreamBoardLightbox.jsx';
 
 /**
@@ -18,6 +22,7 @@ export function DreamBoardSlideCollage({ assets, title = 'My Dream Board', maxCa
   const count = Math.min(cards.length, slideMax);
   const [lightboxAsset, setLightboxAsset] = useState(null);
   const hiddenCount = Math.max(0, cards.length - slideMax);
+  const captionClamp = dreamBoardCaptionClampClass(count);
 
   if (!count) {
     return (
@@ -31,48 +36,63 @@ export function DreamBoardSlideCollage({ assets, title = 'My Dream Board', maxCa
 
   return (
     <>
-    <figure className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-900 shadow-projection">
-      <div className="border-b border-white/10 bg-gradient-to-r from-spike to-spike-dark px-4 py-2">
-        <figcaption className="text-sm font-bold tracking-wide text-white">{title}</figcaption>
-      </div>
-      <div className={`grid aspect-video w-full gap-1 p-1 ${layoutClass}`}>
-        {cards.slice(0, slideMax).map((asset) => {
-          const category = dreamBoardCategoryMeta(asset.category);
-          return (
-            <button
-              key={asset.id}
-              type="button"
-              onClick={() => enableLightbox && setLightboxAsset(asset)}
-              className="relative min-h-0 overflow-hidden rounded-lg bg-slate-800 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-spike-light"
-            >
-              {asset.imageUrl ? (
-                <img src={asset.imageUrl} alt={asset.caption || category.label} className="h-full w-full object-cover" />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-spike-muted/30 to-slate-800 text-3xl text-white/30">
-                  ✦
+      <figure className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-900 shadow-projection">
+        <div className="border-b border-white/10 bg-gradient-to-r from-spike to-spike-dark px-4 py-2">
+          <figcaption className="text-sm font-bold tracking-wide text-white">{title}</figcaption>
+        </div>
+        <div className={`grid aspect-video w-full gap-1.5 p-1.5 sm:gap-2 sm:p-2 ${layoutClass}`}>
+          {cards.slice(0, slideMax).map((asset) => {
+            const category = dreamBoardCategoryMeta(asset.category);
+            const caption = asset.caption?.trim() ?? '';
+            return (
+              <button
+                key={asset.id}
+                type="button"
+                onClick={() => enableLightbox && setLightboxAsset(asset)}
+                className="flex min-h-0 flex-col overflow-hidden rounded-lg bg-slate-800 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-spike-light"
+              >
+                <div className="relative min-h-0 flex-1 overflow-hidden">
+                  {asset.imageUrl ? (
+                    <img
+                      src={asset.imageUrl}
+                      alt={caption || category.label}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-spike-muted/30 to-slate-800 text-3xl text-white/30">
+                      ✦
+                    </div>
+                  )}
                 </div>
-              )}
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/50 to-transparent p-2">
-                <span className="inline-block rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-800">
-                  {category.label}
-                </span>
-                {asset.caption?.trim() ? (
-                  <p className="mt-1 line-clamp-3 text-xs font-medium leading-snug text-white">{asset.caption}</p>
-                ) : null}
-              </div>
-            </button>
-          );
-        })}
-      </div>
-      {hiddenCount > 0 ? (
-        <p className="border-t border-white/10 px-4 py-2 text-xs text-slate-300">
-          +{hiddenCount} more card{hiddenCount === 1 ? '' : 's'} — open the full grid below or tap any card to enlarge.
-        </p>
-      ) : enableLightbox && count > 0 ? (
-        <p className="border-t border-white/10 px-4 py-2 text-xs text-slate-300">Tap any card to view full size.</p>
-      ) : null}
-    </figure>
-    <DreamBoardLightbox asset={lightboxAsset} onClose={() => setLightboxAsset(null)} />
+                <div className="shrink-0 border-t border-white/10 bg-slate-950/95 px-2 py-1.5 sm:px-2.5 sm:py-2">
+                  <span className="inline-block rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-800 sm:text-[11px]">
+                    {category.label}
+                  </span>
+                  {caption ? (
+                    <p
+                      title={caption}
+                      className={`mt-1 text-[11px] font-medium leading-snug text-white sm:text-xs md:text-sm md:leading-relaxed ${captionClamp}`}
+                    >
+                      {caption}
+                    </p>
+                  ) : null}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+        {hiddenCount > 0 ? (
+          <p className="border-t border-white/10 px-4 py-2 text-xs text-slate-300">
+            +{hiddenCount} more card{hiddenCount === 1 ? '' : 's'} — open the full grid below or tap any card to
+            enlarge.
+          </p>
+        ) : enableLightbox && count > 0 ? (
+          <p className="border-t border-white/10 px-4 py-2 text-xs text-slate-300">
+            Tap any card to view the full caption and image.
+          </p>
+        ) : null}
+      </figure>
+      <DreamBoardLightbox asset={lightboxAsset} onClose={() => setLightboxAsset(null)} />
     </>
   );
 }

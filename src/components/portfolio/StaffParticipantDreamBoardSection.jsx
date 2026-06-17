@@ -70,10 +70,10 @@ export function StaffParticipantDreamBoardSection({
             title={`${participantName}'s Dream Board`}
           />
 
-          <details className="rounded-xl border border-slate-200 bg-slate-50/80 p-4">
+          <details className="rounded-xl border border-slate-200 bg-slate-50/80 p-4" open>
             <summary className="inline-flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-spike marker:content-none">
               <LayoutGrid size={16} />
-              View all cards with captions
+              View all cards with full captions
             </summary>
             <div className="mt-4">
               <DreamBoardCollage

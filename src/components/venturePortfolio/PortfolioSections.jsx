@@ -170,7 +170,9 @@ export function PortfolioDreamBoardSection({ portfolio }) {
       <DreamBoardSlideCollage assets={dreamBoard.assets} title={`${portfolio.cover.participantName}'s Dream Board`} />
       <section className="spike-card">
         <h3 className="text-sm font-semibold text-slate-900">All dream cards</h3>
-        <p className="mt-1 text-xs text-slate-500">Tap any card for full-size view with complete caption.</p>
+        <p className="mt-1 text-xs text-slate-500">
+          Full captions below — tap any card in the collage or slide for an enlarged view.
+        </p>
         <div className="mt-4">
           <DreamBoardCollage assets={dreamBoard.assets} showMeta />
         </div>
