@@ -1,19 +1,19 @@
 {
   "assessment": {
     "id": "assessment-day-4-canvas",
-    "title": "Day 4 Canvas Completeness Check",
-    "description": "Canvas v1 threshold and presentation.",
+    "title": "Day 4 UVP & Venture Design Check",
+    "description": "Unified Venture Proposition drafted through Venture Design Studio and shared in peer review.",
     "rubricId": "rubric-day-4-canvas",
     "dayId": "day-segment-1-week-1-day-4"
   },
   "rubric": {
     "id": "rubric-day-4-canvas",
-    "title": "Canvas Presentation Rubric",
+    "title": "UVP Presentation Rubric",
     "criteria": [
-      "30%+ canvas completion",
-      "Strategy statement drafted",
-      "Three priorities identified",
-      "Career direction linked to canvas"
+      "UVP drafted in Venture Design Studio (Step 3)",
+      "Clear who they serve and what problem they solve",
+      "Transformation / outcome articulated (Steps 1–2)",
+      "Brand identity supports the proposition (Step 4)"
     ],
     "assessmentId": "assessment-day-4-canvas"
   }

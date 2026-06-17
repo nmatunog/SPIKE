@@ -41,8 +41,8 @@ export const WEEK1_FACULTY_DAY_META = [
   {
     day: 4,
     theme: 'Entrepreneur',
-    objective: 'Explore venture paths; draft FE Canvas v1 (30%+); present canvas snapshot.',
-    expectedOutput: 'FE Canvas v1, Career Direction checkpoint',
+    objective: 'Explore venture paths; draft Unified Venture Proposition; present UVP snapshot.',
+    expectedOutput: 'UVP (Venture Design Studio), Career Direction checkpoint',
   },
   {
     day: 5,

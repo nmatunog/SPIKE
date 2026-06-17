@@ -1764,8 +1764,8 @@
           "playbookPath": "/playbook?segment=1&week=1&day=4",
           "learningObjectives": [
             "Distinguish advisor, practice owner, and agency builder paths",
-            "Draft Financial Entrepreneurship Canvas v1 (30%+ completion)",
-            "Align canvas engines to career direction",
+            "Draft Unified Venture Proposition through Venture Design Studio",
+            "Align UVP to career direction",
             "Prepare for Day 5 venture commitment"
           ],
           "decks": [
@@ -1905,13 +1905,13 @@
             },
             {
               "time": "0:65–2:00",
-              "activity": "Canvas workshop",
-              "notes": "Target 30% completion."
+              "activity": "Venture Design Studio workshop",
+              "notes": "Target: drafted UVP (Step 3) per squad."
             },
             {
               "time": "2:00–2:40",
               "activity": "Peer review + presentations",
-              "notes": "Coach gaps not grades."
+              "notes": "Coach UVP clarity, not FEC completion %."
             }
           ],
           "activities": [
@@ -1940,8 +1940,8 @@
               "durationMinutes": 75,
               "instructions": [
                 "Open Venture Design Studio from Playbook Day 4 Session 1.",
-                "Complete all five steps — individual inputs consolidate to squad FEC draft.",
-                "Commit to portfolio; Program Coach targets 30% FEC completion minimum."
+                "Complete all five Venture Design Studio steps — focus on Step 3 UVP synthesis.",
+                "Commit UVP and brand snapshot to portfolio; FEC sync follows automatically."
               ],
               "materials": [
                 "Venture Design Studio in Playbook (replaces Deck 02)"
@@ -2006,73 +2006,77 @@
           "surveys": [],
           "evaluations": [],
           "prepChecklist": [
-            "Test canvas editor access",
-            "Load both decks",
-            "Prepare canvas exemplar at 30%"
+            "Test Venture Design Studio access",
+            "Load Deck 01",
+            "Prepare FEC projection (blank + full exemplar) for UVP overview"
           ],
           "debriefQuestions": [
-            "Who reached 30% canvas?",
+            "Who drafted a clear UVP?",
             "Which path drew most energy?",
             "Day 5 presentation prep?"
           ],
           "commonPitfalls": [
-            "Choosing path to please others",
-            "Empty canvas fields",
-            "Skipping strategy statement"
+            "Chasing FEC completion instead of UVP",
+            "Generic customer segments",
+            "Skipping Step 3 synthesis"
           ],
           "coachingTips": [
-            "Use canvas gaps as coaching prompts",
-            "Link engines to persona and ambition"
+            "Use proposition gaps as coaching prompts",
+            "Link UVP to persona and ambition from earlier days"
           ],
           "mentorGuide": {
             "theme": "Entrepreneur",
             "title": "Mentor Guide — Day 4: Entrepreneur",
-            "coachingObjective": "Explore venture paths and canvas ownership.",
+            "coachingObjective": "Coach squads to draft a clear Unified Venture Proposition through Venture Design Studio.",
             "timing": {
-              "preSession": "10 min — review deck speaker notes and observation form",
-              "duringSession": "Circulate during squad activities; coach individuals at transitions",
+              "preSession": "10 min — review Venture Design Studio steps and observation form",
+              "duringSession": "Circulate during squad activities; coach at UVP (Step 3) transitions",
               "postSession": "15 min — complete observation forms and coaching notes"
             },
             "discussionQuestions": [
-              "What type of business excites you?",
-              "Would you rather build a Practice, Team, or Agency? Why?",
-              "What would you build first on your canvas?"
+              "Who does your venture serve — be specific?",
+              "What problem are you solving and what outcome do they want?",
+              "Can you say your UVP in one sentence?"
             ],
             "observationAreas": [
               {
-                "area": "Ownership",
+                "area": "UVP Clarity",
                 "lookFor": [
-                  "Takes canvas seriously",
-                  "Revises based on feedback"
+                  "Names a specific customer segment",
+                  "States problem and desired outcome",
+                  "Completes Venture Design Studio Step 3 synthesis"
                 ],
                 "warningSigns": [
-                  "Minimal effort fields"
+                  "Generic “everyone” customer",
+                  "Feature list instead of proposition"
+                ]
+              },
+              {
+                "area": "Ownership",
+                "lookFor": [
+                  "Engages in Venture Design Studio steps",
+                  "Revises UVP based on feedback"
+                ],
+                "warningSigns": [
+                  "Minimal effort on proposition fields"
                 ]
               },
               {
                 "area": "Entrepreneurial Thinking",
                 "lookFor": [
-                  "Connects engines to market"
+                  "Connects research insight to UVP",
+                  "Links proposition to career direction"
                 ],
                 "warningSigns": [
-                  "Employee language"
-                ]
-              },
-              {
-                "area": "Leadership Interest",
-                "lookFor": [
-                  "Curiosity about team building"
-                ],
-                "warningSigns": [
-                  "Avoids leadership engines"
+                  "Employee language — waiting to be told what to write"
                 ]
               }
             ]
           },
           "expectedOutputs": [
-            "FE Canvas v1",
+            "Unified Venture Proposition",
             "Career Direction checkpoint",
-            "Canvas presentation notes"
+            "UVP presentation notes"
           ]
         },
         {

@@ -3,23 +3,50 @@
     {
       "id": "rubric-day-4-canvas-complete",
       "type": "rubric",
-      "title": "Canvas Completeness Rubric",
+      "title": "UVP & Venture Design Rubric",
       "audience": "faculty",
+      "description": "Day 4 success is a drafted Unified Venture Proposition through Venture Design Studio — not FEC completion percentage.",
       "criteria": [
         {
-          "label": "Canvas v1",
+          "label": "Unified Venture Proposition",
           "indicators": [
-            "30%+ complete",
-            "Strategy drafted",
-            "Priorities set"
+            "Clear target customer segment",
+            "Problem and desired outcome articulated",
+            "UVP synthesis drafted (Venture Design Studio Step 3)",
+            "Squad can explain the proposition in one sentence"
           ]
         }
       ],
       "scale": [
-        "Below v1",
-        "v1",
-        "Strong v1",
-        "Exemplary"
+        "Not drafted",
+        "Emerging UVP",
+        "Clear UVP",
+        "Exemplary UVP"
+      ],
+      "dayId": "day-segment-1-week-1-day-4"
+    },
+    {
+      "id": "observation-day-4-faculty",
+      "type": "observation_form",
+      "title": "Program Coach Day 4 Observation",
+      "audience": "faculty",
+      "observationAreas": [
+        "UVP clarity",
+        "Customer insight",
+        "Squad consolidation"
+      ],
+      "fields": [
+        {
+          "id": "uvp",
+          "label": "UVP drafted and articulable",
+          "type": "rating",
+          "max": 5
+        },
+        {
+          "id": "notes",
+          "label": "Notes",
+          "type": "long_text"
+        }
       ],
       "dayId": "day-segment-1-week-1-day-4"
     },
@@ -29,16 +56,27 @@
       "title": "Mentor Day 4 Observation",
       "audience": "mentor",
       "observationAreas": [
+        "UVP Clarity",
         "Ownership",
-        "Entrepreneurial Thinking",
-        "Leadership Interest"
+        "Entrepreneurial Thinking"
       ],
       "fields": [
         {
-          "id": "ownership",
-          "label": "Ownership",
+          "id": "uvp",
+          "label": "UVP drafted (who they serve, problem, outcome)",
           "type": "rating",
           "max": 5
+        },
+        {
+          "id": "ownership",
+          "label": "Ownership of Venture Design Studio work",
+          "type": "rating",
+          "max": 5
+        },
+        {
+          "id": "coaching_note",
+          "label": "Coaching note",
+          "type": "long_text"
         }
       ],
       "dayId": "day-segment-1-week-1-day-4"
