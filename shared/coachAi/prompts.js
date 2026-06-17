@@ -181,7 +181,8 @@ export function buildCoachPrompt(payload) {
       `Unmet need: ${fields.unmetNeed || '(empty)'}`,
       `Value proposition: ${fields.valueCreation || '(empty)'}`,
       `Evidence library (${fields.evidenceCount} items): ${fields.evidenceNotes || '(no notes)'}`,
-      'Challenge the squad with specifics from THEIR inputs. Quote or paraphrase their segment/problems.',
+      'Challenge the squad with specifics from THEIR inputs. Quote or paraphrase their exact words.',
+      'Never say "your segment" if Target segment above is filled — use their label verbatim.',
       rules,
     ].join('\n');
   }

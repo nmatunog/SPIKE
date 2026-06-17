@@ -6,6 +6,9 @@ import { GOAL_LABELS } from './ventureStudioTypes.js';
 import {
   getVentureStudioCoachFeedback,
 } from './ventureStudioCoachPrompts.js';
+import { assessVentureStudioCoachReadiness } from './ventureStudioCoachReadiness.js';
+
+export { assessVentureStudioCoachReadiness } from './ventureStudioCoachReadiness.js';
 
 /** @typedef {import('./ventureStudioCoachPrompts.js').VentureStudioCoachFeedback} VentureStudioCoachFeedback */
 
@@ -52,6 +55,11 @@ function buildCoachPayloadFields(stepIndex, ctx) {
  * @returns {Promise<VentureStudioCoachFeedback>}
  */
 export async function requestVentureStudioCoachFeedback(stepIndex, ctx) {
+  const readiness = assessVentureStudioCoachReadiness(stepIndex, ctx);
+  if (!readiness.ready && readiness.feedback) {
+    return readiness.feedback;
+  }
+
   const fallback = getVentureStudioCoachFeedback(stepIndex, ctx);
 
   if (import.meta.env.VITE_COACH_AI === 'false') {

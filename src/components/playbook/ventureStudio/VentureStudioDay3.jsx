@@ -34,6 +34,7 @@ import { isMockUserId } from '../../../lib/mockAuth.js';
 import {
   getVentureStudioCoachFeedback,
   requestVentureStudioCoachFeedback,
+  assessVentureStudioCoachReadiness,
 } from '../../../lib/ventureStudioCoachService.js';
 import { BLUEPRINT_LINKS, playbookHref } from '../../../routes/paths.js';
 
@@ -99,6 +100,10 @@ export function VentureStudioDay3({
   } = state;
 
   const progressPercent = useMemo(() => ventureStudioProgressPercent(state), [state]);
+  const coachReadiness = useMemo(
+    () => assessVentureStudioCoachReadiness(currentStep, state),
+    [currentStep, state],
+  );
   const disabled = readOnly;
 
   useEffect(() => {
@@ -169,12 +174,17 @@ export function VentureStudioDay3({
 
   const handleSimulateAI = useCallback(async () => {
     setShowAiFeedback(true);
+    if (!coachReadiness.ready && coachReadiness.feedback) {
+      setCoachFeedback(coachReadiness.feedback);
+      setCoachLoading(false);
+      return;
+    }
     setCoachLoading(true);
     setCoachFeedback(null);
     const feedback = await requestVentureStudioCoachFeedback(currentStep, state);
     setCoachFeedback(feedback);
     setCoachLoading(false);
-  }, [currentStep, state]);
+  }, [coachReadiness, currentStep, state]);
 
   const handleRefineCoachAnswer = useCallback(() => {
     setShowAiFeedback(false);
@@ -329,13 +339,15 @@ export function VentureStudioDay3({
                   <p className="mt-1 text-xs text-slate-400">
                     {coachLoading
                       ? 'Reading your squad inputs…'
-                      : feedback.provider === 'openai'
-                        ? 'AI coach (OpenAI)'
-                        : feedback.provider === 'gemini'
-                          ? 'AI coach'
-                          : feedback.provider === 'prototype'
-                            ? 'Built-in coach — add VENTURE_STUDIO_OPENAI_API_KEY in Cloudflare'
-                            : 'Venture coach'}
+                      : feedback.provider === 'guide'
+                        ? 'Complete required fields first'
+                        : feedback.provider === 'openai'
+                          ? 'AI coach (OpenAI)'
+                          : feedback.provider === 'gemini'
+                            ? 'AI coach'
+                            : feedback.provider === 'prototype'
+                              ? 'Built-in coach — add OPENAI_API_KEY in Cloudflare'
+                              : 'Venture coach'}
                   </p>
                 </div>
               </div>
@@ -395,16 +407,23 @@ export function VentureStudioDay3({
     /** @param {string} label */
     (label) =>
       !showAiFeedback ? (
-        <button
-          type="button"
-          onClick={handleSimulateAI}
-          className="mt-6 flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl bg-slate-900 py-4 font-bold text-white transition hover:bg-slate-800"
-        >
-          <Sparkles size={18} className="shrink-0 text-yellow-400" aria-hidden />
-          <span className="truncate">{label}</span>
-        </button>
+        <div className="mt-6 space-y-2">
+          <button
+            type="button"
+            onClick={handleSimulateAI}
+            className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl bg-slate-900 py-4 font-bold text-white transition hover:bg-slate-800"
+          >
+            <Sparkles size={18} className="shrink-0 text-yellow-400" aria-hidden />
+            <span className="truncate">{label}</span>
+          </button>
+          {!coachReadiness.ready && coachReadiness.hint ? (
+            <p className="text-center text-sm text-amber-700" role="status">
+              {coachReadiness.hint}
+            </p>
+          ) : null}
+        </div>
       ) : null,
-    [showAiFeedback, handleSimulateAI],
+    [showAiFeedback, handleSimulateAI, coachReadiness],
   );
 
   const renderLandingPage = () => (

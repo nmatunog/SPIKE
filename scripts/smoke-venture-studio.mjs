@@ -8,6 +8,7 @@ import {
   getVentureStudioCoachFeedback,
   VENTURE_STUDIO_COACH_BY_STEP,
 } from '../src/lib/ventureStudioCoachPrompts.js';
+import { assessVentureStudioCoachReadiness } from '../src/lib/ventureStudioCoachReadiness.js';
 import { emptyVentureStudioState } from '../src/lib/ventureStudioStorage.js';
 
 const ROOT = join(import.meta.dirname, '..');
@@ -91,4 +92,9 @@ if (step1a.coach === step2.coach) {
 if (Object.keys(VENTURE_STUDIO_COACH_BY_STEP).length !== 5) {
   fail('Expected five step-specific coach prompts');
 }
-console.log('smoke:venture-studio coach OK — deterministic per-step prompts');
+
+const emptyReady = assessVentureStudioCoachReadiness(1, emptyVentureStudioState());
+if (emptyReady.ready || emptyReady.feedback?.provider !== 'guide') {
+  fail('Empty step 1 should block coach with guide feedback');
+}
+console.log('smoke:venture-studio coach OK — deterministic per-step prompts + readiness gate');
