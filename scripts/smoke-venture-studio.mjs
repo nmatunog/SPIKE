@@ -9,6 +9,10 @@ import {
   VENTURE_STUDIO_COACH_BY_STEP,
 } from '../src/lib/ventureStudioCoachPrompts.js';
 import { assessVentureStudioCoachReadiness } from '../src/lib/ventureStudioCoachReadiness.js';
+import { assessVentureDesignCoachReadiness, looksLikeInternSelfGoal } from '../src/lib/ventureDesignCoachReadiness.js';
+import { isVentureDesignCoachEcho } from '../src/lib/ventureDesignCoachValidation.js';
+import { emptyIndividualDraft } from '../src/lib/ventureDesignStudioConstants.js';
+import { buildCoachPrompt } from '../shared/coachAi/prompts.js';
 import { emptyVentureStudioState } from '../src/lib/ventureStudioStorage.js';
 
 const ROOT = join(import.meta.dirname, '..');
@@ -192,3 +196,48 @@ if (emptyReady.ready || emptyReady.feedback?.provider !== 'guide') {
   fail('Empty step 1 should block coach with guide feedback');
 }
 console.log('smoke:venture-studio coach OK — deterministic per-step prompts + readiness gate');
+
+if (
+  !looksLikeInternSelfGoal(
+    'I want to learn practical skills in finance and understand how to apply them in real-world situations during my internship.',
+  )
+) {
+  fail('looksLikeInternSelfGoal should detect Day 1 internship copy');
+}
+
+const internGoalDraft = emptyIndividualDraft();
+internGoalDraft.step1.problem =
+  'I want to learn practical skills in finance during my internship.';
+const blockedDesign = assessVentureDesignCoachReadiness(1, internGoalDraft);
+if (blockedDesign.ready || blockedDesign.feedback?.provider !== 'guide') {
+  fail('Venture Design coach should block Day 1 personal goals in problem field');
+}
+
+const designPrompt = buildCoachPrompt({
+  task: 'venture_design_coach',
+  stepIndex: 1,
+  fields: { programDay: 'Day 4 — Venture Design Studio (FEC)', coachStepTitle: 'Venture Review' },
+});
+if (!/Day 4 Venture Design/i.test(designPrompt) || /reviewing Day 3 Market Discovery/i.test(designPrompt)) {
+  fail('venture_design_coach prompt must scope to Day 4, not Day 3');
+}
+
+const echo = 'I want to learn practical skills in finance during my internship.';
+if (
+  !isVentureDesignCoachEcho(echo, {
+    customerProblem: echo,
+    targetSegment: 'Young professionals',
+  })
+) {
+  fail('isVentureDesignCoachEcho should reject verbatim internship goal text');
+}
+
+const designCoachJs = readFileSync(join(ROOT, 'src/lib/ventureDesignStudioCoach.js'), 'utf8');
+if (!designCoachJs.includes('venture_design_coach') || !designCoachJs.includes('assessVentureDesignCoachReadiness')) {
+  fail('ventureDesignStudioCoach should use Day 4 task + readiness gate');
+}
+if (!designCoachJs.includes('acceptVentureDesignCoachResponse')) {
+  fail('ventureDesignStudioCoach should validate AI echo before showing coach text');
+}
+
+console.log('smoke:venture-studio design coach OK — Day 4 scope + echo guard');

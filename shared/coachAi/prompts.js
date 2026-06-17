@@ -14,10 +14,14 @@ function buildRules(payload) {
     lines.push(
       'Return ONLY valid JSON: {"text":"...","summary":"one sentence under 25 words","note":"..."} with no markdown.',
     );
-  } else if (task === 'venture_studio_coach') {
+  } else if (task === 'venture_studio_coach' || task === 'venture_design_coach') {
     lines.push('Return ONLY valid JSON: {"bias":"short bias label","coach":"2-3 sentences","evidenceScore":"N/10"} — no markdown.');
     lines.push('Coach must reference the squad\'s actual words and segment. Never give generic advice that ignores their input.');
     lines.push('Bias is a sharp diagnostic label (max 12 words). Coach is a probing question or challenge in second person.');
+    if (task === 'venture_design_coach') {
+      lines.push('Context is Day 4 Venture Design Studio (FEC) — client segment, UVP, and brand. NEVER coach about the intern\'s personal internship goals or Day 1 identity work.');
+      lines.push('Never paste the user\'s draft verbatim as the coach message.');
+    }
   } else if (task === 'generate_ambition') {
     lines.push(`Short variant: max 15 words. Balanced: max ${wordLimit} words. Inspirational: max ${wordLimit} words.`);
     lines.push(
@@ -183,6 +187,36 @@ export function buildCoachPrompt(payload) {
       `Evidence library (${fields.evidenceCount} items): ${fields.evidenceNotes || '(no notes)'}`,
       'Challenge the squad with specifics from THEIR inputs. Quote or paraphrase their exact words.',
       'Never say "your segment" if Target segment above is filled — use their label verbatim.',
+      rules,
+    ].join('\n');
+  }
+
+  if (task === 'venture_design_coach') {
+    const step = payload.stepIndex ?? fields.step ?? '1';
+    const hint = payload.localHint
+      ? `Step learning goal (preserve this intent, personalize to their inputs):\nBias: ${payload.localHint.bias}\nCoach: ${payload.localHint.coach}`
+      : '';
+    return [
+      prefix,
+      `You are SPIKE Venture Coach reviewing ${fields.programDay || 'Day 4 Venture Design Studio'} — Step ${step} of 5 (${fields.coachStepTitle || 'Venture Design'}).`,
+      'This is NOT Day 1 personal ambition, NOT Day 3 research field notes. Coach only on venture design: client segment, problem, transformation, UVP, brand, FEC.',
+      'If customer problem text sounds like the intern\'s own learning goals, call it out and redirect to the client\'s financial pain.',
+      hint,
+      `Squad: ${fields.squadName || 'unnamed'}`,
+      `Target segment: ${fields.targetSegment || '(empty)'}`,
+      `Customer problem (client pain, not intern goals): ${fields.customerProblem || '(empty)'}`,
+      `Opportunity: ${fields.opportunity || '(empty)'}`,
+      `Before feeling: ${fields.beforeFeeling || '(empty)'}`,
+      `After feeling: ${fields.afterFeeling || '(empty)'}`,
+      `UVP draft: ${fields.uvp || '(empty)'}`,
+      `Who serve: ${fields.whoServe || '(empty)'}`,
+      `Transformation: ${fields.transformation || '(empty)'}`,
+      `Why us: ${fields.whyUs || '(empty)'}`,
+      `Mechanism: ${fields.mechanism || '(empty)'}`,
+      `Venture name: ${fields.ventureName || '(empty)'}`,
+      `Tagline: ${fields.tagline || '(empty)'}`,
+      `Client experience goal: ${fields.clientExperience || '(empty)'}`,
+      'Write 2–3 sentences challenging the squad. Do NOT repeat their draft verbatim.',
       rules,
     ].join('\n');
   }

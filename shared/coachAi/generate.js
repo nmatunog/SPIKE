@@ -8,7 +8,7 @@ import { callGemini, callOpenAI, shouldTryNextProvider } from './providers.js';
  */
 export async function generateCoachText(payload, keys = {}) {
   const task = String(payload.task ?? '');
-  const preferOpenAI = task === 'venture_studio_coach';
+  const preferOpenAI = task === 'venture_studio_coach' || task === 'venture_design_coach';
 
   /** @type {Array<{ provider: string, run: () => Promise<Record<string, unknown>> }>} */
   const attempts = [];

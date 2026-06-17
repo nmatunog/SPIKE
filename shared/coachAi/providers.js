@@ -80,6 +80,8 @@ export async function callOpenAI(apiKey, payload) {
   const systemContent =
     task === 'venture_studio_coach'
       ? 'You are SPIKE Venture Coach for Day 3 market research. Reply with JSON only: {"bias":"...","coach":"...","evidenceScore":"N/10"}.'
+      : task === 'venture_design_coach'
+        ? 'You are SPIKE Venture Coach for Day 4 Venture Design Studio (FEC). Reply with JSON only: {"bias":"...","coach":"...","evidenceScore":"N/10"}. Never echo intern personal goals or Day 1 ambition text.'
       : task === 'generate_ambition'
       ? 'You are SPIKE Venture Coach. Reply with JSON only: {"variants":{"short":"...","balanced":"...","inspirational":"..."},"note":"..."}.'
       : 'You are SPIKE Venture Coach. Reply with JSON only: {"text":"...","note":"..."}.';

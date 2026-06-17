@@ -12,6 +12,7 @@ export function resolveCoachApiKeys(task, env = {}) {
 
   return {
     geminiApiKey,
-    openaiApiKey: task === 'venture_studio_coach' ? researchOpenAi : sharedOpenAi,
+    openaiApiKey:
+      task === 'venture_studio_coach' || task === 'venture_design_coach' ? researchOpenAi : sharedOpenAi,
   };
 }

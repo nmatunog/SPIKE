@@ -15,6 +15,7 @@ const coachGenerateSchema = z.object({
     'regenerate_tagline',
     'refine_statement',
     'venture_studio_coach',
+    'venture_design_coach',
   ]),
   variant: z.enum(['short', 'balanced', 'inspirational']).optional(),
   fields: z.record(z.string()).optional(),
