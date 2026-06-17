@@ -70,8 +70,26 @@ if (!day4Morning.activityIds.includes('activity-day-4-canvas-workshop')) {
 
 for (const file of [
   'src/components/playbook/ventureDesign/VentureDesignLaunchCard.jsx',
+  'src/components/playbook/ventureDesign/Day4VentureDesignHero.jsx',
+  'src/components/ventureDesign/FecCanvasProjectionView.jsx',
+  'src/lib/fecCanvasExemplar.js',
 ]) {
   if (!existsSync(join(ROOT, file))) fail(`missing ${file}`);
+}
+
+const ventureDesignPage = readFileSync(join(ROOT, 'src/pages/VentureDesignStudio.jsx'), 'utf8');
+if (!ventureDesignPage.includes('project') || !ventureDesignPage.includes('FecCanvasProjectionView')) {
+  fail('VentureDesignStudio missing FEC projection mode');
+}
+
+const hero = readFileSync(join(ROOT, 'src/components/playbook/ventureDesign/Day4VentureDesignHero.jsx'), 'utf8');
+if (!hero.includes('project=1') || !hero.includes('variant')) {
+  fail('Day4VentureDesignHero missing projection link or role variants');
+}
+
+const facultyView = readFileSync(join(ROOT, 'src/components/playbook/FacultyPlaybookView.jsx'), 'utf8');
+if (!facultyView.includes('Day4VentureDesignHero')) {
+  fail('FacultyPlaybookView missing Day 4 hero');
 }
 
 const sessionView = readFileSync(join(ROOT, 'src/components/playbook/SessionView.jsx'), 'utf8');

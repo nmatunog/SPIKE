@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { FecCanvasProjectionView } from '../components/ventureDesign/FecCanvasProjectionView.jsx';
 import { VentureDesignStudioWorkspace } from '../components/ventureDesign/VentureDesignStudioWorkspace.jsx';
 import { prepareFecCanvas } from '../lib/fecCanvasService.js';
 import { loadVentureDesignRecord, saveVentureDesignRecord } from '../lib/ventureDesignStudioService.js';
@@ -23,10 +24,12 @@ export function VentureDesignStudio({
   readOnly: readOnlyProp = false,
 }) {
   const [searchParams] = useSearchParams();
+  const projectMode = searchParams.get('project') === '1';
   const coachMode = searchParams.get('coach') === '1' || coachModeProp;
   const readOnly = readOnlyProp;
 
   useEffect(() => {
+    if (projectMode) return;
     prepareFecCanvas(participantId);
     if (searchParams.get('start') === '1') {
       const record = loadVentureDesignRecord(participantId);
@@ -34,7 +37,11 @@ export function VentureDesignStudio({
         saveVentureDesignRecord(participantId, { isStarted: true });
       }
     }
-  }, [participantId, searchParams]);
+  }, [participantId, searchParams, projectMode]);
+
+  if (projectMode) {
+    return <FecCanvasProjectionView />;
+  }
 
   return (
     <VentureDesignStudioWorkspace

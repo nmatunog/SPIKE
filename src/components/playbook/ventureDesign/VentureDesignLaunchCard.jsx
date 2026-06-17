@@ -1,14 +1,18 @@
-import { ArrowRight, Layout, Sparkles } from 'lucide-react';
+import { ArrowRight, Layout, Monitor, Sparkles } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useMemo } from 'react';
 import {
   loadVentureDesignRecord,
   ventureDesignProgressPercent,
 } from '../../../lib/ventureDesignStudioService.js';
-import { BLUEPRINT_LINKS } from '../../../routes/paths.js';
+import {
+  COACH_WORKSHOP_HREF,
+  PROJECTION_HREF,
+  WORKSHOP_HREF,
+} from './Day4VentureDesignHero.jsx';
 
 /**
- * Playbook call-to-action — opens the Day 4 Venture Design Studio (replaces Deck 02).
+ * Session-level CTA — complements the Day 4 hero (replaces Deck 02 in session flow).
  * @param {{ participantId?: string, facultyMode?: boolean, presentMode?: boolean }} props
  */
 export function VentureDesignLaunchCard({
@@ -22,67 +26,60 @@ export function VentureDesignLaunchCard({
     [participantId, location.pathname],
   );
   const percent = state ? ventureDesignProgressPercent(state) : 0;
-  const href = presentMode
-    ? `${BLUEPRINT_LINKS.businessPlan}?coach=1&start=1`
-    : `${BLUEPRINT_LINKS.businessPlan}?start=1`;
 
   return (
-    <section className="overflow-hidden rounded-2xl border-2 border-spike/25 bg-gradient-to-br from-slate-900 via-spike-dark to-slate-900 p-5 text-white shadow-card sm:p-6 lg:p-8">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="min-w-0 flex-1">
-          <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-red-200/90">
-            <Layout size={16} aria-hidden />
-            Interactive module — replaces Deck 02
-          </p>
-          <h3 className="mt-2 text-xl font-bold sm:text-2xl lg:text-3xl">
-            Venture Design Studio — FEC Workshop
-          </h3>
-          <p className="mt-2 max-w-2xl text-sm text-slate-300 sm:text-base">
-            {facultyMode
-              ? 'Project this workspace for your squad. Five guided steps build customer insight, brand identity, and a Financial Entrepreneurship Canvas draft.'
-              : 'Work through five steps: target insight, transformation, venture proposition, brand identity, and FEC preview — no slides required.'}
-          </p>
-        </div>
-        {participantId && percent > 0 ? (
-          <div className="shrink-0 rounded-xl bg-white/10 px-4 py-3 text-center backdrop-blur-sm">
-            <p className="text-2xl font-black">{percent}%</p>
-            <p className="text-2xs font-semibold uppercase tracking-wide text-slate-300">
-              Design progress
-            </p>
-          </div>
-        ) : null}
-      </div>
+    <section className="overflow-hidden rounded-2xl border border-spike/20 bg-gradient-to-br from-slate-900/90 to-spike-dark/90 p-5 text-white sm:p-6">
+      <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-red-200/80">
+        <Layout size={14} aria-hidden />
+        Session module — Venture Design Studio
+      </p>
+      <p className="mt-2 text-sm text-slate-300">
+        {facultyMode
+          ? 'Use the Day 4 hero above for projection. This slot replaces Deck 02 in the session timeline.'
+          : percent > 0
+            ? `You are ${percent}% through the workshop — pick up where you left off.`
+            : 'Five steps from research insight to FEC preview. Your squad works here instead of slides.'}
+      </p>
 
-      <ul className="mt-5 grid gap-2 text-sm sm:grid-cols-2 lg:grid-cols-3">
-        {['Target Insight', 'Before & After', 'Venture Proposition', 'Brand Identity', 'FEC Preview'].map(
-          (label) => (
-            <li
-              key={label}
-              className="flex items-center gap-2 rounded-lg bg-white/5 px-3 py-2 font-medium text-slate-200"
-            >
-              <Sparkles size={14} className="shrink-0 text-amber-300" aria-hidden />
-              {label}
-            </li>
-          ),
-        )}
+      <ul className="mt-4 flex flex-wrap gap-2 text-xs">
+        {['Insight', 'Transform', 'UVP', 'Brand', 'FEC'].map((label) => (
+          <li
+            key={label}
+            className="flex items-center gap-1 rounded-md bg-white/5 px-2 py-1 font-semibold text-slate-300"
+          >
+            <Sparkles size={12} className="text-amber-300" aria-hidden />
+            {label}
+          </li>
+        ))}
       </ul>
 
-      <div className="mt-6 flex flex-wrap gap-3">
-        <Link
-          to={href}
-          className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-bold text-spike shadow-lg transition hover:bg-red-50 sm:flex-none sm:px-8 sm:text-base"
-        >
-          {facultyMode ? 'Open for projection' : 'Enter Venture Design Studio'}
-          <ArrowRight size={18} aria-hidden />
-        </Link>
+      <div className="mt-5 flex flex-wrap gap-3">
         {facultyMode ? (
+          <>
+            <Link
+              to={presentMode ? PROJECTION_HREF : PROJECTION_HREF}
+              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-amber-400 px-5 py-2.5 text-sm font-bold text-stone-900 hover:bg-amber-300"
+            >
+              <Monitor size={16} aria-hidden />
+              FEC Canvas projection
+              <ArrowRight size={16} aria-hidden />
+            </Link>
+            <Link
+              to={COACH_WORKSHOP_HREF}
+              className="inline-flex min-h-[44px] items-center justify-center rounded-xl border border-white/25 px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/10"
+            >
+              Squad workshop
+            </Link>
+          </>
+        ) : (
           <Link
-            to={`${BLUEPRINT_LINKS.businessPlan}?start=1`}
-            className="inline-flex min-h-[48px] items-center justify-center rounded-xl border border-white/30 px-5 py-3 text-sm font-semibold text-white hover:bg-white/10"
+            to={WORKSHOP_HREF}
+            className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-spike hover:bg-red-50"
           >
-            Squad view
+            {percent > 0 ? 'Continue workshop' : 'Enter Venture Design Studio'}
+            <ArrowRight size={16} aria-hidden />
           </Link>
-        ) : null}
+        )}
       </div>
     </section>
   );
