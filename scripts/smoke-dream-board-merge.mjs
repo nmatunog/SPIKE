@@ -51,4 +51,16 @@ if (enriched[0].caption.length <= 3) {
   fail('enrichDreamBoardFromMetadata should prefer longer metadata caption');
 }
 
+import { dataUrlToImageBlob, buildDreamBoardStoragePath } from '../src/lib/dreamBoardStorageUtils.js';
+
+const tinyPng =
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+const { blob, contentType } = dataUrlToImageBlob(tinyPng);
+if (!(blob instanceof Blob) || contentType !== 'image/png') {
+  fail('dataUrlToImageBlob should decode inline dream board images');
+}
+if (!buildDreamBoardStoragePath('user-1', 'asset-abc').includes('user-1/asset-abc')) {
+  fail('buildDreamBoardStoragePath should namespace by user and asset id');
+}
+
 console.log('smoke:dream-board-merge OK');

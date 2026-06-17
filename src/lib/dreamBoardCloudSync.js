@@ -41,6 +41,25 @@ export async function syncDreamBoardToCloud(participantId, data) {
   await syncDreamBoardAssets(participantId, assets);
 }
 
+/** Upgrade legacy data-URL rows in dream_board_assets to Supabase Storage http URLs. */
+export async function upgradeDreamBoardInlineCloudImages(participantId) {
+  const cloudRows = await fetchDreamBoardAssets(participantId);
+  if (!cloudRows.some((row) => String(row.image_url ?? '').startsWith('data:'))) return false;
+
+  const assets = cloudRows
+    .filter((row) => row.client_asset_id)
+    .map((row) => ({
+      id: String(row.client_asset_id),
+      category: row.category,
+      caption: row.caption ?? '',
+      imageUrl: row.image_url ?? '',
+    }));
+
+  if (!assets.length) return false;
+  await syncDreamBoardAssets(participantId, assets);
+  return true;
+}
+
 /**
  * Merge cloud dream board images into local builder storage.
  * @param {string} participantId
@@ -51,6 +70,11 @@ function isStaffReadHydration(opts = {}) {
 }
 
 export async function hydrateDreamBoardImagesFromCloud(participantId, opts = {}) {
+  const staffRead = isStaffReadHydration(opts);
+  if (!staffRead) {
+    await upgradeDreamBoardInlineCloudImages(participantId);
+  }
+
   const cloudRows = await fetchDreamBoardAssets(participantId);
   if (!cloudRows.length) return false;
 
@@ -58,7 +82,6 @@ export async function hydrateDreamBoardImagesFromCloud(participantId, opts = {})
   const localAssets = /** @type {Array<{ id: string, category: string, caption: string, imageUrl?: string }>} */ (
     entry?.data?.assets ?? []
   );
-  const staffRead = isStaffReadHydration(opts);
 
   let merged;
   if (!staffRead && opts.preferLocalImages && localAssets.some((asset) => asset.imageUrl)) {
@@ -116,7 +139,7 @@ export async function fetchDreamBoardForStaffView(participantId) {
   ).map(stripInlineDreamBoardImage);
 
   const merged = enrichDreamBoardFromMetadata(
-    mergeDreamBoardAssetLists(localAssets, cloudRows).map(stripInlineDreamBoardImage),
+    mergeDreamBoardAssetLists(localAssets, cloudRows),
     metadataAssets,
   );
 

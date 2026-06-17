@@ -1,5 +1,6 @@
 import { isSupabaseConfigured, supabase } from '../../supabaseClient.js';
 import { shouldSkipSupabaseUserWrite, canWriteParticipantRow, isRlsViolationError } from './writeGuards.js';
+import { ensureDreamBoardImageInStorage } from './dreamBoardStorage.js';
 
 /**
  * @typedef {{
@@ -52,13 +53,18 @@ export async function syncDreamBoardAssets(userId, assets) {
 
     keepClientIds.push(asset.id);
 
+    let imageUrl = asset.imageUrl || null;
+    if (imageUrl) {
+      imageUrl = await ensureDreamBoardImageInStorage(userId, asset.id, imageUrl);
+    }
+
     const { error } = await supabase.from('dream_board_assets').upsert(
       {
         user_id: userId,
         client_asset_id: asset.id,
         category: asset.category ?? 'lifestyle',
         caption: asset.caption ?? '',
-        image_url: asset.imageUrl || null,
+        image_url: imageUrl || null,
         sort_order: index,
         updated_at: new Date().toISOString(),
       },

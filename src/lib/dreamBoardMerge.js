@@ -20,10 +20,18 @@ export function mergeDreamBoardAssetLists(localAssets, cloudRows) {
 
   const localIds = new Set(localAssets.map((asset) => asset.id));
 
-  const fromLocal = localAssets.map((asset) => ({
-    ...asset,
-    imageUrl: asset.imageUrl || imageByClientId.get(asset.id) || '',
-  }));
+  const fromLocal = localAssets.map((asset) => {
+    const cloudImage = imageByClientId.get(asset.id) || '';
+    const localImage = asset.imageUrl || '';
+    const imageUrl =
+      cloudImage.startsWith('http') || cloudImage.startsWith('data:')
+        ? cloudImage
+        : localImage || cloudImage;
+    return {
+      ...asset,
+      imageUrl,
+    };
+  });
 
   const fromCloudOnly = cloudRows
     .filter((row) => row.client_asset_id && !localIds.has(String(row.client_asset_id)))
