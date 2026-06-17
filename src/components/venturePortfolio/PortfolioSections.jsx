@@ -167,7 +167,11 @@ export function PortfolioDreamBoardSection({ portfolio }) {
           </Link>
         ) : null}
       </header>
-      <DreamBoardSlideCollage assets={dreamBoard.assets} title={`${portfolio.cover.participantName}'s Dream Board`} />
+      <DreamBoardSlideCollage
+        assets={dreamBoard.assets}
+        title={`${portfolio.cover.participantName}'s Dream Board`}
+        layout="grid"
+      />
       <section className="spike-card">
         <h3 className="text-sm font-semibold text-slate-900">All dream cards</h3>
         <p className="mt-1 text-xs text-slate-500">

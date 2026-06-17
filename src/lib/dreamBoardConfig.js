@@ -24,6 +24,30 @@ export function getDreamBoardMaxCards() {
 }
 
 /**
+ * Deduplicate dream cards and ensure stable ids for rendering.
+ * @param {Array<{ id?: string, category?: string, caption?: string, imageUrl?: string }>} assets
+ */
+export function normalizeDreamBoardCards(assets) {
+  const seen = new Set();
+  /** @type {Array<{ id: string, category: string, caption: string, imageUrl?: string }>} */
+  const normalized = [];
+
+  for (const asset of assets ?? []) {
+    const id = String(asset?.id ?? '').trim();
+    if (!id || seen.has(id)) continue;
+    seen.add(id);
+    normalized.push({
+      id,
+      category: asset.category ?? 'lifestyle',
+      caption: String(asset.caption ?? ''),
+      imageUrl: asset.imageUrl ?? '',
+    });
+  }
+
+  return normalized;
+}
+
+/**
  * Tailwind grid classes for the 16:9 dream board slide collage.
  * @param {number} count
  */
@@ -38,16 +62,4 @@ export function dreamBoardSlideGridClass(count) {
   if (count <= 9) return 'grid-cols-3 grid-rows-3';
   if (count <= 12) return 'grid-cols-4 grid-rows-3';
   return 'grid-cols-4 grid-rows-4';
-}
-
-/**
- * Tailwind line-clamp for slide captions — more lines when fewer cards on screen.
- * @param {number} count
- */
-export function dreamBoardCaptionClampClass(count) {
-  if (count <= 1) return 'line-clamp-8';
-  if (count === 2) return 'line-clamp-6';
-  if (count <= 4) return 'line-clamp-5';
-  if (count <= 6) return 'line-clamp-4';
-  return 'line-clamp-3';
 }

@@ -4,6 +4,7 @@
 import { readBuilderEntry, writeBuilderEntry } from './day1BuilderStorage.js';
 import { fetchDreamBoardAssets, syncDreamBoardAssets } from './supabase/dreamBoardAssets.js';
 import { mergeDreamBoardAssetLists } from './dreamBoardMerge.js';
+import { normalizeDreamBoardCards } from './dreamBoardConfig.js';
 
 export { mergeDreamBoardAssetLists } from './dreamBoardMerge.js';
 
@@ -108,5 +109,7 @@ export async function fetchDreamBoardForStaffView(participantId) {
     entry?.data?.assets ?? []
   ).map(stripInlineDreamBoardImage);
 
-  return mergeDreamBoardAssetLists(localAssets, cloudRows).map(stripInlineDreamBoardImage);
+  return normalizeDreamBoardCards(
+    mergeDreamBoardAssetLists(localAssets, cloudRows).map(stripInlineDreamBoardImage),
+  );
 }

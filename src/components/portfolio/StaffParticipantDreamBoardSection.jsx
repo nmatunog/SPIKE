@@ -3,6 +3,7 @@ import { LayoutGrid } from 'lucide-react';
 import { DreamBoardCollage } from '../venturePortfolio/DreamBoardCollage.jsx';
 import { DreamBoardSlideCollage } from '../venturePortfolio/DreamBoardSlideCollage.jsx';
 import { fetchDreamBoardForStaffView } from '../../lib/dreamBoardCloudSync.js';
+import { normalizeDreamBoardCards } from '../../lib/dreamBoardConfig.js';
 import { isBuilderCompleted } from '../../lib/day1BuilderService.js';
 
 /**
@@ -34,7 +35,7 @@ export function StaffParticipantDreamBoardSection({
   }, [participantId]);
 
   const completed = isBuilderCompleted(participantId, 'dream-board') || assets.length > 0;
-  const cardCount = assets.length;
+  const cardCount = normalizeDreamBoardCards(assets).length;
 
   return (
     <section className={`spike-card space-y-4 ${className}`}>
@@ -68,6 +69,7 @@ export function StaffParticipantDreamBoardSection({
           <DreamBoardSlideCollage
             assets={assets}
             title={`${participantName}'s Dream Board`}
+            layout="grid"
           />
 
           <details className="rounded-xl border border-slate-200 bg-slate-50/80 p-4" open>

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { normalizeDreamBoardCards } from '../src/lib/dreamBoardConfig.js';
 import { mergeDreamBoardAssetLists } from '../src/lib/dreamBoardMerge.js';
 
 function fail(message) {
@@ -29,6 +30,15 @@ if (merged.length !== 6) {
 }
 if (!merged.some((card) => card.id === 'a6' && card.caption === 'Sixth card')) {
   fail('cloud-only sixth card missing from merge');
+}
+
+const deduped = normalizeDreamBoardCards([
+  { id: 'x1', category: 'career', caption: 'First' },
+  { id: 'x1', category: 'career', caption: 'Duplicate' },
+  { id: 'x2', category: 'travel', caption: 'Second' },
+]);
+if (deduped.length !== 2 || deduped[0].caption !== 'First') {
+  fail('normalizeDreamBoardCards should dedupe by id');
 }
 
 console.log('smoke:dream-board-merge OK');

@@ -1,30 +1,39 @@
 import { useState } from 'react';
 import { dreamBoardCategoryMeta } from '../../lib/venturePortfolioService.js';
 import {
-  dreamBoardCaptionClampClass,
   dreamBoardSlideGridClass,
   getDreamBoardMaxCards,
+  normalizeDreamBoardCards,
 } from '../../lib/dreamBoardConfig.js';
 import { DreamBoardLightbox } from './DreamBoardLightbox.jsx';
 
 /**
- * 16:9 presentation slide collage for dream board assets with category tags and captions.
+ * Dream board collage — grid (full captions) or slide (16:9 projection).
  * @param {{
  *   assets: Array<{ id: string, category: string, caption: string, imageUrl?: string }>,
  *   title?: string,
  *   maxCards?: number,
  *   enableLightbox?: boolean,
+ *   layout?: 'grid' | 'slide',
  * }} props
  */
-export function DreamBoardSlideCollage({ assets, title = 'My Dream Board', maxCards, enableLightbox = true }) {
+export function DreamBoardSlideCollage({
+  assets,
+  title = 'My Dream Board',
+  maxCards,
+  enableLightbox = true,
+  layout = 'grid',
+}) {
   const slideMax = maxCards ?? getDreamBoardMaxCards();
-  const cards = assets.filter(
-    (asset) => asset.imageUrl || String(asset.caption ?? '').trim() || asset.category,
+  const allCards = normalizeDreamBoardCards(assets);
+  const cards = allCards.filter(
+    (asset) => asset.imageUrl || asset.caption.trim() || asset.category,
   );
-  const count = Math.min(cards.length, slideMax);
+  const visible = cards.slice(0, slideMax);
+  const count = visible.length;
   const [lightboxAsset, setLightboxAsset] = useState(null);
   const hiddenCount = Math.max(0, cards.length - slideMax);
-  const captionClamp = dreamBoardCaptionClampClass(count);
+  const isSlide = layout === 'slide';
 
   if (!count) {
     return (
@@ -34,33 +43,47 @@ export function DreamBoardSlideCollage({ assets, title = 'My Dream Board', maxCa
     );
   }
 
-  const layoutClass = dreamBoardSlideGridClass(count);
+  const layoutClass = isSlide
+    ? dreamBoardSlideGridClass(count)
+    : count <= 1
+      ? 'grid-cols-1'
+      : count === 2
+        ? 'grid-cols-1 sm:grid-cols-2'
+        : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3';
 
   return (
     <>
       <figure className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-900 shadow-projection">
         <div className="border-b border-white/10 bg-gradient-to-r from-spike to-spike-dark px-4 py-2">
           <figcaption className="text-sm font-bold tracking-wide text-white">{title}</figcaption>
-          {cards.length > 0 ? (
-            <p className="mt-0.5 text-[11px] font-medium text-red-100/90">
-              {count < cards.length
-                ? `Showing ${count} of ${cards.length} cards`
-                : `${cards.length} dream card${cards.length === 1 ? '' : 's'}`}
-            </p>
-          ) : null}
+          <p className="mt-0.5 text-[11px] font-medium text-red-100/90">
+            {hiddenCount > 0
+              ? `Showing ${count} of ${cards.length} cards`
+              : `${cards.length} dream card${cards.length === 1 ? '' : 's'}`}
+          </p>
         </div>
-        <div className={`grid aspect-video w-full gap-1.5 p-1.5 sm:gap-2 sm:p-2 ${layoutClass}`}>
-          {cards.slice(0, slideMax).map((asset) => {
+        <div
+          className={`grid w-full gap-2 p-2 sm:gap-2.5 sm:p-3 ${layoutClass} ${
+            isSlide ? 'aspect-video' : ''
+          }`}
+        >
+          {visible.map((asset) => {
             const category = dreamBoardCategoryMeta(asset.category);
-            const caption = asset.caption?.trim() ?? '';
+            const caption = asset.caption.trim();
             return (
               <button
                 key={asset.id}
                 type="button"
                 onClick={() => enableLightbox && setLightboxAsset(asset)}
-                className="flex min-h-0 flex-col overflow-hidden rounded-lg bg-slate-800 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-spike-light"
+                className={`flex overflow-hidden rounded-lg bg-slate-800 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-spike-light ${
+                  isSlide ? 'min-h-0 flex-col' : 'flex-col'
+                }`}
               >
-                <div className="relative min-h-0 flex-1 overflow-hidden">
+                <div
+                  className={`w-full shrink-0 overflow-hidden ${
+                    isSlide ? 'min-h-0 flex-1' : 'aspect-[4/3]'
+                  }`}
+                >
                   {asset.imageUrl ? (
                     <img
                       src={asset.imageUrl}
@@ -68,23 +91,26 @@ export function DreamBoardSlideCollage({ assets, title = 'My Dream Board', maxCa
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-spike-muted/30 to-slate-800 text-3xl text-white/30">
+                    <div className="flex h-full min-h-[7rem] w-full items-center justify-center bg-gradient-to-br from-spike-muted/30 to-slate-800 text-3xl text-white/30">
                       ✦
                     </div>
                   )}
                 </div>
-                <div className="shrink-0 border-t border-white/10 bg-slate-950/95 px-2 py-1.5 sm:px-2.5 sm:py-2">
+                <div
+                  className={`shrink-0 border-t border-white/10 bg-slate-950/95 px-2.5 py-2 sm:px-3 sm:py-2.5 ${
+                    isSlide ? 'min-h-[4.75rem] max-h-[45%] overflow-y-auto' : ''
+                  }`}
+                >
                   <span className="inline-block rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-800 sm:text-[11px]">
                     {category.label}
                   </span>
                   {caption ? (
-                    <p
-                      title={caption}
-                      className={`mt-1 text-[11px] font-medium leading-snug text-white sm:text-xs md:text-sm md:leading-relaxed ${captionClamp}`}
-                    >
+                    <p className="mt-1.5 whitespace-pre-wrap text-xs font-medium leading-relaxed text-white sm:text-sm">
                       {caption}
                     </p>
-                  ) : null}
+                  ) : (
+                    <p className="mt-1.5 text-xs italic text-slate-400">No caption yet</p>
+                  )}
                 </div>
               </button>
             );
@@ -92,8 +118,8 @@ export function DreamBoardSlideCollage({ assets, title = 'My Dream Board', maxCa
         </div>
         {hiddenCount > 0 ? (
           <p className="border-t border-white/10 px-4 py-2 text-xs text-slate-300">
-            +{hiddenCount} more card{hiddenCount === 1 ? '' : 's'} — open the full grid below or tap any card to
-            enlarge.
+            +{hiddenCount} more card{hiddenCount === 1 ? '' : 's'} — scroll to the full grid below or tap any card
+            to enlarge.
           </p>
         ) : enableLightbox && count > 0 ? (
           <p className="border-t border-white/10 px-4 py-2 text-xs text-slate-300">

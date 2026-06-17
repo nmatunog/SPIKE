@@ -55,7 +55,11 @@ export function PortfolioPresentationView({ portfolio }) {
 
           {slide.type === 'dream-board' ? (
             <PresentationSlide title="Dream Board">
-              <DreamBoardSlideCollage assets={portfolio.dreamBoard.assets} title="My Dream Board" />
+              <DreamBoardSlideCollage
+                assets={portfolio.dreamBoard.assets}
+                title="My Dream Board"
+                layout="slide"
+              />
             </PresentationSlide>
           ) : null}
 
