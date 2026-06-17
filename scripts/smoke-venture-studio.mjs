@@ -92,9 +92,12 @@ if (!access.includes('faculty') || !access.includes('mentor')) {
   fail('fecProjectionAccess missing faculty/mentor gate');
 }
 
-const projection = readFileSync(join(ROOT, 'src/components/ventureDesign/FecCanvasProjectionView.jsx'), 'utf8');
-if (!projection.includes('canToggleMode')) {
-  fail('FecCanvasProjectionView missing canToggleMode gate');
+const exemplar = readFileSync(join(ROOT, 'src/lib/fecCanvasExemplar.js'), 'utf8');
+if (/sun\s*life/i.test(exemplar)) {
+  fail('fecCanvasExemplar must not reference Sun Life — use AIA Philippines');
+}
+if (!exemplar.includes('AIA Philippines')) {
+  fail('fecCanvasExemplar missing AIA Philippines branding');
 }
 
 const facultyView = readFileSync(join(ROOT, 'src/components/playbook/FacultyPlaybookView.jsx'), 'utf8');

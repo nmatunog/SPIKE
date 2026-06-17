@@ -1,21 +1,24 @@
 /**
  * Program Coach exemplar — ~30% FEC completion for projection "full canvas" mode.
+ * Branded for AIA Philippines (SPIKE incubator carrier partner).
  */
-import { FEC_UVP_SUGGESTIVE_EXAMPLE } from './fecCanvasConstants.js';
+
+export const FEC_CANVAS_EXEMPLAR_UVP =
+  'We help young Filipino professionals live Healthier, Longer, Better Lives through AIA Philippines protection and disciplined wealth building — while growing a trusted, scalable advisory practice.';
 
 /** @type {Record<string, Record<string, string>>} */
 export const FEC_CANVAS_EXEMPLAR_ENGINES = {
   create_value: {
     customer_segments:
-      'Young Filipino professionals (25–35) in BPO and tech — first-time insurance buyers with rising income but low financial literacy.',
+      'Young Filipino professionals (25–35) in BPO and tech — first-time protection buyers with rising income but low financial literacy.',
     customer_problem:
-      'They know they should protect their family and invest, but products feel complex, pushy, and disconnected from their goals.',
+      'They know they should protect their family and plan for the future, but products feel complex, pushy, and disconnected from AIA’s Healthier, Longer, Better Lives promise.',
     value_offering:
-      'A trusted advisor relationship: simplified protection + disciplined investing plans aligned to life milestones (marriage, home, retirement).',
+      'A trusted AIA advisor relationship: simplified protection and investment-linked plans aligned to life milestones (marriage, home, retirement, health).',
   },
   capture_value: {
     revenue_streams:
-      'Protection premiums, investment advisory fees, and recurring review sessions bundled into an annual financial wellness plan.',
+      'AIA protection premiums, investment-linked advisory fees, and recurring financial review sessions bundled into an annual wellness plan.',
     cost_structure:
       'Licensing, CRM, lead generation, mentor coaching time, and compliance — kept lean through digital-first delivery.',
     profit_formula:
@@ -23,11 +26,11 @@ export const FEC_CANVAS_EXEMPLAR_ENGINES = {
   },
   enable_value: {
     key_resources:
-      'SPIKE training, Sun Life product suite, squad mentor network, personal brand, and a simple client CRM.',
+      'SPIKE training, AIA Philippines product suite, squad mentor network, personal brand, and a simple client CRM.',
     key_partners:
-      'Program Coach, squad mentor, licensing partner, and referral partners in HR / community groups.',
+      'AIA Philippines agency support, Program Coach, squad mentor, and referral partners in HR / community groups.',
     funding_strategy:
-      'Bootstrap from early commissions; reinvest 20% of revenue into marketing and talent once 15 active clients are secured.',
+      'Bootstrap from early AIA commissions; reinvest 20% of revenue into marketing and talent once 15 active clients are secured.',
   },
   prove_value: {
     revenue: '₱480K annualized (Year 1 target)',
@@ -56,12 +59,12 @@ export const FEC_CANVAS_EXEMPLAR_ENGINES = {
 };
 
 export const FEC_CANVAS_EXEMPLAR_SUMMARY = {
-  unified_venture_proposition: FEC_UVP_SUGGESTIVE_EXAMPLE,
-  roadmap_12mo: 'License, first 10 clients, repeatable discovery call, 30% FEC complete.',
-  roadmap_24mo: '25 clients, referral engine, first associate recruited, profitable unit economics.',
-  roadmap_36mo: 'District hub — 50+ families, 3 associates, recognized community advisor brand.',
+  unified_venture_proposition: FEC_CANVAS_EXEMPLAR_UVP,
+  roadmap_12mo: 'AIA licensing, first 10 clients, repeatable discovery call, 30% FEC complete.',
+  roadmap_24mo: '25 AIA client relationships, referral engine, first associate recruited, profitable unit economics.',
+  roadmap_36mo: 'District hub — 50+ families protected through AIA, 3 associates, recognized community advisor brand.',
   success_narrative:
-    'In three years we protect 50+ families and help 150 lives build disciplined financial habits.',
+    'In three years we help 50+ Filipino families live Healthier, Longer, Better Lives through AIA protection and disciplined financial habits.',
   success_revenue: '₱1.5M annual revenue',
   success_customers: '50 active client relationships',
   success_families_protected: '50',
