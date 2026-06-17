@@ -26,6 +26,9 @@ export async function createWeeklyMentorAssessment(mentorId, participantId, entr
     .single();
 
   if (error) {
+    if (/weekly_mentor_assessments|schema cache|does not exist/i.test(error.message ?? '')) {
+      return null;
+    }
     console.warn('[weeklyMentorAssessments] upsert failed:', error.message);
     return null;
   }
@@ -48,6 +51,9 @@ export async function fetchWeeklyMentorAssessment(participantId, week = 1) {
     .maybeSingle();
 
   if (error) {
+    if (/weekly_mentor_assessments|schema cache|does not exist/i.test(error.message ?? '')) {
+      return null;
+    }
     console.warn('[weeklyMentorAssessments] fetch failed:', error.message);
     return null;
   }

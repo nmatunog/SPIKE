@@ -3,6 +3,19 @@ import { isSupabaseConfigured, supabase } from '../../supabaseClient.js';
 const MAX_TOPIC = 200;
 const MAX_NOTES = 4000;
 
+const COACHING_SESSION_COLUMNS_FULL =
+  'id, mentor_id, participant_id, topic, notes, week, day, discussion_summary, strengths, growth_areas, action_items, concern_flagged, follow_up_required, follow_up_date, completed, created_at';
+
+const COACHING_SESSION_COLUMNS_LEGACY =
+  'id, mentor_id, participant_id, topic, notes, week, day, discussion_summary, strengths, growth_areas, action_items, concern_flagged, follow_up_date, created_at';
+
+/** @param {string} message */
+function isMissingCoachingColumnError(message) {
+  return /follow_up_required|follow_up_date|\bcompleted\b|does not exist|schema cache/i.test(
+    String(message ?? ''),
+  );
+}
+
 /**
  * @param {string} mentorId
  * @param {string} participantId
@@ -50,14 +63,21 @@ export async function createCoachingSession(mentorId, participantId, input) {
 export async function fetchCoachingSessionsForParticipant(participantId, limit = 30) {
   if (!isSupabaseConfigured || !supabase || !participantId) return [];
 
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from('coaching_sessions')
-    .select(
-      'id, mentor_id, participant_id, topic, notes, week, day, discussion_summary, strengths, growth_areas, action_items, concern_flagged, follow_up_required, follow_up_date, completed, created_at',
-    )
+    .select(COACHING_SESSION_COLUMNS_FULL)
     .eq('participant_id', participantId)
     .order('created_at', { ascending: false })
     .limit(limit);
+
+  if (error && isMissingCoachingColumnError(error.message)) {
+    ({ data, error } = await supabase
+      .from('coaching_sessions')
+      .select(COACHING_SESSION_COLUMNS_LEGACY)
+      .eq('participant_id', participantId)
+      .order('created_at', { ascending: false })
+      .limit(limit));
+  }
 
   if (error) {
     console.warn('[coachingSessions] fetch failed:', error.message);
