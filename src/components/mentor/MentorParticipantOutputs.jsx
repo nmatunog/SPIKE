@@ -1,6 +1,7 @@
 import { getParticipantWeek1Outputs, week1OutputCompletionPct } from '../../lib/mentorFrameworkService.js';
 import { computeCanvasCompletionPct } from '../../lib/canvasService.js';
 import { generateVenturePortfolio } from '../../services/portfolioGenerator.js';
+import { VentureDesignMentorReview } from './VentureDesignMentorReview.jsx';
 
 const OUTPUT_ROWS = [
   { key: 'ambition', label: 'Ambition' },
@@ -59,6 +60,8 @@ export function MentorParticipantOutputs({ participantId, participantName = 'Par
           <dd>{portfolio.dreamBoard.assets.length}</dd>
         </div>
       </dl>
+
+      <VentureDesignMentorReview participantId={participantId} participantName={participantName} />
     </div>
   );
 }

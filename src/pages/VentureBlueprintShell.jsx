@@ -61,8 +61,8 @@ export function VentureBlueprintShell({ user, onProgressRefresh }) {
   }, [location.pathname]);
 
   const isExecutiveSummary = moduleSlug === 'canvas' && canvasSubRoute === 'summary';
+  const isCanvasStudio = moduleSlug === 'canvas' && !canvasSubRoute;
   const isCanvasWorkshop = moduleSlug === 'canvas' && canvasSubRoute === 'edit';
-  const isCanvasIntro = moduleSlug === 'canvas' && !canvasSubRoute;
   const isDay1Builders = moduleSlug === 'day-1-builders';
   const isCoach = moduleSlug === 'coach';
   const isPortfolio = moduleSlug === 'portfolio';
@@ -73,7 +73,7 @@ export function VentureBlueprintShell({ user, onProgressRefresh }) {
   const week1Simplified = isWeek1BuildSimplifiedMode(progress);
   const headerVariant = isOverview ? 'none' : 'compact';
   const showJourneyNav = week1Simplified && (isOverview || isDay1Builders || isCoach);
-  const showFullModuleNav = !week1Simplified && !isDay1Builders && !isExecutiveSummary && !isCoach && !isPortfolio && !isCanvasIntro;
+  const showFullModuleNav = !week1Simplified && !isDay1Builders && !isExecutiveSummary && !isCoach && !isPortfolio && !isCanvasStudio;
 
   function handleTrackComplete(nextProgress) {
     setProgress(nextProgress);
@@ -101,6 +101,7 @@ export function VentureBlueprintShell({ user, onProgressRefresh }) {
           <VentureDesignStudio
             participantId={user.id}
             participantName={participantName}
+            squadNameFallback={progress?.squad ?? user.internProgress?.squad ?? ''}
             careerTrack={state.career_track}
           />
         );
@@ -184,8 +185,8 @@ export function VentureBlueprintShell({ user, onProgressRefresh }) {
 
   return (
     <PageContainer
-      presentation={isExecutiveSummary || isCanvasWorkshop || isDay1Builders || isCoach || isPortfolio || isOverview}
-      wide={isExecutiveSummary || isCanvasWorkshop || isDay1Builders || isCoach || isPortfolio || isOverview || isCanvasIntro}
+      presentation={isExecutiveSummary || isCanvasWorkshop || isCanvasStudio || isDay1Builders || isCoach || isPortfolio || isOverview}
+      wide={isExecutiveSummary || isCanvasWorkshop || isCanvasStudio || isDay1Builders || isCoach || isPortfolio || isOverview}
     >
       {showTrackPicker ? (
         <CareerTrackPicker
@@ -207,7 +208,7 @@ export function VentureBlueprintShell({ user, onProgressRefresh }) {
         />
       ) : null}
 
-      {!isDay1Builders && !isExecutiveSummary && !isCoach && !isPortfolio && !isCanvasIntro ? (
+      {!isDay1Builders && !isExecutiveSummary && !isCoach && !isPortfolio && !isCanvasStudio ? (
       <div className="mb-4 space-y-3 lg:hidden">
         {showJourneyNav ? (
           <BlueprintJourneyNav participantId={user.id} day={state.day} />
@@ -227,14 +228,14 @@ export function VentureBlueprintShell({ user, onProgressRefresh }) {
 
       <div
         className={
-          isDay1Builders || isExecutiveSummary || isCoach || isPortfolio || isCanvasIntro
+          isDay1Builders || isExecutiveSummary || isCoach || isPortfolio || isCanvasStudio
             ? 'min-w-0'
             : isOverview
               ? 'grid grid-cols-1 gap-8 lg:grid-cols-[minmax(160px,200px)_1fr]'
               : 'grid grid-cols-1 gap-6 lg:grid-cols-[minmax(200px,240px)_1fr] xl:grid-cols-[minmax(220px,260px)_1fr] 2xl:grid-cols-[minmax(260px,300px)_1fr] 2xl:gap-8'
         }
       >
-        {!isDay1Builders && !isExecutiveSummary && !isCoach && !isPortfolio && !isCanvasIntro ? (
+        {!isDay1Builders && !isExecutiveSummary && !isCoach && !isPortfolio && !isCanvasStudio ? (
         <aside className="hidden lg:block">
           {showJourneyNav ? (
             <div className="sticky top-24">
@@ -255,7 +256,7 @@ export function VentureBlueprintShell({ user, onProgressRefresh }) {
         ) : null}
 
         <div className="min-w-0">
-          {!isOverview && !isExecutiveSummary && !isDay1Builders && !isCoach && !isPortfolio && !isCanvasIntro ? (
+          {!isOverview && !isExecutiveSummary && !isDay1Builders && !isCoach && !isPortfolio && !isCanvasStudio ? (
             <header className="mb-4 lg:mb-5">
               <h3 className="text-lg font-semibold text-slate-900 lg:text-xl 2xl:text-2xl">{activeModule?.label}</h3>
               <p className="mt-1 text-sm text-slate-600 lg:text-base 2xl:text-lg">{activeModule?.description}</p>
