@@ -4,7 +4,7 @@
  * Only `{segment}` is interpolated so feedback names their target market.
  */
 
-/** @typedef {{ bias: string, coach: string, evidenceScore: string, provider: 'prototype' }} VentureStudioCoachFeedback */
+/** @typedef {{ bias: string, coach: string, evidenceScore: string, provider?: 'prototype' | 'openai' | 'gemini' | string }} VentureStudioCoachFeedback */
 
 /** @typedef {import('./ventureStudioTypes.js').VentureStudioState} VentureStudioContext */
 

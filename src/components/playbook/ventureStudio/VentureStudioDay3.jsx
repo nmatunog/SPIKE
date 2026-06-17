@@ -329,7 +329,13 @@ export function VentureStudioDay3({
                   <p className="mt-1 text-xs text-slate-400">
                     {coachLoading
                       ? 'Reading your squad inputs…'
-                      : 'Prototype coach — step-guided feedback'}
+                      : feedback.provider === 'openai'
+                        ? 'AI coach (OpenAI)'
+                        : feedback.provider === 'gemini'
+                          ? 'AI coach'
+                          : feedback.provider === 'prototype'
+                            ? 'Built-in coach — add OPENAI_API_KEY for live AI'
+                            : 'Venture coach'}
                   </p>
                 </div>
               </div>

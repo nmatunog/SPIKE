@@ -1,25 +1,44 @@
 import { callGemini, callOpenAI, shouldTryNextProvider } from './providers.js';
 
 /**
- * Try Gemini first; on quota/rate limits try OpenAI; return null if no provider succeeds.
+ * Try Gemini first (default); venture_studio_coach prefers OpenAI.
+ * On quota/rate limits try the other provider; return null if no provider succeeds.
  * @param {Record<string, unknown>} payload
  * @param {{ geminiApiKey?: string, openaiApiKey?: string }} keys
  */
 export async function generateCoachText(payload, keys = {}) {
+  const task = String(payload.task ?? '');
+  const preferOpenAI = task === 'venture_studio_coach';
+
+  /** @type {Array<{ provider: string, run: () => Promise<Record<string, unknown>> }>} */
   const attempts = [];
 
-  if (keys.geminiApiKey) {
-    attempts.push({
-      provider: 'gemini',
-      run: () => callGemini(keys.geminiApiKey, payload),
-    });
-  }
-
-  if (keys.openaiApiKey) {
-    attempts.push({
-      provider: 'openai',
-      run: () => callOpenAI(keys.openaiApiKey, payload),
-    });
+  if (preferOpenAI) {
+    if (keys.openaiApiKey) {
+      attempts.push({
+        provider: 'openai',
+        run: () => callOpenAI(keys.openaiApiKey, payload),
+      });
+    }
+    if (keys.geminiApiKey) {
+      attempts.push({
+        provider: 'gemini',
+        run: () => callGemini(keys.geminiApiKey, payload),
+      });
+    }
+  } else {
+    if (keys.geminiApiKey) {
+      attempts.push({
+        provider: 'gemini',
+        run: () => callGemini(keys.geminiApiKey, payload),
+      });
+    }
+    if (keys.openaiApiKey) {
+      attempts.push({
+        provider: 'openai',
+        run: () => callOpenAI(keys.openaiApiKey, payload),
+      });
+    }
   }
 
   if (!attempts.length) {

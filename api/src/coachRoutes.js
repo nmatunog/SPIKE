@@ -24,6 +24,13 @@ const coachGenerateSchema = z.object({
     .optional(),
   currentDraft: z.string().optional(),
   refineAction: z.string().optional(),
+  stepIndex: z.number().int().min(1).max(5).optional(),
+  localHint: z
+    .object({
+      bias: z.string().optional(),
+      coach: z.string().optional(),
+    })
+    .optional(),
   ragExamples: z
     .array(
       z.object({
@@ -65,6 +72,7 @@ export function registerCoachRoutes(app) {
       provider: result.provider,
       variants: result.variants,
       summary: result.summary,
+      unavailable: false,
     });
   });
 }

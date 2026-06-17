@@ -162,7 +162,7 @@ export function buildCoachPrompt(payload) {
   if (task === 'venture_studio_coach') {
     const step = payload.stepIndex ?? fields.step ?? '1';
     const hint = payload.localHint
-      ? `Local coach draft (improve, do not copy verbatim):\nBias: ${payload.localHint.bias}\nCoach: ${payload.localHint.coach}`
+      ? `Step learning goal (preserve this intent, personalize to their inputs):\nBias: ${payload.localHint.bias}\nCoach: ${payload.localHint.coach}`
       : '';
     return [
       prefix,
