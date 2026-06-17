@@ -1347,6 +1347,10 @@ const SpikeMasterPortal = () => {
       effectiveUserRole === 'intern'
         ? internModuleUser ?? user
         : user;
+    const playbookInterns =
+      effectiveUserRole === 'mentor'
+        ? mentorInterns.map((i) => ({ id: i.id, name: i.name }))
+        : interns;
     return (
     <LazyRoute label="Loading playbook…">
       <PlaybookShell
@@ -1354,7 +1358,7 @@ const SpikeMasterPortal = () => {
         syllabusView={<MasterSyllabusView />}
         participantId={playbookUser?.id}
         userRole={effectiveUserRole}
-        interns={interns}
+        interns={playbookInterns}
         internProgress={playbookUser?.internProgress ?? null}
       />
     </LazyRoute>

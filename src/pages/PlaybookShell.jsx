@@ -6,7 +6,6 @@ import { PageContainer, PageTitle } from '../components/layout/PageContainer.jsx
 import { InternWorkHydrationAlert } from '../components/intern/InternWorkHydrationAlert.jsx';
 import { ParticipantDayView } from '../components/playbook/ParticipantDayView.jsx';
 import { FacultyPlaybookView } from '../components/playbook/FacultyPlaybookView.jsx';
-import { MentorPlaybookView } from '../components/playbook/MentorPlaybookView.jsx';
 import {
   getCurriculumDataSource,
   getDayContentBundle,
@@ -153,10 +152,11 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
     userRole === 'faculty' || userRole === 'admin' ? (
       <FacultyPlaybookView bundle={bundle} />
     ) : userRole === 'mentor' ? (
-      <MentorPlaybookView
+      <ParticipantDayView
         bundle={bundle}
+        staffPreview
         interns={interns}
-        mentorId={userRole === 'mentor' || userRole === 'admin' ? participantId : undefined}
+        mentorId={participantId}
       />
     ) : (
       <ParticipantDayView
@@ -295,7 +295,11 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
 
   return (
     <PageContainer presentation wide>
-      <PageTitle presentation subtitle={`${roleLabel} view — pick a week and day to open sessions.`}>
+      <PageTitle presentation subtitle={
+        userRole === 'mentor'
+          ? 'Same curriculum interns see — decks, activities, and Venture Studio. Track submissions in People.'
+          : `${roleLabel} view — pick a week and day to open sessions.`
+      }>
         Playbook
       </PageTitle>
 

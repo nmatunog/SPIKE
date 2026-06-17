@@ -1,10 +1,11 @@
 import { useState, useMemo } from 'react';
-import { Rocket, Target, LayoutGrid, FlaskConical } from 'lucide-react';
+import { Rocket, Target, LayoutGrid, FlaskConical, Users } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { SessionView } from './SessionView.jsx';
 import { DayClosingReflectionSection } from './DayClosingReflectionSection.jsx';
 import { DayCompletionBar } from './DayCompletionBar.jsx';
 import { DayContributionChips } from './DayContributionChips.jsx';
+import { MentorPlaybookView } from './MentorPlaybookView.jsx';
 import { getDayCompletionSummary } from '../../lib/playbookProgress.js';
 import { getDay1MissionProgress } from '../../lib/day1BuilderStorage.js';
 import {
@@ -23,9 +24,19 @@ import { UNLOCK_WEEK1_DAY2_PLUS } from '../../lib/programUnlocks.js';
  *   bundle: DayContentBundle,
  *   participantId?: string,
  *   onProgress?: () => void,
+ *   staffPreview?: boolean,
+ *   interns?: Array<{ id: string, name: string }>,
+ *   mentorId?: string,
  * }} props
  */
-export function ParticipantDayView({ bundle, participantId, onProgress }) {
+export function ParticipantDayView({
+  bundle,
+  participantId,
+  onProgress,
+  staffPreview = false,
+  interns = [],
+  mentorId,
+}) {
   const location = useLocation();
   const sessions = bundle.sessions?.sessions ?? [];
   const [sessionIndex, setSessionIndex] = useState(0);
@@ -44,7 +55,31 @@ export function ParticipantDayView({ bundle, participantId, onProgress }) {
 
   return (
     <div className="space-y-6">
-      {isDay1 && participantId && day1Progress ? (
+      {staffPreview ? (
+        <div className="rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-950">
+          <p className="font-semibold">Participant curriculum preview</p>
+          <p className="mt-1 text-sky-900">
+            This is the same Playbook day interns see — slides, activities, and Venture Studio. Open{' '}
+            <Link to={ROUTES.mentorVentureCoach} className="font-semibold text-spike hover:underline">
+              People
+            </Link>{' '}
+            to review their submissions and dream boards.
+          </p>
+        </div>
+      ) : null}
+
+      {isDay1 && staffPreview ? (
+        <section className="overflow-hidden rounded-2xl border border-spike/20 bg-gradient-to-br from-slate-900 to-spike-dark p-5 text-white shadow-card sm:p-6">
+          <p className="text-xs font-semibold uppercase tracking-widest text-spike-light/90">
+            Venture Blueprint Builders™
+          </p>
+          <h3 className="mt-2 text-xl font-bold">Day 1 — Build your foundation</h3>
+          <p className="mt-2 text-sm text-slate-300">
+            Interns skip worksheets and use interactive builders on their own devices. Review their
+            dream boards and vision work in People.
+          </p>
+        </section>
+      ) : isDay1 && participantId && day1Progress ? (
         <section className="overflow-hidden rounded-2xl border border-spike/20 bg-gradient-to-br from-slate-900 to-spike-dark p-5 text-white shadow-card sm:p-6">
           <p className="text-xs font-semibold uppercase tracking-widest text-spike-light/90">
             Venture Blueprint Builders™
@@ -73,8 +108,9 @@ export function ParticipantDayView({ bundle, participantId, onProgress }) {
           </p>
           <h3 className="mt-2 text-xl font-bold">Venture Studio — Market Discovery</h3>
           <p className="mt-2 text-sm text-slate-300">
-            Replace Deck 02 slides with a guided squad workspace: five steps, evidence library, coach
-            feedback, and a Day 4 canvas draft.
+            {staffPreview
+              ? 'Preview the squad workspace interns use: five steps, evidence library, coach feedback, and a Day 4 canvas draft.'
+              : 'Replace Deck 02 slides with a guided squad workspace: five steps, evidence library, coach feedback, and a Day 4 canvas draft.'}
           </p>
           <div className="mt-4 flex flex-wrap items-center gap-4">
             {participantId && ventureStudioPercent > 0 ? (
@@ -87,7 +123,8 @@ export function ParticipantDayView({ bundle, participantId, onProgress }) {
               to={ROUTES.playbookVentureStudio}
               className="spike-btn-primary inline-flex min-h-[48px] items-center bg-white text-spike hover:bg-red-50"
             >
-              <FlaskConical size={16} aria-hidden /> Enter Venture Studio
+              <FlaskConical size={16} aria-hidden />
+              {staffPreview ? 'Preview Venture Studio' : 'Enter Venture Studio'}
             </Link>
           </div>
         </section>
@@ -98,11 +135,11 @@ export function ParticipantDayView({ bundle, participantId, onProgress }) {
           <Target className="mt-1 shrink-0 text-[#8B0000]" size={20} />
           <div className="min-w-0 flex-1">
             <p className="text-xs font-bold uppercase tracking-wider text-[#8B0000]">
-              Today&apos;s sessions
+              {staffPreview ? 'Day sessions' : "Today's sessions"}
             </p>
             <h3 className="text-lg font-bold text-gray-900 sm:text-xl">{bundle.day.title}</h3>
             <p className="mt-1 text-sm text-gray-600">{bundle.day.theme}</p>
-            {isDay1 && UNLOCK_WEEK1_DAY2_PLUS ? (
+            {!staffPreview && isDay1 && UNLOCK_WEEK1_DAY2_PLUS ? (
               <Link
                 to={playbookHref({ week: 1, day: 2 })}
                 className="mt-3 inline-flex text-sm font-semibold text-spike hover:underline"
@@ -114,19 +151,21 @@ export function ParticipantDayView({ bundle, participantId, onProgress }) {
         </div>
       </header>
 
-      <DayCompletionBar
-        percent={
-          isDay1 && day1Progress
-            ? day1Progress.percent
-            : isDay3 && ventureStudioPercent > 0
-              ? Math.max(completion.percent, ventureStudioPercent)
-              : completion.percent
-        }
-        completedItems={
-          isDay1 && day1Progress ? day1Progress.completed : completion.completedItems
-        }
-        totalItems={isDay1 && day1Progress ? day1Progress.total : completion.totalItems}
-      />
+      {!staffPreview ? (
+        <DayCompletionBar
+          percent={
+            isDay1 && day1Progress
+              ? day1Progress.percent
+              : isDay3 && ventureStudioPercent > 0
+                ? Math.max(completion.percent, ventureStudioPercent)
+                : completion.percent
+          }
+          completedItems={
+            isDay1 && day1Progress ? day1Progress.completed : completion.completedItems
+          }
+          totalItems={isDay1 && day1Progress ? day1Progress.total : completion.totalItems}
+        />
+      ) : null}
 
       {sessions.length > 1 ? (
         <div className="spike-scroll-tabs">
@@ -151,43 +190,66 @@ export function ParticipantDayView({ bundle, participantId, onProgress }) {
         <SessionView
           session={activeSession}
           bundle={bundle}
-          participantId={participantId}
+          participantId={staffPreview ? undefined : participantId}
           onProgress={onProgress}
           hideWorksheets={isDay1}
           hidePersonaWorksheet={isDay3}
+          staffPreview={staffPreview}
         />
       ) : (
         <p className="text-sm text-gray-500">No sessions published for this day.</p>
       )}
 
-      <DayClosingReflectionSection
-        bundle={bundle}
-        participantId={participantId}
-        onCompleted={onProgress}
-      />
+      {!staffPreview ? (
+        <DayClosingReflectionSection
+          bundle={bundle}
+          participantId={participantId}
+          onCompleted={onProgress}
+        />
+      ) : null}
 
       <div className="rounded-xl border border-spike/15 bg-spike-muted/40 p-4">
         <h4 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-spike">
           <LayoutGrid size={14} aria-hidden />
-          Where this day goes in your Blueprint
+          Where this day goes in the Blueprint
         </h4>
         <DayContributionChips contributions={bundle.contributions} />
-        <div className="mt-3 flex flex-wrap gap-2">
-          {isDay1 ? (
-            <Link to={BLUEPRINT_LINKS.day1Builders} className="spike-btn-primary inline-flex">
-              Venture Blueprint Builders™
+        {!staffPreview ? (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {isDay1 ? (
+              <Link to={BLUEPRINT_LINKS.day1Builders} className="spike-btn-primary inline-flex">
+                Venture Blueprint Builders™
+              </Link>
+            ) : null}
+            {isDay3 ? (
+              <Link to={ROUTES.playbookVentureStudio} className="spike-btn-primary inline-flex">
+                Venture Studio
+              </Link>
+            ) : null}
+            <Link to={BLUEPRINT_LINKS.businessPlan} className="spike-btn-secondary inline-flex">
+              Financial Canvas
             </Link>
-          ) : null}
-          {isDay3 ? (
+          </div>
+        ) : isDay3 ? (
+          <div className="mt-3">
             <Link to={ROUTES.playbookVentureStudio} className="spike-btn-primary inline-flex">
-              Venture Studio
+              Preview Venture Studio
             </Link>
-          ) : null}
-          <Link to={BLUEPRINT_LINKS.businessPlan} className="spike-btn-secondary inline-flex">
-            Financial Canvas
-          </Link>
-        </div>
+          </div>
+        ) : null}
       </div>
+
+      {staffPreview && interns.length > 0 ? (
+        <details className="rounded-xl border border-slate-200 bg-slate-50/80 p-4">
+          <summary className="inline-flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-slate-800 marker:content-none">
+            <Users size={16} className="text-sky-700" />
+            Mentor coaching — intern progress for this day
+          </summary>
+          <div className="mt-4">
+            <MentorPlaybookView bundle={bundle} interns={interns} mentorId={mentorId} />
+          </div>
+        </details>
+      ) : null}
     </div>
   );
 }

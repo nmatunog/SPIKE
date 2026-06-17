@@ -28,6 +28,7 @@ const VENTURE_STUDIO_ACTIVITY_ID = 'activity-day-3-persona-workshop';
  *   showSpeakerNotes?: boolean,
  *   hideWorksheets?: boolean,
  *   hidePersonaWorksheet?: boolean,
+ *   staffPreview?: boolean,
  * }} props
  */
 export function SessionView({
@@ -38,6 +39,7 @@ export function SessionView({
   showSpeakerNotes = false,
   hideWorksheets = false,
   hidePersonaWorksheet = false,
+  staffPreview = false,
 }) {
   const { activities, worksheets, assessment, reflections, survey } = bundle;
   const isDay3 = bundle.day.id === DAY3_ID;
@@ -130,7 +132,7 @@ export function SessionView({
         </section>
       ) : null}
 
-      {sessionWorksheets.length > 0 && !hideWorksheets ? (
+      {sessionWorksheets.length > 0 && !hideWorksheets && !staffPreview ? (
         <section>
           <h4 className="mb-2 text-xs font-bold uppercase tracking-wider text-gray-500">
             Worksheets
@@ -162,7 +164,7 @@ export function SessionView({
         </section>
       ) : null}
 
-      {sessionWorksheets.length > 0 && hideWorksheets ? (
+      {sessionWorksheets.length > 0 && hideWorksheets && !staffPreview ? (
         <section className="rounded-2xl border border-spike/20 bg-spike-muted/50 p-5">
           <h4 className="mb-2 text-sm font-bold text-spike">Venture Blueprint Builders™</h4>
           <p className="mb-4 text-sm text-slate-700">
@@ -175,7 +177,7 @@ export function SessionView({
         </section>
       ) : null}
 
-      {showAssessment ? (
+      {showAssessment && !staffPreview ? (
         <section>
           <h4 className="mb-2 text-xs font-bold uppercase tracking-wider text-gray-500">
             Assessment
@@ -184,7 +186,7 @@ export function SessionView({
         </section>
       ) : null}
 
-      {showSurvey ? (
+      {showSurvey && !staffPreview ? (
         <section>
           <h4 className="mb-2 text-xs font-bold uppercase tracking-wider text-gray-500">Survey</h4>
           <SurveyViewer
@@ -196,7 +198,7 @@ export function SessionView({
         </section>
       ) : null}
 
-      {sessionReflections.length > 0 ? (
+      {sessionReflections.length > 0 && !staffPreview ? (
         <section>
           <h4 className="mb-2 text-xs font-bold uppercase tracking-wider text-gray-500">
             Reflection
