@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Rocket, Target, LayoutGrid, FlaskConical, Users } from 'lucide-react';
+import { Rocket, Target, LayoutGrid, FlaskConical } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { SessionView } from './SessionView.jsx';
 import { DayClosingReflectionSection } from './DayClosingReflectionSection.jsx';
@@ -200,6 +200,12 @@ export function ParticipantDayView({
         <p className="text-sm text-gray-500">No sessions published for this day.</p>
       )}
 
+      {staffPreview ? (
+        <section className="rounded-2xl border-2 border-sky-200 bg-sky-50/50 p-4 sm:p-6">
+          <MentorPlaybookView bundle={bundle} interns={interns} mentorId={mentorId} />
+        </section>
+      ) : null}
+
       {!staffPreview ? (
         <DayClosingReflectionSection
           bundle={bundle}
@@ -238,18 +244,6 @@ export function ParticipantDayView({
           </div>
         ) : null}
       </div>
-
-      {staffPreview && interns.length > 0 ? (
-        <details className="rounded-xl border border-slate-200 bg-slate-50/80 p-4">
-          <summary className="inline-flex cursor-pointer list-none items-center gap-2 text-sm font-semibold text-slate-800 marker:content-none">
-            <Users size={16} className="text-sky-700" />
-            Mentor coaching — intern progress for this day
-          </summary>
-          <div className="mt-4">
-            <MentorPlaybookView bundle={bundle} interns={interns} mentorId={mentorId} />
-          </div>
-        </details>
-      ) : null}
     </div>
   );
 }
