@@ -1,4 +1,5 @@
 import { generateCoachText } from '../../../shared/coachAi/generate.js';
+import { resolveCoachApiKeys } from '../../../shared/coachAi/keys.js';
 
 /** @param {{ request: Request, env: Record<string, string> }} context */
 export async function onRequest(context) {
@@ -31,10 +32,7 @@ export async function onRequestPost(ctx) {
     return json({ message: 'task is required.' }, 400);
   }
 
-  const result = await generateCoachText(body, {
-    geminiApiKey: env.GEMINI_API_KEY,
-    openaiApiKey: env.OPENAI_API_KEY,
-  });
+  const result = await generateCoachText(body, resolveCoachApiKeys(task, env));
 
   if (!result.ok) {
     return json(

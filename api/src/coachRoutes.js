@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { generateCoachText } from '../../shared/coachAi/generate.js';
+import { resolveCoachApiKeys } from '../../shared/coachAi/keys.js';
 
 const coachGenerateSchema = z.object({
   task: z.enum([
@@ -50,10 +51,10 @@ export function registerCoachRoutes(app) {
       return res.status(400).json({ message: parsed.error.flatten() });
     }
 
-    const result = await generateCoachText(parsed.data, {
-      geminiApiKey: process.env.GEMINI_API_KEY,
-      openaiApiKey: process.env.OPENAI_API_KEY,
-    });
+    const result = await generateCoachText(
+      parsed.data,
+      resolveCoachApiKeys(parsed.data.task, process.env),
+    );
 
     if (!result.ok) {
       return res.status(503).json({

@@ -334,7 +334,7 @@ export function VentureStudioDay3({
                         : feedback.provider === 'gemini'
                           ? 'AI coach'
                           : feedback.provider === 'prototype'
-                            ? 'Built-in coach — add OPENAI_API_KEY for live AI'
+                            ? 'Built-in coach — add VENTURE_STUDIO_OPENAI_API_KEY in Cloudflare'
                             : 'Venture coach'}
                   </p>
                 </div>
