@@ -4,7 +4,7 @@
     "title": "Facilitators Content Reference",
     "subtitle": "Segment 1 — Weeks 1–4: Talks, Decks, Activities & Daily Flow",
     "version": "1.0.0",
-    "updatedAt": "2026-06-17",
+    "updatedAt": "2026-06-18",
     "audience": [
       "Program Coach",
       "Admin",
@@ -1773,60 +1773,100 @@
               "id": "presentation-day-4-deck-01",
               "title": "Program Coach Deck 01 — Advisor vs Entrepreneur",
               "purpose": "",
-              "slideCount": 5,
+              "slideCount": 10,
               "status": "published",
               "pptxUrl": null,
-              "pdfUrl": null,
+              "pdfUrl": "/content/segment-1/week-1/day-4/faculty-deck-01.pdf",
               "slides": [
                 {
                   "number": 1,
                   "title": "Day 4 — Financial Entrepreneurship",
-                  "summary": "You have identity (Day 1), industry context (Day 2), and customer insight (Day 3). Today: choose how you will BUILD — and draft your operating model.",
+                  "summary": "",
                   "facilitatorNotes": "3 min open.",
                   "discussionQuestions": [
                     "What kind of entrepreneur do you want to become?"
                   ],
-                  "imageUrl": null
+                  "imageUrl": "/content/segment-1/week-1/day-4/deck-01/slide-01.png"
                 },
                 {
                   "number": 2,
                   "title": "Advisor vs Entrepreneur",
-                  "summary": "Advisor mindset: execute someone else's system. Entrepreneur mindset: design your own venture system. SPIKE trains financial entrepreneurs — owners of their blueprint.",
+                  "summary": "",
                   "facilitatorNotes": "Contrast examples. 5 min.",
                   "discussionQuestions": [
                     "Where have you been an advisor vs entrepreneur in your life?"
                   ],
-                  "imageUrl": null
+                  "imageUrl": "/content/segment-1/week-1/day-4/deck-01/slide-02.png"
                 },
                 {
                   "number": 3,
                   "title": "Agency Builder Path",
-                  "summary": "Build a team · Recruit · Develop leaders · Scale organization. Canvas engines: talent, leadership, recruitment, culture.",
+                  "summary": "",
                   "facilitatorNotes": "Use district exemplar. 5 min.",
                   "discussionQuestions": [
                     "What excites you about building a team?"
                   ],
-                  "imageUrl": null
+                  "imageUrl": "/content/segment-1/week-1/day-4/deck-01/slide-03.png"
                 },
                 {
                   "number": 4,
                   "title": "Specialist Consultant Path",
-                  "summary": "Build deep expertise · Premium practice · Niche authority. Canvas engines: expertise, client experience, reputation.",
+                  "summary": "",
                   "facilitatorNotes": "5 min.",
                   "discussionQuestions": [
                     "What niche could you own in 3 years?"
                   ],
-                  "imageUrl": null
+                  "imageUrl": "/content/segment-1/week-1/day-4/deck-01/slide-04.png"
                 },
                 {
                   "number": 5,
                   "title": "Deck 01 Close",
-                  "summary": "Deck 02 introduces the Financial Entrepreneurship Canvas.",
+                  "summary": "",
                   "facilitatorNotes": "2 min.",
                   "discussionQuestions": [
                     "Which path will you explore first today?"
                   ],
-                  "imageUrl": null
+                  "imageUrl": "/content/segment-1/week-1/day-4/deck-01/slide-05.png"
+                },
+                {
+                  "number": 6,
+                  "title": "Slide 6",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-1/day-4/deck-01/slide-06.png"
+                },
+                {
+                  "number": 7,
+                  "title": "Slide 7",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-1/day-4/deck-01/slide-07.png"
+                },
+                {
+                  "number": 8,
+                  "title": "Slide 8",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-1/day-4/deck-01/slide-08.png"
+                },
+                {
+                  "number": 9,
+                  "title": "Slide 9",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-1/day-4/deck-01/slide-09.png"
+                },
+                {
+                  "number": 10,
+                  "title": "Slide 10",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-1/day-4/deck-01/slide-10.png"
                 }
               ]
             },

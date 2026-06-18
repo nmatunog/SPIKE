@@ -8,64 +8,128 @@
       "slide-d4-01-02",
       "slide-d4-01-03",
       "slide-d4-01-04",
-      "slide-d4-01-05"
-    ]
+      "slide-d4-01-05",
+      "slide-d4-01-06",
+      "slide-d4-01-07",
+      "slide-d4-01-08",
+      "slide-d4-01-09",
+      "slide-d4-01-10"
+    ],
+    "sourceFile": "faculty-deck-01.pdf",
+    "sourcePath": "content/segment-1/week-1/day-4/source/faculty-deck-01.pdf",
+    "importedAt": "2026-06-18T01:27:32.790Z",
+    "pdfUrl": "/content/segment-1/week-1/day-4/faculty-deck-01.pdf"
   },
   "slides": [
     {
       "id": "slide-d4-01-01",
+      "presentationId": "presentation-day-4-deck-01",
+      "sortOrder": 1,
       "title": "Day 4 — Financial Entrepreneurship",
-      "body": "You have identity (Day 1), industry context (Day 2), and customer insight (Day 3).\n\nToday: choose how you will BUILD — and draft your operating model.",
+      "body": "",
       "speakerNotes": "3 min open.",
       "discussionQuestions": [
         "What kind of entrepreneur do you want to become?"
       ],
-      "presentationId": "presentation-day-4-deck-01",
-      "sortOrder": 1
+      "imageUrl": "/content/segment-1/week-1/day-4/deck-01/slide-01.png"
     },
     {
       "id": "slide-d4-01-02",
+      "presentationId": "presentation-day-4-deck-01",
+      "sortOrder": 2,
       "title": "Advisor vs Entrepreneur",
-      "body": "Advisor mindset: execute someone else's system.\nEntrepreneur mindset: design your own venture system.\n\nSPIKE trains financial entrepreneurs — owners of their blueprint.",
+      "body": "",
       "speakerNotes": "Contrast examples. 5 min.",
       "discussionQuestions": [
         "Where have you been an advisor vs entrepreneur in your life?"
       ],
-      "presentationId": "presentation-day-4-deck-01",
-      "sortOrder": 2
+      "imageUrl": "/content/segment-1/week-1/day-4/deck-01/slide-02.png"
     },
     {
       "id": "slide-d4-01-03",
+      "presentationId": "presentation-day-4-deck-01",
+      "sortOrder": 3,
       "title": "Agency Builder Path",
-      "body": "Build a team · Recruit · Develop leaders · Scale organization.\nCanvas engines: talent, leadership, recruitment, culture.",
+      "body": "",
       "speakerNotes": "Use district exemplar. 5 min.",
       "discussionQuestions": [
         "What excites you about building a team?"
       ],
-      "presentationId": "presentation-day-4-deck-01",
-      "sortOrder": 3
+      "imageUrl": "/content/segment-1/week-1/day-4/deck-01/slide-03.png"
     },
     {
       "id": "slide-d4-01-04",
+      "presentationId": "presentation-day-4-deck-01",
+      "sortOrder": 4,
       "title": "Specialist Consultant Path",
-      "body": "Build deep expertise · Premium practice · Niche authority.\nCanvas engines: expertise, client experience, reputation.",
+      "body": "",
       "speakerNotes": "5 min.",
       "discussionQuestions": [
         "What niche could you own in 3 years?"
       ],
-      "presentationId": "presentation-day-4-deck-01",
-      "sortOrder": 4
+      "imageUrl": "/content/segment-1/week-1/day-4/deck-01/slide-04.png"
     },
     {
       "id": "slide-d4-01-05",
+      "presentationId": "presentation-day-4-deck-01",
+      "sortOrder": 5,
       "title": "Deck 01 Close",
-      "body": "Deck 02 introduces the Financial Entrepreneurship Canvas.",
+      "body": "",
       "speakerNotes": "2 min.",
       "discussionQuestions": [
         "Which path will you explore first today?"
       ],
+      "imageUrl": "/content/segment-1/week-1/day-4/deck-01/slide-05.png"
+    },
+    {
+      "id": "slide-d4-01-06",
       "presentationId": "presentation-day-4-deck-01",
-      "sortOrder": 5
+      "sortOrder": 6,
+      "title": "Slide 6",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-4/deck-01/slide-06.png"
+    },
+    {
+      "id": "slide-d4-01-07",
+      "presentationId": "presentation-day-4-deck-01",
+      "sortOrder": 7,
+      "title": "Slide 7",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-4/deck-01/slide-07.png"
+    },
+    {
+      "id": "slide-d4-01-08",
+      "presentationId": "presentation-day-4-deck-01",
+      "sortOrder": 8,
+      "title": "Slide 8",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-4/deck-01/slide-08.png"
+    },
+    {
+      "id": "slide-d4-01-09",
+      "presentationId": "presentation-day-4-deck-01",
+      "sortOrder": 9,
+      "title": "Slide 9",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-4/deck-01/slide-09.png"
+    },
+    {
+      "id": "slide-d4-01-10",
+      "presentationId": "presentation-day-4-deck-01",
+      "sortOrder": 10,
+      "title": "Slide 10",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-4/deck-01/slide-10.png"
     }
   ]
 }
