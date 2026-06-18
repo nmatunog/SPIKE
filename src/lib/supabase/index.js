@@ -21,6 +21,13 @@ export { fetchClientGrowthFunnel, upsertClientGrowthFunnel } from './clientGrowt
 export { fetchTimelineEvents, insertTimelineEvent } from './timelineEvents.js';
 export { createCoachingSession } from './coachingSessions.js';
 export { fetchBlueprintEntries, upsertBlueprintEntry } from './blueprintEntries.js';
+export {
+  attachVentureToSquad,
+  fetchVentureByOwner,
+  fetchVentureBySquad,
+  fetchVentureForParticipant,
+  upsertVentureDocument,
+} from './ventures.js';
 export { fetchCanvasEntries, upsertCanvasEntry } from './canvasEntries.js';
 export {
   fetchLeadershipJournal,
