@@ -24,10 +24,12 @@ export const ROUTES = {
   analyticsCohortIdentity: '/analytics/cohort-identity',
   programCoachHome: '/program-coach',
   programCoachPlaybook: '/program-coach/playbook',
+  programCoachSquads: '/program-coach/squads',
   programCoachGuides: '/admin/content-studio/program-coach-guides',
   adminProgramCoachPlaybook: '/admin/program-coach-playbook',
   mentorHome: '/mentor',
   mentorPlaybook: '/mentor/playbook',
+  mentorSquads: '/mentor/squads',
   adminMentorPlaybook: '/admin/mentor-playbook',
   myVenturePortfolio: '/my-venture-portfolio',
   adminPortfolioSettings: '/admin/portfolio-settings',
@@ -144,8 +146,48 @@ export function parseMentorParticipantPath(pathname) {
 }
 
 /** @param {string} participantId */
-export function mentorParticipantReviewHref(participantId) {
-  return `${ROUTES.mentorVentureCoach}/${participantId}`;
+export function mentorParticipantReviewHref(participantId, tab = '') {
+  const base = `${ROUTES.mentorVentureCoach}/${participantId}`;
+  if (!tab) return base;
+  return `${base}?tab=${encodeURIComponent(tab)}`;
+}
+
+/** @param {'faculty' | 'mentor'} role */
+export function staffSquadsListHref(role) {
+  return role === 'mentor' ? ROUTES.mentorSquads : ROUTES.programCoachSquads;
+}
+
+/** @param {'faculty' | 'mentor'} role @param {string} squadName */
+export function staffSquadHubHref(role, squadName) {
+  const slug = encodeURIComponent(squadName);
+  return `${staffSquadsListHref(role)}/${slug}`;
+}
+
+/**
+ * @param {string} pathname
+ * @param {'faculty' | 'mentor'} role
+ */
+export function parseStaffSquadHubPath(pathname, role) {
+  const base = staffSquadsListHref(role);
+  const prefix = `${base}/`;
+  if (!pathname.startsWith(prefix)) return null;
+  const slug = pathname.slice(prefix.length).split('/').filter(Boolean)[0];
+  if (!slug) return null;
+  try {
+    return decodeURIComponent(slug);
+  } catch {
+    return slug;
+  }
+}
+
+/** @param {string} pathname */
+export function isStaffSquadsPath(pathname) {
+  return (
+    pathname === ROUTES.programCoachSquads
+    || pathname.startsWith(`${ROUTES.programCoachSquads}/`)
+    || pathname === ROUTES.mentorSquads
+    || pathname.startsWith(`${ROUTES.mentorSquads}/`)
+  );
 }
 
 /**
@@ -202,10 +244,24 @@ export const MODULE_NAV = [
     roles: ['faculty'],
   },
   {
+    path: ROUTES.programCoachSquads,
+    label: 'Squads',
+    shortLabel: 'Squads',
+    icon: 'people',
+    roles: ['faculty'],
+  },
+  {
     path: ROUTES.mentorHome,
     label: 'Home',
     shortLabel: 'Home',
     icon: 'dashboard',
+    roles: ['mentor'],
+  },
+  {
+    path: ROUTES.mentorSquads,
+    label: 'Squads',
+    shortLabel: 'Squads',
+    icon: 'people',
     roles: ['mentor'],
   },
   {
@@ -371,6 +427,18 @@ export function matchModulePath(pathname) {
   }
   if (pathname === ROUTES.facilitatorsReference) {
     return ROUTES.facilitatorsReference;
+  }
+  if (pathname === ROUTES.programCoachSquads || pathname.startsWith(`${ROUTES.programCoachSquads}/`)) {
+    return ROUTES.programCoachSquads;
+  }
+  if (pathname === ROUTES.mentorSquads || pathname.startsWith(`${ROUTES.mentorSquads}/`)) {
+    return ROUTES.mentorSquads;
+  }
+  if (pathname === ROUTES.programCoachSquads || pathname.startsWith(`${ROUTES.programCoachSquads}/`)) {
+    return ROUTES.programCoachSquads;
+  }
+  if (pathname === ROUTES.mentorSquads || pathname.startsWith(`${ROUTES.mentorSquads}/`)) {
+    return ROUTES.mentorSquads;
   }
   if (pathname === ROUTES.programCoachHome || pathname.startsWith(`${ROUTES.programCoachHome}/`)) {
     return ROUTES.programCoachHome;

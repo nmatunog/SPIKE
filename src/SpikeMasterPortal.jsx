@@ -31,7 +31,8 @@ import { RoleDashboardCards } from './components/dashboard/RoleDashboardCards.js
 import { BlueprintTimelineFeed } from './components/blueprint/BlueprintTimelineFeed.jsx';
 import { PageLoader } from './components/ui/PageLoader.jsx';
 import { RoleRouteGuard } from './components/routing/RoleRouteGuard.jsx';
-import { ROUTES, brandLexiconBackHrefForRole, facilitatorsReferenceBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath, isPlaybookPath } from './routes/paths.js';
+import { ROUTES, brandLexiconBackHrefForRole, facilitatorsReferenceBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath, isPlaybookPath, parseStaffSquadHubPath } from './routes/paths.js';
+import { StaffSquadHubPage, StaffSquadsListPage } from './components/staff/StaffSquadHubPage.jsx';
 import {
   AdminCohortsPage,
   AdminFacultyPlaybookPage,
@@ -1730,10 +1731,33 @@ const SpikeMasterPortal = () => {
               internSummary={internSummary}
               pendingLogs={pendingLogs}
               staffId={user?.id ?? ''}
+              staffName={user?.name || user?.email || 'Coach'}
               onSquadChanged={loadInterns}
             />
           </LazyRoute>
         );
+      }
+      if (path === ROUTES.programCoachSquads) {
+        return (
+          <StaffSquadsListPage
+            role="faculty"
+            interns={interns}
+            homeHref={ROUTES.programCoachHome}
+          />
+        );
+      }
+      {
+        const facultySquadName = parseStaffSquadHubPath(path, 'faculty');
+        if (facultySquadName) {
+          return (
+            <StaffSquadHubPage
+              role="faculty"
+              squadName={facultySquadName}
+              interns={interns}
+              homeHref={ROUTES.programCoachHome}
+            />
+          );
+        }
       }
       if (path === ROUTES.programCoachPlaybook) {
         return (
@@ -1761,6 +1785,28 @@ const SpikeMasterPortal = () => {
             />
           </LazyRoute>
         );
+      }
+      if (path === ROUTES.mentorSquads) {
+        return (
+          <StaffSquadsListPage
+            role="mentor"
+            interns={mentorInterns}
+            homeHref={ROUTES.mentorHome}
+          />
+        );
+      }
+      {
+        const mentorSquadName = parseStaffSquadHubPath(path, 'mentor');
+        if (mentorSquadName) {
+          return (
+            <StaffSquadHubPage
+              role="mentor"
+              squadName={mentorSquadName}
+              interns={mentorInterns}
+              homeHref={ROUTES.mentorHome}
+            />
+          );
+        }
       }
       if (path === ROUTES.mentorPlaybook) {
         return (
@@ -1791,9 +1837,11 @@ const SpikeMasterPortal = () => {
         );
       }
       if (path === ROUTES.mentorVentureCoach) {
+        const peopleRole = effectiveUserRole === 'faculty' ? 'faculty' : 'mentor';
         return (
           <LazyRoute label="Loading participants…">
             <MentorParticipantsPage
+              role={peopleRole}
               interns={mentorInterns.map((i) => ({
                 id: i.id,
                 name: i.name,

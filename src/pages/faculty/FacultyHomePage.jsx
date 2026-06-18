@@ -1,19 +1,14 @@
 import { Link } from 'react-router-dom';
-import { BookOpen, GraduationCap, Layers, Sparkles } from 'lucide-react';
-import { PageContainer, PageTitle } from '../../components/layout/PageContainer.jsx';
-import { RoleDashboardCards } from '../../components/dashboard/RoleDashboardCards.jsx';
+import { ChevronDown } from 'lucide-react';
+import { useState } from 'react';
+import { PageContainer } from '../../components/layout/PageContainer.jsx';
+import { StaffCoachHomeDashboard } from '../../components/staff/StaffCoachHomeDashboard.jsx';
 import { Day1CohortOutputsPanel } from '../../components/day1/Day1CohortOutputsPanel.jsx';
 import { FacultyDay1Panel } from '../../components/day1/FacultyDay1Panel.jsx';
 import { FacultyDashboardPanels } from '../../components/faculty/FacultyDashboardPanels.jsx';
 import { FacultyWeek1ProgressPanel } from '../../components/faculty/FacultyWeek1ProgressPanel.jsx';
-import { FrameworkMetric } from '../../components/framework/FrameworkSections.jsx';
 import { ROUTES } from '../../routes/paths.js';
-import { countSubmittedSurveys } from '../../lib/surveyService.js';
-import { deriveFacultyDashboardMetrics } from '../../lib/sprint01Metrics.js';
-import { FACULTY_PHILOSOPHY } from '../../lib/facultyWeek1Constants.js';
 import { DailyActivationCodeCard } from '../../components/dashboard/DailyActivationCodeCard.jsx';
-import { BrandLexiconDashboardCard } from '../../components/resources/BrandLexiconDashboardCard.jsx';
-import { FacilitatorsContentReferenceDashboardCard } from '../../components/resources/FacilitatorsContentReferenceDashboardCard.jsx';
 import { FacultyCohortSyncPanel } from '../../components/faculty/FacultyCohortSyncPanel.jsx';
 import { CohortOnboardingControls } from '../../components/faculty/CohortOnboardingControls.jsx';
 
@@ -23,93 +18,70 @@ import { CohortOnboardingControls } from '../../components/faculty/CohortOnboard
  *   internSummary: object,
  *   pendingLogs: Array<object>,
  *   staffId?: string,
+ *   staffName?: string,
  *   onSquadChanged?: () => void,
  * }} props
  */
-export function FacultyHomePage({ interns, internSummary, pendingLogs = [], staffId = '', onSquadChanged }) {
-  const licensedCount = interns.filter((i) => i.licensed).length;
-  const metrics = deriveFacultyDashboardMetrics(internSummary, {
-    pendingLogs: pendingLogs.length,
-    licensedCount,
-  });
-  const surveyComplete = interns.filter((i) => countSubmittedSurveys(i.id) > 0).length;
-  const surveyPct = internSummary.n ? Math.round((surveyComplete / internSummary.n) * 100) : 0;
+export function FacultyHomePage({
+  interns,
+  staffId = '',
+  staffName = 'Coach',
+  onSquadChanged,
+}) {
+  const [toolsOpen, setToolsOpen] = useState(false);
 
   return (
-    <PageContainer>
-      <PageTitle subtitle="Learning Experience Leader — teach, facilitate, assess, and standardize curriculum delivery.">
-        Program Coach Operating Framework
-      </PageTitle>
-
-      <div className="mb-4 rounded-xl border border-indigo-100 bg-indigo-50 px-4 py-3 text-sm text-indigo-950">
-        {FACULTY_PHILOSOPHY}
-      </div>
-
-      <BrandLexiconDashboardCard />
-
-      <div className="mt-4">
-        <FacilitatorsContentReferenceDashboardCard />
-      </div>
-
-      <DailyActivationCodeCard className="mt-4" />
-
-      {staffId ? (
-        <div className="mt-4">
-          <CohortOnboardingControls
-            staffId={staffId}
-            interns={interns.map((i) => ({ id: i.id, name: i.name }))}
-            canAssignSquads
-            onSquadChanged={onSquadChanged}
-          />
-        </div>
-      ) : (
-        <section className="mt-4 spike-card p-4 text-sm text-amber-800">
-          Sign in with a staff account to manage cohort onboarding.
-        </section>
-      )}
-
-      <RoleDashboardCards
+    <PageContainer wide>
+      <StaffCoachHomeDashboard
         role="faculty"
-        user={null}
+        staffName={staffName}
         interns={interns}
-        internSummary={internSummary}
-        pendingLogs={pendingLogs.length}
+        homeHref={ROUTES.programCoachHome}
       />
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <FrameworkMetric label="Cohort completion" value={`${metrics.cohortProgress}%`} sub="avg hours progress" />
-        <FrameworkMetric label="Day completion" value="Week 1" sub="5-day framework active" accent="text-indigo-700" />
-        <FrameworkMetric label="Survey completion" value={`${surveyPct}%`} sub="submitted surveys" accent="text-emerald-700" />
-        <FrameworkMetric label="Licensed" value={`${metrics.assessmentPassRate}%`} sub="licensing rate" />
-      </div>
+      <div className="mt-10 border-t border-slate-200 pt-8">
+        <button
+          type="button"
+          onClick={() => setToolsOpen((v) => !v)}
+          className="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-left text-sm font-semibold text-slate-700 hover:bg-slate-100"
+        >
+          Program delivery tools
+          <ChevronDown size={18} className={`transition ${toolsOpen ? 'rotate-180' : ''}`} />
+        </button>
 
-      <div className="mt-6 flex flex-wrap gap-2">
-        <Link to={ROUTES.programCoachPlaybook} className="spike-btn-primary inline-flex items-center gap-2">
-          <GraduationCap size={18} /> Program Coach Playbook
-        </Link>
-        <Link to={`${ROUTES.programCoachHome}/advisory`} className="spike-btn-secondary inline-flex items-center gap-2">
-          Traction & hours
-        </Link>
-        <Link to={ROUTES.adminProgramCoachPlaybook} className="spike-btn-secondary inline-flex items-center gap-2">
-          <Layers size={18} /> Manage templates
-        </Link>
-        <Link to={ROUTES.adminContentStudio} className="spike-btn-secondary inline-flex items-center gap-2">
-          <BookOpen size={18} /> Content Studio
-        </Link>
-        <Link to={ROUTES.playbook} className="spike-btn-secondary inline-flex items-center gap-2">
-          <Sparkles size={18} /> Deliver Playbook
-        </Link>
-      </div>
-
-      <div className="mt-6 space-y-6">
-        <Day1CohortOutputsPanel
-          interns={interns.map((i) => ({ id: i.id, name: i.name, squad: i.squad }))}
-          viewerRole="faculty"
-        />
-        <FacultyCohortSyncPanel interns={interns.map((i) => ({ id: i.id, name: i.name }))} />
-        <FacultyWeek1ProgressPanel interns={interns} />
-        <FacultyDashboardPanels interns={interns} />
-        <FacultyDay1Panel interns={interns.map((i) => ({ id: i.id, name: i.name }))} />
+        {toolsOpen ? (
+          <div className="mt-4 space-y-6">
+            <DailyActivationCodeCard />
+            {staffId ? (
+              <CohortOnboardingControls
+                staffId={staffId}
+                interns={interns.map((i) => ({ id: i.id, name: i.name }))}
+                canAssignSquads
+                onSquadChanged={onSquadChanged}
+              />
+            ) : (
+              <section className="spike-card p-4 text-sm text-amber-800">
+                Sign in with a staff account to manage cohort onboarding.
+              </section>
+            )}
+            <Day1CohortOutputsPanel
+              interns={interns.map((i) => ({ id: i.id, name: i.name, squad: i.squad }))}
+              viewerRole="faculty"
+            />
+            <FacultyCohortSyncPanel interns={interns.map((i) => ({ id: i.id, name: i.name }))} />
+            <FacultyWeek1ProgressPanel interns={interns} />
+            <FacultyDashboardPanels interns={interns} />
+            <FacultyDay1Panel interns={interns.map((i) => ({ id: i.id, name: i.name }))} />
+            <div className="flex flex-wrap gap-2">
+              <Link to={ROUTES.adminContentStudio} className="spike-btn-secondary text-sm">
+                Content Studio
+              </Link>
+              <Link to={`${ROUTES.programCoachHome}/advisory`} className="spike-btn-secondary text-sm">
+                Traction &amp; hours
+              </Link>
+            </div>
+          </div>
+        ) : null}
       </div>
     </PageContainer>
   );

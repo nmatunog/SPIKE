@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { PageContainer } from '../../components/layout/PageContainer.jsx';
 import {
@@ -11,6 +11,13 @@ import { MentorParticipantEncodingPanel } from '../../components/mentor/MentorQu
 import { MentorWeek1SummaryPanel } from '../../components/mentor/MentorWeek1SummaryPanel.jsx';
 import { MentorWeeklyAssessmentPanel } from '../../components/mentor/MentorWeeklyAssessmentPanel.jsx';
 import { StaffParticipantDreamBoardSection } from '../../components/portfolio/StaffParticipantDreamBoardSection.jsx';
+import { StaffParticipantTabNav } from '../../components/staff/StaffParticipantTabNav.jsx';
+import { normalizeStaffParticipantTab } from '../../lib/staffParticipantTabs.js';
+import { StaffFecReadOnlyPanel } from '../../components/staff/StaffFecReadOnlyPanel.jsx';
+import {
+  StaffPortfolioPreviewPanel,
+  StaffVentureBoardPanel,
+} from '../../components/staff/StaffVentureBoardPanel.jsx';
 import { hydrateCoachingFromSupabase, listCoachingNotesForParticipant } from '../../lib/coachingService.js';
 import { hydrateWeeklyAssessmentFromSupabase } from '../../lib/weeklyAssessmentService.js';
 import { getCoachSummaryForMentor } from '../../lib/ventureCoachService.js';
@@ -37,6 +44,8 @@ export function MentorVentureCoachPage({
   showToast,
 }) {
   const { pathname } = useLocation();
+  const [searchParams] = useSearchParams();
+  const activeTab = normalizeStaffParticipantTab(searchParams.get('tab') ?? 'overview');
   const participantId = parseMentorParticipantPath(pathname);
   const intern = interns.find((i) => i.id === participantId);
   const { ready: dataReady, version: dataVersion, error: hydrationError } = useParticipantHydration(participantId);
@@ -133,14 +142,16 @@ export function MentorVentureCoachPage({
         <ArrowLeft size={16} /> All participants
       </Link>
 
-      <header className="mb-6">
-        <p className="spike-label text-spike">Participant Coaching Card</p>
+      <header className="mb-4">
+        <p className="spike-label text-spike">Participant</p>
         <h1 className="text-2xl font-bold text-slate-900">{intern?.name ?? 'Participant'}</h1>
         <p className="mt-1 text-sm text-slate-600">
           {intern?.squad ? `${intern.squad} · ` : ''}
-          Day 1 {remoteSummary?.progressPercent ?? summary?.progress?.percent ?? 0}% · {trackLabel}
+          {remoteSummary?.progressPercent ?? summary?.progress?.percent ?? 0}% · {trackLabel}
         </p>
       </header>
+
+      <StaffParticipantTabNav participantId={participantId} activeTab={activeTab} />
 
       {remoteSummary && !remoteSummary.hasRemoteData ? (
         <div className="mb-6 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950">
@@ -149,6 +160,80 @@ export function MentorVentureCoachPage({
         </div>
       ) : null}
 
+      {activeTab === 'venture' ? (
+        <StaffVentureBoardPanel
+          participantId={participantId}
+          participantName={intern?.name ?? 'Participant'}
+        />
+      ) : null}
+
+      {activeTab === 'fec' ? (
+        <StaffFecReadOnlyPanel
+          participantId={participantId}
+          participantName={intern?.name ?? 'Participant'}
+        />
+      ) : null}
+
+      {activeTab === 'portfolio' ? (
+        <StaffPortfolioPreviewPanel
+          participantId={participantId}
+          participantName={intern?.name ?? 'Participant'}
+        />
+      ) : null}
+
+      {activeTab === 'feedback' && !readOnly && mentorId ? (
+        <div className="space-y-6">
+          <section>
+            <h2 className="mb-3 text-lg font-semibold text-slate-900">Quick check-in</h2>
+            <p className="mb-4 text-sm text-slate-600">
+              Tap a rating and add a short note — saves automatically for this intern.
+            </p>
+            <MentorParticipantEncodingPanel
+              mentorId={mentorId}
+              participantId={participantId}
+              participantName={intern?.name}
+              showToast={showToast}
+              onSaved={refreshHistory}
+            />
+          </section>
+          <section className="space-y-4">
+            <h2 className="text-lg font-semibold text-slate-900">Coaching session</h2>
+            <MentorCoachingSessionForm
+              mentorId={mentorId}
+              participantId={participantId}
+              showToast={showToast}
+              onSaved={refreshHistory}
+            />
+            <div className="spike-card">
+              <h3 className="mb-3 text-sm font-semibold text-slate-900">Session history</h3>
+              <MentorCoachingHistory
+                key={historyKey}
+                history={history}
+                participantId={participantId}
+                onUpdated={refreshHistory}
+              />
+            </div>
+          </section>
+          <section>
+            <h2 className="mb-3 text-lg font-semibold text-slate-900">End-of-week ratings</h2>
+            <MentorWeeklyAssessmentPanel
+              mentorId={mentorId}
+              participantId={participantId}
+              showToast={showToast}
+              onSaved={refreshHistory}
+            />
+          </section>
+        </div>
+      ) : null}
+
+      {activeTab === 'feedback' && (readOnly || !mentorId) ? (
+        <p className="rounded-xl border border-slate-200 bg-slate-50 p-6 text-sm text-slate-600">
+          Sign in with a staff account to leave ratings and coaching notes.
+        </p>
+      ) : null}
+
+      {activeTab === 'overview' ? (
+        <>
       <section className="mb-6">
         <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">Venture identity</h2>
         <div className="grid gap-4 lg:grid-cols-2">
@@ -195,55 +280,14 @@ export function MentorVentureCoachPage({
       </section>
 
       {!readOnly && mentorId ? (
-        <>
-          <section className="mb-6">
-            <MentorParticipantEncodingPanel
-              mentorId={mentorId}
-              participantId={participantId}
-              participantName={intern?.name}
-              showToast={showToast}
-              onSaved={refreshHistory}
-            />
-          </section>
-
-          <section className="mb-6 space-y-4">
-            <h2 className="text-sm font-bold uppercase tracking-wide text-slate-500">Coaching notes</h2>
-            <MentorCoachingSessionForm
-              mentorId={mentorId}
-              participantId={participantId}
-              showToast={showToast}
-              onSaved={refreshHistory}
-            />
-            <div className="spike-card">
-              <h3 className="mb-3 text-sm font-semibold text-slate-900">Session history</h3>
-              <MentorCoachingHistory
-                key={historyKey}
-                history={history}
-                participantId={participantId}
-                onUpdated={refreshHistory}
-              />
-            </div>
-          </section>
-
-          <section className="mb-6">
-            <details className="spike-card group">
-              <summary className="cursor-pointer list-none text-sm font-semibold text-slate-900 marker:content-none">
-                <span className="inline-flex items-center gap-2">
-                  End-of-week ratings
-                  <span className="text-xs font-normal text-slate-500">(optional — use after Day 5)</span>
-                </span>
-              </summary>
-              <div className="mt-4 border-t border-slate-100 pt-4">
-                <MentorWeeklyAssessmentPanel
-                  mentorId={mentorId}
-                  participantId={participantId}
-                  showToast={showToast}
-                  onSaved={refreshHistory}
-                />
-              </div>
-            </details>
-          </section>
-        </>
+        <section className="mb-6">
+          <Link
+            to={`${ROUTES.mentorVentureCoach}/${participantId}?tab=feedback`}
+            className="inline-flex rounded-xl bg-spike px-4 py-2.5 text-sm font-semibold text-white hover:bg-spike-light"
+          >
+            Rate &amp; comment →
+          </Link>
+        </section>
       ) : null}
 
       <section className="mb-6">
@@ -254,6 +298,8 @@ export function MentorVentureCoachPage({
           squad={intern?.squad}
         />
       </section>
+        </>
+      ) : null}
     </PageContainer>
   );
 }

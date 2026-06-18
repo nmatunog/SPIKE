@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useMemo, useState, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Briefcase, ChevronRight, Users } from 'lucide-react';
 import { PageContainer, PageTitle } from '../components/layout/PageContainer.jsx';
 import { FacultyCohortSyncPanel } from '../components/faculty/FacultyCohortSyncPanel.jsx';
@@ -100,11 +100,17 @@ function sectionPreviewLines(sectionId, portfolio) {
  */
 export function PortfolioPage({ hours = 0, interns = [] }) {
   const sections = getPortfolioSections();
+  const [searchParams] = useSearchParams();
+  const squadFilter = searchParams.get('squad') ?? '';
+  const filteredInterns = useMemo(() => {
+    if (!squadFilter) return interns;
+    return interns.filter((i) => (i.squad ?? '') === squadFilter);
+  }, [interns, squadFilter]);
   const [participantId, setParticipantId] = useState('');
-  const cohortIds = useMemo(() => interns.map((i) => i.id), [interns]);
+  const cohortIds = useMemo(() => filteredInterns.map((i) => i.id), [filteredInterns]);
   const { ready: cohortReady, version: cohortVersion } = useCohortHydration(cohortIds, {
-    enabled: interns.length > 0,
-    interns,
+    enabled: filteredInterns.length > 0,
+    interns: filteredInterns,
   });
   const { ready: participantReady, version: participantVersion } = useParticipantHydration(
     participantId || null,
@@ -113,17 +119,29 @@ export function PortfolioPage({ hours = 0, interns = [] }) {
   void cohortVersion;
   void participantVersion;
 
-  const selectedIntern = interns.find((i) => i.id === participantId);
+  const selectedIntern = filteredInterns.find((i) => i.id === participantId);
   const portfolio = participantId && participantReady
     ? generateVenturePortfolio(participantId, {
         participantName: selectedIntern?.name ?? 'Participant',
       })
     : null;
 
+  useEffect(() => {
+    if (!squadFilter || !filteredInterns.length) return;
+    if (!filteredInterns.some((i) => i.id === participantId)) {
+      setParticipantId(filteredInterns[0].id);
+    }
+  }, [squadFilter, filteredInterns, participantId]);
+
   return (
     <PageContainer>
       <div className="mb-6 sm:mb-8">
         <PageTitle>Venture Portfolio</PageTitle>
+        {squadFilter ? (
+          <p className="mt-2 rounded-lg bg-spike-muted px-3 py-2 text-sm font-medium text-spike">
+            Showing squad: {squadFilter}
+          </p>
+        ) : null}
         <p className="mt-1 text-sm text-gray-600 sm:text-base">
           Review compiled participant portfolios. Identity work comes from{' '}
           <Link to={ROUTES.ventureBlueprint} className="font-bold text-[#8B0000] hover:underline">
@@ -133,13 +151,13 @@ export function PortfolioPage({ hours = 0, interns = [] }) {
         </p>
       </div>
 
-      {interns.length > 0 ? (
+      {filteredInterns.length > 0 ? (
         <div className="mb-6">
-          <FacultyCohortSyncPanel interns={interns} />
+          <FacultyCohortSyncPanel interns={filteredInterns} />
         </div>
       ) : null}
 
-      {interns.length > 0 ? (
+      {filteredInterns.length > 0 ? (
         <div className="mb-6 spike-card space-y-4">
           <label className="block">
             <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-900">
@@ -152,7 +170,7 @@ export function PortfolioPage({ hours = 0, interns = [] }) {
               className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm"
             >
               <option value="">Choose a participant…</option>
-              {interns.map((intern) => {
+              {filteredInterns.map((intern) => {
                 const summary = cohortReady ? getCoachSummaryForMentor(intern.id) : null;
                 const day1 = cohortReady ? getDay1MissionProgress(intern.id) : null;
                 const pct = day1?.percent ?? summary?.progress?.percent ?? 0;
@@ -184,7 +202,7 @@ export function PortfolioPage({ hours = 0, interns = [] }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {interns.map((intern) => {
+                  {filteredInterns.map((intern) => {
                     const summary = getCoachSummaryForMentor(intern.id);
                     const day1 = getDay1MissionProgress(intern.id);
                     const dreamCards =
