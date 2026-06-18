@@ -87,6 +87,20 @@ if (!publicUrl.includes('/storage/v1/object/public/dream-board/user-1/asset-1.jp
   fail('dreamBoardStoragePublicUrl should build public storage URLs');
 }
 
+import { attachDreamBoardStorageUrls } from '../src/lib/dreamBoardCloudSync.js';
+const withoutFile = attachDreamBoardStorageUrls('user-1', [{ id: 'asset-1', category: 'travel', caption: 'Go', imageUrl: '' }], new Set());
+if (withoutFile[0].imageUrl) {
+  fail('attachDreamBoardStorageUrls should not invent URLs when Storage object is missing');
+}
+const withFile = attachDreamBoardStorageUrls(
+  'user-1',
+  [{ id: 'asset-1', category: 'travel', caption: 'Go', imageUrl: '' }],
+  new Set(['asset-1']),
+);
+if (!withFile[0].imageUrl?.includes('asset-1.jpg')) {
+  fail('attachDreamBoardStorageUrls should attach URL when Storage object exists');
+}
+
 import { dataUrlToImageBlob, buildDreamBoardStoragePath } from '../src/lib/dreamBoardStorageUtils.js';
 
 const tinyPng =

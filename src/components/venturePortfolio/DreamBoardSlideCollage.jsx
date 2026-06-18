@@ -89,12 +89,22 @@ export function DreamBoardSlideCollage({
                       src={asset.imageUrl}
                       alt={caption || category.label}
                       className="h-full w-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        const placeholder = e.currentTarget.nextElementSibling;
+                        if (placeholder instanceof HTMLElement) {
+                          placeholder.style.display = 'flex';
+                        }
+                      }}
                     />
-                  ) : (
-                    <div className="flex h-full min-h-[7rem] w-full items-center justify-center bg-gradient-to-br from-spike-muted/30 to-slate-800 text-3xl text-white/30">
-                      ✦
-                    </div>
-                  )}
+                  ) : null}
+                  <div
+                    className={`flex h-full min-h-[7rem] w-full items-center justify-center bg-gradient-to-br from-spike-muted/30 to-slate-800 text-3xl text-white/30 ${
+                      asset.imageUrl ? 'hidden' : ''
+                    }`}
+                  >
+                    ✦
+                  </div>
                 </div>
                 <div
                   className={`shrink-0 border-t border-white/10 bg-slate-950/95 px-2.5 py-2 sm:px-3 sm:py-2.5 ${

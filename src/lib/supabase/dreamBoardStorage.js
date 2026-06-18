@@ -53,3 +53,21 @@ export function getDreamBoardPublicImageUrl(userId, clientAssetId) {
   const base = import.meta.env.VITE_SUPABASE_URL;
   return dreamBoardStoragePublicUrl(base, userId, clientAssetId);
 }
+
+/** Client asset ids with a `.jpg` object under `{userId}/` in the dream-board bucket. */
+export async function listDreamBoardStorageClientIds(userId) {
+  if (!isSupabaseConfigured || !supabase || !userId) return new Set();
+
+  const { data, error } = await supabase.storage.from(DREAM_BOARD_BUCKET).list(userId, { limit: 200 });
+  if (error) {
+    console.warn('[dreamBoardStorage] list failed:', error.message);
+    return new Set();
+  }
+
+  return new Set(
+    (data ?? [])
+      .map((entry) => entry.name)
+      .filter((name) => name.endsWith('.jpg'))
+      .map((name) => name.slice(0, -4)),
+  );
+}

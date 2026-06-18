@@ -55,14 +55,24 @@ export function DreamBoardCollage({
                   alt={caption || category.label}
                   className="aspect-[4/3] w-full object-cover"
                   loading="lazy"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    const placeholder = e.currentTarget.nextElementSibling;
+                    if (placeholder instanceof HTMLElement) {
+                      placeholder.style.display = 'flex';
+                    }
+                  }}
                 />
-              ) : (
-                <div className="flex aspect-[4/3] items-center justify-center bg-gradient-to-br from-spike-muted/40 to-white px-4 text-center">
-                  <span className="text-3xl opacity-40" aria-hidden>
-                    ✦
-                  </span>
-                </div>
-              )}
+              ) : null}
+              <div
+                className={`aspect-[4/3] items-center justify-center bg-gradient-to-br from-spike-muted/40 to-white px-4 text-center ${
+                  asset.imageUrl ? 'hidden' : 'flex'
+                }`}
+              >
+                <span className="text-3xl opacity-40" aria-hidden>
+                  ✦
+                </span>
+              </div>
               <div className="space-y-2 p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="inline-block rounded-full bg-white/80 px-2 py-0.5 text-2xs font-bold uppercase tracking-wide text-slate-600">

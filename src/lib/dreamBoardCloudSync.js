@@ -6,7 +6,7 @@ import { fetchDay1BuilderProgress } from './supabase/day1BuilderProgress.js';
 import { fetchDreamBoardAssets, syncDreamBoardAssets } from './supabase/dreamBoardAssets.js';
 import { mergeDreamBoardAssetLists, enrichDreamBoardFromMetadata, mergeDreamBoardBuilderData } from './dreamBoardMerge.js';
 import { normalizeDreamBoardCards } from './dreamBoardConfig.js';
-import { getDreamBoardPublicImageUrl } from './supabase/dreamBoardStorage.js';
+import { getDreamBoardPublicImageUrl, listDreamBoardStorageClientIds } from './supabase/dreamBoardStorage.js';
 import { isHttpDreamBoardImageUrl, isInlineDreamBoardImageUrl } from './dreamBoardStorageUtils.js';
 
 export { mergeDreamBoardAssetLists, enrichDreamBoardFromMetadata, mergeDreamBoardBuilderData } from './dreamBoardMerge.js';
@@ -145,16 +145,18 @@ export async function hydrateDreamBoardImagesFromCloud(participantId, opts = {})
 }
 
 /**
- * Resolve http(s) or data URLs, then fall back to public Storage paths.
+ * Resolve http(s) URLs; only attach Storage URLs when the object exists (avoids broken img tags).
  * @param {string} participantId
  * @param {Array<{ id: string, category: string, caption: string, imageUrl?: string }>} assets
+ * @param {Set<string>} [storageClientIds]
  */
-export function attachDreamBoardStorageUrls(participantId, assets) {
+export function attachDreamBoardStorageUrls(participantId, assets, storageClientIds = new Set()) {
   return assets.map((asset) => {
     const imageUrl = String(asset.imageUrl ?? '');
     if (isHttpDreamBoardImageUrl(imageUrl) || isInlineDreamBoardImageUrl(imageUrl)) {
       return asset;
     }
+    if (!storageClientIds.has(asset.id)) return asset;
     const publicUrl = getDreamBoardPublicImageUrl(participantId, asset.id);
     return publicUrl ? { ...asset, imageUrl: publicUrl } : asset;
   });
@@ -205,5 +207,8 @@ export async function fetchDreamBoardForStaffView(participantId) {
     metadataAssets,
   );
 
-  return normalizeDreamBoardCards(attachDreamBoardStorageUrls(participantId, merged));
+  const storageClientIds = await listDreamBoardStorageClientIds(participantId);
+  return normalizeDreamBoardCards(
+    attachDreamBoardStorageUrls(participantId, merged, storageClientIds),
+  );
 }
