@@ -1,6 +1,6 @@
 import { createServiceClient } from '../../_shared/supabaseAdmin.js';
 import { findAuthUserByEmail } from '../../_shared/bootstrapSuperuser.js';
-import { corsPreflight, json, randomPassword, verifyAdminActor } from '../../_shared/verifySuperuser.js';
+import { corsPreflight, json, randomPassword, verifyAdminActor, assertAdminCanWrite } from '../../_shared/verifySuperuser.js';
 
 const ALL_ROLES = ['INTERN', 'FACULTY', 'MENTOR', 'ADMIN', 'SUPERUSER'];
 const ADMIN_MANAGEABLE_ROLES = ['INTERN', 'FACULTY', 'MENTOR', 'ADMIN'];
@@ -167,6 +167,12 @@ export async function onRequest(ctx) {
 
   if (request.method !== 'POST') {
     return json({ message: 'Method not allowed.' }, 405);
+  }
+
+  try {
+    assertAdminCanWrite(actor);
+  } catch (err) {
+    return json({ message: err instanceof Error ? err.message : 'View-only account.' }, 403);
   }
 
   let body;

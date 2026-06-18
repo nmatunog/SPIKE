@@ -2,7 +2,7 @@ import { LogOut } from 'lucide-react';
 import { SpikeLogo } from '../components/brand/SpikeLogo.jsx';
 import { formatUiRoleLabel } from '../lib/terminology.js';
 
-export function PortalHeader({ userRole, user, setupMeta, onLogout, viewAsRole }) {
+export function PortalHeader({ userRole, user, setupMeta, onLogout, viewAsRole, readOnlyViewer = false }) {
   const badgeRole = viewAsRole ?? userRole;
   const isRolePreview = userRole === 'superuser' && viewAsRole;
   return (
@@ -26,11 +26,19 @@ export function PortalHeader({ userRole, user, setupMeta, onLogout, viewAsRole }
             </span>
             <span
               className={`rounded-full px-2 py-0.5 text-2xs font-semibold uppercase tracking-wide lg:px-2.5 lg:py-1 lg:text-xs ${
-                isRolePreview ? 'bg-amber-300/25 text-amber-50 ring-1 ring-amber-200/40' : 'bg-white/15 text-white'
+                readOnlyViewer
+                  ? 'bg-amber-300/25 text-amber-50 ring-1 ring-amber-200/40'
+                  : isRolePreview
+                    ? 'bg-amber-300/25 text-amber-50 ring-1 ring-amber-200/40'
+                    : 'bg-white/15 text-white'
               }`}
-              title={isRolePreview ? 'Signed in as Superuser' : undefined}
+              title={readOnlyViewer ? 'View-only administrator' : isRolePreview ? 'Signed in as Superuser' : undefined}
             >
-              {isRolePreview ? `Preview: ${formatUiRoleLabel(badgeRole)}` : formatUiRoleLabel(badgeRole)}
+              {readOnlyViewer
+                ? 'View only'
+                : isRolePreview
+                  ? `Preview: ${formatUiRoleLabel(badgeRole)}`
+                  : formatUiRoleLabel(badgeRole)}
             </span>
             <button
               type="button"

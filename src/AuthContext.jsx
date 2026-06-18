@@ -15,6 +15,7 @@ import {
   isMockAuthEnabled,
   persistMockUser,
 } from './lib/mockAuth.js';
+import { normalizeLoginIdentifier, isReadOnlyViewerProfile } from './lib/readOnlyViewer.js';
 import { setOnboardingCompleteCache, isInternOnboardingSatisfied } from './lib/cohortOnboardingService.js';
 import { ensureInternProgress } from './lib/supabase/cohortOnboarding.js';
 import { scheduleInternDelayedUpload, clearInternDelayedUploadSchedule, runInternSignInCloudUpload } from './lib/internSessionSync.js';
@@ -118,7 +119,7 @@ export function AuthProvider({ children }) {
       await Promise.all([
         supabase
           .from('profiles')
-          .select('id, email, name, role')
+          .select('id, email, name, role, read_only')
           .eq('id', authUser.id)
           .maybeSingle(),
         supabase
@@ -191,6 +192,7 @@ export function AuthProvider({ children }) {
       role: profile.role,
       internProgress: internProgress || null,
       mustChangePassword: readMustChangePassword(authUser),
+      readOnlyViewer: isReadOnlyViewerProfile(profile),
     };
   }, []);
 
@@ -403,8 +405,9 @@ export function AuthProvider({ children }) {
   }, [user?.profileIncomplete, user?.id, fetchSupabaseUser]);
 
   const login = useCallback(async (email, password) => {
+    const loginId = normalizeLoginIdentifier(email);
     if (isMockAuthEnabled()) {
-      const mockUser = authenticateMockUser(email, password);
+      const mockUser = authenticateMockUser(loginId, password);
       if (mockUser) {
         persistMockUser(mockUser);
         setToken('mock');
@@ -415,7 +418,7 @@ export function AuthProvider({ children }) {
 
     if (USE_SUPABASE) {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        email: loginId,
         password,
       });
       if (error) throw error;
@@ -427,7 +430,7 @@ export function AuthProvider({ children }) {
 
     const data = await apiFetch('/api/auth/login', {
       method: 'POST',
-      body: { email, password },
+      body: { email: loginId, password },
     });
     localStorage.setItem('spike_token', data.token);
     setToken(data.token);

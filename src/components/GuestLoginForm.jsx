@@ -92,15 +92,15 @@ export const GuestLoginForm = memo(function GuestLoginForm({
       ) : null}
 
       <label className="block">
-        <span className="spike-label mb-1 block">Email</span>
+        <span className="spike-label mb-1 block">Email or username</span>
         <input
-          type="email"
+          type="text"
           required
           autoComplete="username"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-spike focus:ring-2 focus:ring-spike/20"
-          placeholder="you@example.com"
+          placeholder="you@example.com or Admin01"
         />
       </label>
 

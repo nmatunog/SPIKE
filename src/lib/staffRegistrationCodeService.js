@@ -1,4 +1,5 @@
 import { supabase } from '../supabaseClient.js';
+import { assertPortalCanWrite } from './portalWriteAccess.js';
 
 /** @param {{ code?: string; message?: string } | null | undefined} error */
 function formatStaffCodeError(error, fallback) {
@@ -40,6 +41,7 @@ export async function needsStaffBootstrap() {
 
 export async function ensureStaffRegistrationCode() {
   if (!supabase) return null;
+  await assertPortalCanWrite();
   const { data, error } = await supabase.rpc('ensure_staff_registration_code');
   if (error) throw new Error(formatStaffCodeError(error, 'Could not ensure staff registration code.'));
   return data ?? null;
@@ -47,6 +49,7 @@ export async function ensureStaffRegistrationCode() {
 
 export async function regenerateStaffRegistrationCode() {
   if (!supabase) return null;
+  await assertPortalCanWrite();
   const { data, error } = await supabase.rpc('regenerate_staff_registration_code');
   if (error) throw new Error(formatStaffCodeError(error, 'Could not regenerate staff registration code.'));
   return data ?? null;

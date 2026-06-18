@@ -6,6 +6,7 @@ import {
   regenerateDailyActivationCode,
 } from '../lib/activationCodeService.js';
 import { isAdminLikeRole, isStaffUiRole, resolveUserRole } from '../lib/roles.js';
+import { isReadOnlyViewerUser } from '../lib/readOnlyViewer.js';
 
 /**
  * Loads today's intern activation code for staff dashboards.
@@ -15,7 +16,7 @@ export function useDailyActivationCode() {
   const { user, usingSupabaseAuth } = useAuth();
   const userRole = resolveUserRole(user);
   const enabled = usingSupabaseAuth && isStaffUiRole(userRole);
-  const canRegenerate = isAdminLikeRole(userRole);
+  const canRegenerate = isAdminLikeRole(userRole) && !isReadOnlyViewerUser(user);
 
   const [code, setCode] = useState(null);
   const [loading, setLoading] = useState(false);

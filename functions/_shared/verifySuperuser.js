@@ -30,18 +30,30 @@ export async function verifyAdminActor(env, request) {
 
   const { data: profile, error: profErr } = await client
     .from('profiles')
-    .select('id, role, email, name')
+    .select('id, role, email, name, read_only')
     .eq('id', userData.user.id)
     .maybeSingle();
 
   if (profErr || !profile?.role) return null;
   if (!['ADMIN', 'SUPERUSER'].includes(profile.role)) return null;
 
+  const readOnly =
+    profile.role === 'ADMIN'
+    && (Boolean(profile.read_only) || String(profile.email ?? '').toLowerCase() === 'admin01@viewer.1cma.online');
+
   return {
     user: userData.user,
     profile,
     isSuperuser: profile.role === 'SUPERUSER',
+    readOnly,
   };
+}
+
+/** Reject view-only admin accounts for mutation endpoints. */
+export function assertAdminCanWrite(actor) {
+  if (actor?.readOnly) {
+    throw new Error('View-only administrator — cannot make changes.');
+  }
 }
 
 /** @param {Record<string, unknown>} payload */

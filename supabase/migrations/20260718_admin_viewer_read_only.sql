@@ -80,6 +80,41 @@ begin
 end;
 $$;
 
+create or replace function public.regenerate_daily_activation_code()
+returns public.activation_codes
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  today date := public.manila_today();
+  row public.activation_codes;
+begin
+  if public.current_role() not in ('ADMIN', 'SUPERUSER') then
+    raise exception 'Only administrators can regenerate activation codes';
+  end if;
+  if not public.portal_can_write() then
+    raise exception 'View-only administrator — cannot regenerate activation codes';
+  end if;
+
+  insert into public.activation_codes (date_key, code, expires_at, generated_by)
+  values (
+    today,
+    public.random_activation_code(),
+    public.manila_end_of_day(today),
+    auth.uid()
+  )
+  on conflict (date_key) do update
+    set code = excluded.code,
+        expires_at = excluded.expires_at,
+        generated_by = excluded.generated_by,
+        generated_at = now();
+
+  select * into row from public.activation_codes where date_key = today;
+  return row;
+end;
+$$;
+
 create or replace function public.regenerate_staff_registration_code()
 returns public.staff_registration_config
 language plpgsql
@@ -96,18 +131,20 @@ begin
     raise exception 'View-only administrator — cannot change registration codes';
   end if;
 
-  update public.staff_registration_config
-  set
-    code = public.random_staff_code(),
-    expires_at = now() + interval '90 days',
-    updated_at = now(),
-    updated_by = auth.uid()
-  where id = 1
-  returning * into row;
+  insert into public.staff_registration_config (id, code, expires_at, updated_by)
+  values (
+    1,
+    public.random_staff_code(),
+    now() + interval '90 days',
+    auth.uid()
+  )
+  on conflict (id) do update
+    set code = excluded.code,
+        expires_at = excluded.expires_at,
+        updated_at = now(),
+        updated_by = excluded.updated_by;
 
-  if row.id is null then
-    return public.ensure_staff_registration_code();
-  end if;
+  select * into row from public.staff_registration_config where id = 1;
   return row;
 end;
 $$;

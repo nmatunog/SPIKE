@@ -25,6 +25,8 @@ import { useCompactNav } from './hooks/useCompactNav.js';
 import { PortalHeader } from './layouts/PortalHeader.jsx';
 import { filterInternsForMentor } from './lib/mentorAssignmentService.js';
 import { resolveUserRole, isSuperuserDbRole, isAdminLikeRole, isStaffUiRole } from './lib/roles.js';
+import { isReadOnlyViewerUser, assertPortalCanWriteUser } from './lib/readOnlyViewer.js';
+import { ReadOnlyViewerBar } from './components/admin/ReadOnlyViewerBar.jsx';
 import { RoleDashboardCards } from './components/dashboard/RoleDashboardCards.jsx';
 import { BlueprintTimelineFeed } from './components/blueprint/BlueprintTimelineFeed.jsx';
 import { PageLoader } from './components/ui/PageLoader.jsx';
@@ -133,6 +135,7 @@ const SpikeMasterPortal = () => {
     completeBootstrapSetup,
   } = useAuth();
   const userRole = resolveUserRole(user);
+  const readOnlyViewer = isReadOnlyViewerUser(user);
   const [viewAsRole, setViewAsRole] = useState(() => readViewAsRole());
   const effectiveUserRole = useMemo(
     () => getEffectiveUserRole(userRole, viewAsRole),
@@ -285,6 +288,7 @@ const SpikeMasterPortal = () => {
     async (id) => {
       if (!usingSupabaseAuth || !supabase) return;
       try {
+        assertPortalCanWriteUser(user);
         const { error } = await supabase
           .from('password_reset_requests')
           .update({ status: 'resolved' })
@@ -296,7 +300,7 @@ const SpikeMasterPortal = () => {
         showToast(e.message || 'Could not update request', 'info');
       }
     },
-    [usingSupabaseAuth, loadPasswordResetRequests, showToast],
+    [usingSupabaseAuth, loadPasswordResetRequests, showToast, user],
   );
 
   const loadInterns = useCallback(async () => {
@@ -783,6 +787,7 @@ const SpikeMasterPortal = () => {
   const handleAdminRegister = useCallback(
     async (body) => {
       try {
+        assertPortalCanWriteUser(user);
         if (usingSupabaseAuth) {
           if (!supabase) throw new Error('Supabase is not configured.');
           if (!isAdminLikeRole(resolveUserRole(user))) {
@@ -1233,29 +1238,40 @@ const SpikeMasterPortal = () => {
     () => (
       <AdminPage
         usersPanel={
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-            <div className="mb-4 flex items-center gap-2">
-              <Users className="text-[#8B0000]" size={22} />
-              <h3 className="text-lg font-bold text-gray-900">Create user account</h3>
+          readOnlyViewer ? (
+            <div className="rounded-xl border border-amber-200 bg-amber-50 p-6 text-sm text-amber-950">
+              <p className="font-semibold">View-only admin account</p>
+              <p className="mt-2 text-amber-900/90">
+                Account creation, activation codes, and staff registration codes are hidden for this
+                temporary viewer login.
+              </p>
             </div>
-            <p className="mb-4 text-sm text-gray-600">
-              Add another person to the portal (intern, program coach, mentor, or administrator). Interns
-              receive a progress record automatically. Accounts are pre-confirmed — no signup email required.
-            </p>
-            <AdminRegisterForm onRegister={handleAdminRegister} />
-            {usingSupabaseAuth ? (
-              <DailyActivationCodeCard showRegenerate className="mt-6 border-t border-gray-200 pt-6" />
-            ) : null}
-            {usingSupabaseAuth && isAdminLikeRole(resolveUserRole(user)) ? (
-              <StaffRegistrationCodeCard canRegenerate className="mt-6 border-t border-gray-200 pt-6" />
-            ) : null}
-          </div>
+          ) : (
+            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="mb-4 flex items-center gap-2">
+                <Users className="text-[#8B0000]" size={22} />
+                <h3 className="text-lg font-bold text-gray-900">Create user account</h3>
+              </div>
+              <p className="mb-4 text-sm text-gray-600">
+                Add another person to the portal (intern, program coach, mentor, or administrator). Interns
+                receive a progress record automatically. Accounts are pre-confirmed — no signup email required.
+              </p>
+              <AdminRegisterForm onRegister={handleAdminRegister} />
+              {usingSupabaseAuth ? (
+                <DailyActivationCodeCard showRegenerate className="mt-6 border-t border-gray-200 pt-6" />
+              ) : null}
+              {usingSupabaseAuth && isAdminLikeRole(resolveUserRole(user)) ? (
+                <StaffRegistrationCodeCard canRegenerate className="mt-6 border-t border-gray-200 pt-6" />
+              ) : null}
+            </div>
+          )
         }
         userDirectoryPanel={
           isAdminLikeRole(resolveUserRole(user)) && usingSupabaseAuth ? (
             <AdminUserDirectory
               currentUserId={user?.id ?? ''}
               isSuperuser={isSuperuserDbRole(user?.role)}
+              readOnlyViewer={readOnlyViewer}
             />
           ) : null
         }
@@ -1311,8 +1327,9 @@ const SpikeMasterPortal = () => {
                       </div>
                       <button
                         type="button"
+                        disabled={readOnlyViewer}
                         onClick={() => resolvePasswordResetRequest(row.id)}
-                        className="min-h-[44px] shrink-0 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-xs font-bold text-gray-800 transition hover:bg-gray-50"
+                        className="min-h-[44px] shrink-0 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-xs font-bold text-gray-800 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         Mark resolved
                       </button>
@@ -1341,6 +1358,7 @@ const SpikeMasterPortal = () => {
       loadPasswordResetRequests,
       resolvePasswordResetRequest,
       user,
+      readOnlyViewer,
     ],
   );
 
@@ -1861,7 +1879,10 @@ const SpikeMasterPortal = () => {
         user={user}
         setupMeta={setupMeta}
         onLogout={handleLogout}
+        readOnlyViewer={readOnlyViewer}
       />
+
+      {readOnlyViewer ? <ReadOnlyViewerBar /> : null}
 
       {userRole !== 'guest' && userRole !== 'profile_error' && !authLoading && (
         <ModuleNav

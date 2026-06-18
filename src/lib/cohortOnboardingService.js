@@ -11,6 +11,7 @@ import {
   SQUAD_NAME_EXAMPLES,
 } from './cohortFormationStorage.js';
 import * as db from './supabase/cohortOnboarding.js';
+import { assertPortalCanWrite } from './portalWriteAccess.js';
 
 export { COHORT_NAME_EXAMPLES, SQUAD_NAME_EXAMPLES, SQUAD_MOTTO_EXAMPLES };
 
@@ -416,22 +417,27 @@ export async function requestAiFinalists(suggestions) {
 
 /** Staff actions */
 export async function staffOpenSuggestions(cohortId) {
+  await assertPortalCanWrite();
   return db.setCohortPhase(cohortId, 'suggestions_open');
 }
 
 export async function staffCloseSuggestions(cohortId) {
+  await assertPortalCanWrite();
   return db.setCohortPhase(cohortId, 'suggestions_closed');
 }
 
 export async function staffPublishVoting(cohortId) {
+  await assertPortalCanWrite();
   return db.setCohortPhase(cohortId, 'voting_open');
 }
 
 export async function staffCloseVoting(cohortId) {
+  await assertPortalCanWrite();
   return db.setCohortPhase(cohortId, 'voting_closed');
 }
 
 export async function staffRevealWinner(cohortId) {
+  await assertPortalCanWrite();
   return db.revealWinner(cohortId);
 }
 
@@ -441,32 +447,38 @@ export async function staffRevealWinner(cohortId) {
  * @param {string} [staffId]
  */
 export async function staffSaveFinalists(cohortId, finalists, staffId) {
+  await assertPortalCanWrite();
   await db.replaceFinalists(cohortId, finalists, staffId);
   return db.setCohortPhase(cohortId, 'finalists_ready');
 }
 
 /** @param {number} cohortId @param {string} photoUrl */
 export async function staffUploadCohortPhoto(cohortId, photoUrl) {
+  await assertPortalCanWrite();
   return db.setCohortPhoto(cohortId, photoUrl);
 }
 
 /** @param {number} cohortId */
 export async function staffMarkSquadsAssigned(cohortId) {
+  await assertPortalCanWrite();
   return db.setCohortPhase(cohortId, 'squads_assigned');
 }
 
 /** @param {string} squadId @param {string} participantId */
 export async function staffAddInternToSquad(squadId, participantId) {
+  await assertPortalCanWrite();
   return db.addSquadMember(squadId, participantId);
 }
 
 /** @param {string} squadId @param {string} participantId */
 export async function staffRemoveInternFromSquad(squadId, participantId) {
+  await assertPortalCanWrite();
   return db.removeSquadMember(squadId, participantId);
 }
 
 /** @param {string} squadId */
 export async function staffDeleteFormationSquad(squadId) {
+  await assertPortalCanWrite();
   return db.deleteFormationSquad(squadId);
 }
 
@@ -494,6 +506,7 @@ export async function staffLoadDashboard() {
 }
 
 export async function staffGenerateAndSaveFinalists(cohortId, staffId) {
+  await assertPortalCanWrite();
   const suggestions = await db.fetchSuggestions(cohortId);
   const ai = await requestAiFinalists(suggestions);
   let finalists = ai.finalists;

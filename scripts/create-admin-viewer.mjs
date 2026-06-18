@@ -34,23 +34,49 @@ const admin = createClient(url, serviceKey, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
 
-const { data: existing } = await admin.from('profiles').select('id, role, read_only').eq('email', email).maybeSingle();
+async function upsertViewerProfile(id) {
+  const withReadOnly = { id, email, name, role: 'ADMIN', read_only: true };
+  const { error } = await admin.from('profiles').upsert(withReadOnly, { onConflict: 'id' });
+  if (!error) return;
+  if (/read_only/i.test(error.message)) {
+    const { error: fallbackErr } = await admin.from('profiles').upsert(
+      { id, email, name, role: 'ADMIN' },
+      { onConflict: 'id' },
+    );
+    if (fallbackErr) throw fallbackErr;
+    console.warn('Profile saved without read_only — apply migration 20260718_admin_viewer_read_only.sql');
+    return;
+  }
+  throw error;
+}
 
-if (existing?.id) {
-  const { error } = await admin
-    .from('profiles')
-    .update({ role: 'ADMIN', name, read_only: true })
-    .eq('id', existing.id);
-  if (error) {
-    console.error('Failed to update profile:', error.message);
+const { data: existing } = await admin.from('profiles').select('id').eq('email', email).maybeSingle();
+
+let userId = existing?.id;
+
+if (!userId) {
+  const { data: listData, error: listErr } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
+  if (listErr) {
+    console.error('Could not list auth users:', listErr.message);
     process.exit(1);
   }
-  const { error: pwErr } = await admin.auth.admin.updateUserById(existing.id, { password });
+  const authUser = (listData?.users ?? []).find((u) => u.email?.toLowerCase() === email);
+  if (authUser?.id) userId = authUser.id;
+}
+
+if (userId) {
+  try {
+    await upsertViewerProfile(userId);
+  } catch (err) {
+    console.error('Failed to upsert profile:', err instanceof Error ? err.message : err);
+    process.exit(1);
+  }
+  const { error: pwErr } = await admin.auth.admin.updateUserById(userId, { password });
   if (pwErr) {
     console.error('Profile updated but password reset failed:', pwErr.message);
     process.exit(1);
   }
-  console.log(`Reset read-only admin viewer: ${email} (${existing.id})`);
+  console.log(`Reset read-only admin viewer: ${email} (${userId})`);
   console.log('Sign in with Admin01 or', email, '— password:', password);
   process.exit(0);
 }
@@ -67,24 +93,15 @@ if (createErr || !created?.user?.id) {
   process.exit(1);
 }
 
-const userId = created.user.id;
+const newUserId = created.user.id;
 
-const { error: profileErr } = await admin.from('profiles').upsert(
-  {
-    id: userId,
-    email,
-    name,
-    role: 'ADMIN',
-    read_only: true,
-  },
-  { onConflict: 'id' },
-);
-
-if (profileErr) {
-  console.error('Auth user created but profile upsert failed:', profileErr.message);
-  console.error('User id:', userId);
+try {
+  await upsertViewerProfile(newUserId);
+} catch (err) {
+  console.error('Auth user created but profile upsert failed:', err instanceof Error ? err.message : err);
+  console.error('User id:', newUserId);
   process.exit(1);
 }
 
-console.log(`Read-only admin viewer created: ${email} (${userId})`);
+console.log(`Read-only admin viewer created: ${email} (${newUserId})`);
 console.log('Sign in with Admin01 or', email, '— password:', password);

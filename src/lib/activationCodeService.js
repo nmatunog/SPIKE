@@ -1,4 +1,5 @@
 import { supabase } from '../supabaseClient.js';
+import { assertPortalCanWrite } from './portalWriteAccess.js';
 
 /** @param {{ code?: string; message?: string } | null | undefined} error */
 function formatActivationCodeError(error, fallback) {
@@ -55,6 +56,7 @@ export async function fetchTodayActivationCode() {
 /** Admin-only: replace today's code. @returns {Promise<object | null>} */
 export async function regenerateDailyActivationCode() {
   if (!supabase) return null;
+  await assertPortalCanWrite();
   const { data, error } = await supabase.rpc('regenerate_daily_activation_code');
   if (error) throw new Error(formatActivationCodeError(error, 'Could not regenerate today\'s activation code.'));
   return data ?? null;

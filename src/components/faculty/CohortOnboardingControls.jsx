@@ -20,12 +20,14 @@ import { db } from '../../lib/cohortOnboardingService.js';
 import { isMockUserId } from '../../lib/mockAuth.js';
 import { OnboardingPhotoCapture } from '../onboarding/OnboardingPhotoCapture.jsx';
 import { isSupabaseConfigured } from '../../supabaseClient.js';
+import { usePortalWriteAccess } from '../../hooks/usePortalWriteAccess.js';
 
 /**
  * Program Coach / Mentor controls for cohort-first onboarding.
  * @param {{ staffId: string, interns?: Array<{ id: string, name: string }>, canAssignSquads?: boolean, photoOnly?: boolean, onSquadChanged?: () => void }} props
  */
 export function CohortOnboardingControls({ staffId, interns = [], canAssignSquads = false, photoOnly = false, onSquadChanged }) {
+  const { canWrite } = usePortalWriteAccess();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState('');
@@ -58,6 +60,10 @@ export function CohortOnboardingControls({ staffId, interns = [], canAssignSquad
   }, [refresh]);
 
   async function run(label, fn) {
+    if (!canWrite) {
+      setError('View-only account — you cannot make changes.');
+      return;
+    }
     setBusy(label);
     setError('');
     try {

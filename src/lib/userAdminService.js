@@ -1,5 +1,6 @@
 import { ApiError, apiFetch } from '../apiClient.js';
 import { supabase } from '../supabaseClient.js';
+import { assertPortalCanWrite } from './portalWriteAccess.js';
 
 const ADMIN_MANAGEABLE_ROLES = ['INTERN', 'FACULTY', 'MENTOR', 'ADMIN'];
 
@@ -50,7 +51,7 @@ async function getActorContext() {
 
   const { data: selfProfile, error: profileErr } = await supabase
     .from('profiles')
-    .select('role')
+    .select('role, read_only')
     .eq('id', authData.user.id)
     .maybeSingle();
   if (profileErr) throw profileErr;
@@ -176,6 +177,7 @@ async function runAdminDirectoryApi(payload) {
  * }} payload
  */
 export async function createPortalUserViaApi(payload) {
+  await assertPortalCanWrite();
   const role = normalizePortalRole(payload.role);
   if (!role) throw new Error('Select a role for the new account.');
 
@@ -240,6 +242,7 @@ async function updatePortalUser({ targetId, role, name, isSuperuser, target }) {
  */
 export async function runUserDirectoryAction(payload, { isSuperuser, target = null }) {
   if (!supabase) throw new Error('Supabase is not configured.');
+  await assertPortalCanWrite();
 
   if (payload.action === 'password_reset' || payload.action === 'delete') {
     if (!isSuperuser) {

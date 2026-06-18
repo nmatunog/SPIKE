@@ -16,8 +16,8 @@ function normalizePortalRole(role) {
   return String(role ?? 'INTERN').trim().toUpperCase();
 }
 
-/** @param {{ currentUserId?: string, isSuperuser?: boolean }} props */
-export function AdminUserDirectory({ currentUserId = '', isSuperuser = false }) {
+/** @param {{ currentUserId?: string, isSuperuser?: boolean, readOnlyViewer?: boolean }} props */
+export function AdminUserDirectory({ currentUserId = '', isSuperuser = false, readOnlyViewer = false }) {
   const [users, setUsers] = useState([]);
   const [actorIsSuperuser, setActorIsSuperuser] = useState(isSuperuser);
   const [migrationNeeded, setMigrationNeeded] = useState(false);
@@ -98,7 +98,9 @@ export function AdminUserDirectory({ currentUserId = '', isSuperuser = false }) 
         <div>
           <h3 className="text-lg font-bold text-gray-900">Registered users</h3>
           <p className="text-sm text-gray-600">
-            {actorIsSuperuser
+            {readOnlyViewer
+              ? 'Browse all registered accounts. This view-only login cannot edit roles, reset passwords, or remove users.'
+              : actorIsSuperuser
               ? 'View all accounts — promote roles, edit details, reset passwords, or remove users. Every action requires a reason and is logged.'
               : 'View all registered accounts and change roles for interns, coaches, mentors, and administrators. Superuser accounts are read-only.'}
           </p>
@@ -153,7 +155,9 @@ export function AdminUserDirectory({ currentUserId = '', isSuperuser = false }) 
                       ) : null}
                     </td>
                     <td className="px-2 py-3">
-                      {manageable ? (
+                      {readOnlyViewer ? (
+                        <span className="text-xs text-gray-400">View only</span>
+                      ) : manageable ? (
                         <div className="flex flex-wrap gap-2">
                           <button
                             type="button"
