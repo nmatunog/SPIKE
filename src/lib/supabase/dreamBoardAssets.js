@@ -15,8 +15,8 @@ import { preferLongerDreamBoardCaption } from '../dreamBoardMerge.js';
  * }} DreamBoardAssetRow
  */
 
-/** @param {string} userId */
-export async function fetchDreamBoardAssets(userId) {
+/** @param {string} userId @param {{ strict?: boolean }} [opts] */
+export async function fetchDreamBoardAssets(userId, opts = {}) {
   if (!isSupabaseConfigured || !supabase || shouldSkipSupabaseUserWrite(userId)) return [];
 
   const { data, error } = await supabase
@@ -27,6 +27,7 @@ export async function fetchDreamBoardAssets(userId) {
 
   if (error) {
     console.warn('[dreamBoardAssets] fetch failed:', error.message);
+    if (opts.strict) throw error;
     return [];
   }
 

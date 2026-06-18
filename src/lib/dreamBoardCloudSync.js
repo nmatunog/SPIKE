@@ -182,7 +182,7 @@ export async function fetchDreamBoardForStaffView(participantId) {
   if (!participantId || String(participantId).startsWith('mock-')) return [];
 
   const [cloudRows, entry, builderRows] = await Promise.all([
-    fetchDreamBoardAssets(participantId),
+    fetchDreamBoardAssets(participantId, { strict: true }),
     Promise.resolve(readBuilderEntry(participantId, 'dream-board')),
     fetchDay1BuilderProgress(participantId).catch(() => []),
   ]);

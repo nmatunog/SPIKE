@@ -18,15 +18,25 @@ export function StaffParticipantDreamBoardSection({
 }) {
   const [assets, setAssets] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
+    setLoadError('');
     (async () => {
-      const rows = await fetchDreamBoardForStaffView(participantId);
-      if (!cancelled) {
-        setAssets(rows);
-        setLoading(false);
+      try {
+        const rows = await fetchDreamBoardForStaffView(participantId);
+        if (!cancelled) {
+          setAssets(rows);
+          setLoading(false);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setAssets([]);
+          setLoadError(err instanceof Error ? err.message : 'Could not load dream board from the cloud.');
+          setLoading(false);
+        }
       }
     })();
     return () => {
@@ -42,6 +52,7 @@ export function StaffParticipantDreamBoardSection({
   const missingPhotos = assets.filter(
     (asset) => String(asset.caption ?? '').trim() && !asset.imageUrl,
   ).length;
+  const photoCount = assets.filter((asset) => asset.imageUrl).length;
 
   return (
     <section className={`spike-card space-y-4 ${className}`}>
@@ -66,12 +77,30 @@ export function StaffParticipantDreamBoardSection({
         </span>
       </div>
 
+      {loadError ? (
+        <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
+          {loadError} If this persists, ask an administrator to run dream board migrations{' '}
+          <code className="rounded bg-white px-1">20260717</code> and{' '}
+          <code className="rounded bg-white px-1">20260718</code> in Supabase.
+        </p>
+      ) : null}
+
       {loading ? (
         <p className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
           Loading dream board from the cloud…
         </p>
       ) : cardCount > 0 ? (
         <>
+          {photoCount === 0 && missingPhotos > 0 ? (
+            <p className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+              <strong>Captions synced, photos missing.</strong> {cardCount} dream card
+              {cardCount === 1 ? '' : 's'} loaded from the cloud with text only — no photos were uploaded
+              yet. Ask {participantName.split(' ')[0] || 'them'} to open{' '}
+              <strong>Dream Board Studio</strong> on the phone or laptop where they added photos, then tap{' '}
+              <strong>Sync to cloud</strong>. Photos cannot be recovered from the server until they do that.
+            </p>
+          ) : null}
+
           <DreamBoardSlideCollage
             assets={assets}
             title={`${participantName}'s Dream Board`}
