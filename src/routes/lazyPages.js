@@ -18,6 +18,10 @@ export const FecCanvasProjectionPage = lazyNamed(
   () => import('../pages/FecCanvasProjectionPage.jsx'),
   'FecCanvasProjectionPage',
 );
+export const VentureDesignWorkshopPage = lazyNamed(
+  () => import('../pages/VentureDesignWorkshopPage.jsx'),
+  'VentureDesignWorkshopPage',
+);
 export const ResearchPage = lazyNamed(() => import('../pages/ResearchPage.jsx'), 'ResearchPage');
 export const PortfolioPage = lazyNamed(() => import('../pages/PortfolioPage.jsx'), 'PortfolioPage');
 export const ProgressReportsPage = lazyNamed(

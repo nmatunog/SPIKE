@@ -51,6 +51,7 @@ import {
   PlaybookShell,
   VentureStudioDay3Page,
   FecCanvasProjectionPage,
+  VentureDesignWorkshopPage,
   PortfolioPage,
   ProgressReportsPage,
   ResearchPage,
@@ -1375,6 +1376,18 @@ const SpikeMasterPortal = () => {
     </LazyRoute>
   );
 
+  const renderVentureDesignWorkshop = (pageUser, { viewerRole = 'intern', readOnly = false } = {}) => (
+    <LazyRoute label="Loading Venture Design Studio…">
+      <VentureDesignWorkshopPage
+        participantId={readOnly ? '' : pageUser?.id ?? ''}
+        participantName={pageUser?.name || pageUser?.email || 'Builder'}
+        squadNameFallback={pageUser?.internProgress?.squad ?? ''}
+        viewerRole={viewerRole}
+        readOnly={readOnly}
+      />
+    </LazyRoute>
+  );
+
   const renderFecProjection = (viewerRole) => (
     <LazyRoute label="Loading FEC projection…">
       <FecCanvasProjectionPage viewerRole={viewerRole} />
@@ -1487,6 +1500,13 @@ const SpikeMasterPortal = () => {
         const projectionRole = viewAsRole ?? (userRole === 'superuser' ? 'faculty' : userRole);
         return renderFecProjection(projectionRole);
       }
+      if (path === ROUTES.playbookVentureDesignWorkshop) {
+        const workshopRole = viewAsRole ?? (userRole === 'superuser' ? 'faculty' : userRole);
+        return renderVentureDesignWorkshop(internUser, {
+          viewerRole: workshopRole,
+          readOnly: workshopRole === 'mentor',
+        });
+      }
       if (path === ROUTES.playbookVentureStudio) {
         return renderVentureStudioDay3(internUser, { readOnly: false });
       }
@@ -1551,6 +1571,9 @@ const SpikeMasterPortal = () => {
       if (path === ROUTES.playbookFecProjection) {
         return renderFecProjection('intern');
       }
+      if (path === ROUTES.playbookVentureDesignWorkshop) {
+        return renderVentureDesignWorkshop(internUser, { viewerRole: 'intern', readOnly: false });
+      }
       if (path === ROUTES.playbookVentureStudio) {
         return renderVentureStudioDay3(internUser, { readOnly: false });
       }
@@ -1575,6 +1598,12 @@ const SpikeMasterPortal = () => {
     if (isSuperuserSession || isStaffUiRole(effectiveUserRole)) {
       if (path === ROUTES.playbookFecProjection) {
         return renderFecProjection(effectiveUserRole);
+      }
+      if (path === ROUTES.playbookVentureDesignWorkshop) {
+        return renderVentureDesignWorkshop(user, {
+          viewerRole: effectiveUserRole,
+          readOnly: effectiveUserRole === 'mentor',
+        });
       }
       if (path === ROUTES.playbookVentureStudio) {
         const studioUser =

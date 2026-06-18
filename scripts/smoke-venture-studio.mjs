@@ -26,6 +26,15 @@ const pathsJs = readFileSync(join(ROOT, 'src/routes/paths.js'), 'utf8');
 if (!pathsJs.includes("playbookVentureStudio: '/playbook/venture-studio/day-3'")) {
   fail('ROUTES.playbookVentureStudio missing');
 }
+if (!pathsJs.includes("playbookFecProjection: '/playbook/venture-design/fec-projection'")) {
+  fail('ROUTES.playbookFecProjection missing');
+}
+if (!pathsJs.includes("playbookVentureDesignWorkshop: '/playbook/venture-design/workshop'")) {
+  fail('ROUTES.playbookVentureDesignWorkshop missing');
+}
+if (!pathsJs.includes('export function ventureDesignWorkshopHref')) {
+  fail('ventureDesignWorkshopHref helper missing');
+}
 if (!pathsJs.includes('export function isPlaybookPath')) {
   fail('isPlaybookPath helper missing');
 }
@@ -33,6 +42,9 @@ if (!pathsJs.includes('export function isPlaybookPath')) {
 const portal = readFileSync(join(ROOT, 'src/SpikeMasterPortal.jsx'), 'utf8');
 if (!portal.includes('ROUTES.playbookVentureStudio')) {
   fail('SpikeMasterPortal missing venture studio route');
+}
+if (!portal.includes('ROUTES.playbookVentureDesignWorkshop')) {
+  fail('SpikeMasterPortal missing venture design workshop route');
 }
 if (!portal.includes('isPlaybookPath')) {
   fail('SpikeMasterPortal missing isPlaybookPath onboarding exemption');
@@ -99,6 +111,9 @@ const projection = readFileSync(join(ROOT, 'src/components/ventureDesign/FecCanv
 if (!projection.includes('FecCanvasLayout')) {
   fail('FecCanvasProjectionView should render FecCanvasLayout');
 }
+if (!projection.includes('ventureDesignWorkshopHref')) {
+  fail('FecCanvasProjectionView should link Open workshop via ventureDesignWorkshopHref');
+}
 
 const ventureDesignPage = readFileSync(join(ROOT, 'src/pages/VentureDesignStudio.jsx'), 'utf8');
 if (!ventureDesignPage.includes('project') || !ventureDesignPage.includes('FecCanvasProjectionView')) {
@@ -108,6 +123,9 @@ if (!ventureDesignPage.includes('project') || !ventureDesignPage.includes('FecCa
 const hero = readFileSync(join(ROOT, 'src/components/playbook/ventureDesign/Day4VentureDesignHero.jsx'), 'utf8');
 if (!hero.includes('playbookFecProjection') || !hero.includes('variant')) {
   fail('Day4VentureDesignHero missing playbook projection link or role variants');
+}
+if (!hero.includes('ventureDesignWorkshopHref')) {
+  fail('Day4VentureDesignHero should use ventureDesignWorkshopHref for staff workshop links');
 }
 
 const access = readFileSync(join(ROOT, 'src/lib/fecProjectionAccess.js'), 'utf8');

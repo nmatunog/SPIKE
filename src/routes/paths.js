@@ -5,6 +5,7 @@ export const ROUTES = {
   playbook: '/playbook',
   playbookVentureStudio: '/playbook/venture-studio/day-3',
   playbookFecProjection: '/playbook/venture-design/fec-projection',
+  playbookVentureDesignWorkshop: '/playbook/venture-design/workshop',
   portfolio: '/portfolio',
   research: '/research',
   reports: '/reports',
@@ -51,7 +52,20 @@ export function isPlaybookPath(pathname) {
     pathname === ROUTES.playbook
     || pathname === ROUTES.playbookVentureStudio
     || pathname === ROUTES.playbookFecProjection
+    || pathname === ROUTES.playbookVentureDesignWorkshop
   );
+}
+
+/**
+ * Playbook Venture Design workshop — staff delivery + mentor preview (interns use Build canvas).
+ * @param {{ coach?: boolean, start?: boolean }} [opts]
+ */
+export function ventureDesignWorkshopHref({ coach = false, start = true } = {}) {
+  const params = new URLSearchParams();
+  if (coach) params.set('coach', '1');
+  if (start) params.set('start', '1');
+  const q = params.toString();
+  return q ? `${ROUTES.playbookVentureDesignWorkshop}?${q}` : ROUTES.playbookVentureDesignWorkshop;
 }
 
 /** Blueprint sub-routes (PR4) — Business Plan, Milestones, Venture Board live inside the OS. */

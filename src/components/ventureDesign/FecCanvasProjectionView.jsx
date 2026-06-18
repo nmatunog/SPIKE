@@ -6,7 +6,7 @@ import {
   FEC_CANVAS_EXEMPLAR_ENGINES,
   FEC_CANVAS_EXEMPLAR_SUMMARY,
 } from '../../lib/fecCanvasExemplar.js';
-import { BLUEPRINT_LINKS } from '../../routes/paths.js';
+import { BLUEPRINT_LINKS, ventureDesignWorkshopHref } from '../../routes/paths.js';
 import { PROGRAM_COACH_LABEL } from '../../lib/terminology.js';
 import {
   FecCanvasLayout,
@@ -42,6 +42,11 @@ export function FecCanvasProjectionView({
           engines: FEC_CANVAS_EXEMPLAR_ENGINES,
         })
       : null;
+
+  const workshopHref =
+    viewerRole === 'faculty'
+      ? ventureDesignWorkshopHref({ coach: true })
+      : ventureDesignWorkshopHref({ coach: false });
 
   return (
     <div className="-mx-4 min-h-screen bg-stone-950 font-sans text-white md:-mx-0">
@@ -85,7 +90,7 @@ export function FecCanvasProjectionView({
             ) : null}
             {canToggleMode ? (
               <Link
-                to={`${BLUEPRINT_LINKS.businessPlan}?start=1`}
+                to={workshopHref}
                 className="hidden min-h-[40px] items-center rounded-xl border border-stone-600 px-4 py-2 text-xs font-semibold text-stone-200 hover:bg-stone-800 sm:inline-flex"
               >
                 Open workshop

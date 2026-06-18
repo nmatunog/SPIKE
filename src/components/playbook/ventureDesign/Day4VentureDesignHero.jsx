@@ -1,6 +1,6 @@
 import { ArrowRight, Layout, Monitor, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { BLUEPRINT_LINKS, ROUTES } from '../../../routes/paths.js';
+import { BLUEPRINT_LINKS, ROUTES, ventureDesignWorkshopHref } from '../../../routes/paths.js';
 
 const WORKSHOP_STEPS = [
   'Target Insight',
@@ -12,7 +12,8 @@ const WORKSHOP_STEPS = [
 
 const WORKSHOP_HREF = `${BLUEPRINT_LINKS.businessPlan}?start=1`;
 const PROJECTION_HREF = ROUTES.playbookFecProjection;
-const COACH_WORKSHOP_HREF = `${BLUEPRINT_LINKS.businessPlan}?coach=1&start=1`;
+const COACH_WORKSHOP_HREF = ventureDesignWorkshopHref({ coach: true });
+const MENTOR_WORKSHOP_HREF = ventureDesignWorkshopHref({ coach: false });
 
 /**
  * Day 4 main hero — primary material for interns, mentors, and Program Coach.
@@ -119,7 +120,7 @@ export function Day4VentureDesignHero({ variant, progressPercent = 0 }) {
             ) : isMentor ? (
               <>
                 <Link
-                  to={WORKSHOP_HREF}
+                  to={MENTOR_WORKSHOP_HREF}
                   className="inline-flex min-h-[52px] flex-1 items-center justify-center gap-2 rounded-2xl bg-white px-6 py-3 text-sm font-bold text-spike shadow-lg hover:bg-red-50 sm:flex-none sm:px-8"
                 >
                   Preview workshop
@@ -149,4 +150,4 @@ export function Day4VentureDesignHero({ variant, progressPercent = 0 }) {
   );
 }
 
-export { WORKSHOP_HREF, PROJECTION_HREF, COACH_WORKSHOP_HREF };
+export { WORKSHOP_HREF, PROJECTION_HREF, COACH_WORKSHOP_HREF, MENTOR_WORKSHOP_HREF };
