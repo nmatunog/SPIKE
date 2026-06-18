@@ -273,10 +273,14 @@ export function VentureDesignFinalSummary({ draft, squadName, onJumpToStep, onDo
         <div className="rounded-2xl bg-spike p-8 text-center text-white">
           <p className="text-2xl font-bold md:text-3xl">We help {draft.step3.synthesisA} achieve {draft.step3.synthesisB} through {draft.step3.synthesisC}.</p>
         </div>
+        <p className="mt-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-center text-sm text-amber-950">
+          <strong>Day 4 wrap-up:</strong> Tap <strong>Save to Portfolio</strong> to store your Unique Venture
+          Proposition, venture name, and FEC snapshot. No squad presentation yet — just save.
+        </p>
         <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center">
           <button type="button" onClick={onDownload} className="flex items-center justify-center gap-2 rounded-xl border-2 border-stone-300 px-8 py-4 font-bold"><Download size={20} /> Download</button>
           <button type="button" onClick={onSave} disabled={isSaving || saveComplete} className="flex items-center justify-center gap-2 rounded-xl bg-spike px-10 py-4 font-bold text-white">
-            {isSaving ? <Loader2 className="animate-spin" /> : saveComplete ? <CheckCircle /> : <Save />} {saveComplete ? 'Saved' : 'Save to FEC'}
+            {isSaving ? <Loader2 className="animate-spin" /> : saveComplete ? <CheckCircle /> : <Save />} {saveComplete ? 'Saved to Portfolio' : 'Save to Portfolio'}
           </button>
         </div>
         <button type="button" onClick={() => onJumpToStep(1)} className="mt-6 text-sm text-spike hover:underline"><Edit3 size={14} className="inline" /> Edit sections</button>

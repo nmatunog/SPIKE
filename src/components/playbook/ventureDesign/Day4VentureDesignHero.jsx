@@ -54,9 +54,27 @@ export function Day4VentureDesignHero({ variant, progressPercent = 0 }) {
           {isFaculty
             ? 'Today’s delivery centers on this interactive module — not slides. Project the full FEC for your overview, then send squads into the five-step workshop.'
             : isMentor
-              ? 'This is what your interns work through today: individual inputs, squad consolidation, coach feedback, and FEC sync. Preview the workshop or the full canvas structure.'
+              ? 'This is what your interns work through today: individual inputs, squad consolidation, coach feedback, and portfolio sync. Preview the workshop or the full canvas structure.'
               : 'Your squad’s main work today: five guided steps that turn market research into brand identity and your Financial Entrepreneurship Canvas draft.'}
         </p>
+
+        {!isFaculty ? (
+          <p className="mt-4 max-w-3xl rounded-xl border border-amber-400/30 bg-amber-500/10 px-4 py-3 text-sm leading-relaxed text-amber-100">
+            {isMentor ? (
+              <>
+                <strong className="text-amber-200">Wrap-up cue:</strong> Ask each squad to finish all five
+                steps, open <strong>Generate Portfolio View</strong>, then tap{' '}
+                <strong>Save to Portfolio</strong> — UVP, venture name, and FEC snapshot. No presentations yet.
+              </>
+            ) : (
+              <>
+                <strong className="text-amber-200">Wrap-up (15 min):</strong> Finish all five steps →{' '}
+                <strong>Generate Portfolio View</strong> → <strong>Save to Portfolio</strong>. That stores your
+                Unique Venture Proposition, venture name, and FEC snapshot. No squad presentation yet.
+              </>
+            )}
+          </p>
+        ) : null}
 
         <ul className="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
           {WORKSHOP_STEPS.map((label) => (
