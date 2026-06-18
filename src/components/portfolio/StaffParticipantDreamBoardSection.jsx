@@ -82,7 +82,7 @@ export function StaffParticipantDreamBoardSection({
             <p className="text-sm text-amber-800">
               {incompleteCards} card{incompleteCards === 1 ? '' : 's'} still missing a caption or photo in the
               cloud. Ask {participantName.split(' ')[0] || 'them'} to open Dream Board Studio on their device and
-              tap <strong>Update Dream Board</strong> to sync.
+              tap <strong>Sync to cloud</strong> in Dream Board Studio to upload photos and captions.
             </p>
           ) : null}
 
@@ -90,7 +90,7 @@ export function StaffParticipantDreamBoardSection({
             <p className="text-sm text-amber-800">
               {missingPhotos} card{missingPhotos === 1 ? '' : 's'} have captions in the cloud but no photo yet. Ask{' '}
               {participantName.split(' ')[0] || 'them'} to open <strong>Dream Board Studio</strong>, re-add the
-              missing photos, and tap <strong>Update Dream Board</strong> so coaches can see the collage.
+              missing photos, and tap <strong>Sync to cloud</strong> so coaches can see the collage.
             </p>
           ) : null}
 

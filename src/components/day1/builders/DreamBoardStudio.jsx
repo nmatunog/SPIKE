@@ -6,6 +6,7 @@ import {
   getDreamBoardMaxCards,
 } from '../../../lib/dreamBoardConfig.js';
 import { readDreamBoardImageFile } from '../../../lib/dreamBoardImage.js';
+import { DreamBoardCloudSyncBar } from './DreamBoardCloudSyncBar.jsx';
 import { BuilderSubmissionFooter } from '../BuilderSubmissionFooter.jsx';
 
 
@@ -158,6 +159,7 @@ function DreamBoardImageUpload({ assetId, imageUrl, disabled = false, onImage, o
 
 /**
  * @param {{
+ *   participantId: string,
  *   draft: Record<string, unknown>,
  *   completed: boolean,
  *   editLocked?: boolean,
@@ -171,6 +173,7 @@ function DreamBoardImageUpload({ assetId, imageUrl, disabled = false, onImage, o
  * }} props
  */
 export function DreamBoardStudio({
+  participantId,
   draft,
   completed,
   editLocked = false,
@@ -427,6 +430,14 @@ export function DreamBoardStudio({
         ) : null}
       </section>
       </div>
+
+      <DreamBoardCloudSyncBar
+        participantId={participantId}
+        assets={assets}
+        editLocked={readOnly}
+        canRefine={canRefine}
+        onStartRefine={onStartRefine}
+      />
 
       <BuilderSubmissionFooter
         completed={completed}

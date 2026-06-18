@@ -308,7 +308,7 @@ export async function backfillLocalBuildersToSupabase(participantId) {
         await syncDreamBoardToCloud(participantId, entry.data);
         await syncBuilderEntryToSupabase(participantId, builderId, {
           ...entry,
-          data: dreamBoardMetadataForCloud(entry.data),
+          data: await buildDreamBoardCloudMetadata(participantId, entry.data),
         });
       } else {
         await syncBuilderEntryToSupabase(participantId, builderId, entry);

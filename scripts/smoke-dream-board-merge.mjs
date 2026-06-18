@@ -119,4 +119,31 @@ if (!buildDreamBoardStoragePath('user-1', 'asset-abc').includes('user-1/asset-ab
   fail('buildDreamBoardStoragePath should namespace by user and asset id');
 }
 
+import { buildDreamBoardSyncMessage, dreamBoardSyncStats } from '../src/lib/dreamBoardSyncMessage.js';
+
+const emptyStats = dreamBoardSyncStats([]);
+if (emptyStats.cardCount !== 0 || buildDreamBoardSyncMessage(emptyStats) !== 'Add at least one dream card before syncing.') {
+  fail('buildDreamBoardSyncMessage should prompt for cards when empty');
+}
+
+const successMsg = buildDreamBoardSyncMessage({
+  cardCount: 3,
+  captionCount: 3,
+  localPhotoCount: 3,
+  cloudPhotoCount: 3,
+});
+if (!successMsg.includes('mentor can now see')) {
+  fail('buildDreamBoardSyncMessage should confirm full photo sync');
+}
+
+const partialMsg = buildDreamBoardSyncMessage({
+  cardCount: 2,
+  captionCount: 2,
+  localPhotoCount: 2,
+  cloudPhotoCount: 1,
+});
+if (!partialMsg.includes('Partial sync')) {
+  fail('buildDreamBoardSyncMessage should report partial photo upload');
+}
+
 console.log('smoke:dream-board-merge OK');

@@ -20,6 +20,10 @@ import {
   clearBuilderEntry,
 } from './day1BuilderStorage.js';
 import { persistBuilderEntryCloudFirst } from './day1BuilderSync.js';
+import { fetchDreamBoardAssets } from './supabase/dreamBoardAssets.js';
+import { canWriteParticipantRow } from './supabase/writeGuards.js';
+import { buildDreamBoardSyncMessage, dreamBoardSyncStats } from './dreamBoardSyncMessage.js';
+import { isMockUserId } from './mockAuth.js';
 
 const DRAFT_CLOUD_DEBOUNCE_MS = 2000;
 
@@ -92,6 +96,61 @@ export async function completeDay1Builder(participantId, builderId, data) {
   clearDraftCloudTimer(participantId, builderId);
   await persistBuilderEntryCloudFirst(participantId, builderId, data, true);
   await syncBuilderToBlueprint(participantId, builderId, data);
+}
+
+/**
+ * Force dream board captions + photos to Supabase (manual repair / re-sync).
+ * @param {string} participantId
+ * @param {Record<string, unknown>} data
+ * @returns {Promise<{ ok: boolean, message: string, cardCount: number, captionCount: number, localPhotoCount: number, cloudPhotoCount: number, error?: string }>}
+ */
+export async function repairDreamBoardCloudSync(participantId, data) {
+  const stats = dreamBoardSyncStats(/** @type {Array<{ caption?: string, imageUrl?: string }>} */ (data?.assets));
+
+  if (!participantId || isMockUserId(participantId)) {
+    return {
+      ok: false,
+      ...stats,
+      message: 'Sign in with your intern account to sync your dream board.',
+    };
+  }
+
+  if (stats.cardCount === 0) {
+    return { ok: false, ...stats, message: buildDreamBoardSyncMessage(stats) };
+  }
+
+  if (!(await canWriteParticipantRow(participantId))) {
+    return {
+      ok: false,
+      ...stats,
+      message: 'Could not sync — sign out, sign in again, then tap Sync to cloud.',
+    };
+  }
+
+  clearDraftCloudTimer(participantId, 'dream-board');
+  const existing = readBuilderEntry(participantId, 'dream-board');
+  const completed = Boolean(existing?.completedAt);
+
+  writeBuilderEntry(participantId, 'dream-board', data, completed, { force: true });
+
+  try {
+    await persistBuilderEntryCloudFirst(participantId, 'dream-board', data, completed, { force: true });
+    const cloudRows = await fetchDreamBoardAssets(participantId);
+    const cloudPhotoCount = cloudRows.filter((row) => String(row.image_url ?? '').trim()).length;
+    const result = { ...stats, cloudPhotoCount };
+    const message = buildDreamBoardSyncMessage(result);
+    const ok = cloudPhotoCount > 0 || (stats.localPhotoCount === 0 && stats.captionCount > 0);
+    return { ok, message, ...result };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return {
+      ok: false,
+      ...stats,
+      cloudPhotoCount: 0,
+      error: message,
+      message: `Sync failed: ${message}`,
+    };
+  }
 }
 
 /**

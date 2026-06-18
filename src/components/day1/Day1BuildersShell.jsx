@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, Check, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { DAY1_BUILDERS, isCoachBackedBuilder } from '../../lib/day1BuilderConstants.js';
+import { readBuilderEntry } from '../../lib/day1BuilderStorage.js';
+import { fetchDreamBoardAssets } from '../../lib/supabase/dreamBoardAssets.js';
 import {
   completeDay1Builder,
   getBuilderData,
@@ -10,9 +12,9 @@ import {
   isBuilderEditLocked,
   canRefineBuilder,
   startBuilderRefinement,
-  readBuilderEntry,
   resetDay1Builder,
   saveBuilderDraft,
+  repairDreamBoardCloudSync,
 } from '../../lib/day1BuilderService.js';
 import { Day1MissionControl } from './Day1MissionControl.jsx';
 import { Day1CoachSection } from './Day1CoachSection.jsx';
@@ -21,7 +23,6 @@ import { DreamBoardStudio } from './builders/DreamBoardStudio.jsx';
 import { SquadFormationBuilder } from './builders/SquadFormationBuilder.jsx';
 import { SquadCharterBuilder } from './builders/SquadCharterBuilder.jsx';
 import { ROUTES } from '../../routes/paths.js';
-import { repairDreamBoardCloudImagesIfNeeded } from '../../lib/dreamBoardCloudSync.js';
 
 const CLASSIC_BUILDERS = {
   'dream-board': DreamBoardStudio,
@@ -64,7 +65,20 @@ export function Day1BuildersShell({
 
   useEffect(() => {
     if (activeId !== 'dream-board') return;
-    void repairDreamBoardCloudImagesIfNeeded(participantId);
+    let cancelled = false;
+    (async () => {
+      const entry = readBuilderEntry(participantId, 'dream-board');
+      const assets = /** @type {Array<{ imageUrl?: string }>} */ (entry?.data?.assets ?? []);
+      if (!assets.some((asset) => asset.imageUrl)) return;
+      const cloudRows = await fetchDreamBoardAssets(participantId);
+      if (cloudRows.some((row) => row.image_url)) return;
+      if (!cancelled) {
+        await repairDreamBoardCloudSync(participantId, { assets: entry?.data?.assets ?? assets });
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [activeId, participantId]);
 
   function switchBuilder(id) {
