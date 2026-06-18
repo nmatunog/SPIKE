@@ -175,8 +175,8 @@ const INTERN_FORMATION_ROUTES = [
 export const MODULE_NAV = [
   {
     path: ROUTES.ventureBlueprint,
-    label: 'Build',
-    shortLabel: 'Build',
+    label: 'My Venture',
+    shortLabel: 'Venture',
     icon: 'blueprint',
     roles: ['intern'],
   },

@@ -147,7 +147,7 @@ export function VentureBlueprintShell({ user, viewerRole = 'intern', onProgressR
             key={hydrateVersion}
             state={state}
             participantId={user.id}
-            participantName={participantName}
+            squadNameFallback={progress?.squad ?? user.internProgress?.squad ?? ''}
           />
         );
     }

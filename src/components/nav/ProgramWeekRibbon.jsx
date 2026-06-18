@@ -10,10 +10,12 @@ import { ROUTES, internNavActiveModule } from '../../routes/paths.js';
 export function ProgramWeekRibbon({ internProgress, participantId = '' }) {
   const { pathname } = useLocation();
   const active = internNavActiveModule(pathname);
+  const onVentureHq = pathname === ROUTES.ventureBlueprint;
   const showRibbon =
-    active === ROUTES.ventureBlueprint
-    || active === ROUTES.playbook
-    || active === ROUTES.myVenturePortfolio;
+  !onVentureHq
+    && (active === ROUTES.ventureBlueprint
+      || active === ROUTES.playbook
+      || active === ROUTES.myVenturePortfolio);
 
   if (!showRibbon || !internProgress) return null;
 

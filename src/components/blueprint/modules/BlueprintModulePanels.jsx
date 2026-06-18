@@ -55,27 +55,27 @@ function PlaceholderNotice({ children, className = '' }) {
   );
 }
 
-import { BuildStudioHome } from '../BuildStudioHome.jsx';
+import { MyVentureHQ } from '../../venture/MyVentureHQ.jsx';
 
 /**
- * @param {{ state: object, participantId?: string, participantName?: string }} props
+ * @param {{ state: object, participantId?: string, participantName?: string, squadNameFallback?: string }} props
  */
-export function BlueprintOverviewPanel({ state, participantId, participantName = 'Builder' }) {
+export function BlueprintOverviewPanel({ state, participantId, squadNameFallback = '' }) {
   if (!participantId) {
     return (
       <section className="spike-card">
         <p className="text-sm text-slate-600">
-          Sign in to open your Build Studio and continue your venture.
+          Sign in to open My Venture and continue building.
         </p>
       </section>
     );
   }
 
   return (
-    <BuildStudioHome
+    <MyVentureHQ
       participantId={participantId}
-      participantName={participantName}
       state={state}
+      squadNameFallback={squadNameFallback}
     />
   );
 }
