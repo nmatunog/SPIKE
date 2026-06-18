@@ -39,6 +39,9 @@ export function StaffParticipantDreamBoardSection({
   const incompleteCards = assets.filter(
     (asset) => !String(asset.caption ?? '').trim() && !asset.imageUrl,
   ).length;
+  const missingPhotos = assets.filter(
+    (asset) => String(asset.caption ?? '').trim() && !asset.imageUrl,
+  ).length;
 
   return (
     <section className={`spike-card space-y-4 ${className}`}>
@@ -80,6 +83,14 @@ export function StaffParticipantDreamBoardSection({
               {incompleteCards} card{incompleteCards === 1 ? '' : 's'} still missing a caption or photo in the
               cloud. Ask {participantName.split(' ')[0] || 'them'} to open Dream Board Studio on their device and
               tap <strong>Update Dream Board</strong> to sync.
+            </p>
+          ) : null}
+
+          {missingPhotos > 0 ? (
+            <p className="text-sm text-amber-800">
+              {missingPhotos} card{missingPhotos === 1 ? '' : 's'} have captions in the cloud but no photo yet. Ask{' '}
+              {participantName.split(' ')[0] || 'them'} to open <strong>Dream Board Studio</strong>, re-add the
+              missing photos, and tap <strong>Update Dream Board</strong> so coaches can see the collage.
             </p>
           ) : null}
 

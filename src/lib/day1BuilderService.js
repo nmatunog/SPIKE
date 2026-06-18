@@ -75,7 +75,8 @@ export function saveBuilderDraft(participantId, builderId, data) {
     key,
     setTimeout(() => {
       draftCloudTimers.delete(key);
-      void persistBuilderEntryCloudFirst(participantId, builderId, data, false).catch((err) => {
+      const latest = readBuilderEntry(participantId, builderId)?.data ?? data;
+      void persistBuilderEntryCloudFirst(participantId, builderId, latest, false).catch((err) => {
         console.warn('[day1Builder] draft cloud save failed:', err instanceof Error ? err.message : err);
       });
     }, DRAFT_CLOUD_DEBOUNCE_MS),

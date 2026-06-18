@@ -51,6 +51,28 @@ if (enriched[0].caption.length <= 3) {
   fail('enrichDreamBoardFromMetadata should prefer longer metadata caption');
 }
 
+import { mergeDreamBoardBuilderData } from '../src/lib/dreamBoardMerge.js';
+
+const preserved = mergeDreamBoardBuilderData(
+  {
+    assets: [
+      { id: 'c1', category: 'career', caption: 'The', imageUrl: 'data:image/jpeg;base64,abc' },
+    ],
+  },
+  {
+    assets: [{ id: 'c1', category: 'career', caption: 'The career I want is to lead my own agency team.' }],
+  },
+);
+if (!preserved.assets[0].imageUrl?.startsWith('data:')) {
+  fail('mergeDreamBoardBuilderData should preserve local photos when remote is metadata-only');
+}
+
+import { dreamBoardStoragePublicUrl } from '../src/lib/dreamBoardStorageUtils.js';
+const publicUrl = dreamBoardStoragePublicUrl('https://example.supabase.co', 'user-1', 'asset-1');
+if (!publicUrl.includes('/storage/v1/object/public/dream-board/user-1/asset-1.jpg')) {
+  fail('dreamBoardStoragePublicUrl should build public storage URLs');
+}
+
 import { dataUrlToImageBlob, buildDreamBoardStoragePath } from '../src/lib/dreamBoardStorageUtils.js';
 
 const tinyPng =

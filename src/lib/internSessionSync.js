@@ -72,7 +72,7 @@ export async function hydrateInternWorkFromSupabase(participantId) {
   if (!participantId || isMockUserId(participantId)) return;
 
   await Promise.all([
-    hydrateParticipantBuilderData(participantId, { force: true }),
+    hydrateParticipantBuilderData(participantId, { force: true, preferLocal: true }),
     hydrateVentureBlueprint(participantId, internHydrateOpts),
     hydratePlaybookProgressFromSupabase(participantId, { force: true, ...internHydrateOpts }),
     hydrateSurveysFromSupabase(participantId, { force: true, ...internHydrateOpts }),

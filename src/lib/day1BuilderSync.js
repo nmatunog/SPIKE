@@ -19,6 +19,7 @@ import { builderEntryHasContent, shouldApplyRemoteField } from './syncMergeUtils
 import {
   dreamBoardMetadataForCloud,
   hydrateDreamBoardImagesFromCloud,
+  mergeDreamBoardBuilderData,
   stripInlineDreamBoardImage,
   syncDreamBoardToCloud,
 } from './dreamBoardCloudSync.js';
@@ -147,7 +148,8 @@ export async function persistBuilderEntryCloudFirst(
   const cloudEntry = { ...previewEntry, data: cloudData };
 
   if (builderId === 'dream-board') {
-    await syncDreamBoardToCloud(participantId, data);
+    const liveData = readBuilderEntry(participantId, builderId)?.data ?? data;
+    await syncDreamBoardToCloud(participantId, liveData);
   }
 
   await upsertDay1BuilderProgress(participantId, builderId, entryToCloudPayload(cloudEntry));
@@ -218,11 +220,40 @@ export async function hydrateDay1BuildersFromSupabase(participantId, opts = {}) 
 
       const local = user.builders[row.builder_id];
       const remoteEntry = rowToBuilderEntry(row);
+      let remoteData = remoteEntry.data;
+      if (String(row.builder_id) === 'dream-board' && local?.data) {
+        remoteData = mergeDreamBoardBuilderData(
+          /** @type {Record<string, unknown>} */ (local.data),
+          /** @type {Record<string, unknown>} */ (remoteEntry.data),
+        );
+      }
+      const remoteForCompare = { ...remoteEntry, data: remoteData };
       if ((!local && builderEntryHasContent(remoteEntry)) || shouldPreferRemote(local, row, opts)) {
         const data = staffRead
-          ? sanitizeBuilderDataForStaffCache(String(row.builder_id), remoteEntry.data)
-          : remoteEntry.data;
+          ? sanitizeBuilderDataForStaffCache(String(row.builder_id), remoteData)
+          : remoteData;
         user.builders[row.builder_id] = { ...remoteEntry, data };
+      } else if (
+        String(row.builder_id) === 'dream-board'
+        && local?.data
+        && builderEntryHasContent(remoteForCompare)
+        && !shouldPreferRemote(local, row, opts)
+      ) {
+        const localImages = /** @type {Array<{ imageUrl?: string }>} */ (local.data?.assets ?? []).some(
+          (asset) => asset.imageUrl,
+        );
+        const remoteImages = /** @type {Array<{ imageUrl?: string }>} */ (remoteData?.assets ?? []).some(
+          (asset) => asset.imageUrl,
+        );
+        if (localImages && !remoteImages) {
+          user.builders[row.builder_id] = {
+            ...local,
+            data: mergeDreamBoardBuilderData(
+              /** @type {Record<string, unknown>} */ (local.data),
+              /** @type {Record<string, unknown>} */ (remoteEntry.data),
+            ),
+          };
+        }
       }
     }
 

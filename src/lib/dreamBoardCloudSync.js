@@ -6,8 +6,10 @@ import { fetchDay1BuilderProgress } from './supabase/day1BuilderProgress.js';
 import { fetchDreamBoardAssets, syncDreamBoardAssets } from './supabase/dreamBoardAssets.js';
 import { mergeDreamBoardAssetLists, enrichDreamBoardFromMetadata } from './dreamBoardMerge.js';
 import { normalizeDreamBoardCards } from './dreamBoardConfig.js';
+import { getDreamBoardPublicImageUrl } from './supabase/dreamBoardStorage.js';
+import { isHttpDreamBoardImageUrl, isInlineDreamBoardImageUrl } from './dreamBoardStorageUtils.js';
 
-export { mergeDreamBoardAssetLists, enrichDreamBoardFromMetadata } from './dreamBoardMerge.js';
+export { mergeDreamBoardAssetLists, enrichDreamBoardFromMetadata, mergeDreamBoardBuilderData } from './dreamBoardMerge.js';
 
 /**
  * @param {Record<string, unknown>} data
@@ -84,7 +86,15 @@ export async function hydrateDreamBoardImagesFromCloud(participantId, opts = {})
   );
 
   let merged;
-  if (!staffRead && opts.preferLocalImages && localAssets.some((asset) => asset.imageUrl)) {
+  const localHasImages = localAssets.some((asset) => asset.imageUrl);
+  const cloudHasImages = cloudRows.some((row) => row.image_url);
+  if (!staffRead && localHasImages && !cloudHasImages) {
+    merged = mergeDreamBoardAssetLists(localAssets, cloudRows);
+    merged = merged.map((asset) => {
+      const local = localAssets.find((item) => item.id === asset.id);
+      return local?.imageUrl ? { ...asset, imageUrl: local.imageUrl } : asset;
+    });
+  } else if (!staffRead && opts.preferLocalImages && localHasImages) {
     merged = mergeDreamBoardAssetLists(localAssets, cloudRows);
     merged = merged.map((asset) => {
       const local = localAssets.find((item) => item.id === asset.id);
@@ -118,6 +128,41 @@ export async function hydrateDreamBoardImagesFromCloud(participantId, opts = {})
 }
 
 /**
+ * Resolve http(s) or data URLs, then fall back to public Storage paths.
+ * @param {string} participantId
+ * @param {Array<{ id: string, category: string, caption: string, imageUrl?: string }>} assets
+ */
+export function attachDreamBoardStorageUrls(participantId, assets) {
+  return assets.map((asset) => {
+    const imageUrl = String(asset.imageUrl ?? '');
+    if (isHttpDreamBoardImageUrl(imageUrl) || isInlineDreamBoardImageUrl(imageUrl)) {
+      return asset;
+    }
+    const publicUrl = getDreamBoardPublicImageUrl(participantId, asset.id);
+    return publicUrl ? { ...asset, imageUrl: publicUrl } : asset;
+  });
+}
+
+/**
+ * Push local dream board photos to cloud when captions synced but images did not.
+ * @param {string} participantId
+ */
+export async function repairDreamBoardCloudImagesIfNeeded(participantId) {
+  if (!participantId || String(participantId).startsWith('mock-')) return false;
+
+  const entry = readBuilderEntry(participantId, 'dream-board');
+  const localAssets = /** @type {Array<{ imageUrl?: string }>} */ (entry?.data?.assets ?? []);
+  if (!localAssets.some((asset) => asset.imageUrl)) return false;
+
+  const cloudRows = await fetchDreamBoardAssets(participantId);
+  const cloudHasImages = cloudRows.some((row) => row.image_url);
+  if (cloudHasImages) return false;
+
+  await syncDreamBoardToCloud(participantId, entry.data);
+  return true;
+}
+
+/**
  * Dream board assets for staff review — cloud rows + metadata, no localStorage writes.
  * @param {string} participantId
  */
@@ -143,5 +188,5 @@ export async function fetchDreamBoardForStaffView(participantId) {
     metadataAssets,
   );
 
-  return normalizeDreamBoardCards(merged);
+  return normalizeDreamBoardCards(attachDreamBoardStorageUrls(participantId, merged));
 }

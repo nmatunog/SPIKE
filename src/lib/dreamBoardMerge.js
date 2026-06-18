@@ -105,3 +105,38 @@ export function enrichDreamBoardFromMetadata(assets, metadataAssets) {
 
   return merged;
 }
+
+/**
+ * Merge remote metadata-only dream board payload into local draft without dropping photos.
+ * @param {Record<string, unknown> | null | undefined} localData
+ * @param {Record<string, unknown> | null | undefined} remoteData
+ */
+export function mergeDreamBoardBuilderData(localData, remoteData) {
+  const localAssets = /** @type {Array<{ id: string, category: string, caption: string, imageUrl?: string }>} */ (
+    localData?.assets ?? []
+  );
+  const remoteAssets = /** @type {Array<{ id?: string, category?: string, caption?: string }>} */ (
+    remoteData?.assets ?? []
+  );
+
+  const remoteAsCloudRows = remoteAssets
+    .filter((asset) => asset?.id)
+    .map((asset, index) => ({
+      client_asset_id: String(asset.id),
+      category: asset.category ?? 'lifestyle',
+      caption: asset.caption ?? '',
+      image_url: null,
+      sort_order: index,
+    }));
+
+  const mergedAssets = enrichDreamBoardFromMetadata(
+    mergeDreamBoardAssetLists(localAssets, remoteAsCloudRows),
+    remoteAssets,
+  );
+
+  return {
+    ...(typeof remoteData === 'object' && remoteData ? remoteData : {}),
+    ...(typeof localData === 'object' && localData ? localData : {}),
+    assets: mergedAssets,
+  };
+}

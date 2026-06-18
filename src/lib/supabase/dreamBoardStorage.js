@@ -2,6 +2,7 @@ import { isSupabaseConfigured, supabase } from '../../supabaseClient.js';
 import {
   buildDreamBoardStoragePath,
   dataUrlToImageBlob,
+  dreamBoardStoragePublicUrl,
   isHttpDreamBoardImageUrl,
   isInlineDreamBoardImageUrl,
 } from '../dreamBoardStorageUtils.js';
@@ -44,4 +45,11 @@ export async function ensureDreamBoardImageInStorage(userId, clientAssetId, imag
 
   const { data } = supabase.storage.from(DREAM_BOARD_BUCKET).getPublicUrl(storagePath);
   return data?.publicUrl ?? imageUrl;
+}
+
+/** Public collage URL when Storage has the object but dream_board_assets.image_url is empty. */
+export function getDreamBoardPublicImageUrl(userId, clientAssetId) {
+  if (!isSupabaseConfigured || !supabase || !userId || !clientAssetId) return '';
+  const base = import.meta.env.VITE_SUPABASE_URL;
+  return dreamBoardStoragePublicUrl(base, userId, clientAssetId);
 }

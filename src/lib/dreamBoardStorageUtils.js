@@ -36,3 +36,15 @@ export function isHttpDreamBoardImageUrl(imageUrl) {
 export function isInlineDreamBoardImageUrl(imageUrl) {
   return String(imageUrl ?? '').startsWith('data:');
 }
+
+/**
+ * Stable public URL for a dream board object in Storage (bucket is public-read).
+ * @param {string} supabaseProjectUrl e.g. https://xxx.supabase.co
+ * @param {string} userId
+ * @param {string} clientAssetId
+ */
+export function dreamBoardStoragePublicUrl(supabaseProjectUrl, userId, clientAssetId) {
+  if (!supabaseProjectUrl || !userId || !clientAssetId) return '';
+  const path = buildDreamBoardStoragePath(userId, clientAssetId);
+  return `${String(supabaseProjectUrl).replace(/\/$/, '')}/storage/v1/object/public/dream-board/${path}`;
+}

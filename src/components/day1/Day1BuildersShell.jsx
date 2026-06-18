@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, Check, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { DAY1_BUILDERS, isCoachBackedBuilder } from '../../lib/day1BuilderConstants.js';
@@ -21,6 +21,7 @@ import { DreamBoardStudio } from './builders/DreamBoardStudio.jsx';
 import { SquadFormationBuilder } from './builders/SquadFormationBuilder.jsx';
 import { SquadCharterBuilder } from './builders/SquadCharterBuilder.jsx';
 import { ROUTES } from '../../routes/paths.js';
+import { repairDreamBoardCloudImagesIfNeeded } from '../../lib/dreamBoardCloudSync.js';
 
 const CLASSIC_BUILDERS = {
   'dream-board': DreamBoardStudio,
@@ -60,6 +61,11 @@ export function Day1BuildersShell({
   const isCoach = isCoachBackedBuilder(activeId);
   const coachConversationIndex = DAY1_BUILDERS.filter((b) => b.coachSection).findIndex((b) => b.id === activeId) + 1;
   const coachConversationTotal = DAY1_BUILDERS.filter((b) => b.coachSection).length;
+
+  useEffect(() => {
+    if (activeId !== 'dream-board') return;
+    void repairDreamBoardCloudImagesIfNeeded(participantId);
+  }, [activeId, participantId]);
 
   function switchBuilder(id) {
     setActiveId(id);
