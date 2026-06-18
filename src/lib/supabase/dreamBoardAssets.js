@@ -1,6 +1,7 @@
 import { isSupabaseConfigured, supabase } from '../../supabaseClient.js';
 import { shouldSkipSupabaseUserWrite, canWriteParticipantRow, isRlsViolationError } from './writeGuards.js';
 import { ensureDreamBoardImageInStorage } from './dreamBoardStorage.js';
+import { preferLongerDreamBoardCaption } from '../dreamBoardMerge.js';
 
 /**
  * @typedef {{
@@ -43,6 +44,12 @@ export async function syncDreamBoardAssets(userId, assets) {
 
   const list = Array.isArray(assets) ? assets : [];
   const keepClientIds = [];
+  const existingRows = await fetchDreamBoardAssets(userId);
+  const captionByClientId = new Map(
+    existingRows
+      .filter((row) => row.client_asset_id)
+      .map((row) => [String(row.client_asset_id), String(row.caption ?? '')]),
+  );
 
   for (let index = 0; index < list.length; index += 1) {
     const asset = list[index];
@@ -58,12 +65,17 @@ export async function syncDreamBoardAssets(userId, assets) {
       imageUrl = await ensureDreamBoardImageInStorage(userId, asset.id, imageUrl);
     }
 
+    const captionToSave = preferLongerDreamBoardCaption(
+      asset.caption,
+      captionByClientId.get(asset.id),
+    );
+
     const { error } = await supabase.from('dream_board_assets').upsert(
       {
         user_id: userId,
         client_asset_id: asset.id,
         category: asset.category ?? 'lifestyle',
-        caption: asset.caption ?? '',
+        caption: captionToSave,
         image_url: imageUrl || null,
         sort_order: index,
         updated_at: new Date().toISOString(),
@@ -76,8 +88,7 @@ export async function syncDreamBoardAssets(userId, assets) {
     }
   }
 
-  const existing = await fetchDreamBoardAssets(userId);
-  const staleIds = existing
+  const staleIds = existingRows
     .filter((row) => row.client_asset_id && !keepClientIds.includes(row.client_asset_id))
     .map((row) => row.id);
 

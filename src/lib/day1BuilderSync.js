@@ -18,6 +18,7 @@ import {
 import { builderEntryHasContent, shouldApplyRemoteField } from './syncMergeUtils.js';
 import {
   dreamBoardMetadataForCloud,
+  buildDreamBoardCloudMetadata,
   hydrateDreamBoardImagesFromCloud,
   mergeDreamBoardBuilderData,
   stripInlineDreamBoardImage,
@@ -144,12 +145,17 @@ export async function persistBuilderEntryCloudFirst(
     };
   }
 
-  const cloudData = builderId === 'dream-board' ? dreamBoardMetadataForCloud(data) : data;
+  const liveDreamBoardData =
+    builderId === 'dream-board' ? readBuilderEntry(participantId, builderId)?.data ?? data : data;
+
+  const cloudData =
+    builderId === 'dream-board'
+      ? await buildDreamBoardCloudMetadata(participantId, liveDreamBoardData)
+      : data;
   const cloudEntry = { ...previewEntry, data: cloudData };
 
   if (builderId === 'dream-board') {
-    const liveData = readBuilderEntry(participantId, builderId)?.data ?? data;
-    await syncDreamBoardToCloud(participantId, liveData);
+    await syncDreamBoardToCloud(participantId, liveDreamBoardData);
   }
 
   await upsertDay1BuilderProgress(participantId, builderId, entryToCloudPayload(cloudEntry));

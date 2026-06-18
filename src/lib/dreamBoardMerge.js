@@ -2,6 +2,14 @@
  * Merge local dream board cards with Supabase rows (union by client asset id).
  */
 
+/** Keep the fuller caption when cloud sync races with in-progress typing. */
+export function preferLongerDreamBoardCaption(left, right) {
+  const leftRaw = String(left ?? '');
+  const rightRaw = String(right ?? '');
+  if (rightRaw.trim().length > leftRaw.trim().length) return rightRaw;
+  return leftRaw;
+}
+
 /**
  * @param {Array<{ id: string, category: string, caption: string, imageUrl?: string }>} localAssets
  * @param {Array<{ client_asset_id?: string | null, category: string, caption?: string | null, image_url?: string | null, sort_order?: number | null }>} cloudRows
@@ -11,6 +19,11 @@ export function mergeDreamBoardAssetLists(localAssets, cloudRows) {
     cloudRows
       .filter((row) => row.client_asset_id && row.image_url)
       .map((row) => [String(row.client_asset_id), String(row.image_url)]),
+  );
+  const captionByClientId = new Map(
+    cloudRows
+      .filter((row) => row.client_asset_id)
+      .map((row) => [String(row.client_asset_id), String(row.caption ?? '')]),
   );
   const sortByClientId = new Map(
     cloudRows
@@ -29,6 +42,7 @@ export function mergeDreamBoardAssetLists(localAssets, cloudRows) {
         : localImage || cloudImage;
     return {
       ...asset,
+      caption: preferLongerDreamBoardCaption(asset.caption, captionByClientId.get(asset.id)),
       imageUrl,
     };
   });
@@ -81,12 +95,10 @@ export function enrichDreamBoardFromMetadata(assets, metadataAssets) {
   const merged = assets.map((asset) => {
     const meta = metaById.get(asset.id);
     if (!meta) return asset;
-    const metaCaption = String(meta.caption ?? '').trim();
-    const currentCaption = String(asset.caption ?? '').trim();
     return {
       ...asset,
       category: asset.category || meta.category || 'lifestyle',
-      caption: metaCaption.length > currentCaption.length ? metaCaption : currentCaption,
+      caption: preferLongerDreamBoardCaption(asset.caption, meta.caption),
     };
   });
 

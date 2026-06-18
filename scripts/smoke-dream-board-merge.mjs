@@ -51,6 +51,20 @@ if (enriched[0].caption.length <= 3) {
   fail('enrichDreamBoardFromMetadata should prefer longer metadata caption');
 }
 
+import { preferLongerDreamBoardCaption } from '../src/lib/dreamBoardMerge.js';
+
+if (preferLongerDreamBoardCaption('The ', 'The career I want is to lead my own agency team.') !== 'The career I want is to lead my own agency team.') {
+  fail('preferLongerDreamBoardCaption should keep the longer caption');
+}
+
+const captionMerge = mergeDreamBoardAssetLists(
+  [{ id: 'c1', category: 'career', caption: 'The career I want is to lead my own agency team.', imageUrl: '' }],
+  [{ client_asset_id: 'c1', category: 'career', caption: 'The ', image_url: null, sort_order: 0 }],
+);
+if (!captionMerge[0].caption.includes('agency team')) {
+  fail('mergeDreamBoardAssetLists should prefer longer local caption over truncated cloud row');
+}
+
 import { mergeDreamBoardBuilderData } from '../src/lib/dreamBoardMerge.js';
 
 const preserved = mergeDreamBoardBuilderData(

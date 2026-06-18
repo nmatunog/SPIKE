@@ -4,7 +4,7 @@
 import { readBuilderEntry, writeBuilderEntry } from './day1BuilderStorage.js';
 import { fetchDay1BuilderProgress } from './supabase/day1BuilderProgress.js';
 import { fetchDreamBoardAssets, syncDreamBoardAssets } from './supabase/dreamBoardAssets.js';
-import { mergeDreamBoardAssetLists, enrichDreamBoardFromMetadata } from './dreamBoardMerge.js';
+import { mergeDreamBoardAssetLists, enrichDreamBoardFromMetadata, mergeDreamBoardBuilderData } from './dreamBoardMerge.js';
 import { normalizeDreamBoardCards } from './dreamBoardConfig.js';
 import { getDreamBoardPublicImageUrl } from './supabase/dreamBoardStorage.js';
 import { isHttpDreamBoardImageUrl, isInlineDreamBoardImageUrl } from './dreamBoardStorageUtils.js';
@@ -24,6 +24,23 @@ export function dreamBoardMetadataForCloud(data) {
       caption: asset.caption,
     })),
   };
+}
+
+/**
+ * Metadata row for day1_builder_progress — never shorten captions already in the cloud.
+ * @param {string} participantId
+ * @param {Record<string, unknown>} data
+ */
+export async function buildDreamBoardCloudMetadata(participantId, data) {
+  const rows = await fetchDay1BuilderProgress(participantId).catch(() => []);
+  const existingAssets = /** @type {Array<Record<string, unknown>>} */ (
+    rows.find((row) => row.builder_id === 'dream-board')?.payload?.data?.assets ?? []
+  );
+  const merged = mergeDreamBoardBuilderData(
+    /** @type {Record<string, unknown>} */ (data),
+    { assets: existingAssets },
+  );
+  return dreamBoardMetadataForCloud(merged);
 }
 
 /** Drop inline base64 blobs — staff devices should only keep http(s) image URLs. */
