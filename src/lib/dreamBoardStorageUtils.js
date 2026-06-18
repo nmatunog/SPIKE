@@ -38,6 +38,25 @@ export function isInlineDreamBoardImageUrl(imageUrl) {
 }
 
 /**
+ * Resolve http(s) URLs; only attach Storage URLs when the object exists (avoids broken img tags).
+ * @param {string} supabaseProjectUrl
+ * @param {string} participantId
+ * @param {Array<{ id: string, category: string, caption: string, imageUrl?: string }>} assets
+ * @param {Set<string>} storageClientIds
+ */
+export function attachDreamBoardStorageUrls(supabaseProjectUrl, participantId, assets, storageClientIds = new Set()) {
+  return assets.map((asset) => {
+    const imageUrl = String(asset.imageUrl ?? '');
+    if (isHttpDreamBoardImageUrl(imageUrl) || isInlineDreamBoardImageUrl(imageUrl)) {
+      return asset;
+    }
+    if (!storageClientIds.has(asset.id)) return asset;
+    const publicUrl = dreamBoardStoragePublicUrl(supabaseProjectUrl, participantId, asset.id);
+    return publicUrl ? { ...asset, imageUrl: publicUrl } : asset;
+  });
+}
+
+/**
  * Stable public URL for a dream board object in Storage (bucket is public-read).
  * @param {string} supabaseProjectUrl e.g. https://xxx.supabase.co
  * @param {string} userId

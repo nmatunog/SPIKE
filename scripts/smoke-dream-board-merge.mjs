@@ -87,12 +87,18 @@ if (!publicUrl.includes('/storage/v1/object/public/dream-board/user-1/asset-1.jp
   fail('dreamBoardStoragePublicUrl should build public storage URLs');
 }
 
-import { attachDreamBoardStorageUrls } from '../src/lib/dreamBoardCloudSync.js';
-const withoutFile = attachDreamBoardStorageUrls('user-1', [{ id: 'asset-1', category: 'travel', caption: 'Go', imageUrl: '' }], new Set());
+import { attachDreamBoardStorageUrls } from '../src/lib/dreamBoardStorageUtils.js';
+const withoutFile = attachDreamBoardStorageUrls(
+  'https://example.supabase.co',
+  'user-1',
+  [{ id: 'asset-1', category: 'travel', caption: 'Go', imageUrl: '' }],
+  new Set(),
+);
 if (withoutFile[0].imageUrl) {
   fail('attachDreamBoardStorageUrls should not invent URLs when Storage object is missing');
 }
 const withFile = attachDreamBoardStorageUrls(
+  'https://example.supabase.co',
   'user-1',
   [{ id: 'asset-1', category: 'travel', caption: 'Go', imageUrl: '' }],
   new Set(['asset-1']),
