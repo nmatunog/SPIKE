@@ -3,6 +3,30 @@
  */
 import { resolveInternPlaybookDay } from './programUnlocks.js';
 
+/** Week 1 Day 1 = Mon 2026-06-15 → Fri 2026-06-19 = Day 5. Override via VITE_COHORT_START_DATE. */
+export const DEFAULT_COHORT_START_DATE =
+  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_COHORT_START_DATE?.trim())
+  || '2026-06-15';
+
+/** @param {string | null | undefined} cohortStartDate */
+export function effectiveCohortStartDate(cohortStartDate) {
+  if (cohortStartDate) {
+    const match = String(cohortStartDate).match(/^(\d{4}-\d{2}-\d{2})/);
+    if (match) return match[1];
+  }
+  return DEFAULT_COHORT_START_DATE;
+}
+
+/**
+ * Staff/coach "Today" — wall-clock cohort calendar only (not intern progress).
+ * @param {string | null | undefined} cohortStartDate
+ * @param {Date} [now]
+ */
+export function resolveStaffProgramDay(cohortStartDate, now = new Date()) {
+  return deriveProgramDayFromStartDate(effectiveCohortStartDate(cohortStartDate), now)
+    ?? { week: 1, day: 1 };
+}
+
 /** @param {{ week: number, day: number }} programDay */
 function programDayOrdinal({ week, day }) {
   return week * 5 + day;

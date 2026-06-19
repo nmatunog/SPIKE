@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
-import { resolveCohortProgramDay } from '../lib/programCalendar.js';
+import {
+  effectiveCohortStartDate,
+  resolveStaffProgramDay,
+} from '../lib/programCalendar.js';
 import { fetchActiveCohort } from '../lib/supabase/cohortOnboarding.js';
 
 /**
- * Resolve live cohort Week/Day from intern progress + cohort start date.
- * @param {Array<object>} interns
+ * Resolve live cohort Week/Day for staff home from cohort start date (calendar).
  */
-export function useCohortProgramDay(interns) {
+export function useCohortProgramDay() {
   const [cohortStartDate, setCohortStartDate] = useState(null);
   const [ready, setReady] = useState(false);
 
@@ -28,9 +30,14 @@ export function useCohortProgramDay(interns) {
   }, []);
 
   const programDay = useMemo(
-    () => resolveCohortProgramDay(interns, cohortStartDate),
-    [interns, cohortStartDate],
+    () => resolveStaffProgramDay(cohortStartDate),
+    [cohortStartDate],
   );
 
-  return { programDay, ready, cohortStartDate };
+  const effectiveStartDate = useMemo(
+    () => effectiveCohortStartDate(cohortStartDate),
+    [cohortStartDate],
+  );
+
+  return { programDay, ready, cohortStartDate, effectiveStartDate };
 }

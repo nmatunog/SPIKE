@@ -30,7 +30,7 @@ export function FacultyHomePage({
   onSquadChanged,
 }) {
   const [toolsOpen, setToolsOpen] = useState(false);
-  const { programDay, cohortStartDate } = useCohortProgramDay(interns);
+  const { cohortStartDate } = useCohortProgramDay();
 
   return (
     <PageContainer wide>
@@ -39,7 +39,6 @@ export function FacultyHomePage({
         staffName={staffName}
         interns={interns}
         homeHref={ROUTES.programCoachHome}
-        programDay={programDay}
         cohortStartDate={cohortStartDate}
       />
 

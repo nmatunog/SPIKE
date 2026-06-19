@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Loader2, Sparkles, Users } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { CalendarDays, Loader2, Sparkles, Users } from 'lucide-react';
 import {
   staffCloseSuggestions,
   staffCloseVoting,
@@ -14,6 +14,7 @@ import {
   staffRemoveInternFromSquad,
   staffRevealWinner,
   staffSaveFinalists,
+  staffUpdateCohortStartDate,
   staffUploadCohortPhoto,
 } from '../../lib/cohortOnboardingService.js';
 import { db } from '../../lib/cohortOnboardingService.js';
@@ -21,6 +22,10 @@ import { isMockUserId } from '../../lib/mockAuth.js';
 import { OnboardingPhotoCapture } from '../onboarding/OnboardingPhotoCapture.jsx';
 import { isSupabaseConfigured } from '../../supabaseClient.js';
 import { usePortalWriteAccess } from '../../hooks/usePortalWriteAccess.js';
+import {
+  DEFAULT_COHORT_START_DATE,
+  resolveStaffProgramDay,
+} from '../../lib/programCalendar.js';
 
 /**
  * Program Coach / Mentor controls for cohort-first onboarding.
@@ -37,6 +42,7 @@ export function CohortOnboardingControls({ staffId, interns = [], canAssignSquad
   const [pickInterns, setPickInterns] = useState(['', '', '']);
   const [addToSquadId, setAddToSquadId] = useState('');
   const [addInternId, setAddInternId] = useState('');
+  const [startDateEdit, setStartDateEdit] = useState(DEFAULT_COHORT_START_DATE);
 
   const refresh = useCallback(async () => {
     if (!isSupabaseConfigured) {
@@ -58,6 +64,16 @@ export function CohortOnboardingControls({ staffId, interns = [], canAssignSquad
   useEffect(() => {
     refresh();
   }, [refresh]);
+
+  const cohortStartRaw = data?.cohort?.start_date?.slice?.(0, 10) ?? data?.cohort?.start_date ?? null;
+  const todayProgram = useMemo(
+    () => resolveStaffProgramDay(cohortStartRaw),
+    [cohortStartRaw],
+  );
+
+  useEffect(() => {
+    if (cohortStartRaw) setStartDateEdit(cohortStartRaw);
+  }, [cohortStartRaw]);
 
   async function run(label, fn) {
     if (!canWrite) {
@@ -155,6 +171,47 @@ export function CohortOnboardingControls({ staffId, interns = [], canAssignSquad
       {error ? (
         <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">{error}</p>
       ) : null}
+
+      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+        <div className="flex items-start gap-3">
+          <CalendarDays className="mt-0.5 shrink-0 text-spike" size={20} />
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold text-slate-900">Program calendar</p>
+            <p className="mt-1 text-sm text-slate-600">
+              Today resolves to{' '}
+              <strong>
+                Week {todayProgram.week} · Day {todayProgram.day}
+              </strong>
+              {cohortStartRaw ? '' : ' (using default start until saved in Supabase)'}
+            </p>
+            <div className="mt-3 flex flex-wrap items-end gap-3">
+              <label className="text-sm text-slate-700">
+                <span className="mb-1 block font-medium">Week 1 · Day 1 starts</span>
+                <input
+                  type="date"
+                  value={startDateEdit}
+                  onChange={(event) => setStartDateEdit(event.target.value)}
+                  className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
+                  disabled={!canWrite}
+                />
+              </label>
+              {canWrite ? (
+                <button
+                  type="button"
+                  disabled={Boolean(busy) || startDateEdit === (cohortStartRaw || DEFAULT_COHORT_START_DATE)}
+                  className="spike-btn-secondary text-sm"
+                  onClick={() => run('calendar', () => staffUpdateCohortStartDate(cohort.id, startDateEdit))}
+                >
+                  {busy === 'calendar' ? 'Saving…' : 'Save start date'}
+                </button>
+              ) : null}
+            </div>
+            <p className="mt-2 text-xs text-slate-500">
+              Mon 2026-06-15 → Fri 2026-06-19 is Week 1 · Day 5 (Commitment).
+            </p>
+          </div>
+        </div>
+      </div>
 
       {!photoOnly ? (
       <div className="flex flex-wrap gap-2">

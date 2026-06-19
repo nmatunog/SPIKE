@@ -30,7 +30,7 @@ function averageAssessmentScore(scores) {
   return values.reduce((a, b) => a + b, 0) / values.length;
 }
 
-import { resolveCohortProgramDay } from './programCalendar.js';
+import { resolveStaffProgramDay } from './programCalendar.js';
 
 /**
  * @param {'faculty' | 'mentor'} role
@@ -185,11 +185,11 @@ function deriveSquadNextAction(members, week, day) {
 
 /**
  * @param {Array<{ id: string, name: string, squad?: string, hours?: number, current_week?: number, current_day?: number }>} interns
- * @param {{ role: 'faculty' | 'mentor', staffName?: string, programDay?: { week: number, day: number }, cohortStartDate?: string | null }} opts
+ * @param {{ role: 'faculty' | 'mentor', staffName?: string, cohortStartDate?: string | null }} opts
  */
 export function deriveStaffCoachHome(interns, opts) {
-  const { role, staffName = 'Coach', programDay: programDayOverride, cohortStartDate } = opts;
-  const { week, day } = resolveCohortProgramDay(interns, cohortStartDate, programDayOverride);
+  const { role, staffName = 'Coach', cohortStartDate } = opts;
+  const { week, day } = resolveStaffProgramDay(cohortStartDate);
   const squads = groupInternsBySquad(interns);
   const queue = deriveCoachingQueue(interns, week);
   const assigned = deriveAssignedParticipants(interns);
@@ -312,7 +312,7 @@ export function squadNameFromSlug(slug) {
  */
 export function deriveSquadHubDetail(interns, squadName, cohortStartDate) {
   const members = interns.filter((i) => (i.squad ?? 'Unassigned') === squadName);
-  const { week, day } = resolveCohortProgramDay(interns, cohortStartDate);
+  const { week, day } = resolveStaffProgramDay(cohortStartDate);
   const ventureLabel = deriveSquadVentureLabel(members, week, day);
 
   const memberRows = members.map((intern) => {

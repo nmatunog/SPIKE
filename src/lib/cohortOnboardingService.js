@@ -486,6 +486,16 @@ export async function staffEnsureActiveCohort() {
   return db.ensureActiveCohortForStaff();
 }
 
+/** @param {number} cohortId @param {string} startDate YYYY-MM-DD (Week 1 Day 1) */
+export async function staffUpdateCohortStartDate(cohortId, startDate) {
+  await assertPortalCanWrite();
+  const normalized = String(startDate ?? '').trim().slice(0, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(normalized)) {
+    throw new Error('Enter a valid start date (YYYY-MM-DD).');
+  }
+  return db.updateCohort(cohortId, { start_date: normalized });
+}
+
 export async function staffLoadDashboard() {
   let cohort = await db.fetchActiveCohort();
   if (!cohort) {

@@ -60,4 +60,9 @@ if (utcString.day !== 5) {
   fail(`local date parse should not shift start_date off-by-one, got ${JSON.stringify(utcString)}`);
 }
 
+const defaultStart = deriveProgramDayFromStartDate('2026-06-15', friJun19);
+if (defaultStart.day !== 5) {
+  fail(`default pilot start should land on Day 5 Fri Jun 19, got ${JSON.stringify(defaultStart)}`);
+}
+
 console.log('smoke-program-calendar: ok (Fri 2026-06-19 → Week 1 · Day 5)');

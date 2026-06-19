@@ -23,7 +23,7 @@ import { CohortOnboardingControls } from '../../components/faculty/CohortOnboard
 export function MentorHomePage({ user, interns, showToast }) {
   const [toolsOpen, setToolsOpen] = useState(false);
   const staffName = user?.name || user?.email || 'Mentor';
-  const { programDay, cohortStartDate } = useCohortProgramDay(interns);
+  const { cohortStartDate } = useCohortProgramDay();
 
   return (
     <PageContainer wide>
@@ -32,7 +32,6 @@ export function MentorHomePage({ user, interns, showToast }) {
         staffName={staffName}
         interns={interns}
         homeHref={ROUTES.mentorHome}
-        programDay={programDay}
         cohortStartDate={cohortStartDate}
       />
 

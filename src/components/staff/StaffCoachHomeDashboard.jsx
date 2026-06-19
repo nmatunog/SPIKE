@@ -24,7 +24,6 @@ import {
  *   staffName?: string,
  *   interns: Array<{ id: string, name: string, squad?: string, hours?: number, internProgress?: object }>,
  *   homeHref: string,
- *   programDay?: { week: number, day: number },
  *   cohortStartDate?: string | null,
  * }} props
  */
@@ -33,10 +32,9 @@ export function StaffCoachHomeDashboard({
   staffName = 'Coach',
   interns,
   homeHref,
-  programDay,
   cohortStartDate,
 }) {
-  const model = deriveStaffCoachHome(interns, { role, staffName, programDay, cohortStartDate });
+  const model = deriveStaffCoachHome(interns, { role, staffName, cohortStartDate });
   const hero = model.todayHero;
   const roleLabel = role === 'faculty' ? 'Program Coach' : 'Mentor';
   const squadsHref = staffSquadsListHref(role);

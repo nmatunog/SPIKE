@@ -28,6 +28,7 @@ function isMissingRpcError(error) {
  *   photo_url: string | null,
  *   motto: string,
  *   theme_statement: string,
+ *   start_date?: string | null,
  * }} CohortRow
  */
 
