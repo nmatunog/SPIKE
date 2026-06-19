@@ -31,8 +31,10 @@ import { RoleDashboardCards } from './components/dashboard/RoleDashboardCards.js
 import { BlueprintTimelineFeed } from './components/blueprint/BlueprintTimelineFeed.jsx';
 import { PageLoader } from './components/ui/PageLoader.jsx';
 import { RoleRouteGuard } from './components/routing/RoleRouteGuard.jsx';
-import { ROUTES, brandLexiconBackHrefForRole, facilitatorsReferenceBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath, isPlaybookPath, parseStaffSquadHubPath } from './routes/paths.js';
+import { ROUTES, brandLexiconBackHrefForRole, facilitatorsReferenceBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath, isPlaybookPath, parseStaffSquadHubPath, parseStaffStageGatePath } from './routes/paths.js';
 import { StaffSquadHubPage, StaffSquadsListPage } from './components/staff/StaffSquadHubPage.jsx';
+import { StageGateCeremonyPage } from './components/stageGate/StageGateCeremonyPage.jsx';
+import { PageContainer } from './components/layout/PageContainer.jsx';
 import {
   AdminCohortsPage,
   AdminFacultyPlaybookPage,
@@ -1759,6 +1761,23 @@ const SpikeMasterPortal = () => {
           );
         }
       }
+      {
+        const facultyStageGate = parseStaffStageGatePath(path, 'faculty');
+        if (facultyStageGate) {
+          return (
+            <PageContainer wide>
+              <StageGateCeremonyPage
+                role="faculty"
+                interns={interns}
+                segment={facultyStageGate.segment}
+                closingWeek={facultyStageGate.closingWeek}
+                staffId={user?.id ?? ''}
+                homeHref={ROUTES.programCoachHome}
+              />
+            </PageContainer>
+          );
+        }
+      }
       if (path === ROUTES.programCoachPlaybook) {
         return (
           <LazyRoute label="Loading program coach playbook…">
@@ -1805,6 +1824,23 @@ const SpikeMasterPortal = () => {
               interns={mentorInterns}
               homeHref={ROUTES.mentorHome}
             />
+          );
+        }
+      }
+      {
+        const mentorStageGate = parseStaffStageGatePath(path, 'mentor');
+        if (mentorStageGate) {
+          return (
+            <PageContainer wide>
+              <StageGateCeremonyPage
+                role="mentor"
+                interns={mentorInterns}
+                segment={mentorStageGate.segment}
+                closingWeek={mentorStageGate.closingWeek}
+                staffId={user?.id ?? ''}
+                homeHref={ROUTES.mentorHome}
+              />
+            </PageContainer>
           );
         }
       }

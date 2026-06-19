@@ -9,6 +9,7 @@ import {
   ClipboardList,
   Lightbulb,
   MessageSquarePlus,
+  Trophy,
   Users,
 } from 'lucide-react';
 import { deriveStaffCoachHome } from '../../lib/staffCoachHomeService.js';
@@ -94,6 +95,15 @@ export function StaffCoachHomeDashboard({
             >
               Deliver to cohort
             </Link>
+            {model.stageGateHref ? (
+              <Link
+                to={model.stageGateHref}
+                className="inline-flex min-h-[48px] items-center gap-2 rounded-xl border border-yellow-400/40 bg-yellow-400/10 px-6 py-3 text-sm font-semibold text-yellow-100 transition hover:bg-yellow-400/20"
+              >
+                <Trophy size={18} />
+                Stage gate ceremony
+              </Link>
+            ) : null}
           </div>
           <p className="mt-4 text-xs text-slate-400">
             Estimated program time · {hero.estimatedMinutes} min

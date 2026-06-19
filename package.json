@@ -36,6 +36,7 @@
     "smoke:venture-studio": "node scripts/smoke-venture-studio.mjs",
     "smoke:dream-board-merge": "node scripts/smoke-dream-board-merge.mjs",
     "smoke:program-calendar": "node scripts/smoke-program-calendar.mjs",
+    "smoke:stage-gate-ceremony": "node scripts/smoke-stage-gate-ceremony.mjs",
     "audit:intern-recovery": "node scripts/audit-intern-cloud-recovery.mjs",
     "cap:sync": "CAPACITOR=true npm run build && npx cap sync",
     "cap:ios": "npm run cap:sync && npx cap open ios",

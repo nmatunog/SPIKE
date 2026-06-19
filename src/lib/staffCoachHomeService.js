@@ -24,7 +24,7 @@ import {
   formatScheduleTime,
   STAFF_COACH_TIPS,
 } from './staffCoachHomeConstants.js';
-import { playbookHref } from '../routes/paths.js';
+import { playbookHref, staffStageGateHref } from '../routes/paths.js';
 
 /** @param {Record<string, number>} scores */
 function averageAssessmentScore(scores) {
@@ -305,6 +305,7 @@ export function deriveStaffCoachHome(interns, opts) {
     playbookHref: playbookHref({ week, day }),
     frameworkPlaybookHref:
       role === 'mentor' ? `/mentor/playbook/1/${week}/${day}` : `/program-coach/playbook/1/${week}/${day}`,
+    stageGateHref: day === 5 ? staffStageGateHref(role, 1, week) : null,
     coachTip: STAFF_COACH_TIPS[tipIndex],
     coachingQueue: queue,
     participants: assigned,

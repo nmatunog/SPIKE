@@ -25,11 +25,13 @@ export const ROUTES = {
   programCoachHome: '/program-coach',
   programCoachPlaybook: '/program-coach/playbook',
   programCoachSquads: '/program-coach/squads',
+  programCoachStageGate: '/program-coach/stage-gate',
   programCoachGuides: '/admin/content-studio/program-coach-guides',
   adminProgramCoachPlaybook: '/admin/program-coach-playbook',
   mentorHome: '/mentor',
   mentorPlaybook: '/mentor/playbook',
   mentorSquads: '/mentor/squads',
+  mentorStageGate: '/mentor/stage-gate',
   adminMentorPlaybook: '/admin/mentor-playbook',
   myVenturePortfolio: '/my-venture-portfolio',
   adminPortfolioSettings: '/admin/portfolio-settings',
@@ -178,6 +180,36 @@ export function parseStaffSquadHubPath(pathname, role) {
   } catch {
     return slug;
   }
+}
+
+/** @param {'faculty' | 'mentor'} role @param {number} [segment] @param {number} [closingWeek] */
+export function staffStageGateHref(role, segment = 1, closingWeek = 1) {
+  const base = role === 'mentor' ? ROUTES.mentorStageGate : ROUTES.programCoachStageGate;
+  return `${base}/${segment}/${closingWeek}`;
+}
+
+/**
+ * @param {string} pathname
+ * @param {'faculty' | 'mentor'} role
+ */
+export function parseStaffStageGatePath(pathname, role) {
+  const base = role === 'mentor' ? ROUTES.mentorStageGate : ROUTES.programCoachStageGate;
+  const prefix = `${base}/`;
+  if (!pathname.startsWith(prefix)) return null;
+  const parts = pathname.slice(prefix.length).split('/').filter(Boolean);
+  if (parts.length < 2) return null;
+  const segment = Number(parts[0]);
+  const closingWeek = Number(parts[1]);
+  if (!Number.isFinite(segment) || !Number.isFinite(closingWeek)) return null;
+  return { segment, closingWeek };
+}
+
+/** @param {string} pathname */
+export function isStaffStageGatePath(pathname) {
+  return (
+    pathname.startsWith(`${ROUTES.programCoachStageGate}/`)
+    || pathname.startsWith(`${ROUTES.mentorStageGate}/`)
+  );
 }
 
 /** @param {string} pathname */
