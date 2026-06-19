@@ -16,6 +16,7 @@ import { deriveStageGateCeremony } from '../../lib/stageGateCeremonyService.js';
 import { unlockStage } from '../../lib/stageGateService.js';
 import { stageGatePresentationHref } from '../../routes/paths.js';
 import { usePortalWriteAccess } from '../../hooks/usePortalWriteAccess.js';
+import { useCohortHydration } from '../../hooks/useParticipantHydration.js';
 import { StageGateProjectorPanel } from './StageGateProjectorPanel.jsx';
 
 /**
@@ -39,6 +40,11 @@ export function StageGateCeremonyPage({
   onUnlock,
 }) {
   const { canWrite } = usePortalWriteAccess();
+  const cohortIds = useMemo(() => interns.map((i) => i.id), [interns]);
+  const { ready: cohortReady, version: cohortVersion } = useCohortHydration(cohortIds, {
+    enabled: interns.length > 0,
+    interns,
+  });
   const [view, setView] = useState('coach');
   const [showUnlockModal, setShowUnlockModal] = useState(false);
   const [unlockBusy, setUnlockBusy] = useState(false);
@@ -46,7 +52,7 @@ export function StageGateCeremonyPage({
 
   const model = useMemo(
     () => deriveStageGateCeremony(interns, { segment, closingWeek, role }),
-    [interns, segment, closingWeek, role, refreshKey],
+    [interns, segment, closingWeek, role, refreshKey, cohortVersion],
   );
 
   const roleLabel = role === 'faculty' ? 'Program Coach' : 'Mentor';
@@ -67,6 +73,22 @@ export function StageGateCeremonyPage({
     } finally {
       setUnlockBusy(false);
     }
+  }
+
+  if (!cohortReady && interns.length > 0) {
+    return (
+      <div className="space-y-4">
+        <Link
+          to={homeHref}
+          className="inline-flex items-center gap-1 text-sm font-semibold text-slate-500 hover:text-spike"
+        >
+          <ArrowLeft size={16} /> Back to {roleLabel} home
+        </Link>
+        <section className="spike-card p-8 text-center text-sm text-slate-600">
+          Loading squad venture propositions and FEC data from the cloud…
+        </section>
+      </div>
+    );
   }
 
   if (view === 'projector') {
