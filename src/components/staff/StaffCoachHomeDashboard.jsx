@@ -24,10 +24,20 @@ import {
  *   staffName?: string,
  *   interns: Array<{ id: string, name: string, squad?: string, hours?: number, internProgress?: object }>,
  *   homeHref: string,
+ *   programDay?: { week: number, day: number },
+ *   cohortStartDate?: string | null,
  * }} props
  */
-export function StaffCoachHomeDashboard({ role, staffName = 'Coach', interns, homeHref }) {
-  const model = deriveStaffCoachHome(interns, { role, staffName });
+export function StaffCoachHomeDashboard({
+  role,
+  staffName = 'Coach',
+  interns,
+  homeHref,
+  programDay,
+  cohortStartDate,
+}) {
+  const model = deriveStaffCoachHome(interns, { role, staffName, programDay, cohortStartDate });
+  const hero = model.todayHero;
   const roleLabel = role === 'faculty' ? 'Program Coach' : 'Mentor';
   const squadsHref = staffSquadsListHref(role);
 
@@ -38,12 +48,60 @@ export function StaffCoachHomeDashboard({ role, staffName = 'Coach', interns, ho
         <h1 className="mt-1 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
           Welcome back, {model.staffName}
         </h1>
-        <p className="mt-2 max-w-2xl text-base text-slate-600">
-          {role === 'faculty'
-            ? "You're leading the next generation of financial entrepreneurs."
-            : 'Coach your squads through identity, venture design, and portfolio readiness.'}
-        </p>
       </header>
+
+      {/* Today hero */}
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-spike-dark p-6 text-white shadow-xl sm:p-8">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-20 -top-16 h-56 w-56 rounded-full bg-spike/25 blur-3xl"
+        />
+        <div className="relative">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="rounded-full bg-spike px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
+              Today
+            </span>
+            <span className="rounded-full border border-white/20 px-3 py-1 text-xs font-semibold text-slate-200">
+              {hero.dayLabel}
+            </span>
+            <span className="rounded-full border border-white/20 px-3 py-1 text-xs font-semibold text-slate-300">
+              {hero.themeLabel}
+            </span>
+          </div>
+          <h2 className="mt-4 text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">{hero.title}</h2>
+          <p className="mt-3 max-w-2xl text-base leading-relaxed text-slate-300">{hero.subtitle}</p>
+          {hero.expectedOutputs.length ? (
+            <ul className="mt-4 flex flex-wrap gap-2">
+              {hero.expectedOutputs.map((output) => (
+                <li
+                  key={output}
+                  className="rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-slate-200"
+                >
+                  {output}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link
+              to={model.frameworkPlaybookHref}
+              className="inline-flex min-h-[48px] items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-spike-muted"
+            >
+              Open Day {model.day} playbook
+              <ArrowRight size={18} />
+            </Link>
+            <Link
+              to={model.playbookHref}
+              className="inline-flex min-h-[48px] items-center gap-2 rounded-xl border border-white/25 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+            >
+              Deliver to cohort
+            </Link>
+          </div>
+          <p className="mt-4 text-xs text-slate-400">
+            Estimated program time · {hero.estimatedMinutes} min
+          </p>
+        </div>
+      </section>
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard
@@ -70,7 +128,7 @@ export function StaffCoachHomeDashboard({ role, staffName = 'Coach', interns, ho
         <div className="space-y-6">
           <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
             <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-              <h2 className="text-lg font-semibold text-slate-900">Today at a glance</h2>
+              <h2 className="text-lg font-semibold text-slate-900">Today&apos;s schedule</h2>
               <span className="rounded-full bg-spike-muted px-3 py-1 text-xs font-semibold text-spike">
                 {model.weekLabel}
               </span>

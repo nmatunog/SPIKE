@@ -22,6 +22,8 @@ function mapInternRow(profile, progress, formationSquad) {
     licensed: progress?.licensed ?? false,
     squad,
     university: progress?.university ?? null,
+    current_week: progress?.current_week ?? null,
+    current_day: progress?.current_day ?? null,
   };
 }
 
@@ -42,7 +44,7 @@ export async function fetchInterns() {
     const [{ data: progRows, error: progErr }, formationLabels] = await Promise.all([
       supabase
         .from('intern_progress')
-        .select('user_id, segment, hours, licensed, squad, university')
+        .select('user_id, segment, hours, licensed, squad, university, current_week, current_day')
         .in('user_id', ids),
       fetchFormationSquadLabels(ids).catch(() => ({})),
     ]);

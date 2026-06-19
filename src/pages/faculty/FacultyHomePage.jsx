@@ -3,6 +3,7 @@ import { ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 import { PageContainer } from '../../components/layout/PageContainer.jsx';
 import { StaffCoachHomeDashboard } from '../../components/staff/StaffCoachHomeDashboard.jsx';
+import { useCohortProgramDay } from '../../hooks/useCohortProgramDay.js';
 import { Day1CohortOutputsPanel } from '../../components/day1/Day1CohortOutputsPanel.jsx';
 import { FacultyDay1Panel } from '../../components/day1/FacultyDay1Panel.jsx';
 import { FacultyDashboardPanels } from '../../components/faculty/FacultyDashboardPanels.jsx';
@@ -29,6 +30,7 @@ export function FacultyHomePage({
   onSquadChanged,
 }) {
   const [toolsOpen, setToolsOpen] = useState(false);
+  const { programDay, cohortStartDate } = useCohortProgramDay(interns);
 
   return (
     <PageContainer wide>
@@ -37,6 +39,8 @@ export function FacultyHomePage({
         staffName={staffName}
         interns={interns}
         homeHref={ROUTES.programCoachHome}
+        programDay={programDay}
+        cohortStartDate={cohortStartDate}
       />
 
       <div className="mt-10 border-t border-slate-200 pt-8">

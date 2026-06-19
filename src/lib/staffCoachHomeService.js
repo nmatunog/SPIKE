@@ -30,24 +30,7 @@ function averageAssessmentScore(scores) {
   return values.reduce((a, b) => a + b, 0) / values.length;
 }
 
-/**
- * @param {Array<{ id: string, hours?: number, internProgress?: { current_week?: number, current_day?: number } }>} interns
- */
-export function deriveCohortWeekDay(interns) {
-  const fromProgress = interns.find((i) => i.internProgress?.current_week);
-  if (fromProgress?.internProgress) {
-    return {
-      week: fromProgress.internProgress.current_week ?? 1,
-      day: fromProgress.internProgress.current_day ?? 1,
-    };
-  }
-  const avgHours = interns.length
-    ? interns.reduce((sum, i) => sum + (i.hours ?? 0), 0) / interns.length
-    : 0;
-  const week = Math.min(4, Math.max(1, Math.floor(avgHours / 40) + 1));
-  const day = Math.min(5, Math.max(1, Math.floor((avgHours % 40) / 8) + 1));
-  return { week, day };
-}
+import { resolveCohortProgramDay } from './programCalendar.js';
 
 /**
  * @param {'faculty' | 'mentor'} role
@@ -103,6 +86,42 @@ export function deriveTodaySchedule(role, week = 1, day = 1) {
   }
 
   return { theme, items };
+}
+
+/**
+ * Hero summary for today's program delivery.
+ * @param {'faculty' | 'mentor'} role
+ * @param {number} week
+ * @param {number} day
+ */
+export function deriveTodayHero(role, week = 1, day = 1) {
+  const template =
+    role === 'mentor'
+      ? getMentorDayFromSeed(1, week, day)
+      : getFacultyDayFromSeed(1, week, day);
+  const meta = WEEK1_DAY_META.find((d) => d.day === day) ?? WEEK1_DAY_META[0];
+  const theme = template?.theme ?? meta.theme;
+  const objectives =
+    /** @type {string[]} */ (template?.learning_objectives ?? [])
+    || (role === 'mentor' ? [String(template?.coaching_objective ?? '')] : []);
+  const outputs =
+    /** @type {string[]} */ (template?.expected_outputs ?? [meta.expectedOutput].filter(Boolean));
+  const schedule = deriveTodaySchedule(role, week, day);
+  const totalMinutes = schedule.items.reduce((sum, item) => sum + (item.minutes ?? 0), 0);
+
+  return {
+    dayLabel: `Week ${week} · Day ${day}`,
+    themeLabel: meta.theme,
+    title: meta.playbookTitle ?? theme,
+    subtitle:
+      role === 'faculty'
+        ? String(objectives[0] ?? theme)
+        : String(template?.coaching_objective ?? meta.objective ?? theme),
+    objectives: objectives.filter(Boolean).slice(0, 4),
+    expectedOutputs: outputs.filter(Boolean).slice(0, 5),
+    estimatedMinutes: totalMinutes || 240,
+    topActivities: schedule.items.slice(0, 3),
+  };
 }
 
 /** @param {number} progressPct @param {number} [assessmentAvg] */
@@ -165,16 +184,17 @@ function deriveSquadNextAction(members, week, day) {
 }
 
 /**
- * @param {Array<{ id: string, name: string, squad?: string, hours?: number }>} interns
- * @param {{ role: 'faculty' | 'mentor', staffName?: string }} opts
+ * @param {Array<{ id: string, name: string, squad?: string, hours?: number, current_week?: number, current_day?: number }>} interns
+ * @param {{ role: 'faculty' | 'mentor', staffName?: string, programDay?: { week: number, day: number }, cohortStartDate?: string | null }} opts
  */
 export function deriveStaffCoachHome(interns, opts) {
-  const { role, staffName = 'Coach' } = opts;
-  const { week, day } = deriveCohortWeekDay(interns);
+  const { role, staffName = 'Coach', programDay: programDayOverride, cohortStartDate } = opts;
+  const { week, day } = resolveCohortProgramDay(interns, cohortStartDate, programDayOverride);
   const squads = groupInternsBySquad(interns);
   const queue = deriveCoachingQueue(interns, week);
   const assigned = deriveAssignedParticipants(interns);
   const schedule = deriveTodaySchedule(role, week, day);
+  const todayHero = deriveTodayHero(role, week, day);
   const weekTheme =
     role === 'mentor'
       ? MENTOR_WEEK_THEMES[`1-${week}`] ?? 'Identity · Confidence · Direction'
@@ -240,7 +260,8 @@ export function deriveStaffCoachHome(interns, opts) {
     week,
     day,
     weekTheme,
-    weekLabel: `Week ${week}: ${weekTheme.split('·')[0]?.trim() ?? weekTheme}`,
+    weekLabel: `Week ${week} · Day ${day} · ${todayHero.themeLabel}`,
+    todayHero,
     metrics: {
       activeSquads: squads.length,
       participants: interns.length,
@@ -289,9 +310,9 @@ export function squadNameFromSlug(slug) {
  * @param {Array<{ id: string, name: string, squad?: string, hours?: number }>} interns
  * @param {string} squadName
  */
-export function deriveSquadHubDetail(interns, squadName) {
+export function deriveSquadHubDetail(interns, squadName, cohortStartDate) {
   const members = interns.filter((i) => (i.squad ?? 'Unassigned') === squadName);
-  const { week, day } = deriveCohortWeekDay(interns);
+  const { week, day } = resolveCohortProgramDay(interns, cohortStartDate);
   const ventureLabel = deriveSquadVentureLabel(members, week, day);
 
   const memberRows = members.map((intern) => {

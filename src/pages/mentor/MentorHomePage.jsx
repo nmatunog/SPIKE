@@ -3,6 +3,7 @@ import { ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 import { PageContainer } from '../../components/layout/PageContainer.jsx';
 import { StaffCoachHomeDashboard } from '../../components/staff/StaffCoachHomeDashboard.jsx';
+import { useCohortProgramDay } from '../../hooks/useCohortProgramDay.js';
 import { MentorDayDebriefPanel } from '../../components/mentor/MentorDayDebriefPanel.jsx';
 import { MentorWeek1QuickPanel } from '../../components/mentor/MentorWeek1QuickPanel.jsx';
 import { MentorDashboardPanels } from '../../components/mentor/MentorDashboardPanels.jsx';
@@ -22,6 +23,7 @@ import { CohortOnboardingControls } from '../../components/faculty/CohortOnboard
 export function MentorHomePage({ user, interns, showToast }) {
   const [toolsOpen, setToolsOpen] = useState(false);
   const staffName = user?.name || user?.email || 'Mentor';
+  const { programDay, cohortStartDate } = useCohortProgramDay(interns);
 
   return (
     <PageContainer wide>
@@ -30,6 +32,8 @@ export function MentorHomePage({ user, interns, showToast }) {
         staffName={staffName}
         interns={interns}
         homeHref={ROUTES.mentorHome}
+        programDay={programDay}
+        cohortStartDate={cohortStartDate}
       />
 
       <div className="mt-10 border-t border-slate-200 pt-8">

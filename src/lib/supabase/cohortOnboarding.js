@@ -56,7 +56,7 @@ function formatDbError(error, fallback) {
 export async function fetchActiveCohort() {
   const client = assertClient();
   const fullSelect =
-    'id, name, code, is_active, onboarding_phase, official_name, photo_url, motto, theme_statement';
+    'id, name, code, is_active, onboarding_phase, official_name, photo_url, motto, theme_statement, start_date';
 
   const withActive = await client
     .from('cohorts')
