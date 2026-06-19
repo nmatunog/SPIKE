@@ -11,6 +11,19 @@ import { syncParticipantSquadCacheFromInterns } from './participantSquadCache.js
 /** Staff review — cloud is source of truth; never upsert participant rows from a coach device. */
 const remoteOpts = { preferRemote: true, readOnly: true };
 
+const COHORT_HYDRATION_CHUNK = 5;
+
+/** @param {string[]} ids @param {typeof remoteOpts & { force?: boolean }} staffOpts */
+async function hydrateCohortChunk(ids, staffOpts) {
+  await Promise.all([
+    ...ids.map((id) => hydrateVentureBlueprint(id, staffOpts)),
+    ...ids.map((id) => hydratePlaybookProgressFromSupabase(id, staffOpts)),
+    ...ids.map((id) => hydrateSurveysFromSupabase(id, staffOpts)),
+    ...ids.map((id) => hydrateCanvasFromSupabase(id, staffOpts)),
+    hydrateCohortBuilderData(ids, staffOpts),
+  ]);
+}
+
 /** @param {string} participantId @param {{ force?: boolean }} [opts] */
 export async function hydrateParticipantForStaffView(participantId, opts = {}) {
   if (!participantId || String(participantId).startsWith('mock-')) return;
@@ -32,11 +45,8 @@ export async function hydrateCohortForStaffView(participantIds, opts = {}) {
   if (staffOpts.interns?.length) {
     syncParticipantSquadCacheFromInterns(staffOpts.interns);
   }
-  await Promise.all([
-    ...ids.map((id) => hydrateVentureBlueprint(id, staffOpts)),
-    ...ids.map((id) => hydratePlaybookProgressFromSupabase(id, staffOpts)),
-    ...ids.map((id) => hydrateSurveysFromSupabase(id, staffOpts)),
-    ...ids.map((id) => hydrateCanvasFromSupabase(id, staffOpts)),
-    hydrateCohortBuilderData(ids, staffOpts),
-  ]);
+  for (let i = 0; i < ids.length; i += COHORT_HYDRATION_CHUNK) {
+    const chunk = ids.slice(i, i + COHORT_HYDRATION_CHUNK);
+    await hydrateCohortChunk(chunk, staffOpts);
+  }
 }

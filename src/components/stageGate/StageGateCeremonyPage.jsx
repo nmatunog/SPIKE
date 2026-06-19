@@ -33,7 +33,7 @@ import { StageGateProjectorPanel } from './StageGateProjectorPanel.jsx';
  */
 export function StageGateCeremonyPage({
   role,
-  interns,
+  interns = [],
   segment,
   closingWeek,
   staffId = '',
@@ -42,10 +42,13 @@ export function StageGateCeremonyPage({
 }) {
   const { canWrite } = usePortalWriteAccess();
   const cohortIds = useMemo(() => interns.map((i) => i.id), [interns]);
-  const { ready: cohortReady, version: cohortVersion } = useCohortHydration(cohortIds, {
-    enabled: interns.length > 0,
-    interns,
-  });
+  const { ready: cohortReady, version: cohortVersion, error: cohortHydrationError } = useCohortHydration(
+    cohortIds,
+    {
+      enabled: interns.length > 0,
+      interns,
+    },
+  );
   const [view, setView] = useState('coach');
   const [showUnlockModal, setShowUnlockModal] = useState(false);
   const [showSampleCert, setShowSampleCert] = useState(false);
@@ -86,22 +89,6 @@ export function StageGateCeremonyPage({
     }
   }
 
-  if (!cohortReady && interns.length > 0) {
-    return (
-      <div className="space-y-4">
-        <Link
-          to={homeHref}
-          className="inline-flex items-center gap-1 text-sm font-semibold text-slate-500 hover:text-spike"
-        >
-          <ArrowLeft size={16} /> Back to {roleLabel} home
-        </Link>
-        <section className="spike-card p-8 text-center text-sm text-slate-600">
-          Loading squad venture propositions and FEC data from the cloud…
-        </section>
-      </div>
-    );
-  }
-
   if (view === 'projector') {
     return (
       <StageGateProjectorPanel
@@ -125,6 +112,16 @@ export function StageGateCeremonyPage({
 
   return (
     <div className="space-y-6">
+      {!cohortReady && interns.length > 0 ? (
+        <section className="spike-card border-sky-200 bg-sky-50/80 px-4 py-3 text-sm text-sky-900">
+          Syncing squad venture propositions and FEC data from the cloud…
+        </section>
+      ) : null}
+      {cohortHydrationError ? (
+        <section className="spike-card border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+          {cohortHydrationError} Refresh the page to retry cloud sync.
+        </section>
+      ) : null}
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <Link

@@ -40,7 +40,7 @@ export function FecCanvasProjectionView({
   );
 
   const participantContent = useMemo(() => {
-    if (!participantId || !participantReady) return null;
+    if (!participantId) return null;
     return buildFecLayoutParticipantContent(participantId);
   }, [participantId, participantReady, participantVersion]);
 
@@ -76,17 +76,6 @@ export function FecCanvasProjectionView({
       ? ventureDesignWorkshopHref({ coach: true })
       : ventureDesignWorkshopHref({ coach: false });
 
-  if (isParticipantView && !participantReady) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-stone-950 text-white">
-        <p className="flex items-center gap-2 text-sm text-stone-300">
-          <Loader2 size={18} className="animate-spin text-amber-400" />
-          Loading participant FEC from the cloud…
-        </p>
-      </div>
-    );
-  }
-
   return (
     <div className="-mx-4 min-h-screen bg-stone-950 font-sans text-white md:-mx-0">
       <header className="sticky top-0 z-50 border-b border-stone-800 bg-stone-950/95 px-4 py-3 backdrop-blur md:px-8">
@@ -98,6 +87,12 @@ export function FecCanvasProjectionView({
                 {projectionLabel}
               </p>
               <h1 className="truncate text-sm font-bold md:text-base">Financial Entrepreneurship Canvas</h1>
+              {isParticipantView && !participantReady ? (
+                <p className="mt-0.5 flex items-center gap-1.5 text-[10px] font-semibold text-stone-400">
+                  <Loader2 size={12} className="animate-spin text-amber-400" />
+                  Syncing from cloud…
+                </p>
+              ) : null}
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">

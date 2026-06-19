@@ -1,6 +1,22 @@
 import { useEffect, useState } from 'react';
 import { hydrateParticipantForStaffView, hydrateCohortForStaffView } from '../lib/participantDataHydration.js';
 
+const HYDRATION_TIMEOUT_MS = 20_000;
+
+/**
+ * @template T
+ * @param {Promise<T>} promise
+ * @param {number} ms
+ */
+function withHydrationTimeout(promise, ms = HYDRATION_TIMEOUT_MS) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Cloud sync timed out — showing cached data.')), ms);
+    }),
+  ]);
+}
+
 /**
  * Hydrate one participant's Day 1 + blueprint data from Supabase for staff review.
  * @param {string | undefined | null} participantId
@@ -23,7 +39,7 @@ export function useParticipantHydration(participantId, opts = {}) {
     setError(null);
     (async () => {
       try {
-        await hydrateParticipantForStaffView(participantId, { force: true });
+        await withHydrationTimeout(hydrateParticipantForStaffView(participantId, { force: true }));
         if (!cancelled) {
           setReady(true);
           setVersion((v) => v + 1);
@@ -69,7 +85,9 @@ export function useCohortHydration(participantIds, opts = {}) {
     setError(null);
     (async () => {
       try {
-        await hydrateCohortForStaffView(participantIds, { force: true, interns: opts.interns });
+        await withHydrationTimeout(
+          hydrateCohortForStaffView(participantIds, { force: true, interns: opts.interns }),
+        );
         if (!cancelled) {
           setReady(true);
           setVersion((v) => v + 1);
