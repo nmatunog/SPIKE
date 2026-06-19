@@ -34,6 +34,7 @@ export const ROUTES = {
   mentorStageGate: '/mentor/stage-gate',
   adminMentorPlaybook: '/admin/mentor-playbook',
   myVenturePortfolio: '/my-venture-portfolio',
+  stageGatePresentation: '/presentation/stagegate',
   adminPortfolioSettings: '/admin/portfolio-settings',
   brandLexicon: '/brand-lexicon',
   facilitatorsReference: '/facilitators-content-reference',
@@ -186,6 +187,24 @@ export function parseStaffSquadHubPath(pathname, role) {
 export function staffStageGateHref(role, segment = 1, closingWeek = 1) {
   const base = role === 'mentor' ? ROUTES.mentorStageGate : ROUTES.programCoachStageGate;
   return `${base}/${segment}/${closingWeek}`;
+}
+
+/** @param {number} [closingWeek] */
+export function stageGateCertificateHref(closingWeek = 1) {
+  return `${ROUTES.myVenturePortfolio}/certificates/week${closingWeek}`;
+}
+
+/** @param {string} pathname */
+export function parseStageGateCertificatePath(pathname) {
+  const prefix = `${ROUTES.myVenturePortfolio}/certificates/week`;
+  if (!pathname.startsWith(prefix)) return null;
+  const week = Number(pathname.slice(prefix.length));
+  return Number.isFinite(week) && week >= 1 ? week : null;
+}
+
+/** @param {number} [closingWeek] */
+export function stageGatePresentationHref(closingWeek = 1) {
+  return `${ROUTES.stageGatePresentation}?week=${closingWeek}`;
 }
 
 /**
@@ -401,7 +420,7 @@ export const PORTFOLIO_TABS = [
   { id: 'overview', label: 'Overview', sections: ['overview'] },
   { id: 'identity', label: 'Identity', sections: ['identity', 'dream-board', 'career'] },
   { id: 'work', label: 'Work', sections: ['canvas', 'research', 'deliverables'] },
-  { id: 'share', label: 'Share', sections: ['presentations', 'certifications', 'export', 'milestones'] },
+  { id: 'share', label: 'Share', sections: ['presentations', 'certifications', 'stage-gate-certificates', 'export', 'milestones'] },
 ];
 
 const PORTFOLIO_SECTION_TO_TAB = Object.fromEntries(

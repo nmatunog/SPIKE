@@ -16,10 +16,18 @@ import {
   PortfolioResearchSection,
 } from '../components/venturePortfolio/PortfolioSections.jsx';
 import { PortfolioPresentationView } from '../components/venturePortfolio/PortfolioPresentationView.jsx';
+import { PortfolioStageGateCertificates } from '../components/stageGate/PortfolioStageGateCertificates.jsx';
 import {
   generateVenturePortfolio,
 } from '../services/portfolioGenerator.js';
-import { ROUTES, defaultRouteForRole, portfolioTabFromPath, PORTFOLIO_TABS } from '../routes/paths.js';
+import {
+  ROUTES,
+  defaultRouteForRole,
+  parseStageGateCertificatePath,
+  portfolioTabFromPath,
+  PORTFOLIO_TABS,
+} from '../routes/paths.js';
+import { StageGateCertificatePage } from './stageGate/StageGateCertificatePage.jsx';
 import { InternWorkHydrationAlert } from '../components/intern/InternWorkHydrationAlert.jsx';
 import { isSuperuserInternPreviewUser } from '../lib/superuserInternPreview.js';
 
@@ -130,6 +138,10 @@ function renderTab(tabId, sectionId, portfolio, participantId, participantName) 
         <div className="space-y-8">
           <PortfolioPresentationsSection portfolio={portfolio} participantId={participantId} />
           <PortfolioCertificationsSection portfolio={portfolio} />
+          <PortfolioStageGateCertificates
+            participantId={participantId}
+            participantName={participantName}
+          />
           <PortfolioMilestonesSection portfolio={portfolio} />
           <PortfolioExportSection
             portfolio={portfolio}
@@ -157,6 +169,10 @@ function renderTab(tabId, sectionId, portfolio, participantId, participantName) 
  */
 export function MyVenturePortfolioRoute({ user }) {
   const { pathname } = useLocation();
+  const certWeek = parseStageGateCertificatePath(pathname);
+  if (certWeek) {
+    return <StageGateCertificatePage user={user} closingWeek={certWeek} />;
+  }
   if (pathname.endsWith('/present')) {
     return <MyVenturePortfolioShell user={user} section="present" />;
   }

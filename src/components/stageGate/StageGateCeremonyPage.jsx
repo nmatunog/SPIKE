@@ -13,10 +13,8 @@ import {
   Users,
 } from 'lucide-react';
 import { deriveStageGateCeremony } from '../../lib/stageGateCeremonyService.js';
-import {
-  isStageGateUnlocked,
-  saveStageGateUnlock,
-} from '../../lib/stageGateCeremonyStorage.js';
+import { unlockStage } from '../../lib/stageGateService.js';
+import { stageGatePresentationHref } from '../../routes/paths.js';
 import { usePortalWriteAccess } from '../../hooks/usePortalWriteAccess.js';
 import { StageGateProjectorPanel } from './StageGateProjectorPanel.jsx';
 
@@ -56,14 +54,19 @@ export function StageGateCeremonyPage({
   async function handleUnlock() {
     if (!canWrite) return;
     setUnlockBusy(true);
-    saveStageGateUnlock(segment, closingWeek, {
-      unlockedBy: staffId,
-      nextWeek: model.gate.nextWeek,
-    });
-    setUnlockBusy(false);
-    setShowUnlockModal(false);
-    setRefreshKey((k) => k + 1);
-    onUnlock?.();
+    try {
+      await unlockStage(interns, {
+        segment,
+        closingWeek,
+        staffId,
+        staffName: roleLabel,
+      });
+      setShowUnlockModal(false);
+      setRefreshKey((k) => k + 1);
+      onUnlock?.();
+    } finally {
+      setUnlockBusy(false);
+    }
   }
 
   if (view === 'projector') {
@@ -71,11 +74,13 @@ export function StageGateCeremonyPage({
       <StageGateProjectorPanel
         model={model}
         onExit={() => setView('coach')}
-        onCompleteUnlock={() => {
-          if (!isStageGateUnlocked(segment, closingWeek) && canWrite) {
-            saveStageGateUnlock(segment, closingWeek, {
-              unlockedBy: staffId,
-              nextWeek: model.gate.nextWeek,
+        onCompleteUnlock={async () => {
+          if (!model.unlocked && canWrite) {
+            await unlockStage(interns, {
+              segment,
+              closingWeek,
+              staffId,
+              staffName: roleLabel,
             });
             setRefreshKey((k) => k + 1);
             onUnlock?.();
@@ -116,6 +121,14 @@ export function StageGateCeremonyPage({
               ? `Stage 2: ${model.gate.nextStageLabel} unlocked`
               : `Stage 1: ${model.gate.stageLabel} active`}
           </span>
+          <a
+            href={stageGatePresentationHref(closingWeek)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="spike-btn-secondary inline-flex items-center gap-2 text-sm"
+          >
+            <Tv size={16} /> Presentation mode
+          </a>
           <button
             type="button"
             onClick={() => setView('projector')}

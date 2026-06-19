@@ -8,6 +8,7 @@ import { Day1CohortOutputsPanel } from '../../components/day1/Day1CohortOutputsP
 import { FacultyDay1Panel } from '../../components/day1/FacultyDay1Panel.jsx';
 import { FacultyDashboardPanels } from '../../components/faculty/FacultyDashboardPanels.jsx';
 import { FacultyWeek1ProgressPanel } from '../../components/faculty/FacultyWeek1ProgressPanel.jsx';
+import { StageGateReadyCard } from '../../components/stageGate/StageGateReadyCard.jsx';
 import { ROUTES, staffStageGateHref } from '../../routes/paths.js';
 import { DailyActivationCodeCard } from '../../components/dashboard/DailyActivationCodeCard.jsx';
 import { FacultyCohortSyncPanel } from '../../components/faculty/FacultyCohortSyncPanel.jsx';
@@ -32,6 +33,7 @@ export function FacultyHomePage({
   const [toolsOpen, setToolsOpen] = useState(false);
   const { cohortStartDate, programDay } = useCohortProgramDay();
   const stageGateHref = staffStageGateHref('faculty', 1, programDay.week);
+  const closingWeek = programDay.week;
 
   return (
     <PageContainer wide>
@@ -55,6 +57,13 @@ export function FacultyHomePage({
 
         {toolsOpen ? (
           <div className="mt-4 space-y-6">
+            <StageGateReadyCard
+              role="faculty"
+              interns={interns}
+              closingWeek={closingWeek}
+              staffId={staffId}
+              staffName={staffName}
+            />
             <section className="spike-card flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h2 className="text-sm font-bold text-slate-900">Stage gate ceremony</h2>

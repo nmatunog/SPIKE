@@ -7,6 +7,7 @@ import { useCohortProgramDay } from '../../hooks/useCohortProgramDay.js';
 import { MentorDayDebriefPanel } from '../../components/mentor/MentorDayDebriefPanel.jsx';
 import { MentorWeek1QuickPanel } from '../../components/mentor/MentorWeek1QuickPanel.jsx';
 import { MentorDashboardPanels } from '../../components/mentor/MentorDashboardPanels.jsx';
+import { StageGateReadyCard } from '../../components/stageGate/StageGateReadyCard.jsx';
 import { ROUTES, staffStageGateHref } from '../../routes/paths.js';
 import { DailyActivationCodeCard } from '../../components/dashboard/DailyActivationCodeCard.jsx';
 import { CohortOnboardingControls } from '../../components/faculty/CohortOnboardingControls.jsx';
@@ -25,6 +26,7 @@ export function MentorHomePage({ user, interns, showToast }) {
   const staffName = user?.name || user?.email || 'Mentor';
   const { cohortStartDate, programDay } = useCohortProgramDay();
   const stageGateHref = staffStageGateHref('mentor', 1, programDay.week);
+  const closingWeek = programDay.week;
 
   return (
     <PageContainer wide>
@@ -48,6 +50,13 @@ export function MentorHomePage({ user, interns, showToast }) {
 
         {toolsOpen ? (
           <div className="mt-4 space-y-6">
+            <StageGateReadyCard
+              role="mentor"
+              interns={interns}
+              closingWeek={closingWeek}
+              staffId={user?.id ?? ''}
+              staffName={staffName}
+            />
             <section className="spike-card flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h2 className="text-sm font-bold text-slate-900">Stage gate ceremony</h2>

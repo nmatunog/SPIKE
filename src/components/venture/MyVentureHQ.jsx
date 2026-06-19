@@ -2,6 +2,9 @@ import { ArrowRight, CheckCircle2, Circle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { FecCanvasLayout } from '../ventureDesign/FecCanvasLayout.jsx';
 import { deriveMyVentureHq } from '../../lib/myVentureHqService.js';
+import { StageGateCelebrationCard } from '../../components/stageGate/StageGateCelebrationCard.jsx';
+import { StageGateJourneyPanel } from '../../components/stageGate/StageGateJourneyPanel.jsx';
+import { getActiveProgramStageLabel } from '../../lib/stageGateParticipantStorage.js';
 
 /**
  * Venture-centric intern home — replaces week-first Build Studio landing.
@@ -17,9 +20,11 @@ export function MyVentureHQ({ participantId, state, squadNameFallback = '' }) {
     state,
     squadNameFallback,
   );
+  const programStage = getActiveProgramStageLabel(participantId);
 
   return (
     <div className="mx-auto max-w-3xl space-y-0 divide-y divide-slate-200/90">
+      <StageGateCelebrationCard participantId={participantId} />
       {/* MY VENTURE */}
       <section className="pb-8 pt-2 text-center">
         <p className="text-xs font-bold uppercase tracking-[0.25em] text-slate-500">My Venture</p>
@@ -38,7 +43,8 @@ export function MyVentureHQ({ participantId, state, squadNameFallback = '' }) {
       {/* CURRENT STAGE */}
       <section className="py-8">
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-500">Current Stage</p>
-        <p className="mt-2 text-lg font-semibold text-slate-900">{stage.stageLabel}</p>
+        <p className="mt-2 text-2xl font-black tracking-tight text-slate-900">{programStage}</p>
+        <p className="mt-1 text-sm font-medium text-slate-500">{stage.stageLabel}</p>
         <div className="mt-4">
           <div
             className="h-2.5 overflow-hidden rounded-full bg-slate-200"
@@ -58,6 +64,8 @@ export function MyVentureHQ({ participantId, state, squadNameFallback = '' }) {
           </p>
         </div>
       </section>
+
+      <StageGateJourneyPanel participantId={participantId} />
 
       {/* TODAY */}
       <section className="py-8">

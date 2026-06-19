@@ -34,6 +34,7 @@ import { RoleRouteGuard } from './components/routing/RoleRouteGuard.jsx';
 import { ROUTES, brandLexiconBackHrefForRole, facilitatorsReferenceBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath, isPlaybookPath, parseStaffSquadHubPath, parseStaffStageGatePath } from './routes/paths.js';
 import { StaffSquadHubPage, StaffSquadsListPage } from './components/staff/StaffSquadHubPage.jsx';
 import { StageGateCeremonyPage } from './components/stageGate/StageGateCeremonyPage.jsx';
+import { StageGatePresentationPage } from './pages/stageGate/StageGatePresentationPage.jsx';
 import { PageContainer } from './components/layout/PageContainer.jsx';
 import {
   AdminCohortsPage,
@@ -1947,6 +1948,11 @@ const SpikeMasterPortal = () => {
 
     return null;
   };
+
+  if (location.pathname === ROUTES.stageGatePresentation) {
+    const closingWeek = Number(new URLSearchParams(location.search).get('week')) || 1;
+    return <StageGatePresentationPage closingWeek={closingWeek} />;
+  }
 
   return (
     <div
