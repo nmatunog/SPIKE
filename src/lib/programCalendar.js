@@ -10,11 +10,39 @@ export const DEFAULT_COHORT_START_DATE =
 
 /** @param {string | null | undefined} cohortStartDate */
 export function effectiveCohortStartDate(cohortStartDate) {
-  if (cohortStartDate) {
-    const match = String(cohortStartDate).match(/^(\d{4}-\d{2}-\d{2})/);
-    if (match) return match[1];
+  const explicit = parseProgramDateOnly(cohortStartDate);
+  const defaultStart = parseProgramDateOnly(DEFAULT_COHORT_START_DATE);
+  if (!explicit) return DEFAULT_COHORT_START_DATE;
+  // starts_on is often cohort-created mid-week — ignore if after canonical pilot Day 1
+  if (defaultStart && explicit > defaultStart) {
+    return DEFAULT_COHORT_START_DATE;
   }
-  return DEFAULT_COHORT_START_DATE;
+  return formatProgramDateOnly(explicit);
+}
+
+/** @param {string | Date | null | undefined} value */
+function parseProgramDateOnly(value) {
+  if (value instanceof Date) {
+    if (Number.isNaN(value.getTime())) return null;
+    return new Date(value.getFullYear(), value.getMonth(), value.getDate());
+  }
+  if (typeof value === 'string') {
+    const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value.trim());
+    if (match) {
+      return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+    }
+  }
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+/** @param {Date} date */
+function formatProgramDateOnly(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
 }
 
 /**
@@ -34,22 +62,8 @@ function programDayOrdinal({ week, day }) {
 
 /** Parse YYYY-MM-DD (or ISO prefix) as local midnight — avoids UTC off-by-one. */
 function parseProgramDate(value) {
-  if (value instanceof Date) {
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return null;
-    date.setHours(0, 0, 0, 0);
-    return date;
-  }
-  if (typeof value === 'string') {
-    const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value.trim());
-    if (match) {
-      return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
-    }
-  }
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return null;
-  date.setHours(0, 0, 0, 0);
-  return date;
+  const parsed = parseProgramDateOnly(value);
+  return parsed;
 }
 
 /**
@@ -120,7 +134,7 @@ export function resolveCohortProgramDay(interns, cohortStartDate, override, now 
     )
     : null;
 
-  const fromCalendar = deriveProgramDayFromStartDate(cohortStartDate, now);
+  const fromCalendar = deriveProgramDayFromStartDate(effectiveCohortStartDate(cohortStartDate), now);
   if (fromCalendar && explicitMax) {
     return programDayOrdinal(fromCalendar) >= programDayOrdinal(explicitMax)
       ? fromCalendar

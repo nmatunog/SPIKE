@@ -56,10 +56,10 @@ function formatDbError(error, fallback) {
 /** @param {Record<string, unknown> | null | undefined} row */
 function normalizeCohortRow(row) {
   if (!row) return null;
-  const startDate = row.start_date ?? row.starts_on ?? null;
+  const explicitStart = row.start_date ? String(row.start_date).slice(0, 10) : null;
   return /** @type {CohortRow} */ ({
     ...row,
-    start_date: startDate ? String(startDate).slice(0, 10) : null,
+    start_date: explicitStart,
   });
 }
 
