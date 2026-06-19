@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Monitor } from 'lucide-react';
+import { ArrowLeft, Loader2, Monitor } from 'lucide-react';
 import { FEC_TOP_BANNER } from '../../lib/fecCanvasConstants.js';
 import {
   FEC_CANVAS_EXEMPLAR_ENGINES,
@@ -9,44 +9,83 @@ import {
 import { BLUEPRINT_LINKS, ventureDesignWorkshopHref } from '../../routes/paths.js';
 import { PROGRAM_COACH_LABEL } from '../../lib/terminology.js';
 import {
-  FecCanvasLayout,
-} from './FecCanvasLayout.jsx';
-import { buildFecLayoutExemplarContent } from '../../lib/fecCanvasLayoutContent.js';
+  buildFecLayoutExemplarContent,
+  buildFecLayoutParticipantContent,
+} from '../../lib/fecCanvasLayoutContent.js';
+import { useParticipantHydration } from '../../hooks/useParticipantHydration.js';
+import { FecCanvasLayout } from './FecCanvasLayout.jsx';
 
 /**
  * FEC overview projection — blank/full toggle for Program Coach and mentors only.
+ * When participantId is set, shows that intern's canvas (staff portfolio review).
  * @param {{
  *   canToggleMode?: boolean,
  *   exitHref?: string,
  *   viewerRole?: string,
+ *   participantId?: string,
+ *   participantName?: string,
  * }} props
  */
 export function FecCanvasProjectionView({
   canToggleMode = false,
   exitHref = BLUEPRINT_LINKS.businessPlan,
   viewerRole = 'intern',
+  participantId,
+  participantName = '',
 }) {
   const [mode, setMode] = useState(/** @type {'blank' | 'full'} */ ('blank'));
-  const displayMode = canToggleMode ? mode : 'blank';
+  const { ready: participantReady, version: participantVersion } = useParticipantHydration(
+    participantId,
+    { enabled: Boolean(participantId) },
+  );
+
+  const participantContent = useMemo(() => {
+    if (!participantId || !participantReady) return null;
+    return buildFecLayoutParticipantContent(participantId);
+  }, [participantId, participantReady, participantVersion]);
+
+  const isParticipantView = Boolean(participantId);
+  const displayMode = isParticipantView
+    ? participantContent?.mode ?? 'blank'
+    : canToggleMode
+      ? mode
+      : 'blank';
   const isFaculty = viewerRole === 'faculty';
-  const projectionLabel = isFaculty
-    ? `${PROGRAM_COACH_LABEL} projection`
-    : viewerRole === 'mentor'
-      ? 'Mentor projection'
-      : 'FEC overview';
+  const projectionLabel = isParticipantView
+    ? participantName
+      ? `${participantName} · FEC projection`
+      : 'Participant FEC projection'
+    : isFaculty
+      ? `${PROGRAM_COACH_LABEL} projection`
+      : viewerRole === 'mentor'
+        ? 'Mentor projection'
+        : 'FEC overview';
 
   const exemplar =
-    displayMode === 'full'
+    !isParticipantView && displayMode === 'full'
       ? buildFecLayoutExemplarContent({
           summary: FEC_CANVAS_EXEMPLAR_SUMMARY,
           engines: FEC_CANVAS_EXEMPLAR_ENGINES,
         })
       : null;
 
+  const layoutContent = isParticipantView ? participantContent : exemplar;
+
   const workshopHref =
     viewerRole === 'faculty'
       ? ventureDesignWorkshopHref({ coach: true })
       : ventureDesignWorkshopHref({ coach: false });
+
+  if (isParticipantView && !participantReady) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-stone-950 text-white">
+        <p className="flex items-center gap-2 text-sm text-stone-300">
+          <Loader2 size={18} className="animate-spin text-amber-400" />
+          Loading participant FEC from the cloud…
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="-mx-4 min-h-screen bg-stone-950 font-sans text-white md:-mx-0">
@@ -108,17 +147,24 @@ export function FecCanvasProjectionView({
       </header>
 
       <div className="mx-auto max-w-[100rem] px-4 py-6 md:px-8 md:py-10">
-        <p className="mb-6 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-5 py-4 text-center text-sm font-medium text-amber-100 md:text-base">
-          {FEC_TOP_BANNER}
-        </p>
+        {isParticipantView && displayMode === 'blank' ? (
+          <p className="mb-6 rounded-2xl border border-stone-700 bg-stone-900/80 px-5 py-4 text-center text-sm text-stone-300">
+            This participant has not filled their FEC yet. Ask them to save their canvas in Venture Blueprint
+            or Venture Design Studio.
+          </p>
+        ) : (
+          <p className="mb-6 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-5 py-4 text-center text-sm font-medium text-amber-100 md:text-base">
+            {FEC_TOP_BANNER}
+          </p>
+        )}
 
         <FecCanvasLayout
           mode={displayMode}
           variant="poster"
-          centerContent={exemplar?.centerContent}
-          uvpDetailContent={exemplar?.uvpDetailContent}
-          boxContents={exemplar?.boxContents}
-          complexContents={exemplar?.complexContents}
+          centerContent={layoutContent?.centerContent}
+          uvpDetailContent={layoutContent?.uvpDetailContent}
+          boxContents={layoutContent?.boxContents}
+          complexContents={layoutContent?.complexContents}
         />
       </div>
     </div>

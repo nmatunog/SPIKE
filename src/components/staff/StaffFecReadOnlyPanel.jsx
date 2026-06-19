@@ -1,15 +1,20 @@
+import { Link, useLocation } from 'react-router-dom';
 import { FecCanvasLayout } from '../ventureDesign/FecCanvasLayout.jsx';
 import { buildFecPreviewContent } from '../../lib/myVentureHqService.js';
 import { computeCanvasCompletionPct } from '../../lib/canvasService.js';
 import { getCanvasSummary } from '../../lib/canvasSummaryService.js';
-import { Link } from 'react-router-dom';
-import { ROUTES } from '../../routes/paths.js';
+import { fecProjectionHref } from '../../routes/paths.js';
 
 /** @param {{ participantId: string, participantName?: string }} props */
 export function StaffFecReadOnlyPanel({ participantId, participantName = 'Participant' }) {
+  const location = useLocation();
   const preview = buildFecPreviewContent(participantId);
   const canvasPct = computeCanvasCompletionPct(participantId);
   const summary = getCanvasSummary(participantId);
+  const projectionHref = fecProjectionHref(participantId, {
+    name: participantName,
+    exit: `${location.pathname}${location.search}`,
+  });
 
   return (
     <div className="space-y-4">
@@ -21,7 +26,7 @@ export function StaffFecReadOnlyPanel({ participantId, participantName = 'Partic
           </p>
         </div>
         <Link
-          to={ROUTES.playbookFecProjection}
+          to={projectionHref}
           className="text-sm font-semibold text-spike hover:underline"
         >
           Open projection mode →

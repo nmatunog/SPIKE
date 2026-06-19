@@ -208,6 +208,20 @@ export function stageGatePresentationHref(closingWeek = 1) {
 }
 
 /**
+ * FEC projection — optional participant context for staff portfolio review.
+ * @param {string} [participantId]
+ * @param {{ exit?: string, name?: string }} [opts]
+ */
+export function fecProjectionHref(participantId, opts = {}) {
+  const params = new URLSearchParams();
+  if (participantId) params.set('participant', participantId);
+  if (opts.name) params.set('name', opts.name);
+  if (opts.exit) params.set('exit', opts.exit);
+  const q = params.toString();
+  return q ? `${ROUTES.playbookFecProjection}?${q}` : ROUTES.playbookFecProjection;
+}
+
+/**
  * @param {string} pathname
  * @param {'faculty' | 'mentor'} role
  */
