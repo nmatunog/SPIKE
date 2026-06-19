@@ -16,6 +16,8 @@ import {
   saveBuilderDraft,
   repairDreamBoardCloudSync,
 } from '../../lib/day1BuilderService.js';
+import { upgradeLocalDreamBoardInlineImages } from '../../lib/dreamBoardCloudSync.js';
+import { hasInlineDreamBoardImages } from '../../lib/dreamBoardLocalCache.js';
 import { Day1MissionControl } from './Day1MissionControl.jsx';
 import { Day1CoachSection } from './Day1CoachSection.jsx';
 import { BuilderResetButton } from './BuilderResetButton.jsx';
@@ -68,12 +70,26 @@ export function Day1BuildersShell({
     let cancelled = false;
     (async () => {
       const entry = readBuilderEntry(participantId, 'dream-board');
-      const assets = /** @type {Array<{ imageUrl?: string }>} */ (entry?.data?.assets ?? []);
-      if (!assets.some((asset) => asset.imageUrl)) return;
+      const data = entry?.data;
+      if (data && hasInlineDreamBoardImages(data)) {
+        const upgraded = await upgradeLocalDreamBoardInlineImages(participantId, data);
+        if (!cancelled && upgraded) {
+          setDraft(upgraded);
+        }
+      }
+
+      const entryAfter = readBuilderEntry(participantId, 'dream-board');
+      const assets = /** @type {Array<{ imageUrl?: string }>} */ (entryAfter?.data?.assets ?? []);
+      const httpPhotos = assets.filter((asset) => {
+        const url = String(asset.imageUrl ?? '');
+        return url.startsWith('http://') || url.startsWith('https://');
+      });
+      if (!httpPhotos.length) return;
+
       const cloudRows = await fetchDreamBoardAssets(participantId);
       if (cloudRows.some((row) => row.image_url)) return;
       if (!cancelled) {
-        await repairDreamBoardCloudSync(participantId, { assets: entry?.data?.assets ?? assets });
+        await repairDreamBoardCloudSync(participantId, { assets: entryAfter?.data?.assets ?? assets });
       }
     })();
     return () => {

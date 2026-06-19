@@ -5,7 +5,7 @@ import {
   DREAM_BOARD_MIN_COMPLETE_CARDS,
   getDreamBoardMaxCards,
 } from '../../../lib/dreamBoardConfig.js';
-import { readDreamBoardImageFile } from '../../../lib/dreamBoardImage.js';
+import { uploadDreamBoardPhoto } from '../../../lib/dreamBoardImageUpload.js';
 import { DreamBoardCloudSyncBar } from './DreamBoardCloudSyncBar.jsx';
 import { BuilderSubmissionFooter } from '../BuilderSubmissionFooter.jsx';
 
@@ -20,6 +20,7 @@ function newAssetId() {
 
 /**
  * @param {{
+ *   participantId: string,
  *   assetId: string,
  *   imageUrl: string,
  *   disabled?: boolean,
@@ -27,29 +28,32 @@ function newAssetId() {
  *   onError: (message: string) => void,
  * }} props
  */
-function DreamBoardImageUpload({ assetId, imageUrl, disabled = false, onImage, onError }) {
+function DreamBoardImageUpload({ participantId, assetId, imageUrl, disabled = false, onImage, onError }) {
   const inputRef = useRef(/** @type {HTMLInputElement | null} */ (null));
   const busyRef = useRef(false);
   const [dragging, setDragging] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   async function handleFiles(files) {
     if (disabled || busyRef.current) return;
     const file = files?.[0];
     if (!file) return;
     busyRef.current = true;
+    setUploading(true);
     try {
-      const dataUrl = await readDreamBoardImageFile(file);
-      onImage(dataUrl);
+      const url = await uploadDreamBoardPhoto(participantId, assetId, file);
+      onImage(url);
     } catch (err) {
       onError(err instanceof Error ? err.message : 'Upload failed.');
     } finally {
       busyRef.current = false;
+      setUploading(false);
     }
   }
 
   function openFilePicker(event) {
     event.stopPropagation();
-    if (disabled) return;
+    if (disabled || uploading) return;
     inputRef.current?.click();
   }
 
@@ -82,7 +86,7 @@ function DreamBoardImageUpload({ assetId, imageUrl, disabled = false, onImage, o
         }}
         onClick={openFilePicker}
         className={`rounded-xl border-2 border-dashed px-3 py-4 text-center transition ${
-          disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
+          disabled || uploading ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
         } ${
           dragging
             ? 'border-spike bg-spike-muted/40'
@@ -102,9 +106,13 @@ function DreamBoardImageUpload({ assetId, imageUrl, disabled = false, onImage, o
           <ImagePlus size={28} className="mx-auto mb-2 text-slate-400" />
         )}
         <p className="text-xs font-semibold text-slate-700">
-          {dragging ? 'Drop photo here' : 'Drag a photo here or tap to upload'}
+          {uploading
+            ? 'Uploading photo…'
+            : dragging
+              ? 'Drop photo here'
+              : 'Drag a photo here or tap to upload'}
         </p>
-        <p className="mt-1 text-2xs text-slate-500">JPG, PNG, WebP · max 2 MB</p>
+        <p className="mt-1 text-2xs text-slate-500">JPG, PNG, WebP · max 2 MB · saves to cloud</p>
       </div>
 
       <input
@@ -113,7 +121,7 @@ function DreamBoardImageUpload({ assetId, imageUrl, disabled = false, onImage, o
         type="file"
         accept="image/jpeg,image/png,image/webp,image/gif"
         className="sr-only"
-        disabled={disabled}
+        disabled={disabled || uploading}
         onChange={(e) => {
           void handleFiles(e.target.files);
           e.target.value = '';
@@ -123,7 +131,7 @@ function DreamBoardImageUpload({ assetId, imageUrl, disabled = false, onImage, o
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
-          disabled={disabled}
+          disabled={disabled || uploading}
           onClick={openFilePicker}
           className="inline-flex items-center gap-1 rounded-lg bg-white/80 px-2 py-1 text-2xs font-semibold text-slate-700 hover:bg-white disabled:opacity-50"
         >
@@ -132,7 +140,7 @@ function DreamBoardImageUpload({ assetId, imageUrl, disabled = false, onImage, o
         {imageUrl ? (
           <button
             type="button"
-            disabled={disabled}
+            disabled={disabled || uploading}
             onClick={(e) => {
               e.stopPropagation();
               onImage('');
@@ -147,7 +155,7 @@ function DreamBoardImageUpload({ assetId, imageUrl, disabled = false, onImage, o
       <input
         type="url"
         placeholder="Or paste an image URL"
-        disabled={disabled}
+        disabled={disabled || uploading}
         className="w-full rounded-lg border border-white/60 bg-white/80 px-2 py-1.5 text-xs disabled:opacity-60"
         value={imageUrl.startsWith('data:') ? '' : imageUrl}
         onChange={(e) => onImage(e.target.value)}
@@ -398,6 +406,7 @@ export function DreamBoardStudio({
                       </div>
 
                       <DreamBoardImageUpload
+                        participantId={participantId}
                         assetId={asset.id}
                         imageUrl={asset.imageUrl}
                         disabled={readOnly}

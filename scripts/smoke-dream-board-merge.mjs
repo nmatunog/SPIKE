@@ -146,4 +146,34 @@ if (!partialMsg.includes('Partial sync')) {
   fail('buildDreamBoardSyncMessage should report partial photo upload');
 }
 
+import {
+  hasInlineDreamBoardImages,
+  stripInlineDreamBoardData,
+  buildLocalDreamBoardDataFromCloud,
+} from '../src/lib/dreamBoardLocalCache.js';
+
+const inlineData = {
+  assets: [{ id: 'a1', category: 'lifestyle', caption: 'test', imageUrl: 'data:image/jpeg;base64,abc' }],
+};
+if (!hasInlineDreamBoardImages(inlineData)) {
+  fail('hasInlineDreamBoardImages should detect data URLs');
+}
+const stripped = stripInlineDreamBoardData(inlineData);
+if (stripped.assets[0].imageUrl !== '') {
+  fail('stripInlineDreamBoardData should remove inline image URLs');
+}
+
+const localFromCloud = buildLocalDreamBoardDataFromCloud(inlineData, [
+  {
+    client_asset_id: 'a1',
+    category: 'lifestyle',
+    caption: 'test',
+    image_url: 'https://example.supabase.co/storage/v1/object/public/dream-board/u/a1.jpg',
+    sort_order: 0,
+  },
+]);
+if (!localFromCloud.assets[0].imageUrl.startsWith('https://')) {
+  fail('buildLocalDreamBoardDataFromCloud should prefer cloud http URLs over inline data');
+}
+
 console.log('smoke:dream-board-merge OK');

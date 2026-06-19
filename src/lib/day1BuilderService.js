@@ -23,6 +23,11 @@ import { persistBuilderEntryCloudFirst } from './day1BuilderSync.js';
 import { fetchDreamBoardAssets } from './supabase/dreamBoardAssets.js';
 import { canWriteParticipantRow } from './supabase/writeGuards.js';
 import { buildDreamBoardSyncMessage, dreamBoardSyncStats } from './dreamBoardSyncMessage.js';
+import {
+  hasInlineDreamBoardImages,
+  stripInlineDreamBoardData,
+} from './dreamBoardLocalCache.js';
+import { upgradeLocalDreamBoardInlineImages } from './dreamBoardCloudSync.js';
 import { isMockUserId } from './mockAuth.js';
 
 const DRAFT_CLOUD_DEBOUNCE_MS = 2000;
@@ -69,7 +74,15 @@ export function getBuilderData(participantId, builderId) {
  * @param {Record<string, unknown>} data
  */
 export function saveBuilderDraft(participantId, builderId, data) {
-  writeBuilderEntry(participantId, builderId, data, false);
+  let storeData = data;
+  if (builderId === 'dream-board' && hasInlineDreamBoardImages(data) && !isMockUserId(participantId)) {
+    storeData = stripInlineDreamBoardData(data);
+    void upgradeLocalDreamBoardInlineImages(participantId, data).catch((err) => {
+      console.warn('[day1Builder] dream board inline upgrade failed:', err instanceof Error ? err.message : err);
+    });
+  }
+
+  writeBuilderEntry(participantId, builderId, storeData, false);
 
   const key = draftTimerKey(participantId, builderId);
   const existing = draftCloudTimers.get(key);
@@ -131,7 +144,7 @@ export async function repairDreamBoardCloudSync(participantId, data) {
   const existing = readBuilderEntry(participantId, 'dream-board');
   const completed = Boolean(existing?.completedAt);
 
-  writeBuilderEntry(participantId, 'dream-board', data, completed, { force: true });
+  writeBuilderEntry(participantId, 'dream-board', stripInlineDreamBoardData(data), completed, { force: true });
 
   try {
     await persistBuilderEntryCloudFirst(participantId, 'dream-board', data, completed, { force: true });

@@ -6,8 +6,26 @@ import { fetchDay1BuilderProgress } from './supabase/day1BuilderProgress.js';
 import { fetchDreamBoardAssets, syncDreamBoardAssets } from './supabase/dreamBoardAssets.js';
 import { mergeDreamBoardAssetLists, enrichDreamBoardFromMetadata, mergeDreamBoardBuilderData } from './dreamBoardMerge.js';
 import { normalizeDreamBoardCards } from './dreamBoardConfig.js';
-import { listDreamBoardStorageClientIds } from './supabase/dreamBoardStorage.js';
-import { attachDreamBoardStorageUrls } from './dreamBoardStorageUtils.js';
+import { ensureDreamBoardImageInStorage, listDreamBoardStorageClientIds } from './supabase/dreamBoardStorage.js';
+import {
+  attachDreamBoardStorageUrls,
+  isHttpDreamBoardImageUrl,
+  isInlineDreamBoardImageUrl,
+} from './dreamBoardStorageUtils.js';
+import { canWriteParticipantRow } from './supabase/writeGuards.js';
+import { isMockUserId } from './mockAuth.js';
+import {
+  stripInlineDreamBoardImage,
+  hasInlineDreamBoardImages,
+  buildLocalDreamBoardDataFromCloud,
+} from './dreamBoardLocalCache.js';
+
+export {
+  stripInlineDreamBoardImage,
+  hasInlineDreamBoardImages,
+  stripInlineDreamBoardData,
+  buildLocalDreamBoardDataFromCloud,
+} from './dreamBoardLocalCache.js';
 
 export { mergeDreamBoardAssetLists, enrichDreamBoardFromMetadata, mergeDreamBoardBuilderData } from './dreamBoardMerge.js';
 
@@ -43,13 +61,51 @@ export async function buildDreamBoardCloudMetadata(participantId, data) {
   return dreamBoardMetadataForCloud(merged);
 }
 
-/** Drop inline base64 blobs — staff devices should only keep http(s) image URLs. */
-export function stripInlineDreamBoardImage(asset) {
-  const imageUrl = String(asset?.imageUrl ?? '');
-  if (!imageUrl || imageUrl.startsWith('data:')) {
-    return { ...asset, imageUrl: '' };
+/**
+ * Upload legacy inline photos to Storage and rewrite local cache with public URLs.
+ * @param {string} participantId
+ * @param {Record<string, unknown> | null} [sourceData]
+ * @returns {Promise<Record<string, unknown> | null>}
+ */
+export async function upgradeLocalDreamBoardInlineImages(participantId, sourceData = null) {
+  if (!participantId || isMockUserId(participantId)) return null;
+  if (!(await canWriteParticipantRow(participantId))) return null;
+
+  const entry = readBuilderEntry(participantId, 'dream-board');
+  const data = sourceData ?? entry?.data;
+  if (!data || !hasInlineDreamBoardImages(data)) return null;
+
+  const assets = /** @type {Array<{ id: string, category: string, caption: string, imageUrl?: string }>} */ (
+    data.assets ?? []
+  );
+  /** @type {Array<{ id: string, category: string, caption: string, imageUrl?: string }>} */
+  const nextAssets = [];
+  let changed = false;
+
+  for (const asset of assets) {
+    if (!isInlineDreamBoardImageUrl(asset.imageUrl)) {
+      nextAssets.push(asset);
+      continue;
+    }
+    const url = await ensureDreamBoardImageInStorage(participantId, asset.id, asset.imageUrl);
+    if (isHttpDreamBoardImageUrl(url)) {
+      nextAssets.push({ ...asset, imageUrl: url });
+      changed = true;
+    } else {
+      nextAssets.push(stripInlineDreamBoardImage(asset));
+      changed = true;
+    }
   }
-  return asset;
+
+  if (!changed) return null;
+
+  const nextData = { ...data, assets: nextAssets };
+  writeBuilderEntry(participantId, 'dream-board', nextData, Boolean(entry?.completedAt), {
+    force: true,
+    refining: entry?.refining,
+  });
+  await syncDreamBoardAssets(participantId, nextAssets);
+  return nextData;
 }
 
 /** @param {string} participantId @param {Record<string, unknown>} data */
@@ -109,13 +165,17 @@ export async function hydrateDreamBoardImagesFromCloud(participantId, opts = {})
     merged = mergeDreamBoardAssetLists(localAssets, cloudRows);
     merged = merged.map((asset) => {
       const local = localAssets.find((item) => item.id === asset.id);
-      return local?.imageUrl ? { ...asset, imageUrl: local.imageUrl } : asset;
+      const localUrl = String(local?.imageUrl ?? '');
+      if (isHttpDreamBoardImageUrl(localUrl)) return { ...asset, imageUrl: localUrl };
+      return asset;
     });
   } else if (!staffRead && opts.preferLocalImages && localHasImages) {
     merged = mergeDreamBoardAssetLists(localAssets, cloudRows);
     merged = merged.map((asset) => {
       const local = localAssets.find((item) => item.id === asset.id);
-      return local?.imageUrl ? { ...asset, imageUrl: local.imageUrl } : asset;
+      const localUrl = String(local?.imageUrl ?? '');
+      if (isHttpDreamBoardImageUrl(localUrl)) return { ...asset, imageUrl: localUrl };
+      return asset;
     });
   } else {
     merged = mergeDreamBoardAssetLists(localAssets, cloudRows);
@@ -127,10 +187,10 @@ export async function hydrateDreamBoardImagesFromCloud(participantId, opts = {})
 
   if (!merged.length && !localAssets.length) return false;
 
-  const nextData = {
-    ...(entry?.data ?? {}),
-    assets: merged.length ? merged : localAssets.map(stripInlineDreamBoardImage),
-  };
+  const nextData = buildLocalDreamBoardDataFromCloud(
+    { ...(entry?.data ?? {}), assets: merged.length ? merged : localAssets },
+    cloudRows,
+  );
 
   if (staffRead) {
     return true;

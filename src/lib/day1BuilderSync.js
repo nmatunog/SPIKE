@@ -21,9 +21,9 @@ import {
   buildDreamBoardCloudMetadata,
   hydrateDreamBoardImagesFromCloud,
   mergeDreamBoardBuilderData,
-  stripInlineDreamBoardImage,
   syncDreamBoardToCloud,
 } from './dreamBoardCloudSync.js';
+import { stripInlineDreamBoardImage, buildLocalDreamBoardDataFromCloud } from './dreamBoardLocalCache.js';
 import { fetchDreamBoardAssets } from './supabase/dreamBoardAssets.js';
 
 const COACH_PREFIX = 'coach:';
@@ -159,7 +159,14 @@ export async function persistBuilderEntryCloudFirst(
   }
 
   await upsertDay1BuilderProgress(participantId, builderId, entryToCloudPayload(cloudEntry));
-  return writeBuilderEntry(participantId, builderId, data, completed, options);
+
+  let localData = data;
+  if (builderId === 'dream-board') {
+    const cloudRows = await fetchDreamBoardAssets(participantId);
+    localData = buildLocalDreamBoardDataFromCloud(liveDreamBoardData, cloudRows);
+  }
+
+  return writeBuilderEntry(participantId, builderId, localData, completed, options);
 }
 
 /**

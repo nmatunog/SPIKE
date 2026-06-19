@@ -24,7 +24,7 @@ function writeAll(data) {
   } catch (err) {
     if (err instanceof DOMException && (err.name === 'QuotaExceededError' || err.code === 22)) {
       const quotaError = new Error(
-        'Device storage is full. Remove a dream card photo or use smaller images, then try again.',
+        'This browser’s storage for SPIKE is full. Remove a dream card photo or sign in so photos save to the cloud.',
       );
       quotaError.name = 'QuotaExceededError';
       throw quotaError;
