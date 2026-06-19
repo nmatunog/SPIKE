@@ -31,7 +31,7 @@ export const SUPERUSER_INTERN_PREVIEW_PROGRESS = {
   career_track: 'undecided',
   career_track_selected_at: null,
   current_week: 1,
-  current_day: 2,
+  current_day: null,
   onboarding_complete: true,
   onboarding_welcomed_at: '2026-02-01T08:00:00.000Z',
   cohort_id: 'cohort-sample-2026',

@@ -2,6 +2,8 @@ import { deriveWeekDay } from './sprint01Metrics.js';
 import { countCompletedFnas } from './fnaService.js';
 import { computeSpikeReadinessScore } from './spikeReadinessScore.js';
 import { computeBlueprintCompletion } from './blueprintCompletion.js';
+import { SUPERUSER_INTERN_PREVIEW_PARTICIPANT_ID } from './superuserInternPreviewData.js';
+import { resolveSuperuserInternCalendarDay } from './superuserInternPreview.js';
 
 /**
  * Program State Engine (PRD Engine 1) — master state from intern_progress until DB view exists.
@@ -12,6 +14,13 @@ export function buildParticipantState(participantId, internProgress) {
   const hours = internProgress?.hours ?? 0;
   const segment = internProgress?.segment ?? 1;
   const derived = deriveWeekDay(hours);
+  let week = internProgress?.current_week ?? derived.currentWeek;
+  let day = internProgress?.current_day ?? derived.currentDay;
+  if (participantId === SUPERUSER_INTERN_PREVIEW_PARTICIPANT_ID) {
+    const calendar = resolveSuperuserInternCalendarDay();
+    week = calendar.week;
+    day = calendar.day;
+  }
   const trackSelected = Boolean(internProgress?.career_track_selected_at);
   const careerTrack = trackSelected
     ? normalizeCareerTrack(internProgress?.career_track)
@@ -24,8 +33,8 @@ export function buildParticipantState(participantId, internProgress) {
   return {
     participant_id: participantId,
     segment,
-    week: internProgress?.current_week ?? derived.currentWeek,
-    day: internProgress?.current_day ?? derived.currentDay,
+    week,
+    day,
     hours,
     career_track: careerTrack,
     career_position: defaultCareerPosition(careerTrack, trackSelected),
