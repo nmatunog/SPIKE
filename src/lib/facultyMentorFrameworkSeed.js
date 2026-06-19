@@ -161,7 +161,12 @@ export const FACULTY_DAY_TEMPLATES_SEED = [
       'Who do you serve?',
       'What commitment are you making for Week 2?',
     ],
-    activities: ['Portfolio rehearsal', 'Venture presentations', 'Squad pitch', 'Commitment ceremony'],
+    activities: [
+      'Pitch preparations and rehearsals (9:00 AM – 12:00 NN)',
+      'Squad venture pitch presentations (1:00 PM)',
+      'Commitment (2:00 PM)',
+      'Introduction to Week 2 (3:00 PM)',
+    ],
     worksheets: ['Week 1 commitment & Week 2 priorities'],
     assessments: ['Week 1 venture board readiness'],
     rubrics: ['Portfolio presentation rubric', 'Venture direction rubric'],

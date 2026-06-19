@@ -18,6 +18,9 @@ import { getFacultyDayFromSeed, getMentorDayFromSeed } from './facultyMentorFram
 import { FACULTY_WEEK_THEMES, MENTOR_WEEK_THEMES } from './facultyMentorFrameworkService.js';
 import {
   DEFAULT_DAY_SCHEDULE_SLOTS,
+  FACULTY_DAY_SCHEDULE_OVERRIDES,
+  MENTOR_DAY_SCHEDULE_OVERRIDES,
+  facultyScheduleOverrideKey,
   formatScheduleTime,
   STAFF_COACH_TIPS,
 } from './staffCoachHomeConstants.js';
@@ -37,12 +40,28 @@ import { resolveStaffProgramDay } from './programCalendar.js';
  * @param {number} week
  * @param {number} day
  */
-export function deriveTodaySchedule(role, week = 1, day = 1) {
+export function deriveTodaySchedule(role, week = 1, day = 1, segment = 1) {
   const template =
     role === 'mentor'
       ? getMentorDayFromSeed(1, week, day)
       : getFacultyDayFromSeed(1, week, day);
   const theme = template?.theme ?? WEEK1_DAY_META.find((d) => d.day === day)?.theme ?? 'Program day';
+  const overrideKey = facultyScheduleOverrideKey(segment, week, day);
+  const overrideBlocks =
+    role === 'mentor'
+      ? MENTOR_DAY_SCHEDULE_OVERRIDES[overrideKey]
+      : FACULTY_DAY_SCHEDULE_OVERRIDES[overrideKey];
+
+  if (overrideBlocks?.length) {
+    const items = overrideBlocks.map((block) => ({
+      time: block.timeLabel ?? formatScheduleTime(block.startMinutes),
+      title: block.title,
+      description: block.description ?? '',
+      minutes: block.defaultMinutes,
+    }));
+    return { theme, items };
+  }
+
   const items = [];
 
   if (role === 'faculty') {

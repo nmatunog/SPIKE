@@ -17,6 +17,76 @@ export const DEFAULT_DAY_SCHEDULE_SLOTS = [
   { startMinutes: 14 * 60 + 30, defaultMinutes: 60 },
 ];
 
+/**
+ * Explicit schedule blocks — key `${segment}-${week}-${day}`.
+ * @type {Record<string, Array<{ startMinutes: number, defaultMinutes: number, title: string, description?: string, timeLabel?: string }>>}
+ */
+export const FACULTY_DAY_SCHEDULE_OVERRIDES = {
+  '1-1-5': [
+    {
+      startMinutes: 9 * 60,
+      defaultMinutes: 180,
+      timeLabel: '9:00 AM – 12:00 NN',
+      title: 'Pitch preparations and rehearsals',
+      description: 'Studio time — squads polish venture portfolio pitches',
+    },
+    {
+      startMinutes: 13 * 60,
+      defaultMinutes: 60,
+      title: 'Squad venture pitch presentations',
+      description: 'Commitment — each squad presents to the cohort',
+    },
+    {
+      startMinutes: 14 * 60,
+      defaultMinutes: 60,
+      title: 'Commitment',
+      description: 'Commitment ceremony — Week 1 direction and accountability',
+    },
+    {
+      startMinutes: 15 * 60,
+      defaultMinutes: 60,
+      title: 'Introduction to Week 2',
+      description: 'Preview priorities and deliverables for the week ahead',
+    },
+  ],
+};
+
+/** @type {typeof FACULTY_DAY_SCHEDULE_OVERRIDES} */
+export const MENTOR_DAY_SCHEDULE_OVERRIDES = {
+  '1-1-5': [
+    {
+      startMinutes: 9 * 60,
+      defaultMinutes: 180,
+      timeLabel: '9:00 AM – 12:00 NN',
+      title: 'Pitch preparations and rehearsals',
+      description: 'Coach squads on clarity, confidence, and story flow',
+    },
+    {
+      startMinutes: 13 * 60,
+      defaultMinutes: 60,
+      title: 'Squad venture pitch presentations',
+      description: 'Observe presentations — capture coaching notes',
+    },
+    {
+      startMinutes: 14 * 60,
+      defaultMinutes: 60,
+      title: 'Commitment',
+      description: 'Support commitment statements — log Week 1 coaching summary',
+    },
+    {
+      startMinutes: 15 * 60,
+      defaultMinutes: 60,
+      title: 'Introduction to Week 2',
+      description: 'Align squads on Week 2 focus and next actions',
+    },
+  ],
+};
+
+/** @param {number} segment @param {number} week @param {number} day */
+export function facultyScheduleOverrideKey(segment, week, day) {
+  return `${segment}-${week}-${day}`;
+}
+
 /** @param {number} minutesFromMidnight */
 export function formatScheduleTime(minutesFromMidnight) {
   const h24 = Math.floor(minutesFromMidnight / 60);
