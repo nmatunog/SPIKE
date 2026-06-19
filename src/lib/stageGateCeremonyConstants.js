@@ -129,6 +129,18 @@ export function getStageGateDefinition(closingWeek) {
   return STAGE_GATE_BY_CLOSING_WEEK[closingWeek] ?? STAGE_GATE_BY_CLOSING_WEEK[1];
 }
 
+/**
+ * Map program week on a portfolio deliverable to the stage gate closing week.
+ * @param {number | null | undefined} programWeek
+ */
+export function resolveClosingWeekForPresentation(programWeek) {
+  const week = Number(programWeek);
+  if (!Number.isFinite(week) || week <= 1) return 1;
+  if (week === 2) return 2;
+  if (week >= 4) return 4;
+  return 2;
+}
+
 /** SPIKE program stages for progress panel */
 export const SPIKE_PROGRAM_STAGES = [
   { id: 1, label: 'DISCOVER', hourLabel: 'Hours 1 – 40' },

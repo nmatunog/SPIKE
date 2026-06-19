@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Award, Download } from 'lucide-react';
-import { listParticipantCertificates } from '../../lib/stageGateService.js';
+import { listParticipantCertificates, ensurePitchCertificatesFromPortfolio } from '../../lib/stageGateService.js';
 import { exportStageGateCertificatePdf } from '../../lib/stageGateCertificatePdf.js';
 import { getStageGateDefinition, STAGE_GATE_BY_CLOSING_WEEK } from '../../lib/stageGateCeremonyConstants.js';
 import { stageGateCertificateHref } from '../../routes/paths.js';
@@ -14,11 +14,25 @@ export function PortfolioStageGateCertificates({ participantId, participantName 
 
   useEffect(() => {
     let cancelled = false;
-    listParticipantCertificates(participantId).then((rows) => {
+
+    async function loadCertificates() {
+      await ensurePitchCertificatesFromPortfolio(participantId);
+      const rows = await listParticipantCertificates(participantId);
       if (!cancelled) setCertificates(rows);
-    });
+    }
+
+    void loadCertificates();
+
+    function onIssued(event) {
+      const detail = /** @type {CustomEvent<{ participantId?: string }>} */ (event).detail;
+      if (detail?.participantId && detail.participantId !== participantId) return;
+      void loadCertificates();
+    }
+
+    window.addEventListener('spike-stage-gate-certificate-issued', onIssued);
     return () => {
       cancelled = true;
+      window.removeEventListener('spike-stage-gate-certificate-issued', onIssued);
     };
   }, [participantId]);
 
@@ -90,7 +104,7 @@ export function PortfolioStageGateCertificates({ participantId, participantName 
 
       {certificates.length === 0 ? (
         <p className="mt-4 text-sm text-slate-500">
-          Complete a stage gate ceremony to earn your first certificate.
+          Upload your squad pitch deck under Deliverables to earn your stage gate certificate.
         </p>
       ) : null}
     </section>

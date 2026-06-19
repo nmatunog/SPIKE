@@ -127,6 +127,9 @@ export async function uploadPortfolioDeliverable(participantId, file, input) {
       const rows = listPortfolioDeliverablesLocal(participantId).filter((item) => item.id !== id);
       rows.unshift(result.deliverable);
       savePortfolioDeliverablesLocal(participantId, rows);
+      if (input.category === 'presentation') {
+        void releasePitchCertificateAfterUpload(participantId, input.week ?? null);
+      }
       return result.deliverable;
     }
 
@@ -158,6 +161,9 @@ export async function uploadPortfolioDeliverable(participantId, file, input) {
   const rows = listPortfolioDeliverablesLocal(participantId);
   rows.unshift(deliverable);
   savePortfolioDeliverablesLocal(participantId, rows);
+  if (input.category === 'presentation') {
+    void releasePitchCertificateAfterUpload(participantId, input.week ?? null);
+  }
   return deliverable;
 }
 
@@ -223,6 +229,9 @@ export async function syncLocalPortfolioDeliverablesToSupabase(participantId) {
 
     if (result?.deliverable) {
       await deleteDeliverableBlob(item.id);
+      if (item.category === 'presentation') {
+        void releasePitchCertificateAfterUpload(participantId, item.week);
+      }
     }
   }
 
@@ -253,4 +262,18 @@ function isAllowedDeliverableFile(fileName, mimeType) {
 /** @param {string} participantId */
 export function countPortfolioDeliverables(participantId) {
   return listPortfolioDeliverablesLocal(participantId).length;
+}
+
+/** @param {string} participantId */
+export function participantHasPitchDeckDeliverable(participantId) {
+  return listPortfolioDeliverablesLocal(participantId).some((item) => item.category === 'presentation');
+}
+
+async function releasePitchCertificateAfterUpload(participantId, week) {
+  try {
+    const { issueCertificateForPitchDeckUpload } = await import('./stageGateService.js');
+    await issueCertificateForPitchDeckUpload(participantId, { week });
+  } catch (err) {
+    console.warn('[portfolioDeliverables] pitch certificate:', err instanceof Error ? err.message : err);
+  }
 }

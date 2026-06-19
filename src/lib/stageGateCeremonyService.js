@@ -13,6 +13,7 @@ import { getCanvasSummary } from './canvasSummaryService.js';
 import { getEffectiveCanvasCompletionPct } from './participantOutputMetrics.js';
 import { getParticipantSquad } from './cohortFormationService.js';
 import { getWeeklyAssessment } from './weeklyAssessmentService.js';
+import { listPortfolioDeliverablesLocal } from './portfolioDeliverableService.js';
 import { deriveEngagementLevel } from './staffCoachHomeService.js';
 import { getStageGateDefinition } from './stageGateCeremonyConstants.js';
 import { isStageGateUnlocked, readStageGateUnlock } from './stageGateCeremonyStorage.js';
@@ -111,7 +112,10 @@ function deriveSquadOutputChecks(members) {
     uvpGenerated: checks.some((row) => row.byId.uvp),
     fecStarted: checks.some((row) => row.byId['business-model'] || row.byId['financial-plan']),
     pitchPortfolioReady:
-      checks.some((row) => row.byId.pitch || row.byId.uvp)
+      members.some((member) =>
+        listPortfolioDeliverablesLocal(member.id).some((d) => d.category === 'presentation'),
+      )
+      || checks.some((row) => row.byId.pitch || row.byId.uvp)
       || avgPct >= 50,
     avgOutputPct: avgPct,
   };
@@ -157,11 +161,13 @@ export function deriveStageGateCeremony(interns, opts = {}) {
           ? Math.round(assessmentAvg * 10) / 10
           : null;
     const engagement = deriveEngagementLevel(outputs.avgOutputPct, assessmentAvg);
-    const ready =
-      hasText(venture.uvp)
-      && !venture.uvp.includes('in progress')
-      && (outputs.uvpGenerated || outputs.fecStarted)
-      && outputs.avgOutputPct >= 40;
+    const ready = outputs.pitchPortfolioReady
+      || (
+        hasText(venture.uvp)
+        && !venture.uvp.includes('in progress')
+        && (outputs.uvpGenerated || outputs.fecStarted)
+        && outputs.avgOutputPct >= 40
+      );
 
     return {
       slug: encodeURIComponent(squad.name),

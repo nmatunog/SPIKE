@@ -14,6 +14,7 @@ import { getCoachSummaryForMentor } from './ventureCoachService.js';
 import { getWeeklyAssessment } from './weeklyAssessmentService.js';
 import { VENTURE_DIRECTION_CARDS } from './ventureCoachConstants.js';
 import { isWeek1DayComplete } from './week1JourneyService.js';
+import { participantHasPitchDeckDeliverable } from './portfolioDeliverableService.js';
 
 export { groupInternsBySquad, deriveMentorRiskFlags, deriveBlueprintCompletionPct };
 
@@ -35,6 +36,7 @@ export function getParticipantWeek1Outputs(participantId) {
     feCanvas: isFeCanvasOutputComplete(participantId),
     ventureDesign: isVentureDesignOutputComplete(participantId),
     portfolio: portfolio.cover.portfolioCompletion >= 15,
+    pitch: participantHasPitchDeckDeliverable(participantId),
   };
 }
 
@@ -53,6 +55,7 @@ export function week1OutputCompletionPct(outputs) {
     'feCanvas',
     'ventureDesign',
     'portfolio',
+    'pitch',
   ];
   const done = keys.filter((key) => outputs[key]).length;
   return Math.round((done / keys.length) * 100);

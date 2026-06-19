@@ -21,6 +21,8 @@ import {
   upsertCertificatesRemote,
 } from './stageGateParticipantStorage.js';
 import { getParticipantSquad } from './cohortFormationService.js';
+import { isMockUserId } from './mockAuth.js';
+import { resolveClosingWeekForPresentation } from './stageGateCeremonyConstants.js';
 
 /**
  * @typedef {{
@@ -72,8 +74,7 @@ export function validateStageCompletion(interns, opts = {}) {
   const ready =
     model.metrics.totalInterns > 0
     && model.metrics.totalSquads > 0
-    && model.metrics.pitchesSubmittedPct >= 50
-    && (model.metrics.allSquadsReady || model.metrics.pitchesSubmittedPct >= 70);
+    && model.metrics.pitchesSubmittedPct >= 50;
   const week1CompletionPct = model.squads.length
     ? Math.round(
         model.squads.reduce((sum, s) => sum + (s.outputs?.avgOutputPct ?? 0), 0) / model.squads.length,
@@ -96,8 +97,9 @@ export function validateStageCompletion(interns, opts = {}) {
       ? []
       : [
           model.metrics.totalSquads === 0 ? 'Assign squads before unlocking.' : null,
-          !model.metrics.allSquadsReady ? 'Not all squads are pitch-ready.' : null,
-          model.metrics.pitchesSubmittedPct < 50 ? 'Complete squad venture pitch presentations.' : null,
+          model.metrics.pitchesSubmittedPct < 50
+            ? 'Upload squad pitch decks to portfolio (Presentation category).'
+            : null,
         ].filter(Boolean),
   };
 }
@@ -251,3 +253,91 @@ export function readParticipantStageNotification(participantId) {
 }
 
 export { dismissStageGateNotification, findCertificateByWeekLocal, isStageGateUnlocked, readStageGateUnlock };
+
+/**
+ * Issue a stage gate certificate when a squad pitch deck is uploaded to portfolio.
+ * Pitch deck upload counts as successful pitch — no FEC / UVP / coach evaluation required.
+ * @param {string} participantId
+ * @param {{ week?: number | null, segment?: number, participantName?: string, squadName?: string }} [opts]
+ */
+export async function issueCertificateForPitchDeckUpload(participantId, opts = {}) {
+  if (!participantId || String(participantId).startsWith('mock-') || isMockUserId(participantId)) {
+    return null;
+  }
+
+  const closingWeek = resolveClosingWeekForPresentation(opts.week);
+  const segment = opts.segment ?? 1;
+
+  const existing = findCertificateByWeekLocal(participantId, closingWeek);
+  if (existing) return existing;
+
+  const gate = getStageGateDefinition(closingWeek);
+  const squadRecord = getParticipantSquad(participantId);
+  const completedDate = new Date().toISOString().slice(0, 10);
+
+  const certificate = {
+    id: uuidLike(),
+    participantId,
+    participantName: opts.participantName ?? '',
+    segment,
+    closingWeek,
+    stage: gate.stageLabel,
+    stageLabel: gate.stageLabel,
+    title: gate.ceremonyTitle,
+    completedDate,
+    squadName: opts.squadName ?? squadRecord?.name ?? '',
+    programName: 'SPIKE Venture Studio',
+    nextStageLabel: gate.nextStageLabel,
+    createdBy: '',
+    createdAt: new Date().toISOString(),
+  };
+
+  saveCertificateLocal(certificate);
+  applyStageUnlockToParticipant(participantId, closingWeek, completedDate);
+
+  try {
+    await upsertCertificatesRemote([certificate], '');
+  } catch (err) {
+    console.warn('[stageGate] pitch certificate sync failed:', err);
+  }
+
+  queueStageGateNotification(participantId, {
+    closingWeek,
+    stageLabel: gate.stageLabel,
+    nextStageLabel: gate.nextStageLabel,
+    certificateId: certificate.id,
+  });
+
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(
+      new CustomEvent('spike-stage-gate-certificate-issued', {
+        detail: { participantId, closingWeek, certificateId: certificate.id },
+      }),
+    );
+  }
+
+  return certificate;
+}
+
+/**
+ * Backfill certificates for any presentation deliverables already in portfolio.
+ * @param {string} participantId
+ */
+export async function ensurePitchCertificatesFromPortfolio(participantId) {
+  const { listPortfolioDeliverablesLocal } = await import('./portfolioDeliverableService.js');
+  const presentations = listPortfolioDeliverablesLocal(participantId).filter(
+    (item) => item.category === 'presentation',
+  );
+  if (!presentations.length) return [];
+
+  const issued = [];
+  const seenWeeks = new Set();
+  for (const item of presentations) {
+    const closingWeek = resolveClosingWeekForPresentation(item.week);
+    if (seenWeeks.has(closingWeek)) continue;
+    seenWeeks.add(closingWeek);
+    const cert = await issueCertificateForPitchDeckUpload(participantId, { week: item.week });
+    if (cert) issued.push(cert);
+  }
+  return issued;
+}
