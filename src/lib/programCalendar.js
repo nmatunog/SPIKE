@@ -3,6 +3,31 @@
  */
 import { resolveInternPlaybookDay } from './programUnlocks.js';
 
+/** @param {{ week: number, day: number }} programDay */
+function programDayOrdinal({ week, day }) {
+  return week * 5 + day;
+}
+
+/** Parse YYYY-MM-DD (or ISO prefix) as local midnight — avoids UTC off-by-one. */
+function parseProgramDate(value) {
+  if (value instanceof Date) {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return null;
+    date.setHours(0, 0, 0, 0);
+    return date;
+  }
+  if (typeof value === 'string') {
+    const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value.trim());
+    if (match) {
+      return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+    }
+  }
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  date.setHours(0, 0, 0, 0);
+  return date;
+}
+
 /**
  * Count Mon–Fri program days from cohort start through today (inclusive).
  * @param {string | Date | null | undefined} startDate
@@ -10,9 +35,8 @@ import { resolveInternPlaybookDay } from './programUnlocks.js';
  */
 export function deriveProgramDayFromStartDate(startDate, now = new Date()) {
   if (!startDate) return null;
-  const start = new Date(startDate);
-  if (Number.isNaN(start.getTime())) return null;
-  start.setHours(0, 0, 0, 0);
+  const start = parseProgramDate(startDate);
+  if (!start) return null;
   const today = new Date(now);
   today.setHours(0, 0, 0, 0);
   if (today < start) return { week: 1, day: 1 };
@@ -46,8 +70,9 @@ function internProgressShape(intern) {
  * @param {Array<{ hours?: number, current_week?: number | null, current_day?: number | null, internProgress?: object }>} interns
  * @param {string | null | undefined} [cohortStartDate]
  * @param {{ week?: number, day?: number }} [override]
+ * @param {Date} [now]
  */
-export function resolveCohortProgramDay(interns, cohortStartDate, override) {
+export function resolveCohortProgramDay(interns, cohortStartDate, override, now = new Date()) {
   if (override?.week && override?.day) {
     return {
       week: Math.max(1, override.week),
@@ -65,14 +90,20 @@ export function resolveCohortProgramDay(interns, cohortStartDate, override) {
     })
     .filter(Boolean);
 
-  if (explicit.length) {
-    return explicit.reduce((best, cur) =>
-      (cur.week * 5 + cur.day) > (best.week * 5 + best.day) ? cur : best,
-    );
-  }
+  const explicitMax = explicit.length
+    ? explicit.reduce((best, cur) =>
+      programDayOrdinal(cur) > programDayOrdinal(best) ? cur : best,
+    )
+    : null;
 
-  const fromCalendar = deriveProgramDayFromStartDate(cohortStartDate);
+  const fromCalendar = deriveProgramDayFromStartDate(cohortStartDate, now);
+  if (fromCalendar && explicitMax) {
+    return programDayOrdinal(fromCalendar) >= programDayOrdinal(explicitMax)
+      ? fromCalendar
+      : explicitMax;
+  }
   if (fromCalendar) return fromCalendar;
+  if (explicitMax) return explicitMax;
 
   if (interns.length) {
     const days = interns.map((intern) => {
