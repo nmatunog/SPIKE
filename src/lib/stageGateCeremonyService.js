@@ -10,7 +10,7 @@ import { deriveVentureIdentity, deriveVentureMilestones } from './myVentureHqSer
 import { loadVentureDesignRecord, loadSquadDesignRecord } from './ventureDesignStudioService.js';
 import { loadVentureStudioState } from './ventureStudioStorage.js';
 import { getCanvasSummary } from './canvasSummaryService.js';
-import { computeCanvasCompletionPct } from './canvasService.js';
+import { getEffectiveCanvasCompletionPct } from './participantOutputMetrics.js';
 import { getParticipantSquad } from './cohortFormationService.js';
 import { getWeeklyAssessment } from './weeklyAssessmentService.js';
 import { deriveEngagementLevel } from './staffCoachHomeService.js';
@@ -55,8 +55,8 @@ function resolveSquadVentureFields(consolidated, members) {
     const design = loadVentureDesignRecord(member.id);
     const studio = loadVentureStudioState(member.id);
     const canvas = getCanvasSummary(member.id);
-    const pct = computeCanvasCompletionPct(member.id);
-    canvasPct = Math.max(canvasPct, pct);
+    const effectiveCanvasPct = getEffectiveCanvasCompletionPct(member.id);
+    canvasPct = Math.max(canvasPct, effectiveCanvasPct);
 
     if (!focusMarket) {
       focusMarket =
@@ -110,7 +110,9 @@ function deriveSquadOutputChecks(members) {
     segmentMapped: checks.some((row) => row.byId.customer || row.byId.opportunity),
     uvpGenerated: checks.some((row) => row.byId.uvp),
     fecStarted: checks.some((row) => row.byId['business-model'] || row.byId['financial-plan']),
-    pitchPortfolioReady: checks.some((row) => row.byId.pitch) || avgPct >= 60,
+    pitchPortfolioReady:
+      checks.some((row) => row.byId.pitch || row.byId.uvp)
+      || avgPct >= 50,
     avgOutputPct: avgPct,
   };
 }
@@ -158,8 +160,8 @@ export function deriveStageGateCeremony(interns, opts = {}) {
     const ready =
       hasText(venture.uvp)
       && !venture.uvp.includes('in progress')
-      && outputs.uvpGenerated
-      && outputs.avgOutputPct >= 50;
+      && (outputs.uvpGenerated || outputs.fecStarted)
+      && outputs.avgOutputPct >= 40;
 
     return {
       slug: encodeURIComponent(squad.name),

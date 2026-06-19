@@ -1,10 +1,13 @@
 /**
  * Mentor Operating Framework — Week 1 dashboard derivations and participant profiles.
  */
-import { computeCanvasCompletionPct } from './canvasService.js';
 import { isBuilderCompleted } from './day1BuilderService.js';
 import { listCoachingNotesForParticipant } from './coachingService.js';
 import { deriveBlueprintCompletionPct, deriveMentorRiskFlags, groupInternsBySquad } from './facultyMentorFrameworkService.js';
+import {
+  isFeCanvasOutputComplete,
+  isVentureDesignOutputComplete,
+} from './participantOutputMetrics.js';
 import { deriveWeekDay } from './sprint01Metrics.js';
 import { generateVenturePortfolio } from '../services/portfolioGenerator.js';
 import { getCoachSummaryForMentor } from './ventureCoachService.js';
@@ -18,7 +21,6 @@ export { groupInternsBySquad, deriveMentorRiskFlags, deriveBlueprintCompletionPc
 export function getParticipantWeek1Outputs(participantId) {
   const coach = getCoachSummaryForMentor(participantId);
   const portfolio = generateVenturePortfolio(participantId, { participantName: '' });
-  const canvasPct = computeCanvasCompletionPct(participantId);
 
   return {
     ambition: Boolean(coach?.ambition?.trim()),
@@ -30,7 +32,8 @@ export function getParticipantWeek1Outputs(participantId) {
     squadMembership: Boolean(portfolio.cover.squad && portfolio.cover.squad !== 'Squad forming'),
     squadCharter: isBuilderCompleted(participantId, 'squad-charter'),
     dreamBoard: portfolio.dreamBoard.completed,
-    feCanvas: canvasPct >= 30,
+    feCanvas: isFeCanvasOutputComplete(participantId),
+    ventureDesign: isVentureDesignOutputComplete(participantId),
     portfolio: portfolio.cover.portfolioCompletion >= 15,
   };
 }
@@ -48,6 +51,7 @@ export function week1OutputCompletionPct(outputs) {
     'squadCharter',
     'dreamBoard',
     'feCanvas',
+    'ventureDesign',
     'portfolio',
   ];
   const done = keys.filter((key) => outputs[key]).length;

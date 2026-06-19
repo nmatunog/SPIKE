@@ -1,11 +1,12 @@
 import { Star } from 'lucide-react';
 import { VentureDesignSquadPanel } from '../ventureDesign/VentureDesignSquadPanel.jsx';
+import { deriveVentureDesignStaffProgress } from '../../lib/participantOutputMetrics.js';
+import { getFecUnifiedVentureProposition } from '../../lib/fecCanvasService.js';
 import {
   loadSquadDesignRecord,
   loadVentureDesignRecord,
   resolveSquadContext,
   saveSquadDesignRecord,
-  ventureDesignProgressPercent,
 } from '../../lib/ventureDesignStudioService.js';
 
 /**
@@ -14,7 +15,7 @@ import {
  */
 export function VentureDesignMentorReview({ participantId, participantName = 'Intern', mentorId = 'mentor' }) {
   const record = loadVentureDesignRecord(participantId);
-  const pct = ventureDesignProgressPercent(record);
+  const pct = deriveVentureDesignStaffProgress(participantId);
   const squadCtx = resolveSquadContext(participantId);
   const squadRecord = loadSquadDesignRecord(squadCtx.squadId);
 
@@ -35,7 +36,10 @@ export function VentureDesignMentorReview({ participantId, participantName = 'In
           <dd className="mt-1 font-medium text-slate-800">
             {record.individual.step3.synthesisA
               ? `We help ${record.individual.step3.synthesisA}…`
-              : 'Not drafted yet'}
+              : (() => {
+                  const uvp = getFecUnifiedVentureProposition(participantId);
+                  return uvp ? `${uvp.slice(0, 80)}…` : 'Not drafted yet';
+                })()}
           </dd>
         </div>
         <div className="rounded-lg bg-slate-50 p-3">

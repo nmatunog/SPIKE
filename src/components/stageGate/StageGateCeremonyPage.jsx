@@ -80,6 +80,7 @@ export function StageGateCeremonyPage({
         closingWeek,
         staffId,
         staffName: roleLabel,
+        force: true,
       });
       setShowUnlockModal(false);
       setRefreshKey((k) => k + 1);
@@ -101,6 +102,7 @@ export function StageGateCeremonyPage({
               closingWeek,
               staffId,
               staffName: roleLabel,
+              force: true,
             });
             setRefreshKey((k) => k + 1);
             onUnlock?.();

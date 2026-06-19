@@ -72,8 +72,8 @@ export function validateStageCompletion(interns, opts = {}) {
   const ready =
     model.metrics.totalInterns > 0
     && model.metrics.totalSquads > 0
-    && model.metrics.allSquadsReady
-    && model.metrics.pitchesSubmittedPct >= 80;
+    && model.metrics.pitchesSubmittedPct >= 50
+    && (model.metrics.allSquadsReady || model.metrics.pitchesSubmittedPct >= 70);
   const week1CompletionPct = model.squads.length
     ? Math.round(
         model.squads.reduce((sum, s) => sum + (s.outputs?.avgOutputPct ?? 0), 0) / model.squads.length,
@@ -97,7 +97,7 @@ export function validateStageCompletion(interns, opts = {}) {
       : [
           model.metrics.totalSquads === 0 ? 'Assign squads before unlocking.' : null,
           !model.metrics.allSquadsReady ? 'Not all squads are pitch-ready.' : null,
-          model.metrics.pitchesSubmittedPct < 80 ? 'Complete squad venture pitch presentations.' : null,
+          model.metrics.pitchesSubmittedPct < 50 ? 'Complete squad venture pitch presentations.' : null,
         ].filter(Boolean),
   };
 }

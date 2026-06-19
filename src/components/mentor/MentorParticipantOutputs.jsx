@@ -1,5 +1,5 @@
 import { getParticipantWeek1Outputs, week1OutputCompletionPct } from '../../lib/mentorFrameworkService.js';
-import { computeCanvasCompletionPct } from '../../lib/canvasService.js';
+import { getEffectiveCanvasCompletionPct } from '../../lib/participantOutputMetrics.js';
 import { generateVenturePortfolio } from '../../services/portfolioGenerator.js';
 import { VentureDesignMentorReview } from './VentureDesignMentorReview.jsx';
 
@@ -13,6 +13,7 @@ const OUTPUT_ROWS = [
   { key: 'squadCharter', label: 'Squad Charter' },
   { key: 'dreamBoard', label: 'Dream Board' },
   { key: 'feCanvas', label: 'FE Canvas v1' },
+  { key: 'ventureDesign', label: 'Venture proposition' },
   { key: 'portfolio', label: 'Portfolio v1' },
 ];
 
@@ -23,7 +24,7 @@ export function MentorParticipantOutputs({ participantId, participantName = 'Par
   const outputs = getParticipantWeek1Outputs(participantId);
   const pct = week1OutputCompletionPct(outputs);
   const portfolio = generateVenturePortfolio(participantId, { participantName });
-  const canvasPct = computeCanvasCompletionPct(participantId);
+  const canvasPct = getEffectiveCanvasCompletionPct(participantId);
 
   return (
     <div className="spike-card space-y-4">

@@ -271,7 +271,11 @@ export function MentorVentureCoachPage({
 
       <section className="mb-6">
         <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">Current outputs</h2>
-        <MentorParticipantOutputs participantId={participantId} participantName={intern?.name} />
+        <MentorParticipantOutputs
+          key={dataVersion}
+          participantId={participantId}
+          participantName={intern?.name}
+        />
       </section>
 
       <section className="mb-6 grid gap-4 lg:grid-cols-2">

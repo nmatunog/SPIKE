@@ -1,13 +1,16 @@
 /**
  * Week 1 participant journey — deliverable validation and portfolio readiness.
  */
-import { computeCanvasCompletionPct } from './canvasService.js';
 import { isBuilderCompleted } from './day1BuilderService.js';
 import { WEEK1_DAY_META, WEEK1_MENTOR_OUTCOMES } from './mentorWeek1Constants.js';
 import { countSubmittedSurveys } from './surveyService.js';
 import { getCoachSummaryForMentor, getCoachProgress } from './ventureCoachService.js';
 import { ensureFormationStore } from './cohortFormationStorage.js';
 import { hasAssignedSquad } from './participantSquadCache.js';
+import {
+  getEffectiveCanvasCompletionPct,
+  isFeCanvasOutputComplete,
+} from './participantOutputMetrics.js';
 
 /** @typedef {{ id: string, label: string, done: boolean, href?: string }} Week1Deliverable */
 
@@ -16,7 +19,7 @@ export function getWeek1DeliverableStatus(participantId) {
   const coach = getCoachSummaryForMentor(participantId);
   const progress = coach?.progress ?? getCoachProgress(participantId);
   const coachPercent = progress.percent ?? 0;
-  const canvasPct = computeCanvasCompletionPct(participantId);
+  const canvasPct = getEffectiveCanvasCompletionPct(participantId);
   const surveys = countSubmittedSurveys(participantId);
   const dreamBoardCompleted = isBuilderCompleted(participantId, 'dream-board');
 
@@ -30,7 +33,7 @@ export function getWeek1DeliverableStatus(participantId) {
     squadMembership: hasSquadMembership(participantId),
     squadCharter: isBuilderCompleted(participantId, 'squad-charter'),
     dreamBoard: dreamBoardCompleted,
-    feCanvas: canvasPct >= 30,
+    feCanvas: isFeCanvasOutputComplete(participantId),
     portfolio: coachPercent >= 15 || dreamBoardCompleted,
   };
 
