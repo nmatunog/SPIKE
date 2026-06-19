@@ -13,10 +13,11 @@ import {
   Users,
 } from 'lucide-react';
 import { deriveStageGateCeremony } from '../../lib/stageGateCeremonyService.js';
-import { unlockStage } from '../../lib/stageGateService.js';
+import { buildSampleStageGateCertificate, unlockStage } from '../../lib/stageGateService.js';
 import { stageGatePresentationHref } from '../../routes/paths.js';
 import { usePortalWriteAccess } from '../../hooks/usePortalWriteAccess.js';
 import { useCohortHydration } from '../../hooks/useParticipantHydration.js';
+import { StageGateCertificatePreviewModal } from './StageGateCertificatePreviewModal.jsx';
 import { StageGateProjectorPanel } from './StageGateProjectorPanel.jsx';
 
 /**
@@ -47,12 +48,22 @@ export function StageGateCeremonyPage({
   });
   const [view, setView] = useState('coach');
   const [showUnlockModal, setShowUnlockModal] = useState(false);
+  const [showSampleCert, setShowSampleCert] = useState(false);
   const [unlockBusy, setUnlockBusy] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const model = useMemo(
     () => deriveStageGateCeremony(interns, { segment, closingWeek, role }),
     [interns, segment, closingWeek, role, refreshKey, cohortVersion],
+  );
+
+  const sampleCertificate = useMemo(
+    () =>
+      buildSampleStageGateCertificate(closingWeek, {
+        participantName: interns[0]?.name,
+        squadName: model.squads[0]?.name,
+      }),
+    [closingWeek, interns, model.squads],
   );
 
   const roleLabel = role === 'faculty' ? 'Program Coach' : 'Mentor';
@@ -310,15 +321,31 @@ export function StageGateCeremonyPage({
                   >
                     <Tv size={16} /> Preview ceremony
                   </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowSampleCert(true)}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/10"
+                  >
+                    <Award size={16} /> Preview sample certificate
+                  </button>
                 </>
               ) : (
-                <button
-                  type="button"
-                  onClick={() => setView('projector')}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/10"
-                >
-                  <Trophy size={16} /> Replay ceremony
-                </button>
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setView('projector')}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/10"
+                  >
+                    <Trophy size={16} /> Replay ceremony
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowSampleCert(true)}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/10"
+                  >
+                    <Award size={16} /> Preview sample certificate
+                  </button>
+                </>
               )}
             </div>
           </section>
@@ -354,6 +381,13 @@ export function StageGateCeremonyPage({
           </section>
         </div>
       </div>
+
+      {showSampleCert ? (
+        <StageGateCertificatePreviewModal
+          certificate={sampleCertificate}
+          onClose={() => setShowSampleCert(false)}
+        />
+      ) : null}
 
       {showUnlockModal ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm">

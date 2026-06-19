@@ -22,6 +22,39 @@ import {
 } from './stageGateParticipantStorage.js';
 import { getParticipantSquad } from './cohortFormationService.js';
 
+/**
+ * @typedef {{
+ *   participantName: string,
+ *   squadName: string,
+ *   programName: string,
+ *   completedDate: string,
+ *   stageLabel: string,
+ *   nextStageLabel: string,
+ *   title: string,
+ *   closingWeek: number,
+ * }} StageGateCertificateDisplay
+ */
+
+/**
+ * Sample certificate for coach preview — not saved or issued.
+ * @param {number} closingWeek
+ * @param {{ participantName?: string, squadName?: string }} [opts]
+ * @returns {StageGateCertificateDisplay}
+ */
+export function buildSampleStageGateCertificate(closingWeek, opts = {}) {
+  const gate = getStageGateDefinition(closingWeek);
+  return {
+    participantName: opts.participantName?.trim() || 'Sample Intern',
+    squadName: opts.squadName?.trim() || 'Sample Squad',
+    programName: 'SPIKE Venture Studio',
+    completedDate: new Date().toISOString().slice(0, 10),
+    stageLabel: gate.stageLabel,
+    nextStageLabel: gate.nextStageLabel,
+    title: gate.ceremonyTitle,
+    closingWeek,
+  };
+}
+
 /** @param {string | undefined} value */
 function uuidLike(value) {
   const id = String(value ?? '').trim();
