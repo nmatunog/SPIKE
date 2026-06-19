@@ -8,7 +8,7 @@ import { Day1CohortOutputsPanel } from '../../components/day1/Day1CohortOutputsP
 import { FacultyDay1Panel } from '../../components/day1/FacultyDay1Panel.jsx';
 import { FacultyDashboardPanels } from '../../components/faculty/FacultyDashboardPanels.jsx';
 import { FacultyWeek1ProgressPanel } from '../../components/faculty/FacultyWeek1ProgressPanel.jsx';
-import { ROUTES } from '../../routes/paths.js';
+import { ROUTES, staffStageGateHref } from '../../routes/paths.js';
 import { DailyActivationCodeCard } from '../../components/dashboard/DailyActivationCodeCard.jsx';
 import { FacultyCohortSyncPanel } from '../../components/faculty/FacultyCohortSyncPanel.jsx';
 import { CohortOnboardingControls } from '../../components/faculty/CohortOnboardingControls.jsx';
@@ -30,7 +30,8 @@ export function FacultyHomePage({
   onSquadChanged,
 }) {
   const [toolsOpen, setToolsOpen] = useState(false);
-  const { cohortStartDate } = useCohortProgramDay();
+  const { cohortStartDate, programDay } = useCohortProgramDay();
+  const stageGateHref = staffStageGateHref('faculty', 1, programDay.week);
 
   return (
     <PageContainer wide>
@@ -54,6 +55,17 @@ export function FacultyHomePage({
 
         {toolsOpen ? (
           <div className="mt-4 space-y-6">
+            <section className="spike-card flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 className="text-sm font-bold text-slate-900">Stage gate ceremony</h2>
+                <p className="mt-1 text-sm text-slate-600">
+                  Week {programDay.week} closing — run after squad pitch (projector + unlock next stage).
+                </p>
+              </div>
+              <Link to={stageGateHref} className="spike-btn-primary shrink-0 text-sm">
+                Open stage gate
+              </Link>
+            </section>
             <DailyActivationCodeCard />
             {staffId ? (
               <CohortOnboardingControls
@@ -78,6 +90,9 @@ export function FacultyHomePage({
             <div className="flex flex-wrap gap-2">
               <Link to={ROUTES.adminContentStudio} className="spike-btn-secondary text-sm">
                 Content Studio
+              </Link>
+              <Link to={stageGateHref} className="spike-btn-secondary text-sm">
+                Stage gate ceremony
               </Link>
               <Link to={`${ROUTES.programCoachHome}/advisory`} className="spike-btn-secondary text-sm">
                 Traction &amp; hours
