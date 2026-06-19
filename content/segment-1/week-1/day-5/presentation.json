@@ -8,64 +8,227 @@
       "slide-d5-01-02",
       "slide-d5-01-03",
       "slide-d5-01-04",
-      "slide-d5-01-05"
-    ]
+      "slide-d5-01-05",
+      "slide-d5-01-06",
+      "slide-d5-01-07",
+      "slide-d5-01-08",
+      "slide-d5-01-09",
+      "slide-d5-01-10",
+      "slide-d5-01-11",
+      "slide-d5-01-12",
+      "slide-d5-01-13",
+      "slide-d5-01-14",
+      "slide-d5-01-15",
+      "slide-d5-01-16",
+      "slide-d5-01-17",
+      "slide-d5-01-18",
+      "slide-d5-01-19"
+    ],
+    "sourceFile": "faculty-deck-01.pdf",
+    "sourcePath": "content/segment-1/week-1/day-5/source/faculty-deck-01.pdf",
+    "importedAt": "2026-06-19T08:55:04.314Z",
+    "pdfUrl": "/content/segment-1/week-1/day-5/faculty-deck-01.pdf"
   },
   "slides": [
     {
       "id": "slide-d5-01-01",
+      "presentationId": "presentation-day-5-deck-01",
+      "sortOrder": 1,
       "title": "Day 5 — Week 1 Commitment Day",
       "body": "Five days ago you heard three stories.\nYou built identity, discovered industry and customer, drafted your canvas.\n\nToday: present, commit, and launch Week 2.",
       "speakerNotes": "Celebrate energy. 3 min.",
       "discussionQuestions": [
         "What are you most proud of from Week 1?"
       ],
-      "presentationId": "presentation-day-5-deck-01",
-      "sortOrder": 1
+      "imageUrl": "/content/segment-1/week-1/day-5/deck-01/slide-01.png"
     },
     {
       "id": "slide-d5-01-02",
+      "presentationId": "presentation-day-5-deck-01",
+      "sortOrder": 2,
       "title": "3-Year Vision Review",
       "body": "Future self · Ambition · Impact · Career direction.\n\nYour presentation must show coherence — one venture story.",
       "speakerNotes": "Reference portfolio presentation mode. 5 min.",
       "discussionQuestions": [
         "Does your portfolio tell one story?"
       ],
-      "presentationId": "presentation-day-5-deck-01",
-      "sortOrder": 2
+      "imageUrl": "/content/segment-1/week-1/day-5/deck-01/slide-02.png"
     },
     {
       "id": "slide-d5-01-03",
+      "presentationId": "presentation-day-5-deck-01",
+      "sortOrder": 3,
       "title": "Opportunity Mapping",
       "body": "Connect persona problems → canvas priorities → Week 2 research.\n\nVenture entrepreneurs show evidence, not hope.",
       "speakerNotes": "5 min.",
       "discussionQuestions": [
         "What evidence supports your direction?"
       ],
-      "presentationId": "presentation-day-5-deck-01",
-      "sortOrder": 3
+      "imageUrl": "/content/segment-1/week-1/day-5/deck-01/slide-03.png"
     },
     {
       "id": "slide-d5-01-04",
+      "presentationId": "presentation-day-5-deck-01",
+      "sortOrder": 4,
       "title": "Hour 200 Venture Board Preview",
       "body": "Segment 1 ends at Hour 200 Venture Board.\nWeek 1 is foundation — not the finish line.\n\nToday's presentation is practice for that gate.",
       "speakerNotes": "4 min.",
       "discussionQuestions": [
         "What will Hour 200 look like for you?"
       ],
-      "presentationId": "presentation-day-5-deck-01",
-      "sortOrder": 4
+      "imageUrl": "/content/segment-1/week-1/day-5/deck-01/slide-04.png"
     },
     {
       "id": "slide-d5-01-05",
+      "presentationId": "presentation-day-5-deck-01",
+      "sortOrder": 5,
       "title": "Deck 01 Close",
       "body": "Deck 02: presentation protocol and coaching summary.",
       "speakerNotes": "2 min.",
       "discussionQuestions": [
         "Who presents first from your squad?"
       ],
+      "imageUrl": "/content/segment-1/week-1/day-5/deck-01/slide-05.png"
+    },
+    {
+      "id": "slide-d5-01-06",
       "presentationId": "presentation-day-5-deck-01",
-      "sortOrder": 5
+      "sortOrder": 6,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-5/deck-01/slide-06.png"
+    },
+    {
+      "id": "slide-d5-01-07",
+      "presentationId": "presentation-day-5-deck-01",
+      "sortOrder": 7,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-5/deck-01/slide-07.png"
+    },
+    {
+      "id": "slide-d5-01-08",
+      "presentationId": "presentation-day-5-deck-01",
+      "sortOrder": 8,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-5/deck-01/slide-08.png"
+    },
+    {
+      "id": "slide-d5-01-09",
+      "presentationId": "presentation-day-5-deck-01",
+      "sortOrder": 9,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-5/deck-01/slide-09.png"
+    },
+    {
+      "id": "slide-d5-01-10",
+      "presentationId": "presentation-day-5-deck-01",
+      "sortOrder": 10,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-5/deck-01/slide-10.png"
+    },
+    {
+      "id": "slide-d5-01-11",
+      "presentationId": "presentation-day-5-deck-01",
+      "sortOrder": 11,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-5/deck-01/slide-11.png"
+    },
+    {
+      "id": "slide-d5-01-12",
+      "presentationId": "presentation-day-5-deck-01",
+      "sortOrder": 12,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-5/deck-01/slide-12.png"
+    },
+    {
+      "id": "slide-d5-01-13",
+      "presentationId": "presentation-day-5-deck-01",
+      "sortOrder": 13,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-5/deck-01/slide-13.png"
+    },
+    {
+      "id": "slide-d5-01-14",
+      "presentationId": "presentation-day-5-deck-01",
+      "sortOrder": 14,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-5/deck-01/slide-14.png"
+    },
+    {
+      "id": "slide-d5-01-15",
+      "presentationId": "presentation-day-5-deck-01",
+      "sortOrder": 15,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-5/deck-01/slide-15.png"
+    },
+    {
+      "id": "slide-d5-01-16",
+      "presentationId": "presentation-day-5-deck-01",
+      "sortOrder": 16,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-5/deck-01/slide-16.png"
+    },
+    {
+      "id": "slide-d5-01-17",
+      "presentationId": "presentation-day-5-deck-01",
+      "sortOrder": 17,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-5/deck-01/slide-17.png"
+    },
+    {
+      "id": "slide-d5-01-18",
+      "presentationId": "presentation-day-5-deck-01",
+      "sortOrder": 18,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-5/deck-01/slide-18.png"
+    },
+    {
+      "id": "slide-d5-01-19",
+      "presentationId": "presentation-day-5-deck-01",
+      "sortOrder": 19,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-1/day-5/deck-01/slide-19.png"
     }
   ]
 }
