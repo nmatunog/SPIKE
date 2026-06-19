@@ -53,15 +53,28 @@ function formatDbError(error, fallback) {
   return message || fallback;
 }
 
-/** @returns {Promise<CohortRow | null>} */
-export async function fetchActiveCohort() {
-  const client = assertClient();
-  const fullSelect =
-    'id, name, code, is_active, onboarding_phase, official_name, photo_url, motto, theme_statement, start_date';
+/** @param {Record<string, unknown> | null | undefined} row */
+function normalizeCohortRow(row) {
+  if (!row) return null;
+  const startDate = row.start_date ?? row.starts_on ?? null;
+  return /** @type {CohortRow} */ ({
+    ...row,
+    start_date: startDate ? String(startDate).slice(0, 10) : null,
+  });
+}
 
+/** @param {{ code?: string, message?: string }} error */
+function isMissingColumnError(error) {
+  if (!error) return false;
+  const message = String(error.message ?? '');
+  return error.code === '42703' || /column .* does not exist|schema cache/i.test(message);
+}
+
+/** @param {import('@supabase/supabase-js').SupabaseClient} client @param {string} select */
+async function fetchFirstCohortRow(client, select) {
   const withActive = await client
     .from('cohorts')
-    .select(fullSelect)
+    .select(select)
     .eq('is_active', true)
     .order('id', { ascending: true })
     .limit(1)
@@ -70,11 +83,34 @@ export async function fetchActiveCohort() {
 
   const anyCohort = await client
     .from('cohorts')
-    .select(fullSelect)
+    .select(select)
     .order('id', { ascending: true })
     .limit(1)
     .maybeSingle();
   if (!anyCohort.error) return anyCohort.data;
+  return { error: anyCohort.error ?? withActive.error };
+}
+
+/** @returns {Promise<CohortRow | null>} */
+export async function fetchActiveCohort() {
+  const client = assertClient();
+  const selects = [
+    'id, name, code, is_active, onboarding_phase, official_name, photo_url, motto, theme_statement, start_date, starts_on',
+    'id, name, code, is_active, onboarding_phase, official_name, photo_url, motto, theme_statement, starts_on',
+    'id, name, code, is_active, onboarding_phase, official_name, photo_url, motto, theme_statement',
+    'id, name, code',
+  ];
+
+  for (const select of selects) {
+    const result = await fetchFirstCohortRow(client, select);
+    if (result && !('error' in result)) {
+      const normalized = normalizeCohortRow(result);
+      if (normalized) return normalized;
+    }
+    if (result && 'error' in result && !isMissingColumnError(result.error)) {
+      break;
+    }
+  }
 
   const minimal = await client
     .from('cohorts')
@@ -84,7 +120,7 @@ export async function fetchActiveCohort() {
     .maybeSingle();
   if (minimal.error) throw minimal.error;
   if (!minimal.data) return null;
-  return {
+  return normalizeCohortRow({
     ...minimal.data,
     is_active: true,
     onboarding_phase: 'suggestions_closed',
@@ -92,7 +128,7 @@ export async function fetchActiveCohort() {
     photo_url: null,
     motto: '',
     theme_statement: '',
-  };
+  });
 }
 
 /** Bootstrap founding cohort (staff RPC). Requires Supabase session as FACULTY/MENTOR/ADMIN. */
@@ -106,19 +142,35 @@ export async function ensureActiveCohortForStaff() {
 /** @param {number} cohortId @param {Partial<CohortRow>} patch */
 export async function updateCohort(cohortId, patch) {
   const client = assertClient();
-  const { data, error } = await client
-    .from('cohorts')
-    .update(patch)
-    .eq('id', cohortId)
-    .select()
-    .maybeSingle();
+  /** @type {Record<string, unknown>} */
+  let payload = { ...patch };
+  if (patch.start_date !== undefined) {
+    payload.starts_on = patch.start_date;
+  }
+
+  async function attemptUpdate(body) {
+    return client
+      .from('cohorts')
+      .update(body)
+      .eq('id', cohortId)
+      .select()
+      .maybeSingle();
+  }
+
+  let { data, error } = await attemptUpdate(payload);
+  if (error && isMissingColumnError(error) && payload.start_date !== undefined) {
+    ({ data, error } = await attemptUpdate({ starts_on: payload.start_date }));
+  } else if (error && isMissingColumnError(error) && payload.starts_on !== undefined) {
+    ({ data, error } = await attemptUpdate({ start_date: payload.starts_on }));
+  }
+
   if (error) throw new Error(formatDbError(error, 'Could not update cohort.'));
   if (!data) {
     throw new Error(
       'Cohort update was blocked (no rows changed). Run migration 20260707_superuser_cohort_onboarding.sql in Supabase SQL Editor, then reload the API schema.',
     );
   }
-  return data;
+  return normalizeCohortRow(data);
 }
 
 /** @param {number} cohortId */
