@@ -23,6 +23,7 @@ import {
 import { getParticipantSquad } from './cohortFormationService.js';
 import { isMockUserId } from './mockAuth.js';
 import { resolveClosingWeekForPresentation } from './stageGateCeremonyConstants.js';
+import { queuePortfolioStageGateCelebration } from './stageGatePortfolioCelebration.js';
 
 /**
  * @typedef {{
@@ -294,6 +295,7 @@ export async function issueCertificateForPitchDeckUpload(participantId, opts = {
 
   saveCertificateLocal(certificate);
   applyStageUnlockToParticipant(participantId, closingWeek, completedDate);
+  queuePortfolioStageGateCelebration(participantId, closingWeek);
 
   try {
     await upsertCertificatesRemote([certificate], '');

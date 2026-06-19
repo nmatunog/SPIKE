@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Link, Navigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Briefcase } from 'lucide-react';
 import { PageContainer } from '../components/layout/PageContainer.jsx';
@@ -17,6 +18,11 @@ import {
 } from '../components/venturePortfolio/PortfolioSections.jsx';
 import { PortfolioPresentationView } from '../components/venturePortfolio/PortfolioPresentationView.jsx';
 import { PortfolioStageGateCertificates } from '../components/stageGate/PortfolioStageGateCertificates.jsx';
+import { StageGatePortfolioCelebration } from '../components/stageGate/StageGatePortfolioCelebration.jsx';
+import {
+  ensurePitchCertificatesFromPortfolio,
+} from '../lib/stageGateService.js';
+import { readPendingPortfolioCelebration } from '../lib/stageGatePortfolioCelebration.js';
 import {
   generateVenturePortfolio,
 } from '../services/portfolioGenerator.js';
@@ -170,6 +176,41 @@ function renderTab(tabId, sectionId, portfolio, participantId, participantName) 
 export function MyVenturePortfolioRoute({ user }) {
   const { pathname } = useLocation();
   const certWeek = parseStageGateCertificatePath(pathname);
+  const [celebration, setCelebration] = useState(() => readPendingPortfolioCelebration(user.id));
+
+  useEffect(() => {
+    let cancelled = false;
+
+    function syncCelebration() {
+      const pending = readPendingPortfolioCelebration(user.id);
+      if (!cancelled) setCelebration(pending);
+    }
+
+    void ensurePitchCertificatesFromPortfolio(user.id).then(syncCelebration);
+    syncCelebration();
+
+    function onCertificateIssued(event) {
+      const detail = /** @type {CustomEvent<{ participantId?: string }>} */ (event).detail;
+      if (detail?.participantId && detail.participantId !== user.id) return;
+      syncCelebration();
+    }
+
+    window.addEventListener('spike-stage-gate-certificate-issued', onCertificateIssued);
+    return () => {
+      cancelled = true;
+      window.removeEventListener('spike-stage-gate-certificate-issued', onCertificateIssued);
+    };
+  }, [user.id]);
+
+  if (celebration && !certWeek) {
+    return (
+      <StageGatePortfolioCelebration
+        participantId={user.id}
+        closingWeek={celebration.closingWeek}
+      />
+    );
+  }
+
   if (certWeek) {
     return <StageGateCertificatePage user={user} closingWeek={certWeek} />;
   }

@@ -4,12 +4,20 @@ import { getStageGateDefinition } from '../../lib/stageGateCeremonyConstants.js'
 
 /**
  * Fullscreen projector sequence — /presentation/stagegate?week=1
- * @param {{ closingWeek?: number, stageLabel?: string, nextStageLabel?: string }} props
+ * @param {{
+ *   closingWeek?: number,
+ *   stageLabel?: string,
+ *   nextStageLabel?: string,
+ *   autoFinish?: boolean,
+ *   onComplete?: () => void,
+ * }} props
  */
 export function StageGatePresentationPage({
   closingWeek = 1,
   stageLabel: stageLabelProp,
   nextStageLabel: nextStageLabelProp,
+  autoFinish = false,
+  onComplete,
 }) {
   const gate = getStageGateDefinition(closingWeek);
   const stageLabel = stageLabelProp ?? gate.stageLabel;
@@ -61,6 +69,13 @@ export function StageGatePresentationPage({
       clearTimeout(t2);
     };
   }, [screen]);
+
+  useEffect(() => {
+    if (screen !== 4) return undefined;
+    if (!autoFinish || !onComplete) return undefined;
+    const t = setTimeout(() => onComplete(), 2600);
+    return () => clearTimeout(t);
+  }, [screen, autoFinish, onComplete]);
 
   return (
     <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white text-slate-900">
