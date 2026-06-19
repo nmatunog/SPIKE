@@ -8,13 +8,18 @@ export const DEFAULT_COHORT_START_DATE =
   (typeof import.meta !== 'undefined' && import.meta.env?.VITE_COHORT_START_DATE?.trim())
   || '2026-06-15';
 
+/** Only trust DB start_date within this many calendar days of canonical Day 1. */
+const COHORT_START_DRIFT_DAYS = 2;
+
 /** @param {string | null | undefined} cohortStartDate */
 export function effectiveCohortStartDate(cohortStartDate) {
   const explicit = parseProgramDateOnly(cohortStartDate);
   const defaultStart = parseProgramDateOnly(DEFAULT_COHORT_START_DATE);
-  if (!explicit) return DEFAULT_COHORT_START_DATE;
-  // starts_on is often cohort-created mid-week — ignore if after canonical pilot Day 1
-  if (defaultStart && explicit > defaultStart) {
+  if (!explicit || !defaultStart) return DEFAULT_COHORT_START_DATE;
+
+  const diffDays = Math.round((explicit.getTime() - defaultStart.getTime()) / 86400000);
+  // Reject starts_on / legacy backfills (cohort row created mid-week or months early).
+  if (Math.abs(diffDays) > COHORT_START_DRIFT_DAYS) {
     return DEFAULT_COHORT_START_DATE;
   }
   return formatProgramDateOnly(explicit);
@@ -51,8 +56,18 @@ function formatProgramDateOnly(date) {
  * @param {Date} [now]
  */
 export function resolveStaffProgramDay(cohortStartDate, now = new Date()) {
-  return deriveProgramDayFromStartDate(effectiveCohortStartDate(cohortStartDate), now)
-    ?? { week: 1, day: 1 };
+  const fromDefault =
+    deriveProgramDayFromStartDate(DEFAULT_COHORT_START_DATE, now) ?? { week: 1, day: 1 };
+  const fromCohort = deriveProgramDayFromStartDate(
+    effectiveCohortStartDate(cohortStartDate),
+    now,
+  );
+  if (!fromCohort) return fromDefault;
+  // Stale DB start dates can inflate week/day — never show ahead of canonical calendar.
+  if (programDayOrdinal(fromCohort) > programDayOrdinal(fromDefault)) {
+    return fromDefault;
+  }
+  return fromCohort;
 }
 
 /** @param {{ week: number, day: number }} programDay */

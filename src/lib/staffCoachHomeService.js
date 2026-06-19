@@ -35,16 +35,28 @@ function averageAssessmentScore(scores) {
 
 import { resolveStaffProgramDay } from './programCalendar.js';
 
+/** Segment 1 playbook seeds ship for week 1 — map calendar week onto published content. */
+function staffContentWeekDay(role, week, day, segment = 1) {
+  const template =
+    role === 'mentor'
+      ? getMentorDayFromSeed(segment, week, day)
+      : getFacultyDayFromSeed(segment, week, day);
+  if (template) return { week, day };
+  if (segment === 1) return { week: 1, day };
+  return { week, day };
+}
+
 /**
  * @param {'faculty' | 'mentor'} role
  * @param {number} week
  * @param {number} day
  */
 export function deriveTodaySchedule(role, week = 1, day = 1, segment = 1) {
+  const content = staffContentWeekDay(role, week, day, segment);
   const template =
     role === 'mentor'
-      ? getMentorDayFromSeed(1, week, day)
-      : getFacultyDayFromSeed(1, week, day);
+      ? getMentorDayFromSeed(segment, content.week, content.day)
+      : getFacultyDayFromSeed(segment, content.week, content.day);
   const theme = template?.theme ?? WEEK1_DAY_META.find((d) => d.day === day)?.theme ?? 'Program day';
   const overrideKey = facultyScheduleOverrideKey(segment, week, day);
   const overrideBlocks =
@@ -114,11 +126,13 @@ export function deriveTodaySchedule(role, week = 1, day = 1, segment = 1) {
  * @param {number} day
  */
 export function deriveTodayHero(role, week = 1, day = 1) {
+  const content = staffContentWeekDay(role, week, day, 1);
   const template =
     role === 'mentor'
-      ? getMentorDayFromSeed(1, week, day)
-      : getFacultyDayFromSeed(1, week, day);
-  const meta = WEEK1_DAY_META.find((d) => d.day === day) ?? WEEK1_DAY_META[0];
+      ? getMentorDayFromSeed(1, content.week, content.day)
+      : getFacultyDayFromSeed(1, content.week, content.day);
+  const meta =
+    WEEK1_DAY_META.find((d) => d.day === content.day) ?? WEEK1_DAY_META[0];
   const theme = template?.theme ?? meta.theme;
   const objectives =
     /** @type {string[]} */ (template?.learning_objectives ?? [])
