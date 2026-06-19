@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, Navigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Briefcase } from 'lucide-react';
 import { PageContainer } from '../components/layout/PageContainer.jsx';
@@ -176,23 +176,26 @@ function renderTab(tabId, sectionId, portfolio, participantId, participantName) 
 export function MyVenturePortfolioRoute({ user }) {
   const { pathname } = useLocation();
   const certWeek = parseStageGateCertificatePath(pathname);
-  const [celebration, setCelebration] = useState(() => readPendingPortfolioCelebration(user.id));
+  const [celebrationVersion, setCelebrationVersion] = useState(0);
+  const celebration = useMemo(
+    () => readPendingPortfolioCelebration(user.id),
+    [user.id, pathname, celebrationVersion],
+  );
 
   useEffect(() => {
     let cancelled = false;
 
-    function syncCelebration() {
-      const pending = readPendingPortfolioCelebration(user.id);
-      if (!cancelled) setCelebration(pending);
+    function bumpCelebration() {
+      if (!cancelled) setCelebrationVersion((version) => version + 1);
     }
 
-    void ensurePitchCertificatesFromPortfolio(user.id).then(syncCelebration);
-    syncCelebration();
+    void ensurePitchCertificatesFromPortfolio(user.id).then(bumpCelebration);
+    bumpCelebration();
 
     function onCertificateIssued(event) {
       const detail = /** @type {CustomEvent<{ participantId?: string }>} */ (event).detail;
       if (detail?.participantId && detail.participantId !== user.id) return;
-      syncCelebration();
+      bumpCelebration();
     }
 
     window.addEventListener('spike-stage-gate-certificate-issued', onCertificateIssued);
@@ -200,13 +203,14 @@ export function MyVenturePortfolioRoute({ user }) {
       cancelled = true;
       window.removeEventListener('spike-stage-gate-certificate-issued', onCertificateIssued);
     };
-  }, [user.id]);
+  }, [user.id, pathname]);
 
   if (celebration && !certWeek) {
     return (
       <StageGatePortfolioCelebration
         participantId={user.id}
         closingWeek={celebration.closingWeek}
+        onFinished={() => setCelebrationVersion((version) => version + 1)}
       />
     );
   }

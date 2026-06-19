@@ -17,7 +17,7 @@ export function StageGateCertificatePreviewModal({ certificate, onClose }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[110] flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm">
       <div
         className="spike-card max-h-[90vh] w-full max-w-2xl overflow-y-auto p-6"
         role="dialog"

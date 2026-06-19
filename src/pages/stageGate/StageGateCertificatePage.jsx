@@ -7,6 +7,7 @@ import {
   findCertificateByWeekLocal,
   listParticipantCertificates,
 } from '../../lib/stageGateService.js';
+import { saveCertificateLocal } from '../../lib/stageGateParticipantStorage.js';
 import { exportStageGateCertificatePdf } from '../../lib/stageGateCertificatePdf.js';
 import { getStageGateDefinition } from '../../lib/stageGateCeremonyConstants.js';
 import { ROUTES } from '../../routes/paths.js';
@@ -29,12 +30,15 @@ export function StageGateCertificatePage({ user, closingWeek }) {
       }
       const rows = await listParticipantCertificates(user.id);
       const match = rows.find((c) => c.closingWeek === closingWeek);
+      if (match) {
+        saveCertificateLocal({ ...match, participantId: user.id, participantName: match.participantName || participantName });
+      }
       if (!cancelled) setCertificate(match ?? null);
     })();
     return () => {
       cancelled = true;
     };
-  }, [user.id, closingWeek]);
+  }, [user.id, closingWeek, participantName]);
 
   const display = certificate ?? {
     stageLabel: gate.stageLabel,

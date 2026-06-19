@@ -244,8 +244,19 @@ export async function unlockStage(interns, params) {
 /** @param {string} participantId */
 export async function listParticipantCertificates(participantId) {
   const local = listCertificatesLocal(participantId);
-  if (local.length) return local;
-  return fetchCertificatesRemote(participantId);
+  const remote = await fetchCertificatesRemote(participantId);
+  if (!remote.length) return local;
+
+  const byWeek = new Map(local.map((cert) => [cert.closingWeek, cert]));
+  for (const row of remote) {
+    const existing = byWeek.get(row.closingWeek);
+    if (!existing || !existing.participantName) {
+      byWeek.set(row.closingWeek, row);
+      saveCertificateLocal({ ...row, participantId });
+    }
+  }
+
+  return [...byWeek.values()].sort((a, b) => a.closingWeek - b.closingWeek);
 }
 
 /** @param {string} participantId */

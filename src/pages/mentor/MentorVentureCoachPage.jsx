@@ -11,6 +11,7 @@ import { MentorParticipantEncodingPanel } from '../../components/mentor/MentorQu
 import { MentorWeek1SummaryPanel } from '../../components/mentor/MentorWeek1SummaryPanel.jsx';
 import { MentorWeeklyAssessmentPanel } from '../../components/mentor/MentorWeeklyAssessmentPanel.jsx';
 import { StaffParticipantDreamBoardSection } from '../../components/portfolio/StaffParticipantDreamBoardSection.jsx';
+import { StaffParticipantDeliverablesPanel } from '../../components/portfolio/StaffParticipantDeliverablesPanel.jsx';
 import { StaffParticipantTabNav } from '../../components/staff/StaffParticipantTabNav.jsx';
 import { normalizeStaffParticipantTab } from '../../lib/staffParticipantTabs.js';
 import { StaffFecReadOnlyPanel } from '../../components/staff/StaffFecReadOnlyPanel.jsx';
@@ -175,10 +176,16 @@ export function MentorVentureCoachPage({
       ) : null}
 
       {activeTab === 'portfolio' ? (
-        <StaffPortfolioPreviewPanel
-          participantId={participantId}
-          participantName={intern?.name ?? 'Participant'}
-        />
+        <div className="space-y-6">
+          <StaffParticipantDeliverablesPanel
+            participantId={participantId}
+            participantName={intern?.name ?? 'Participant'}
+          />
+          <StaffPortfolioPreviewPanel
+            participantId={participantId}
+            participantName={intern?.name ?? 'Participant'}
+          />
+        </div>
       ) : null}
 
       {activeTab === 'feedback' && !readOnly && mentorId ? (

@@ -92,23 +92,31 @@ export function StageGateCeremonyPage({
 
   if (view === 'projector') {
     return (
-      <StageGateProjectorPanel
-        model={model}
-        onExit={() => setView('coach')}
-        onCompleteUnlock={async () => {
-          if (!model.unlocked && canWrite) {
-            await unlockStage(interns, {
-              segment,
-              closingWeek,
-              staffId,
-              staffName: roleLabel,
-              force: true,
-            });
-            setRefreshKey((k) => k + 1);
-            onUnlock?.();
-          }
-        }}
-      />
+      <>
+        <StageGateProjectorPanel
+          model={model}
+          onExit={() => setView('coach')}
+          onCompleteUnlock={async () => {
+            if (!model.unlocked && canWrite) {
+              await unlockStage(interns, {
+                segment,
+                closingWeek,
+                staffId,
+                staffName: roleLabel,
+                force: true,
+              });
+              setRefreshKey((k) => k + 1);
+              onUnlock?.();
+            }
+          }}
+        />
+        {showSampleCert ? (
+          <StageGateCertificatePreviewModal
+            certificate={sampleCertificate}
+            onClose={() => setShowSampleCert(false)}
+          />
+        ) : null}
+      </>
     );
   }
 

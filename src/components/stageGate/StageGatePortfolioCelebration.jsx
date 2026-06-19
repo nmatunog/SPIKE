@@ -6,14 +6,15 @@ import { stageGateCertificateHref } from '../../routes/paths.js';
 
 /**
  * Pitch-deck celebration — projector animation, then certificate view.
- * @param {{ participantId: string, closingWeek: number }} props
+ * @param {{ participantId: string, closingWeek: number, onFinished?: () => void }} props
  */
-export function StageGatePortfolioCelebration({ participantId, closingWeek }) {
+export function StageGatePortfolioCelebration({ participantId, closingWeek, onFinished }) {
   const navigate = useNavigate();
 
   function finishCelebration() {
     clearPendingPortfolioCelebration(participantId);
     dismissStageGateNotification(participantId);
+    onFinished?.();
     navigate(stageGateCertificateHref(closingWeek), { replace: true });
   }
 
