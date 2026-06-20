@@ -31,6 +31,7 @@ export const MARKET_INTELLIGENCE_FIELDS = [
   { key: 'research_findings', label: 'Research Findings', minChars: 30 },
   { key: 'market_segment_insights', label: 'Market Segment Insights', minChars: 30 },
   { key: 'opportunity_notes', label: 'Opportunity Notes', minChars: 20 },
+  { key: 'squad_commendations', label: 'Squad Commendations', minChars: 10 },
 ];
 
 export const CLIENT_GROWTH_FIELDS = [

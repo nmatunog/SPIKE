@@ -10,7 +10,8 @@ import {
 import { getPortfolioSettings } from '../../lib/portfolioStorage.js';
 import { useCohortHydration } from '../../hooks/useParticipantHydration.js';
 import { ROUTES } from '../../routes/paths.js';
-import { MentorSquadRatingPanel } from '../staff/MentorSquadRatingPanel.jsx';
+import { SquadWeeklyReviewPanel } from '../staff/SquadWeeklyReviewPanel.jsx';
+import { SquadXpLeaderboard } from '../staff/SquadXpDashboard.jsx';
 import { useCohortProgramDay } from '../../hooks/useCohortProgramDay.js';
 
 /**
@@ -135,15 +136,18 @@ export function MentorDashboardPanels({ interns, mentorId = '', showToast }) {
         </div>
       </section>
 
+      {squadsGrouped.length > 0 ? (
+        <SquadXpLeaderboard interns={interns} week={programDay.week} />
+      ) : null}
+
       {mentorId && squadsGrouped.length > 0 ? (
         <div className="grid gap-4 lg:grid-cols-2">
           {squadsGrouped.map((squad) => (
-            <MentorSquadRatingPanel
+            <SquadWeeklyReviewPanel
               key={squad.name}
               staffId={mentorId}
               squadName={squad.name}
               week={programDay.week}
-              day={programDay.day}
               interns={squad.members ?? []}
               showToast={showToast}
             />

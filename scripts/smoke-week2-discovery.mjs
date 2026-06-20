@@ -35,8 +35,8 @@ const { deriveWeek2MissionTrack, getActiveWeek2Task } = await import(
 const { resolveSquadMission, WEEK2_MISSION_TASKS } = await import(
   '../src/lib/customerDiscovery/week2Constants.js'
 );
-const { saveSquadDayRating, getCoachRatingGamification } = await import(
-  '../src/lib/staff/squadRatingService.js'
+const { computeSquadAutoXp, saveSquadMentorReview } = await import(
+  '../src/lib/staff/squadXpService.js'
 );
 
 assert.equal(defaultWeek2State().questions.length, 5);
@@ -56,7 +56,11 @@ assert.ok(status.nextMilestone);
 const active = getActiveWeek2Task(participantId);
 assert.ok(['guide', 'thinking'].includes(active.id), `unexpected active task ${active.id}`);
 
-saveSquadDayRating('mentor-smoke', 'Squad Cassiopeia', 2, 1, { overallScore: 4 });
-assert.ok(getCoachRatingGamification('mentor-smoke').totalXp >= 10);
+const auto = computeSquadAutoXp([participantId], 2);
+assert.ok(auto.autoXp >= 0);
+
+saveSquadMentorReview('mentor-smoke', 'Squad Cassiopeia', 2, {
+  ratings: { quality_of_learning: 4, collaboration: 4, professionalism: 4, readiness_for_stage_gate: 3 },
+});
 
 console.log('smoke:week2-discovery OK');

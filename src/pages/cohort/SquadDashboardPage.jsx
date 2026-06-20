@@ -1,15 +1,16 @@
 import { Link } from 'react-router-dom';
 import { Users, FileSignature, Award } from 'lucide-react';
 import { PageContainer } from '../../components/layout/PageContainer.jsx';
+import { SquadXpDashboard } from '../../components/staff/SquadXpDashboard.jsx';
 import {
   getOfficialCohort,
   getParticipantBadges,
   getParticipantSquad,
   getSquadCharter,
   getThemeItem,
+  listAllSquads,
   RESEARCH_MARKETS,
 } from '../../lib/cohortFormationService.js';
-import { getDay1MissionProgress } from '../../lib/day1BuilderStorage.js';
 import { ROUTES } from '../../routes/paths.js';
 
 /**
@@ -20,8 +21,12 @@ export function SquadDashboardPage({ participantId, participantName }) {
   const cohort = getOfficialCohort();
   const charter = squad ? getSquadCharter(squad.id) : null;
   const badges = getParticipantBadges(participantId);
-  const day1 = getDay1MissionProgress(participantId);
   const item = squad ? getThemeItem(String(squad.themeItemId)) : null;
+  const memberIds = (squad?.members ?? []).map((m) => m.participantId);
+  const allSquads = listAllSquads().map((s) => ({
+    name: s.name,
+    members: (s.members ?? []).map((m) => ({ id: m.participantId, name: m.participantId.slice(0, 8) })),
+  }));
   const market = squad
     ? RESEARCH_MARKETS.find((m) => m.id === squad.researchMarket)?.label
     : null;
@@ -61,8 +66,15 @@ export function SquadDashboardPage({ participantId, participantName }) {
           <p className="mt-2 text-sm text-slate-500">Your role: {member?.role ?? 'Member'}</p>
         </header>
 
-        <div className="grid gap-4 sm:grid-cols-3">
-          <StatCard label="Day 1 progress" value={`${day1.percent}%`} />
+        <SquadXpDashboard
+          squadName={squad.name}
+          memberIds={memberIds}
+          participantId={participantId}
+          week={2}
+          allSquads={allSquads}
+        />
+
+        <div className="grid gap-4 sm:grid-cols-2">
           <StatCard
             label="Charter status"
             value={charter?.status === 'approved' ? 'Approved' : signed ? 'Signed' : 'Pending'}

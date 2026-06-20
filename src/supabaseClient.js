@@ -12,8 +12,9 @@ function normalizeSupabaseUrl(rawUrl) {
   }
 }
 
-const supabaseUrl = normalizeSupabaseUrl(import.meta.env.VITE_SUPABASE_URL);
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const env = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env : {};
+const supabaseUrl = normalizeSupabaseUrl(env.VITE_SUPABASE_URL);
+const supabaseAnonKey = env.VITE_SUPABASE_ANON_KEY;
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 

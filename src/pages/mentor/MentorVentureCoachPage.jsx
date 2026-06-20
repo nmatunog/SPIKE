@@ -7,9 +7,7 @@ import {
   MentorCoachingSessionForm,
 } from '../../components/mentor/MentorCoachingSessionForm.jsx';
 import { MentorParticipantOutputs } from '../../components/mentor/MentorParticipantOutputs.jsx';
-import { MentorParticipantEncodingPanel } from '../../components/mentor/MentorQuickCapture.jsx';
 import { MentorWeek1SummaryPanel } from '../../components/mentor/MentorWeek1SummaryPanel.jsx';
-import { MentorWeeklyAssessmentPanel } from '../../components/mentor/MentorWeeklyAssessmentPanel.jsx';
 import { StaffParticipantDreamBoardSection } from '../../components/portfolio/StaffParticipantDreamBoardSection.jsx';
 import { StaffParticipantDeliverablesPanel } from '../../components/portfolio/StaffParticipantDeliverablesPanel.jsx';
 import { StaffParticipantTabNav } from '../../components/staff/StaffParticipantTabNav.jsx';
@@ -190,21 +188,22 @@ export function MentorVentureCoachPage({
 
       {activeTab === 'feedback' && !readOnly && mentorId ? (
         <div className="space-y-6">
-          <section>
-            <h2 className="mb-3 text-lg font-semibold text-slate-900">Quick check-in</h2>
-            <p className="mb-4 text-sm text-slate-600">
-              Tap a rating and add a short note — saves automatically for this intern.
+          <section className="spike-surface">
+            <h2 className="text-lg font-semibold text-slate-900">Squad-first assessment</h2>
+            <p className="mt-2 text-sm text-slate-600">
+              SPIKE uses shared Squad XP — no individual scores. Rate{' '}
+              <span className="font-semibold">{intern?.squad ?? 'your squad'}</span> as a team from
+              your mentor dashboard (~1 minute per squad).
             </p>
-            <MentorParticipantEncodingPanel
-              mentorId={mentorId}
-              participantId={participantId}
-              participantName={intern?.name}
-              showToast={showToast}
-              onSaved={refreshHistory}
-            />
+            <Link to={ROUTES.mentorHome} className="mt-4 inline-flex spike-btn-secondary text-sm">
+              Open squad weekly review
+            </Link>
           </section>
           <section className="space-y-4">
             <h2 className="text-lg font-semibold text-slate-900">Coaching session</h2>
+            <p className="text-sm text-slate-600">
+              Private coaching notes — not graded, not shared as a score.
+            </p>
             <MentorCoachingSessionForm
               mentorId={mentorId}
               participantId={participantId}
@@ -221,21 +220,12 @@ export function MentorVentureCoachPage({
               />
             </div>
           </section>
-          <section>
-            <h2 className="mb-3 text-lg font-semibold text-slate-900">End-of-week ratings</h2>
-            <MentorWeeklyAssessmentPanel
-              mentorId={mentorId}
-              participantId={participantId}
-              showToast={showToast}
-              onSaved={refreshHistory}
-            />
-          </section>
         </div>
       ) : null}
 
       {activeTab === 'feedback' && (readOnly || !mentorId) ? (
         <p className="rounded-xl border border-slate-200 bg-slate-50 p-6 text-sm text-slate-600">
-          Sign in with a staff account to leave ratings and coaching notes.
+          Sign in with a staff account to leave coaching notes.
         </p>
       ) : null}
 

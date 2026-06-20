@@ -13,7 +13,7 @@ import { ROUTES, staffStageGateHref } from '../../routes/paths.js';
 import { DailyActivationCodeCard } from '../../components/dashboard/DailyActivationCodeCard.jsx';
 import { FacultyCohortSyncPanel } from '../../components/faculty/FacultyCohortSyncPanel.jsx';
 import { CohortOnboardingControls } from '../../components/faculty/CohortOnboardingControls.jsx';
-import { FacultySquadRatingPanel } from '../../components/staff/MentorSquadRatingPanel.jsx';
+import { FacultySquadReviewPanel } from '../../components/staff/SquadWeeklyReviewPanel.jsx';
 import { groupInternsBySquad } from '../../lib/mentorFrameworkService.js';
 
 /**
@@ -97,11 +97,10 @@ export function FacultyHomePage({
             <FacultyCohortSyncPanel interns={interns.map((i) => ({ id: i.id, name: i.name }))} />
             <FacultyWeek1ProgressPanel interns={interns} />
             {staffId ? (
-              <FacultySquadRatingPanel
+              <FacultySquadReviewPanel
                 staffId={staffId}
                 squads={groupInternsBySquad(interns)}
                 week={programDay.week}
-                day={programDay.day}
               />
             ) : null}
             <FacultyDashboardPanels interns={interns} />
