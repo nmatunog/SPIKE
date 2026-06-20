@@ -70,7 +70,7 @@ export function MentorHomePage({ user, interns, showToast }) {
             </section>
             <DailyActivationCodeCard />
             {user?.id ? <CohortOnboardingControls staffId={user.id} photoOnly /> : null}
-            <MentorDashboardPanels interns={interns} />
+            <MentorDashboardPanels interns={interns} mentorId={user?.id ?? ''} showToast={showToast} />
             <MentorWeek1QuickPanel />
             {user?.id ? (
               <MentorDayDebriefPanel mentorId={user.id} showToast={showToast} />

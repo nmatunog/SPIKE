@@ -12,6 +12,7 @@ import { week1CompletionPct, getWeek1DayProgress } from './week1JourneyService.j
 import { isDay1MissionActive, isWeek1PlaybookDaysActive } from './day1BuilderService.js';
 import { playbookHref } from '../routes/paths.js';
 import { getNextBlueprintAction } from './blueprintRecommendations.js';
+import { getActiveWeek2Task, week2MissionProgressPct } from './customerDiscovery/week2MissionService.js';
 import { WEEK1_DAY_META } from './mentorWeek1Constants.js';
 
 /** Day 1 journey steps — participant-facing order. */
@@ -106,6 +107,27 @@ export function deriveDay1Journey(participantId) {
 
 /**
  * @param {string} participantId
+ * @param {{ week: number, day: number, segment: number }} state
+ */
+function deriveWeek2DiscoveryMission(participantId, state) {
+  const active = getActiveWeek2Task(participantId);
+  return {
+    title: active.label,
+    stepLabel: `Week ${state.week} · Customer Discovery`,
+    href: active.href,
+    estimatedMinutes: active.estMin ?? 15,
+    coachReady: false,
+    progressPercent: week2MissionProgressPct(participantId),
+    journey: [],
+    allComplete: false,
+    day1: false,
+    week2Discovery: true,
+    continueLabel: 'Continue mission',
+  };
+}
+
+/**
+ * @param {string} participantId
  * @param {{ week: number, day: number, segment: number, blueprint_completion?: number }} state
  */
 function deriveWeek1PlaybookMission(participantId, state) {
@@ -134,6 +156,9 @@ function deriveWeek1PlaybookMission(participantId, state) {
  * @param {{ week: number, segment: number, day?: number, blueprint_completion?: number }} [state]
  */
 export function deriveTodayMission(participantId, state) {
+  if (state && state.segment === 1 && state.week === 2) {
+    return deriveWeek2DiscoveryMission(participantId, state);
+  }
   if (state && state.segment === 1 && state.week <= 1) {
     const day = Math.max(1, Math.min(5, state.day ?? 1));
     if (day >= 2) {

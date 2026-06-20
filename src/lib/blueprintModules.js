@@ -59,9 +59,9 @@ export const BLUEPRINT_MODULES = [
   },
   {
     slug: 'market-intelligence',
-    label: 'Market Intelligence',
-    shortLabel: 'Market',
-    description: 'Survey insights and segments.',
+    label: 'Customer Discovery',
+    shortLabel: 'Research',
+    description: 'Field interviews and market validation.',
     navGroup: 'growth',
     tracks: ['agency_builder', 'specialist_consultant'],
   },
@@ -165,5 +165,6 @@ export function getBlueprintModule(slug) {
 export function blueprintModulePath(slug, base = '/venture-blueprint') {
   if (slug === 'overview') return base;
   if (slug === 'portfolio') return '/my-venture-portfolio';
+  if (slug === 'market-intelligence') return `${base}/customer-discovery`;
   return `${base}/${slug}`;
 }

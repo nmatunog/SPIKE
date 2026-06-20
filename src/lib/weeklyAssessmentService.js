@@ -81,10 +81,16 @@ export async function saveWeeklyAssessment(mentorId, participantId, input = {}) 
   if (!mentorId || !participantId) return null;
 
   const week = input.week ?? 1;
+  /** @type {Record<string, number>} */
   const scores = {};
-  for (const cat of WEEK1_ASSESSMENT_CATEGORIES) {
-    const raw = Number(input.scores?.[cat.id] ?? 0);
-    scores[cat.id] = Math.min(cat.max, Math.max(cat.min, raw || 0));
+
+  if (input.scores?.overall) {
+    scores.overall = Math.min(5, Math.max(1, Number(input.scores.overall) || 0));
+  } else {
+    for (const cat of WEEK1_ASSESSMENT_CATEGORIES) {
+      const raw = Number(input.scores?.[cat.id] ?? 0);
+      scores[cat.id] = Math.min(cat.max, Math.max(cat.min, raw || 0));
+    }
   }
 
   const entry = {

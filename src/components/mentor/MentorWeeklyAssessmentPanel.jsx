@@ -1,106 +1,117 @@
 import { useState } from 'react';
+import { Trophy, Zap } from 'lucide-react';
 import {
-  MENTOR_RECOMMENDATIONS,
-  WEEK1_ASSESSMENT_CATEGORIES,
-} from '../../lib/mentorWeek1Constants.js';
-import { averageAssessmentScore, getWeeklyAssessment, saveWeeklyAssessment } from '../../lib/weeklyAssessmentService.js';
+  averageAssessmentScore,
+  getWeeklyAssessment,
+  saveWeeklyAssessment,
+} from '../../lib/weeklyAssessmentService.js';
+import { getCoachRatingGamification } from '../../lib/staff/squadRatingService.js';
 
 /**
+ * Simplified end-of-week snapshot — one score, optional standout note.
  * @param {{
  *   mentorId: string,
  *   participantId: string,
+ *   week?: number,
  *   onSaved?: () => void,
  *   showToast?: (message: string, type?: string) => void,
  * }} props
  */
-export function MentorWeeklyAssessmentPanel({ mentorId, participantId, onSaved, showToast }) {
-  const existing = getWeeklyAssessment(participantId, 1);
-  const [scores, setScores] = useState(
-    () => /** @type {Record<string, number>} */ (existing?.scores ?? {}),
-  );
-  const [notes, setNotes] = useState(existing?.notes ?? '');
-  const [recommendation, setRecommendation] = useState(existing?.recommendation ?? 'continue_normally');
+export function MentorWeeklyAssessmentPanel({
+  mentorId,
+  participantId,
+  week = 1,
+  onSaved,
+  showToast,
+}) {
+  const existing = getWeeklyAssessment(participantId, week);
+  const gamify = getCoachRatingGamification(mentorId);
+  const [overallScore, setOverallScore] = useState(existing?.scores?.overall ?? 0);
+  const [standoutNote, setStandoutNote] = useState(existing?.notes ?? '');
+  const [showNote, setShowNote] = useState(Boolean(existing?.notes));
   const [saving, setSaving] = useState(false);
 
   async function handleSave() {
-    const hasScore = WEEK1_ASSESSMENT_CATEGORIES.some((cat) => (scores[cat.id] ?? 0) > 0);
-    if (!hasScore) {
-      showToast?.('Score at least one category before saving.', 'info');
+    if (!overallScore) {
+      showToast?.('Tap an overall score 1–5.', 'info');
       return;
     }
     setSaving(true);
     try {
-      await saveWeeklyAssessment(mentorId, participantId, { week: 1, scores, notes, recommendation });
-      showToast?.('Week 1 assessment saved.');
+      await saveWeeklyAssessment(mentorId, participantId, {
+        week,
+        scores: { overall: overallScore },
+        notes: showNote ? standoutNote : '',
+        recommendation: overallScore >= 4 ? 'continue_normally' : overallScore <= 2 ? 'needs_coaching' : 'monitor_closely',
+      });
+      showToast?.(`Week ${week} score saved · +10 Coach XP`);
       onSaved?.();
     } finally {
       setSaving(false);
     }
   }
 
+  const hints = ['Needs support', 'Building', 'On track', 'Strong', 'Standout'];
+
   return (
-    <div className="spike-card space-y-4">
-      <div>
-        <h3 className="text-sm font-semibold text-slate-900">Week 1 snapshot</h3>
-        <p className="mt-1 text-xs text-slate-500">
-          Optional end-of-week view. Daily check-ins above are enough for most mentors.
-        </p>
+    <div className="spike-surface space-y-4">
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div>
+          <h3 className="text-sm font-semibold text-slate-900">Week {week} score</h3>
+          <p className="mt-1 text-xs text-slate-500">
+            One number — optional note only for standout performance.
+          </p>
+        </div>
+        <span className="inline-flex items-center gap-1 rounded-lg bg-amber-50 px-2 py-1 text-[10px] font-bold text-amber-900">
+          <Trophy size={12} /> {gamify.level}
+        </span>
       </div>
 
-      <div className="space-y-3">
-        {WEEK1_ASSESSMENT_CATEGORIES.map((cat) => (
-          <div key={cat.id} className="rounded-xl bg-slate-50 px-3 py-3">
-            <p className="text-sm font-semibold text-slate-900">{cat.label}</p>
-            <p className="text-xs text-slate-500">{cat.question}</p>
-            <div className="mt-2 flex gap-2">
-              {[1, 2, 3, 4, 5].map((score) => (
-                <button
-                  key={score}
-                  type="button"
-                  onClick={() => setScores((prev) => ({ ...prev, [cat.id]: score }))}
-                  className={`h-9 w-9 rounded-lg text-sm font-bold ${
-                    scores[cat.id] === score ? 'bg-spike text-white' : 'bg-white text-slate-700 ring-1 ring-slate-200'
-                  }`}
-                >
-                  {score}
-                </button>
-              ))}
-            </div>
-          </div>
+      <div className="flex flex-wrap gap-2">
+        {[1, 2, 3, 4, 5].map((score) => (
+          <button
+            key={score}
+            type="button"
+            title={hints[score - 1]}
+            onClick={() => setOverallScore(score)}
+            className={`h-11 w-11 rounded-xl text-sm font-bold ${
+              overallScore === score ? 'bg-spike text-white' : 'bg-slate-100 text-slate-700 ring-1 ring-slate-200'
+            }`}
+          >
+            {score}
+          </button>
         ))}
       </div>
 
-      <p className="text-sm text-slate-600">
-        Average score: <strong>{averageAssessmentScore(scores) || '—'}</strong>
-      </p>
+      {overallScore > 0 ? (
+        <p className="text-sm text-slate-600">
+          Average: <strong>{averageAssessmentScore({ overall: overallScore })}/5</strong>
+          {' · '}
+          {hints[overallScore - 1]}
+        </p>
+      ) : null}
 
-      <label className="block text-sm">
-        <span className="mb-1 block text-xs font-semibold text-slate-600">Observation notes</span>
+      <button
+        type="button"
+        onClick={() => setShowNote((v) => !v)}
+        className="text-xs font-semibold text-spike"
+      >
+        {showNote ? 'Hide' : 'Add'} standout note (optional)
+      </button>
+
+      {showNote ? (
         <textarea
-          rows={3}
-          className="w-full rounded-xl border border-slate-200 px-3 py-2"
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
+          rows={2}
+          className="w-full rounded-xl border-0 bg-slate-50 px-3 py-2 text-sm"
+          value={standoutNote}
+          onChange={(e) => setStandoutNote(e.target.value)}
+          placeholder="Extraordinary performance only — one sentence max"
         />
-      </label>
+      ) : null}
 
-      <label className="block text-sm">
-        <span className="mb-1 block text-xs font-semibold text-slate-600">Mentor recommendation</span>
-        <select
-          className="w-full rounded-xl border border-slate-200 px-3 py-2"
-          value={recommendation}
-          onChange={(e) => setRecommendation(e.target.value)}
-        >
-          {MENTOR_RECOMMENDATIONS.map((opt) => (
-            <option key={opt.id} value={opt.id}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
-      </label>
-
-      <button type="button" disabled={saving} onClick={() => void handleSave()} className="spike-btn-primary disabled:opacity-50">
-        Save assessment
+      <button type="button" disabled={saving} onClick={() => void handleSave()} className="spike-btn-primary inline-flex gap-2 disabled:opacity-50">
+        <Zap size={16} />
+        {saving ? 'Saving…' : 'Save score'}
       </button>
     </div>
   );

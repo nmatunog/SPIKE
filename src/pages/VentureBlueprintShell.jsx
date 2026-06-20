@@ -7,7 +7,7 @@ import { BlueprintModuleNav } from '../components/blueprint/BlueprintModuleNav.j
 import { CareerTrackPicker } from '../components/blueprint/CareerTrackPicker.jsx';
 import { buildParticipantState } from '../lib/participantState.js';
 import { getBlueprintModule, isSharedBlueprintModule } from '../lib/blueprintModules.js';
-import { ROUTES } from '../routes/paths.js';
+import { ROUTES, BLUEPRINT_LINKS } from '../routes/paths.js';
 import { useInternWorkHydration } from '../hooks/useInternWorkHydration.js';
 import { needsCareerTrackSelection } from '../lib/careerTrackService.js';
 import {
@@ -30,6 +30,7 @@ import { BlueprintJourneyNav } from '../components/blueprint/BlueprintJourneyNav
 import { Day1BuildersShell } from '../components/day1/Day1BuildersShell.jsx';
 import { VentureCoachShell } from '../components/ventureCoach/VentureCoachShell.jsx';
 import { isWeek1BuildSimplifiedMode } from '../lib/programContext.js';
+import { CustomerDiscoveryShell } from './customerDiscovery/CustomerDiscoveryShell.jsx';
 
 /**
  * @param {{ user: { id: string, internProgress?: object | null }, viewerRole?: string, onLogTraction?: () => void, onProgressRefresh?: (progress: object) => void }} props
@@ -66,14 +67,15 @@ export function VentureBlueprintShell({ user, viewerRole = 'intern', onProgressR
   const isDay1Builders = moduleSlug === 'day-1-builders';
   const isCoach = moduleSlug === 'coach';
   const isPortfolio = moduleSlug === 'portfolio';
+  const isCustomerDiscovery = moduleSlug === 'customer-discovery';
 
   const activeModule = getBlueprintModule(moduleSlug) ?? getBlueprintModule('overview');
   const showTrackPicker = needsCareerTrackSelection(user.id, progress);
   const isOverview = moduleSlug === 'overview';
   const week1Simplified = isWeek1BuildSimplifiedMode(progress);
-  const headerVariant = isOverview ? 'none' : 'compact';
+  const headerVariant = isOverview || isCustomerDiscovery ? 'none' : 'compact';
   const showJourneyNav = week1Simplified && (isOverview || isDay1Builders || isCoach);
-  const showFullModuleNav = !week1Simplified && !isDay1Builders && !isExecutiveSummary && !isCoach && !isPortfolio && !isCanvasStudio;
+  const showFullModuleNav = !week1Simplified && !isDay1Builders && !isExecutiveSummary && !isCoach && !isPortfolio && !isCanvasStudio && !isCustomerDiscovery;
 
   function handleTrackComplete(nextProgress) {
     setProgress(nextProgress);
@@ -107,7 +109,9 @@ export function VentureBlueprintShell({ user, viewerRole = 'intern', onProgressR
           />
         );
       case 'market-intelligence':
-        return <MarketIntelligencePanel participantId={user.id} />;
+        return <Navigate to={BLUEPRINT_LINKS.customerDiscovery} replace />;
+      case 'customer-discovery':
+        return <CustomerDiscoveryShell user={user} />;
       case 'milestones':
         return <MilestonesModule state={state} />;
       case 'client-growth':

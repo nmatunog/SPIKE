@@ -84,6 +84,7 @@ export const BLUEPRINT_LINKS = {
   squad: '/squad',
   squadCharter: '/squad-charter',
   marketIntelligence: '/venture-blueprint/market-intelligence',
+  customerDiscovery: '/venture-blueprint/customer-discovery',
   milestones: '/venture-blueprint/milestones',
   ventureBoard: '/venture-blueprint/venture-board',
   vision: '/venture-blueprint/vision',

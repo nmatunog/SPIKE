@@ -11,6 +11,9 @@ export default {
       '3xl': '1920px',
     },
     extend: {
+      fontFamily: {
+        sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+      },
       colors: {
         spike: {
           DEFAULT: '#8B0000',
@@ -18,6 +21,11 @@ export default {
           light: '#A52A2A',
           muted: '#FDF2F2',
           surface: '#FFF5F5',
+        },
+        venture: {
+          discover: '#059669',
+          validate: '#D97706',
+          build: '#8B0000',
         },
       },
       fontSize: {

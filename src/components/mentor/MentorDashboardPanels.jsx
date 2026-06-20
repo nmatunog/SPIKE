@@ -10,17 +10,25 @@ import {
 import { getPortfolioSettings } from '../../lib/portfolioStorage.js';
 import { useCohortHydration } from '../../hooks/useParticipantHydration.js';
 import { ROUTES } from '../../routes/paths.js';
+import { MentorSquadRatingPanel } from '../staff/MentorSquadRatingPanel.jsx';
+import { useCohortProgramDay } from '../../hooks/useCohortProgramDay.js';
 
 /**
- * @param {{ interns: Array<{ id: string, name: string, hours?: number, squad?: string, licensed?: boolean }> }} props
+ * @param {{
+ *   interns: Array<{ id: string, name: string, hours?: number, squad?: string, licensed?: boolean }>,
+ *   mentorId?: string,
+ *   showToast?: (message: string) => void,
+ * }} props
  */
-export function MentorDashboardPanels({ interns }) {
+export function MentorDashboardPanels({ interns, mentorId = '', showToast }) {
   const ids = interns.map((i) => i.id);
   const { ready, version } = useCohortHydration(ids, { enabled: interns.length > 0, interns });
+  const { programDay } = useCohortProgramDay();
   void version;
 
   const participants = ready ? deriveAssignedParticipants(interns) : [];
-  const squads = ready ? deriveSquadSummaries(groupInternsBySquad(interns)) : [];
+  const squadsGrouped = ready ? groupInternsBySquad(interns) : [];
+  const squads = ready ? deriveSquadSummaries(squadsGrouped) : [];
   const queue = ready ? deriveCoachingQueue(interns) : {
     needs_review: [],
     needs_follow_up: [],
@@ -126,6 +134,22 @@ export function MentorDashboardPanels({ interns }) {
           <QueueColumn title="Incomplete outputs" items={queue.incomplete_outputs} />
         </div>
       </section>
+
+      {mentorId && squadsGrouped.length > 0 ? (
+        <div className="grid gap-4 lg:grid-cols-2">
+          {squadsGrouped.map((squad) => (
+            <MentorSquadRatingPanel
+              key={squad.name}
+              staffId={mentorId}
+              squadName={squad.name}
+              week={programDay.week}
+              day={programDay.day}
+              interns={squad.members ?? []}
+              showToast={showToast}
+            />
+          ))}
+        </div>
+      ) : null}
 
       <section className="spike-card">
         <h3 className="flex items-center gap-2 text-sm font-semibold text-slate-900">

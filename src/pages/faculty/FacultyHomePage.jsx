@@ -13,6 +13,8 @@ import { ROUTES, staffStageGateHref } from '../../routes/paths.js';
 import { DailyActivationCodeCard } from '../../components/dashboard/DailyActivationCodeCard.jsx';
 import { FacultyCohortSyncPanel } from '../../components/faculty/FacultyCohortSyncPanel.jsx';
 import { CohortOnboardingControls } from '../../components/faculty/CohortOnboardingControls.jsx';
+import { FacultySquadRatingPanel } from '../../components/staff/MentorSquadRatingPanel.jsx';
+import { groupInternsBySquad } from '../../lib/mentorFrameworkService.js';
 
 /**
  * @param {{
@@ -94,6 +96,14 @@ export function FacultyHomePage({
             />
             <FacultyCohortSyncPanel interns={interns.map((i) => ({ id: i.id, name: i.name }))} />
             <FacultyWeek1ProgressPanel interns={interns} />
+            {staffId ? (
+              <FacultySquadRatingPanel
+                staffId={staffId}
+                squads={groupInternsBySquad(interns)}
+                week={programDay.week}
+                day={programDay.day}
+              />
+            ) : null}
             <FacultyDashboardPanels interns={interns} />
             <FacultyDay1Panel interns={interns.map((i) => ({ id: i.id, name: i.name }))} />
             <div className="flex flex-wrap gap-2">

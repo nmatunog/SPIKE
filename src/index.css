@@ -124,6 +124,56 @@
   .spike-scroll-tabs > * {
     @apply snap-start;
   }
+
+  /* Design System 2.0 — Customer Discovery / Mission OS */
+  .spike-surface {
+    @apply rounded-2xl bg-white/80 p-5 sm:p-6;
+  }
+
+  .spike-mission-hero {
+    @apply text-display font-bold tracking-tight text-slate-900 sm:text-display-lg;
+  }
+
+  .spike-mission-sub {
+    @apply text-sm leading-relaxed text-slate-600 sm:text-base;
+  }
+
+  .spike-task-active {
+    @apply border-l-4 border-spike bg-spike-muted/40 pl-4 py-3;
+  }
+
+  .spike-task-done {
+    @apply pl-4 py-2 text-sm text-slate-500 line-through decoration-slate-300;
+  }
+
+  .spike-task-pending {
+    @apply pl-4 py-2 text-sm font-medium text-slate-800;
+  }
+
+  .spike-thinking-prompt {
+    @apply text-lg font-semibold leading-snug text-slate-900 sm:text-xl;
+  }
+
+  .spike-venture-status {
+    @apply rounded-2xl bg-gradient-to-br from-slate-50 to-white p-5;
+  }
+
+  .spike-score-pill {
+    @apply inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold tabular-nums text-slate-600;
+  }
+
+  .spike-celebration {
+    @apply text-center py-8;
+  }
+
+  @keyframes spike-fade-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-spike-fade-in {
+    animation: spike-fade-in 0.35s ease-out;
+  }
 }
 
 @layer utilities {
