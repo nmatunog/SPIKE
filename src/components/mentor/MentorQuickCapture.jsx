@@ -1,7 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Check, ChevronLeft, ChevronRight, Zap } from 'lucide-react';
 import { useMentorDayTemplates } from '../../hooks/useMentorDayTemplates.js';
-import { saveMentorEncoding } from '../../lib/mentorEncodingService.js';
+import {
+  getMentorEncoding,
+  hydrateMentorEncodingFromSupabase,
+  saveMentorEncoding,
+} from '../../lib/mentorEncodingService.js';
 import {
   getParticipantPulseRating,
   saveParticipantPulseRating,
