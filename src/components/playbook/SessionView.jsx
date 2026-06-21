@@ -14,9 +14,11 @@ import { isDayClosingReflection } from '../../lib/dayClosingReflection.js';
 
 const DAY3_ID = 'day-segment-1-week-1-day-3';
 const DAY4_ID = 'day-segment-1-week-1-day-4';
+const WEEK2_DAY1_ID = 'day-segment-1-week-2-day-1';
 const VENTURE_STUDIO_ACTIVITY_ID = 'activity-day-3-persona-workshop';
 const VENTURE_DESIGN_ACTIVITY_ID = 'activity-day-4-canvas-workshop';
 const VENTURE_DESIGN_DECK_ID = 'presentation-day-4-deck-02';
+const WEEK2_ACTIVATE_HERO_IMAGE = '/images/week-2-activate-hero.png';
 
 /**
  * @typedef {import('../../lib/contentLoader.js').DayContentBundle} DayContentBundle
@@ -59,11 +61,21 @@ export function SessionView({
 
   const sessionPresentations =
     session.presentationIds.length > 0
-      ? resolvePresentations(bundle, session.presentationIds).filter(
-          (pres) =>
+      ? resolvePresentations(bundle, session.presentationIds).filter((pres) => {
+          if (bundle.day.id === WEEK2_DAY1_ID) {
+            const slides = pres.slides ?? [];
+            if (
+              slides.length === 1
+              && slides[0].imageUrl === WEEK2_ACTIVATE_HERO_IMAGE
+            ) {
+              return false;
+            }
+          }
+          return (
             pres.presentation.id !== 'presentation-day-3-deck-02'
-            && pres.presentation.id !== VENTURE_DESIGN_DECK_ID,
-        )
+            && pres.presentation.id !== VENTURE_DESIGN_DECK_ID
+          );
+        })
       : [];
 
   const sessionActivities = (activities?.activities ?? []).filter((a) =>

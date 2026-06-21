@@ -2,8 +2,11 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { BLUEPRINT_LINKS, playbookHref } from '../../../routes/paths.js';
 
+const HERO_IMAGE = '/images/week-2-activate-hero.png';
+
 /**
  * Week 2 Activate hero — mission-first banner (Playbook + welcome flow).
+ * Uses photo crop from the composite asset; typography lives in HTML only (Activate, not baked VALIDATE).
  * @param {{
  *   variant?: 'intern' | 'mentor' | 'faculty',
  *   showActions?: boolean,
@@ -17,20 +20,20 @@ export function Week2ActivateHero({ variant = 'intern', showActions = true, clas
     <section
       className={`relative overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-card ${className}`}
     >
-      <div className="grid lg:grid-cols-[minmax(0,42%)_1fr]">
-        <div className="relative min-h-[200px] lg:min-h-[320px]">
+      <div className="grid lg:grid-cols-[minmax(0,38%)_1fr]">
+        <div className="relative min-h-[220px] overflow-hidden lg:min-h-[340px]">
           <img
-            src="/images/week-2-activate-hero.png"
+            src={HERO_IMAGE}
             alt=""
-            className="absolute inset-0 h-full w-full object-cover object-left"
+            className="absolute left-0 top-0 h-full min-w-[165%] max-w-none object-cover object-left sm:min-w-[180%] lg:min-w-[210%]"
           />
           <div
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-white lg:via-white/80"
+            className="absolute inset-0 bg-gradient-to-r from-black/10 via-white/95 to-white"
             aria-hidden
           />
         </div>
 
-        <div className="relative flex flex-col justify-between px-6 py-8 sm:px-10 sm:py-10">
+        <div className="relative z-10 flex flex-col justify-between bg-white px-6 py-8 sm:px-10 sm:py-10">
           <div>
             <p className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.2em] text-slate-500">
               <span className="text-venture-activate">Week 2</span>
