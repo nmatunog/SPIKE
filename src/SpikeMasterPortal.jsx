@@ -31,6 +31,7 @@ import { RoleDashboardCards } from './components/dashboard/RoleDashboardCards.js
 import { BlueprintTimelineFeed } from './components/blueprint/BlueprintTimelineFeed.jsx';
 import { PageLoader } from './components/ui/PageLoader.jsx';
 import { RoleRouteGuard } from './components/routing/RoleRouteGuard.jsx';
+import { playbookWeek2MissionHref } from './lib/customerDiscovery/week2MissionService.js';
 import { ROUTES, brandLexiconBackHrefForRole, facilitatorsReferenceBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath, isPlaybookPath, parseStaffSquadHubPath, parseStaffStageGatePath, playbookHref } from './routes/paths.js';
 import { StaffSquadHubPage, StaffSquadsListPage } from './components/staff/StaffSquadHubPage.jsx';
 import { Week2LoginWelcomeFlow } from './components/week2/Week2LoginWelcomeFlow.jsx';
@@ -660,7 +661,7 @@ const SpikeMasterPortal = () => {
         if (!done) target = ROUTES.cohortIdentity;
       }
       if (role === 'intern' && UNLOCK_WEEK2 && target !== ROUTES.cohortIdentity) {
-        target = playbookHref({ segment: 1, week: 2, day: 1 });
+        target = playbookWeek2MissionHref('mission');
       }
       navigate(target);
       showToast('Signed in successfully.');

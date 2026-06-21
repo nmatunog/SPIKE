@@ -3,14 +3,14 @@ import { ArrowRight, Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { MAX_INTERVIEW_QUESTIONS, PREPARE_RULES } from '../../lib/customerDiscovery/week2Constants.js';
 import { getWeek2State, saveInterviewQuestions } from '../../lib/customerDiscovery/week2DiscoveryService.js';
-import { customerDiscoveryHref } from '../../lib/customerDiscovery/week2MissionService.js';
+import { week2MissionHref } from '../../lib/customerDiscovery/week2MissionService.js';
 import { isWeek2PortfolioSynced } from '../../lib/customerDiscovery/week2PortfolioSync.js';
 
 /**
  * Interview guide builder — max 5 questions, autosave on blur.
- * @param {{ participantId: string, onSaved?: () => void }} props
+ * @param {{ participantId: string, onSaved?: () => void, missionContext?: 'blueprint' | 'playbook' }} props
  */
-export function InterviewGuideTask({ participantId, onSaved }) {
+export function InterviewGuideTask({ participantId, onSaved, missionContext = 'blueprint' }) {
   const initial = getWeek2State(participantId).questions ?? [];
   const [questions, setQuestions] = useState(initial);
   const [saved, setSaved] = useState(false);
@@ -90,7 +90,7 @@ export function InterviewGuideTask({ participantId, onSaved }) {
       {complete ? (
         <div className="space-y-3 animate-spike-fade-in">
           <p className="text-sm font-semibold text-slate-800">Guide complete — portfolio synced.</p>
-          <Link to={customerDiscoveryHref('thinking')} className="spike-btn-primary inline-flex">
+          <Link to={week2MissionHref('thinking', missionContext)} className="spike-btn-primary inline-flex">
             Capture thinking shift <ArrowRight size={16} />
           </Link>
         </div>

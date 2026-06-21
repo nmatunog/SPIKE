@@ -8,7 +8,7 @@ import { buildSampleStageGateCertificate } from '../../lib/stageGateService.js';
 import { findCertificateByWeekLocal } from '../../lib/stageGateParticipantStorage.js';
 import { applyStageUnlockToParticipant } from '../../lib/stageGateParticipantStorage.js';
 import { markWeek2LoginWelcomeSeen } from '../../lib/week2LoginWelcome.js';
-import { BLUEPRINT_LINKS } from '../../routes/paths.js';
+import { playbookWeek2MissionHref } from '../../lib/customerDiscovery/week2MissionService.js';
 
 /**
  * Post-login welcome — Week 1 certificate, then Week 2 Activate hero.
@@ -38,7 +38,7 @@ export function Week2LoginWelcomeFlow({ participantId, participantName = 'Partic
   function finish() {
     markWeek2LoginWelcomeSeen(participantId);
     onFinished?.();
-    navigate(BLUEPRINT_LINKS.customerDiscovery);
+    navigate(playbookWeek2MissionHref('mission'));
   }
 
   return (

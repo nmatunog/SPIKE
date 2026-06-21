@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { BLUEPRINT_LINKS, playbookHref } from '../../../routes/paths.js';
+import { playbookWeek2MissionHref } from '../../../lib/customerDiscovery/week2MissionService.js';
 
 const HERO_IMAGE = '/images/week-2-activate-hero.png';
 
@@ -64,14 +65,14 @@ export function Week2ActivateHero({ variant = 'intern', showActions = true, clas
           {showActions ? (
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
-                to={BLUEPRINT_LINKS.customerDiscovery}
+                to={playbookWeek2MissionHref('mission')}
                 className="spike-btn-primary inline-flex items-center gap-2"
               >
-                Open Customer Discovery
+                Start squad mission
                 <ArrowRight size={16} />
               </Link>
-              <Link to={playbookHref({ segment: 1, week: 2, day: 1 })} className="spike-btn-secondary">
-                Playbook Week 2
+              <Link to={BLUEPRINT_LINKS.customerDiscovery} className="spike-btn-secondary">
+                Venture Blueprint
               </Link>
             </div>
           ) : null}

@@ -33,6 +33,7 @@ import { UNLOCK_WEEK1_DAY2_PLUS } from '../../lib/programUnlocks.js';
  *   staffPreview?: boolean,
  *   interns?: Array<{ id: string, name: string }>,
  *   mentorId?: string,
+ *   skipWeek2Hero?: boolean,
  * }} props
  */
 export function ParticipantDayView({
@@ -42,6 +43,7 @@ export function ParticipantDayView({
   staffPreview = false,
   interns = [],
   mentorId,
+  skipWeek2Hero = false,
 }) {
   const location = useLocation();
   const sessions = bundle.sessions?.sessions ?? [];
@@ -70,7 +72,7 @@ export function ParticipantDayView({
 
   return (
     <div className="space-y-6">
-      {isWeek2Day1 ? (
+      {isWeek2Day1 && !skipWeek2Hero ? (
         <Week2ActivateHero variant={staffPreview ? 'mentor' : 'intern'} />
       ) : null}
 

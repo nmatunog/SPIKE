@@ -24,12 +24,33 @@ function isTaskComplete(participantId, taskId) {
   }
 }
 
-/** @param {string} participantId */
-export function deriveWeek2MissionTrack(participantId) {
+/**
+ * Playbook URL for Week 2 mission track (intern mission-first entry).
+ * @param {string} [taskSlug]
+ * @param {{ segment?: number, week?: number, day?: number }} [opts]
+ */
+export function playbookWeek2MissionHref(taskSlug = 'mission', opts = {}) {
+  const params = new URLSearchParams({
+    segment: String(opts.segment ?? 1),
+    week: String(opts.week ?? 2),
+    day: String(opts.day ?? 1),
+    mission: taskSlug,
+  });
+  return `${ROUTES.playbook}?${params.toString()}`;
+}
+
+/** @param {string} [taskSlug] @param {'blueprint' | 'playbook'} [context] */
+export function week2MissionHref(taskSlug, context = 'blueprint') {
+  if (context === 'playbook') return playbookWeek2MissionHref(taskSlug);
+  return customerDiscoveryHref(taskSlug);
+}
+
+/** @param {string} participantId @param {'blueprint' | 'playbook'} [context] */
+export function deriveWeek2MissionTrack(participantId, context = 'blueprint') {
   return WEEK2_MISSION_TASKS.map((task, index) => ({
     ...task,
     index: index + 1,
-    href: `${BASE}/${task.slug}`,
+    href: week2MissionHref(task.slug, context),
     complete: isTaskComplete(participantId, task.id),
   }));
 }

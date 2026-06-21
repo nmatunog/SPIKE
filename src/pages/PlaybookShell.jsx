@@ -7,6 +7,7 @@ import { InternWorkHydrationAlert } from '../components/intern/InternWorkHydrati
 import { ParticipantDayView } from '../components/playbook/ParticipantDayView.jsx';
 import { FacultyPlaybookView } from '../components/playbook/FacultyPlaybookView.jsx';
 import { Week2ActivateHero } from '../components/playbook/week2/Week2ActivateHero.jsx';
+import { Week2MissionPlaybookView } from '../components/playbook/week2/Week2MissionPlaybookView.jsx';
 import {
   getCurriculumDataSource,
   getDayContentBundle,
@@ -16,6 +17,11 @@ import {
   listWeeks,
 } from '../lib/curriculumService.js';
 import { resolveInternPlaybookDay, resolveInternProgramWeek, UNLOCK_WEEK2 } from '../lib/programUnlocks.js';
+import { getParticipantSquad } from '../lib/cohortFormationService.js';
+import {
+  deriveWeek2MissionTrack,
+  getActiveWeek2Task,
+} from '../lib/customerDiscovery/week2MissionService.js';
 import { useInternWorkHydration } from '../hooks/useInternWorkHydration.js';
 
 const TABS = [
@@ -53,6 +59,9 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
   );
   const [dataSource, setDataSource] = useState(() => getCurriculumDataSource());
   const [, setRefreshKey] = useState(0);
+
+  const missionSlug = searchParams.get('mission') ?? '';
+  const showCurriculum = searchParams.get('view') === 'curriculum';
 
   const entryDay = useMemo(() => {
     const fromQuery = Number.parseInt(searchParams.get('day') ?? '', 10);
@@ -126,6 +135,57 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
   const selectedDay = days.find((d) => d.slug === daySlug);
   const showSegmentPicker = segments.length > 1;
 
+  const isInternWeek2 =
+    userRole === 'intern'
+    && entryWeek >= 2
+    && entrySegment === 1
+    && (weekSlug === 'week-2' || selectedWeek?.week?.weekNumber === 2);
+
+  const isWeek2Day1 = daySlug === 'day-1' || selectedDay?.day?.dayNumber === 1;
+
+  const showMissionFirst =
+    isInternWeek2
+    && isWeek2Day1
+    && !showCurriculum
+    && !browseAllDays
+    && Boolean(participantId);
+
+  useEffect(() => {
+    if (!showMissionFirst || !participantId) return;
+    if (missionSlug) return;
+    const active = getActiveWeek2Task(participantId);
+    const params = new URLSearchParams(searchParams);
+    params.set('mission', active.slug);
+    setSearchParams(params, { replace: true });
+  }, [showMissionFirst, participantId, missionSlug, searchParams, setSearchParams]);
+
+  useEffect(() => {
+    if (!showMissionFirst || !participantId || !missionSlug) return;
+    const track = deriveWeek2MissionTrack(participantId, 'playbook');
+    const current = track.find((t) => t.slug === missionSlug);
+    if (!current?.complete) return;
+    const active = getActiveWeek2Task(participantId);
+    if (active.slug === missionSlug) return;
+    const params = new URLSearchParams(searchParams);
+    params.set('mission', active.slug);
+    setSearchParams(params, { replace: true });
+  }, [showMissionFirst, participantId, missionSlug, searchParams, setSearchParams, hydrateVersion]);
+
+  function openCurriculumView() {
+    const params = new URLSearchParams(searchParams);
+    params.set('view', 'curriculum');
+    setSearchParams(params);
+  }
+
+  function backToMissionView() {
+    const params = new URLSearchParams(searchParams);
+    params.delete('view');
+    if (participantId) {
+      params.set('mission', getActiveWeek2Task(participantId).slug);
+    }
+    setSearchParams(params);
+  }
+
   let bundle = null;
   try {
     bundle = getDayContentBundle(segmentSlug, weekSlug, daySlug);
@@ -185,42 +245,79 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
   const staffHeroVariant =
     userRole === 'faculty' || userRole === 'admin' ? 'faculty' : userRole === 'mentor' ? 'mentor' : 'intern';
 
-  const dayContent = bundle ? (
-    userRole === 'faculty' || userRole === 'admin' ? (
-      <FacultyPlaybookView bundle={bundle} />
-    ) : userRole === 'mentor' ? (
-      <ParticipantDayView
-        bundle={bundle}
-        staffPreview
-        interns={interns}
-        mentorId={participantId}
-      />
-    ) : (
-      <ParticipantDayView
-        bundle={bundle}
+  const squadRecord = participantId ? getParticipantSquad(participantId) : null;
+  const internSquadName = squadRecord?.name ?? internProgress?.squad ?? '';
+
+  let dayContent;
+
+  if (showMissionFirst && participantId) {
+    dayContent = (
+      <Week2MissionPlaybookView
         participantId={participantId}
+        squadName={internSquadName}
+        missionSlug={missionSlug || 'mission'}
+        onOpenCurriculum={openCurriculumView}
         onProgress={() => setRefreshKey((k) => k + 1)}
       />
-    )
-  ) : isWeek2 ? (
-    <Week2ActivateHero variant={staffHeroVariant} />
-  ) : selectedWeek && (userRole === 'faculty' || userRole === 'admin' || userRole === 'mentor') ? (
-    <div className="rounded-xl border border-amber-100 bg-amber-50/80 px-4 py-5 text-sm text-amber-950">
-      <p className="font-semibold">
-        Week {selectedWeek.week.weekNumber}: {selectedWeek.week.title}
+    );
+  } else if (bundle) {
+    dayContent =
+      userRole === 'faculty' || userRole === 'admin' ? (
+        <FacultyPlaybookView bundle={bundle} />
+      ) : userRole === 'mentor' ? (
+        <ParticipantDayView
+          bundle={bundle}
+          staffPreview
+          interns={interns}
+          mentorId={participantId}
+        />
+      ) : (
+        <>
+          {isInternWeek2 && showCurriculum ? (
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-spike/15 bg-spike/5 px-4 py-3">
+              <p className="text-sm text-slate-700">
+                Coach session notes — slides and activities for today&apos;s facilitation.
+              </p>
+              <button
+                type="button"
+                onClick={backToMissionView}
+                className="text-sm font-semibold text-spike hover:underline"
+              >
+                ← Back to your mission
+              </button>
+            </div>
+          ) : null}
+          <ParticipantDayView
+            bundle={bundle}
+            participantId={participantId}
+            onProgress={() => setRefreshKey((k) => k + 1)}
+            skipWeek2Hero={isInternWeek2}
+          />
+        </>
+      );
+  } else if (isWeek2) {
+    dayContent = <Week2ActivateHero variant={staffHeroVariant} />;
+  } else if (selectedWeek && (userRole === 'faculty' || userRole === 'admin' || userRole === 'mentor')) {
+    dayContent = (
+      <div className="rounded-xl border border-amber-100 bg-amber-50/80 px-4 py-5 text-sm text-amber-950">
+        <p className="font-semibold">
+          Week {selectedWeek.week.weekNumber}: {selectedWeek.week.title}
+        </p>
+        {selectedWeek.week.milestoneObjective ? (
+          <p className="mt-2 text-amber-900">{selectedWeek.week.milestoneObjective}</p>
+        ) : null}
+        <p className="mt-3 text-amber-800">
+          Day content for this selection is not loaded yet — choose another day or refresh.
+        </p>
+      </div>
+    );
+  } else {
+    dayContent = (
+      <p className="text-sm text-slate-500">
+        Pick a week and day with published content.
       </p>
-      {selectedWeek.week.milestoneObjective ? (
-        <p className="mt-2 text-amber-900">{selectedWeek.week.milestoneObjective}</p>
-      ) : null}
-      <p className="mt-3 text-amber-800">
-        Day content for this selection is not loaded yet — choose another day or refresh.
-      </p>
-    </div>
-  ) : (
-    <p className="text-sm text-slate-500">
-      Pick a week and day with published content.
-    </p>
-  );
+    );
+  }
 
   const internTodayHeader = userRole === 'intern' && selectedDay ? (
     <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-indigo-100 bg-indigo-50/80 px-4 py-3">
@@ -252,7 +349,7 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
     </div>
   ) : null;
 
-  const showPathBar = userRole !== 'intern' || browseAllDays;
+  const showPathBar = (userRole !== 'intern' || browseAllDays) && !showMissionFirst;
 
   const pathBarMobile = (
     <div className="spike-card space-y-3">
@@ -347,9 +444,11 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
   return (
     <PageContainer presentation wide>
       <PageTitle presentation subtitle={
-        userRole === 'mentor'
-          ? 'Same curriculum interns see — decks, activities, and Venture Studio. Track submissions in People.'
-          : `${roleLabel} view — pick a week and day to open sessions.`
+        showMissionFirst
+          ? 'Week 2 Activate — your squad mission comes first. Coach notes unlock when you need them.'
+          : userRole === 'mentor'
+            ? 'Same curriculum interns see — decks, activities, and Venture Studio. Track submissions in People.'
+            : `${roleLabel} view — pick a week and day to open sessions.`
       }>
         Playbook
       </PageTitle>
@@ -360,11 +459,17 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
 
       {internTodayHeader}
 
-      {userRole === 'intern' && !browseAllDays ? (
+      {userRole === 'intern' && !browseAllDays && !showMissionFirst ? (
         <p className="mt-3 text-sm text-slate-600">
           {entryWeek >= 2
             ? 'Week 2 Activate is live — open Customer Discovery from Venture Blueprint or continue in Playbook.'
             : 'All Week 1 days stay open — prior days do not need to be finished first. Work saves when you sign in.'}
+        </p>
+      ) : null}
+
+      {showMissionFirst ? (
+        <p className="mt-3 text-sm text-slate-600">
+          Your squad mission is live — complete one step at a time. Evidence flows automatically into your Venture Portfolio.
         </p>
       ) : null}
 

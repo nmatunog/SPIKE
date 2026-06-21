@@ -3,13 +3,13 @@ import { ArrowRight, ChevronDown, ChevronUp, MapPin, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { resolveSquadMission, PREPARE_RULES } from '../../lib/customerDiscovery/week2Constants.js';
 import { acknowledgeMission } from '../../lib/customerDiscovery/week2DiscoveryService.js';
-import { customerDiscoveryHref } from '../../lib/customerDiscovery/week2MissionService.js';
+import { week2MissionHref } from '../../lib/customerDiscovery/week2MissionService.js';
 
 /**
  * Minimal mission brief — 4 lines default, expandable full brief.
- * @param {{ participantId: string, squadName?: string, onComplete?: () => void }} props
+ * @param {{ participantId: string, squadName?: string, onComplete?: () => void, missionContext?: 'blueprint' | 'playbook' }} props
  */
-export function MissionBriefTask({ participantId, squadName, onComplete }) {
+export function MissionBriefTask({ participantId, squadName, onComplete, missionContext = 'blueprint' }) {
   const mission = resolveSquadMission(squadName);
   const [expanded, setExpanded] = useState(false);
   const [done, setDone] = useState(false);
@@ -25,7 +25,7 @@ export function MissionBriefTask({ participantId, squadName, onComplete }) {
       <div className="spike-surface space-y-4 animate-spike-fade-in">
         <p className="spike-label text-venture-discover">Mission acknowledged ✓</p>
         <p className="text-sm text-slate-600">Next: design your 5 interview questions.</p>
-        <Link to={customerDiscoveryHref('guide')} className="spike-btn-primary inline-flex">
+        <Link to={week2MissionHref('guide', missionContext)} className="spike-btn-primary inline-flex">
           Design questions <ArrowRight size={16} />
         </Link>
       </div>

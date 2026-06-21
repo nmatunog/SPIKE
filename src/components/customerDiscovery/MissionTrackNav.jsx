@@ -5,11 +5,11 @@ import { getMisBreakdown } from '../../lib/customerDiscovery/week2MisService.js'
 
 /**
  * Vertical mission track — Duolingo-style progression.
- * @param {{ participantId: string }} props
+ * @param {{ participantId: string, activeSlug?: string, context?: 'blueprint' | 'playbook' }} props
  */
-export function MissionTrackNav({ participantId }) {
+export function MissionTrackNav({ participantId, activeSlug, context = 'blueprint' }) {
   const location = useLocation();
-  const steps = deriveWeek2MissionTrack(participantId);
+  const steps = deriveWeek2MissionTrack(participantId, context);
   const mis = getMisBreakdown(participantId);
   const activeTask = steps.find((s) => !s.complete) ?? steps[steps.length - 1];
 
@@ -20,8 +20,10 @@ export function MissionTrackNav({ participantId }) {
       </p>
       {steps.map((step) => {
         const isActive =
-          location.pathname.includes(`/${step.slug}`)
-          || (location.pathname.endsWith('/customer-discovery') && step.id === activeTask?.id);
+          context === 'playbook'
+            ? (activeSlug ?? activeTask?.slug) === step.slug
+            : location.pathname.includes(`/${step.slug}`)
+              || (location.pathname.endsWith('/customer-discovery') && step.id === activeTask?.id);
 
         return (
           <Link
