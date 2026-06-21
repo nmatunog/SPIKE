@@ -6,7 +6,7 @@
       "sessionNumber": 1,
       "title": "Week 2 Activate — Customer Discovery",
       "durationMinutes": 240,
-      "presentationIds": ["presentation-day-2-deck-01"],
+      "presentationIds": ["presentation-day-2-deck-01", "presentation-day-2-deck-02"],
       "activityIds": ["activity-day-2-customer-discovery"],
       "worksheetIds": [],
       "assessmentIds": ["assessment-day-2-participation"],

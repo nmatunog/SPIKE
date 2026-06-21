@@ -1,0 +1,180 @@
+{
+  "presentation": {
+    "id": "presentation-day-2-deck-02",
+    "dayId": "day-segment-1-week-2-day-1",
+    "title": "Program Coach Deck 02 — Customer Discovery Missions",
+    "slideIds": [
+      "slide-d1-02-01",
+      "slide-d1-02-02",
+      "slide-d1-02-03",
+      "slide-d1-02-04",
+      "slide-d1-02-05",
+      "slide-d1-02-06",
+      "slide-d1-02-07",
+      "slide-d1-02-08",
+      "slide-d1-02-09",
+      "slide-d1-02-10",
+      "slide-d1-02-11",
+      "slide-d1-02-12",
+      "slide-d1-02-13",
+      "slide-d1-02-14",
+      "slide-d1-02-15"
+    ],
+    "sourceFile": "faculty-deck-02.pdf",
+    "sourcePath": "content/segment-1/week-2/day-1/source/faculty-deck-02.pdf",
+    "importedAt": "2026-06-21T14:32:09.767Z",
+    "pdfUrl": "/content/segment-1/week-2/day-1/faculty-deck-02.pdf"
+  },
+  "slides": [
+    {
+      "id": "slide-d1-02-01",
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 1,
+      "title": "Slide 1",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-1/deck-02/slide-01.png"
+    },
+    {
+      "id": "slide-d1-02-02",
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 2,
+      "title": "Slide 2",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-1/deck-02/slide-02.png"
+    },
+    {
+      "id": "slide-d1-02-03",
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 3,
+      "title": "Slide 3",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-1/deck-02/slide-03.png"
+    },
+    {
+      "id": "slide-d1-02-04",
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 4,
+      "title": "Slide 4",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-1/deck-02/slide-04.png"
+    },
+    {
+      "id": "slide-d1-02-05",
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 5,
+      "title": "Slide 5",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-1/deck-02/slide-05.png"
+    },
+    {
+      "id": "slide-d1-02-06",
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 6,
+      "title": "Slide 6",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-1/deck-02/slide-06.png"
+    },
+    {
+      "id": "slide-d1-02-07",
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 7,
+      "title": "Slide 7",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-1/deck-02/slide-07.png"
+    },
+    {
+      "id": "slide-d1-02-08",
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 8,
+      "title": "Slide 8",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-1/deck-02/slide-08.png"
+    },
+    {
+      "id": "slide-d1-02-09",
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 9,
+      "title": "Slide 9",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-1/deck-02/slide-09.png"
+    },
+    {
+      "id": "slide-d1-02-10",
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 10,
+      "title": "Slide 10",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-1/deck-02/slide-10.png"
+    },
+    {
+      "id": "slide-d1-02-11",
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 11,
+      "title": "Slide 11",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-1/deck-02/slide-11.png"
+    },
+    {
+      "id": "slide-d1-02-12",
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 12,
+      "title": "Slide 12",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-1/deck-02/slide-12.png"
+    },
+    {
+      "id": "slide-d1-02-13",
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 13,
+      "title": "Slide 13",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-1/deck-02/slide-13.png"
+    },
+    {
+      "id": "slide-d1-02-14",
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 14,
+      "title": "Slide 14",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-1/deck-02/slide-14.png"
+    },
+    {
+      "id": "slide-d1-02-15",
+      "presentationId": "presentation-day-2-deck-02",
+      "sortOrder": 15,
+      "title": "Slide 15",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-1/deck-02/slide-15.png"
+    }
+  ]
+}
