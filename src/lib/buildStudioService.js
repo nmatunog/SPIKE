@@ -12,7 +12,7 @@ import { week1CompletionPct, getWeek1DayProgress } from './week1JourneyService.j
 import { isDay1MissionActive, isWeek1PlaybookDaysActive } from './day1BuilderService.js';
 import { playbookHref } from '../routes/paths.js';
 import { getNextBlueprintAction } from './blueprintRecommendations.js';
-import { getActiveWeek2Task, week2MissionProgressPct } from './customerDiscovery/week2MissionService.js';
+import { getActiveWeek2Task, week2MissionProgressPct, playbookWeek2MissionHref } from './customerDiscovery/week2MissionService.js';
 import { WEEK1_DAY_META } from './mentorWeek1Constants.js';
 
 /** Day 1 journey steps — participant-facing order. */
@@ -114,7 +114,7 @@ function deriveWeek2DiscoveryMission(participantId, state) {
   return {
     title: active.label,
     stepLabel: `Week ${state.week} · Customer Discovery`,
-    href: active.href,
+    href: playbookWeek2MissionHref(active.slug),
     estimatedMinutes: active.estMin ?? 15,
     coachReady: false,
     progressPercent: week2MissionProgressPct(participantId),

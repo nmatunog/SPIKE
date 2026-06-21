@@ -5,6 +5,7 @@ import {
   SUPERUSER_INTERN_PREVIEW_PROGRESS,
 } from './superuserInternPreviewData.js';
 import { resolveStaffProgramDay } from './programCalendar.js';
+import { UNLOCK_WEEK2 } from './programUnlocks.js';
 
 const SAMPLE_INTERN_NAME = 'Alex Rivera (Sample)';
 
@@ -16,9 +17,19 @@ export function resolveSuperuserInternCalendarDay(cohortStartDate = null) {
 /** @param {string | null | undefined} [cohortStartDate] */
 export function buildSuperuserInternPreviewProgress(cohortStartDate = null) {
   const { week, day } = resolveSuperuserInternCalendarDay(cohortStartDate);
-  return {
+  const merged = {
     ...SUPERUSER_INTERN_PREVIEW_PROGRESS,
     ...readSuperuserInternPreviewProgressPatch(),
+  };
+  if (UNLOCK_WEEK2 && (merged.segment ?? 1) === 1) {
+    return {
+      ...merged,
+      current_week: 2,
+      current_day: 1,
+    };
+  }
+  return {
+    ...merged,
     current_week: week,
     current_day: day,
   };

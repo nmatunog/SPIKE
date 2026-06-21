@@ -32,13 +32,16 @@ export function resolveInternProgramWeek(internProgress) {
  * @param {object | null | undefined} internProgress
  */
 export function resolveInternPlaybookDay(internProgress) {
+  const segment = internProgress?.segment ?? 1;
   const week = resolveInternProgramWeek(internProgress);
   const hours = internProgress?.hours ?? 0;
   const derived = deriveWeekDay(hours);
-  const day = internProgress?.current_day ?? derived.currentDay;
+  const storedWeek = internProgress?.current_week ?? 1;
+  let day = internProgress?.current_day ?? derived.currentDay;
 
-  if (week <= 1) {
-    return Math.max(1, Math.min(5, day));
+  // Week 2 pilot unlock — stored progress may still reflect Week 1 calendar; playbook starts Day 1.
+  if (UNLOCK_WEEK2 && segment === 1 && week >= 2 && storedWeek < 2) {
+    return 1;
   }
 
   return Math.max(1, Math.min(5, day));
