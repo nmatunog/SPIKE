@@ -17,6 +17,7 @@ import {
   ventureDesignProgressPercent,
 } from '../../lib/ventureDesignStudioService.js';
 import { Day4VentureDesignHero, WORKSHOP_HREF } from './ventureDesign/Day4VentureDesignHero.jsx';
+import { Week2ActivateHero } from './week2/Week2ActivateHero.jsx';
 import { BLUEPRINT_LINKS, playbookHref, ROUTES } from '../../routes/paths.js';
 import { UNLOCK_WEEK1_DAY2_PLUS } from '../../lib/programUnlocks.js';
 
@@ -65,9 +66,14 @@ export function ParticipantDayView({
   const isDay1 = bundle.day.id === 'day-segment-1-week-1-day-1';
   const isDay3 = bundle.day.id === 'day-segment-1-week-1-day-3';
   const isDay4 = bundle.day.id === 'day-segment-1-week-1-day-4';
+  const isWeek2Day1 = bundle.day.id === 'day-segment-1-week-2-day-1';
 
   return (
     <div className="space-y-6">
+      {isWeek2Day1 ? (
+        <Week2ActivateHero variant={staffPreview ? 'mentor' : 'intern'} />
+      ) : null}
+
       {isDay4 ? (
         <Day4VentureDesignHero
           variant={staffPreview ? 'mentor' : 'intern'}

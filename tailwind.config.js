@@ -25,6 +25,7 @@ export default {
         venture: {
           discover: '#059669',
           validate: '#D97706',
+          activate: '#F5B800',
           build: '#8B0000',
         },
       },

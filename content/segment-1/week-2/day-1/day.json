@@ -1,0 +1,28 @@
+{
+  "id": "day-segment-1-week-2-day-1",
+  "segmentId": "segment-1",
+  "weekId": "week-segment-1-2",
+  "dayNumber": 1,
+  "title": "Day 1 — Activate Customer Discovery",
+  "theme": "From Ideas to Evidence",
+  "durationHours": 4,
+  "learningObjectives": [
+    "Launch Week 2 squad missions for customer validation",
+    "Complete interview preparation and market intelligence encoding",
+    "Connect discovery insights to Venture Portfolio and Stage Gate II"
+  ],
+  "expectedOutputs": [
+    "Customer discovery mission acknowledged",
+    "Interview guide reviewed",
+    "First thinking-shift reflection submitted"
+  ],
+  "portfolioDeliverables": [
+    "Market intelligence squad mission brief",
+    "Customer discovery portfolio sync"
+  ],
+  "businessPlanIntegration": "Draft opening narrative for Business Plan Chapter 2: Market Intelligence",
+  "presentations": ["presentation-day-2-deck-01"],
+  "activities": ["activity-day-2-customer-discovery"],
+  "worksheets": [],
+  "assessments": ["assessment-day-2-participation"]
+}

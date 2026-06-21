@@ -14,7 +14,7 @@ import {
   listSegments,
   listWeeks,
 } from '../lib/curriculumService.js';
-import { resolveInternPlaybookDay } from '../lib/programUnlocks.js';
+import { resolveInternPlaybookDay, resolveInternProgramWeek } from '../lib/programUnlocks.js';
 import { useInternWorkHydration } from '../hooks/useInternWorkHydration.js';
 
 const TABS = [
@@ -67,7 +67,7 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
   const entryWeek = useMemo(() => {
     const fromQuery = Number.parseInt(searchParams.get('week') ?? '', 10);
     if (Number.isFinite(fromQuery) && fromQuery >= 1) return fromQuery;
-    return internProgress?.current_week ?? 1;
+    return resolveInternProgramWeek(internProgress);
   }, [searchParams, internProgress]);
 
   const entrySegment = useMemo(() => {
@@ -311,8 +311,9 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
 
       {userRole === 'intern' && !browseAllDays ? (
         <p className="mt-3 text-sm text-slate-600">
-          All Week 1 days stay open — prior days do not need to be finished first. Work saves when you
-          sign in.
+          {entryWeek >= 2
+            ? 'Week 2 Activate is live — open Customer Discovery from Venture Blueprint or continue in Playbook.'
+            : 'All Week 1 days stay open — prior days do not need to be finished first. Work saves when you sign in.'}
         </p>
       ) : null}
 

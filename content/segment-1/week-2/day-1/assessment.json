@@ -1,0 +1,20 @@
+{
+  "assessment": {
+    "id": "assessment-day-2-participation",
+    "dayId": "day-segment-1-week-2-day-1",
+    "title": "Week 2 Squad Participation",
+    "description": "Squad-first progress — automatic XP from discovery activities; mentors review squads weekly.",
+    "rubricId": "rubric-day-2-participation"
+  },
+  "rubric": {
+    "id": "rubric-day-2-participation",
+    "assessmentId": "assessment-day-2-participation",
+    "title": "Squad XP checklist",
+    "criteria": [
+      "Interview encoding on track",
+      "Portfolio market intelligence updated",
+      "Thinking-shift reflection submitted",
+      "Squad mission acknowledged"
+    ]
+  }
+}

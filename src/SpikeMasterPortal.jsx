@@ -31,8 +31,11 @@ import { RoleDashboardCards } from './components/dashboard/RoleDashboardCards.js
 import { BlueprintTimelineFeed } from './components/blueprint/BlueprintTimelineFeed.jsx';
 import { PageLoader } from './components/ui/PageLoader.jsx';
 import { RoleRouteGuard } from './components/routing/RoleRouteGuard.jsx';
-import { ROUTES, brandLexiconBackHrefForRole, facilitatorsReferenceBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath, isPlaybookPath, parseStaffSquadHubPath, parseStaffStageGatePath } from './routes/paths.js';
+import { ROUTES, brandLexiconBackHrefForRole, facilitatorsReferenceBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath, isPlaybookPath, parseStaffSquadHubPath, parseStaffStageGatePath, playbookHref } from './routes/paths.js';
 import { StaffSquadHubPage, StaffSquadsListPage } from './components/staff/StaffSquadHubPage.jsx';
+import { Week2LoginWelcomeFlow } from './components/week2/Week2LoginWelcomeFlow.jsx';
+import { shouldShowWeek2LoginWelcome } from './lib/week2LoginWelcome.js';
+import { UNLOCK_WEEK2 } from './lib/programUnlocks.js';
 import { StageGateCeremonyPage } from './components/stageGate/StageGateCeremonyPage.jsx';
 import { StageGatePresentationPage } from './pages/stageGate/StageGatePresentationPage.jsx';
 import { PageContainer } from './components/layout/PageContainer.jsx';
@@ -166,6 +169,15 @@ const SpikeMasterPortal = () => {
   });
   const [selectedIntern, setSelectedIntern] = useState(null);
   const [editData, setEditData] = useState(null);
+  const [week2WelcomeDismissed, setWeek2WelcomeDismissed] = useState(false);
+
+  const internForWelcome = internModuleUser ?? user;
+  const showWeek2Welcome =
+    portalAccessRole === 'intern'
+    && !authLoading
+    && !week2WelcomeDismissed
+    && internForWelcome?.id
+    && shouldShowWeek2LoginWelcome(internForWelcome.id, internForWelcome.internProgress);
 
   const [interns, setInterns] = useState([]);
   const [internsLoading, setInternsLoading] = useState(false);
@@ -640,6 +652,9 @@ const SpikeMasterPortal = () => {
       ) {
         const done = await hydrateOnboardingStatus(signedIn.id);
         if (!done) target = ROUTES.cohortIdentity;
+      }
+      if (role === 'intern' && UNLOCK_WEEK2 && target !== ROUTES.cohortIdentity) {
+        target = playbookHref({ segment: 1, week: 2, day: 1 });
       }
       navigate(target);
       showToast('Signed in successfully.');
@@ -2099,6 +2114,14 @@ const SpikeMasterPortal = () => {
             showToast={showToast}
           />
         )}
+
+      {showWeek2Welcome ? (
+        <Week2LoginWelcomeFlow
+          participantId={internForWelcome.id}
+          participantName={internForWelcome.name ?? internForWelcome.email ?? 'Participant'}
+          onFinished={() => setWeek2WelcomeDismissed(true)}
+        />
+      ) : null}
 
       {toast.show && (
         <div

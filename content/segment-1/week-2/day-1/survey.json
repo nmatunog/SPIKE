@@ -1,0 +1,19 @@
+{
+  "survey": {
+    "id": "survey-day-2-activate",
+    "dayId": "day-segment-1-week-2-day-1",
+    "title": "Week 2 Activate Pulse",
+    "description": "Quick confidence check as squads enter validation.",
+    "status": "active"
+  },
+  "questions": [
+    {
+      "id": "sq-day-2-01",
+      "surveyId": "survey-day-2-activate",
+      "prompt": "How ready is your squad to run customer interviews this week?",
+      "type": "rating",
+      "required": true,
+      "sortOrder": 1
+    }
+  ]
+}

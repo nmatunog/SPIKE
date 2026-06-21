@@ -1,0 +1,32 @@
+{
+  "activities": [
+    {
+      "id": "activity-day-2-customer-discovery",
+      "dayId": "day-segment-1-week-2-day-1",
+      "title": "Customer Discovery Studio — Squad Mission",
+      "durationMinutes": 180,
+      "materials": [
+        "Venture Blueprint → Customer Discovery",
+        "Squad mission brief (Cassiopeia, Pegasus, or Argo Navis)",
+        "Interview encoding workspace"
+      ],
+      "instructions": [
+        "Open Venture Blueprint → Customer Discovery and acknowledge your squad mission.",
+        "Review the interview guide and prepare 3–5 customer conversations.",
+        "Encode interviews — credit for completion, not length of notes.",
+        "Submit at least one thinking-shift reflection: What changed your thinking today?",
+        "Sync portfolio artifacts as missions complete."
+      ],
+      "outputs": [
+        "Squad MIS progress and venture status metrics",
+        "Portfolio market intelligence updates",
+        "Thinking-shift log for mentor coaching"
+      ],
+      "debriefQuestions": [
+        "What assumption did your squad challenge today?",
+        "Which interview surprised your team most?",
+        "What evidence do you still need before Stage Gate II?"
+      ]
+    }
+  ]
+}

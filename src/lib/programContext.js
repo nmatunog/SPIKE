@@ -3,7 +3,7 @@
  */
 import { buildParticipantState } from './participantState.js';
 import { deriveTodayMission } from './buildStudioService.js';
-import { resolveInternPlaybookDay } from './programUnlocks.js';
+import { resolveInternPlaybookDay, resolveInternProgramWeek } from './programUnlocks.js';
 import { COACH_SECTIONS } from './ventureCoachConstants.js';
 import { isCoachSectionComplete } from './ventureCoachStorage.js';
 import { ROUTES, playbookHref } from '../routes/paths.js';
@@ -14,7 +14,7 @@ import { ROUTES, playbookHref } from '../routes/paths.js';
  */
 export function getProgramContext(internProgress, participantId = '') {
   const segment = internProgress?.segment ?? 1;
-  const week = internProgress?.current_week ?? 1;
+  const week = resolveInternProgramWeek(internProgress);
   const day = resolveInternPlaybookDay(internProgress);
   const state = participantId
     ? buildParticipantState(participantId, internProgress)
@@ -62,6 +62,6 @@ export function getNextCoachSectionLabel(participantId) {
 /** Week 1 interns use journey-first Build UI (no full LMS module tree). */
 export function isWeek1BuildSimplifiedMode(internProgress) {
   const segment = internProgress?.segment ?? 1;
-  const week = internProgress?.current_week ?? 1;
+  const week = resolveInternProgramWeek(internProgress);
   return segment === 1 && week <= 1;
 }

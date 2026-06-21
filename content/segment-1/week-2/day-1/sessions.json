@@ -1,0 +1,17 @@
+{
+  "sessions": [
+    {
+      "id": "session-day-2-morning",
+      "dayId": "day-segment-1-week-2-day-1",
+      "sessionNumber": 1,
+      "title": "Week 2 Activate — Customer Discovery",
+      "durationMinutes": 240,
+      "presentationIds": ["presentation-day-2-deck-01"],
+      "activityIds": ["activity-day-2-customer-discovery"],
+      "worksheetIds": [],
+      "assessmentIds": ["assessment-day-2-participation"],
+      "reflectionIds": [],
+      "surveyIds": ["survey-day-2-activate"]
+    }
+  ]
+}
