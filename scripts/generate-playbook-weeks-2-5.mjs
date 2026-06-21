@@ -290,7 +290,7 @@ function draftDeckToJson(dayId, weekNum, dayNum, deckNum, draftDeck) {
     id: slideId(weekNum, dayNum, deckNum, i),
     presentationId: presId,
     title: String(s.title ?? `Slide ${i + 1}`),
-    body: String(s.purpose ?? ''),
+    body: String(s.purpose || s.title || ''),
     speakerNotes: String(s.facilitatorNotes ?? draftDeck.purpose ?? ''),
     discussionQuestions: Array.isArray(s.discussionQuestions) ? s.discussionQuestions : [],
     sortOrder: i + 1,

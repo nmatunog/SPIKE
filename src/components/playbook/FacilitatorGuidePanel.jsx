@@ -18,7 +18,7 @@ export function FacilitatorGuidePanel({ guide }) {
           Prep checklist
         </h4>
         <ul className="space-y-1 text-sm text-gray-800">
-          {guide.prepChecklist.map((item) => (
+          {(guide.prepChecklist ?? []).map((item) => (
             <li key={item} className="rounded-lg bg-white px-3 py-2">
               • {item}
             </li>
@@ -31,14 +31,23 @@ export function FacilitatorGuidePanel({ guide }) {
           Session flow
         </h4>
         <div className="space-y-2">
-          {guide.sessionFlow.map((block) => (
-            <div key={`${block.time}-${block.activity}`} className="rounded-lg bg-white p-3 text-sm">
-              <p className="font-bold text-gray-900">
-                {block.time} — {block.activity}
-              </p>
-              <p className="mt-1 text-gray-600">{block.notes}</p>
-            </div>
-          ))}
+          {(guide.sessionFlow ?? []).map((block, index) => {
+            if (typeof block === 'string') {
+              return (
+                <div key={`flow-${index}`} className="rounded-lg bg-white p-3 text-sm text-gray-800">
+                  {block}
+                </div>
+              );
+            }
+            return (
+              <div key={`${block.time}-${block.activity}-${index}`} className="rounded-lg bg-white p-3 text-sm">
+                <p className="font-bold text-gray-900">
+                  {block.time} — {block.activity}
+                </p>
+                {block.notes ? <p className="mt-1 text-gray-600">{block.notes}</p> : null}
+              </div>
+            );
+          })}
         </div>
       </section>
 
@@ -47,7 +56,7 @@ export function FacilitatorGuidePanel({ guide }) {
           Debrief questions
         </h4>
         <ul className="space-y-1 text-sm text-gray-800">
-          {guide.debriefQuestions.map((q) => (
+          {(guide.debriefQuestions ?? []).map((q) => (
             <li key={q}>• {q}</li>
           ))}
         </ul>
@@ -59,7 +68,7 @@ export function FacilitatorGuidePanel({ guide }) {
             Common pitfalls
           </h4>
           <ul className="space-y-1 text-sm text-gray-700">
-            {guide.commonPitfalls.map((p) => (
+            {(guide.commonPitfalls ?? []).map((p) => (
               <li key={p}>• {p}</li>
             ))}
           </ul>
@@ -69,7 +78,7 @@ export function FacilitatorGuidePanel({ guide }) {
             Coaching tips
           </h4>
           <ul className="space-y-1 text-sm text-gray-700">
-            {guide.coachingTips.map((t) => (
+            {(guide.coachingTips ?? []).map((t) => (
               <li key={t}>• {t}</li>
             ))}
           </ul>

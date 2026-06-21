@@ -1,7 +1,5 @@
-/** @param {{ slide: { title: string, body: string, imageUrl?: string } }} props */
+/** @param {{ slide: { title: string, body?: string, imageUrl?: string } }} props */
 export function SlideViewer({ slide }) {
-  const paragraphs = slide.body.split('\n').filter(Boolean);
-
   if (slide.imageUrl) {
     return (
       <article className="spike-slide">
@@ -14,6 +12,8 @@ export function SlideViewer({ slide }) {
       </article>
     );
   }
+
+  const paragraphs = (slide.body ?? '').split('\n').filter(Boolean);
 
   return (
     <article className="spike-slide">

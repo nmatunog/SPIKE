@@ -10,9 +10,11 @@
       "id": "slide-w2-activate-01",
       "presentationId": "presentation-day-2-deck-01",
       "title": "Week 2 Activate",
+      "body": "Week 2 Activate — From Ideas to Evidence",
       "imageUrl": "/images/week-2-activate-hero.png",
       "sortOrder": 1,
-      "notes": "Hero banner — squads open Customer Discovery in Venture Blueprint."
+      "speakerNotes": "Hero banner — squads open Customer Discovery in Venture Blueprint.",
+      "discussionQuestions": []
     }
   ]
 }
