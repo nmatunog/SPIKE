@@ -12,7 +12,8 @@ import { loadVentureStudioState } from './ventureStudioStorage.js';
 import { getCanvasSummary } from './canvasSummaryService.js';
 import { getEffectiveCanvasCompletionPct } from './participantOutputMetrics.js';
 import { getParticipantSquad } from './cohortFormationService.js';
-import { getWeeklyAssessment } from './weeklyAssessmentService.js';
+import { countSquadsWithReviewForInterns } from './staff/squadAssessmentService.js';
+import { getSquadMentorReview, getSquadWeeklyXp } from './staff/squadXpService.js';
 import { listPortfolioDeliverablesLocal } from './portfolioDeliverableService.js';
 import { deriveEngagementLevel } from './staffCoachHomeService.js';
 import { getStageGateDefinition } from './stageGateCeremonyConstants.js';
@@ -122,13 +123,6 @@ function deriveSquadOutputChecks(members) {
   };
 }
 
-/** @param {Record<string, number>} scores */
-function averageAssessmentScore(scores) {
-  const values = Object.values(scores ?? {}).filter((v) => v > 0);
-  if (!values.length) return 0;
-  return values.reduce((a, b) => a + b, 0) / values.length;
-}
-
 /**
  * @param {Array<{ id: string, name: string, squad?: string, hours?: number }>} interns
  * @param {{ segment?: number, closingWeek?: number, role?: 'faculty' | 'mentor' }} opts
@@ -149,19 +143,24 @@ export function deriveStageGateCeremony(interns, opts = {}) {
     const squadDesign = loadSquadDesignRecord(squadId);
     const venture = resolveSquadVentureFields(squadDesign.consolidated, members);
     const outputs = deriveSquadOutputChecks(members);
-    const assessments = members
-      .map((m) => averageAssessmentScore(getWeeklyAssessment(m.id, closingWeek)?.scores))
-      .filter((s) => s > 0);
-    const assessmentAvg = assessments.length
-      ? assessments.reduce((a, b) => a + b, 0) / assessments.length
+    const memberIds = members.map((m) => m.id);
+    const review = getSquadMentorReview(squad.name, closingWeek);
+    const squadXp = getSquadWeeklyXp(squad.name, memberIds, closingWeek);
+    const ratingValues = review
+      ? Object.values(review.ratings ?? {}).filter((v) => v > 0)
+      : [];
+    const assessmentAvg = ratingValues.length
+      ? ratingValues.reduce((a, b) => a + b, 0) / ratingValues.length
       : 0;
     const pitchScore =
-      squadDesign.mentorRating != null && squadDesign.mentorRating > 0
-        ? Number(squadDesign.mentorRating)
-        : assessmentAvg > 0
-          ? Math.round(assessmentAvg * 10) / 10
-          : null;
-    const engagement = deriveEngagementLevel(outputs.avgOutputPct, assessmentAvg);
+      review && assessmentAvg > 0
+        ? Math.round(assessmentAvg * 10) / 10
+        : squadDesign.mentorRating != null && squadDesign.mentorRating > 0
+          ? Number(squadDesign.mentorRating)
+          : squadXp.totalXp > 0
+            ? Math.round((squadXp.totalXp / 20) * 10) / 10
+            : null;
+    const engagement = deriveEngagementLevel(outputs.avgOutputPct, assessmentAvg || squadXp.totalXp / 25);
     const ready = outputs.pitchPortfolioReady
       || (
         hasText(venture.uvp)
@@ -182,7 +181,7 @@ export function deriveStageGateCeremony(interns, opts = {}) {
       canvasPct: venture.canvasPct,
       outputs,
       pitchScore,
-      mentorNotes: squadDesign.mentorNotes || squadDesign.coachSummary || '',
+      mentorNotes: review?.aiSummary || squadDesign.mentorNotes || squadDesign.coachSummary || '',
       engagement,
       status: ready ? 'Ready' : 'Needs review',
       gatePassed: ready,
@@ -200,10 +199,7 @@ export function deriveStageGateCeremony(interns, opts = {}) {
           * 100,
       )
     : 0;
-  const assessmentsLogged = interns.filter((intern) => {
-    const scores = getWeeklyAssessment(intern.id, closingWeek)?.scores ?? {};
-    return Object.values(scores).some((v) => v > 0);
-  }).length;
+  const squadsWithReview = countSquadsWithReviewForInterns(interns, closingWeek);
 
   const allSquadsReady = squadRows.length > 0 && squadRows.every((row) => row.gatePassed);
   const activeStageIndex = unlocked ? gate.nextWeek : closingWeek;
@@ -223,7 +219,7 @@ export function deriveStageGateCeremony(interns, opts = {}) {
       totalInterns: interns.length,
       pitchesSubmittedPct,
       avgPitchRating,
-      assessmentsLogged,
+      assessmentsLogged: squadsWithReview,
       allSquadsReady,
     },
     advancementChecklist: [
@@ -236,8 +232,8 @@ export function deriveStageGateCeremony(interns, opts = {}) {
         complete: allSquadsReady,
       },
       {
-        label: `${assessmentsLogged} coaching assessments logged (Week ${closingWeek})`,
-        complete: assessmentsLogged >= Math.min(interns.length, squadRows.length * 2),
+        label: `${squadsWithReview} squad reviews logged (Week ${closingWeek})`,
+        complete: squadsWithReview >= (squadRows.length || 1),
       },
       {
         label: 'Squad venture & FEC data captured',

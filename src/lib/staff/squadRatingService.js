@@ -72,32 +72,5 @@ export function getCoachRatingGamification(staffId) {
   return { totalXp, streak, level };
 }
 
-/** Simplified per-participant pulse — single 1-5 score replaces multi-field forms. */
 export const SIMPLIFIED_PULSE_LABEL = 'Squad pulse today';
 export const SIMPLIFIED_PULSE_HINTS = ['Struggling', 'Building', 'Solid', 'Strong', 'Standout'];
-
-/**
- * @param {string} mentorId
- * @param {string} participantId
- * @param {number} week
- * @param {number} day
- * @param {{ pulseScore: number, standoutNote?: string }} input
- */
-export function saveParticipantPulseRating(mentorId, participantId, week, day, input) {
-  const key = `pulse:${mentorId}:${participantId}:w${week}:d${day}`;
-  const all = readAll();
-  all[key] = {
-    overallScore: Math.min(5, Math.max(1, Number(input.pulseScore) || 0)),
-    standoutNote: String(input.standoutNote ?? '').trim().slice(0, 200) || undefined,
-    savedAt: new Date().toISOString(),
-    ratedBy: mentorId,
-  };
-  writeAll(all);
-  return all[key];
-}
-
-/** @param {string} mentorId @param {string} participantId @param {number} week @param {number} day */
-export function getParticipantPulseRating(mentorId, participantId, week, day) {
-  const key = `pulse:${mentorId}:${participantId}:w${week}:d${day}`;
-  return readAll()[key] ?? null;
-}

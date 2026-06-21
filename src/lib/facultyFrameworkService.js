@@ -1,7 +1,7 @@
 /**
  * Faculty Operating Framework — Week 1 dashboard derivations.
  */
-import { countAssessmentsForParticipants } from './weeklyAssessmentService.js';
+import { squadReviewCoveragePct, countSquadsWithReviewForInterns } from './staff/squadAssessmentService.js';
 import { countCoachingNotesForParticipants } from './coachingService.js';
 import { deriveWeek1DayProgress } from './mentorFrameworkService.js';
 import { isWeek1DayComplete, week1CompletionPct } from './week1JourneyService.js';
@@ -36,12 +36,13 @@ export function deriveFacultyParticipantSubmissions(interns) {
 export function deriveFacultyAssessmentCoverage(interns) {
   const ids = interns.map((i) => i.id);
   const withCoaching = countCoachingNotesForParticipants(ids);
-  const withAssessment = countAssessmentsForParticipants(ids, 1);
+  const withAssessment = countSquadsWithReviewForInterns(interns, 1);
+  const assessmentPct = squadReviewCoveragePct(interns, 1);
   const n = interns.length || 1;
 
   return {
     coachingPct: Math.round((withCoaching / n) * 100),
-    assessmentPct: Math.round((withAssessment / n) * 100),
+    assessmentPct,
     coachingCount: withCoaching,
     assessmentCount: withAssessment,
     total: interns.length,

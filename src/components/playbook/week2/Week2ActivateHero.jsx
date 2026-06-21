@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
-import { BLUEPRINT_LINKS, playbookHref } from '../../../routes/paths.js';
+import { BLUEPRINT_LINKS } from '../../../routes/paths.js';
 import { playbookWeek2MissionHref } from '../../../lib/customerDiscovery/week2MissionService.js';
 
 const HERO_IMAGE = '/images/week-2-activate-hero.png';

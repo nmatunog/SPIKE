@@ -18,6 +18,7 @@ import {
   getSquadCommendations,
   saveSquadCommendations,
 } from '../../lib/staff/squadCommendationService.js';
+import { SquadMemberNotesAppendix } from './SquadInternNotesPanel.jsx';
 
 /**
  * End-of-week squad review — 4 star ratings, gate decision, up to 3 commendations (~1 min).
@@ -126,6 +127,8 @@ export function SquadWeeklyReviewPanel({
           </div>
         ))}
       </div>
+
+      <SquadMemberNotesAppendix members={interns} week={week} />
 
       <div>
         <p className="mb-2 text-xs font-semibold uppercase text-slate-400">Stage gate</p>

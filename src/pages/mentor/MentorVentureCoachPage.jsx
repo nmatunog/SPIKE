@@ -18,7 +18,8 @@ import {
   StaffVentureBoardPanel,
 } from '../../components/staff/StaffVentureBoardPanel.jsx';
 import { hydrateCoachingFromSupabase, listCoachingNotesForParticipant } from '../../lib/coachingService.js';
-import { hydrateWeeklyAssessmentFromSupabase } from '../../lib/weeklyAssessmentService.js';
+import { squadMemberIdsForIntern } from '../../lib/staff/squadAssessmentService.js';
+import { SquadInternNotesPanel } from '../../components/staff/SquadInternNotesPanel.jsx';
 import { getCoachSummaryForMentor } from '../../lib/ventureCoachService.js';
 import { useParticipantHydration } from '../../hooks/useParticipantHydration.js';
 import { fetchRemoteParticipantSummary } from '../../lib/participantRemoteData.js';
@@ -85,10 +86,7 @@ export function MentorVentureCoachPage({
     if (!participantId) return;
     let cancelled = false;
     (async () => {
-      await Promise.all([
-        hydrateCoachingFromSupabase(participantId),
-        hydrateWeeklyAssessmentFromSupabase(participantId, 1),
-      ]);
+      await hydrateCoachingFromSupabase(participantId);
       if (!cancelled) setHistoryKey((k) => k + 1);
     })();
     return () => {
@@ -199,6 +197,10 @@ export function MentorVentureCoachPage({
               Open squad weekly review
             </Link>
           </section>
+          <SquadInternNotesPanel
+            participantId={participantId}
+            participantName={intern?.name ?? 'Participant'}
+          />
           <section className="space-y-4">
             <h2 className="text-lg font-semibold text-slate-900">Coaching session</h2>
             <p className="text-sm text-slate-600">
@@ -297,6 +299,7 @@ export function MentorVentureCoachPage({
           participantId={participantId}
           participantName={intern?.name ?? 'Participant'}
           squad={intern?.squad}
+          memberIds={squadMemberIdsForIntern(interns, intern?.squad ?? 'Unassigned')}
         />
       </section>
         </>

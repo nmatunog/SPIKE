@@ -33,7 +33,7 @@ import { PageLoader } from './components/ui/PageLoader.jsx';
 import { RoleRouteGuard } from './components/routing/RoleRouteGuard.jsx';
 import { playbookWeek2MissionHref } from './lib/customerDiscovery/week2MissionService.js';
 import { buildSuperuserMentorPreviewInterns } from './lib/superuserMentorPreview.js';
-import { ROUTES, brandLexiconBackHrefForRole, facilitatorsReferenceBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath, isPlaybookPath, parseStaffSquadHubPath, parseStaffStageGatePath, playbookHref } from './routes/paths.js';
+import { ROUTES, brandLexiconBackHrefForRole, facilitatorsReferenceBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath, isPlaybookPath, parseStaffSquadHubPath, parseStaffStageGatePath } from './routes/paths.js';
 import { StaffSquadHubPage, StaffSquadsListPage } from './components/staff/StaffSquadHubPage.jsx';
 import { Week2LoginWelcomeFlow } from './components/week2/Week2LoginWelcomeFlow.jsx';
 import { shouldShowWeek2LoginWelcome } from './lib/week2LoginWelcome.js';
@@ -118,6 +118,11 @@ import {
 } from './lib/superuserViewAs.js';
 import { buildSuperuserInternPreviewUser, resolveSuperuserInternRouteUser } from './lib/superuserInternPreview.js';
 import { hydrateOnboardingStatus, setOnboardingCompleteCache, shouldGateInternOnboarding, isInternOnboardingSatisfied } from './lib/cohortOnboardingService.js';
+import {
+  ensureSquadAssessmentMigration,
+  isSquadAssessmentMigrationComplete,
+} from './lib/staff/squadAssessmentMigration.js';
+import { hydrateWeeklyAssessmentFromSupabase } from './lib/weeklyAssessmentService.js';
 
 /** @param {{ children: import('react').ReactNode, label?: string }} props */
 function LazyRoute({ children, label }) {
@@ -333,7 +338,14 @@ const SpikeMasterPortal = () => {
     if (usingSupabaseAuth && supabase) {
       setInternsLoading(true);
       try {
-        setInterns(await fetchInterns());
+        let rows = await fetchInterns();
+        if (!isSquadAssessmentMigrationComplete()) {
+          await Promise.all(
+            rows.flatMap((intern) => [1, 2].map((week) => hydrateWeeklyAssessmentFromSupabase(intern.id, week))),
+          );
+          ensureSquadAssessmentMigration(rows);
+        }
+        setInterns(rows);
       } catch (e) {
         showToast(e.message || 'Failed to load interns', 'info');
       } finally {
@@ -346,6 +358,9 @@ const SpikeMasterPortal = () => {
     setInternsLoading(true);
     try {
       const rows = await apiFetch('/api/interns', { token });
+      if (!isSquadAssessmentMigrationComplete()) {
+        ensureSquadAssessmentMigration(rows);
+      }
       setInterns(rows);
     } catch (e) {
       showToast(e.message || 'Failed to load interns', 'info');

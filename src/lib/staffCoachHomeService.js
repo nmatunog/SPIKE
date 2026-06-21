@@ -11,7 +11,12 @@ import {
 import { deriveVentureIdentity } from './myVentureHqService.js';
 import { loadVentureDesignRecord, loadSquadDesignRecord } from './ventureDesignStudioService.js';
 import { getParticipantSquad } from './cohortFormationService.js';
-import { getWeeklyAssessment } from './weeklyAssessmentService.js';
+import {
+  averageSquadRatingForParticipant,
+  squadMemberIdsForIntern,
+} from './staff/squadAssessmentService.js';
+import { getSquadMentorReview } from './staff/squadXpService.js';
+import { listSquadInternNotes } from './staff/squadInternNotesService.js';
 import { listCoachingNotesForParticipant } from './coachingService.js';
 import { WEEK1_DAY_META } from './mentorWeek1Constants.js';
 import { getFacultyDayFromSeed, getMentorDayFromSeed } from './facultyMentorFrameworkSeed.js';
@@ -25,13 +30,6 @@ import {
   STAFF_COACH_TIPS,
 } from './staffCoachHomeConstants.js';
 import { playbookHref, staffStageGateHref } from '../routes/paths.js';
-
-/** @param {Record<string, number>} scores */
-function averageAssessmentScore(scores) {
-  const values = Object.values(scores ?? {}).filter((v) => v > 0);
-  if (!values.length) return 0;
-  return values.reduce((a, b) => a + b, 0) / values.length;
-}
 
 import { resolveEffectiveStaffProgramDay } from './programCalendar.js';
 
@@ -135,8 +133,8 @@ export function deriveTodayHero(role, week = 1, day = 1) {
       title: role === 'mentor' ? 'Score squads & coach research' : 'Activate — validation week',
       subtitle:
         role === 'mentor'
-          ? 'Daily squad pulse (30 sec) + weekly squad review (~1 min) feed Squad XP toward Stage Gate.'
-          : 'Facilitate customer discovery missions; mentors score squad progress daily.',
+          ? 'Weekly squad review (~1 min) feeds Squad XP toward Stage Gate — shared by the whole squad.'
+          : 'Facilitate customer discovery missions; mentors complete weekly squad reviews.',
       objectives: [
         'Squad mission acknowledged',
         'Interview guide complete',
@@ -266,9 +264,11 @@ export function deriveStaffCoachHome(interns, opts) {
   }).length;
 
   const engagementScores = interns.map((intern) => {
-    const assessment = getWeeklyAssessment(intern.id, week);
+    const squadName = intern.squad ?? 'Unassigned';
+    const memberIds = squadMemberIdsForIntern(interns, squadName);
+    const squadRating = averageSquadRatingForParticipant(intern.id, squadName, memberIds, week);
     const progress = deriveBlueprintCompletionPct(intern.id);
-    return averageAssessmentScore(assessment?.scores) || progress / 20;
+    return squadRating || progress / 20;
   });
   const avgEngagement = engagementScores.length
     ? (engagementScores.reduce((a, b) => a + b, 0) / engagementScores.length).toFixed(1)
@@ -282,11 +282,12 @@ export function deriveStaffCoachHome(interns, opts) {
             / memberIds.length,
         )
       : 0;
-    const assessments = memberIds
-      .map((id) => averageAssessmentScore(getWeeklyAssessment(id, week)?.scores))
-      .filter((s) => s > 0);
-    const assessmentAvg = assessments.length
-      ? assessments.reduce((a, b) => a + b, 0) / assessments.length
+    const review = getSquadMentorReview(squad.name, week);
+    const ratingValues = review
+      ? Object.values(review.ratings ?? {}).filter((v) => v > 0)
+      : [];
+    const assessmentAvg = ratingValues.length
+      ? ratingValues.reduce((a, b) => a + b, 0) / ratingValues.length
       : 0;
     const engagement = deriveEngagementLevel(progressPct, assessmentAvg);
     const next = deriveSquadNextAction(
@@ -380,9 +381,12 @@ export function deriveSquadHubDetail(interns, squadName, cohortStartDate) {
     const progressPct = week1OutputCompletionPct(outputs);
     const design = loadVentureDesignRecord(intern.id);
     const identity = deriveVentureIdentity(intern.id, intern.squad ?? '');
-    const assessment = getWeeklyAssessment(intern.id, week);
+    const squadName = intern.squad ?? 'Unassigned';
+    const memberIds = squadMemberIdsForIntern(interns, squadName);
+    const internNotes = listSquadInternNotes(intern.id, week);
     const notes = listCoachingNotesForParticipant(intern.id);
     const lastNote = notes[0];
+    const lastMigratedNote = internNotes[0];
 
     return {
       id: intern.id,
@@ -391,8 +395,11 @@ export function deriveSquadHubDetail(interns, squadName, cohortStartDate) {
       progressPct,
       fecStarted: design.isStarted || outputs.feCanvas,
       portfolioReady: outputs.portfolio,
-      assessmentAvg: averageAssessmentScore(assessment?.scores),
-      lastNotePreview: lastNote?.summary?.trim()?.slice(0, 80) ?? '',
+      assessmentAvg: averageSquadRatingForParticipant(intern.id, squadName, memberIds, week),
+      lastNotePreview:
+        lastMigratedNote?.text?.trim()?.slice(0, 80)
+        || lastNote?.summary?.trim()?.slice(0, 80)
+        || '',
     };
   });
 

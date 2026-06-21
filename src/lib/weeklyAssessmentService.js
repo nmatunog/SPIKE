@@ -1,8 +1,8 @@
 /**
- * Week 1 mentor weekly assessments — localStorage + optional Supabase sync.
+ * Legacy weekly assessments — read-only; new scoring uses squadXpService.
+ * One-time migration: squadAssessmentMigration.js
  */
-import { WEEK1_ASSESSMENT_CATEGORIES } from './mentorWeek1Constants.js';
-import { createWeeklyMentorAssessment, fetchWeeklyMentorAssessment } from './supabase/weeklyMentorAssessments.js';
+import { fetchWeeklyMentorAssessment } from './supabase/weeklyMentorAssessments.js';
 
 const STORAGE_KEY = 'spike_weekly_mentor_assessments';
 
@@ -68,49 +68,11 @@ export async function hydrateWeeklyAssessmentFromSupabase(participantId, week = 
 }
 
 /**
- * @param {string} mentorId
- * @param {string} participantId
- * @param {{
- *   week?: number,
- *   scores?: Record<string, number>,
- *   notes?: string,
- *   recommendation?: string,
- * }} input
+ * @deprecated Use squad weekly review + appendSquadInternNote instead.
  */
-export async function saveWeeklyAssessment(mentorId, participantId, input = {}) {
-  if (!mentorId || !participantId) return null;
-
-  const week = input.week ?? 1;
-  /** @type {Record<string, number>} */
-  const scores = {};
-
-  if (input.scores?.overall) {
-    scores.overall = Math.min(5, Math.max(1, Number(input.scores.overall) || 0));
-  } else {
-    for (const cat of WEEK1_ASSESSMENT_CATEGORIES) {
-      const raw = Number(input.scores?.[cat.id] ?? 0);
-      scores[cat.id] = Math.min(cat.max, Math.max(cat.min, raw || 0));
-    }
-  }
-
-  const entry = {
-    id: `assess-${crypto.randomUUID()}`,
-    mentorId,
-    participantId,
-    week,
-    scores,
-    notes: String(input.notes ?? '').trim().slice(0, 4000),
-    recommendation: input.recommendation ?? 'continue_normally',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
-
-  const all = readAll();
-  all[`${participantId}:w${week}`] = entry;
-  writeAll(all);
-
-  void createWeeklyMentorAssessment(mentorId, participantId, entry);
-  return entry;
+export async function saveWeeklyAssessment() {
+  console.warn('[SPIKE] saveWeeklyAssessment is deprecated — use SquadWeeklyReviewPanel + squadInternNotesService.');
+  return null;
 }
 
 /** @param {Record<string, number>} scores */

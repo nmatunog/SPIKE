@@ -1,18 +1,16 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Star, Trophy, Zap } from 'lucide-react';
+import { ArrowRight, Star, Trophy } from 'lucide-react';
 import { groupInternsBySquad } from '../../lib/mentorFrameworkService.js';
 import { ROUTES } from '../../routes/paths.js';
-import { MentorSquadRatingPanel } from '../staff/MentorSquadRatingPanel.jsx';
 import { SquadWeeklyReviewPanel } from '../staff/SquadWeeklyReviewPanel.jsx';
 import { SquadXpLeaderboard } from '../staff/SquadXpDashboard.jsx';
 
 /**
- * Week 2 mentor scoring — squad XP, daily pulse, weekly review (prominent on mentor home).
+ * Week 2 mentor scoring — squad XP and weekly review (prominent on mentor home).
  * @param {{
  *   mentorId: string,
  *   interns: Array<{ id: string, name: string, squad?: string }>,
  *   week?: number,
- *   day?: number,
  *   showToast?: (message: string, type?: string) => void,
  * }} props
  */
@@ -20,7 +18,6 @@ export function MentorWeek2ScoringSection({
   mentorId,
   interns,
   week = 2,
-  day = 1,
   showToast,
 }) {
   const squads = groupInternsBySquad(interns);
@@ -30,7 +27,7 @@ export function MentorWeek2ScoringSection({
       <section className="mt-10 rounded-2xl border border-dashed border-slate-200 bg-slate-50/80 p-6 text-sm text-slate-600">
         <p className="font-semibold text-slate-900">Week 2 squad scoring</p>
         <p className="mt-2">
-          Assign squads in cohort formation to score squad pulse and weekly reviews.
+          Assign squads in cohort formation to complete weekly squad reviews.
         </p>
       </section>
     );
@@ -46,8 +43,8 @@ export function MentorWeek2ScoringSection({
           </p>
           <h2 className="mt-2 text-2xl font-bold text-slate-900">Squad-first assessment</h2>
           <p className="mt-2 max-w-2xl text-sm text-slate-600">
-            Auto XP from intern missions (80%) + your weekly review bonus (20%). Daily pulse takes
-            ~30 seconds; end-of-week review ~1 minute — no per-intern essays.
+            Auto XP from intern missions (80%) + your weekly review bonus (20%). One squad review per
+            week (~1 minute) — no per-intern rubrics. Legacy notes carry over automatically.
           </p>
         </div>
         <Link
@@ -59,12 +56,7 @@ export function MentorWeek2ScoringSection({
         </Link>
       </header>
 
-      <div className="grid gap-3 sm:grid-cols-3">
-        <ScoringPrinciple
-          icon={Zap}
-          title="Daily pulse"
-          detail="1–5 for the whole squad today"
-        />
+      <div className="grid gap-3 sm:grid-cols-2">
         <ScoringPrinciple
           icon={Star}
           title="Weekly review"
@@ -81,23 +73,14 @@ export function MentorWeek2ScoringSection({
 
       <div className="space-y-6">
         {squads.map((squad) => (
-          <div key={squad.name} className="grid gap-4 xl:grid-cols-2">
-            <MentorSquadRatingPanel
-              staffId={mentorId}
-              squadName={squad.name}
-              week={week}
-              day={day}
-              interns={squad.members ?? []}
-              showToast={showToast}
-            />
-            <SquadWeeklyReviewPanel
-              staffId={mentorId}
-              squadName={squad.name}
-              week={week}
-              interns={squad.members ?? []}
-              showToast={showToast}
-            />
-          </div>
+          <SquadWeeklyReviewPanel
+            key={squad.name}
+            staffId={mentorId}
+            squadName={squad.name}
+            week={week}
+            interns={squad.members ?? []}
+            showToast={showToast}
+          />
         ))}
       </div>
     </section>
@@ -105,7 +88,8 @@ export function MentorWeek2ScoringSection({
 }
 
 /** @param {{ icon: import('lucide-react').LucideIcon, title: string, detail: string }} props */
-function ScoringPrinciple({ icon: Icon, title, detail }) {
+function ScoringPrinciple({ icon, title, detail }) {
+  const Icon = icon;
   return (
     <div className="rounded-xl border border-slate-200 bg-white px-4 py-3">
       <p className="flex items-center gap-2 text-sm font-semibold text-slate-900">

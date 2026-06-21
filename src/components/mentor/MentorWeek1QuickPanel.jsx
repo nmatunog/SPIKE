@@ -13,8 +13,8 @@ export function MentorWeek1QuickPanel() {
         <CalendarDays size={16} className="text-sky-700" /> Week 1 coaching guides
       </h3>
       <p className="mt-1 text-xs text-slate-500">
-        Open the day guide, then use <strong>Quick check-in</strong> on each participant&apos;s coaching
-        card. Save your day debrief below when you&apos;re done.
+        Open the day guide, then log coaching sessions on each participant&apos;s card. Complete your
+        squad weekly review from the mentor home dashboard.
       </p>
       <div className="mt-3 grid gap-2 sm:grid-cols-5">
         {WEEK1_DAY_META.map((meta) => (

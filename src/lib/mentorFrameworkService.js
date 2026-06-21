@@ -11,7 +11,13 @@ import {
 import { deriveWeekDay } from './sprint01Metrics.js';
 import { generateVenturePortfolio } from '../services/portfolioGenerator.js';
 import { getCoachSummaryForMentor } from './ventureCoachService.js';
-import { getWeeklyAssessment } from './weeklyAssessmentService.js';
+import {
+  getParticipantSquadAssessmentContext,
+  labelForStageGateDecision,
+  squadMemberIdsForIntern,
+} from './staff/squadAssessmentService.js';
+import { listSquadInternNotes } from './staff/squadInternNotesService.js';
+import { getSquadMentorReview } from './staff/squadXpService.js';
 import { VENTURE_DIRECTION_CARDS } from './ventureCoachConstants.js';
 import { isWeek1DayComplete } from './week1JourneyService.js';
 import { participantHasPitchDeckDeliverable } from './portfolioDeliverableService.js';
@@ -86,10 +92,13 @@ export function deriveCoachingQueue(interns, week = 1) {
         new Date(n.followUpDate).getTime() <= now,
     );
     const flagged = notes.some((n) => n.concernFlagged && !n.completed);
-    const assessment = getWeeklyAssessment(intern.id, week);
+    const squadName = intern.squad ?? 'Unassigned';
+    const memberIds = squadMemberIdsForIntern(interns, squadName);
+    const squadCtx = getParticipantSquadAssessmentContext(intern.id, squadName, memberIds, week);
     const outputs = getParticipantWeek1Outputs(intern.id);
     const outputPct = week1OutputCompletionPct(outputs);
     const licensingRisk = !intern.licensed && (intern.hours ?? 0) >= 85 && (intern.hours ?? 0) < 115;
+    const squadReviewMissing = squadName !== 'Unassigned' && !squadCtx.hasSquadReview;
 
     if (weekNotes.length === 0) {
       buckets.needs_review.push({ id: intern.id, name: intern.name, reason: 'No coaching conversation logged this week' });
@@ -101,11 +110,17 @@ export function deriveCoachingQueue(interns, week = 1) {
         reason: `Follow-up due ${followUpDue.followUpDate}`,
       });
     }
-    if (flagged || licensingRisk || (assessment && averageScores(assessment.scores) < 2.5)) {
+    if (flagged || licensingRisk || squadCtx.atRisk || squadReviewMissing) {
       buckets.at_risk.push({
         id: intern.id,
         name: intern.name,
-        reason: flagged ? 'Concern flagged' : licensingRisk ? 'Licensing window' : 'Low assessment scores',
+        reason: flagged
+          ? 'Concern flagged'
+          : licensingRisk
+            ? 'Licensing window'
+            : squadCtx.atRisk
+              ? 'Low squad review scores'
+              : 'Squad weekly review missing',
       });
     }
     if (outputPct < 60) {
@@ -118,13 +133,6 @@ export function deriveCoachingQueue(interns, week = 1) {
   }
 
   return buckets;
-}
-
-/** @param {Record<string, number>} scores */
-function averageScores(scores) {
-  const values = Object.values(scores ?? {}).filter((v) => v > 0);
-  if (!values.length) return 0;
-  return values.reduce((a, b) => a + b, 0) / values.length;
 }
 
 /**
@@ -202,8 +210,13 @@ export function deriveSquadSummaries(squads) {
  */
 export function buildWeek1CoachingSummary(participantId, participantName, meta = {}) {
   const coach = getCoachSummaryForMentor(participantId);
-  const assessment = getWeeklyAssessment(participantId, 1);
+  const squadName = meta.squad ?? 'Unassigned';
+  const memberIds = meta.memberIds ?? [];
+  const week = meta.week ?? 1;
+  const squadCtx = getParticipantSquadAssessmentContext(participantId, squadName, memberIds, week);
+  const review = squadName !== 'Unassigned' ? getSquadMentorReview(squadName, week) : null;
   const notes = listCoachingNotesForParticipant(participantId).slice(0, 10);
+  const internNotes = listSquadInternNotes(participantId, week);
   const track =
     VENTURE_DIRECTION_CARDS.find((c) => c.id === coach?.ventureDirection)?.label ?? 'Exploring';
 
@@ -220,14 +233,19 @@ export function buildWeek1CoachingSummary(participantId, participantName, meta =
     .filter(Boolean)
     .slice(0, 3);
 
+  const migratedRecommendation = internNotes.find((n) =>
+    n.source === 'Mentor recommendation' || n.migratedFrom === 'weekly_assessment_recommendation',
+  )?.text;
+  const gateLabel = labelForStageGateDecision(squadCtx.gateDecision);
   const recommendationLabel =
-    assessment?.recommendation === 'monitor_closely'
-      ? 'Monitor Closely'
-      : assessment?.recommendation === 'needs_coaching'
-        ? 'Needs Additional Coaching'
-        : assessment?.recommendation === 'future_leader'
-          ? 'Potential Future Leader'
-          : 'Continue Normally';
+    migratedRecommendation
+    || (gateLabel === 'Not Ready'
+      ? 'Needs Additional Coaching'
+      : gateLabel === 'Almost Ready'
+        ? 'Monitor Closely'
+        : gateLabel === 'Ready'
+          ? 'Continue Normally'
+          : 'Continue Normally');
 
   return {
     participantName,
@@ -239,7 +257,9 @@ export function buildWeek1CoachingSummary(participantId, participantName, meta =
       ? actionsFromNotes
       : ['Complete remaining Venture Coach sections', 'Schedule follow-up coaching', 'Publish Week 1 portfolio draft'],
     mentorRecommendation: recommendationLabel,
-    assessmentScores: assessment?.scores ?? {},
+    squadDimensionScores: review?.ratings ?? {},
+    internNotes,
+    squadXp: squadCtx.squadXp,
     generatedAt: new Date().toISOString(),
   };
 }

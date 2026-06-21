@@ -1,21 +1,37 @@
 import { buildWeek1CoachingSummary } from '../../lib/mentorFrameworkService.js';
-import { WEEK1_ASSESSMENT_CATEGORIES } from '../../lib/mentorWeek1Constants.js';
+import { MENTOR_REVIEW_DIMENSIONS } from '../../lib/staff/squadXpConstants.js';
+import { SquadInternNotesPanel } from '../staff/SquadInternNotesPanel.jsx';
 
 /**
  * @param {{
  *   participantId: string,
  *   participantName: string,
  *   squad?: string,
+ *   memberIds?: string[],
+ *   week?: number,
  * }} props
  */
-export function MentorWeek1SummaryPanel({ participantId, participantName, squad }) {
-  const summary = buildWeek1CoachingSummary(participantId, participantName, { squad });
+export function MentorWeek1SummaryPanel({
+  participantId,
+  participantName,
+  squad,
+  memberIds = [],
+  week = 1,
+}) {
+  const summary = buildWeek1CoachingSummary(participantId, participantName, {
+    squad,
+    memberIds,
+    week,
+  });
+  const dimensionScores = summary.squadDimensionScores ?? {};
 
   return (
     <div className="spike-card space-y-4">
       <div>
-        <h3 className="text-sm font-semibold text-slate-900">Week 1 coaching summary</h3>
-        <p className="mt-1 text-xs text-slate-500">Generated from coaching notes and assessment — review on Day 5.</p>
+        <h3 className="text-sm font-semibold text-slate-900">Week {week} coaching summary</h3>
+        <p className="mt-1 text-xs text-slate-500">
+          Generated from squad review, coaching notes, and carried-over mentor comments.
+        </p>
       </div>
 
       <dl className="grid gap-2 text-sm sm:grid-cols-3">
@@ -33,6 +49,12 @@ export function MentorWeek1SummaryPanel({ participantId, participantName, squad 
         </div>
       </dl>
 
+      {summary.squadXp > 0 ? (
+        <p className="text-sm text-slate-600">
+          Squad XP: <strong className="text-spike">{summary.squadXp}</strong> / 100 (shared)
+        </p>
+      ) : null}
+
       <SummaryList title="Strengths (top 3)" items={summary.strengths} />
       <SummaryList title="Growth areas (top 3)" items={summary.growthAreas} />
       <SummaryList title="Recommended actions" items={summary.recommendedActions} />
@@ -42,18 +64,25 @@ export function MentorWeek1SummaryPanel({ participantId, participantName, squad 
         <p className="mt-1 text-sm font-semibold text-slate-900">{summary.mentorRecommendation}</p>
       </div>
 
-      {Object.keys(summary.assessmentScores).length ? (
+      {Object.keys(dimensionScores).length ? (
         <div>
-          <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Assessment scores</p>
+          <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Squad review dimensions</p>
           <ul className="mt-2 grid gap-1 sm:grid-cols-2">
-            {WEEK1_ASSESSMENT_CATEGORIES.map((cat) => (
-              <li key={cat.id} className="text-sm text-slate-700">
-                {cat.label}: <strong>{summary.assessmentScores[cat.id] ?? '—'}</strong>/5
+            {MENTOR_REVIEW_DIMENSIONS.map((dim) => (
+              <li key={dim.id} className="text-sm text-slate-700">
+                {dim.label}: <strong>{dimensionScores[dim.id] ?? '—'}</strong>/5
               </li>
             ))}
           </ul>
         </div>
       ) : null}
+
+      <SquadInternNotesPanel
+        participantId={participantId}
+        participantName={participantName}
+        week={week}
+        compact
+      />
     </div>
   );
 }
