@@ -12,13 +12,26 @@ export function isChunkLoadError(error) {
   );
 }
 
+/** Stale hashed chunk still cached after deploy (e.g. old PlaybookShell calling slide.body.split). */
+export function isStaleModuleRuntimeError(error) {
+  const message = error instanceof Error ? error.message : String(error ?? '');
+  const stack = error instanceof Error ? String(error.stack ?? '') : '';
+  if (!/reading 'split'|reading "split"/i.test(message)) return false;
+  return /PlaybookShell|SlideViewer|PresentationViewer/i.test(stack);
+}
+
+/** @param {unknown} error */
+export function isRecoverableDeployError(error) {
+  return isChunkLoadError(error) || isStaleModuleRuntimeError(error);
+}
+
 /**
  * One automatic hard reload when a hashed chunk 404s (stale index.html after deploy).
  * @param {unknown} error
  * @returns {boolean} true if a reload was triggered
  */
 export function tryRecoverFromChunkLoadError(error) {
-  if (!isChunkLoadError(error)) return false;
+  if (!isRecoverableDeployError(error)) return false;
   try {
     if (sessionStorage.getItem(RELOAD_KEY) === '1') return false;
     sessionStorage.setItem(RELOAD_KEY, '1');
@@ -53,6 +66,12 @@ export function installChunkLoadRecovery() {
 
   window.addEventListener('unhandledrejection', (event) => {
     if (tryRecoverFromChunkLoadError(event.reason)) {
+      event.preventDefault();
+    }
+  });
+
+  window.addEventListener('error', (event) => {
+    if (tryRecoverFromChunkLoadError(event.error ?? new Error(event.message))) {
       event.preventDefault();
     }
   });

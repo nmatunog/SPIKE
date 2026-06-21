@@ -1,5 +1,8 @@
 import { Component } from 'react';
-import { isChunkLoadError, tryRecoverFromChunkLoadError } from '../lib/chunkLoadRecovery.js';
+import {
+  isRecoverableDeployError,
+  tryRecoverFromChunkLoadError,
+} from '../lib/chunkLoadRecovery.js';
 
 const RELOAD_KEY = 'spike_chunk_reload_once';
 
@@ -10,7 +13,7 @@ export class ChunkLoadErrorBoundary extends Component {
   }
 
   static getDerivedStateFromError(error) {
-    if (isChunkLoadError(error)) {
+    if (isRecoverableDeployError(error)) {
       return { failed: true, error };
     }
     return null;
@@ -18,7 +21,7 @@ export class ChunkLoadErrorBoundary extends Component {
 
   componentDidCatch(error) {
     if (tryRecoverFromChunkLoadError(error)) return;
-    if (isChunkLoadError(error)) {
+    if (isRecoverableDeployError(error)) {
       this.setState({ failed: true, error });
     }
   }
