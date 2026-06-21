@@ -70,7 +70,7 @@ export function VentureBlueprintShell({ user, viewerRole = 'intern', onProgressR
   const isCustomerDiscovery = moduleSlug === 'customer-discovery';
 
   const activeModule = getBlueprintModule(moduleSlug) ?? getBlueprintModule('overview');
-  const showTrackPicker = needsCareerTrackSelection(user.id, progress);
+  const showTrackPicker = needsCareerTrackSelection(user.id, progress) && !isCustomerDiscovery;
   const isOverview = moduleSlug === 'overview';
   const week1Simplified = isWeek1BuildSimplifiedMode(progress);
   const headerVariant = isOverview || isCustomerDiscovery ? 'none' : 'compact';

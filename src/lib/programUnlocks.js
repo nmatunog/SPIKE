@@ -3,6 +3,7 @@
  * Does not delete or overwrite participant data.
  */
 import { deriveWeekDay } from './sprint01Metrics.js';
+import { applyStageUnlockToParticipant } from './stageGateParticipantStorage.js';
 
 /**
  * When true, interns may use any Week 1 Playbook day and portfolio work without finishing
@@ -48,4 +49,18 @@ export function isPlaybookDayUnlocked(week, segment, day = 1) {
   if (segment !== 1 || week > 1) return true;
   if (UNLOCK_WEEK1_DAY2_PLUS) return day >= 1 && day <= 5;
   return day >= 1 && day <= 5;
+}
+
+/** @param {object | null | undefined} internProgress */
+export function isSegment1Week2Open(internProgress) {
+  return UNLOCK_WEEK2 && (internProgress?.segment ?? 1) === 1;
+}
+
+/**
+ * Local unlock — Week 2 open for all; no Week 1 submission or ceremony required.
+ * @param {string} participantId
+ */
+export function ensureWeek2OpenForParticipant(participantId) {
+  if (!UNLOCK_WEEK2 || !participantId) return;
+  applyStageUnlockToParticipant(participantId, 1, new Date().toISOString().slice(0, 10));
 }

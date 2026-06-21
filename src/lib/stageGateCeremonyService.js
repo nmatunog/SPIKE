@@ -17,6 +17,7 @@ import { listPortfolioDeliverablesLocal } from './portfolioDeliverableService.js
 import { deriveEngagementLevel } from './staffCoachHomeService.js';
 import { getStageGateDefinition } from './stageGateCeremonyConstants.js';
 import { isStageGateUnlocked, readStageGateUnlock } from './stageGateCeremonyStorage.js';
+import { UNLOCK_WEEK2 } from './programUnlocks.js';
 import { staffStageGateHref } from '../routes/paths.js';
 
 /** @param {string | undefined | null} value */
@@ -138,7 +139,7 @@ export function deriveStageGateCeremony(interns, opts = {}) {
   const role = opts.role ?? 'faculty';
   const gate = getStageGateDefinition(closingWeek);
   const squads = groupInternsBySquad(interns);
-  const unlocked = isStageGateUnlocked(segment, closingWeek);
+  const unlocked = isStageGateUnlocked(segment, closingWeek) || (UNLOCK_WEEK2 && segment === 1 && closingWeek === 1);
   const unlockRecord = readStageGateUnlock(segment, closingWeek);
 
   const squadRows = squads.map((squad) => {

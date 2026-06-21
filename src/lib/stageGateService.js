@@ -24,6 +24,7 @@ import { getParticipantSquad } from './cohortFormationService.js';
 import { isMockUserId } from './mockAuth.js';
 import { resolveClosingWeekForPresentation } from './stageGateCeremonyConstants.js';
 import { queuePortfolioStageGateCelebration } from './stageGatePortfolioCelebration.js';
+import { UNLOCK_WEEK2 } from './programUnlocks.js';
 
 /**
  * @typedef {{
@@ -72,8 +73,9 @@ function uuidLike(value) {
 export function validateStageCompletion(interns, opts = {}) {
   const model = deriveStageGateCeremony(interns, opts);
   const gate = model.gate;
-  const ready =
-    model.metrics.totalInterns > 0
+  const ready = UNLOCK_WEEK2 && opts.closingWeek === 1
+    ? model.metrics.totalInterns > 0
+    : model.metrics.totalInterns > 0
     && model.metrics.totalSquads > 0
     && model.metrics.pitchesSubmittedPct >= 50;
   const week1CompletionPct = model.squads.length
@@ -96,7 +98,9 @@ export function validateStageCompletion(interns, opts = {}) {
     },
     blockers: ready
       ? []
-      : [
+      : UNLOCK_WEEK2 && opts.closingWeek === 1
+        ? []
+        : [
           model.metrics.totalSquads === 0 ? 'Assign squads before unlocking.' : null,
           model.metrics.pitchesSubmittedPct < 50
             ? 'Upload squad pitch decks to portfolio (Presentation category).'

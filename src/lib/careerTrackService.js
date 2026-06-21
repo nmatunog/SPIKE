@@ -3,7 +3,7 @@
  * Interns explore shared curriculum in Week 1; track choice gates from Week 2 onward.
  */
 import { isSupabaseConfigured, supabase } from '../supabaseClient.js';
-import { deriveWeekDay } from './sprint01Metrics.js';
+import { resolveInternProgramWeek } from './programUnlocks.js';
 import {
   isMockUserId,
   shouldUseSupabaseForUser,
@@ -32,10 +32,7 @@ function writeConfirmed(data) {
  */
 export function getProgramWeek(internProgress) {
   if (!internProgress) return 1;
-  if (internProgress.current_week != null) {
-    return Math.max(1, Number(internProgress.current_week));
-  }
-  return deriveWeekDay(internProgress.hours ?? 0).currentWeek;
+  return resolveInternProgramWeek(internProgress);
 }
 
 /**

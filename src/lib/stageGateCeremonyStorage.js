@@ -1,6 +1,8 @@
 /**
  * Persist stage gate unlock state (local until cohort gate RPC ships).
  */
+import { UNLOCK_WEEK2 } from './programUnlocks.js';
+
 const STORAGE_KEY = 'spike_stage_gate_unlocks';
 
 /** @param {number} segment @param {number} closingWeek */
@@ -26,6 +28,7 @@ function writeAll(data) {
 
 /** @param {number} segment @param {number} closingWeek */
 export function isStageGateUnlocked(segment, closingWeek) {
+  if (UNLOCK_WEEK2 && segment === 1 && closingWeek === 1) return true;
   const key = stageGateKey(segment, closingWeek);
   return Boolean(readAll().gates?.[key]?.unlockedAt);
 }

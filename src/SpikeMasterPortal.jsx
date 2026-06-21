@@ -35,7 +35,7 @@ import { ROUTES, brandLexiconBackHrefForRole, facilitatorsReferenceBackHrefForRo
 import { StaffSquadHubPage, StaffSquadsListPage } from './components/staff/StaffSquadHubPage.jsx';
 import { Week2LoginWelcomeFlow } from './components/week2/Week2LoginWelcomeFlow.jsx';
 import { shouldShowWeek2LoginWelcome } from './lib/week2LoginWelcome.js';
-import { UNLOCK_WEEK2 } from './lib/programUnlocks.js';
+import { UNLOCK_WEEK2, ensureWeek2OpenForParticipant } from './lib/programUnlocks.js';
 import { StageGateCeremonyPage } from './components/stageGate/StageGateCeremonyPage.jsx';
 import { StageGatePresentationPage } from './pages/stageGate/StageGatePresentationPage.jsx';
 import { PageContainer } from './components/layout/PageContainer.jsx';
@@ -209,6 +209,12 @@ const SpikeMasterPortal = () => {
       navigate(defaultRouteForRole(effectiveUserRole), { replace: true });
     }
   }, [authLoading, userRole, effectiveUserRole, location.pathname, navigate]);
+
+  useEffect(() => {
+    if (authLoading || portalAccessRole !== 'intern') return;
+    const internId = (internModuleUser ?? user)?.id;
+    if (internId && UNLOCK_WEEK2) ensureWeek2OpenForParticipant(internId);
+  }, [authLoading, portalAccessRole, internModuleUser?.id, user?.id]);
 
   useEffect(() => {
     if (userRole !== 'superuser' && viewAsRole) {

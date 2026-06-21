@@ -2,6 +2,7 @@
  * Participant stage progress, certificates, and unlock notifications (local + Supabase sync).
  */
 import { supabase, isSupabaseConfigured } from '../supabaseClient.js';
+import { UNLOCK_WEEK2 } from './programUnlocks.js';
 
 const PROGRESS_KEY = 'spike_stage_progress';
 const CERTS_KEY = 'spike_stage_gate_certificates';
@@ -28,7 +29,11 @@ function writeJson(key, value) {
 /** @returns {Record<string, { status: StageStatus, completedDate?: string | null }>} */
 export function readParticipantStageProgress(participantId) {
   const all = readJson(PROGRESS_KEY, {});
-  return all[participantId] ?? defaultStageProgress();
+  let progress = { ...defaultStageProgress(), ...(all[participantId] ?? {}) };
+  if (UNLOCK_WEEK2 && progress.discover?.status !== 'completed') {
+    progress = applyStageUnlockToParticipant(participantId, 1, new Date().toISOString().slice(0, 10));
+  }
+  return progress;
 }
 
 function defaultStageProgress() {

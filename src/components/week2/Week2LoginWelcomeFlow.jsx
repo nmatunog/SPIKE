@@ -74,7 +74,14 @@ export function Week2LoginWelcomeFlow({ participantId, participantName = 'Partic
           )}
         </div>
 
-        <div className="sticky bottom-0 flex flex-wrap justify-end gap-3 border-t border-slate-100 bg-white px-6 py-4">
+        <div className="sticky bottom-0 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 bg-white px-6 py-4">
+          <button
+            type="button"
+            onClick={finish}
+            className="text-sm font-semibold text-slate-500 hover:text-slate-800"
+          >
+            Skip for now
+          </button>
           {step === 0 ? (
             <button type="button" onClick={() => setStep(1)} className="spike-btn-primary inline-flex gap-2">
               Continue to Week 2

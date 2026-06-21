@@ -1,4 +1,5 @@
 import { deriveWeekDay } from './sprint01Metrics.js';
+import { resolveInternProgramWeek } from './programUnlocks.js';
 import { countCompletedFnas } from './fnaService.js';
 import { computeSpikeReadinessScore } from './spikeReadinessScore.js';
 import { computeBlueprintCompletion } from './blueprintCompletion.js';
@@ -14,7 +15,7 @@ export function buildParticipantState(participantId, internProgress) {
   const hours = internProgress?.hours ?? 0;
   const segment = internProgress?.segment ?? 1;
   const derived = deriveWeekDay(hours);
-  let week = internProgress?.current_week ?? derived.currentWeek;
+  let week = resolveInternProgramWeek(internProgress);
   let day = internProgress?.current_day ?? derived.currentDay;
   if (participantId === SUPERUSER_INTERN_PREVIEW_PARTICIPANT_ID) {
     const calendar = resolveSuperuserInternCalendarDay();
