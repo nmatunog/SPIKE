@@ -19,9 +19,15 @@ import { useCohortProgramDay } from '../../hooks/useCohortProgramDay.js';
  *   interns: Array<{ id: string, name: string, hours?: number, squad?: string, licensed?: boolean }>,
  *   mentorId?: string,
  *   showToast?: (message: string) => void,
+ *   hideWeek2Scoring?: boolean,
  * }} props
  */
-export function MentorDashboardPanels({ interns, mentorId = '', showToast }) {
+export function MentorDashboardPanels({
+  interns,
+  mentorId = '',
+  showToast,
+  hideWeek2Scoring = false,
+}) {
   const ids = interns.map((i) => i.id);
   const { ready, version } = useCohortHydration(ids, { enabled: interns.length > 0, interns });
   const { programDay } = useCohortProgramDay();
@@ -136,11 +142,11 @@ export function MentorDashboardPanels({ interns, mentorId = '', showToast }) {
         </div>
       </section>
 
-      {squadsGrouped.length > 0 ? (
+      {!hideWeek2Scoring && squadsGrouped.length > 0 ? (
         <SquadXpLeaderboard interns={interns} week={programDay.week} />
       ) : null}
 
-      {mentorId && squadsGrouped.length > 0 ? (
+      {!hideWeek2Scoring && mentorId && squadsGrouped.length > 0 ? (
         <div className="grid gap-4 lg:grid-cols-2">
           {squadsGrouped.map((squad) => (
             <SquadWeeklyReviewPanel

@@ -32,6 +32,7 @@ import { BlueprintTimelineFeed } from './components/blueprint/BlueprintTimelineF
 import { PageLoader } from './components/ui/PageLoader.jsx';
 import { RoleRouteGuard } from './components/routing/RoleRouteGuard.jsx';
 import { playbookWeek2MissionHref } from './lib/customerDiscovery/week2MissionService.js';
+import { buildSuperuserMentorPreviewInterns } from './lib/superuserMentorPreview.js';
 import { ROUTES, brandLexiconBackHrefForRole, facilitatorsReferenceBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath, isPlaybookPath, parseStaffSquadHubPath, parseStaffStageGatePath, playbookHref } from './routes/paths.js';
 import { StaffSquadHubPage, StaffSquadsListPage } from './components/staff/StaffSquadHubPage.jsx';
 import { Week2LoginWelcomeFlow } from './components/week2/Week2LoginWelcomeFlow.jsx';
@@ -489,9 +490,12 @@ const SpikeMasterPortal = () => {
   }, [user?.role, usingSupabaseAuth, loadPasswordResetRequests]);
 
   const mentorInterns = useMemo(() => {
+    if (isSuperuserSession && viewAsRole === 'mentor') {
+      return buildSuperuserMentorPreviewInterns(interns);
+    }
     if (user?.role !== 'MENTOR') return interns;
     return filterInternsForMentor(interns, user?.id, 'mentor');
-  }, [interns, user?.id, user?.role]);
+  }, [interns, user?.id, user?.role, isSuperuserSession, viewAsRole]);
 
   const internSummary = useMemo(() => {
     const list = interns;

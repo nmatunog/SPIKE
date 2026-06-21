@@ -10,7 +10,8 @@ import { MentorDashboardPanels } from '../../components/mentor/MentorDashboardPa
 import { StageGateReadyCard } from '../../components/stageGate/StageGateReadyCard.jsx';
 import { ROUTES, staffStageGateHref } from '../../routes/paths.js';
 import { DailyActivationCodeCard } from '../../components/dashboard/DailyActivationCodeCard.jsx';
-import { CohortOnboardingControls } from '../../components/faculty/CohortOnboardingControls.jsx';
+import { MentorWeek2ScoringSection } from '../../components/mentor/MentorWeek2ScoringSection.jsx';
+import { UNLOCK_WEEK2 } from '../../lib/programUnlocks.js';
 
 /**
  * @param {{
@@ -27,6 +28,7 @@ export function MentorHomePage({ user, interns, showToast }) {
   const { cohortStartDate, programDay } = useCohortProgramDay();
   const stageGateHref = staffStageGateHref('mentor', 1, programDay.week);
   const closingWeek = programDay.week;
+  const showWeek2Scoring = UNLOCK_WEEK2 && programDay.week >= 2;
 
   return (
     <PageContainer wide>
@@ -37,6 +39,16 @@ export function MentorHomePage({ user, interns, showToast }) {
         homeHref={ROUTES.mentorHome}
         cohortStartDate={cohortStartDate}
       />
+
+      {showWeek2Scoring && user?.id ? (
+        <MentorWeek2ScoringSection
+          mentorId={user.id}
+          interns={interns}
+          week={programDay.week}
+          day={programDay.day}
+          showToast={showToast}
+        />
+      ) : null}
 
       <div className="mt-10 border-t border-slate-200 pt-8">
         <button
@@ -70,7 +82,12 @@ export function MentorHomePage({ user, interns, showToast }) {
             </section>
             <DailyActivationCodeCard />
             {user?.id ? <CohortOnboardingControls staffId={user.id} photoOnly /> : null}
-            <MentorDashboardPanels interns={interns} mentorId={user?.id ?? ''} showToast={showToast} />
+            <MentorDashboardPanels
+              interns={interns}
+              mentorId={user?.id ?? ''}
+              showToast={showToast}
+              hideWeek2Scoring={showWeek2Scoring}
+            />
             <MentorWeek1QuickPanel />
             {user?.id ? (
               <MentorDayDebriefPanel mentorId={user.id} showToast={showToast} />

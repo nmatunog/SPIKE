@@ -18,8 +18,12 @@ import {
 } from './ventureCoachStorage.js';
 import { COACH_SECTIONS } from './ventureCoachConstants.js';
 
+import { saveWeek2Discovery } from './customerDiscovery/week2DiscoveryStorage.js';
+
+export const SUPERUSER_MENTOR_PREVIEW_PEER_IDS = ['mock-peer-1', 'mock-peer-2'];
+
 export const SUPERUSER_INTERN_PREVIEW_PARTICIPANT_ID = 'mock-superuser-intern-preview';
-export const SUPERUSER_INTERN_PREVIEW_SEED_VERSION = 'v3';
+export const SUPERUSER_INTERN_PREVIEW_SEED_VERSION = 'v4';
 const SEEDED_MARKER_KEY = 'spike_superuser_intern_preview_seed';
 const PROGRESS_PATCH_KEY = 'spike_superuser_intern_preview_progress';
 
@@ -450,6 +454,33 @@ function seedSquadMembership(participantId) {
   writeFormationStore(store);
 }
 
+/** Seed Week 2 discovery progress for mentor scoring preview (Squad Catalyst). */
+function seedWeek2SquadSampleProgress(leaderId) {
+  const now = new Date().toISOString();
+  saveWeek2Discovery(leaderId, {
+    missionAcknowledged: true,
+    guideCompletedAt: now,
+    portfolioSyncedAt: now,
+    thinkingShifts: [{ id: 'ts-1', promptId: 'thinking', response: 'Customers care more about trust than price.' }],
+    interviews: [
+      { id: 'iv-1', encoded: true },
+      { id: 'iv-2', encoded: true },
+      { id: 'iv-3', encoded: true },
+    ],
+  });
+  saveWeek2Discovery(SUPERUSER_MENTOR_PREVIEW_PEER_IDS[0], {
+    missionAcknowledged: true,
+    guideCompletedAt: now,
+    portfolioSyncedAt: now,
+    thinkingShifts: [{ id: 'ts-1', promptId: 'thinking', response: 'Interviewees want simpler onboarding.' }],
+    interviews: [{ id: 'iv-1', encoded: true }, { id: 'iv-2', encoded: true }],
+  });
+  saveWeek2Discovery(SUPERUSER_MENTOR_PREVIEW_PEER_IDS[1], {
+    missionAcknowledged: true,
+    guideCompletedAt: now,
+  });
+}
+
 /** @param {string} participantId */
 function seedPortfolioSettings(participantId) {
   savePortfolioSettings(participantId, {
@@ -473,6 +504,7 @@ export function seedSuperuserInternPortfolio(
   seedFnaRecords(participantId);
   seedSquadMembership(participantId);
   seedPortfolioSettings(participantId);
+  seedWeek2SquadSampleProgress(participantId);
 
   localStorage.setItem(SEEDED_MARKER_KEY, SUPERUSER_INTERN_PREVIEW_SEED_VERSION);
   return true;

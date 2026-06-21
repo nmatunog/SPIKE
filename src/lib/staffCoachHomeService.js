@@ -33,7 +33,7 @@ function averageAssessmentScore(scores) {
   return values.reduce((a, b) => a + b, 0) / values.length;
 }
 
-import { resolveStaffProgramDay } from './programCalendar.js';
+import { resolveEffectiveStaffProgramDay } from './programCalendar.js';
 
 /** Segment 1 playbook seeds ship for week 1 — map calendar week onto published content. */
 function staffContentWeekDay(role, week, day, segment = 1) {
@@ -126,6 +126,32 @@ export function deriveTodaySchedule(role, week = 1, day = 1, segment = 1) {
  * @param {number} day
  */
 export function deriveTodayHero(role, week = 1, day = 1) {
+  if (week >= 2) {
+    const schedule = deriveTodaySchedule(role, week, day);
+    const totalMinutes = schedule.items.reduce((sum, item) => sum + (item.minutes ?? 0), 0);
+    return {
+      dayLabel: `Week ${week} · Day ${day}`,
+      themeLabel: 'Activate · Customer Discovery',
+      title: role === 'mentor' ? 'Score squads & coach research' : 'Activate — validation week',
+      subtitle:
+        role === 'mentor'
+          ? 'Daily squad pulse (30 sec) + weekly squad review (~1 min) feed Squad XP toward Stage Gate.'
+          : 'Facilitate customer discovery missions; mentors score squad progress daily.',
+      objectives: [
+        'Squad mission acknowledged',
+        'Interview guide complete',
+        'Thinking shifts captured',
+      ],
+      expectedOutputs: [
+        'Squad XP leaderboard',
+        'Mentor bonus XP',
+        'Stage gate readiness',
+      ],
+      estimatedMinutes: totalMinutes || 240,
+      topActivities: schedule.items.slice(0, 3),
+    };
+  }
+
   const content = staffContentWeekDay(role, week, day, 1);
   const template =
     role === 'mentor'
@@ -222,7 +248,7 @@ function deriveSquadNextAction(members, week, day) {
  */
 export function deriveStaffCoachHome(interns, opts) {
   const { role, staffName = 'Coach', cohortStartDate } = opts;
-  const { week, day } = resolveStaffProgramDay(cohortStartDate);
+  const { week, day } = resolveEffectiveStaffProgramDay(cohortStartDate);
   const squads = groupInternsBySquad(interns);
   const queue = deriveCoachingQueue(interns, week);
   const assigned = deriveAssignedParticipants(interns);
@@ -346,7 +372,7 @@ export function squadNameFromSlug(slug) {
  */
 export function deriveSquadHubDetail(interns, squadName, cohortStartDate) {
   const members = interns.filter((i) => (i.squad ?? 'Unassigned') === squadName);
-  const { week, day } = resolveStaffProgramDay(cohortStartDate);
+  const { week, day } = resolveEffectiveStaffProgramDay(cohortStartDate);
   const ventureLabel = deriveSquadVentureLabel(members, week, day);
 
   const memberRows = members.map((intern) => {

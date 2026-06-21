@@ -1,7 +1,7 @@
 /**
  * Cohort program calendar — resolve Week/Day for staff dashboards and playbook defaults.
  */
-import { resolveInternPlaybookDay } from './programUnlocks.js';
+import { resolveInternPlaybookDay, UNLOCK_WEEK2 } from './programUnlocks.js';
 
 /** Week 1 Day 1 = Mon 2026-06-15 → Fri 2026-06-19 = Day 5. Override via VITE_COHORT_START_DATE. */
 export const DEFAULT_COHORT_START_DATE =
@@ -176,4 +176,19 @@ export function resolveCohortProgramDay(interns, cohortStartDate, override, now 
 /** @deprecated Use resolveCohortProgramDay */
 export function deriveCohortWeekDay(interns, cohortStartDate) {
   return resolveCohortProgramDay(interns, cohortStartDate);
+}
+
+/**
+ * Staff/coach Week/Day — applies cohort pilot unlocks (Week 2 Activate).
+ * @param {string | null | undefined} cohortStartDate
+ * @param {Date} [now]
+ */
+export function resolveEffectiveStaffProgramDay(cohortStartDate, now = new Date()) {
+  const calendar = resolveStaffProgramDay(cohortStartDate, now);
+  if (!UNLOCK_WEEK2) return calendar;
+  if (calendar.week < 2) return { week: 2, day: 1 };
+  return {
+    week: calendar.week,
+    day: Math.max(1, Math.min(5, calendar.day)),
+  };
 }

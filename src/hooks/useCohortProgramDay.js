@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
   effectiveCohortStartDate,
-  resolveStaffProgramDay,
+  resolveEffectiveStaffProgramDay,
 } from '../lib/programCalendar.js';
 import { fetchActiveCohort } from '../lib/supabase/cohortOnboarding.js';
 
@@ -30,7 +30,7 @@ export function useCohortProgramDay() {
   }, []);
 
   const programDay = useMemo(
-    () => resolveStaffProgramDay(cohortStartDate),
+    () => resolveEffectiveStaffProgramDay(cohortStartDate),
     [cohortStartDate],
   );
 
