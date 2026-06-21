@@ -1,0 +1,34 @@
+{
+  "activities": [
+    {
+      "id": "activity-w5-d4-01",
+      "dayId": "day-segment-1-week-5-day-4",
+      "title": "Three-Year Blueprint Builder",
+      "durationMinutes": 50,
+      "materials": [],
+      "instructions": [
+        "Complete Year 1–3 milestones",
+        "Link to licensing and ops readiness"
+      ],
+      "outputs": [
+        "3-year blueprint artifact"
+      ],
+      "debriefQuestions": []
+    },
+    {
+      "id": "activity-w5-d4-02",
+      "dayId": "day-segment-1-week-5-day-4",
+      "title": "Business Plan Integration Workshop",
+      "durationMinutes": 40,
+      "materials": [],
+      "instructions": [
+        "Merge chapter summaries",
+        "Identify gaps"
+      ],
+      "outputs": [
+        "Integrated plan outline"
+      ],
+      "debriefQuestions": []
+    }
+  ]
+}

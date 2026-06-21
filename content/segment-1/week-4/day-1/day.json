@@ -1,0 +1,39 @@
+{
+  "id": "day-segment-1-week-4-day-1",
+  "segmentId": "segment-1",
+  "weekId": "week-segment-1-4",
+  "dayNumber": 1,
+  "title": "Day 16 — Insurance Code, AMLA & Data Privacy Ethics",
+  "theme": "Compliance & Ethics",
+  "durationHours": 4,
+  "learningObjectives": [
+    "Explain core insurance code principles and advisor duties",
+    "Apply AMLA red-flag awareness to case vignettes",
+    "Practice data privacy protocols for client information",
+    "Analyze ethics case studies with defensible reasoning"
+  ],
+  "expectedOutputs": [
+    "Ethics case memo",
+    "Privacy checklist"
+  ],
+  "portfolioDeliverables": [
+    "portfolio-professional-development"
+  ],
+  "businessPlanIntegration": "bp-chapter-4",
+  "presentations": [
+    "presentation-w4-d1-deck-01",
+    "presentation-w4-d1-deck-02"
+  ],
+  "activities": [
+    "activity-w4-d1-01",
+    "activity-w4-d1-02",
+    "activity-w4-d1-03"
+  ],
+  "worksheets": [
+    "worksheet-w4-d1-01",
+    "worksheet-w4-d1-02"
+  ],
+  "assessments": [
+    "assessment-w4-d1"
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "dayId": "day-segment-1-week-5-day-3",
+  "title": "Facilitator Guide — Day 23 — Venture Board Deck Workshop",
+  "durationHours": 4,
+  "prepChecklist": [
+    "Confirm board date logistics",
+    "Load feedback templates"
+  ],
+  "sessionFlow": [
+    {
+      "time": "0:00–0:25",
+      "activity": "Deck 01 — Board standards",
+      "notes": ""
+    },
+    {
+      "time": "0:25–1:15",
+      "activity": "Rehearsal round 1",
+      "notes": ""
+    },
+    {
+      "time": "1:15–1:25",
+      "activity": "Break",
+      "notes": ""
+    },
+    {
+      "time": "1:25–2:05",
+      "activity": "Revision sprint",
+      "notes": ""
+    },
+    {
+      "time": "2:05–2:35",
+      "activity": "Rehearsal round 2",
+      "notes": ""
+    },
+    {
+      "time": "2:35–3:00",
+      "activity": "Reflection + Day 24 preview",
+      "notes": ""
+    }
+  ],
+  "debriefQuestions": [
+    "Which squads have credible market evidence?",
+    "Q&A weak spots?"
+  ],
+  "commonPitfalls": [
+    "Slide overload",
+    "Missing ops/licensing story"
+  ],
+  "coachingTips": [
+    "Push for one clear ask at the end"
+  ]
+}

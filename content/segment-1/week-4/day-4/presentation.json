@@ -1,0 +1,61 @@
+{
+  "presentation": {
+    "id": "presentation-w4-d4-deck-01",
+    "dayId": "day-segment-1-week-4-day-4",
+    "title": "Program Coach Deck 01 — Mock Exam Day Briefing",
+    "slideIds": [
+      "slide-w4-d4-dk1-01",
+      "slide-w4-d4-dk1-02",
+      "slide-w4-d4-dk1-03",
+      "slide-w4-d4-dk1-04",
+      "slide-w4-d4-dk1-05"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-w4-d4-dk1-01",
+      "presentationId": "presentation-w4-d4-deck-01",
+      "title": "Day 19 — Simulate to Calibrate",
+      "body": "Serious but not punitive tone.",
+      "speakerNotes": "Exam conditions.",
+      "discussionQuestions": [],
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-w4-d4-dk1-02",
+      "presentationId": "presentation-w4-d4-deck-01",
+      "title": "Exam Rules & Timing",
+      "body": "Devices, breaks, materials.",
+      "speakerNotes": "Exam conditions.",
+      "discussionQuestions": [],
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-w4-d4-dk1-03",
+      "presentationId": "presentation-w4-d4-deck-01",
+      "title": "Scoring & Remediation Paths",
+      "body": "What happens after results.",
+      "speakerNotes": "Exam conditions.",
+      "discussionQuestions": [],
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-w4-d4-dk1-04",
+      "presentationId": "presentation-w4-d4-deck-01",
+      "title": "Wellness Check",
+      "body": "Sleep, nutrition, stress tools.",
+      "speakerNotes": "Exam conditions.",
+      "discussionQuestions": [],
+      "sortOrder": 4
+    },
+    {
+      "id": "slide-w4-d4-dk1-05",
+      "presentationId": "presentation-w4-d4-deck-01",
+      "title": "Deck 01 Close — Exam A",
+      "body": "",
+      "speakerNotes": "Exam conditions.",
+      "discussionQuestions": [],
+      "sortOrder": 5
+    }
+  ]
+}

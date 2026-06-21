@@ -1,0 +1,61 @@
+{
+  "presentation": {
+    "id": "presentation-w5-d5-deck-01",
+    "dayId": "day-segment-1-week-5-day-5",
+    "title": "Program Coach Deck 01 — Hour 200 Venture Board Gate",
+    "slideIds": [
+      "slide-w5-d5-dk1-01",
+      "slide-w5-d5-dk1-02",
+      "slide-w5-d5-dk1-03",
+      "slide-w5-d5-dk1-04",
+      "slide-w5-d5-dk1-05"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-w5-d5-dk1-01",
+      "presentationId": "presentation-w5-d5-deck-01",
+      "title": "Day 25 — Segment 1 Capstone",
+      "body": "",
+      "speakerNotes": "Capstone ceremony.",
+      "discussionQuestions": [],
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-w5-d5-dk1-02",
+      "presentationId": "presentation-w5-d5-deck-01",
+      "title": "Gate Evidence Checklist",
+      "body": "Portfolio, plan, board deck, licensing path.",
+      "speakerNotes": "Capstone ceremony.",
+      "discussionQuestions": [],
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-w5-d5-dk1-03",
+      "presentationId": "presentation-w5-d5-deck-01",
+      "title": "Final Presentation Format",
+      "body": "",
+      "speakerNotes": "Capstone ceremony.",
+      "discussionQuestions": [],
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-w5-d5-dk1-04",
+      "presentationId": "presentation-w5-d5-deck-01",
+      "title": "Panel Q&A Standards",
+      "body": "",
+      "speakerNotes": "Capstone ceremony.",
+      "discussionQuestions": [],
+      "sortOrder": 4
+    },
+    {
+      "id": "slide-w5-d5-dk1-05",
+      "presentationId": "presentation-w5-d5-deck-01",
+      "title": "Deck 01 Close",
+      "body": "",
+      "speakerNotes": "Capstone ceremony.",
+      "discussionQuestions": [],
+      "sortOrder": 5
+    }
+  ]
+}

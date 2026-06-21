@@ -1,0 +1,32 @@
+{
+  "dayId": "day-segment-1-week-3-day-1",
+  "theme": "Discipline",
+  "title": "Mentor Guide — Day 11 — Underwriting Principles & Risk Assessment",
+  "coachingObjective": "Build respect for backend rigor.",
+  "timing": {
+    "preSession": "Review facilitator guide and deck speaker notes",
+    "duringSession": "Circulate during squad activities",
+    "postSession": "Complete squad weekly review snapshot"
+  },
+  "discussionQuestions": [
+    "Where did squads disagree on risk?",
+    "Did anyone rationalize hiding information?",
+    "How does underwriting affect client trust?"
+  ],
+  "observationAreas": [
+    "Analytical reasoning",
+    "Ethics language",
+    "Team deliberation"
+  ],
+  "coachingTips": [
+    "Reward transparent reasoning over fast answers"
+  ],
+  "warningSigns": [],
+  "reflectionPrompts": [],
+  "expectedOutcomes": [
+    "Underwriting case memo",
+    "Risk factor map"
+  ],
+  "activityCoachingNotes": [],
+  "debriefWithFaculty": []
+}

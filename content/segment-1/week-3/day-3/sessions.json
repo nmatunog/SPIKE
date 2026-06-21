@@ -1,0 +1,33 @@
+{
+  "sessions": [
+    {
+      "id": "session-w3-d3-full",
+      "dayId": "day-segment-1-week-3-day-3",
+      "sessionNumber": 1,
+      "title": "Day 13 — Claims Processing & Empathy Delivery",
+      "durationMinutes": 240,
+      "presentationIds": [
+        "presentation-w3-d3-deck-01",
+        "presentation-w3-d3-deck-02"
+      ],
+      "activityIds": [
+        "activity-w3-d3-01",
+        "activity-w3-d3-02",
+        "activity-w3-d3-03"
+      ],
+      "worksheetIds": [
+        "worksheet-w3-d3-01",
+        "worksheet-w3-d3-02"
+      ],
+      "assessmentIds": [
+        "assessment-w3-d3"
+      ],
+      "reflectionIds": [
+        "reflection-w3-d3"
+      ],
+      "surveyIds": [
+        "survey-w3-d3"
+      ]
+    }
+  ]
+}

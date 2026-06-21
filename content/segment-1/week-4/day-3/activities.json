@@ -1,0 +1,47 @@
+{
+  "activities": [
+    {
+      "id": "activity-w4-d3-01",
+      "dayId": "day-segment-1-week-4-day-3",
+      "title": "VUL Timed Drill",
+      "durationMinutes": 40,
+      "materials": [],
+      "instructions": [
+        "Individual timed set",
+        "Log misses by domain"
+      ],
+      "outputs": [
+        "VUL drill score sheet"
+      ],
+      "debriefQuestions": []
+    },
+    {
+      "id": "activity-w4-d3-02",
+      "dayId": "day-segment-1-week-4-day-3",
+      "title": "Plain Language Explanation Lab",
+      "durationMinutes": 40,
+      "materials": [],
+      "instructions": [
+        "60-sec explanations peer scored"
+      ],
+      "outputs": [
+        "Explanation feedback"
+      ],
+      "debriefQuestions": []
+    },
+    {
+      "id": "activity-w4-d3-03",
+      "dayId": "day-segment-1-week-4-day-3",
+      "title": "Fee Disclosure Roleplay",
+      "durationMinutes": 30,
+      "materials": [],
+      "instructions": [
+        "Advisor explains charges without minimizing"
+      ],
+      "outputs": [
+        "Roleplay notes"
+      ],
+      "debriefQuestions": []
+    }
+  ]
+}

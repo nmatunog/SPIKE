@@ -1,0 +1,61 @@
+{
+  "presentation": {
+    "id": "presentation-w4-d3-deck-02",
+    "dayId": "day-segment-1-week-4-day-3",
+    "title": "Program Coach Deck 02 — VUL Drill & Explanation Lab",
+    "slideIds": [
+      "slide-w4-d3-dk2-01",
+      "slide-w4-d3-dk2-02",
+      "slide-w4-d3-dk2-03",
+      "slide-w4-d3-dk2-04",
+      "slide-w4-d3-dk2-05"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-w4-d3-dk2-01",
+      "presentationId": "presentation-w4-d3-deck-02",
+      "title": "Drill Set — VUL Fundamentals",
+      "body": "Timed questions.",
+      "speakerNotes": "Practice explaining simply.",
+      "discussionQuestions": [],
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-w4-d3-dk2-02",
+      "presentationId": "presentation-w4-d3-deck-02",
+      "title": "Explain to a Friend",
+      "body": "60-second plain language.",
+      "speakerNotes": "Practice explaining simply.",
+      "discussionQuestions": [],
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-w4-d3-dk2-03",
+      "presentationId": "presentation-w4-d3-deck-02",
+      "title": "Fee Disclosure Roleplay",
+      "body": "Client asks about charges.",
+      "speakerNotes": "Practice explaining simply.",
+      "discussionQuestions": [],
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-w4-d3-dk2-04",
+      "presentationId": "presentation-w4-d3-deck-02",
+      "title": "Error Log Sync",
+      "body": "Combine with Trad Life log.",
+      "speakerNotes": "Practice explaining simply.",
+      "discussionQuestions": [],
+      "sortOrder": 4
+    },
+    {
+      "id": "slide-w4-d3-dk2-05",
+      "presentationId": "presentation-w4-d3-deck-02",
+      "title": "Day 18 Deliverables",
+      "body": "",
+      "speakerNotes": "Practice explaining simply.",
+      "discussionQuestions": [],
+      "sortOrder": 5
+    }
+  ]
+}

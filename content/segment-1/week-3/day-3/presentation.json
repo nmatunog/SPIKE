@@ -1,0 +1,61 @@
+{
+  "presentation": {
+    "id": "presentation-w3-d3-deck-01",
+    "dayId": "day-segment-1-week-3-day-3",
+    "title": "Program Coach Deck 01 — Claims as Promise Keeping",
+    "slideIds": [
+      "slide-w3-d3-dk1-01",
+      "slide-w3-d3-dk1-02",
+      "slide-w3-d3-dk1-03",
+      "slide-w3-d3-dk1-04",
+      "slide-w3-d3-dk1-05"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-w3-d3-dk1-01",
+      "presentationId": "presentation-w3-d3-deck-01",
+      "title": "Day 13 — When Protection Is Tested",
+      "body": "Story-first — why claims matter.",
+      "speakerNotes": "Emotional and process frame.",
+      "discussionQuestions": [],
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-w3-d3-dk1-02",
+      "presentationId": "presentation-w3-d3-deck-01",
+      "title": "Claims Workflow Map",
+      "body": "FNOL to decision to payout.",
+      "speakerNotes": "Emotional and process frame.",
+      "discussionQuestions": [],
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-w3-d3-dk1-03",
+      "presentationId": "presentation-w3-d3-deck-01",
+      "title": "Advisor Role at Claim Time",
+      "body": "Advocate, communicator, documenter.",
+      "speakerNotes": "Emotional and process frame.",
+      "discussionQuestions": [],
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-w3-d3-dk1-04",
+      "presentationId": "presentation-w3-d3-deck-01",
+      "title": "Empathy vs Sympathy",
+      "body": "Language that helps.",
+      "speakerNotes": "Emotional and process frame.",
+      "discussionQuestions": [],
+      "sortOrder": 4
+    },
+    {
+      "id": "slide-w3-d3-dk1-05",
+      "presentationId": "presentation-w3-d3-deck-01",
+      "title": "Deck 01 Close — Roleplay Brief",
+      "body": "Assign claim scenarios.",
+      "speakerNotes": "Emotional and process frame.",
+      "discussionQuestions": [],
+      "sortOrder": 5
+    }
+  ]
+}

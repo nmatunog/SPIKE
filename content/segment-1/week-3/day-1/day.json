@@ -1,0 +1,39 @@
+{
+  "id": "day-segment-1-week-3-day-1",
+  "segmentId": "segment-1",
+  "weekId": "week-segment-1-3",
+  "dayNumber": 1,
+  "title": "Day 11 — Underwriting Principles & Risk Assessment",
+  "theme": "Underwriting",
+  "durationHours": 4,
+  "learningObjectives": [
+    "Explain underwriting purpose in the protection value chain",
+    "Identify key risk factors in life insurance applications",
+    "Apply basic risk assessment to mock profiles",
+    "Connect underwriting discipline to advisor ethics"
+  ],
+  "expectedOutputs": [
+    "Underwriting case memo",
+    "Risk factor map"
+  ],
+  "portfolioDeliverables": [
+    "portfolio-advisor-startup"
+  ],
+  "businessPlanIntegration": "bp-chapter-3",
+  "presentations": [
+    "presentation-w3-d1-deck-01",
+    "presentation-w3-d1-deck-02"
+  ],
+  "activities": [
+    "activity-w3-d1-01",
+    "activity-w3-d1-02",
+    "activity-w3-d1-03"
+  ],
+  "worksheets": [
+    "worksheet-w3-d1-01",
+    "worksheet-w3-d1-02"
+  ],
+  "assessments": [
+    "assessment-w3-d1"
+  ]
+}

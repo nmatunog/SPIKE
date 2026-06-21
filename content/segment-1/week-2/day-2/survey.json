@@ -1,0 +1,19 @@
+{
+  "survey": {
+    "id": "survey-w2-d2",
+    "dayId": "day-segment-1-week-2-day-2",
+    "title": "Day 7 FNA confidence survey",
+    "description": "Week 2 Day 2 facilitator pulse check",
+    "status": "active"
+  },
+  "questions": [
+    {
+      "id": "sq-w2-d2-01",
+      "surveyId": "survey-w2-d2",
+      "prompt": "How ready is the cohort for today's session flow?",
+      "type": "rating",
+      "required": true,
+      "sortOrder": 1
+    }
+  ]
+}

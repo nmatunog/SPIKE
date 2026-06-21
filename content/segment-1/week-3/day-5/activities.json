@@ -1,0 +1,47 @@
+{
+  "activities": [
+    {
+      "id": "activity-w3-d5-01",
+      "dayId": "day-segment-1-week-3-day-5",
+      "title": "Startup Readiness Presentations",
+      "durationMinutes": 90,
+      "materials": [],
+      "instructions": [
+        "8-min presentation per participant or squad",
+        "Cover systems, ops learning, ethics"
+      ],
+      "outputs": [
+        "Operations review deck"
+      ],
+      "debriefQuestions": []
+    },
+    {
+      "id": "activity-w3-d5-02",
+      "dayId": "day-segment-1-week-3-day-5",
+      "title": "Gate Artifact Audit",
+      "durationMinutes": 20,
+      "materials": [],
+      "instructions": [
+        "Program coach verifies checklist with participants"
+      ],
+      "outputs": [
+        "Gate status record"
+      ],
+      "debriefQuestions": []
+    },
+    {
+      "id": "activity-w3-d5-03",
+      "dayId": "day-segment-1-week-3-day-5",
+      "title": "Week 4 Study Plan Builder",
+      "durationMinutes": 10,
+      "materials": [],
+      "instructions": [
+        "Personal study schedule draft"
+      ],
+      "outputs": [
+        "Study plan v1"
+      ],
+      "debriefQuestions": []
+    }
+  ]
+}

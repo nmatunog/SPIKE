@@ -1,0 +1,39 @@
+{
+  "id": "day-segment-1-week-4-day-4",
+  "segmentId": "segment-1",
+  "weekId": "week-segment-1-4",
+  "dayNumber": 4,
+  "title": "Day 19 — Mock Licensing Exams & Remediation",
+  "theme": "Mock Exams",
+  "durationHours": 4,
+  "learningObjectives": [
+    "Complete full-length mock Trad Life and VUL assessments under exam conditions",
+    "Analyze cohort weak domains for targeted remediation",
+    "Assign remediation dyads and tutoring plan",
+    "Confirm exam logistics and professional conduct expectations"
+  ],
+  "expectedOutputs": [
+    "Mock exam results",
+    "Signed remediation plan"
+  ],
+  "portfolioDeliverables": [
+    "portfolio-professional-development"
+  ],
+  "businessPlanIntegration": "bp-chapter-4",
+  "presentations": [
+    "presentation-w4-d4-deck-01",
+    "presentation-w4-d4-deck-02"
+  ],
+  "activities": [
+    "activity-w4-d4-01",
+    "activity-w4-d4-02",
+    "activity-w4-d4-03"
+  ],
+  "worksheets": [
+    "worksheet-w4-d4-01",
+    "worksheet-w4-d4-02"
+  ],
+  "assessments": [
+    "assessment-w4-d4"
+  ]
+}

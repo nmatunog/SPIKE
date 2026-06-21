@@ -1,0 +1,33 @@
+{
+  "sessions": [
+    {
+      "id": "session-w4-d3-full",
+      "dayId": "day-segment-1-week-4-day-3",
+      "sessionNumber": 1,
+      "title": "Day 18 — VUL Concepts & Licensing Prep",
+      "durationMinutes": 240,
+      "presentationIds": [
+        "presentation-w4-d3-deck-01",
+        "presentation-w4-d3-deck-02"
+      ],
+      "activityIds": [
+        "activity-w4-d3-01",
+        "activity-w4-d3-02",
+        "activity-w4-d3-03"
+      ],
+      "worksheetIds": [
+        "worksheet-w4-d3-01",
+        "worksheet-w4-d3-02"
+      ],
+      "assessmentIds": [
+        "assessment-w4-d3"
+      ],
+      "reflectionIds": [
+        "reflection-w4-d3"
+      ],
+      "surveyIds": [
+        "survey-w4-d3"
+      ]
+    }
+  ]
+}

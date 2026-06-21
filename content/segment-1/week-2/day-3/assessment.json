@@ -1,0 +1,18 @@
+{
+  "assessment": {
+    "id": "assessment-w2-d3",
+    "dayId": "day-segment-1-week-2-day-3",
+    "title": "Survey quality rubric",
+    "description": "Faculty delivery checklist — squad progress tracked via Squad XP.",
+    "rubricId": "rubric-assessment-w2-d3"
+  },
+  "rubric": {
+    "id": "rubric-assessment-w2-d3",
+    "assessmentId": "assessment-w2-d3",
+    "title": "Delivery checklist",
+    "criteria": [
+      "Final survey instrument",
+      "Field execution plan"
+    ]
+  }
+}

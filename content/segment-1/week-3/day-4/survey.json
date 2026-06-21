@@ -1,0 +1,19 @@
+{
+  "survey": {
+    "id": "survey-w3-d4",
+    "dayId": "day-segment-1-week-3-day-4",
+    "title": "Day 14 operations integration survey",
+    "description": "Week 3 Day 4 facilitator pulse check",
+    "status": "active"
+  },
+  "questions": [
+    {
+      "id": "sq-w3-d4-01",
+      "surveyId": "survey-w3-d4",
+      "prompt": "How ready is the cohort for today's session flow?",
+      "type": "rating",
+      "required": true,
+      "sortOrder": 1
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "presentation": {
+    "id": "presentation-w3-d5-deck-01",
+    "dayId": "day-segment-1-week-3-day-5",
+    "title": "Program Coach Deck 01 — 120-Hour Gate Standards",
+    "slideIds": [
+      "slide-w3-d5-dk1-01",
+      "slide-w3-d5-dk1-02",
+      "slide-w3-d5-dk1-03",
+      "slide-w3-d5-dk1-04",
+      "slide-w3-d5-dk1-05"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-w3-d5-dk1-01",
+      "presentationId": "presentation-w3-d5-deck-01",
+      "title": "Day 15 — Operations Gate",
+      "body": "Explain hour 120 expectations.",
+      "speakerNotes": "Gate criteria and professionalism.",
+      "discussionQuestions": [],
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-w3-d5-dk1-02",
+      "presentationId": "presentation-w3-d5-deck-01",
+      "title": "Gate Evidence Checklist",
+      "body": "Portfolio, BP Ch.3, lab logs, checklists.",
+      "speakerNotes": "Gate criteria and professionalism.",
+      "discussionQuestions": [],
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-w3-d5-dk1-03",
+      "presentationId": "presentation-w3-d5-deck-01",
+      "title": "Presentation Structure",
+      "body": "Startup readiness story in 8 minutes.",
+      "speakerNotes": "Gate criteria and professionalism.",
+      "discussionQuestions": [],
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-w3-d5-dk1-04",
+      "presentationId": "presentation-w3-d5-deck-01",
+      "title": "Remediation Pathway",
+      "body": "How to recover if gate incomplete.",
+      "speakerNotes": "Gate criteria and professionalism.",
+      "discussionQuestions": [],
+      "sortOrder": 4
+    },
+    {
+      "id": "slide-w3-d5-dk1-05",
+      "presentationId": "presentation-w3-d5-deck-01",
+      "title": "Deck 01 Close",
+      "body": "",
+      "speakerNotes": "Gate criteria and professionalism.",
+      "discussionQuestions": [],
+      "sortOrder": 5
+    }
+  ]
+}

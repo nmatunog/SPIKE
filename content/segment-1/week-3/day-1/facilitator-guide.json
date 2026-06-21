@@ -1,0 +1,54 @@
+{
+  "dayId": "day-segment-1-week-3-day-1",
+  "title": "Facilitator Guide — Day 11 — Underwriting Principles & Risk Assessment",
+  "durationHours": 4,
+  "prepChecklist": [
+    "Print mock applications",
+    "Brief mentors on compliance language",
+    "No real client data ever"
+  ],
+  "sessionFlow": [
+    {
+      "time": "0:00–0:30",
+      "activity": "Deck 01 — Underwriting concepts",
+      "notes": "Use protection story from Week 1 Day 2."
+    },
+    {
+      "time": "0:30–1:30",
+      "activity": "Mock application lab — Round 1",
+      "notes": "Squads deliberate; mentors probe reasoning."
+    },
+    {
+      "time": "1:30–1:40",
+      "activity": "Break",
+      "notes": ""
+    },
+    {
+      "time": "1:40–2:20",
+      "activity": "Mock application lab — Round 2",
+      "notes": "Harder cases with missing info."
+    },
+    {
+      "time": "2:20–2:45",
+      "activity": "Squad case presentations",
+      "notes": ""
+    },
+    {
+      "time": "2:45–3:00",
+      "activity": "Reflection + Day 12 preview (digital portals)",
+      "notes": ""
+    }
+  ],
+  "debriefQuestions": [
+    "Where did squads disagree on risk?",
+    "Did anyone rationalize hiding information?",
+    "How does underwriting affect client trust?"
+  ],
+  "commonPitfalls": [
+    "Treating lab as sales training",
+    "Oversimplified accept/decline without rationale"
+  ],
+  "coachingTips": [
+    "Reward transparent reasoning over fast answers"
+  ]
+}

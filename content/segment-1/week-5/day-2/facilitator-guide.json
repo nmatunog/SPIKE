@@ -1,0 +1,52 @@
+{
+  "dayId": "day-segment-1-week-5-day-2",
+  "title": "Facilitator Guide — Day 22 — Sales Process & Objection Handling",
+  "durationHours": 4,
+  "prepChecklist": [
+    "Print scenario cards",
+    "Brief mentors on constructive feedback"
+  ],
+  "sessionFlow": [
+    {
+      "time": "0:00–0:30",
+      "activity": "Deck 01 — Sales stages",
+      "notes": ""
+    },
+    {
+      "time": "0:30–1:30",
+      "activity": "Objection role-play rounds",
+      "notes": ""
+    },
+    {
+      "time": "1:30–1:40",
+      "activity": "Break",
+      "notes": ""
+    },
+    {
+      "time": "1:40–2:20",
+      "activity": "Personal sales process workshop",
+      "notes": ""
+    },
+    {
+      "time": "2:20–2:45",
+      "activity": "Squad debrief + portfolio sync",
+      "notes": ""
+    },
+    {
+      "time": "2:45–3:00",
+      "activity": "Reflection",
+      "notes": ""
+    }
+  ],
+  "debriefQuestions": [
+    "Who improved listening most?",
+    "Ready for Venture Board deck work?"
+  ],
+  "commonPitfalls": [
+    "Aggressive closing language",
+    "Skipping debrief after role-play"
+  ],
+  "coachingTips": [
+    "Celebrate good questions over good closes"
+  ]
+}

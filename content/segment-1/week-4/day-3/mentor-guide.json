@@ -1,0 +1,32 @@
+{
+  "dayId": "day-segment-1-week-4-day-3",
+  "theme": "Clarity",
+  "title": "Mentor Guide — Day 18 — VUL Concepts & Licensing Prep",
+  "coachingObjective": "Simple honest explanations.",
+  "timing": {
+    "preSession": "Review facilitator guide and deck speaker notes",
+    "duringSession": "Circulate during squad activities",
+    "postSession": "Complete squad weekly review snapshot"
+  },
+  "discussionQuestions": [
+    "Who can explain NAVPU simply?",
+    "Any tendency to oversell investment upside?",
+    "Combined weak areas for mock exam day?"
+  ],
+  "observationAreas": [
+    "Jargon use",
+    "Disclosure completeness",
+    "Drill focus"
+  ],
+  "coachingTips": [
+    "Record exemplar 60-second explanations (with consent)"
+  ],
+  "warningSigns": [],
+  "reflectionPrompts": [],
+  "expectedOutcomes": [
+    "VUL drill scores",
+    "Updated combined error log"
+  ],
+  "activityCoachingNotes": [],
+  "debriefWithFaculty": []
+}

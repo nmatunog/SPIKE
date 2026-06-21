@@ -1,0 +1,19 @@
+{
+  "survey": {
+    "id": "survey-w4-d3",
+    "dayId": "day-segment-1-week-4-day-3",
+    "title": "Day 18 VUL confidence survey",
+    "description": "Week 4 Day 3 facilitator pulse check",
+    "status": "active"
+  },
+  "questions": [
+    {
+      "id": "sq-w4-d3-01",
+      "surveyId": "survey-w4-d3",
+      "prompt": "How ready is the cohort for today's session flow?",
+      "type": "rating",
+      "required": true,
+      "sortOrder": 1
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "dayId": "day-segment-1-week-3-day-2",
+  "theme": "Systems",
+  "title": "Mentor Guide — Day 12 — Policy Servicing & AIA Digital Portals",
+  "coachingObjective": "Coach operational habits.",
+  "timing": {
+    "preSession": "Review facilitator guide and deck speaker notes",
+    "duringSession": "Circulate during squad activities",
+    "postSession": "Complete squad weekly review snapshot"
+  },
+  "discussionQuestions": [
+    "What task caused most friction?",
+    "Who can explain lifecycle to a client clearly?",
+    "What systems are still missing for startup readiness?"
+  ],
+  "observationAreas": [
+    "Portal accuracy",
+    "Client explanation clarity",
+    "Organization"
+  ],
+  "coachingTips": [
+    "Pair tech-confident with tech-anxious interns"
+  ],
+  "warningSigns": [],
+  "reflectionPrompts": [],
+  "expectedOutcomes": [
+    "Portal lab log",
+    "Advisor startup checklist"
+  ],
+  "activityCoachingNotes": [],
+  "debriefWithFaculty": []
+}

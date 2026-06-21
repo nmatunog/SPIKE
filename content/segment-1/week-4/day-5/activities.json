@@ -1,0 +1,47 @@
+{
+  "activities": [
+    {
+      "id": "activity-w4-d5-01",
+      "dayId": "day-segment-1-week-4-day-5",
+      "title": "Professional Readiness Presentations",
+      "durationMinutes": 60,
+      "materials": [],
+      "instructions": [
+        "5-min story: ethics, study discipline, ops readiness",
+        "Q&A"
+      ],
+      "outputs": [
+        "Readiness presentation"
+      ],
+      "debriefQuestions": []
+    },
+    {
+      "id": "activity-w4-d5-02",
+      "dayId": "day-segment-1-week-4-day-5",
+      "title": "160-Hour Gate Audit",
+      "durationMinutes": 25,
+      "materials": [],
+      "instructions": [
+        "Verify artifacts with program coach"
+      ],
+      "outputs": [
+        "Gate record"
+      ],
+      "debriefQuestions": []
+    },
+    {
+      "id": "activity-w4-d5-03",
+      "dayId": "day-segment-1-week-4-day-5",
+      "title": "Professional Commitment Ceremony",
+      "durationMinutes": 25,
+      "materials": [],
+      "instructions": [
+        "Signed pledge + mentor witness"
+      ],
+      "outputs": [
+        "Commitment artifact"
+      ],
+      "debriefQuestions": []
+    }
+  ]
+}

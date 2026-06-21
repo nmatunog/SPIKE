@@ -1,0 +1,61 @@
+{
+  "presentation": {
+    "id": "presentation-w5-d3-deck-02",
+    "dayId": "day-segment-1-week-5-day-3",
+    "title": "Program Coach Deck 02 — Rehearsal Lab",
+    "slideIds": [
+      "slide-w5-d3-dk2-01",
+      "slide-w5-d3-dk2-02",
+      "slide-w5-d3-dk2-03",
+      "slide-w5-d3-dk2-04",
+      "slide-w5-d3-dk2-05"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-w5-d3-dk2-01",
+      "presentationId": "presentation-w5-d3-deck-02",
+      "title": "Rehearsal Round 1 — Squads",
+      "body": "Timed run-throughs.",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-w5-d3-dk2-02",
+      "presentationId": "presentation-w5-d3-deck-02",
+      "title": "Feedback Capture Form",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-w5-d3-dk2-03",
+      "presentationId": "presentation-w5-d3-deck-02",
+      "title": "Revision Sprint",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-w5-d3-dk2-04",
+      "presentationId": "presentation-w5-d3-deck-02",
+      "title": "Mentor Coaching Corners",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "sortOrder": 4
+    },
+    {
+      "id": "slide-w5-d3-dk2-05",
+      "presentationId": "presentation-w5-d3-deck-02",
+      "title": "Day 23 Deliverables",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "sortOrder": 5
+    }
+  ]
+}

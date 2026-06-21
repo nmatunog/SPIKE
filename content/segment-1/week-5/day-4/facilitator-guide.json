@@ -1,0 +1,52 @@
+{
+  "dayId": "day-segment-1-week-5-day-4",
+  "title": "Facilitator Guide — Day 24 — 3-Year Blueprint & Business Plan Integration",
+  "durationHours": 4,
+  "prepChecklist": [
+    "Review portfolio section links",
+    "Prepare integration checklist"
+  ],
+  "sessionFlow": [
+    {
+      "time": "0:00–0:30",
+      "activity": "Deck 01 — Blueprint framework",
+      "notes": ""
+    },
+    {
+      "time": "0:30–1:20",
+      "activity": "Blueprint builder lab",
+      "notes": ""
+    },
+    {
+      "time": "1:20–1:30",
+      "activity": "Break",
+      "notes": ""
+    },
+    {
+      "time": "1:30–2:10",
+      "activity": "Business plan integration workshop",
+      "notes": ""
+    },
+    {
+      "time": "2:10–2:40",
+      "activity": "Peer review + portfolio sync",
+      "notes": ""
+    },
+    {
+      "time": "2:40–3:00",
+      "activity": "Reflection",
+      "notes": ""
+    }
+  ],
+  "debriefQuestions": [
+    "Are Year 1 milestones realistic post-licensing?",
+    "Missing business plan sections?"
+  ],
+  "commonPitfalls": [
+    "Unrealistic revenue projections",
+    "Ignoring ops week learnings"
+  ],
+  "coachingTips": [
+    "Anchor milestones to Hour 110 and 200 gates"
+  ]
+}

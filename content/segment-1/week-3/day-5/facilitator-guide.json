@@ -1,0 +1,48 @@
+{
+  "dayId": "day-segment-1-week-3-day-5",
+  "title": "Facilitator Guide — Day 15 — Business Operations Review & 120-Hour Gate",
+  "durationHours": 4,
+  "prepChecklist": [
+    "Coordinate gate sign-off with admin",
+    "Distribute Week 4 study materials"
+  ],
+  "sessionFlow": [
+    {
+      "time": "0:00–0:20",
+      "activity": "Deck 01 — Gate briefing",
+      "notes": ""
+    },
+    {
+      "time": "0:20–1:05",
+      "activity": "Startup readiness presentations",
+      "notes": ""
+    },
+    {
+      "time": "1:05–2:25",
+      "activity": "Panel Q&A + scoring",
+      "notes": ""
+    },
+    {
+      "time": "2:25–2:45",
+      "activity": "120-hour gate confirmation",
+      "notes": ""
+    },
+    {
+      "time": "2:45–3:00",
+      "activity": "Deck 02 — Week 4 preview + reflection",
+      "notes": ""
+    }
+  ],
+  "debriefQuestions": [
+    "Who is truly startup-ready?",
+    "What ops gaps remain?",
+    "Is study plan realistic for licensing week?"
+  ],
+  "commonPitfalls": [
+    "Gate as formality without evidence",
+    "Skipping remediation documentation"
+  ],
+  "coachingTips": [
+    "Be explicit about licensing week expectations"
+  ]
+}

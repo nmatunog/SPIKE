@@ -1,0 +1,63 @@
+{
+  "presentation": {
+    "id": "presentation-w2-d2-deck-01",
+    "dayId": "day-segment-1-week-2-day-2",
+    "title": "Program Coach Deck 01 — The FNA Conversation",
+    "slideIds": [
+      "slide-w2-d2-dk1-01",
+      "slide-w2-d2-dk1-02",
+      "slide-w2-d2-dk1-03",
+      "slide-w2-d2-dk1-04",
+      "slide-w2-d2-dk1-05"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-w2-d2-dk1-01",
+      "presentationId": "presentation-w2-d2-deck-01",
+      "title": "Day 7 Opening — Problems, Numbers, Priorities",
+      "body": "Connect persona work to structured needs analysis.",
+      "speakerNotes": "Teach discovery discipline before solutions.",
+      "discussionQuestions": [],
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-w2-d2-dk1-02",
+      "presentationId": "presentation-w2-d2-deck-01",
+      "title": "FNA Stages Overview",
+      "body": "Discover → Quantify → Prioritize → Plan (no product).",
+      "speakerNotes": "Use SPIKE language: venture builders listen before they prescribe.",
+      "discussionQuestions": [],
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-w2-d2-dk1-03",
+      "presentationId": "presentation-w2-d2-deck-01",
+      "title": "Powerful Questions Bank",
+      "body": "Open vs closed questions; follow-up probes.",
+      "speakerNotes": "Teach discovery discipline before solutions.",
+      "discussionQuestions": [
+        "What question would you hate being asked as a client?"
+      ],
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-w2-d2-dk1-04",
+      "presentationId": "presentation-w2-d2-deck-01",
+      "title": "Ethical Boundaries in Discovery",
+      "body": "No product talk until needs documented.",
+      "speakerNotes": "Compliance frame early.",
+      "discussionQuestions": [],
+      "sortOrder": 4
+    },
+    {
+      "id": "slide-w2-d2-dk1-05",
+      "presentationId": "presentation-w2-d2-deck-01",
+      "title": "Deck 01 Close — Dyad Launch",
+      "body": "Assign roles: advisor / client.",
+      "speakerNotes": "Teach discovery discipline before solutions.",
+      "discussionQuestions": [],
+      "sortOrder": 5
+    }
+  ]
+}

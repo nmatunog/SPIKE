@@ -1,0 +1,48 @@
+{
+  "activities": [
+    {
+      "id": "activity-w3-d2-01",
+      "dayId": "day-segment-1-week-3-day-2",
+      "title": "Portal Hands-On Lab",
+      "durationMinutes": 60,
+      "materials": [],
+      "instructions": [
+        "Complete 5 servicing tasks in sandbox",
+        "Screenshot or log proof"
+      ],
+      "outputs": [
+        "Portal lab log"
+      ],
+      "debriefQuestions": []
+    },
+    {
+      "id": "activity-w3-d2-02",
+      "dayId": "day-segment-1-week-3-day-2",
+      "title": "Client Servicing Roleplay",
+      "durationMinutes": 35,
+      "materials": [],
+      "instructions": [
+        "Explain lifecycle event to client",
+        "Handle confusion with empathy"
+      ],
+      "outputs": [
+        "Roleplay feedback notes"
+      ],
+      "debriefQuestions": []
+    },
+    {
+      "id": "activity-w3-d2-03",
+      "dayId": "day-segment-1-week-3-day-2",
+      "title": "Advisor Startup Checklist Builder",
+      "durationMinutes": 25,
+      "materials": [],
+      "instructions": [
+        "Draft personal CRM, calendar, compliance folders"
+      ],
+      "outputs": [
+        "Startup checklist v1"
+      ],
+      "debriefQuestions": []
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "activities": [
+    {
+      "id": "activity-w5-d1-01",
+      "dayId": "day-segment-1-week-5-day-1",
+      "title": "Solution Mapping Lab",
+      "durationMinutes": 50,
+      "materials": [],
+      "instructions": [
+        "Map persona needs to solution categories",
+        "Document rationale"
+      ],
+      "outputs": [
+        "Solution map artifact"
+      ],
+      "debriefQuestions": [
+        "What need was hardest to address?"
+      ]
+    },
+    {
+      "id": "activity-w5-d1-02",
+      "dayId": "day-segment-1-week-5-day-1",
+      "title": "Squad Peer Review",
+      "durationMinutes": 40,
+      "materials": [],
+      "instructions": [
+        "Review one squad map per team",
+        "Capture feedback"
+      ],
+      "outputs": [
+        "Peer review notes"
+      ],
+      "debriefQuestions": [
+        "Did anyone jump to product too fast?"
+      ]
+    }
+  ]
+}

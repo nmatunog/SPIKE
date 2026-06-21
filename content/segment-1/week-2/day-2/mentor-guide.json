@@ -1,0 +1,33 @@
+{
+  "dayId": "day-segment-1-week-2-day-2",
+  "theme": "Listening",
+  "title": "Mentor Guide — Day 7 — Financial Needs Analysis & Advisory Dyads",
+  "coachingObjective": "Develop patient discovery habits.",
+  "timing": {
+    "preSession": "Review facilitator guide and deck speaker notes",
+    "duringSession": "Circulate during squad activities",
+    "postSession": "Complete squad weekly review snapshot"
+  },
+  "discussionQuestions": [
+    "Who listened vs who lectured?",
+    "What needs appeared across multiple squads?",
+    "Are participants ready to design surveys?"
+  ],
+  "observationAreas": [
+    "Active listening",
+    "Note quality",
+    "Empathy cues"
+  ],
+  "coachingTips": [
+    "Celebrate clarifying questions",
+    "Flag advisors who fill silence with jargon"
+  ],
+  "warningSigns": [],
+  "reflectionPrompts": [],
+  "expectedOutcomes": [
+    "FNA dyad notes",
+    "Squad needs theme summary"
+  ],
+  "activityCoachingNotes": [],
+  "debriefWithFaculty": []
+}

@@ -1,0 +1,54 @@
+{
+  "dayId": "day-segment-1-week-4-day-2",
+  "title": "Facilitator Guide — Day 17 — Traditional Life Licensing Prep",
+  "durationHours": 4,
+  "prepChecklist": [
+    "Load question bank",
+    "Ensure quiet drill environment",
+    "Calculator policy per exam rules"
+  ],
+  "sessionFlow": [
+    {
+      "time": "0:00–0:25",
+      "activity": "Deck 01 — Exam map",
+      "notes": ""
+    },
+    {
+      "time": "0:25–1:05",
+      "activity": "Timed drill set A + error log",
+      "notes": ""
+    },
+    {
+      "time": "1:05–1:15",
+      "activity": "Break",
+      "notes": ""
+    },
+    {
+      "time": "1:15–1:55",
+      "activity": "Teach-back + drill set B",
+      "notes": ""
+    },
+    {
+      "time": "1:55–2:30",
+      "activity": "Weak domain clinic",
+      "notes": "Program coach targets top 3 missed themes."
+    },
+    {
+      "time": "2:30–3:00",
+      "activity": "Study plan adjustment + reflection",
+      "notes": ""
+    }
+  ],
+  "debriefQuestions": [
+    "Top 3 weak domains cohort-wide?",
+    "Who needs tutoring dyad?",
+    "Is error log being used honestly?"
+  ],
+  "commonPitfalls": [
+    "Memorizing without understanding scenarios",
+    "Skipping error log"
+  ],
+  "coachingTips": [
+    "Celebrate improvement not just absolute score"
+  ]
+}

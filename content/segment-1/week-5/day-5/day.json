@@ -1,0 +1,38 @@
+{
+  "id": "day-segment-1-week-5-day-5",
+  "segmentId": "segment-1",
+  "weekId": "week-segment-1-5",
+  "dayNumber": 5,
+  "title": "Day 25 — Segment 1 Capstone & Hour 200 Venture Board Prep",
+  "theme": "Venture Board Gate",
+  "durationHours": 4,
+  "learningObjectives": [
+    "Deliver final Venture Board presentation rehearsal",
+    "Complete Hour 200 gate artifact checklist",
+    "Celebrate Segment 1 completion and preview Segment 2"
+  ],
+  "expectedOutputs": [
+    "Final board presentation",
+    "Hour 200 gate clearance",
+    "Segment 2 readiness plan"
+  ],
+  "portfolioDeliverables": [
+    "portfolio-three-year-blueprint"
+  ],
+  "businessPlanIntegration": "bp-chapter-5",
+  "presentations": [
+    "presentation-w5-d5-deck-01",
+    "presentation-w5-d5-deck-02"
+  ],
+  "activities": [
+    "activity-w5-d5-01",
+    "activity-w5-d5-02",
+    "activity-w5-d5-03"
+  ],
+  "worksheets": [
+    "worksheet-w5-d5-01"
+  ],
+  "assessments": [
+    "assessment-w5-d5"
+  ]
+}

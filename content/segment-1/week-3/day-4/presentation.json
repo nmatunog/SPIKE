@@ -1,0 +1,61 @@
+{
+  "presentation": {
+    "id": "presentation-w3-d4-deck-01",
+    "dayId": "day-segment-1-week-3-day-4",
+    "title": "Program Coach Deck 01 — Client Journey Operations View",
+    "slideIds": [
+      "slide-w3-d4-dk1-01",
+      "slide-w3-d4-dk1-02",
+      "slide-w3-d4-dk1-03",
+      "slide-w3-d4-dk1-04",
+      "slide-w3-d4-dk1-05"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-w3-d4-dk1-01",
+      "presentationId": "presentation-w3-d4-deck-01",
+      "title": "Day 14 — Full Stack Advisor Ops",
+      "body": "Connect front office to back office.",
+      "speakerNotes": "Integrate the week.",
+      "discussionQuestions": [],
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-w3-d4-dk1-02",
+      "presentationId": "presentation-w3-d4-deck-01",
+      "title": "Journey Map Template",
+      "body": "Sale → issue → service → claim.",
+      "speakerNotes": "Integrate the week.",
+      "discussionQuestions": [],
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-w3-d4-dk1-03",
+      "presentationId": "presentation-w3-d4-deck-01",
+      "title": "Efficiency & Compliance Tension",
+      "body": "Speed vs accuracy.",
+      "speakerNotes": "Integrate the week.",
+      "discussionQuestions": [],
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-w3-d4-dk1-04",
+      "presentationId": "presentation-w3-d4-deck-01",
+      "title": "Dyad Presentation Format",
+      "body": "10-minute integrated scenario.",
+      "speakerNotes": "Integrate the week.",
+      "discussionQuestions": [],
+      "sortOrder": 4
+    },
+    {
+      "id": "slide-w3-d4-dk1-05",
+      "presentationId": "presentation-w3-d4-deck-01",
+      "title": "Deck 01 Close — Rehearsal",
+      "body": "",
+      "speakerNotes": "Integrate the week.",
+      "discussionQuestions": [],
+      "sortOrder": 5
+    }
+  ]
+}

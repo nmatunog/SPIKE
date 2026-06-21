@@ -1,0 +1,17 @@
+{
+  "worksheets": [
+    {
+      "id": "worksheet-w3-d1-01",
+      "dayId": "day-segment-1-week-3-day-1",
+      "title": "Mock application packets",
+      "questionIds": []
+    },
+    {
+      "id": "worksheet-w3-d1-02",
+      "dayId": "day-segment-1-week-3-day-1",
+      "title": "Risk scoring worksheet",
+      "questionIds": []
+    }
+  ],
+  "questions": []
+}

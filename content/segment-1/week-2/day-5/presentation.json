@@ -1,0 +1,51 @@
+{
+  "presentation": {
+    "id": "presentation-w2-d5-deck-01",
+    "dayId": "day-segment-1-week-2-day-5",
+    "title": "Program Coach Deck 01 — From Data to Decisions",
+    "slideIds": [
+      "slide-w2-d5-dk1-01",
+      "slide-w2-d5-dk1-02",
+      "slide-w2-d5-dk1-03",
+      "slide-w2-d5-dk1-04"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-w2-d5-dk1-01",
+      "presentationId": "presentation-w2-d5-deck-01",
+      "title": "Day 10 — Market Review Gate",
+      "body": "Explain 80-hour gate criteria.",
+      "speakerNotes": "Presentation standards.",
+      "discussionQuestions": [],
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-w2-d5-dk1-02",
+      "presentationId": "presentation-w2-d5-deck-01",
+      "title": "Insight > Information",
+      "body": "So what / Now what framework.",
+      "speakerNotes": "Presentation standards.",
+      "discussionQuestions": [],
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-w2-d5-dk1-03",
+      "presentationId": "presentation-w2-d5-deck-01",
+      "title": "Presentation Rubric",
+      "body": "Evidence, clarity, persona link.",
+      "speakerNotes": "Presentation standards.",
+      "discussionQuestions": [],
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-w2-d5-dk1-04",
+      "presentationId": "presentation-w2-d5-deck-01",
+      "title": "Deck 01 Close — Rehearsal",
+      "body": "Squads prep 8-minute presentations.",
+      "speakerNotes": "Presentation standards.",
+      "discussionQuestions": [],
+      "sortOrder": 4
+    }
+  ]
+}

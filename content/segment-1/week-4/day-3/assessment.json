@@ -1,0 +1,18 @@
+{
+  "assessment": {
+    "id": "assessment-w4-d3",
+    "dayId": "day-segment-1-week-4-day-3",
+    "title": "VUL drill benchmark check",
+    "description": "Faculty delivery checklist — squad progress tracked via Squad XP.",
+    "rubricId": "rubric-assessment-w4-d3"
+  },
+  "rubric": {
+    "id": "rubric-assessment-w4-d3",
+    "assessmentId": "assessment-w4-d3",
+    "title": "Delivery checklist",
+    "criteria": [
+      "VUL drill scores",
+      "Updated combined error log"
+    ]
+  }
+}

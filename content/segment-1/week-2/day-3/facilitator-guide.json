@@ -1,0 +1,60 @@
+{
+  "dayId": "day-segment-1-week-2-day-3",
+  "title": "Facilitator Guide — Day 8 — Needs Analysis Survey Design",
+  "durationHours": 4,
+  "prepChecklist": [
+    "Print survey templates",
+    "Confirm field locations and permissions",
+    "Safety briefing with admin"
+  ],
+  "sessionFlow": [
+    {
+      "time": "0:00–0:25",
+      "activity": "Deck 01 — Survey methods",
+      "notes": "Live rewrite of bad questions."
+    },
+    {
+      "time": "0:25–1:15",
+      "activity": "Survey drafting workshop",
+      "notes": "Squads draft; mentors challenge bias."
+    },
+    {
+      "time": "1:15–1:25",
+      "activity": "Break",
+      "notes": ""
+    },
+    {
+      "time": "1:25–2:00",
+      "activity": "Pilot interviews inside cohort",
+      "notes": "3 respondents per squad minimum."
+    },
+    {
+      "time": "2:00–2:30",
+      "activity": "Peer review stations + revisions",
+      "notes": ""
+    },
+    {
+      "time": "2:30–2:50",
+      "activity": "Field plan approval with program coach",
+      "notes": "Sign-off checklist."
+    },
+    {
+      "time": "2:50–3:00",
+      "activity": "Day 8 reflection",
+      "notes": ""
+    }
+  ],
+  "debriefQuestions": [
+    "Which questions survived pilot intact?",
+    "Where is sample bias risk?",
+    "Is field plan realistic for tomorrow?"
+  ],
+  "commonPitfalls": [
+    "Leading questions",
+    "No success metrics",
+    "Unsafe field assignments"
+  ],
+  "coachingTips": [
+    "Push squads to define what answer would change their venture thesis"
+  ]
+}

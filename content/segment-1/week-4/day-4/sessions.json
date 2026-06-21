@@ -1,0 +1,33 @@
+{
+  "sessions": [
+    {
+      "id": "session-w4-d4-full",
+      "dayId": "day-segment-1-week-4-day-4",
+      "sessionNumber": 1,
+      "title": "Day 19 — Mock Licensing Exams & Remediation",
+      "durationMinutes": 240,
+      "presentationIds": [
+        "presentation-w4-d4-deck-01",
+        "presentation-w4-d4-deck-02"
+      ],
+      "activityIds": [
+        "activity-w4-d4-01",
+        "activity-w4-d4-02",
+        "activity-w4-d4-03"
+      ],
+      "worksheetIds": [
+        "worksheet-w4-d4-01",
+        "worksheet-w4-d4-02"
+      ],
+      "assessmentIds": [
+        "assessment-w4-d4"
+      ],
+      "reflectionIds": [
+        "reflection-w4-d4"
+      ],
+      "surveyIds": [
+        "survey-w4-d4"
+      ]
+    }
+  ]
+}

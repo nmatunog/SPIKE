@@ -1,0 +1,18 @@
+{
+  "assessment": {
+    "id": "assessment-w4-d1",
+    "dayId": "day-segment-1-week-4-day-1",
+    "title": "Ethics case rubric",
+    "description": "Faculty delivery checklist — squad progress tracked via Squad XP.",
+    "rubricId": "rubric-assessment-w4-d1"
+  },
+  "rubric": {
+    "id": "rubric-assessment-w4-d1",
+    "assessmentId": "assessment-w4-d1",
+    "title": "Delivery checklist",
+    "criteria": [
+      "Ethics case memo",
+      "Privacy checklist"
+    ]
+  }
+}

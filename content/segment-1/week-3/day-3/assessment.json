@@ -1,0 +1,19 @@
+{
+  "assessment": {
+    "id": "assessment-w3-d3",
+    "dayId": "day-segment-1-week-3-day-3",
+    "title": "Empathy roleplay rubric",
+    "description": "Faculty delivery checklist — squad progress tracked via Squad XP.",
+    "rubricId": "rubric-assessment-w3-d3"
+  },
+  "rubric": {
+    "id": "rubric-assessment-w3-d3",
+    "assessmentId": "assessment-w3-d3",
+    "title": "Delivery checklist",
+    "criteria": [
+      "Workflow map",
+      "Roleplay reflection",
+      "Documentation sample"
+    ]
+  }
+}

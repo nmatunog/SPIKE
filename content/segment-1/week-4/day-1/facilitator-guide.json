@@ -1,0 +1,53 @@
+{
+  "dayId": "day-segment-1-week-4-day-1",
+  "title": "Facilitator Guide — Day 16 — Insurance Code, AMLA & Data Privacy Ethics",
+  "durationHours": 4,
+  "prepChecklist": [
+    "Source approved case vignettes from compliance",
+    "No real enforcement cases with identifiers"
+  ],
+  "sessionFlow": [
+    {
+      "time": "0:00–0:35",
+      "activity": "Deck 01 — Code, AMLA, privacy",
+      "notes": "No legal advice disclaimers read aloud."
+    },
+    {
+      "time": "0:35–1:25",
+      "activity": "Ethics case lab — Round 1",
+      "notes": ""
+    },
+    {
+      "time": "1:25–1:35",
+      "activity": "Break",
+      "notes": ""
+    },
+    {
+      "time": "1:35–2:15",
+      "activity": "Case lab — Round 2",
+      "notes": ""
+    },
+    {
+      "time": "2:15–2:40",
+      "activity": "Squad ethics presentations",
+      "notes": ""
+    },
+    {
+      "time": "2:40–3:00",
+      "activity": "Reflection + Day 17 Trad Life preview",
+      "notes": ""
+    }
+  ],
+  "debriefQuestions": [
+    "Where did participants rationalize shortcuts?",
+    "Do they know escalation paths?",
+    "Ready for product licensing content?"
+  ],
+  "commonPitfalls": [
+    "Treating AMLA as only back-office",
+    "Humor that undermines privacy seriousness"
+  ],
+  "coachingTips": [
+    "Praise dissent respectfully in case debates"
+  ]
+}

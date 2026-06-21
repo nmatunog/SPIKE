@@ -1,0 +1,61 @@
+{
+  "presentation": {
+    "id": "presentation-w5-d1-deck-01",
+    "dayId": "day-segment-1-week-5-day-1",
+    "title": "Program Coach Deck 01 — From Discovery to Solutions",
+    "slideIds": [
+      "slide-w5-d1-dk1-01",
+      "slide-w5-d1-dk1-02",
+      "slide-w5-d1-dk1-03",
+      "slide-w5-d1-dk1-04",
+      "slide-w5-d1-dk1-05"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-w5-d1-dk1-01",
+      "presentationId": "presentation-w5-d1-deck-01",
+      "title": "Day 21 Opening — Solutions After Evidence",
+      "body": "Week 5 launches product integration.",
+      "speakerNotes": "Bridge Week 4 licensing to product week.",
+      "discussionQuestions": [],
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-w5-d1-dk1-02",
+      "presentationId": "presentation-w5-d1-deck-01",
+      "title": "Needs-Based Recommendation Framework",
+      "body": "Needs first, product second.",
+      "speakerNotes": "Bridge Week 4 licensing to product week.",
+      "discussionQuestions": [],
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-w5-d1-dk1-03",
+      "presentationId": "presentation-w5-d1-deck-01",
+      "title": "Trad Life vs VUL — When Each Fits",
+      "body": "Conceptual comparison only.",
+      "speakerNotes": "Bridge Week 4 licensing to product week.",
+      "discussionQuestions": [],
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-w5-d1-dk1-04",
+      "presentationId": "presentation-w5-d1-deck-01",
+      "title": "Ethical Recommendation Language",
+      "body": "No guarantees; full disclosure.",
+      "speakerNotes": "Bridge Week 4 licensing to product week.",
+      "discussionQuestions": [],
+      "sortOrder": 4
+    },
+    {
+      "id": "slide-w5-d1-dk1-05",
+      "presentationId": "presentation-w5-d1-deck-01",
+      "title": "Deck 01 Close — Squad Lab Preview",
+      "body": "",
+      "speakerNotes": "Bridge Week 4 licensing to product week.",
+      "discussionQuestions": [],
+      "sortOrder": 5
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "activities": [
+    {
+      "id": "activity-w2-d4-01",
+      "dayId": "day-segment-1-week-2-day-4",
+      "title": "Field Survey Execution",
+      "durationMinutes": 100,
+      "materials": [],
+      "instructions": [
+        "Meet quota per field plan",
+        "Use introduction script",
+        "Log responses immediately"
+      ],
+      "outputs": [
+        "Raw survey dataset"
+      ],
+      "debriefQuestions": []
+    },
+    {
+      "id": "activity-w2-d4-02",
+      "dayId": "day-segment-1-week-2-day-4",
+      "title": "Hot Wash Debrief",
+      "durationMinutes": 30,
+      "materials": [],
+      "instructions": [
+        "Squad shares 3 surprises",
+        "Identify data gaps"
+      ],
+      "outputs": [
+        "Debrief notes"
+      ],
+      "debriefQuestions": []
+    },
+    {
+      "id": "activity-w2-d4-03",
+      "dayId": "day-segment-1-week-2-day-4",
+      "title": "Data Hygiene Lab",
+      "durationMinutes": 20,
+      "materials": [],
+      "instructions": [
+        "Clean incomplete rows",
+        "Tag outliers for follow-up"
+      ],
+      "outputs": [
+        "Clean dataset v1"
+      ],
+      "debriefQuestions": []
+    }
+  ]
+}

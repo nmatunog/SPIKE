@@ -1,0 +1,33 @@
+{
+  "dayId": "day-segment-1-week-2-day-4",
+  "theme": "Professionalism",
+  "title": "Mentor Guide — Day 9 — Field Survey Execution",
+  "coachingObjective": "Coach conduct and resilience in the field.",
+  "timing": {
+    "preSession": "Review facilitator guide and deck speaker notes",
+    "duringSession": "Circulate during squad activities",
+    "postSession": "Complete squad weekly review snapshot"
+  },
+  "discussionQuestions": [
+    "Did any squad fall short on quota — why?",
+    "What ethical issues arose?",
+    "What story is emerging in the data?"
+  ],
+  "observationAreas": [
+    "Introduction quality",
+    "Resilience after rejection",
+    "Data discipline"
+  ],
+  "coachingTips": [
+    "Celebrate professional conduct publicly",
+    "Normalize rejection stories"
+  ],
+  "warningSigns": [],
+  "reflectionPrompts": [],
+  "expectedOutcomes": [
+    "Survey dataset",
+    "Field debrief summary"
+  ],
+  "activityCoachingNotes": [],
+  "debriefWithFaculty": []
+}

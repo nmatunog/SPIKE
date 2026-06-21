@@ -1,0 +1,33 @@
+{
+  "sessions": [
+    {
+      "id": "session-w3-d2-full",
+      "dayId": "day-segment-1-week-3-day-2",
+      "sessionNumber": 1,
+      "title": "Day 12 — Policy Servicing & AIA Digital Portals",
+      "durationMinutes": 240,
+      "presentationIds": [
+        "presentation-w3-d2-deck-01",
+        "presentation-w3-d2-deck-02"
+      ],
+      "activityIds": [
+        "activity-w3-d2-01",
+        "activity-w3-d2-02",
+        "activity-w3-d2-03"
+      ],
+      "worksheetIds": [
+        "worksheet-w3-d2-01",
+        "worksheet-w3-d2-02"
+      ],
+      "assessmentIds": [
+        "assessment-w3-d2"
+      ],
+      "reflectionIds": [
+        "reflection-w3-d2"
+      ],
+      "surveyIds": [
+        "survey-w3-d2"
+      ]
+    }
+  ]
+}

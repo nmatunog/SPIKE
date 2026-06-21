@@ -1,0 +1,39 @@
+{
+  "id": "day-segment-1-week-4-day-2",
+  "segmentId": "segment-1",
+  "weekId": "week-segment-1-4",
+  "dayNumber": 2,
+  "title": "Day 17 — Traditional Life Licensing Prep",
+  "theme": "Trad Life",
+  "durationHours": 4,
+  "learningObjectives": [
+    "Master high-yield Traditional Life exam concepts",
+    "Complete timed Trad Life drill sets with score tracking",
+    "Use error logs to target weak domains",
+    "Pair teach difficult concepts in study squads"
+  ],
+  "expectedOutputs": [
+    "Trad Life drill scores",
+    "Error log v1"
+  ],
+  "portfolioDeliverables": [
+    "portfolio-professional-development"
+  ],
+  "businessPlanIntegration": "bp-chapter-4",
+  "presentations": [
+    "presentation-w4-d2-deck-01",
+    "presentation-w4-d2-deck-02"
+  ],
+  "activities": [
+    "activity-w4-d2-01",
+    "activity-w4-d2-02",
+    "activity-w4-d2-03"
+  ],
+  "worksheets": [
+    "worksheet-w4-d2-01",
+    "worksheet-w4-d2-02"
+  ],
+  "assessments": [
+    "assessment-w4-d2"
+  ]
+}

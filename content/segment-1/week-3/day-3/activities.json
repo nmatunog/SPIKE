@@ -1,0 +1,48 @@
+{
+  "activities": [
+    {
+      "id": "activity-w3-d3-01",
+      "dayId": "day-segment-1-week-3-day-3",
+      "title": "Claims Workflow Mapping",
+      "durationMinutes": 25,
+      "materials": [],
+      "instructions": [
+        "Squads sketch workflow on canvas",
+        "Present one friction point"
+      ],
+      "outputs": [
+        "Workflow map"
+      ],
+      "debriefQuestions": []
+    },
+    {
+      "id": "activity-w3-d3-02",
+      "dayId": "day-segment-1-week-3-day-3",
+      "title": "Claim Delivery Roleplays",
+      "durationMinutes": 70,
+      "materials": [],
+      "instructions": [
+        "Rotate advisor role through scenarios",
+        "Use empathy rubric feedback"
+      ],
+      "outputs": [
+        "Roleplay reflections"
+      ],
+      "debriefQuestions": []
+    },
+    {
+      "id": "activity-w3-d3-03",
+      "dayId": "day-segment-1-week-3-day-3",
+      "title": "Documentation Drill",
+      "durationMinutes": 15,
+      "materials": [],
+      "instructions": [
+        "Complete post-call checklist for scenario"
+      ],
+      "outputs": [
+        "Claim documentation sample"
+      ],
+      "debriefQuestions": []
+    }
+  ]
+}

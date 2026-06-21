@@ -1,0 +1,61 @@
+{
+  "presentation": {
+    "id": "presentation-w5-d1-deck-02",
+    "dayId": "day-segment-1-week-5-day-1",
+    "title": "Program Coach Deck 02 — Solution Mapping Lab",
+    "slideIds": [
+      "slide-w5-d1-dk2-01",
+      "slide-w5-d1-dk2-02",
+      "slide-w5-d1-dk2-03",
+      "slide-w5-d1-dk2-04",
+      "slide-w5-d1-dk2-05"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-w5-d1-dk2-01",
+      "presentationId": "presentation-w5-d1-deck-02",
+      "title": "Persona Recap from Portfolio",
+      "body": "Pull Week 1–2 persona artifacts.",
+      "speakerNotes": "Hands-on mapping.",
+      "discussionQuestions": [],
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-w5-d1-dk2-02",
+      "presentationId": "presentation-w5-d1-deck-02",
+      "title": "Solution Mapping Worksheet",
+      "body": "Map needs to solution types.",
+      "speakerNotes": "Hands-on mapping.",
+      "discussionQuestions": [],
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-w5-d1-dk2-03",
+      "presentationId": "presentation-w5-d1-deck-02",
+      "title": "Squad Peer Review Protocol",
+      "body": "Challenge assumptions respectfully.",
+      "speakerNotes": "Hands-on mapping.",
+      "discussionQuestions": [],
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-w5-d1-dk2-04",
+      "presentationId": "presentation-w5-d1-deck-02",
+      "title": "Portfolio Sync — Business Plan Ch. 5",
+      "body": "",
+      "speakerNotes": "Hands-on mapping.",
+      "discussionQuestions": [],
+      "sortOrder": 4
+    },
+    {
+      "id": "slide-w5-d1-dk2-05",
+      "presentationId": "presentation-w5-d1-deck-02",
+      "title": "Day 21 Deliverables",
+      "body": "",
+      "speakerNotes": "Hands-on mapping.",
+      "discussionQuestions": [],
+      "sortOrder": 5
+    }
+  ]
+}

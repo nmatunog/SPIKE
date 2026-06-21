@@ -1,0 +1,39 @@
+{
+  "id": "day-segment-1-week-4-day-3",
+  "segmentId": "segment-1",
+  "weekId": "week-segment-1-4",
+  "dayNumber": 3,
+  "title": "Day 18 — VUL Concepts & Licensing Prep",
+  "theme": "VUL",
+  "durationHours": 4,
+  "learningObjectives": [
+    "Explain VUL mechanics: protection, investment funds, charges",
+    "Compare Trad Life and VUL suitability factors without inappropriate recommendations",
+    "Complete VUL timed drill sets with error logging",
+    "Practice client-safe explanations of risk and fees"
+  ],
+  "expectedOutputs": [
+    "VUL drill scores",
+    "Updated combined error log"
+  ],
+  "portfolioDeliverables": [
+    "portfolio-professional-development"
+  ],
+  "businessPlanIntegration": "bp-chapter-4",
+  "presentations": [
+    "presentation-w4-d3-deck-01",
+    "presentation-w4-d3-deck-02"
+  ],
+  "activities": [
+    "activity-w4-d3-01",
+    "activity-w4-d3-02",
+    "activity-w4-d3-03"
+  ],
+  "worksheets": [
+    "worksheet-w4-d3-01",
+    "worksheet-w4-d3-02"
+  ],
+  "assessments": [
+    "assessment-w4-d3"
+  ]
+}

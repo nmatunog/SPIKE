@@ -1,0 +1,36 @@
+{
+  "id": "day-segment-1-week-5-day-3",
+  "segmentId": "segment-1",
+  "weekId": "week-segment-1-5",
+  "dayNumber": 3,
+  "title": "Day 23 — Venture Board Deck Workshop",
+  "theme": "Board Presentation",
+  "durationHours": 4,
+  "learningObjectives": [
+    "Structure a 10-minute Venture Board narrative",
+    "Integrate portfolio, business plan, and market evidence slides",
+    "Rehearse with timed squad feedback"
+  ],
+  "expectedOutputs": [
+    "Venture Board deck v2",
+    "Rehearsal feedback"
+  ],
+  "portfolioDeliverables": [
+    "portfolio-three-year-blueprint"
+  ],
+  "businessPlanIntegration": "bp-chapter-5",
+  "presentations": [
+    "presentation-w5-d3-deck-01",
+    "presentation-w5-d3-deck-02"
+  ],
+  "activities": [
+    "activity-w5-d3-01",
+    "activity-w5-d3-02"
+  ],
+  "worksheets": [
+    "worksheet-w5-d3-01"
+  ],
+  "assessments": [
+    "assessment-w5-d3"
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "activities": [
+    {
+      "id": "activity-w4-d1-01",
+      "dayId": "day-segment-1-week-4-day-1",
+      "title": "Regulatory Concept Sort",
+      "durationMinutes": 20,
+      "materials": [],
+      "instructions": [
+        "Sort statements into code / AMLA / privacy buckets"
+      ],
+      "outputs": [
+        "Concept sort sheet"
+      ],
+      "debriefQuestions": []
+    },
+    {
+      "id": "activity-w4-d1-02",
+      "dayId": "day-segment-1-week-4-day-1",
+      "title": "Ethics Case Lab",
+      "durationMinutes": 70,
+      "materials": [],
+      "instructions": [
+        "Deliberate cases; write recommendation",
+        "Present one decision per squad"
+      ],
+      "outputs": [
+        "Ethics case memo"
+      ],
+      "debriefQuestions": []
+    },
+    {
+      "id": "activity-w4-d1-03",
+      "dayId": "day-segment-1-week-4-day-1",
+      "title": "Privacy Protocol Drill",
+      "durationMinutes": 20,
+      "materials": [],
+      "instructions": [
+        "Respond to simulated breach steps"
+      ],
+      "outputs": [
+        "Privacy response checklist"
+      ],
+      "debriefQuestions": []
+    }
+  ]
+}

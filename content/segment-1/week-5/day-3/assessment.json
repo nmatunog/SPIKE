@@ -1,0 +1,18 @@
+{
+  "assessment": {
+    "id": "assessment-w5-d3",
+    "dayId": "day-segment-1-week-5-day-3",
+    "title": "Board rehearsal rubric",
+    "description": "Faculty delivery checklist — squad progress tracked via Squad XP.",
+    "rubricId": "rubric-assessment-w5-d3"
+  },
+  "rubric": {
+    "id": "rubric-assessment-w5-d3",
+    "assessmentId": "assessment-w5-d3",
+    "title": "Delivery checklist",
+    "criteria": [
+      "Venture Board deck v2",
+      "Rehearsal feedback"
+    ]
+  }
+}

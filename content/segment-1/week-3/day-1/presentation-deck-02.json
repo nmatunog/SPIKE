@@ -1,0 +1,61 @@
+{
+  "presentation": {
+    "id": "presentation-w3-d1-deck-02",
+    "dayId": "day-segment-1-week-3-day-1",
+    "title": "Program Coach Deck 02 — Mock Application Lab",
+    "slideIds": [
+      "slide-w3-d1-dk2-01",
+      "slide-w3-d1-dk2-02",
+      "slide-w3-d1-dk2-03",
+      "slide-w3-d1-dk2-04",
+      "slide-w3-d1-dk2-05"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-w3-d1-dk2-01",
+      "presentationId": "presentation-w3-d1-deck-02",
+      "title": "Case File Protocol",
+      "body": "Teams receive redacted mock apps.",
+      "speakerNotes": "Hands-on evaluation.",
+      "discussionQuestions": [],
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-w3-d1-dk2-02",
+      "presentationId": "presentation-w3-d1-deck-02",
+      "title": "Risk Scoring Worksheet",
+      "body": "Simple scoring — not actuarial.",
+      "speakerNotes": "Hands-on evaluation.",
+      "discussionQuestions": [],
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-w3-d1-dk2-03",
+      "presentationId": "presentation-w3-d1-deck-02",
+      "title": "Squad Deliberation Format",
+      "body": "Recommend accept / refer / decline with rationale.",
+      "speakerNotes": "Hands-on evaluation.",
+      "discussionQuestions": [],
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-w3-d1-dk2-04",
+      "presentationId": "presentation-w3-d1-deck-02",
+      "title": "Ethics Corners",
+      "body": "What advisors must never conceal.",
+      "speakerNotes": "Hands-on evaluation.",
+      "discussionQuestions": [],
+      "sortOrder": 4
+    },
+    {
+      "id": "slide-w3-d1-dk2-05",
+      "presentationId": "presentation-w3-d1-deck-02",
+      "title": "Day 11 Deliverables",
+      "body": "Case memos uploaded.",
+      "speakerNotes": "Hands-on evaluation.",
+      "discussionQuestions": [],
+      "sortOrder": 5
+    }
+  ]
+}

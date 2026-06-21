@@ -1,0 +1,61 @@
+{
+  "presentation": {
+    "id": "presentation-w4-d3-deck-01",
+    "dayId": "day-segment-1-week-4-day-3",
+    "title": "Program Coach Deck 01 — VUL Mechanics",
+    "slideIds": [
+      "slide-w4-d3-dk1-01",
+      "slide-w4-d3-dk1-02",
+      "slide-w4-d3-dk1-03",
+      "slide-w4-d3-dk1-04",
+      "slide-w4-d3-dk1-05"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-w4-d3-dk1-01",
+      "presentationId": "presentation-w4-d3-deck-01",
+      "title": "Day 18 — Variable Unit-Linked",
+      "body": "Protection + investment wrapper.",
+      "speakerNotes": "Conceptual clarity.",
+      "discussionQuestions": [],
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-w4-d3-dk1-02",
+      "presentationId": "presentation-w4-d3-deck-01",
+      "title": "Funds, NAVPU, Charges",
+      "body": "High-yield exam topics.",
+      "speakerNotes": "Conceptual clarity.",
+      "discussionQuestions": [],
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-w4-d3-dk1-03",
+      "presentationId": "presentation-w4-d3-deck-01",
+      "title": "Suitability & Disclosure",
+      "body": "Never promise returns.",
+      "speakerNotes": "Conceptual clarity.",
+      "discussionQuestions": [],
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-w4-d3-dk1-04",
+      "presentationId": "presentation-w4-d3-deck-01",
+      "title": "Trad vs VUL Decision Framework",
+      "body": "Needs-based, not product-push.",
+      "speakerNotes": "Conceptual clarity.",
+      "discussionQuestions": [],
+      "sortOrder": 4
+    },
+    {
+      "id": "slide-w4-d3-dk1-05",
+      "presentationId": "presentation-w4-d3-deck-01",
+      "title": "Deck 01 Close — Drills",
+      "body": "",
+      "speakerNotes": "Conceptual clarity.",
+      "discussionQuestions": [],
+      "sortOrder": 5
+    }
+  ]
+}

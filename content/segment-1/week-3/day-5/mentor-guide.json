@@ -1,0 +1,33 @@
+{
+  "dayId": "day-segment-1-week-3-day-5",
+  "theme": "Readiness",
+  "title": "Mentor Guide — Day 15 — Business Operations Review & 120-Hour Gate",
+  "coachingObjective": "Honest readiness assessment.",
+  "timing": {
+    "preSession": "Review facilitator guide and deck speaker notes",
+    "duringSession": "Circulate during squad activities",
+    "postSession": "Complete squad weekly review snapshot"
+  },
+  "discussionQuestions": [
+    "Who is truly startup-ready?",
+    "What ops gaps remain?",
+    "Is study plan realistic for licensing week?"
+  ],
+  "observationAreas": [
+    "Evidence quality",
+    "Q&A composure",
+    "Study plan commitment"
+  ],
+  "coachingTips": [
+    "Be explicit about licensing week expectations"
+  ],
+  "warningSigns": [],
+  "reflectionPrompts": [],
+  "expectedOutcomes": [
+    "Operations review presentation",
+    "120-hour gate clearance",
+    "Study plan v1"
+  ],
+  "activityCoachingNotes": [],
+  "debriefWithFaculty": []
+}

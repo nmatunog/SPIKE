@@ -1,0 +1,61 @@
+{
+  "presentation": {
+    "id": "presentation-w4-d2-deck-01",
+    "dayId": "day-segment-1-week-4-day-2",
+    "title": "Program Coach Deck 01 — Trad Life Exam Map",
+    "slideIds": [
+      "slide-w4-d2-dk1-01",
+      "slide-w4-d2-dk1-02",
+      "slide-w4-d2-dk1-03",
+      "slide-w4-d2-dk1-04",
+      "slide-w4-d2-dk1-05"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-w4-d2-dk1-01",
+      "presentationId": "presentation-w4-d2-deck-01",
+      "title": "Day 17 — Trad Life Deep Dive",
+      "body": "Exam structure and timing.",
+      "speakerNotes": "Syllabus alignment.",
+      "discussionQuestions": [],
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-w4-d2-dk1-02",
+      "presentationId": "presentation-w4-d2-deck-01",
+      "title": "High-Yield Topic Clusters",
+      "body": "Policy types, provisions, taxes overview.",
+      "speakerNotes": "Syllabus alignment.",
+      "discussionQuestions": [],
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-w4-d2-dk1-03",
+      "presentationId": "presentation-w4-d2-deck-01",
+      "title": "Trap Questions & Distractors",
+      "body": "How exams test precision.",
+      "speakerNotes": "Syllabus alignment.",
+      "discussionQuestions": [],
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-w4-d2-dk1-04",
+      "presentationId": "presentation-w4-d2-deck-01",
+      "title": "Study Sprint Norms",
+      "body": "Pomodoro, error log, teach-back.",
+      "speakerNotes": "Syllabus alignment.",
+      "discussionQuestions": [],
+      "sortOrder": 4
+    },
+    {
+      "id": "slide-w4-d2-dk1-05",
+      "presentationId": "presentation-w4-d2-deck-01",
+      "title": "Deck 01 Close — Drill Launch",
+      "body": "",
+      "speakerNotes": "Syllabus alignment.",
+      "discussionQuestions": [],
+      "sortOrder": 5
+    }
+  ]
+}

@@ -204,6 +204,18 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
     )
   ) : isWeek2 ? (
     <Week2ActivateHero variant={staffHeroVariant} />
+  ) : selectedWeek && (userRole === 'faculty' || userRole === 'admin' || userRole === 'mentor') ? (
+    <div className="rounded-xl border border-amber-100 bg-amber-50/80 px-4 py-5 text-sm text-amber-950">
+      <p className="font-semibold">
+        Week {selectedWeek.week.weekNumber}: {selectedWeek.week.title}
+      </p>
+      {selectedWeek.week.milestoneObjective ? (
+        <p className="mt-2 text-amber-900">{selectedWeek.week.milestoneObjective}</p>
+      ) : null}
+      <p className="mt-3 text-amber-800">
+        Day content for this selection is not loaded yet — choose another day or refresh.
+      </p>
+    </div>
   ) : (
     <p className="text-sm text-slate-500">
       Pick a week and day with published content.

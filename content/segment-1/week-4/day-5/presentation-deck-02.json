@@ -1,0 +1,61 @@
+{
+  "presentation": {
+    "id": "presentation-w4-d5-deck-02",
+    "dayId": "day-segment-1-week-4-day-5",
+    "title": "Program Coach Deck 02 — Week 5 Preview & Commitment",
+    "slideIds": [
+      "slide-w4-d5-dk2-01",
+      "slide-w4-d5-dk2-02",
+      "slide-w4-d5-dk2-03",
+      "slide-w4-d5-dk2-04",
+      "slide-w4-d5-dk2-05"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-w4-d5-dk2-01",
+      "presentationId": "presentation-w4-d5-deck-02",
+      "title": "Beyond Licensing — Product Solutions",
+      "body": "Module 5 preview.",
+      "speakerNotes": "Forward look.",
+      "discussionQuestions": [],
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-w4-d5-dk2-02",
+      "presentationId": "presentation-w4-d5-deck-02",
+      "title": "Professional Brand in Portfolio",
+      "body": "Tie to Venture Portfolio™.",
+      "speakerNotes": "Forward look.",
+      "discussionQuestions": [],
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-w4-d5-dk2-03",
+      "presentationId": "presentation-w4-d5-deck-02",
+      "title": "Commitment Ceremony",
+      "body": "Public professional pledge.",
+      "speakerNotes": "Forward look.",
+      "discussionQuestions": [],
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-w4-d5-dk2-04",
+      "presentationId": "presentation-w4-d5-deck-02",
+      "title": "Celebration & Acknowledgment",
+      "body": "Recognize improvement arcs.",
+      "speakerNotes": "Forward look.",
+      "discussionQuestions": [],
+      "sortOrder": 4
+    },
+    {
+      "id": "slide-w4-d5-dk2-05",
+      "presentationId": "presentation-w4-d5-deck-02",
+      "title": "Segment 1 Weeks 1–4 Close",
+      "body": "Preview remaining Segment 1 modules.",
+      "speakerNotes": "Forward look.",
+      "discussionQuestions": [],
+      "sortOrder": 5
+    }
+  ]
+}

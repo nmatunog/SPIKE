@@ -1,0 +1,18 @@
+{
+  "assessment": {
+    "id": "assessment-w2-d4",
+    "dayId": "day-segment-1-week-2-day-4",
+    "title": "Field professionalism rubric",
+    "description": "Faculty delivery checklist — squad progress tracked via Squad XP.",
+    "rubricId": "rubric-assessment-w2-d4"
+  },
+  "rubric": {
+    "id": "rubric-assessment-w2-d4",
+    "assessmentId": "assessment-w2-d4",
+    "title": "Delivery checklist",
+    "criteria": [
+      "Survey dataset",
+      "Field debrief summary"
+    ]
+  }
+}

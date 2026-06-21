@@ -1,0 +1,61 @@
+{
+  "presentation": {
+    "id": "presentation-w3-d2-deck-01",
+    "dayId": "day-segment-1-week-3-day-2",
+    "title": "Program Coach Deck 01 — Policy Lifecycle",
+    "slideIds": [
+      "slide-w3-d2-dk1-01",
+      "slide-w3-d2-dk1-02",
+      "slide-w3-d2-dk1-03",
+      "slide-w3-d2-dk1-04",
+      "slide-w3-d2-dk1-05"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-w3-d2-dk1-01",
+      "presentationId": "presentation-w3-d2-deck-01",
+      "title": "Day 12 — After the Sale",
+      "body": "Service builds persistency.",
+      "speakerNotes": "Servicing story arc.",
+      "discussionQuestions": [],
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-w3-d2-dk1-02",
+      "presentationId": "presentation-w3-d2-deck-01",
+      "title": "Policy Lifecycle Map",
+      "body": "Issue, pay, change, claim touchpoints.",
+      "speakerNotes": "Servicing story arc.",
+      "discussionQuestions": [],
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-w3-d2-dk1-03",
+      "presentationId": "presentation-w3-d2-deck-01",
+      "title": "Digital Portal Landscape",
+      "body": "Advisor vs client vs operations views.",
+      "speakerNotes": "Servicing story arc.",
+      "discussionQuestions": [],
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-w3-d2-dk1-04",
+      "presentationId": "presentation-w3-d2-deck-01",
+      "title": "Data Privacy in Servicing",
+      "body": "Authentication and consent.",
+      "speakerNotes": "Servicing story arc.",
+      "discussionQuestions": [],
+      "sortOrder": 4
+    },
+    {
+      "id": "slide-w3-d2-dk1-05",
+      "presentationId": "presentation-w3-d2-deck-01",
+      "title": "Deck 01 Close — Lab Setup",
+      "body": "Login sandboxes or screenshots workflow.",
+      "speakerNotes": "Servicing story arc.",
+      "discussionQuestions": [],
+      "sortOrder": 5
+    }
+  ]
+}

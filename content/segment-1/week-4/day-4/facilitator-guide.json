@@ -1,0 +1,55 @@
+{
+  "dayId": "day-segment-1-week-4-day-4",
+  "title": "Facilitator Guide — Day 19 — Mock Licensing Exams & Remediation",
+  "durationHours": 4,
+  "prepChecklist": [
+    "Secure proctoring staff",
+    "Print exams or load digital proctor tool",
+    "Prep remediation tutors"
+  ],
+  "sessionFlow": [
+    {
+      "time": "0:00–0:15",
+      "activity": "Deck 01 — Briefing",
+      "notes": ""
+    },
+    {
+      "time": "0:15–1:15",
+      "activity": "Mock Exam A (Trad Life or combined per cohort policy)",
+      "notes": "Proctored silence."
+    },
+    {
+      "time": "1:15–1:25",
+      "activity": "Break",
+      "notes": ""
+    },
+    {
+      "time": "1:25–2:15",
+      "activity": "Mock Exam B (VUL)",
+      "notes": ""
+    },
+    {
+      "time": "2:15–2:45",
+      "activity": "Deck 02 — Remediation stations",
+      "notes": ""
+    },
+    {
+      "time": "2:45–3:00",
+      "activity": "Personal remediation plan + reflection",
+      "notes": ""
+    }
+  ],
+  "debriefQuestions": [
+    "Cohort weak domains?",
+    "Who needs 1:1 before real exam?",
+    "Logistics blockers?"
+  ],
+  "commonPitfalls": [
+    "Sharing answers during break",
+    "Shaming low scores publicly"
+  ],
+  "coachingTips": [
+    "Private coaching for outliers",
+    "Celebrate effort and improvement"
+  ]
+}

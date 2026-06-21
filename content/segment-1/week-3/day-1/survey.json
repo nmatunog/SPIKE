@@ -1,0 +1,19 @@
+{
+  "survey": {
+    "id": "survey-w3-d1",
+    "dayId": "day-segment-1-week-3-day-1",
+    "title": "Day 11 operations confidence survey",
+    "description": "Week 3 Day 1 facilitator pulse check",
+    "status": "active"
+  },
+  "questions": [
+    {
+      "id": "sq-w3-d1-01",
+      "surveyId": "survey-w3-d1",
+      "prompt": "How ready is the cohort for today's session flow?",
+      "type": "rating",
+      "required": true,
+      "sortOrder": 1
+    }
+  ]
+}

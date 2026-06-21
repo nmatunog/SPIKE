@@ -1,0 +1,61 @@
+{
+  "presentation": {
+    "id": "presentation-w5-d2-deck-02",
+    "dayId": "day-segment-1-week-5-day-2",
+    "title": "Program Coach Deck 02 — Objection Role-Play Lab",
+    "slideIds": [
+      "slide-w5-d2-dk2-01",
+      "slide-w5-d2-dk2-02",
+      "slide-w5-d2-dk2-03",
+      "slide-w5-d2-dk2-04",
+      "slide-w5-d2-dk2-05"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-w5-d2-dk2-01",
+      "presentationId": "presentation-w5-d2-deck-02",
+      "title": "Scenario Assignments",
+      "body": "Price, timing, trust objections.",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-w5-d2-dk2-02",
+      "presentationId": "presentation-w5-d2-deck-02",
+      "title": "Observer Checklist",
+      "body": "Mentors score listening, not closing.",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-w5-d2-dk2-03",
+      "presentationId": "presentation-w5-d2-deck-02",
+      "title": "Debrief Protocol",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-w5-d2-dk2-04",
+      "presentationId": "presentation-w5-d2-deck-02",
+      "title": "Personal Sales Process Builder",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "sortOrder": 4
+    },
+    {
+      "id": "slide-w5-d2-dk2-05",
+      "presentationId": "presentation-w5-d2-deck-02",
+      "title": "Day 22 Deliverables",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "sortOrder": 5
+    }
+  ]
+}

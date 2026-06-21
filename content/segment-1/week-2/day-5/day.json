@@ -1,0 +1,39 @@
+{
+  "id": "day-segment-1-week-2-day-5",
+  "segmentId": "segment-1",
+  "weekId": "week-segment-1-2",
+  "dayNumber": 5,
+  "title": "Day 10 — Survey Debrief & 80-Hour Market Review Gate",
+  "theme": "Market Review Gate",
+  "durationHours": 4,
+  "learningObjectives": [
+    "Present survey findings with charts and quotes",
+    "Identify actionable market gaps for Business Plan Chapter 2",
+    "Complete 80-hour Market Review gate requirements",
+    "Receive program coach and mentor feedback for Week 3 operations pivot"
+  ],
+  "expectedOutputs": [
+    "Market review presentation",
+    "Market gap declaration",
+    "80-hour gate clearance"
+  ],
+  "portfolioDeliverables": [
+    "portfolio-market-intelligence"
+  ],
+  "businessPlanIntegration": "bp-chapter-2",
+  "presentations": [
+    "presentation-w2-d5-deck-01",
+    "presentation-w2-d5-deck-02"
+  ],
+  "activities": [
+    "activity-w2-d5-01",
+    "activity-w2-d5-02",
+    "activity-w2-d5-03"
+  ],
+  "worksheets": [
+    "worksheet-w2-d5-01"
+  ],
+  "assessments": [
+    "assessment-w2-d5"
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "sessions": [
+    {
+      "id": "session-w5-d3-full",
+      "dayId": "day-segment-1-week-5-day-3",
+      "sessionNumber": 1,
+      "title": "Day 23 — Venture Board Deck Workshop",
+      "durationMinutes": 240,
+      "presentationIds": [
+        "presentation-w5-d3-deck-01",
+        "presentation-w5-d3-deck-02"
+      ],
+      "activityIds": [
+        "activity-w5-d3-01",
+        "activity-w5-d3-02"
+      ],
+      "worksheetIds": [
+        "worksheet-w5-d3-01"
+      ],
+      "assessmentIds": [
+        "assessment-w5-d3"
+      ],
+      "reflectionIds": [
+        "reflection-w5-d3"
+      ],
+      "surveyIds": [
+        "survey-w5-d3"
+      ]
+    }
+  ]
+}

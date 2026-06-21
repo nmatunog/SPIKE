@@ -1,0 +1,49 @@
+{
+  "activities": [
+    {
+      "id": "activity-w5-d5-01",
+      "dayId": "day-segment-1-week-5-day-5",
+      "title": "Final Venture Board Presentations",
+      "durationMinutes": 60,
+      "materials": [],
+      "instructions": [
+        "10-minute board presentations",
+        "Panel Q&A"
+      ],
+      "outputs": [
+        "Final board deck"
+      ],
+      "debriefQuestions": []
+    },
+    {
+      "id": "activity-w5-d5-02",
+      "dayId": "day-segment-1-week-5-day-5",
+      "title": "Hour 200 Gate Audit",
+      "durationMinutes": 30,
+      "materials": [],
+      "instructions": [
+        "Verify artifacts with program coach",
+        "Record gate clearance"
+      ],
+      "outputs": [
+        "Gate clearance record"
+      ],
+      "debriefQuestions": []
+    },
+    {
+      "id": "activity-w5-d5-03",
+      "dayId": "day-segment-1-week-5-day-5",
+      "title": "Segment 1 Capstone Ceremony",
+      "durationMinutes": 25,
+      "materials": [],
+      "instructions": [
+        "Recognize squads and individuals",
+        "Segment 2 commitment"
+      ],
+      "outputs": [
+        "Capstone acknowledgment"
+      ],
+      "debriefQuestions": []
+    }
+  ]
+}

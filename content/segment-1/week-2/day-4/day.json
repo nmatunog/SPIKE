@@ -1,0 +1,38 @@
+{
+  "id": "day-segment-1-week-2-day-4",
+  "segmentId": "segment-1",
+  "weekId": "week-segment-1-2",
+  "dayNumber": 4,
+  "title": "Day 9 — Field Survey Execution",
+  "theme": "Field Research",
+  "durationHours": 4,
+  "learningObjectives": [
+    "Execute field surveys with professional conduct",
+    "Capture minimum viable sample per squad quota",
+    "Log raw data with timestamps and context notes",
+    "Debrief field surprises without premature solutioning"
+  ],
+  "expectedOutputs": [
+    "Survey dataset",
+    "Field debrief summary"
+  ],
+  "portfolioDeliverables": [
+    "portfolio-market-intelligence"
+  ],
+  "businessPlanIntegration": "bp-chapter-2",
+  "presentations": [
+    "presentation-w2-d4-deck-01",
+    "presentation-w2-d4-deck-02"
+  ],
+  "activities": [
+    "activity-w2-d4-01",
+    "activity-w2-d4-02",
+    "activity-w2-d4-03"
+  ],
+  "worksheets": [
+    "worksheet-w2-d4-01"
+  ],
+  "assessments": [
+    "assessment-w2-d4"
+  ]
+}

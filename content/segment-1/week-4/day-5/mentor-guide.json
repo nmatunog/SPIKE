@@ -1,0 +1,34 @@
+{
+  "dayId": "day-segment-1-week-4-day-5",
+  "theme": "Professionalism",
+  "title": "Mentor Guide — Day 20 — Professional Readiness & 160-Hour Gate",
+  "coachingObjective": "Launch licensed-advisor identity.",
+  "timing": {
+    "preSession": "Review facilitator guide and deck speaker notes",
+    "duringSession": "Circulate during squad activities",
+    "postSession": "Complete squad weekly review snapshot"
+  },
+  "discussionQuestions": [
+    "Who is on track for Hour 110 license milestone?",
+    "Professional brand gaps?",
+    "Energy level for product week?"
+  ],
+  "observationAreas": [
+    "Presentation professionalism",
+    "Licensing plan realism",
+    "Commitment authenticity"
+  ],
+  "coachingTips": [
+    "Document next 30-day licensing calendar per participant"
+  ],
+  "warningSigns": [],
+  "reflectionPrompts": [],
+  "expectedOutcomes": [
+    "Readiness presentation",
+    "160-hour gate clearance",
+    "Licensing schedule",
+    "Commitment artifact"
+  ],
+  "activityCoachingNotes": [],
+  "debriefWithFaculty": []
+}

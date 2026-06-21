@@ -1,0 +1,18 @@
+{
+  "assessment": {
+    "id": "assessment-w5-d4",
+    "dayId": "day-segment-1-week-5-day-4",
+    "title": "Blueprint completeness rubric",
+    "description": "Faculty delivery checklist — squad progress tracked via Squad XP.",
+    "rubricId": "rubric-assessment-w5-d4"
+  },
+  "rubric": {
+    "id": "rubric-assessment-w5-d4",
+    "assessmentId": "assessment-w5-d4",
+    "title": "Delivery checklist",
+    "criteria": [
+      "3-year blueprint",
+      "Integrated business plan outline"
+    ]
+  }
+}

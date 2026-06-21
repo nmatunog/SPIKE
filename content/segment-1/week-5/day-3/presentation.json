@@ -1,0 +1,61 @@
+{
+  "presentation": {
+    "id": "presentation-w5-d3-deck-01",
+    "dayId": "day-segment-1-week-5-day-3",
+    "title": "Program Coach Deck 01 — Venture Board Standards",
+    "slideIds": [
+      "slide-w5-d3-dk1-01",
+      "slide-w5-d3-dk1-02",
+      "slide-w5-d3-dk1-03",
+      "slide-w5-d3-dk1-04",
+      "slide-w5-d3-dk1-05"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-w5-d3-dk1-01",
+      "presentationId": "presentation-w5-d3-deck-01",
+      "title": "Day 23 — Tell Your Venture Story",
+      "body": "",
+      "speakerNotes": "Hour 200 gate preview.",
+      "discussionQuestions": [],
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-w5-d3-dk1-02",
+      "presentationId": "presentation-w5-d3-deck-01",
+      "title": "Board Deck Architecture",
+      "body": "Problem, solution, market, ops, ask.",
+      "speakerNotes": "Hour 200 gate preview.",
+      "discussionQuestions": [],
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-w5-d3-dk1-03",
+      "presentationId": "presentation-w5-d3-deck-01",
+      "title": "Evidence Standards",
+      "body": "No vanity metrics.",
+      "speakerNotes": "Hour 200 gate preview.",
+      "discussionQuestions": [],
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-w5-d3-dk1-04",
+      "presentationId": "presentation-w5-d3-deck-01",
+      "title": "Timing & Q&A Prep",
+      "body": "10 min + 5 min Q&A.",
+      "speakerNotes": "Hour 200 gate preview.",
+      "discussionQuestions": [],
+      "sortOrder": 4
+    },
+    {
+      "id": "slide-w5-d3-dk1-05",
+      "presentationId": "presentation-w5-d3-deck-01",
+      "title": "Deck 01 Close",
+      "body": "",
+      "speakerNotes": "Hour 200 gate preview.",
+      "discussionQuestions": [],
+      "sortOrder": 5
+    }
+  ]
+}

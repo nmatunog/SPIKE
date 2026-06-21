@@ -1,0 +1,61 @@
+{
+  "presentation": {
+    "id": "presentation-w2-d2-deck-02",
+    "dayId": "day-segment-1-week-2-day-2",
+    "title": "Program Coach Deck 02 — Advisory Dyad Workshop",
+    "slideIds": [
+      "slide-w2-d2-dk2-01",
+      "slide-w2-d2-dk2-02",
+      "slide-w2-d2-dk2-03",
+      "slide-w2-d2-dk2-04",
+      "slide-w2-d2-dk2-05"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-w2-d2-dk2-01",
+      "presentationId": "presentation-w2-d2-deck-02",
+      "title": "Dyad Protocol & Timing",
+      "body": "8 min discovery / 4 min feedback / swap.",
+      "speakerNotes": "Facilitate practice and feedback.",
+      "discussionQuestions": [],
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-w2-d2-dk2-02",
+      "presentationId": "presentation-w2-d2-deck-02",
+      "title": "Client Persona Cards",
+      "body": "Use Week 1 persona or provided scenarios.",
+      "speakerNotes": "Facilitate practice and feedback.",
+      "discussionQuestions": [],
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-w2-d2-dk2-03",
+      "presentationId": "presentation-w2-d2-deck-02",
+      "title": "Observation Checklist",
+      "body": "Mentors score listening, empathy, note-taking.",
+      "speakerNotes": "Facilitate practice and feedback.",
+      "discussionQuestions": [],
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-w2-d2-dk2-04",
+      "presentationId": "presentation-w2-d2-deck-02",
+      "title": "Squad Synthesis",
+      "body": "Top 3 needs themes per squad.",
+      "speakerNotes": "Facilitate practice and feedback.",
+      "discussionQuestions": [],
+      "sortOrder": 4
+    },
+    {
+      "id": "slide-w2-d2-dk2-05",
+      "presentationId": "presentation-w2-d2-deck-02",
+      "title": "Day 7 Deliverables",
+      "body": "FNA notes uploaded; preview field survey planning.",
+      "speakerNotes": "Facilitate practice and feedback.",
+      "discussionQuestions": [],
+      "sortOrder": 5
+    }
+  ]
+}

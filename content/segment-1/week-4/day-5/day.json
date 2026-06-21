@@ -1,0 +1,41 @@
+{
+  "id": "day-segment-1-week-4-day-5",
+  "segmentId": "segment-1",
+  "weekId": "week-segment-1-4",
+  "dayNumber": 5,
+  "title": "Day 20 — Professional Readiness & 160-Hour Gate",
+  "theme": "Professional Gate",
+  "durationHours": 4,
+  "learningObjectives": [
+    "Present professional readiness portfolio including licensing progress",
+    "Complete 160-hour gate requirements",
+    "Articulate licensing pathway and Hour 110 milestone plan",
+    "Transition cohort mindset toward Week 5+ product and sales integration"
+  ],
+  "expectedOutputs": [
+    "Readiness presentation",
+    "160-hour gate clearance",
+    "Licensing schedule",
+    "Commitment artifact"
+  ],
+  "portfolioDeliverables": [
+    "portfolio-professional-development"
+  ],
+  "businessPlanIntegration": "bp-chapter-4",
+  "presentations": [
+    "presentation-w4-d5-deck-01",
+    "presentation-w4-d5-deck-02"
+  ],
+  "activities": [
+    "activity-w4-d5-01",
+    "activity-w4-d5-02",
+    "activity-w4-d5-03"
+  ],
+  "worksheets": [
+    "worksheet-w4-d5-01",
+    "worksheet-w4-d5-02"
+  ],
+  "assessments": [
+    "assessment-w4-d5"
+  ]
+}

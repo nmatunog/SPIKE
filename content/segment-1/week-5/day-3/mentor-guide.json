@@ -1,0 +1,31 @@
+{
+  "dayId": "day-segment-1-week-5-day-3",
+  "theme": "Storytelling",
+  "title": "Mentor Guide — Day 23 — Venture Board Deck Workshop",
+  "coachingObjective": "Help squads tell a board-ready narrative.",
+  "timing": {
+    "preSession": "Review facilitator guide and deck speaker notes",
+    "duringSession": "Circulate during squad activities",
+    "postSession": "Complete squad weekly review snapshot"
+  },
+  "discussionQuestions": [
+    "Which squads have credible market evidence?",
+    "Q&A weak spots?"
+  ],
+  "observationAreas": [
+    "Evidence quality",
+    "Timing",
+    "Q&A composure"
+  ],
+  "coachingTips": [
+    "Push for one clear ask at the end"
+  ],
+  "warningSigns": [],
+  "reflectionPrompts": [],
+  "expectedOutcomes": [
+    "Venture Board deck v2",
+    "Rehearsal feedback"
+  ],
+  "activityCoachingNotes": [],
+  "debriefWithFaculty": []
+}

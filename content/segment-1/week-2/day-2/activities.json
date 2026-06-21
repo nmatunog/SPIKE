@@ -1,0 +1,50 @@
+{
+  "activities": [
+    {
+      "id": "activity-w2-d2-01",
+      "dayId": "day-segment-1-week-2-day-2",
+      "title": "FNA Question Drill",
+      "durationMinutes": 20,
+      "materials": [],
+      "instructions": [
+        "Rotate through question bank stations",
+        "Practice follow-up probes"
+      ],
+      "outputs": [
+        "Question drill notes"
+      ],
+      "debriefQuestions": []
+    },
+    {
+      "id": "activity-w2-d2-02",
+      "dayId": "day-segment-1-week-2-day-2",
+      "title": "Advisory Dyad — Round 1 & 2",
+      "durationMinutes": 50,
+      "materials": [],
+      "instructions": [
+        "Role A: advisor conducts discovery",
+        "Role B: client uses persona card",
+        "Swap roles"
+      ],
+      "outputs": [
+        "FNA discovery notes"
+      ],
+      "debriefQuestions": []
+    },
+    {
+      "id": "activity-w2-d2-03",
+      "dayId": "day-segment-1-week-2-day-2",
+      "title": "Needs Theme Synthesis",
+      "durationMinutes": 30,
+      "materials": [],
+      "instructions": [
+        "Squads cluster needs into themes",
+        "Prepare one-slide summary"
+      ],
+      "outputs": [
+        "Squad needs summary"
+      ],
+      "debriefQuestions": []
+    }
+  ]
+}

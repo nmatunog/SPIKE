@@ -1,0 +1,19 @@
+{
+  "survey": {
+    "id": "survey-w5-d5",
+    "dayId": "day-segment-1-week-5-day-5",
+    "title": "Day 5 pulse survey",
+    "description": "Week 5 Day 5 facilitator pulse check",
+    "status": "active"
+  },
+  "questions": [
+    {
+      "id": "sq-w5-d5-01",
+      "surveyId": "survey-w5-d5",
+      "prompt": "How ready is the cohort for today's session flow?",
+      "type": "rating",
+      "required": true,
+      "sortOrder": 1
+    }
+  ]
+}

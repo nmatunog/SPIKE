@@ -1,0 +1,48 @@
+{
+  "activities": [
+    {
+      "id": "activity-w3-d1-01",
+      "dayId": "day-segment-1-week-3-day-1",
+      "title": "Underwriting Concept Clusters",
+      "durationMinutes": 25,
+      "materials": [],
+      "instructions": [
+        "Gallery walk of risk factor cards",
+        "Squads sort into categories"
+      ],
+      "outputs": [
+        "Risk factor map"
+      ],
+      "debriefQuestions": []
+    },
+    {
+      "id": "activity-w3-d1-02",
+      "dayId": "day-segment-1-week-3-day-1",
+      "title": "Mock Application Lab",
+      "durationMinutes": 75,
+      "materials": [],
+      "instructions": [
+        "Evaluate 2 cases per squad",
+        "Write recommendation memo"
+      ],
+      "outputs": [
+        "Underwriting case memo"
+      ],
+      "debriefQuestions": []
+    },
+    {
+      "id": "activity-w3-d1-03",
+      "dayId": "day-segment-1-week-3-day-1",
+      "title": "Case Presentation Snapshots",
+      "durationMinutes": 25,
+      "materials": [],
+      "instructions": [
+        "3-minute recommendation per squad"
+      ],
+      "outputs": [
+        "Presentation notes"
+      ],
+      "debriefQuestions": []
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "id": "day-segment-1-week-2-day-3",
+  "segmentId": "segment-1",
+  "weekId": "week-segment-1-2",
+  "dayNumber": 3,
+  "title": "Day 8 — Needs Analysis Survey Design",
+  "theme": "Survey Methods",
+  "durationHours": 4,
+  "learningObjectives": [
+    "Design unbiased survey questions for target demographic (e.g., Gen Z)",
+    "Pilot survey with squad critique for leading questions",
+    "Finalize field survey plan with ethics and safety protocols",
+    "Align survey metrics to Business Plan Chapter 2 evidence standards"
+  ],
+  "expectedOutputs": [
+    "Final survey instrument",
+    "Field execution plan"
+  ],
+  "portfolioDeliverables": [
+    "portfolio-market-intelligence"
+  ],
+  "businessPlanIntegration": "bp-chapter-2",
+  "presentations": [
+    "presentation-w2-d3-deck-01",
+    "presentation-w2-d3-deck-02"
+  ],
+  "activities": [
+    "activity-w2-d3-01",
+    "activity-w2-d3-02",
+    "activity-w2-d3-03"
+  ],
+  "worksheets": [
+    "worksheet-w2-d3-01",
+    "worksheet-w2-d3-02"
+  ],
+  "assessments": [
+    "assessment-w2-d3"
+  ]
+}

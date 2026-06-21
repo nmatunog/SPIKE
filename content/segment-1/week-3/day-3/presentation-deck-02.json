@@ -1,0 +1,61 @@
+{
+  "presentation": {
+    "id": "presentation-w3-d3-deck-02",
+    "dayId": "day-segment-1-week-3-day-3",
+    "title": "Program Coach Deck 02 — Claim Delivery Roleplays",
+    "slideIds": [
+      "slide-w3-d3-dk2-01",
+      "slide-w3-d3-dk2-02",
+      "slide-w3-d3-dk2-03",
+      "slide-w3-d3-dk2-04",
+      "slide-w3-d3-dk2-05"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-w3-d3-dk2-01",
+      "presentationId": "presentation-w3-d3-deck-02",
+      "title": "Roleplay Protocol",
+      "body": "5 min scene / 5 min feedback.",
+      "speakerNotes": "Practice difficult conversations.",
+      "discussionQuestions": [],
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-w3-d3-dk2-02",
+      "presentationId": "presentation-w3-d3-deck-02",
+      "title": "Scenario Menu",
+      "body": "Death, CI, disability, delay.",
+      "speakerNotes": "Practice difficult conversations.",
+      "discussionQuestions": [],
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-w3-d3-dk2-03",
+      "presentationId": "presentation-w3-d3-deck-02",
+      "title": "Feedback Rubric",
+      "body": "Empathy, clarity, next steps.",
+      "speakerNotes": "Practice difficult conversations.",
+      "discussionQuestions": [],
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-w3-d3-dk2-04",
+      "presentationId": "presentation-w3-d3-deck-02",
+      "title": "Documentation Checklist",
+      "body": "What to capture after call.",
+      "speakerNotes": "Practice difficult conversations.",
+      "discussionQuestions": [],
+      "sortOrder": 4
+    },
+    {
+      "id": "slide-w3-d3-dk2-05",
+      "presentationId": "presentation-w3-d3-deck-02",
+      "title": "Day 13 Deliverables",
+      "body": "Roleplay reflection uploaded.",
+      "speakerNotes": "Practice difficult conversations.",
+      "discussionQuestions": [],
+      "sortOrder": 5
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "assessment": {
+    "id": "assessment-w3-d1",
+    "dayId": "day-segment-1-week-3-day-1",
+    "title": "Case memo rubric",
+    "description": "Faculty delivery checklist — squad progress tracked via Squad XP.",
+    "rubricId": "rubric-assessment-w3-d1"
+  },
+  "rubric": {
+    "id": "rubric-assessment-w3-d1",
+    "assessmentId": "assessment-w3-d1",
+    "title": "Delivery checklist",
+    "criteria": [
+      "Underwriting case memo",
+      "Risk factor map"
+    ]
+  }
+}

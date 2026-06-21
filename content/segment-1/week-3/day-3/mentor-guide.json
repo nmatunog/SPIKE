@@ -1,0 +1,34 @@
+{
+  "dayId": "day-segment-1-week-3-day-3",
+  "theme": "Empathy",
+  "title": "Mentor Guide — Day 13 — Claims Processing & Empathy Delivery",
+  "coachingObjective": "Develop humane claim-side presence.",
+  "timing": {
+    "preSession": "Review facilitator guide and deck speaker notes",
+    "duringSession": "Circulate during squad activities",
+    "postSession": "Complete squad weekly review snapshot"
+  },
+  "discussionQuestions": [
+    "What phrases landed vs harmed?",
+    "Who needs more practice before client-facing work?",
+    "How do claims reinforce Week 1 impact statements?"
+  ],
+  "observationAreas": [
+    "Tone and pace",
+    "Appropriate silence",
+    "Clear next steps"
+  ],
+  "coachingTips": [
+    "Model pause and reflective listening",
+    "Debrief facilitator emotions too"
+  ],
+  "warningSigns": [],
+  "reflectionPrompts": [],
+  "expectedOutcomes": [
+    "Workflow map",
+    "Roleplay reflection",
+    "Documentation sample"
+  ],
+  "activityCoachingNotes": [],
+  "debriefWithFaculty": []
+}

@@ -1,0 +1,61 @@
+{
+  "presentation": {
+    "id": "presentation-w3-d1-deck-01",
+    "dayId": "day-segment-1-week-3-day-1",
+    "title": "Program Coach Deck 01 — Why Underwriting Exists",
+    "slideIds": [
+      "slide-w3-d1-dk1-01",
+      "slide-w3-d1-dk1-02",
+      "slide-w3-d1-dk1-03",
+      "slide-w3-d1-dk1-04",
+      "slide-w3-d1-dk1-05"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-w3-d1-dk1-01",
+      "presentationId": "presentation-w3-d1-deck-01",
+      "title": "Day 11 — Backend Operations Week",
+      "body": "Pivot from market to operating model.",
+      "speakerNotes": "Conceptual foundations.",
+      "discussionQuestions": [],
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-w3-d1-dk1-02",
+      "presentationId": "presentation-w3-d1-deck-01",
+      "title": "Underwriting in the Protection Story",
+      "body": "Fair pricing and insurability.",
+      "speakerNotes": "Conceptual foundations.",
+      "discussionQuestions": [],
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-w3-d1-dk1-03",
+      "presentationId": "presentation-w3-d1-deck-01",
+      "title": "Risk Factors Overview",
+      "body": "Health, occupation, financial justification.",
+      "speakerNotes": "Conceptual foundations.",
+      "discussionQuestions": [],
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-w3-d1-dk1-04",
+      "presentationId": "presentation-w3-d1-deck-01",
+      "title": "Advisor Role vs Underwriter Role",
+      "body": "Full disclosure expectations.",
+      "speakerNotes": "Conceptual foundations.",
+      "discussionQuestions": [],
+      "sortOrder": 4
+    },
+    {
+      "id": "slide-w3-d1-dk1-05",
+      "presentationId": "presentation-w3-d1-deck-01",
+      "title": "Deck 01 Close — Case Lab",
+      "body": "Introduce mock applications.",
+      "speakerNotes": "Conceptual foundations.",
+      "discussionQuestions": [],
+      "sortOrder": 5
+    }
+  ]
+}

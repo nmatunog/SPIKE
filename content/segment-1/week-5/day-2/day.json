@@ -1,0 +1,37 @@
+{
+  "id": "day-segment-1-week-5-day-2",
+  "segmentId": "segment-1",
+  "weekId": "week-segment-1-5",
+  "dayNumber": 2,
+  "title": "Day 22 — Sales Process & Objection Handling",
+  "theme": "Advisory Sales",
+  "durationHours": 4,
+  "learningObjectives": [
+    "Outline the SPIKE advisory sales stages from rapport to next step",
+    "Practice objection handling with role-play scenarios",
+    "Document a personal sales process for Venture Portfolio"
+  ],
+  "expectedOutputs": [
+    "Role-play feedback",
+    "Personal sales process"
+  ],
+  "portfolioDeliverables": [
+    "portfolio-three-year-blueprint"
+  ],
+  "businessPlanIntegration": "bp-chapter-5",
+  "presentations": [
+    "presentation-w5-d2-deck-01",
+    "presentation-w5-d2-deck-02"
+  ],
+  "activities": [
+    "activity-w5-d2-01",
+    "activity-w5-d2-02"
+  ],
+  "worksheets": [
+    "worksheet-w5-d2-01",
+    "worksheet-w5-d2-02"
+  ],
+  "assessments": [
+    "assessment-w5-d2"
+  ]
+}

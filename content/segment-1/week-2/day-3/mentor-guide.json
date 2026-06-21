@@ -1,0 +1,32 @@
+{
+  "dayId": "day-segment-1-week-2-day-3",
+  "theme": "Rigor",
+  "title": "Mentor Guide — Day 8 — Needs Analysis Survey Design",
+  "coachingObjective": "Instill evidence standards.",
+  "timing": {
+    "preSession": "Review facilitator guide and deck speaker notes",
+    "duringSession": "Circulate during squad activities",
+    "postSession": "Complete squad weekly review snapshot"
+  },
+  "discussionQuestions": [
+    "Which questions survived pilot intact?",
+    "Where is sample bias risk?",
+    "Is field plan realistic for tomorrow?"
+  ],
+  "observationAreas": [
+    "Question quality",
+    "Ethics awareness",
+    "Squad collaboration"
+  ],
+  "coachingTips": [
+    "Push squads to define what answer would change their venture thesis"
+  ],
+  "warningSigns": [],
+  "reflectionPrompts": [],
+  "expectedOutcomes": [
+    "Final survey instrument",
+    "Field execution plan"
+  ],
+  "activityCoachingNotes": [],
+  "debriefWithFaculty": []
+}

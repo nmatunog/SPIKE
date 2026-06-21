@@ -1,0 +1,32 @@
+{
+  "sessions": [
+    {
+      "id": "session-w5-d4-full",
+      "dayId": "day-segment-1-week-5-day-4",
+      "sessionNumber": 1,
+      "title": "Day 24 — 3-Year Blueprint & Business Plan Integration",
+      "durationMinutes": 240,
+      "presentationIds": [
+        "presentation-w5-d4-deck-01",
+        "presentation-w5-d4-deck-02"
+      ],
+      "activityIds": [
+        "activity-w5-d4-01",
+        "activity-w5-d4-02"
+      ],
+      "worksheetIds": [
+        "worksheet-w5-d4-01",
+        "worksheet-w5-d4-02"
+      ],
+      "assessmentIds": [
+        "assessment-w5-d4"
+      ],
+      "reflectionIds": [
+        "reflection-w5-d4"
+      ],
+      "surveyIds": [
+        "survey-w5-d4"
+      ]
+    }
+  ]
+}

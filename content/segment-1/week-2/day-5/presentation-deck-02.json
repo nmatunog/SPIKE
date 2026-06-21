@@ -1,0 +1,61 @@
+{
+  "presentation": {
+    "id": "presentation-w2-d5-deck-02",
+    "dayId": "day-segment-1-week-2-day-5",
+    "title": "Program Coach Deck 02 — Gate Ceremony & Week 3 Preview",
+    "slideIds": [
+      "slide-w2-d5-dk2-01",
+      "slide-w2-d5-dk2-02",
+      "slide-w2-d5-dk2-03",
+      "slide-w2-d5-dk2-04",
+      "slide-w2-d5-dk2-05"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-w2-d5-dk2-01",
+      "presentationId": "presentation-w2-d5-deck-02",
+      "title": "Squad Presentation Format",
+      "body": "8 min present / 4 min Q&A.",
+      "speakerNotes": "Close Week 2.",
+      "discussionQuestions": [],
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-w2-d5-dk2-02",
+      "presentationId": "presentation-w2-d5-deck-02",
+      "title": "Market Gap Declaration",
+      "body": "One sentence opportunity thesis.",
+      "speakerNotes": "Close Week 2.",
+      "discussionQuestions": [],
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-w2-d5-dk2-03",
+      "presentationId": "presentation-w2-d5-deck-02",
+      "title": "80-Hour Gate Checklist",
+      "body": "Portfolio + BP Chapter 2 + hours.",
+      "speakerNotes": "Close Week 2.",
+      "discussionQuestions": [],
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-w2-d5-dk2-04",
+      "presentationId": "presentation-w2-d5-deck-02",
+      "title": "Week 3 — Operations Preview",
+      "body": "Underwriting and portals ahead.",
+      "speakerNotes": "Close Week 2.",
+      "discussionQuestions": [],
+      "sortOrder": 4
+    },
+    {
+      "id": "slide-w2-d5-dk2-05",
+      "presentationId": "presentation-w2-d5-deck-02",
+      "title": "Week 2 Close",
+      "body": "Celebration + commitments.",
+      "speakerNotes": "Close Week 2.",
+      "discussionQuestions": [],
+      "sortOrder": 5
+    }
+  ]
+}

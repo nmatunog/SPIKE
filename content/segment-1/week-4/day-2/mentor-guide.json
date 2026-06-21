@@ -1,0 +1,32 @@
+{
+  "dayId": "day-segment-1-week-4-day-2",
+  "theme": "Study Discipline",
+  "title": "Mentor Guide — Day 17 — Traditional Life Licensing Prep",
+  "coachingObjective": "Coach exam habits.",
+  "timing": {
+    "preSession": "Review facilitator guide and deck speaker notes",
+    "duringSession": "Circulate during squad activities",
+    "postSession": "Complete squad weekly review snapshot"
+  },
+  "discussionQuestions": [
+    "Top 3 weak domains cohort-wide?",
+    "Who needs tutoring dyad?",
+    "Is error log being used honestly?"
+  ],
+  "observationAreas": [
+    "Focus during drills",
+    "Teach-back clarity",
+    "Resilience after low scores"
+  ],
+  "coachingTips": [
+    "Celebrate improvement not just absolute score"
+  ],
+  "warningSigns": [],
+  "reflectionPrompts": [],
+  "expectedOutcomes": [
+    "Trad Life drill scores",
+    "Error log v1"
+  ],
+  "activityCoachingNotes": [],
+  "debriefWithFaculty": []
+}

@@ -1,0 +1,48 @@
+{
+  "activities": [
+    {
+      "id": "activity-w3-d4-01",
+      "dayId": "day-segment-1-week-3-day-4",
+      "title": "Client Journey Mapping",
+      "durationMinutes": 30,
+      "materials": [],
+      "instructions": [
+        "Map one persona through full ops lifecycle",
+        "Flag handoff risks"
+      ],
+      "outputs": [
+        "Journey map"
+      ],
+      "debriefQuestions": []
+    },
+    {
+      "id": "activity-w3-d4-02",
+      "dayId": "day-segment-1-week-3-day-4",
+      "title": "Operations Dyad Presentations",
+      "durationMinutes": 80,
+      "materials": [],
+      "instructions": [
+        "10-min integrated roleplay per dyad",
+        "Q&A from coaches"
+      ],
+      "outputs": [
+        "Dyad presentation recording or notes"
+      ],
+      "debriefQuestions": []
+    },
+    {
+      "id": "activity-w3-d4-03",
+      "dayId": "day-segment-1-week-3-day-4",
+      "title": "Efficiency Recommendation Workshop",
+      "durationMinutes": 20,
+      "materials": [],
+      "instructions": [
+        "Each squad proposes one ops improvement"
+      ],
+      "outputs": [
+        "Efficiency memo"
+      ],
+      "debriefQuestions": []
+    }
+  ]
+}

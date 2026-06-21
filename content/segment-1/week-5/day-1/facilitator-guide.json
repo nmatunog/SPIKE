@@ -1,0 +1,52 @@
+{
+  "dayId": "day-segment-1-week-5-day-1",
+  "title": "Facilitator Guide — Day 21 — Product Solutions & Needs-Based Framework",
+  "durationHours": 4,
+  "prepChecklist": [
+    "Load persona artifacts from portfolios",
+    "Brief mentors on compliance language"
+  ],
+  "sessionFlow": [
+    {
+      "time": "0:00–0:35",
+      "activity": "Deck 01 — Product solutions framing",
+      "notes": ""
+    },
+    {
+      "time": "0:35–1:25",
+      "activity": "Solution mapping lab",
+      "notes": "Mentors probe for needs evidence."
+    },
+    {
+      "time": "1:25–1:35",
+      "activity": "Break",
+      "notes": ""
+    },
+    {
+      "time": "1:35–2:15",
+      "activity": "Squad peer review",
+      "notes": ""
+    },
+    {
+      "time": "2:15–2:45",
+      "activity": "Portfolio sync + assessment",
+      "notes": ""
+    },
+    {
+      "time": "2:45–3:00",
+      "activity": "Reflection + Day 22 preview",
+      "notes": ""
+    }
+  ],
+  "debriefQuestions": [
+    "Who stayed needs-based longest?",
+    "Gaps before sales process day?"
+  ],
+  "commonPitfalls": [
+    "Product pitching before needs documented",
+    "Guarantee language"
+  ],
+  "coachingTips": [
+    "Reward evidence citations from discovery work"
+  ]
+}

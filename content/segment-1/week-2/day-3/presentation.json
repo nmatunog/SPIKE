@@ -1,0 +1,61 @@
+{
+  "presentation": {
+    "id": "presentation-w2-d3-deck-01",
+    "dayId": "day-segment-1-week-2-day-3",
+    "title": "Program Coach Deck 01 — Evidence Over Opinions",
+    "slideIds": [
+      "slide-w2-d3-dk1-01",
+      "slide-w2-d3-dk1-02",
+      "slide-w2-d3-dk1-03",
+      "slide-w2-d3-dk1-04",
+      "slide-w2-d3-dk1-05"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-w2-d3-dk1-01",
+      "presentationId": "presentation-w2-d3-deck-01",
+      "title": "Day 8 — From Conversations to Sample Size",
+      "body": "Bridge dyads to structured research.",
+      "speakerNotes": "Survey science for venture builders.",
+      "discussionQuestions": [],
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-w2-d3-dk1-02",
+      "presentationId": "presentation-w2-d3-deck-01",
+      "title": "Good vs Bad Survey Questions",
+      "body": "Leading, double-barreled, jargon examples.",
+      "speakerNotes": "Survey science for venture builders.",
+      "discussionQuestions": [],
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-w2-d3-dk1-03",
+      "presentationId": "presentation-w2-d3-deck-01",
+      "title": "Sampling & Field Safety",
+      "body": "Consent, privacy, mentor escorts where required.",
+      "speakerNotes": "Survey science for venture builders.",
+      "discussionQuestions": [],
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-w2-d3-dk1-04",
+      "presentationId": "presentation-w2-d3-deck-01",
+      "title": "Gen Z / Persona Targeting",
+      "body": "Connect to Week 1 persona segments.",
+      "speakerNotes": "Survey science for venture builders.",
+      "discussionQuestions": [],
+      "sortOrder": 4
+    },
+    {
+      "id": "slide-w2-d3-dk1-05",
+      "presentationId": "presentation-w2-d3-deck-01",
+      "title": "Deck 01 Close — Workshop Launch",
+      "body": "Squads draft 8–12 questions.",
+      "speakerNotes": "Survey science for venture builders.",
+      "discussionQuestions": [],
+      "sortOrder": 5
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "dayId": "day-segment-1-week-3-day-2",
+  "title": "Facilitator Guide — Day 12 — Policy Servicing & AIA Digital Portals",
+  "durationHours": 4,
+  "prepChecklist": [
+    "Confirm portal sandbox access with IT",
+    "Prepare backup screenshots if live portal unavailable"
+  ],
+  "sessionFlow": [
+    {
+      "time": "0:00–0:25",
+      "activity": "Deck 01 — Lifecycle + portals overview",
+      "notes": ""
+    },
+    {
+      "time": "0:25–1:25",
+      "activity": "Portal hands-on lab (rotating stations)",
+      "notes": "Pairs complete task checklist."
+    },
+    {
+      "time": "1:25–1:35",
+      "activity": "Break",
+      "notes": ""
+    },
+    {
+      "time": "1:35–2:10",
+      "activity": "Client servicing roleplays",
+      "notes": "Explain portal outcome to mock client."
+    },
+    {
+      "time": "2:10–2:40",
+      "activity": "Advisor startup systems workshop",
+      "notes": "Personal ops checklist in Blueprint."
+    },
+    {
+      "time": "2:40–3:00",
+      "activity": "Assessment + reflection",
+      "notes": ""
+    }
+  ],
+  "debriefQuestions": [
+    "What task caused most friction?",
+    "Who can explain lifecycle to a client clearly?",
+    "What systems are still missing for startup readiness?"
+  ],
+  "commonPitfalls": [
+    "Clicking without understanding lifecycle",
+    "Sharing credentials against policy"
+  ],
+  "coachingTips": [
+    "Pair tech-confident with tech-anxious interns"
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "dayId": "day-segment-1-week-3-day-3",
+  "title": "Facilitator Guide — Day 13 — Claims Processing & Empathy Delivery",
+  "durationHours": 4,
+  "prepChecklist": [
+    "Brief mentors on trauma-sensitive facilitation",
+    "No graphic content in scenarios"
+  ],
+  "sessionFlow": [
+    {
+      "time": "0:00–0:30",
+      "activity": "Deck 01 — Claims workflow + empathy",
+      "notes": "Use careful tone — room may have personal stories."
+    },
+    {
+      "time": "0:30–1:25",
+      "activity": "Claim delivery roleplays — Round 1",
+      "notes": "Mentors score empathy rubric."
+    },
+    {
+      "time": "1:25–1:35",
+      "activity": "Break",
+      "notes": ""
+    },
+    {
+      "time": "1:35–2:20",
+      "activity": "Roleplays — Round 2 (harder scenarios)",
+      "notes": ""
+    },
+    {
+      "time": "2:20–2:45",
+      "activity": "Squad debrief — language that worked",
+      "notes": ""
+    },
+    {
+      "time": "2:45–3:00",
+      "activity": "Reflection",
+      "notes": ""
+    }
+  ],
+  "debriefQuestions": [
+    "What phrases landed vs harmed?",
+    "Who needs more practice before client-facing work?",
+    "How do claims reinforce Week 1 impact statements?"
+  ],
+  "commonPitfalls": [
+    "Rushing to policy details before acknowledging loss",
+    "Scripted insincerity"
+  ],
+  "coachingTips": [
+    "Model pause and reflective listening",
+    "Debrief facilitator emotions too"
+  ]
+}

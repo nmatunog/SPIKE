@@ -1,0 +1,37 @@
+{
+  "activities": [
+    {
+      "id": "activity-w5-d3-01",
+      "dayId": "day-segment-1-week-5-day-3",
+      "title": "Venture Board Rehearsal Lab",
+      "durationMinutes": 90,
+      "materials": [],
+      "instructions": [
+        "10-minute timed presentations",
+        "Squad + mentor feedback"
+      ],
+      "outputs": [
+        "Board deck v1",
+        "Feedback form"
+      ],
+      "debriefQuestions": [
+        "Strongest evidence slide?"
+      ]
+    },
+    {
+      "id": "activity-w5-d3-02",
+      "dayId": "day-segment-1-week-5-day-3",
+      "title": "Deck Revision Sprint",
+      "durationMinutes": 40,
+      "materials": [],
+      "instructions": [
+        "Incorporate feedback",
+        "Sync portfolio links"
+      ],
+      "outputs": [
+        "Board deck v2"
+      ],
+      "debriefQuestions": []
+    }
+  ]
+}

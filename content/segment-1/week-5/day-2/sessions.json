@@ -1,0 +1,32 @@
+{
+  "sessions": [
+    {
+      "id": "session-w5-d2-full",
+      "dayId": "day-segment-1-week-5-day-2",
+      "sessionNumber": 1,
+      "title": "Day 22 — Sales Process & Objection Handling",
+      "durationMinutes": 240,
+      "presentationIds": [
+        "presentation-w5-d2-deck-01",
+        "presentation-w5-d2-deck-02"
+      ],
+      "activityIds": [
+        "activity-w5-d2-01",
+        "activity-w5-d2-02"
+      ],
+      "worksheetIds": [
+        "worksheet-w5-d2-01",
+        "worksheet-w5-d2-02"
+      ],
+      "assessmentIds": [
+        "assessment-w5-d2"
+      ],
+      "reflectionIds": [
+        "reflection-w5-d2"
+      ],
+      "surveyIds": [
+        "survey-w5-d2"
+      ]
+    }
+  ]
+}

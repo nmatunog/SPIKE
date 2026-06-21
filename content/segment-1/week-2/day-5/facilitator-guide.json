@@ -1,0 +1,51 @@
+{
+  "dayId": "day-segment-1-week-2-day-5",
+  "title": "Facilitator Guide — Day 10 — Survey Debrief & 80-Hour Market Review Gate",
+  "durationHours": 4,
+  "prepChecklist": [
+    "Load gate checklist in admin",
+    "Confirm presentation AV",
+    "Invite venture partners if scheduled"
+  ],
+  "sessionFlow": [
+    {
+      "time": "0:00–0:20",
+      "activity": "Deck 01 — Presentation standards",
+      "notes": "Show exemplar slide structure."
+    },
+    {
+      "time": "0:20–1:05",
+      "activity": "Squad presentation rehearsals",
+      "notes": "Mentors time rehearsals."
+    },
+    {
+      "time": "1:05–2:35",
+      "activity": "Market Review presentations + Q&A",
+      "notes": "Program coach scores with rubric."
+    },
+    {
+      "time": "2:35–2:50",
+      "activity": "80-hour gate confirmation",
+      "notes": "Admin verifies hours artifact."
+    },
+    {
+      "time": "2:50–3:00",
+      "activity": "Week 2 reflection + Week 3 prep",
+      "notes": ""
+    }
+  ],
+  "debriefQuestions": [
+    "Which squads showed strongest evidence?",
+    "Are market gaps actionable for operations week?",
+    "Who needs remediation before Week 3?"
+  ],
+  "commonPitfalls": [
+    "Data dumps without insights",
+    "Ignoring persona link",
+    "Missing gate artifacts"
+  ],
+  "coachingTips": [
+    "Push for one clear decision per presentation",
+    "Document remediation plans for weak gates"
+  ]
+}

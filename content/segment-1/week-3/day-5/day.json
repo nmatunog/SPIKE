@@ -1,0 +1,39 @@
+{
+  "id": "day-segment-1-week-3-day-5",
+  "segmentId": "segment-1",
+  "weekId": "week-segment-1-3",
+  "dayNumber": 5,
+  "title": "Day 15 — Business Operations Review & 120-Hour Gate",
+  "theme": "Operations Gate",
+  "durationHours": 4,
+  "learningObjectives": [
+    "Demonstrate advisor startup readiness across systems checklist",
+    "Present Business Operations Review to faculty panel",
+    "Complete 120-hour gate with remediation plan if needed",
+    "Preview Week 4 licensing intensity and study norms"
+  ],
+  "expectedOutputs": [
+    "Operations review presentation",
+    "120-hour gate clearance",
+    "Study plan v1"
+  ],
+  "portfolioDeliverables": [
+    "portfolio-advisor-startup"
+  ],
+  "businessPlanIntegration": "bp-chapter-3",
+  "presentations": [
+    "presentation-w3-d5-deck-01",
+    "presentation-w3-d5-deck-02"
+  ],
+  "activities": [
+    "activity-w3-d5-01",
+    "activity-w3-d5-02",
+    "activity-w3-d5-03"
+  ],
+  "worksheets": [
+    "worksheet-w3-d5-01"
+  ],
+  "assessments": [
+    "assessment-w3-d5"
+  ]
+}

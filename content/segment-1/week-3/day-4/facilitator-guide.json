@@ -1,0 +1,48 @@
+{
+  "dayId": "day-segment-1-week-3-day-4",
+  "title": "Facilitator Guide — Day 14 — Operations Dyad Presentations",
+  "durationHours": 4,
+  "prepChecklist": [
+    "Schedule presentation panel",
+    "Load rubrics in Playbook when published"
+  ],
+  "sessionFlow": [
+    {
+      "time": "0:00–0:20",
+      "activity": "Deck 01 — Journey integration",
+      "notes": ""
+    },
+    {
+      "time": "0:20–1:00",
+      "activity": "Dyad rehearsal",
+      "notes": "Mentors coach transitions between ops stages."
+    },
+    {
+      "time": "1:00–2:20",
+      "activity": "Operations dyad presentations",
+      "notes": "Panel feedback."
+    },
+    {
+      "time": "2:20–2:40",
+      "activity": "Peer review + efficiency recommendations",
+      "notes": ""
+    },
+    {
+      "time": "2:40–3:00",
+      "activity": "Gate prep + reflection",
+      "notes": ""
+    }
+  ],
+  "debriefQuestions": [
+    "Where did handoffs break down in roleplays?",
+    "Who demonstrates startup readiness?",
+    "What remediation before gate?"
+  ],
+  "commonPitfalls": [
+    "Treating presentation as siloed demos",
+    "Ignoring compliance steps"
+  ],
+  "coachingTips": [
+    "Ask dyads to name one system they will use in Week 4"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "sessions": [
+    {
+      "id": "session-w4-d2-full",
+      "dayId": "day-segment-1-week-4-day-2",
+      "sessionNumber": 1,
+      "title": "Day 17 — Traditional Life Licensing Prep",
+      "durationMinutes": 240,
+      "presentationIds": [
+        "presentation-w4-d2-deck-01",
+        "presentation-w4-d2-deck-02"
+      ],
+      "activityIds": [
+        "activity-w4-d2-01",
+        "activity-w4-d2-02",
+        "activity-w4-d2-03"
+      ],
+      "worksheetIds": [
+        "worksheet-w4-d2-01",
+        "worksheet-w4-d2-02"
+      ],
+      "assessmentIds": [
+        "assessment-w4-d2"
+      ],
+      "reflectionIds": [
+        "reflection-w4-d2"
+      ],
+      "surveyIds": [
+        "survey-w4-d2"
+      ]
+    }
+  ]
+}

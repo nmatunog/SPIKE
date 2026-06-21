@@ -1,0 +1,51 @@
+{
+  "dayId": "day-segment-1-week-2-day-4",
+  "title": "Facilitator Guide — Day 9 — Field Survey Execution",
+  "durationHours": 4,
+  "prepChecklist": [
+    "Confirm mentor zones and emergency contacts",
+    "Test data upload paths",
+    "Weather / venue backup plan"
+  ],
+  "sessionFlow": [
+    {
+      "time": "0:00–0:20",
+      "activity": "Deck 01 — Field briefing",
+      "notes": "Consent scripts practiced aloud."
+    },
+    {
+      "time": "0:20–2:00",
+      "activity": "Field survey execution",
+      "notes": "Mentors roam; program coach on call."
+    },
+    {
+      "time": "2:00–2:10",
+      "activity": "Break / regroup",
+      "notes": ""
+    },
+    {
+      "time": "2:10–2:40",
+      "activity": "Deck 02 — Hot wash debrief",
+      "notes": "Squads share surprises."
+    },
+    {
+      "time": "2:40–3:00",
+      "activity": "Data upload + reflection",
+      "notes": "Confirm Portfolio sync."
+    }
+  ],
+  "debriefQuestions": [
+    "Did any squad fall short on quota — why?",
+    "What ethical issues arose?",
+    "What story is emerging in the data?"
+  ],
+  "commonPitfalls": [
+    "Interviewing friends only",
+    "No consent documentation",
+    "Premature product pitches in field"
+  ],
+  "coachingTips": [
+    "Celebrate professional conduct publicly",
+    "Normalize rejection stories"
+  ]
+}

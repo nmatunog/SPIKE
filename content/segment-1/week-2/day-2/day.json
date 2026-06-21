@@ -1,0 +1,39 @@
+{
+  "id": "day-segment-1-week-2-day-2",
+  "segmentId": "segment-1",
+  "weekId": "week-segment-1-2",
+  "dayNumber": 2,
+  "title": "Day 7 — Financial Needs Analysis & Advisory Dyads",
+  "theme": "FNA Process",
+  "durationHours": 4,
+  "learningObjectives": [
+    "Describe the FNA steps: discover, quantify, prioritize, recommend framework",
+    "Conduct a 15-minute advisory dyad using FNA question bank",
+    "Document needs findings without recommending products",
+    "Give and receive structured peer feedback on listening skills"
+  ],
+  "expectedOutputs": [
+    "FNA dyad notes",
+    "Squad needs theme summary"
+  ],
+  "portfolioDeliverables": [
+    "portfolio-market-intelligence"
+  ],
+  "businessPlanIntegration": "bp-chapter-2",
+  "presentations": [
+    "presentation-w2-d2-deck-01",
+    "presentation-w2-d2-deck-02"
+  ],
+  "activities": [
+    "activity-w2-d2-01",
+    "activity-w2-d2-02",
+    "activity-w2-d2-03"
+  ],
+  "worksheets": [
+    "worksheet-w2-d2-01",
+    "worksheet-w2-d2-02"
+  ],
+  "assessments": [
+    "assessment-w2-d2"
+  ]
+}

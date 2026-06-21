@@ -1,0 +1,53 @@
+{
+  "dayId": "day-segment-1-week-5-day-5",
+  "title": "Facilitator Guide — Day 25 — Segment 1 Capstone & Hour 200 Venture Board Prep",
+  "durationHours": 4,
+  "prepChecklist": [
+    "Coordinate panel members",
+    "Prepare gate certificates",
+    "Segment 2 materials ready"
+  ],
+  "sessionFlow": [
+    {
+      "time": "0:00–0:15",
+      "activity": "Deck 01 — Gate briefing",
+      "notes": ""
+    },
+    {
+      "time": "0:15–1:15",
+      "activity": "Final Venture Board presentations",
+      "notes": ""
+    },
+    {
+      "time": "1:15–1:45",
+      "activity": "Gate audit + sign-off",
+      "notes": ""
+    },
+    {
+      "time": "1:45–2:15",
+      "activity": "Break + portfolio final sync",
+      "notes": ""
+    },
+    {
+      "time": "2:15–2:45",
+      "activity": "Deck 02 — Celebration + Segment 2 preview",
+      "notes": ""
+    },
+    {
+      "time": "2:45–3:00",
+      "activity": "Closing reflection",
+      "notes": ""
+    }
+  ],
+  "debriefQuestions": [
+    "Who is board-ready today vs needs polish?",
+    "Energy for Segment 2?"
+  ],
+  "commonPitfalls": [
+    "Gate as checkbox without presentation quality",
+    "Skipping remediation notes"
+  ],
+  "coachingTips": [
+    "Document polish items before Segment 2 launch"
+  ]
+}

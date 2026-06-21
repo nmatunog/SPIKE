@@ -1,0 +1,33 @@
+{
+  "sessions": [
+    {
+      "id": "session-w3-d1-full",
+      "dayId": "day-segment-1-week-3-day-1",
+      "sessionNumber": 1,
+      "title": "Day 11 — Underwriting Principles & Risk Assessment",
+      "durationMinutes": 240,
+      "presentationIds": [
+        "presentation-w3-d1-deck-01",
+        "presentation-w3-d1-deck-02"
+      ],
+      "activityIds": [
+        "activity-w3-d1-01",
+        "activity-w3-d1-02",
+        "activity-w3-d1-03"
+      ],
+      "worksheetIds": [
+        "worksheet-w3-d1-01",
+        "worksheet-w3-d1-02"
+      ],
+      "assessmentIds": [
+        "assessment-w3-d1"
+      ],
+      "reflectionIds": [
+        "reflection-w3-d1"
+      ],
+      "surveyIds": [
+        "survey-w3-d1"
+      ]
+    }
+  ]
+}

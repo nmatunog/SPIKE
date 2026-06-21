@@ -1,0 +1,61 @@
+{
+  "dayId": "day-segment-1-week-2-day-2",
+  "title": "Facilitator Guide — Day 7 — Financial Needs Analysis & Advisory Dyads",
+  "durationHours": 4,
+  "prepChecklist": [
+    "Print persona cards and dyad timers",
+    "Brief mentors on observation rubric",
+    "Prepare squad boards or digital doc"
+  ],
+  "sessionFlow": [
+    {
+      "time": "0:00–0:25",
+      "activity": "Deck 01 — FNA concepts",
+      "notes": "Interactive question practice on slide 3."
+    },
+    {
+      "time": "0:25–0:40",
+      "activity": "Deck 02 — Dyad setup",
+      "notes": "Assign pairs; mentors assigned to squads."
+    },
+    {
+      "time": "0:40–1:30",
+      "activity": "Advisory dyad rounds (2 cycles)",
+      "notes": "Strict timer; no product mentions."
+    },
+    {
+      "time": "1:30–1:40",
+      "activity": "Break",
+      "notes": ""
+    },
+    {
+      "time": "1:40–2:10",
+      "activity": "Squad synthesis + gallery of needs themes",
+      "notes": "Scribes post top needs on board."
+    },
+    {
+      "time": "2:10–2:35",
+      "activity": "Peer feedback clinic + assessment",
+      "notes": "Use listening rubric."
+    },
+    {
+      "time": "2:35–3:00",
+      "activity": "Reflection + survey",
+      "notes": "Preview Day 8 survey design."
+    }
+  ],
+  "debriefQuestions": [
+    "Who listened vs who lectured?",
+    "What needs appeared across multiple squads?",
+    "Are participants ready to design surveys?"
+  ],
+  "commonPitfalls": [
+    "Advisors pitching products in discovery",
+    "Clients breaking character",
+    "Skipping structured feedback"
+  ],
+  "coachingTips": [
+    "Celebrate clarifying questions",
+    "Flag advisors who fill silence with jargon"
+  ]
+}

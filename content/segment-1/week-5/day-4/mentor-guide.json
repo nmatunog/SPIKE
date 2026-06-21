@@ -1,0 +1,31 @@
+{
+  "dayId": "day-segment-1-week-5-day-4",
+  "theme": "Planning",
+  "title": "Mentor Guide — Day 24 — 3-Year Blueprint & Business Plan Integration",
+  "coachingObjective": "Ground ambition in executable milestones.",
+  "timing": {
+    "preSession": "Review facilitator guide and deck speaker notes",
+    "duringSession": "Circulate during squad activities",
+    "postSession": "Complete squad weekly review snapshot"
+  },
+  "discussionQuestions": [
+    "Are Year 1 milestones realistic post-licensing?",
+    "Missing business plan sections?"
+  ],
+  "observationAreas": [
+    "Milestone realism",
+    "Plan integration",
+    "Portfolio completeness"
+  ],
+  "coachingTips": [
+    "Anchor milestones to Hour 110 and 200 gates"
+  ],
+  "warningSigns": [],
+  "reflectionPrompts": [],
+  "expectedOutcomes": [
+    "3-year blueprint",
+    "Integrated business plan outline"
+  ],
+  "activityCoachingNotes": [],
+  "debriefWithFaculty": []
+}

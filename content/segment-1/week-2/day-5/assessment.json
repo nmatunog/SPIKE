@@ -1,0 +1,19 @@
+{
+  "assessment": {
+    "id": "assessment-w2-d5",
+    "dayId": "day-segment-1-week-2-day-5",
+    "title": "Market review presentation rubric",
+    "description": "Faculty delivery checklist — squad progress tracked via Squad XP.",
+    "rubricId": "rubric-assessment-w2-d5"
+  },
+  "rubric": {
+    "id": "rubric-assessment-w2-d5",
+    "assessmentId": "assessment-w2-d5",
+    "title": "Delivery checklist",
+    "criteria": [
+      "Market review presentation",
+      "Market gap declaration",
+      "80-hour gate clearance"
+    ]
+  }
+}

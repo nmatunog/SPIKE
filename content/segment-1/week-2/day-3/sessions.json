@@ -1,0 +1,33 @@
+{
+  "sessions": [
+    {
+      "id": "session-w2-d3-full",
+      "dayId": "day-segment-1-week-2-day-3",
+      "sessionNumber": 1,
+      "title": "Day 8 — Needs Analysis Survey Design",
+      "durationMinutes": 240,
+      "presentationIds": [
+        "presentation-w2-d3-deck-01",
+        "presentation-w2-d3-deck-02"
+      ],
+      "activityIds": [
+        "activity-w2-d3-01",
+        "activity-w2-d3-02",
+        "activity-w2-d3-03"
+      ],
+      "worksheetIds": [
+        "worksheet-w2-d3-01",
+        "worksheet-w2-d3-02"
+      ],
+      "assessmentIds": [
+        "assessment-w2-d3"
+      ],
+      "reflectionIds": [
+        "reflection-w2-d3"
+      ],
+      "surveyIds": [
+        "survey-w2-d3"
+      ]
+    }
+  ]
+}

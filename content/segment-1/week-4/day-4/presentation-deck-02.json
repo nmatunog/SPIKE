@@ -1,0 +1,61 @@
+{
+  "presentation": {
+    "id": "presentation-w4-d4-deck-02",
+    "dayId": "day-segment-1-week-4-day-4",
+    "title": "Program Coach Deck 02 — Remediation Workshop",
+    "slideIds": [
+      "slide-w4-d4-dk2-01",
+      "slide-w4-d4-dk2-02",
+      "slide-w4-d4-dk2-03",
+      "slide-w4-d4-dk2-04",
+      "slide-w4-d4-dk2-05"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-w4-d4-dk2-01",
+      "presentationId": "presentation-w4-d4-deck-02",
+      "title": "Cohort Results Overview",
+      "body": "Anonymous aggregate only.",
+      "speakerNotes": "Afternoon recovery.",
+      "discussionQuestions": [],
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-w4-d4-dk2-02",
+      "presentationId": "presentation-w4-d4-deck-02",
+      "title": "Domain Remediation Stations",
+      "body": "Rotating tutors.",
+      "speakerNotes": "Afternoon recovery.",
+      "discussionQuestions": [],
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-w4-d4-dk2-03",
+      "presentationId": "presentation-w4-d4-deck-02",
+      "title": "Dyad Tutoring Assignments",
+      "body": "Strong paired with developing.",
+      "speakerNotes": "Afternoon recovery.",
+      "discussionQuestions": [],
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-w4-d4-dk2-04",
+      "presentationId": "presentation-w4-d4-deck-02",
+      "title": "Exam Logistics Review",
+      "body": "ID, venue, schedule.",
+      "speakerNotes": "Afternoon recovery.",
+      "discussionQuestions": [],
+      "sortOrder": 4
+    },
+    {
+      "id": "slide-w4-d4-dk2-05",
+      "presentationId": "presentation-w4-d4-deck-02",
+      "title": "Day 19 Deliverables",
+      "body": "Remediation plan signed.",
+      "speakerNotes": "Afternoon recovery.",
+      "discussionQuestions": [],
+      "sortOrder": 5
+    }
+  ]
+}

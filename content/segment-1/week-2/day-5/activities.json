@@ -1,0 +1,49 @@
+{
+  "activities": [
+    {
+      "id": "activity-w2-d5-01",
+      "dayId": "day-segment-1-week-2-day-5",
+      "title": "Presentation Rehearsal",
+      "durationMinutes": 45,
+      "materials": [],
+      "instructions": [
+        "Time 8-minute deck",
+        "Mentor feedback on clarity"
+      ],
+      "outputs": [
+        "Rehearsal notes"
+      ],
+      "debriefQuestions": []
+    },
+    {
+      "id": "activity-w2-d5-02",
+      "dayId": "day-segment-1-week-2-day-5",
+      "title": "Market Review Presentations",
+      "durationMinutes": 90,
+      "materials": [],
+      "instructions": [
+        "Squad presents findings",
+        "Q&A from coaches and peers"
+      ],
+      "outputs": [
+        "Market review deck"
+      ],
+      "debriefQuestions": []
+    },
+    {
+      "id": "activity-w2-d5-03",
+      "dayId": "day-segment-1-week-2-day-5",
+      "title": "Market Gap Declaration",
+      "durationMinutes": 15,
+      "materials": [],
+      "instructions": [
+        "Each participant writes one-sentence gap thesis",
+        "Sync to Portfolio"
+      ],
+      "outputs": [
+        "Market gap statement"
+      ],
+      "debriefQuestions": []
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "sessions": [
+    {
+      "id": "session-w5-d1-full",
+      "dayId": "day-segment-1-week-5-day-1",
+      "sessionNumber": 1,
+      "title": "Day 21 — Product Solutions & Needs-Based Framework",
+      "durationMinutes": 240,
+      "presentationIds": [
+        "presentation-w5-d1-deck-01",
+        "presentation-w5-d1-deck-02"
+      ],
+      "activityIds": [
+        "activity-w5-d1-01",
+        "activity-w5-d1-02"
+      ],
+      "worksheetIds": [
+        "worksheet-w5-d1-01"
+      ],
+      "assessmentIds": [
+        "assessment-w5-d1"
+      ],
+      "reflectionIds": [
+        "reflection-w5-d1"
+      ],
+      "surveyIds": [
+        "survey-w5-d1"
+      ]
+    }
+  ]
+}

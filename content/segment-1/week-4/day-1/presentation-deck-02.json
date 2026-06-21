@@ -1,0 +1,61 @@
+{
+  "presentation": {
+    "id": "presentation-w4-d1-deck-02",
+    "dayId": "day-segment-1-week-4-day-1",
+    "title": "Program Coach Deck 02 — Ethics Case Lab",
+    "slideIds": [
+      "slide-w4-d1-dk2-01",
+      "slide-w4-d1-dk2-02",
+      "slide-w4-d1-dk2-03",
+      "slide-w4-d1-dk2-04",
+      "slide-w4-d1-dk2-05"
+    ]
+  },
+  "slides": [
+    {
+      "id": "slide-w4-d1-dk2-01",
+      "presentationId": "presentation-w4-d1-deck-02",
+      "title": "Case Study Protocol",
+      "body": "Small groups, timed deliberation.",
+      "speakerNotes": "Facilitated debate.",
+      "discussionQuestions": [],
+      "sortOrder": 1
+    },
+    {
+      "id": "slide-w4-d1-dk2-02",
+      "presentationId": "presentation-w4-d1-deck-02",
+      "title": "AMLA Scenario Set A",
+      "body": "Transaction pattern recognition.",
+      "speakerNotes": "Facilitated debate.",
+      "discussionQuestions": [],
+      "sortOrder": 2
+    },
+    {
+      "id": "slide-w4-d1-dk2-03",
+      "presentationId": "presentation-w4-d1-deck-02",
+      "title": "Privacy Breach Scenario Set B",
+      "body": "Device loss, oversharing in chat.",
+      "speakerNotes": "Facilitated debate.",
+      "discussionQuestions": [],
+      "sortOrder": 3
+    },
+    {
+      "id": "slide-w4-d1-dk2-04",
+      "presentationId": "presentation-w4-d1-deck-02",
+      "title": "Reporting Pathways",
+      "body": "When to escalate to compliance.",
+      "speakerNotes": "Facilitated debate.",
+      "discussionQuestions": [],
+      "sortOrder": 4
+    },
+    {
+      "id": "slide-w4-d1-dk2-05",
+      "presentationId": "presentation-w4-d1-deck-02",
+      "title": "Day 16 Deliverables",
+      "body": "Ethics memo uploaded.",
+      "speakerNotes": "Facilitated debate.",
+      "discussionQuestions": [],
+      "sortOrder": 5
+    }
+  ]
+}

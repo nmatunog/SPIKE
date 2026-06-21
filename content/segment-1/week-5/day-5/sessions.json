@@ -1,0 +1,32 @@
+{
+  "sessions": [
+    {
+      "id": "session-w5-d5-full",
+      "dayId": "day-segment-1-week-5-day-5",
+      "sessionNumber": 1,
+      "title": "Day 25 — Segment 1 Capstone & Hour 200 Venture Board Prep",
+      "durationMinutes": 240,
+      "presentationIds": [
+        "presentation-w5-d5-deck-01",
+        "presentation-w5-d5-deck-02"
+      ],
+      "activityIds": [
+        "activity-w5-d5-01",
+        "activity-w5-d5-02",
+        "activity-w5-d5-03"
+      ],
+      "worksheetIds": [
+        "worksheet-w5-d5-01"
+      ],
+      "assessmentIds": [
+        "assessment-w5-d5"
+      ],
+      "reflectionIds": [
+        "reflection-w5-d5"
+      ],
+      "surveyIds": [
+        "survey-w5-d5"
+      ]
+    }
+  ]
+}

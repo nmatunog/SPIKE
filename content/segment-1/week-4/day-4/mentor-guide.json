@@ -1,0 +1,33 @@
+{
+  "dayId": "day-segment-1-week-4-day-4",
+  "theme": "Calibration",
+  "title": "Mentor Guide — Day 19 — Mock Licensing Exams & Remediation",
+  "coachingObjective": "Reduce exam surprise anxiety.",
+  "timing": {
+    "preSession": "Review facilitator guide and deck speaker notes",
+    "duringSession": "Circulate during squad activities",
+    "postSession": "Complete squad weekly review snapshot"
+  },
+  "discussionQuestions": [
+    "Cohort weak domains?",
+    "Who needs 1:1 before real exam?",
+    "Logistics blockers?"
+  ],
+  "observationAreas": [
+    "Test conduct",
+    "Stress signals",
+    "Remediation follow-through"
+  ],
+  "coachingTips": [
+    "Private coaching for outliers",
+    "Celebrate effort and improvement"
+  ],
+  "warningSigns": [],
+  "reflectionPrompts": [],
+  "expectedOutcomes": [
+    "Mock exam results",
+    "Signed remediation plan"
+  ],
+  "activityCoachingNotes": [],
+  "debriefWithFaculty": []
+}

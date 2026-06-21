@@ -1,0 +1,33 @@
+{
+  "dayId": "day-segment-1-week-3-day-4",
+  "theme": "Integration",
+  "title": "Mentor Guide — Day 14 — Operations Dyad Presentations",
+  "coachingObjective": "See the whole operating system.",
+  "timing": {
+    "preSession": "Review facilitator guide and deck speaker notes",
+    "duringSession": "Circulate during squad activities",
+    "postSession": "Complete squad weekly review snapshot"
+  },
+  "discussionQuestions": [
+    "Where did handoffs break down in roleplays?",
+    "Who demonstrates startup readiness?",
+    "What remediation before gate?"
+  ],
+  "observationAreas": [
+    "Handoff clarity",
+    "Compliance mentions",
+    "Presentation poise"
+  ],
+  "coachingTips": [
+    "Ask dyads to name one system they will use in Week 4"
+  ],
+  "warningSigns": [],
+  "reflectionPrompts": [],
+  "expectedOutcomes": [
+    "Journey map",
+    "Dyad presentation",
+    "Efficiency memo"
+  ],
+  "activityCoachingNotes": [],
+  "debriefWithFaculty": []
+}

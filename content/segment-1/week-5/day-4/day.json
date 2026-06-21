@@ -1,0 +1,37 @@
+{
+  "id": "day-segment-1-week-5-day-4",
+  "segmentId": "segment-1",
+  "weekId": "week-segment-1-5",
+  "dayNumber": 4,
+  "title": "Day 24 — 3-Year Blueprint & Business Plan Integration",
+  "theme": "Three-Year Blueprint",
+  "durationHours": 4,
+  "learningObjectives": [
+    "Draft a 3-year advisor venture blueprint with milestones",
+    "Integrate business plan chapters into a cohesive narrative",
+    "Align squad and individual portfolio sections for board review"
+  ],
+  "expectedOutputs": [
+    "3-year blueprint",
+    "Integrated business plan outline"
+  ],
+  "portfolioDeliverables": [
+    "portfolio-three-year-blueprint"
+  ],
+  "businessPlanIntegration": "bp-chapter-5",
+  "presentations": [
+    "presentation-w5-d4-deck-01",
+    "presentation-w5-d4-deck-02"
+  ],
+  "activities": [
+    "activity-w5-d4-01",
+    "activity-w5-d4-02"
+  ],
+  "worksheets": [
+    "worksheet-w5-d4-01",
+    "worksheet-w5-d4-02"
+  ],
+  "assessments": [
+    "assessment-w5-d4"
+  ]
+}

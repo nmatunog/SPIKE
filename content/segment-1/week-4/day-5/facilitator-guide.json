@@ -1,0 +1,49 @@
+{
+  "dayId": "day-segment-1-week-4-day-5",
+  "title": "Facilitator Guide — Day 20 — Professional Readiness & 160-Hour Gate",
+  "durationHours": 4,
+  "prepChecklist": [
+    "Coordinate exam scheduling contacts",
+    "Gate sign-off with admin",
+    "Prepare commitment certificates if used"
+  ],
+  "sessionFlow": [
+    {
+      "time": "0:00–0:20",
+      "activity": "Deck 01 — Gate briefing",
+      "notes": ""
+    },
+    {
+      "time": "0:20–1:20",
+      "activity": "Professional readiness presentations",
+      "notes": ""
+    },
+    {
+      "time": "1:20–2:00",
+      "activity": "Panel feedback + 160-hour gate confirmation",
+      "notes": ""
+    },
+    {
+      "time": "2:00–2:30",
+      "activity": "Licensing pathway workshop — schedule exams",
+      "notes": ""
+    },
+    {
+      "time": "2:30–3:00",
+      "activity": "Deck 02 — Commitment ceremony + Week 5 preview",
+      "notes": ""
+    }
+  ],
+  "debriefQuestions": [
+    "Who is on track for Hour 110 license milestone?",
+    "Professional brand gaps?",
+    "Energy level for product week?"
+  ],
+  "commonPitfalls": [
+    "Gate without licensing plan",
+    "Treating ceremony as endpoint not launch"
+  ],
+  "coachingTips": [
+    "Document next 30-day licensing calendar per participant"
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "dayId": "day-segment-1-week-4-day-3",
+  "title": "Facilitator Guide — Day 18 — VUL Concepts & Licensing Prep",
+  "durationHours": 4,
+  "prepChecklist": [
+    "Confirm fund fact sheet samples for study only",
+    "Reinforce no guaranteed return language"
+  ],
+  "sessionFlow": [
+    {
+      "time": "0:00–0:30",
+      "activity": "Deck 01 — VUL concepts",
+      "notes": "Use diagrams; avoid return illustrations."
+    },
+    {
+      "time": "0:30–1:10",
+      "activity": "VUL timed drills",
+      "notes": ""
+    },
+    {
+      "time": "1:10–1:20",
+      "activity": "Break",
+      "notes": ""
+    },
+    {
+      "time": "1:20–2:00",
+      "activity": "Explain-to-a-friend rotations",
+      "notes": "Mentors score clarity."
+    },
+    {
+      "time": "2:00–2:30",
+      "activity": "Fee disclosure roleplays",
+      "notes": ""
+    },
+    {
+      "time": "2:30–3:00",
+      "activity": "Combined error log review + reflection",
+      "notes": ""
+    }
+  ],
+  "debriefQuestions": [
+    "Who can explain NAVPU simply?",
+    "Any tendency to oversell investment upside?",
+    "Combined weak areas for mock exam day?"
+  ],
+  "commonPitfalls": [
+    "Confusing VUL with mutual funds only",
+    "Omitting charges in client explanations"
+  ],
+  "coachingTips": [
+    "Record exemplar 60-second explanations (with consent)"
+  ]
+}

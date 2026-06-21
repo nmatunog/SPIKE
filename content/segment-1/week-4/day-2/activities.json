@@ -1,0 +1,49 @@
+{
+  "activities": [
+    {
+      "id": "activity-w4-d2-01",
+      "dayId": "day-segment-1-week-4-day-2",
+      "title": "Trad Life Timed Drill A",
+      "durationMinutes": 40,
+      "materials": [],
+      "instructions": [
+        "Individual timed set",
+        "Log score and misses"
+      ],
+      "outputs": [
+        "Drill A score sheet"
+      ],
+      "debriefQuestions": []
+    },
+    {
+      "id": "activity-w4-d2-02",
+      "dayId": "day-segment-1-week-4-day-2",
+      "title": "Concept Teach-Back",
+      "durationMinutes": 25,
+      "materials": [],
+      "instructions": [
+        "Squad teaches missed questions"
+      ],
+      "outputs": [
+        "Teach-back notes"
+      ],
+      "debriefQuestions": []
+    },
+    {
+      "id": "activity-w4-d2-03",
+      "dayId": "day-segment-1-week-4-day-2",
+      "title": "Trad Life Timed Drill B",
+      "durationMinutes": 40,
+      "materials": [],
+      "instructions": [
+        "Scenario-heavy set",
+        "Compare to Drill A"
+      ],
+      "outputs": [
+        "Drill B score sheet",
+        "Error log v1"
+      ],
+      "debriefQuestions": []
+    }
+  ]
+}

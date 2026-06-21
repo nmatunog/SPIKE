@@ -1,0 +1,47 @@
+{
+  "activities": [
+    {
+      "id": "activity-w4-d4-01",
+      "dayId": "day-segment-1-week-4-day-4",
+      "title": "Mock Licensing Exam A",
+      "durationMinutes": 60,
+      "materials": [],
+      "instructions": [
+        "Proctored timed exam",
+        "Collect bubble sheets or digital scores"
+      ],
+      "outputs": [
+        "Mock exam A result"
+      ],
+      "debriefQuestions": []
+    },
+    {
+      "id": "activity-w4-d4-02",
+      "dayId": "day-segment-1-week-4-day-4",
+      "title": "Mock Licensing Exam B",
+      "durationMinutes": 50,
+      "materials": [],
+      "instructions": [
+        "Proctored timed exam"
+      ],
+      "outputs": [
+        "Mock exam B result"
+      ],
+      "debriefQuestions": []
+    },
+    {
+      "id": "activity-w4-d4-03",
+      "dayId": "day-segment-1-week-4-day-4",
+      "title": "Remediation Station Rotation",
+      "durationMinutes": 30,
+      "materials": [],
+      "instructions": [
+        "Top 3 weak domains addressed in stations"
+      ],
+      "outputs": [
+        "Remediation plan"
+      ],
+      "debriefQuestions": []
+    }
+  ]
+}
