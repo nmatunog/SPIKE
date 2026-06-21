@@ -2,10 +2,12 @@
 
 export const FACULTY_WEEK_THEMES = {
   '1-1': 'Dream • Discover • Decide',
+  '1-2': 'Activate • Validate • Customer Discovery',
 };
 
 export const MENTOR_WEEK_THEMES = {
   '1-1': 'Identity • Confidence • Direction',
+  '1-2': 'Research • Squad XP • Stage Gate Readiness',
 };
 
 /** @type {Array<Record<string, unknown>>} */
@@ -173,6 +175,50 @@ export const FACULTY_DAY_TEMPLATES_SEED = [
     expected_outputs: ['Venture Portfolio presentation', 'Week 1 Coaching Summary', 'Week 2 commitment'],
     status: 'published',
   },
+  {
+    id: 'faculty-s1-w2-d1',
+    segment: 1,
+    week: 2,
+    day: 1,
+    theme: 'Activate — Customer Discovery Mission',
+    learning_objectives: [
+      'Launch Week 2 squad missions in the Playbook',
+      'Facilitate customer discovery mindset shift',
+      'Ensure squads complete mission brief and interview guide',
+      'Preview Stage Gate II readiness via squad XP',
+    ],
+    key_concepts: [
+      'Customer Discovery',
+      'Squad Mission',
+      'Interview Guide',
+      'Thinking Shifts',
+      'Squad XP',
+      'Validation',
+    ],
+    speaker_notes:
+      'Week 2 is mission-first in the Playbook. Facilitate activation, then let squads run discovery missions. Mentors complete weekly squad reviews — not individual rubrics.',
+    discussion_questions: [
+      'What assumption are you testing this week?',
+      'Who will you interview first and why?',
+      'How will your squad share learning daily?',
+    ],
+    activities: [
+      'Week 2 activation & mission brief',
+      'Interview guide workshop',
+      'Squad mission check-in',
+      'Thinking shift capture',
+    ],
+    worksheets: ['Interview guide draft'],
+    assessments: ['Squad mission acknowledged', 'Interview guide complete'],
+    rubrics: ['Squad collaboration rubric', 'Discovery quality rubric'],
+    expected_outputs: [
+      'Mission acknowledged',
+      'Interview guide',
+      'First thinking shift',
+      'Portfolio sync started',
+    ],
+    status: 'published',
+  },
 ];
 
 /** @type {Array<Record<string, unknown>>} */
@@ -285,6 +331,29 @@ export const MENTOR_DAY_GUIDES_SEED = [
     warning_signs: ['Vague vision with no measurable outcome', 'Fear of presenting to squad'],
     coaching_tips: ['End with accountability: one action before next session', 'Generate Week 1 coaching summary'],
     expected_outcomes: ['Week 1 Coaching Summary'],
+    status: 'published',
+  },
+  {
+    id: 'mentor-s1-w2-d1',
+    segment: 1,
+    week: 2,
+    day: 1,
+    theme: 'Activate',
+    coaching_objective:
+      'Coach squads through customer discovery missions. Complete weekly squad review (~1 min) — shared Squad XP, no individual scores.',
+    discussion_questions: [
+      'What customer assumption is your squad testing?',
+      'Who did you interview or plan to interview today?',
+      'What thinking shift showed up from the field?',
+    ],
+    observation_areas: ['Curiosity', 'Squad Collaboration', 'Interview Quality', 'Follow-through'],
+    reflection_prompts: ['What evidence surprised your squad today?'],
+    warning_signs: ['Squad members working in silos', 'No interviews planned', 'Generic interview scripts'],
+    coaching_tips: [
+      'Use squad weekly review on your dashboard — not per-intern rubrics',
+      'Commend standout interviews via squad commendations',
+    ],
+    expected_outcomes: ['Squad mission progress', 'Weekly squad review saved'],
     status: 'published',
   },
 ];

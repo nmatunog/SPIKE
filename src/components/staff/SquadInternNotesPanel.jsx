@@ -58,7 +58,8 @@ export function SquadInternNotesPanel({
 
 /** @param {Array<{ id: string, name: string }>} members @param {number} [week] */
 export function SquadMemberNotesAppendix({ members, week }) {
-  const withNotes = members.filter((m) => listSquadInternNotes(m.id, week).length > 0);
+  const safeMembers = Array.isArray(members) ? members : [];
+  const withNotes = safeMembers.filter((m) => listSquadInternNotes(m.id, week).length > 0);
   if (!withNotes.length) return null;
 
   return (

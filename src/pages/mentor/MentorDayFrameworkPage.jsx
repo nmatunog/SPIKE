@@ -13,16 +13,22 @@ export function MentorDayFrameworkPage() {
   const wk = coords?.week;
   const dy = coords?.day;
   const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (seg == null || wk == null || dy == null) {
       setData(null);
+      setLoading(false);
       return undefined;
     }
     let cancelled = false;
+    setLoading(true);
     (async () => {
       const result = await loadMentorDayFramework(seg, wk, dy);
-      if (!cancelled) setData(result);
+      if (!cancelled) {
+        setData(result);
+        setLoading(false);
+      }
     })();
     return () => {
       cancelled = true;
@@ -48,10 +54,24 @@ export function MentorDayFrameworkPage() {
 
   const guide = data?.guide;
 
-  if (!guide) {
+  if (loading) {
     return (
       <PageContainer>
         <p className="text-sm text-slate-500">Loading mentor day guide…</p>
+      </PageContainer>
+    );
+  }
+
+  if (!guide) {
+    return (
+      <PageContainer>
+        <p className="text-sm font-medium text-slate-900">No mentor guide for Week {wk} · Day {dy} yet.</p>
+        <p className="mt-2 text-sm text-slate-600">
+          Use your mentor home dashboard for squad weekly reviews and participant coaching cards.
+        </p>
+        <Link to={ROUTES.mentorHome} className="mt-4 inline-flex spike-btn-primary text-sm">
+          Open mentor home
+        </Link>
       </PageContainer>
     );
   }

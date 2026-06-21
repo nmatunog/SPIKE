@@ -13,16 +13,22 @@ export function FacultyDayFrameworkPage() {
   const wk = coords?.week;
   const dy = coords?.day;
   const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (seg == null || wk == null || dy == null) {
       setData(null);
+      setLoading(false);
       return undefined;
     }
     let cancelled = false;
+    setLoading(true);
     (async () => {
       const result = await loadFacultyDayFramework(seg, wk, dy);
-      if (!cancelled) setData(result);
+      if (!cancelled) {
+        setData(result);
+        setLoading(false);
+      }
     })();
     return () => {
       cancelled = true;
@@ -48,10 +54,29 @@ export function FacultyDayFrameworkPage() {
 
   const template = data?.template;
 
-  if (!template) {
+  if (loading) {
     return (
       <PageContainer>
         <p className="text-sm text-slate-500">Loading program coach day template…</p>
+      </PageContainer>
+    );
+  }
+
+  if (!template) {
+    return (
+      <PageContainer>
+        <p className="text-sm font-medium text-slate-900">No framework guide for Week {wk} · Day {dy} yet.</p>
+        <p className="mt-2 text-sm text-slate-600">
+          Deliver Week {wk} from the cohort Playbook — squad missions and facilitator notes live there.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <Link to={ROUTES.playbook} className="spike-btn-primary">
+            Open Playbook
+          </Link>
+          <Link to={ROUTES.programCoachPlaybook} className="spike-btn-secondary text-sm">
+            Program Coach Playbook index
+          </Link>
+        </div>
       </PageContainer>
     );
   }

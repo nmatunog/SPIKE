@@ -23,9 +23,14 @@ function storageKey(squadName, week) {
   return `${squadName}:w${week}`;
 }
 
+/** @param {unknown} items */
+function normalizeCommendationItems(items) {
+  return Array.isArray(items) ? items : [];
+}
+
 /** @param {string} squadName @param {number} [week] */
 export function getSquadCommendations(squadName, week = 2) {
-  return readAll()[storageKey(squadName, week)]?.items ?? [];
+  return normalizeCommendationItems(readAll()[storageKey(squadName, week)]?.items);
 }
 
 /** @param {string} participantId @param {number} [week] */

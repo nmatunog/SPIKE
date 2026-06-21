@@ -54,7 +54,8 @@ export function appendSquadInternNote(participantId, input) {
 
 /** @param {string} participantId @param {number} [week] */
 export function listSquadInternNotes(participantId, week) {
-  const list = readAll()[participantId] ?? [];
+  const raw = readAll()[participantId];
+  const list = Array.isArray(raw) ? raw : [];
   if (week == null) return list;
   return list.filter((n) => n.week === week);
 }

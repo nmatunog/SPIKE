@@ -1,11 +1,19 @@
-/** @param {{ title: string, items?: string[], empty?: string }} props */
-export function FrameworkBulletList({ title, items = [], empty = 'None listed.' }) {
+/** @param {unknown} items */
+function toStringList(items) {
+  if (Array.isArray(items)) return items.map(String).filter(Boolean);
+  if (typeof items === 'string' && items.trim()) return [items.trim()];
+  return [];
+}
+
+/** @param {{ title: string, items?: unknown, empty?: string }} props */
+export function FrameworkBulletList({ title, items, empty = 'None listed.' }) {
+  const list = toStringList(items);
   return (
     <div className="spike-card">
       <h3 className="spike-label">{title}</h3>
-      {items.length ? (
+      {list.length ? (
         <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-700">
-          {items.map((item) => (
+          {list.map((item) => (
             <li key={item}>{item}</li>
           ))}
         </ul>

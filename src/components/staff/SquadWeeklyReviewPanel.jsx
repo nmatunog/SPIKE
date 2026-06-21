@@ -34,9 +34,10 @@ export function SquadWeeklyReviewPanel({
   staffId,
   squadName,
   week = 2,
-  interns = [],
+  interns: internsProp,
   showToast,
 }) {
+  const interns = Array.isArray(internsProp) ? internsProp : [];
   const memberIds = interns.map((i) => i.id);
   const existing = getSquadMentorReview(squadName, week);
   const existingGate = getSquadStageGateDecision(squadName, week);
@@ -228,8 +229,9 @@ export function SquadWeeklyReviewPanel({
   );
 }
 
-/** @param {{ staffId: string, squads: Array<{ name: string, members?: Array<{ id: string, name: string }> }>, week?: number, showToast?: (m: string) => void }} props */
-export function FacultySquadReviewPanel({ staffId, squads, week = 2, showToast }) {
+/** @param {{ staffId: string, squads?: Array<{ name: string, members?: Array<{ id: string, name: string }> }>, week?: number, showToast?: (m: string) => void }} props */
+export function FacultySquadReviewPanel({ staffId, squads: squadsProp, week = 2, showToast }) {
+  const squads = Array.isArray(squadsProp) ? squadsProp : [];
   return (
     <div className="space-y-4">
       <p className="text-xs text-slate-500">Squad-first reviews — shared XP, no individual rubrics.</p>

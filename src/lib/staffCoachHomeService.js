@@ -345,7 +345,11 @@ export function deriveStaffCoachHome(interns, opts) {
       }),
     playbookHref: playbookHref({ week, day }),
     frameworkPlaybookHref:
-      role === 'mentor' ? `/mentor/playbook/1/${week}/${day}` : `/program-coach/playbook/1/${week}/${day}`,
+      role === 'mentor'
+        ? `/mentor/playbook/1/${week}/${day}`
+        : week >= 2
+          ? playbookHref({ week, day })
+          : `/program-coach/playbook/1/${week}/${day}`,
     stageGateHref: day === 5 ? staffStageGateHref(role, 1, week) : null,
     coachTip: STAFF_COACH_TIPS[tipIndex],
     coachingQueue: queue,
