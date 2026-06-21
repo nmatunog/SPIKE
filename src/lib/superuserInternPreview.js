@@ -1,5 +1,6 @@
 import {
   ensureSuperuserInternPreviewSeeded,
+  readSuperuserInternPreviewProgressPatch,
   SUPERUSER_INTERN_PREVIEW_PARTICIPANT_ID,
   SUPERUSER_INTERN_PREVIEW_PROGRESS,
 } from './superuserInternPreviewData.js';
@@ -17,6 +18,7 @@ export function buildSuperuserInternPreviewProgress(cohortStartDate = null) {
   const { week, day } = resolveSuperuserInternCalendarDay(cohortStartDate);
   return {
     ...SUPERUSER_INTERN_PREVIEW_PROGRESS,
+    ...readSuperuserInternPreviewProgressPatch(),
     current_week: week,
     current_day: day,
   };

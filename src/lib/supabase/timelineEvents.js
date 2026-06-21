@@ -1,4 +1,5 @@
 import { isSupabaseConfigured, supabase } from '../../supabaseClient.js';
+import { shouldSkipSupabaseUserWrite } from './writeGuards.js';
 
 const MAX_TITLE = 500;
 
@@ -14,7 +15,9 @@ const MAX_TITLE = 500;
  * }} event
  */
 export async function insertTimelineEvent(userId, event) {
-  if (!isSupabaseConfigured || !supabase || !userId) return null;
+  if (!isSupabaseConfigured || !supabase || !userId || shouldSkipSupabaseUserWrite(userId)) {
+    return null;
+  }
 
   const title = String(event.title || '').slice(0, MAX_TITLE);
   if (!title) return null;
@@ -42,7 +45,9 @@ export async function insertTimelineEvent(userId, event) {
  * @param {number} [limit]
  */
 export async function fetchTimelineEvents(userId, limit = 20) {
-  if (!isSupabaseConfigured || !supabase || !userId) return null;
+  if (!isSupabaseConfigured || !supabase || !userId || shouldSkipSupabaseUserWrite(userId)) {
+    return null;
+  }
 
   const { data, error } = await supabase
     .from('participant_timeline_events')

@@ -9,6 +9,10 @@ import {
   shouldUseSupabaseForUser,
   updateMockInternProgress,
 } from './mockAuth.js';
+import {
+  isSuperuserInternPreviewParticipantId,
+  updateSuperuserInternPreviewProgress,
+} from './superuserInternPreviewData.js';
 
 /** First week is orientation — track decision opens entering Week 2. */
 export const CAREER_TRACK_SELECTION_MIN_WEEK = 2;
@@ -66,6 +70,17 @@ export async function saveCareerTrackSelection(userId, track, existingProgress) 
     career_track: track,
     career_track_selected_at: now,
   };
+
+  if (isSuperuserInternPreviewParticipantId(userId)) {
+    const progress = updateSuperuserInternPreviewProgress({
+      ...(existingProgress ?? {}),
+      ...progressPatch,
+    });
+    const confirmed = readConfirmed();
+    confirmed[userId] = true;
+    writeConfirmed(confirmed);
+    return progress;
+  }
 
   if (isMockUserId(userId) || !shouldUseSupabaseForUser({ id: userId, isMockUser: isMockUserId(userId) })) {
     const progress = updateMockInternProgress(userId, {

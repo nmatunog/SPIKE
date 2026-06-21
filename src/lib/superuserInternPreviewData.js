@@ -21,6 +21,41 @@ import { COACH_SECTIONS } from './ventureCoachConstants.js';
 export const SUPERUSER_INTERN_PREVIEW_PARTICIPANT_ID = 'mock-superuser-intern-preview';
 export const SUPERUSER_INTERN_PREVIEW_SEED_VERSION = 'v3';
 const SEEDED_MARKER_KEY = 'spike_superuser_intern_preview_seed';
+const PROGRESS_PATCH_KEY = 'spike_superuser_intern_preview_progress';
+
+/** @param {string | null | undefined} userId */
+export function isSuperuserInternPreviewParticipantId(userId) {
+  return userId === SUPERUSER_INTERN_PREVIEW_PARTICIPANT_ID;
+}
+
+export function readSuperuserInternPreviewProgressPatch() {
+  try {
+    const raw = localStorage.getItem(PROGRESS_PATCH_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+/** @param {Record<string, unknown>} patch */
+export function updateSuperuserInternPreviewProgress(patch) {
+  if (typeof localStorage === 'undefined') return null;
+  const merged = {
+    ...SUPERUSER_INTERN_PREVIEW_PROGRESS,
+    ...readSuperuserInternPreviewProgressPatch(),
+    ...patch,
+  };
+  localStorage.setItem(PROGRESS_PATCH_KEY, JSON.stringify(merged));
+  return merged;
+}
+
+export function clearSuperuserInternPreviewProgressPatch() {
+  try {
+    localStorage.removeItem(PROGRESS_PATCH_KEY);
+  } catch {
+    /* ignore */
+  }
+}
 
 export const SUPERUSER_INTERN_PREVIEW_PROGRESS = {
   segment: 1,
@@ -447,6 +482,7 @@ export function ensureSuperuserInternPreviewSeeded() {
   if (typeof localStorage === 'undefined') return;
   const marker = localStorage.getItem(SEEDED_MARKER_KEY);
   if (marker === SUPERUSER_INTERN_PREVIEW_SEED_VERSION) return;
+  clearSuperuserInternPreviewProgressPatch();
   seedSuperuserInternPortfolio();
 }
 
