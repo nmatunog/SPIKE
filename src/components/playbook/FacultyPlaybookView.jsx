@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { GraduationCap } from 'lucide-react';
 import { Day4VentureDesignHero } from './ventureDesign/Day4VentureDesignHero.jsx';
+import { Week2ActivateHero } from './week2/Week2ActivateHero.jsx';
 import { EvaluationTemplatesPanel } from './EvaluationTemplatesPanel.jsx';
 import { FacilitatorGuidePanel } from './FacilitatorGuidePanel.jsx';
 import { MentorGuidePanel } from './MentorGuidePanel.jsx';
@@ -21,9 +22,11 @@ export function FacultyPlaybookView({ bundle }) {
   const [sessionIndex, setSessionIndex] = useState(0);
   const activeSession = sessions[sessionIndex];
   const isDay4 = bundle.day.id === 'day-segment-1-week-1-day-4';
+  const isWeek2Day1 = bundle.day.id === 'day-segment-1-week-2-day-1';
 
   return (
     <div className="space-y-6">
+      {isWeek2Day1 ? <Week2ActivateHero variant="faculty" /> : null}
       {isDay4 ? <Day4VentureDesignHero variant="faculty" /> : null}
 
       <header className="border-b border-gray-100 pb-4">

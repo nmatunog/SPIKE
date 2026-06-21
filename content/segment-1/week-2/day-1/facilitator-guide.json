@@ -1,0 +1,32 @@
+{
+  "dayId": "day-segment-1-week-2-day-1",
+  "title": "Week 2 Activate — Customer Discovery",
+  "durationHours": 4,
+  "prepChecklist": [
+    "Confirm squads can open Venture Blueprint → Customer Discovery",
+    "Review squad missions (Cassiopeia, Pegasus, Argo Navis)",
+    "Prepare projector for Week 2 Activate hero — no Deck 02 required today"
+  ],
+  "sessionFlow": [
+    "Open with Week 2 Activate hero — From Ideas to Evidence",
+    "Squads acknowledge mission brief in Customer Discovery Studio",
+    "Walk through interview guide encoding (credit for completion, not length)",
+    "Thinking-shift prompt: What changed your thinking today?",
+    "Close with squad MIS / venture status check"
+  ],
+  "debriefQuestions": [
+    "What assumption did your squad challenge today?",
+    "Which interview will you run first this week?",
+    "What evidence do you need before Stage Gate II?"
+  ],
+  "commonPitfalls": [
+    "Squads writing essays instead of encoding interviews",
+    "Skipping portfolio sync after mission prep",
+    "Treating Week 2 as individual competition — reinforce Squad XP"
+  ],
+  "coachingTips": [
+    "Week 2 is open for all squads — no Week 1 submission gate",
+    "Mentors use squad weekly review (~1 min), not individual rubrics",
+    "Point squads to Customer Discovery as the primary workspace"
+  ]
+}

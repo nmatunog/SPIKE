@@ -6,6 +6,7 @@ import { PageContainer, PageTitle } from '../components/layout/PageContainer.jsx
 import { InternWorkHydrationAlert } from '../components/intern/InternWorkHydrationAlert.jsx';
 import { ParticipantDayView } from '../components/playbook/ParticipantDayView.jsx';
 import { FacultyPlaybookView } from '../components/playbook/FacultyPlaybookView.jsx';
+import { Week2ActivateHero } from '../components/playbook/week2/Week2ActivateHero.jsx';
 import {
   getCurriculumDataSource,
   getDayContentBundle,
@@ -14,7 +15,7 @@ import {
   listSegments,
   listWeeks,
 } from '../lib/curriculumService.js';
-import { resolveInternPlaybookDay, resolveInternProgramWeek } from '../lib/programUnlocks.js';
+import { resolveInternPlaybookDay, resolveInternProgramWeek, UNLOCK_WEEK2 } from '../lib/programUnlocks.js';
 import { useInternWorkHydration } from '../hooks/useInternWorkHydration.js';
 
 const TABS = [
@@ -46,7 +47,7 @@ function PathPill({ active, children, onClick, className = '' }) {
  * }} props
  */
 function ContentCurriculum({ participantId, userRole = 'intern', interns = [], internProgress = null }) {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { version: hydrateVersion, ready: hydrateReady, error: hydrateError } = useInternWorkHydration(
     userRole === 'intern' ? participantId : null,
   );
@@ -67,8 +68,10 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
   const entryWeek = useMemo(() => {
     const fromQuery = Number.parseInt(searchParams.get('week') ?? '', 10);
     if (Number.isFinite(fromQuery) && fromQuery >= 1) return fromQuery;
-    return resolveInternProgramWeek(internProgress);
-  }, [searchParams, internProgress]);
+    if (userRole === 'intern') return resolveInternProgramWeek(internProgress);
+    if (UNLOCK_WEEK2) return 2;
+    return internProgress?.current_week ?? 1;
+  }, [searchParams, userRole, internProgress]);
 
   const entrySegment = useMemo(() => {
     const fromQuery = Number.parseInt(searchParams.get('segment') ?? '', 10);
@@ -99,9 +102,20 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
   useEffect(() => {
     setSegmentSlug(`segment-${entrySegment}`);
     setWeekSlug(`week-${entryWeek}`);
-    setDaySlug(`day-${entryDay}`);
+    const weekDays = listDays(`segment-${entrySegment}`, `week-${entryWeek}`);
+    const preferred = weekDays.find((d) => d.slug === `day-${entryDay}`)?.slug
+      ?? weekDays[0]?.slug
+      ?? `day-${entryDay}`;
+    setDaySlug(preferred);
     if (userRole === 'intern') setBrowseAllDays(false);
   }, [entrySegment, entryWeek, entryDay, userRole]);
+
+  useEffect(() => {
+    const weekDays = listDays(segmentSlug, weekSlug);
+    if (weekDays.length && !weekDays.some((d) => d.slug === daySlug)) {
+      setDaySlug(weekDays[0].slug);
+    }
+  }, [segmentSlug, weekSlug, daySlug]);
 
   useEffect(() => {
     setRefreshKey((k) => k + hydrateVersion);
@@ -119,26 +133,45 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
     bundle = null;
   }
 
+  function syncPlaybookQuery(segment, week, day) {
+    const params = new URLSearchParams(searchParams);
+    params.set('segment', String(segment));
+    params.set('week', String(week));
+    params.set('day', String(day));
+    setSearchParams(params, { replace: true });
+  }
+
   const selectSegment = (slug) => {
     setSegmentSlug(slug);
     const nextWeeks = listWeeks(slug);
     const w = nextWeeks[0]?.slug ?? '';
     setWeekSlug(w);
     const nextDays = w ? listDays(slug, w) : [];
-    setDaySlug(nextDays[0]?.slug ?? '');
+    const nextDay = nextDays[0]?.slug ?? '';
+    setDaySlug(nextDay);
     setMobilePanel('content');
+    const weekNum = Number.parseInt(w.replace('week-', ''), 10) || 1;
+    const dayNum = Number.parseInt(String(nextDay).replace('day-', ''), 10) || 1;
+    syncPlaybookQuery(Number.parseInt(slug.replace('segment-', ''), 10) || 1, weekNum, dayNum);
   };
 
   const selectWeek = (slug) => {
     setWeekSlug(slug);
     const nextDays = listDays(segmentSlug, slug);
-    setDaySlug(nextDays[0]?.slug ?? '');
+    const nextDay = nextDays[0]?.slug ?? `day-1`;
+    setDaySlug(nextDay);
     setMobilePanel('content');
+    const weekNum = Number.parseInt(slug.replace('week-', ''), 10) || 1;
+    const dayNum = Number.parseInt(String(nextDay).replace('day-', ''), 10) || 1;
+    syncPlaybookQuery(entrySegment, weekNum, dayNum);
   };
 
   const selectDay = (slug) => {
     setDaySlug(slug);
     setMobilePanel('content');
+    const weekNum = selectedWeek?.week.weekNumber ?? entryWeek;
+    const dayNum = Number.parseInt(slug.replace('day-', ''), 10) || 1;
+    syncPlaybookQuery(entrySegment, weekNum, dayNum);
   };
 
   const roleLabel =
@@ -147,6 +180,10 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
       : userRole === 'mentor'
         ? 'Mentor'
         : 'Participant';
+
+  const isWeek2 = weekSlug === 'week-2' || selectedWeek?.week?.weekNumber === 2;
+  const staffHeroVariant =
+    userRole === 'faculty' || userRole === 'admin' ? 'faculty' : userRole === 'mentor' ? 'mentor' : 'intern';
 
   const dayContent = bundle ? (
     userRole === 'faculty' || userRole === 'admin' ? (
@@ -165,6 +202,8 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
         onProgress={() => setRefreshKey((k) => k + 1)}
       />
     )
+  ) : isWeek2 ? (
+    <Week2ActivateHero variant={staffHeroVariant} />
   ) : (
     <p className="text-sm text-slate-500">
       Pick a week and day with published content.
