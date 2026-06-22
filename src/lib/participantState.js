@@ -77,7 +77,9 @@ function ventureBoardStatus(hours, segment) {
 /** @param {ReturnType<typeof buildParticipantState>} state */
 export function formatCareerTrackLabel(state) {
   if (!state.career_track_selected) {
-    return state.week >= 2 ? 'Choose your track' : 'Track — after Week 1';
+    if (state.week >= 3) return 'Choose your track';
+    if (state.week >= 2) return 'Track — Week 3';
+    return 'Track — after Week 1';
   }
   return state.career_track === 'specialist_consultant'
     ? 'Specialist Consultant'

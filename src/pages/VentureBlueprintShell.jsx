@@ -169,8 +169,8 @@ export function VentureBlueprintShell({ user, viewerRole = 'intern', onProgressR
       <PageContainer>
         <BlueprintStateHeader state={state} participantId={user.id} variant="compact" />
         <p className="spike-card text-sm text-sky-900">
-          Track-specific modules unlock after Week 1. For now, use Foundation and Growth sections in
-          the menu.
+          Track-specific modules unlock when you choose your ACS track in Week 3. For now, use
+          Foundation, Growth, and Customer Discovery in the menu.
         </p>
       </PageContainer>
     );

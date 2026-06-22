@@ -1,6 +1,6 @@
 /**
  * Career track selection — agency_builder | specialist_consultant (Sprint 05).
- * Interns explore shared curriculum in Week 1; track choice gates from Week 2 onward.
+ * Interns explore shared curriculum in Weeks 1–2; track choice opens in Week 3.
  */
 import { isSupabaseConfigured, supabase } from '../supabaseClient.js';
 import { resolveInternProgramWeek } from './programUnlocks.js';
@@ -19,8 +19,8 @@ import {
   isInternProgressApiUnavailable,
 } from './internProgressApi.js';
 
-/** First week is orientation — track decision opens entering Week 2. */
-export const CAREER_TRACK_SELECTION_MIN_WEEK = 2;
+/** Track decision deferred to Week 3 so Week 2 Customer Discovery is uninterrupted. */
+export const CAREER_TRACK_SELECTION_MIN_WEEK = 3;
 
 const STORAGE_KEY = 'spike_career_track_confirmed';
 

@@ -11,11 +11,11 @@ import { ROUTES } from '../routes/paths.js';
  * @param {string} participantId
  */
 export function getNextBlueprintAction(state, participantId) {
-  if (!state.career_track_selected && state.week >= 2) {
+  if (!state.career_track_selected && state.week >= 3) {
     return {
       title: 'Choose your career track',
       detail:
-        'You have finished Week 1 orientation. Select Agency Builder or Specialist Consultant to unlock your full Blueprint.',
+        'Select Agency Builder or Specialist Consultant to unlock track-specific Blueprint modules.',
       href: '/venture-blueprint/overview',
     };
   }

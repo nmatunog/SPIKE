@@ -33,8 +33,8 @@ export function CareerTrackPicker({ userId, internProgress, onComplete }) {
       <div className="w-full max-w-lg rounded-2xl border border-gray-200 bg-white p-6 shadow-xl">
         <h2 className="text-xl font-black text-gray-900">Choose your career track</h2>
         <p className="mt-2 text-sm text-gray-600">
-          Week {week} is open for everyone. Pick the ACS path that fits how you want to build your
-          practice — this unlocks track-specific Blueprint modules.
+          Week {week} — pick the ACS path that fits how you want to build your practice. This unlocks
+          track-specific Blueprint modules (Recruitment, Leadership, Specialist focus, and more).
         </p>
         <div className="mt-6 grid gap-3 sm:grid-cols-2">
           <button
@@ -62,17 +62,13 @@ export function CareerTrackPicker({ userId, internProgress, onComplete }) {
           <p className="mt-4 text-center text-sm text-slate-500">Saving your track…</p>
         ) : null}
         {error ? <p className="mt-3 text-sm text-red-600">{error}</p> : null}
-        <div className="mt-5 border-t border-slate-100 pt-4 text-center">
-          <Link
-            to={BLUEPRINT_LINKS.customerDiscovery}
-            className="text-sm font-semibold text-spike hover:underline"
-          >
-            Continue to Week 2 Customer Discovery →
+        <p className="mt-5 border-t border-slate-100 pt-4 text-center text-xs text-slate-500">
+          Not ready? Continue with shared modules from{' '}
+          <Link to={BLUEPRINT_LINKS.customerDiscovery} className="font-semibold text-spike hover:underline">
+            Customer Discovery
           </Link>
-          <p className="mt-1 text-xs text-slate-500">
-            You can choose your ACS track later from Build home.
-          </p>
-        </div>
+          .
+        </p>
       </div>
     </div>
   );
