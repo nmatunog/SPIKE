@@ -3,11 +3,15 @@
  */
 import { DEFAULT_INTERVIEW_QUESTIONS } from './week2Constants.js';
 
-const STORAGE_KEY = 'spike_week2_discovery_v1';
+const STORAGE_KEY = 'spike_week2_discovery_v2';
+const LEGACY_STORAGE_KEY = 'spike_week2_discovery_v1';
 
 function readAll() {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    const current = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    if (Object.keys(current).length) return current;
+    const legacy = JSON.parse(localStorage.getItem(LEGACY_STORAGE_KEY) || '{}');
+    return legacy;
   } catch {
     return {};
   }

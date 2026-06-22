@@ -11,20 +11,23 @@ import { isWeek2PortfolioSynced } from '../../lib/customerDiscovery/week2Portfol
  * @param {{ participantId: string, onSaved?: () => void, missionContext?: 'blueprint' | 'playbook' }} props
  */
 export function InterviewGuideTask({ participantId, onSaved, missionContext = 'blueprint' }) {
-  const initial = getWeek2State(participantId).questions ?? [];
+  const initialState = getWeek2State(participantId);
+  const initial = initialState.questions ?? [];
   const [questions, setQuestions] = useState(initial);
   const [saved, setSaved] = useState(false);
+  const [guideComplete, setGuideComplete] = useState(Boolean(initialState.guideCompletedAt));
   const [portfolioSynced, setPortfolioSynced] = useState(isWeek2PortfolioSynced(participantId));
 
   const filledCount = questions.filter((q) => String(q.text ?? '').trim().length > 8).length;
-  const complete = filledCount >= MAX_INTERVIEW_QUESTIONS;
+  const complete = guideComplete;
 
   const persist = useCallback(
     (next) => {
       setQuestions(next);
-      saveInterviewQuestions(participantId, next);
+      const savedState = saveInterviewQuestions(participantId, next);
       setSaved(true);
-      if (next.filter((q) => String(q.text ?? '').trim().length > 8).length >= MAX_INTERVIEW_QUESTIONS) {
+      if (savedState.guideCompletedAt) {
+        setGuideComplete(true);
         setPortfolioSynced(true);
         onSaved?.();
       }
@@ -74,7 +77,7 @@ export function InterviewGuideTask({ participantId, onSaved, missionContext = 'b
               value={q.text}
               onChange={(e) => updateQuestion(q.id, e.target.value)}
               className="w-full border-0 bg-transparent text-sm font-medium text-slate-900 focus:outline-none focus:ring-0"
-              placeholder="Open-ended interview question…"
+              placeholder={q.placeholder ?? 'Open-ended interview question…'}
             />
           </li>
         ))}

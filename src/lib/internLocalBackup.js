@@ -27,7 +27,7 @@ export const INTERN_WORK_STORAGE_KEYS = [
   'spike_fna_records',
   'spike_research_analytics',
   'spike_week2_login_welcome_seen_v1',
-  'spike_week2_discovery_v1',
+  'spike_week2_discovery_v2',
   'spike_squad_mentor_review_v1',
   'spike_squad_stage_gate_v1',
   'spike_squad_commendations_v1',

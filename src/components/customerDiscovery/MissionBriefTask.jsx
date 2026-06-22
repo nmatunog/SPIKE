@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ArrowRight, ChevronDown, ChevronUp, MapPin, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { resolveSquadMission, PREPARE_RULES } from '../../lib/customerDiscovery/week2Constants.js';
-import { acknowledgeMission } from '../../lib/customerDiscovery/week2DiscoveryService.js';
+import { acknowledgeMission, getWeek2State } from '../../lib/customerDiscovery/week2DiscoveryService.js';
 import { week2MissionHref } from '../../lib/customerDiscovery/week2MissionService.js';
 
 /**
@@ -12,7 +12,7 @@ import { week2MissionHref } from '../../lib/customerDiscovery/week2MissionServic
 export function MissionBriefTask({ participantId, squadName, onComplete, missionContext = 'blueprint' }) {
   const mission = resolveSquadMission(squadName);
   const [expanded, setExpanded] = useState(false);
-  const [done, setDone] = useState(false);
+  const [done, setDone] = useState(() => Boolean(getWeek2State(participantId).missionAcknowledged));
 
   function handleStart() {
     acknowledgeMission(participantId);

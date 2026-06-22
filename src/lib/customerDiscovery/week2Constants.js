@@ -73,36 +73,42 @@ export const SQUAD_MISSIONS = {
   },
 };
 
+/** Starter slots — text stays empty until the intern writes their own questions. */
 export const DEFAULT_INTERVIEW_QUESTIONS = [
   {
     id: 'q-1',
-    text: 'Tell me about yourself — what do you do and how long have you been working?',
+    text: '',
     purpose: 'Warm up and context',
     section: 'Warm Up',
+    placeholder: 'Tell me about yourself — what do you do and how long have you been working?',
   },
   {
     id: 'q-2',
-    text: 'What financial goal excites you most right now?',
+    text: '',
     purpose: 'Goals',
     section: 'Goals',
+    placeholder: 'What financial goal excites you most right now?',
   },
   {
     id: 'q-3',
-    text: 'What financial challenge keeps you awake at night?',
+    text: '',
     purpose: 'Challenges',
     section: 'Challenges',
+    placeholder: 'What financial challenge keeps you awake at night?',
   },
   {
     id: 'q-4',
-    text: 'How are you handling this challenge today?',
+    text: '',
     purpose: 'Current solutions',
     section: 'Current Solutions',
+    placeholder: 'How are you handling this challenge today?',
   },
   {
     id: 'q-5',
-    text: 'If you could change one thing about your financial situation, what would it be?',
+    text: '',
     purpose: 'Reflection',
     section: 'Reflection',
+    placeholder: 'If you could change one thing about your financial situation, what would it be?',
   },
 ];
 

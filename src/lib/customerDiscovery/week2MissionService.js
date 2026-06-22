@@ -3,7 +3,7 @@
  */
 import { ROUTES } from '../../routes/paths.js';
 import { loadWeek2Discovery, saveWeek2Discovery } from './week2DiscoveryStorage.js';
-import { WEEK2_MISSION_TASKS, MAX_INTERVIEW_QUESTIONS } from './week2Constants.js';
+import { WEEK2_MISSION_TASKS } from './week2Constants.js';
 
 const BASE = `${ROUTES.ventureBlueprint}/customer-discovery`;
 
@@ -13,10 +13,8 @@ function isTaskComplete(participantId, taskId) {
   switch (taskId) {
     case 'mission':
       return Boolean(state.missionAcknowledged);
-    case 'guide': {
-      const filled = (state.questions ?? []).filter((q) => String(q.text ?? '').trim().length > 8);
-      return filled.length >= MAX_INTERVIEW_QUESTIONS || Boolean(state.guideCompletedAt);
-    }
+    case 'guide':
+      return Boolean(state.guideCompletedAt);
     case 'thinking':
       return (state.thinkingShifts ?? []).some((s) => String(s.response ?? '').trim().length > 10);
     default:
