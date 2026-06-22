@@ -85,6 +85,13 @@ export async function onRequest(ctx) {
   } else if (action === 'complete') {
     row.onboarding_welcomed_at = row.onboarding_welcomed_at ?? now;
     row.onboarding_complete = true;
+  } else if (action === 'career_track') {
+    const track = String(body?.career_track ?? '');
+    if (track !== 'agency_builder' && track !== 'specialist_consultant') {
+      return json({ message: 'Invalid career track.' }, 400);
+    }
+    row.career_track = track;
+    row.career_track_selected_at = now;
   }
 
   const { data, error } = await admin

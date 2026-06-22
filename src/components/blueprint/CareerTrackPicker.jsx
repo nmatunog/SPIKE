@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Briefcase, Stethoscope } from 'lucide-react';
 import {
   getProgramWeek,
   saveCareerTrackSelection,
 } from '../../lib/careerTrackService.js';
+import { BLUEPRINT_LINKS } from '../../routes/paths.js';
 
 /**
  * @param {{ userId: string, internProgress?: object | null, onComplete: (progress: object) => void }} props
@@ -56,7 +58,21 @@ export function CareerTrackPicker({ userId, internProgress, onComplete }) {
             <p className="mt-1 text-xs text-gray-600">Practice growth, authority, niche expertise.</p>
           </button>
         </div>
+        {saving ? (
+          <p className="mt-4 text-center text-sm text-slate-500">Saving your track…</p>
+        ) : null}
         {error ? <p className="mt-3 text-sm text-red-600">{error}</p> : null}
+        <div className="mt-5 border-t border-slate-100 pt-4 text-center">
+          <Link
+            to={BLUEPRINT_LINKS.customerDiscovery}
+            className="text-sm font-semibold text-spike hover:underline"
+          >
+            Continue to Week 2 Customer Discovery →
+          </Link>
+          <p className="mt-1 text-xs text-slate-500">
+            You can choose your ACS track later from Build home.
+          </p>
+        </div>
       </div>
     </div>
   );

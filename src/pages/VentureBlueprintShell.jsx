@@ -70,7 +70,10 @@ export function VentureBlueprintShell({ user, viewerRole = 'intern', onProgressR
   const isCustomerDiscovery = moduleSlug === 'customer-discovery';
 
   const activeModule = getBlueprintModule(moduleSlug) ?? getBlueprintModule('overview');
-  const showTrackPicker = needsCareerTrackSelection(user.id, progress) && !isCustomerDiscovery;
+  const showTrackPicker =
+    needsCareerTrackSelection(user.id, progress)
+    && !isCustomerDiscovery
+    && moduleSlug !== 'overview';
   const isOverview = moduleSlug === 'overview';
   const week1Simplified = isWeek1BuildSimplifiedMode(progress);
   const headerVariant = isOverview || isCustomerDiscovery ? 'none' : 'compact';
@@ -78,7 +81,7 @@ export function VentureBlueprintShell({ user, viewerRole = 'intern', onProgressR
   const showFullModuleNav = !week1Simplified && !isDay1Builders && !isExecutiveSummary && !isCoach && !isPortfolio && !isCanvasStudio && !isCustomerDiscovery;
 
   function handleTrackComplete(nextProgress) {
-    setProgress(nextProgress);
+    setProgress(nextProgress ?? null);
     onProgressRefresh?.(nextProgress);
   }
 

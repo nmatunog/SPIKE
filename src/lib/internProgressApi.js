@@ -10,8 +10,8 @@ export function isInternProgressApiUnavailable(err) {
 }
 
 /**
- * @param {'ensure' | 'welcome' | 'complete'} action
- * @param {{ university?: string | null, squad?: string | null }} [opts]
+ * @param {'ensure' | 'welcome' | 'complete' | 'career_track'} action
+ * @param {{ university?: string | null, squad?: string | null, career_track?: 'agency_builder' | 'specialist_consultant' }} [opts]
  */
 export async function bootstrapInternProgressViaApi(action = 'ensure', opts = {}) {
   if (!supabase) {
@@ -31,6 +31,7 @@ export async function bootstrapInternProgressViaApi(action = 'ensure', opts = {}
       action,
       university: opts.university ?? null,
       squad: opts.squad ?? null,
+      career_track: opts.career_track ?? null,
     },
   });
 
