@@ -135,7 +135,7 @@ export function SquadXpDashboard({
       ) : null}
 
       <p className="text-[10px] text-slate-400">
-        Auto XP {xp.autoXp}/80 · Mentor bonus {xp.mentorBonus}/20 · Shared by all squad members
+        Auto XP {xp.autoXp}/80 · Pitch bonus {xp.pitchBonus}/20 · Shared by all squad members
       </p>
     </section>
   );

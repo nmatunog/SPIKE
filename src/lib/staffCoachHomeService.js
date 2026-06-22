@@ -133,7 +133,7 @@ export function deriveTodayHero(role, week = 1, day = 1) {
       title: role === 'mentor' ? 'Score squads & coach research' : 'Activate — validation week',
       subtitle:
         role === 'mentor'
-          ? 'Weekly squad review (~1 min) feeds Squad XP toward Stage Gate — shared by the whole squad.'
+          ? 'Weekly squad review (~1 min) sets stage gate readiness — pitch completion adds Squad XP bonus.'
           : 'Facilitate customer discovery missions; mentors complete weekly squad reviews.',
       objectives: [
         'Squad mission acknowledged',
@@ -142,7 +142,7 @@ export function deriveTodayHero(role, week = 1, day = 1) {
       ],
       expectedOutputs: [
         'Squad XP leaderboard',
-        'Mentor bonus XP',
+        'Venture Proposition pitch bonus',
         'Stage gate readiness',
       ],
       estimatedMinutes: totalMinutes || 240,

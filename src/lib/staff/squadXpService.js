@@ -1,15 +1,20 @@
 /**
- * Squad Weekly XP — automatic (80%) + mentor review bonus (20%).
+ * Squad Weekly XP — automatic activity (80%) + Venture Proposition pitch bonus (20%).
  * All squad members share the same weekly XP.
  */
+import { getParticipantSquad } from '../cohortFormationService.js';
 import { loadWeek2Discovery } from '../customerDiscovery/week2DiscoveryStorage.js';
+import { deriveVentureMilestones } from '../myVentureHqService.js';
+import { isVentureDesignOutputComplete } from '../participantOutputMetrics.js';
+import { participantHasPitchDeckDeliverable } from '../portfolioDeliverableService.js';
 import { countSubmittedSurveys } from '../surveyService.js';
 import { getCoachProgress } from '../ventureCoachStorage.js';
+import { loadSquadDesignRecord } from '../ventureDesignStudioService.js';
 import {
   AUTO_XP_WEIGHTS,
   MENTOR_REVIEW_DIMENSIONS,
   SQUAD_XP_AUTO_MAX,
-  SQUAD_XP_MENTOR_MAX,
+  SQUAD_XP_PITCH_BONUS_MAX,
   SQUAD_XP_TOTAL_MAX,
   STAGE_GATE_DECISIONS,
 } from './squadXpConstants.js';
@@ -103,14 +108,43 @@ export function computeSquadAutoXp(memberIds, week = 2) {
   return { autoXp, breakdown, completionPct };
 }
 
+/** @param {import('../ventureDesignStudioConstants.js').VentureDesignIndividualDraft | undefined} consolidated */
+function hasConsolidatedVentureProposition(consolidated) {
+  const parts = [
+    consolidated?.step3?.synthesisA,
+    consolidated?.step3?.synthesisB,
+    consolidated?.step3?.synthesisC,
+  ].filter((part) => String(part ?? '').trim());
+  return parts.length >= 2;
+}
+
+/** @param {string} participantId */
+function memberVenturePropositionReady(participantId) {
+  if (participantHasPitchDeckDeliverable(participantId)) return true;
+  if (isVentureDesignOutputComplete(participantId)) return true;
+  const { milestones } = deriveVentureMilestones(participantId);
+  return Boolean(milestones.find((m) => m.id === 'uvp')?.complete);
+}
+
 /**
- * @param {Record<string, number>} ratings — dimension id → 1–5
+ * Squad earns pitch bonus when consolidated UVP exists, a pitch deck is uploaded,
+ * or every member has completed their Venture Proposition work.
+ * @param {string[]} memberIds
  */
-export function computeMentorBonusXp(ratings) {
-  const values = MENTOR_REVIEW_DIMENSIONS.map((d) => Number(ratings[d.id] ?? 0)).filter((v) => v > 0);
-  if (!values.length) return 0;
-  const avg = values.reduce((a, b) => a + b, 0) / values.length;
-  return Math.round((avg / 5) * SQUAD_XP_MENTOR_MAX);
+export function squadVenturePropositionPitchComplete(memberIds) {
+  const ids = memberIds.filter(Boolean);
+  if (!ids.length) return false;
+
+  const squadRecord = getParticipantSquad(ids[0]);
+  const squadDesign = loadSquadDesignRecord(squadRecord?.id ?? '');
+  if (hasConsolidatedVentureProposition(squadDesign.consolidated)) return true;
+  if (ids.some((id) => participantHasPitchDeckDeliverable(id))) return true;
+  return ids.every((id) => memberVenturePropositionReady(id));
+}
+
+/** @param {string[]} memberIds */
+export function computePitchBonusXp(memberIds) {
+  return squadVenturePropositionPitchComplete(memberIds) ? SQUAD_XP_PITCH_BONUS_MAX : 0;
 }
 
 /**
@@ -121,15 +155,17 @@ export function computeMentorBonusXp(ratings) {
 export function getSquadWeeklyXp(squadName, memberIds, week = 2) {
   const { autoXp, breakdown, completionPct } = computeSquadAutoXp(memberIds, week);
   const review = getSquadMentorReview(squadName, week);
-  const mentorBonus = review ? computeMentorBonusXp(review.ratings) : 0;
-  const totalXp = Math.min(SQUAD_XP_TOTAL_MAX, autoXp + mentorBonus);
+  const pitchBonus = computePitchBonusXp(memberIds);
+  const pitchComplete = pitchBonus > 0;
+  const totalXp = Math.min(SQUAD_XP_TOTAL_MAX, autoXp + pitchBonus);
   const gate = getSquadStageGateDecision(squadName, week);
 
   return {
     squadName,
     week,
     autoXp,
-    mentorBonus,
+    pitchBonus,
+    pitchComplete,
     totalXp,
     breakdown,
     completionPct,
@@ -143,11 +179,13 @@ export function getSquadWeeklyXp(squadName, memberIds, week = 2) {
 /** @param {string[]} memberIds */
 function buildSquadChecklist(memberIds) {
   const { breakdown } = computeSquadAutoXp(memberIds);
+  const pitchDone = squadVenturePropositionPitchComplete(memberIds);
   return [
     { id: 'interviews', label: 'Interviews completed', done: breakdown.interviews >= AUTO_XP_WEIGHTS.interviews * 0.8 },
     { id: 'portfolio', label: 'Portfolio updated', done: breakdown.portfolio >= AUTO_XP_WEIGHTS.portfolio * 0.8 },
     { id: 'reflection', label: 'Reflection submitted', done: breakdown.reflection >= AUTO_XP_WEIGHTS.reflection * 0.8 },
     { id: 'assignment', label: 'Assignment submitted', done: breakdown.assignment >= AUTO_XP_WEIGHTS.assignment * 0.8 },
+    { id: 'pitch', label: 'Venture Proposition pitch complete (+20 XP)', done: pitchDone },
   ];
 }
 

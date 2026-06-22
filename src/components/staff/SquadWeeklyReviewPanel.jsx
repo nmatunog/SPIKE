@@ -86,7 +86,7 @@ export function SquadWeeklyReviewPanel({
     }
 
     setSaved(true);
-    showToast?.(`${squadName} review saved · Squad XP updated`);
+    showToast?.(`${squadName} review saved`);
   }
 
   return (
@@ -101,7 +101,7 @@ export function SquadWeeklyReviewPanel({
           <p className="text-2xl font-bold tabular-nums text-spike">{squadXp.totalXp} XP</p>
           <p className="text-xs text-amber-600">{formatStarDisplay(squadXp.totalXp)}</p>
           <p className="mt-1 text-[10px] text-slate-400">
-            Auto {squadXp.autoXp} + Mentor {squadXp.mentorBonus}
+            Auto {squadXp.autoXp} + Pitch {squadXp.pitchBonus}
           </p>
         </div>
       </div>

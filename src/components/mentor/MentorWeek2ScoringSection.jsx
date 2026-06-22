@@ -43,8 +43,9 @@ export function MentorWeek2ScoringSection({
           </p>
           <h2 className="mt-2 text-2xl font-bold text-slate-900">Squad-first assessment</h2>
           <p className="mt-2 max-w-2xl text-sm text-slate-600">
-            Auto XP from intern missions (80%) + your weekly review bonus (20%). One squad review per
-            week (~1 minute) — no per-intern rubrics. Legacy notes carry over automatically.
+            Auto XP from intern missions (80%) + Venture Proposition pitch bonus (20%) when the squad
+            completes their pitch. Weekly squad review (~1 minute) sets stage gate readiness — no per-intern
+            rubrics.
           </p>
         </div>
         <Link
