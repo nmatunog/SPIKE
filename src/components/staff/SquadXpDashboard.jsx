@@ -1,5 +1,7 @@
 import { useMemo } from 'react';
 import { Sparkles, Trophy } from 'lucide-react';
+import { getParticipantSquad } from '../../lib/cohortFormationService.js';
+import { useCohortProgramDay } from '../../hooks/useCohortProgramDay.js';
 import {
   formatStarDisplay,
   getSquadWeeklyXp,
@@ -10,6 +12,110 @@ import {
   getSquadCommendations,
 } from '../../lib/staff/squadCommendationService.js';
 import { groupInternsBySquad } from '../../lib/facultyMentorFrameworkService.js';
+
+/** Compact XP readout for tables and squad list cards. */
+export function SquadXpInline({ totalXp, className = '' }) {
+  return (
+    <span className={`inline-flex flex-col items-end tabular-nums ${className}`}>
+      <span className="font-bold text-spike">{totalXp} XP</span>
+      <span className="text-[10px] text-amber-600">{formatStarDisplay(totalXp)}</span>
+    </span>
+  );
+}
+
+/**
+ * Shared squad XP card — portfolio, squad hub, coach previews.
+ * @param {{ squadName: string, memberIds: string[], week?: number, compact?: boolean, className?: string }} props
+ */
+export function SquadXpSummaryCard({
+  squadName,
+  memberIds,
+  week: weekProp,
+  compact = false,
+  className = '',
+}) {
+  const { programDay } = useCohortProgramDay();
+  const week = weekProp ?? programDay.week;
+  const xp = useMemo(
+    () => getSquadWeeklyXp(squadName, memberIds, week),
+    [squadName, memberIds, week],
+  );
+
+  if (compact) {
+    return (
+      <div className={`rounded-xl border border-spike/15 bg-spike-muted/30 px-4 py-3 ${className}`}>
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Squad XP</p>
+            <p className="text-xs text-slate-600">{squadName} · Week {week}</p>
+          </div>
+          <SquadXpInline totalXp={xp.totalXp} />
+        </div>
+        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-200">
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-venture-discover to-spike"
+            style={{ width: `${xp.totalXp}%` }}
+          />
+        </div>
+        <p className="mt-1 text-[10px] text-slate-500">
+          Auto {xp.autoXp} + Pitch {xp.pitchBonus} · shared by your squad
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <section className={`spike-venture-status space-y-4 ${className}`}>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p className="spike-label">Squad XP · Week {week}</p>
+          <h2 className="text-lg font-bold text-slate-900">{squadName}</h2>
+          <p className="mt-1 text-3xl font-black tabular-nums text-spike">{xp.totalXp} XP</p>
+          <p className="text-sm text-amber-600">{formatStarDisplay(xp.totalXp)}</p>
+        </div>
+        <p className="text-xs text-slate-500">{xp.completionPct}% mission completion</p>
+      </div>
+      <div className="h-2 overflow-hidden rounded-full bg-slate-200/80">
+        <div
+          className="h-full rounded-full bg-gradient-to-r from-venture-discover to-spike transition-all"
+          style={{ width: `${xp.totalXp}%` }}
+        />
+      </div>
+      <ul className="space-y-1 text-sm text-slate-700">
+        {xp.checklist.map((item) => (
+          <li key={item.id} className="flex items-center gap-2">
+            <span className={item.done ? 'text-emerald-600' : 'text-slate-300'}>
+              {item.done ? '✔' : '○'}
+            </span>
+            {item.label}
+          </li>
+        ))}
+      </ul>
+      <p className="text-[10px] text-slate-400">
+        Auto {xp.autoXp}/80 · Pitch {xp.pitchBonus}/20 · Shared by all squad members
+      </p>
+    </section>
+  );
+}
+
+/**
+ * Resolves squad from participant and shows XP card.
+ * @param {{ participantId: string, week?: number, compact?: boolean, className?: string }} props
+ */
+export function ParticipantSquadXpCard({ participantId, week, compact = false, className = '' }) {
+  const squad = getParticipantSquad(participantId);
+  if (!squad) return null;
+  const memberIds = (squad.members ?? []).map((m) => m.participantId);
+  return (
+    <SquadXpSummaryCard
+      squadName={squad.name}
+      memberIds={memberIds}
+      week={week}
+      compact={compact}
+      className={className}
+    />
+  );
+}
 
 /**
  * Squad XP dashboard — team game view for participants and staff.

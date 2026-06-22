@@ -60,6 +60,7 @@ export function VentureDesignMentorReview({ participantId, participantName = 'In
       {squadCtx.squadId ? (
         <VentureDesignSquadPanel
           memberIds={squadCtx.memberIds}
+          squadName={squadCtx.squadName}
           nameById={{ [participantId]: participantName }}
           consolidated={squadRecord.consolidated}
           coachSummary={squadRecord.coachSummary}

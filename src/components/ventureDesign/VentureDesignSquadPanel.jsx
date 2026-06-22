@@ -1,4 +1,5 @@
 import { Sparkles, Users } from 'lucide-react';
+import { SquadXpSummaryCard } from '../staff/SquadXpDashboard.jsx';
 import {
   loadSquadMemberDesignInputs,
   suggestSquadConsolidation,
@@ -15,6 +16,8 @@ import {
  *   mentorRating: number | null,
  *   mentorNotes: string,
  *   coachMode: boolean,
+ *   squadName?: string,
+ *   week?: number,
  *   onApplySuggestion: (patch: Partial<import('../../lib/ventureDesignStudioService.js').VentureDesignIndividualDraft>) => void,
  *   onCoachSummaryChange: (value: string) => void,
  *   onCoachFocusChange: (value: string) => void,
@@ -31,6 +34,8 @@ export function VentureDesignSquadPanel({
   mentorRating,
   mentorNotes,
   coachMode,
+  squadName = '',
+  week,
   onApplySuggestion,
   onCoachSummaryChange,
   onCoachFocusChange,
@@ -48,6 +53,14 @@ export function VentureDesignSquadPanel({
 
   return (
     <div className="space-y-4">
+      {squadName && memberIds.length ? (
+        <SquadXpSummaryCard
+          squadName={squadName}
+          memberIds={memberIds}
+          week={week}
+          compact
+        />
+      ) : null}
       <div className="rounded-2xl border border-stone-700 bg-stone-800 p-5 text-white shadow-lg">
         <h4 className="mb-4 flex items-center gap-2 border-b border-stone-700 pb-3 text-xs font-bold uppercase tracking-widest text-yellow-500">
           <Users size={16} />

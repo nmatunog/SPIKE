@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Users, FileSignature, Award } from 'lucide-react';
 import { PageContainer } from '../../components/layout/PageContainer.jsx';
 import { SquadXpDashboard } from '../../components/staff/SquadXpDashboard.jsx';
+import { useCohortProgramDay } from '../../hooks/useCohortProgramDay.js';
 import {
   getOfficialCohort,
   getParticipantBadges,
@@ -17,6 +18,7 @@ import { ROUTES } from '../../routes/paths.js';
  * @param {{ participantId: string, participantName: string }} props
  */
 export function SquadDashboardPage({ participantId, participantName }) {
+  const { programDay } = useCohortProgramDay();
   const squad = getParticipantSquad(participantId);
   const cohort = getOfficialCohort();
   const charter = squad ? getSquadCharter(squad.id) : null;
@@ -70,7 +72,7 @@ export function SquadDashboardPage({ participantId, participantName }) {
           squadName={squad.name}
           memberIds={memberIds}
           participantId={participantId}
-          week={2}
+          week={programDay.week}
           allSquads={allSquads}
         />
 

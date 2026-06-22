@@ -17,7 +17,7 @@ import {
   squadMemberIdsForIntern,
 } from './staff/squadAssessmentService.js';
 import { listSquadInternNotes } from './staff/squadInternNotesService.js';
-import { getSquadMentorReview } from './staff/squadXpService.js';
+import { getSquadMentorReview, getSquadWeeklyXp } from './staff/squadXpService.js';
 import { VENTURE_DIRECTION_CARDS } from './ventureCoachConstants.js';
 import { isWeek1DayComplete } from './week1JourneyService.js';
 import { participantHasPitchDeckDeliverable } from './portfolioDeliverableService.js';
@@ -182,8 +182,9 @@ export function deriveAssignedParticipants(interns) {
 
 /**
  * @param {Array<{ name: string, members: Array<{ id: string, name: string }>, count: number }>} squads
+ * @param {number} [week]
  */
-export function deriveSquadSummaries(squads) {
+export function deriveSquadSummaries(squads, week = 2) {
   return squads.map((squad) => {
     const memberIds = squad.members.map((m) => m.id);
     const avgProgress = memberIds.length
@@ -192,11 +193,13 @@ export function deriveSquadSummaries(squads) {
         )
       : 0;
     const allComplete = memberIds.every((id) => week1OutputCompletionPct(getParticipantWeek1Outputs(id)) >= 80);
+    const squadXp = getSquadWeeklyXp(squad.name, memberIds, week);
 
     return {
       name: squad.name,
       members: squad.count,
       completionPct: avgProgress,
+      totalXp: squadXp.totalXp,
       status: allComplete ? 'On track' : avgProgress >= 50 ? 'In progress' : 'Needs attention',
     };
   });

@@ -11,7 +11,7 @@ import { getPortfolioSettings } from '../../lib/portfolioStorage.js';
 import { useCohortHydration } from '../../hooks/useParticipantHydration.js';
 import { ROUTES } from '../../routes/paths.js';
 import { SquadWeeklyReviewPanel } from '../staff/SquadWeeklyReviewPanel.jsx';
-import { SquadXpLeaderboard } from '../staff/SquadXpDashboard.jsx';
+import { SquadXpInline, SquadXpLeaderboard } from '../staff/SquadXpDashboard.jsx';
 import { useCohortProgramDay } from '../../hooks/useCohortProgramDay.js';
 
 /**
@@ -35,7 +35,7 @@ export function MentorDashboardPanels({
 
   const participants = ready ? deriveAssignedParticipants(interns) : [];
   const squadsGrouped = ready ? groupInternsBySquad(interns) : [];
-  const squads = ready ? deriveSquadSummaries(squadsGrouped) : [];
+  const squads = ready ? deriveSquadSummaries(squadsGrouped, programDay.week) : [];
   const queue = ready ? deriveCoachingQueue(interns) : {
     needs_review: [],
     needs_follow_up: [],
@@ -112,11 +112,16 @@ export function MentorDashboardPanels({
               squads.map((squad) => (
                 <li key={squad.name} className="rounded-xl bg-slate-50 px-3 py-2 text-sm">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="font-semibold text-slate-900">{squad.name}</span>
-                    <span className="text-xs font-semibold text-slate-500">{squad.status}</span>
+                    <Link
+                      to={`${ROUTES.mentorSquads}/${encodeURIComponent(squad.name)}`}
+                      className="font-semibold text-slate-900 hover:text-spike"
+                    >
+                      {squad.name}
+                    </Link>
+                    <SquadXpInline totalXp={squad.totalXp} />
                   </div>
                   <p className="mt-1 text-xs text-slate-500">
-                    {squad.members} members · {squad.completionPct}% avg progress
+                    {squad.members} members · {squad.completionPct}% avg progress · {squad.status}
                   </p>
                 </li>
               ))

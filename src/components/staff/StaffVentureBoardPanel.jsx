@@ -2,6 +2,7 @@ import { generateVenturePortfolio } from '../../services/portfolioGenerator.js';
 import { getPortfolioSections } from '../../lib/playbookSeeds.js';
 import { formatVentureBoardStatus } from '../../lib/participantState.js';
 import { buildParticipantState } from '../../lib/participantState.js';
+import { ParticipantSquadXpCard } from '../staff/SquadXpDashboard.jsx';
 
 /** @param {{ participantId: string, participantName?: string, internProgress?: object | null }} props */
 export function StaffVentureBoardPanel({ participantId, participantName = 'Participant', internProgress }) {
@@ -69,6 +70,7 @@ export function StaffPortfolioPreviewPanel({ participantId, participantName = 'P
           {portfolio.cover.portfolioCompletion}% complete · {participantName}
         </p>
       </header>
+      <ParticipantSquadXpCard participantId={participantId} compact />
       <div className="grid gap-3 sm:grid-cols-2">
         {sections.map((section) => {
           const pct = section.id === 'portfolio-financial-blueprint'

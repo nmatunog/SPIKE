@@ -369,6 +369,7 @@ export function VentureDesignStudioWorkspace({
             <div className="sticky top-28 space-y-4">
               <VentureDesignSquadPanel
                 memberIds={squadCtx.memberIds.length ? squadCtx.memberIds : [participantId]}
+                squadName={squadCtx.squadName || squadNameFallback}
                 nameById={{ [participantId]: participantName }}
                 consolidated={squadRecord.consolidated}
                 coachSummary={squadRecord.coachSummary}

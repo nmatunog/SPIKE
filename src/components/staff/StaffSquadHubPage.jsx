@@ -3,12 +3,15 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, Briefcase, LayoutGrid, MessageSquare, Sparkles, User } from 'lucide-react';
 import { PageContainer } from '../layout/PageContainer.jsx';
 import { deriveSquadHubDetail } from '../../lib/staffCoachHomeService.js';
+import { SquadXpInline, SquadXpSummaryCard } from './SquadXpDashboard.jsx';
+import { getSquadWeeklyXp } from '../../lib/staff/squadXpService.js';
 import {
   mentorParticipantReviewHref,
   staffSquadsListHref,
   ROUTES,
 } from '../../routes/paths.js';
 import { groupInternsBySquad } from '../../lib/facultyMentorFrameworkService.js';
+import { useCohortProgramDay } from '../../hooks/useCohortProgramDay.js';
 
 /**
  * @param {{
@@ -21,6 +24,7 @@ import { groupInternsBySquad } from '../../lib/facultyMentorFrameworkService.js'
 export function StaffSquadHubPage({ role, squadName, interns, homeHref }) {
   const detail = deriveSquadHubDetail(interns, squadName);
   const squadsHref = staffSquadsListHref(role);
+  const memberIds = detail.memberRows.map((m) => m.id);
 
   return (
     <PageContainer>
@@ -45,6 +49,12 @@ export function StaffSquadHubPage({ role, squadName, interns, homeHref }) {
           <span className="text-sm font-semibold text-slate-600">{detail.avgProgress}% Week 1 ready</span>
         </div>
       </header>
+
+      <SquadXpSummaryCard
+        squadName={detail.squadName}
+        memberIds={memberIds}
+        week={detail.week}
+      />
 
       <div className="mb-6 flex flex-wrap gap-2">
         <Link
@@ -141,6 +151,7 @@ export function StaffSquadHubPage({ role, squadName, interns, homeHref }) {
  */
 export function StaffSquadsListPage({ role, interns, homeHref }) {
   const squads = groupInternsBySquad(interns);
+  const { programDay } = useCohortProgramDay();
 
   return (
     <PageContainer>
@@ -151,17 +162,26 @@ export function StaffSquadsListPage({ role, interns, homeHref }) {
         </p>
       </header>
       <ul className="grid gap-4 sm:grid-cols-2">
-        {squads.map((squad) => (
+        {squads.map((squad) => {
+          const memberIds = (squad.members ?? []).map((m) => m.id);
+          const xp = getSquadWeeklyXp(squad.name, memberIds, programDay.week);
+          return (
           <li key={squad.name}>
             <Link
               to={`${staffSquadsListHref(role)}/${encodeURIComponent(squad.name)}`}
               className="block rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-spike/30 hover:shadow-md"
             >
-              <h2 className="text-lg font-semibold text-slate-900">{squad.name}</h2>
-              <p className="mt-1 text-sm text-slate-600">{squad.count} members</p>
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-semibold text-slate-900">{squad.name}</h2>
+                  <p className="mt-1 text-sm text-slate-600">{squad.count} members</p>
+                </div>
+                <SquadXpInline totalXp={xp.totalXp} />
+              </div>
             </Link>
           </li>
-        ))}
+          );
+        })}
       </ul>
       {squads.length === 0 ? (
         <p className="rounded-xl border border-dashed border-slate-200 p-8 text-center text-sm text-slate-500">

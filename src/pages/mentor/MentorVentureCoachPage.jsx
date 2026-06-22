@@ -20,6 +20,7 @@ import {
 import { hydrateCoachingFromSupabase, listCoachingNotesForParticipant } from '../../lib/coachingService.js';
 import { squadMemberIdsForIntern } from '../../lib/staff/squadAssessmentService.js';
 import { SquadInternNotesPanel } from '../../components/staff/SquadInternNotesPanel.jsx';
+import { ParticipantSquadXpCard } from '../../components/staff/SquadXpDashboard.jsx';
 import { getCoachSummaryForMentor } from '../../lib/ventureCoachService.js';
 import { useParticipantHydration } from '../../hooks/useParticipantHydration.js';
 import { fetchRemoteParticipantSummary } from '../../lib/participantRemoteData.js';
@@ -233,6 +234,8 @@ export function MentorVentureCoachPage({
 
       {activeTab === 'overview' ? (
         <>
+      <ParticipantSquadXpCard participantId={participantId} className="mb-6" />
+
       <section className="mb-6">
         <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">Venture identity</h2>
         <div className="grid gap-4 lg:grid-cols-2">

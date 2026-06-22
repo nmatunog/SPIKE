@@ -13,6 +13,7 @@ import {
   Users,
 } from 'lucide-react';
 import { deriveStaffCoachHome } from '../../lib/staffCoachHomeService.js';
+import { SquadXpInline } from './SquadXpDashboard.jsx';
 import {
   ROUTES,
   staffSquadHubHref,
@@ -182,6 +183,7 @@ export function StaffCoachHomeDashboard({
                       <th className="px-5 py-3">Squad</th>
                       <th className="px-3 py-3">Venture</th>
                       <th className="px-3 py-3">Progress</th>
+                      <th className="px-3 py-3">Squad XP</th>
                       <th className="px-3 py-3">Engagement</th>
                       <th className="px-3 py-3">Next</th>
                       <th className="px-3 py-3" aria-label="Open" />
@@ -204,6 +206,9 @@ export function StaffCoachHomeDashboard({
                             </div>
                             <span className="text-xs font-semibold text-slate-600">{row.progressPct}%</span>
                           </div>
+                        </td>
+                        <td className="px-3 py-4">
+                          <SquadXpInline totalXp={row.squadXp} />
                         </td>
                         <td className="px-3 py-4">
                           <EngagementDot tone={row.engagement.tone} label={row.engagement.label} />
