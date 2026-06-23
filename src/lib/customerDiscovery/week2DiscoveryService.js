@@ -151,6 +151,14 @@ export function saveThinkingShift(participantId, input) {
   return saveWeek2Discovery(participantId, { thinkingShifts });
 }
 
+/** @param {import('./week2DiscoveryTypes.js').Week2DiscoveryState} [state] */
+export function getExchangeReflectionText(state) {
+  const s = state ?? {};
+  const direct = String(s.exchangeReflectionText ?? '').trim();
+  if (direct) return direct;
+  return String(s.thinkingShifts?.find((t) => t.taskId === 'exchange')?.response ?? '').trim();
+}
+
 /** @param {string} participantId @param {string} response */
 export function saveExchangeReflection(participantId, response) {
   const text = String(response ?? '').trim();
@@ -169,6 +177,7 @@ export function saveExchangeReflection(participantId, response) {
 
   const next = saveWeek2Discovery(participantId, {
     thinkingShifts,
+    exchangeReflectionText: text,
     exchangeReflectionAt: text.length > 15 ? new Date().toISOString() : state.exchangeReflectionAt,
   });
   if (text.length > 15) syncWeek2PortfolioArtifacts(participantId);

@@ -12,6 +12,10 @@ import {
   SQUAD_INTERVIEW_TARGET,
 } from '../../lib/customerDiscovery/week2Constants.js';
 import { squadEvidenceSummary } from '../../lib/customerDiscovery/week2SquadEvidenceService.js';
+import {
+  hydrateParticipantWeek2Discovery,
+  hydrateSquadWeek2Discovery,
+} from '../../lib/customerDiscovery/week2DiscoverySync.js';
 
 function readInterviewDraft(participantId, interviewIndex) {
   const state = getWeek2State(participantId);
@@ -25,6 +29,17 @@ function readInterviewDraft(participantId, interviewIndex) {
     insights: existing.aiInsights ?? null,
     encoded: Boolean(existing.encoded),
   };
+}
+
+function applyDraft(setters, draft) {
+  setters.setQuestions(draft.questions);
+  setters.setAlias(draft.alias);
+  setters.setOccupation(draft.occupation);
+  setters.setAnswers(draft.answers);
+  setters.setReflection(draft.reflection);
+  setters.setInsights(draft.insights);
+  setters.setEncoded(draft.encoded);
+  setters.setSaveState('idle');
 }
 
 /**
@@ -45,36 +60,58 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
   const [insights, setInsights] = useState(initial.insights);
   const [encoded, setEncoded] = useState(initial.encoded);
   const [saveState, setSaveState] = useState('idle');
+  const [squadTick, setSquadTick] = useState(0);
 
   const draftRef = useRef({ alias, occupation, answers, reflection, questions });
 
   useEffect(() => {
-    const draft = readInterviewDraft(participantId, interviewIndex);
-    setQuestions(draft.questions);
-    setAlias(draft.alias);
-    setOccupation(draft.occupation);
-    setAnswers(draft.answers);
-    setReflection(draft.reflection);
-    setInsights(draft.insights);
-    setEncoded(draft.encoded);
-    setSaveState('idle');
+    let cancelled = false;
+    (async () => {
+      await hydrateParticipantWeek2Discovery(participantId);
+      await hydrateSquadWeek2Discovery(participantId);
+      if (cancelled) return;
+      applyDraft(
+        {
+          setQuestions,
+          setAlias,
+          setOccupation,
+          setAnswers,
+          setReflection,
+          setInsights,
+          setEncoded,
+          setSaveState,
+        },
+        readInterviewDraft(participantId, interviewIndex),
+      );
+      setSquadTick((n) => n + 1);
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [participantId, interviewIndex]);
 
   useEffect(() => {
     draftRef.current = { alias, occupation, answers, reflection, questions };
   }, [alias, occupation, answers, reflection, questions]);
 
-  const squadEvidence = useMemo(() => squadEvidenceSummary(participantId), [participantId]);
+  const squadEvidence = useMemo(
+    () => squadEvidenceSummary(participantId),
+    [participantId, squadTick],
+  );
 
-  function flushDraft({ notify = false, showFeedback = false } = {}) {
+  function writeDraftToStorage() {
     const draft = draftRef.current;
     saveInterviewQuestions(participantId, draft.questions);
-    const next = saveEncodedInterview(participantId, interviewIndex, {
+    return saveEncodedInterview(participantId, interviewIndex, {
       alias: draft.alias,
       occupation: draft.occupation,
       answers: draft.answers,
       reflection: draft.reflection,
     });
+  }
+
+  function flushDraft({ notify = false, showFeedback = false } = {}) {
+    const next = writeDraftToStorage();
     const iv = next.interviews?.[interviewIndex];
     if (iv?.aiInsights) setInsights(iv.aiInsights);
     setEncoded(Boolean(iv?.encoded));
@@ -87,15 +124,18 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
   }
 
   useEffect(() => {
+    const save = () => {
+      writeDraftToStorage();
+    };
+    window.addEventListener('pagehide', save);
+    const onHide = () => {
+      if (document.visibilityState === 'hidden') save();
+    };
+    document.addEventListener('visibilitychange', onHide);
     return () => {
-      const draft = draftRef.current;
-      saveInterviewQuestions(participantId, draft.questions);
-      saveEncodedInterview(participantId, interviewIndex, {
-        alias: draft.alias,
-        occupation: draft.occupation,
-        answers: draft.answers,
-        reflection: draft.reflection,
-      });
+      window.removeEventListener('pagehide', save);
+      document.removeEventListener('visibilitychange', onHide);
+      save();
     };
   }, [participantId, interviewIndex]);
 
@@ -124,8 +164,39 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
   const filledAnswers = answers.filter((a) => String(a).trim().length > 0).length;
   const substantialAnswers = answers.filter((a) => String(a).trim().length > 8).length;
 
+  const saveBar = (
+    <div className="flex flex-wrap items-center gap-3">
+      <button
+        type="button"
+        onClick={() => flushDraft({ notify: true, showFeedback: true })}
+        className="spike-btn-primary inline-flex min-h-[48px] w-full items-center justify-center gap-2 sm:w-auto"
+      >
+        <Save size={18} aria-hidden />
+        Save interview
+      </button>
+      {saveState === 'saved' ? (
+        <span className="inline-flex items-center gap-1 text-sm font-medium text-venture-discover">
+          <Check size={14} aria-hidden />
+          Saved to device + cloud
+        </span>
+      ) : (
+        <span className="text-xs text-slate-500">Tap Save before switching sections (especially on Safari).</span>
+      )}
+      {encoded ? (
+        <span className="rounded-full bg-venture-discover/15 px-2.5 py-0.5 text-xs font-semibold text-venture-discover">
+          Encoded ✓
+        </span>
+      ) : (
+        <span className="text-xs text-slate-500">
+          {substantialAnswers} / 3 substantial answers · {filledAnswers} / {MAX_INTERVIEW_QUESTIONS} started
+          {alias.trim().length <= 1 ? ' · alias required' : ''}
+        </span>
+      )}
+    </div>
+  );
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-24 sm:pb-6">
       <section className="spike-surface space-y-2">
         <p className="spike-label">Discover mode</p>
         <h2 className="text-xl font-bold text-slate-900">Interview {interviewIndex + 1}</h2>
@@ -133,37 +204,9 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
           Minimum {MIN_ENCODED_INTERVIEWS} per member · Squad target {SQUAD_INTERVIEW_TARGET} · Your squad:{' '}
           {squadEvidence.interviewCount}
         </p>
-        <p className="text-xs text-slate-500">
-          Answers save as you type and when you leave this screen. Use Save before switching sections if you want to be sure.
-        </p>
       </section>
 
-      <div className="flex flex-wrap items-center gap-3">
-        <button
-          type="button"
-          onClick={() => flushDraft({ notify: true, showFeedback: true })}
-          className="spike-btn-primary inline-flex min-h-[44px] items-center gap-2"
-        >
-          <Save size={16} aria-hidden />
-          Save interview
-        </button>
-        {saveState === 'saved' ? (
-          <span className="inline-flex items-center gap-1 text-sm font-medium text-venture-discover">
-            <Check size={14} aria-hidden />
-            Saved
-          </span>
-        ) : null}
-        {encoded ? (
-          <span className="rounded-full bg-venture-discover/15 px-2.5 py-0.5 text-xs font-semibold text-venture-discover">
-            Encoded ✓
-          </span>
-        ) : (
-          <span className="text-xs text-slate-500">
-            {substantialAnswers} / 3 substantial answers needed · {filledAnswers} / {MAX_INTERVIEW_QUESTIONS} started
-            {alias.trim().length <= 1 ? ' · alias required' : ''}
-          </span>
-        )}
-      </div>
+      <div className="hidden sm:block">{saveBar}</div>
 
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="spike-surface block space-y-1">
@@ -175,6 +218,7 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
               setAlias(e.target.value);
               persist({ alias: e.target.value });
             }}
+            onBlur={() => flushDraft()}
             placeholder="e.g. Alex"
             className="w-full border-0 bg-transparent text-sm font-medium focus:outline-none"
           />
@@ -188,6 +232,7 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
               setOccupation(e.target.value);
               persist({ occupation: e.target.value });
             }}
+            onBlur={() => flushDraft()}
             placeholder="e.g. Teacher, 3 years"
             className="w-full border-0 bg-transparent text-sm font-medium focus:outline-none"
           />
@@ -205,12 +250,13 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
               type="text"
               value={questions[qi]?.text ?? ''}
               onChange={(e) => updateQuestion(qi, e.target.value)}
+              onBlur={() => flushDraft()}
               placeholder={questions[qi]?.placeholder ?? 'Question you asked in the field'}
               className="w-full border-0 bg-transparent text-sm font-medium text-slate-800 focus:outline-none"
             />
             <textarea
               value={ans}
-              rows={2}
+              rows={3}
               onChange={(e) => {
                 const next = [...answers];
                 next[qi] = e.target.value;
@@ -271,6 +317,10 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
           </div>
         </section>
       ) : null}
+
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200 bg-white/95 px-4 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] backdrop-blur sm:hidden">
+        {saveBar}
+      </div>
     </div>
   );
 }

@@ -21,6 +21,13 @@ function encodedCount(state) {
   return (state.interviews ?? []).filter((i) => i.encoded).length;
 }
 
+/** @param {import('./week2DiscoveryTypes.js').Week2DiscoveryState} state */
+function exchangeReflectionComplete(state) {
+  const direct = String(state.exchangeReflectionText ?? '').trim();
+  const fromShift = String(state.thinkingShifts?.find((s) => s.taskId === 'exchange')?.response ?? '').trim();
+  return (direct || fromShift).length > 15;
+}
+
 /** @param {string} participantId @param {string} taskId */
 function isTaskComplete(participantId, taskId) {
   const state = loadWeek2Discovery(participantId);
@@ -45,7 +52,7 @@ function isTaskComplete(participantId, taskId) {
       return Boolean(iv?.encoded);
     }
     case 'exchange':
-      return Boolean(state.exchangeReflectionAt);
+      return exchangeReflectionComplete(state);
     case 'readiness':
       return Boolean(state.professionalReadinessAt);
     case 'readiness-reflect':

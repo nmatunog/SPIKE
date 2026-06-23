@@ -9,6 +9,8 @@ import { hydrateVentureBlueprint } from './ventureBlueprintSync.js';
 import { fetchRemoteWorkAssessment } from './participantRemoteData.js';
 import { assessLocalInternWork } from './internLocalWorkAssessment.js';
 import { isMockUserId } from './mockAuth.js';
+import { hydrateWeek2DiscoveryFromCloud } from './customerDiscovery/week2DiscoverySync.js';
+import { hydrateParticipantFecValidation } from './customerDiscovery/week2FecValidationSync.js';
 
 const RECOVERY_DONE_KEY = 'spike_intern_cloud_recovery_v1';
 
@@ -35,6 +37,8 @@ export async function recoverInternWorkFromSupabase(participantId) {
     hydrateVentureBlueprint(participantId, recoveryHydrateOpts),
     hydratePlaybookProgressFromSupabase(participantId, recoveryHydrateOpts),
     hydrateSurveysFromSupabase(participantId, recoveryHydrateOpts),
+    hydrateWeek2DiscoveryFromCloud(participantId, { preferRemote: true }),
+    hydrateParticipantFecValidation(participantId),
   ]);
 
   markCloudRecoveryDone(participantId);

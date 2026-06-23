@@ -16,6 +16,7 @@ import {
 } from './FecValidationShared.jsx';
 import { FecValidationPoster } from './FecValidationPoster.jsx';
 import { hydrateParticipantFecValidation } from '../../../lib/customerDiscovery/week2FecValidationSync.js';
+import { hydrateSquadWeek2Discovery } from '../../../lib/customerDiscovery/week2DiscoverySync.js';
 
 /**
  * @param {{ participantId: string, squadName?: string, stepSlug?: string, onSaved?: () => void, memberNames?: Record<string, string>, onNavigate?: (slug: string) => void }} props
@@ -32,6 +33,7 @@ export function FecValidationLab({ participantId, squadName = '', stepSlug, onSa
 
   useEffect(() => {
     void hydrateParticipantFecValidation(participantId).then(() => refresh());
+    void hydrateSquadWeek2Discovery(participantId).then(() => refresh());
   }, [participantId]);
 
   const lab = useMemo(() => getFecValidationLabState(participantId), [participantId, squadName]);

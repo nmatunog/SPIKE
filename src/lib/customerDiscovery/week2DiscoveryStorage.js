@@ -6,20 +6,62 @@ import { extractInterviewInsights } from './week2InsightSynthesis.js';
 
 const STORAGE_KEY = 'spike_week2_discovery_v2';
 const LEGACY_STORAGE_KEY = 'spike_week2_discovery_v1';
+const SESSION_BACKUP_KEY = 'spike_week2_discovery_v2_session';
+
+/** @type {Record<string, import('./week2DiscoveryTypes.js').Week2DiscoveryState>} */
+const memoryCache = {};
 
 function readAll() {
+  /** @type {Record<string, unknown>} */
+  let merged = { ...memoryCache };
   try {
     const current = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-    if (Object.keys(current).length) return current;
-    const legacy = JSON.parse(localStorage.getItem(LEGACY_STORAGE_KEY) || '{}');
-    return legacy;
+    if (current && typeof current === 'object') merged = { ...merged, ...current };
   } catch {
-    return {};
+    /* Safari private mode / ITP */
+  }
+  if (!Object.keys(merged).length) {
+    try {
+      const legacy = JSON.parse(localStorage.getItem(LEGACY_STORAGE_KEY) || '{}');
+      if (legacy && typeof legacy === 'object') merged = { ...merged, ...legacy };
+    } catch {
+      /* ignore */
+    }
+  }
+  try {
+    const backup = JSON.parse(sessionStorage.getItem(SESSION_BACKUP_KEY) || '{}');
+    if (backup && typeof backup === 'object') merged = { ...backup, ...merged };
+  } catch {
+    /* ignore */
+  }
+  return merged;
+}
+
+/** @param {Record<string, unknown>} data */
+function writeAll(data) {
+  Object.assign(memoryCache, data);
+  let persisted = false;
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    persisted = true;
+  } catch (err) {
+    console.warn('[week2Discovery] localStorage write failed', err);
+  }
+  try {
+    sessionStorage.setItem(SESSION_BACKUP_KEY, JSON.stringify(data));
+    persisted = true;
+  } catch {
+    /* ignore */
+  }
+  if (!persisted) {
+    console.warn('[week2Discovery] using in-memory cache only — enable cloud sync or free storage');
   }
 }
 
-function writeAll(data) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+function scheduleCloudSync(participantId, state) {
+  void import('./week2DiscoverySync.js')
+    .then((m) => m.syncWeek2DiscoveryToCloud(participantId, state))
+    .catch(() => {});
 }
 
 /** @param {string[] | null | undefined} answers */
@@ -39,6 +81,7 @@ export function defaultWeek2State() {
     squadAlignedAt: null,
     portfolioSyncedAt: null,
     exchangeReflectionAt: null,
+    exchangeReflectionText: '',
     professionalReadinessAt: null,
     readinessReflectionAt: null,
     synthesisReviewedAt: null,
@@ -94,6 +137,7 @@ export function loadWeek2Discovery(participantId) {
     }),
     fieldResearchPlan: stored.fieldResearchPlan ?? '',
     squadDiscussionNotes: stored.squadDiscussionNotes ?? '',
+    exchangeReflectionText: stored.exchangeReflectionText ?? '',
     readinessEvidenceNote: stored.readinessEvidenceNote ?? '',
     pitchOutline: { ...defaultWeek2State().pitchOutline, ...(stored.pitchOutline ?? {}) },
   };
@@ -102,8 +146,9 @@ export function loadWeek2Discovery(participantId) {
 /**
  * @param {string} participantId
  * @param {Partial<import('./week2DiscoveryTypes.js').Week2DiscoveryState>} patch
+ * @param {{ skipCloudSync?: boolean }} [opts]
  */
-export function saveWeek2Discovery(participantId, patch) {
+export function saveWeek2Discovery(participantId, patch, opts = {}) {
   const all = readAll();
   const current = loadWeek2Discovery(participantId);
   const next = {
@@ -112,7 +157,9 @@ export function saveWeek2Discovery(participantId, patch) {
     updatedAt: new Date().toISOString(),
   };
   all[participantId] = next;
+  memoryCache[participantId] = next;
   writeAll(all);
+  if (!opts.skipCloudSync) scheduleCloudSync(participantId, next);
   return next;
 }
 

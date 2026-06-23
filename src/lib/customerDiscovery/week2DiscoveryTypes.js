@@ -73,6 +73,7 @@
  * @property {string | null} squadAlignedAt
  * @property {string | null} portfolioSyncedAt
  * @property {string | null} exchangeReflectionAt
+ * @property {string} exchangeReflectionText
  * @property {string | null} professionalReadinessAt
  * @property {string | null} readinessReflectionAt
  * @property {string | null} synthesisReviewedAt
