@@ -3,6 +3,7 @@
  */
 import { ROUTES } from '../../routes/paths.js';
 import { loadWeek2Discovery, saveWeek2Discovery } from './week2DiscoveryStorage.js';
+import { isCoachWeek2StudioPreviewParticipantId } from './coachWeek2StudioPreview.js';
 import {
   getWeek2PhaseForDay,
   getWeek2TasksForDay,
@@ -83,6 +84,7 @@ function isDayPhaseComplete(participantId, day) {
 
 /** @param {string} participantId @param {number} day */
 export function isWeek2DayUnlocked(participantId, day) {
+  if (isCoachWeek2StudioPreviewParticipantId(participantId)) return day >= 1 && day <= 5;
   if (day <= 1) return true;
   for (let d = 1; d < day; d += 1) {
     if (!isDayPhaseComplete(participantId, d)) return false;

@@ -61,6 +61,7 @@ import {
   MentorVentureCoachPage,
   PlaybookShell,
   VentureStudioDay3Page,
+  Week2StudioPreviewPage,
   FecCanvasProjectionPage,
   VentureDesignWorkshopPage,
   PortfolioPage,
@@ -1439,6 +1440,16 @@ const SpikeMasterPortal = () => {
     </LazyRoute>
   );
 
+  const renderWeek2StudioPreview = (staffRole) => (
+    <LazyRoute label="Loading SPIKE Studio preview…">
+      <Week2StudioPreviewPage
+        backHref={staffRole === 'mentor' ? ROUTES.mentorHome : ROUTES.programCoachHome}
+        backLabel={staffRole === 'mentor' ? 'Back to mentor home' : 'Back to coach home'}
+        roleLabel={staffRole === 'mentor' ? 'Mentor' : 'Program Coach'}
+      />
+    </LazyRoute>
+  );
+
   const renderVentureDesignWorkshop = (pageUser, { viewerRole = 'intern', readOnly = false } = {}) => (
     <LazyRoute label="Loading Venture Design Studio…">
       <VentureDesignWorkshopPage
@@ -1573,6 +1584,13 @@ const SpikeMasterPortal = () => {
       if (path === ROUTES.playbookVentureStudio) {
         return renderVentureStudioDay3(internUser, { readOnly: false });
       }
+      if (path === ROUTES.playbookWeek2Studio) {
+        const previewRole = viewAsRole ?? (userRole === 'superuser' ? 'faculty' : userRole);
+        if (previewRole === 'intern') {
+          return <Navigate to={playbookWeek2MissionHref('mission', { day: 1 })} replace />;
+        }
+        return renderWeek2StudioPreview(previewRole === 'mentor' ? 'mentor' : 'faculty');
+      }
       if (path === ROUTES.playbook) return renderPlaybook();
     }
 
@@ -1640,6 +1658,9 @@ const SpikeMasterPortal = () => {
       if (path === ROUTES.playbookVentureStudio) {
         return renderVentureStudioDay3(internUser, { readOnly: false });
       }
+      if (path === ROUTES.playbookWeek2Studio) {
+        return <Navigate to={playbookWeek2MissionHref('mission', { day: 1 })} replace />;
+      }
       if (path === ROUTES.playbook) return renderPlaybook();
       if (path === ROUTES.portfolio && !isSuperuserSession) {
         return <Navigate to={ROUTES.myVenturePortfolio} replace />;
@@ -1674,6 +1695,12 @@ const SpikeMasterPortal = () => {
         return renderVentureStudioDay3(studioUser, {
           readOnly: effectiveUserRole !== 'intern',
         });
+      }
+      if (path === ROUTES.playbookWeek2Studio) {
+        if (effectiveUserRole === 'intern') {
+          return <Navigate to={playbookWeek2MissionHref('mission', { day: 1 })} replace />;
+        }
+        return renderWeek2StudioPreview(effectiveUserRole === 'mentor' ? 'mentor' : 'faculty');
       }
       if (path === ROUTES.playbook) return renderPlaybook();
       if (path === ROUTES.portfolio) return <PortfolioPage hours={internSummary.avgHours} interns={interns} />;

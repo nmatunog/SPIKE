@@ -4,6 +4,7 @@ export const ROUTES = {
   ventureBlueprint: '/venture-blueprint',
   playbook: '/playbook',
   playbookVentureStudio: '/playbook/venture-studio/day-3',
+  playbookWeek2Studio: '/playbook/week-2-studio',
   playbookFecProjection: '/playbook/venture-design/fec-projection',
   playbookVentureDesignWorkshop: '/playbook/venture-design/workshop',
   portfolio: '/portfolio',
@@ -56,6 +57,7 @@ export function isPlaybookPath(pathname) {
   return (
     pathname === ROUTES.playbook
     || pathname === ROUTES.playbookVentureStudio
+    || pathname === ROUTES.playbookWeek2Studio
     || pathname === ROUTES.playbookFecProjection
     || pathname === ROUTES.playbookVentureDesignWorkshop
   );
@@ -71,6 +73,18 @@ export function ventureDesignWorkshopHref({ coach = false, start = true } = {}) 
   if (start) params.set('start', '1');
   const q = params.toString();
   return q ? `${ROUTES.playbookVentureDesignWorkshop}?${q}` : ROUTES.playbookVentureDesignWorkshop;
+}
+
+/**
+ * Week 2 SPIKE Studio — staff preview sandbox.
+ * @param {{ day?: number, mission?: string }} [opts]
+ */
+export function playbookWeek2StudioHref(opts = {}) {
+  const params = new URLSearchParams();
+  if (opts.day) params.set('day', String(opts.day));
+  if (opts.mission) params.set('mission', opts.mission);
+  const q = params.toString();
+  return q ? `${ROUTES.playbookWeek2Studio}?${q}` : ROUTES.playbookWeek2Studio;
 }
 
 /** Blueprint sub-routes (PR4) — Business Plan, Milestones, Venture Board live inside the OS. */
@@ -568,6 +582,7 @@ export function rolesForRoute(pathname) {
     return ['admin', 'superuser', 'faculty'];
   }
   if (pathname === ROUTES.adminPortfolioSettings) return ['admin', 'superuser', 'faculty'];
+  if (pathname === ROUTES.playbookWeek2Studio) return ['faculty', 'mentor', 'admin', 'superuser'];
   if (pathname === ROUTES.adminProgramCoachPlaybook) return ['admin', 'superuser', 'faculty'];
   if (pathname === ROUTES.adminMentorPlaybook) return ['admin', 'superuser', 'mentor'];
   if (pathname === ROUTES.programCoachHome || pathname.startsWith(`${ROUTES.programCoachHome}/`)) {

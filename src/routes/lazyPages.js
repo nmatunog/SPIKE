@@ -14,6 +14,10 @@ export const VentureStudioDay3Page = lazyNamed(
   () => import('../pages/VentureStudioDay3Page.jsx'),
   'VentureStudioDay3Page',
 );
+export const Week2StudioPreviewPage = lazyNamed(
+  () => import('../pages/Week2StudioPreviewPage.jsx'),
+  'Week2StudioPreviewPage',
+);
 export const FecCanvasProjectionPage = lazyNamed(
   () => import('../pages/FecCanvasProjectionPage.jsx'),
   'FecCanvasProjectionPage',

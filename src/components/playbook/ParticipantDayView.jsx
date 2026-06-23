@@ -18,7 +18,8 @@ import {
 } from '../../lib/ventureDesignStudioService.js';
 import { Day4VentureDesignHero, WORKSHOP_HREF } from './ventureDesign/Day4VentureDesignHero.jsx';
 import { Week2ActivateHero } from './week2/Week2ActivateHero.jsx';
-import { BLUEPRINT_LINKS, playbookHref, ROUTES } from '../../routes/paths.js';
+import { Week2StudioLaunchCard } from './week2/Week2StudioLaunchCard.jsx';
+import { BLUEPRINT_LINKS, playbookHref, playbookWeek2StudioHref, ROUTES } from '../../routes/paths.js';
 import { UNLOCK_WEEK1_DAY2_PLUS } from '../../lib/programUnlocks.js';
 
 /**
@@ -69,6 +70,8 @@ export function ParticipantDayView({
   const isDay3 = bundle.day.id === 'day-segment-1-week-1-day-3';
   const isDay4 = bundle.day.id === 'day-segment-1-week-1-day-4';
   const isWeek2Day1 = bundle.day.id === 'day-segment-1-week-2-day-1';
+  const week2DayMatch = bundle.day.id.match(/day-segment-1-week-2-day-(\d+)/);
+  const week2Day = week2DayMatch ? Number(week2DayMatch[1]) : 0;
 
   return (
     <div className="space-y-6">
@@ -81,6 +84,10 @@ export function ParticipantDayView({
           variant={staffPreview ? 'mentor' : 'intern'}
           progressPercent={ventureDesignPercent}
         />
+      ) : null}
+
+      {staffPreview && week2Day > 0 ? (
+        <Week2StudioLaunchCard day={week2Day} mission="mission" />
       ) : null}
 
       {staffPreview ? (
@@ -281,6 +288,12 @@ export function ParticipantDayView({
           <div className="mt-3">
             <Link to={WORKSHOP_HREF} className="spike-btn-primary inline-flex">
               Preview Venture Design Studio
+            </Link>
+          </div>
+        ) : week2Day > 0 ? (
+          <div className="mt-3">
+            <Link to={playbookWeek2StudioHref({ day: week2Day, mission: 'mission' })} className="spike-btn-primary inline-flex">
+              Preview SPIKE Studio
             </Link>
           </div>
         ) : null}

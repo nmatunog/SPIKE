@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { playbookHref } from '../../../routes/paths.js';
+import { playbookHref, playbookWeek2StudioHref } from '../../../routes/paths.js';
 import { WEEK2_COACH_TIMELINE } from '../../../lib/customerDiscovery/week2JourneyConstants.js';
 
 /**
@@ -9,12 +9,20 @@ import { WEEK2_COACH_TIMELINE } from '../../../lib/customerDiscovery/week2Journe
 export function Week2CoachTimeline({ activeDay = 1, role = 'faculty' }) {
   return (
     <section className="space-y-4">
-      <header>
-        <p className="text-xs font-bold uppercase tracking-wider text-spike">Week 2 timeline</p>
-        <h2 className="text-xl font-bold text-slate-900">Activate — Customer Discovery to Validation</h2>
-        <p className="mt-1 text-sm text-slate-600">
-          Venture studio · Research lab · Professional development — one coherent week.
-        </p>
+      <header className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-wider text-spike">Week 2 timeline</p>
+          <h2 className="text-xl font-bold text-slate-900">Activate — Customer Discovery to Validation</h2>
+          <p className="mt-1 text-sm text-slate-600">
+            Venture studio · Research lab · Professional development — one coherent week.
+          </p>
+        </div>
+        <Link
+          to={playbookWeek2StudioHref({ day: activeDay, mission: 'mission' })}
+          className="spike-btn-secondary inline-flex min-h-[44px] items-center text-sm"
+        >
+          Preview SPIKE Studio
+        </Link>
       </header>
       <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
         {WEEK2_COACH_TIMELINE.map((card) => {

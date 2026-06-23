@@ -11,14 +11,17 @@ import {
   MessageSquarePlus,
   Trophy,
   Users,
+  FlaskConical,
 } from 'lucide-react';
 import { deriveStaffCoachHome } from '../../lib/staffCoachHomeService.js';
 import { SquadXpInline } from './SquadXpDashboard.jsx';
 import {
   ROUTES,
+  playbookWeek2StudioHref,
   staffSquadHubHref,
   staffSquadsListHref,
 } from '../../routes/paths.js';
+import { UNLOCK_WEEK2 } from '../../lib/programUnlocks.js';
 
 /**
  * @param {{
@@ -103,6 +106,15 @@ export function StaffCoachHomeDashboard({
               >
                 <Trophy size={18} />
                 Stage gate ceremony
+              </Link>
+            ) : null}
+            {UNLOCK_WEEK2 && model.week >= 2 ? (
+              <Link
+                to={playbookWeek2StudioHref({ day: model.day, mission: 'mission' })}
+                className="inline-flex min-h-[48px] items-center gap-2 rounded-xl border border-venture-activate/40 bg-venture-activate/15 px-6 py-3 text-sm font-semibold text-venture-activate transition hover:bg-venture-activate/25"
+              >
+                <FlaskConical size={18} />
+                Preview SPIKE Studio
               </Link>
             ) : null}
           </div>
@@ -256,6 +268,13 @@ export function StaffCoachHomeDashboard({
             <ul className="mt-3 space-y-1">
               <QuickAction to={squadsHref} icon={Users} label="View my squads" />
               <QuickAction to={model.playbookHref} icon={BookOpen} label={`Open Day ${model.day} playbook`} />
+              {UNLOCK_WEEK2 && model.week >= 2 ? (
+                <QuickAction
+                  to={playbookWeek2StudioHref({ day: model.day, mission: 'mission' })}
+                  icon={FlaskConical}
+                  label="Preview SPIKE Studio"
+                />
+              ) : null}
               <QuickAction to={ROUTES.portfolio} icon={Briefcase} label="Portfolio review" />
               <QuickAction
                 to={ROUTES.mentorVentureCoach}
