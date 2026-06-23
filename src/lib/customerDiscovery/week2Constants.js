@@ -5,7 +5,8 @@ export const WEEK2_COHORT_NAME = 'TYCOONS';
 export const MAX_INTERVIEW_QUESTIONS = 5;
 
 export const MIN_ENCODED_INTERVIEWS = 3;
-export const TARGET_ENCODED_INTERVIEWS = 5;
+export const TARGET_ENCODED_INTERVIEWS = 3;
+export const SQUAD_INTERVIEW_TARGET = 9;
 
 /** @type {Record<string, { marketSegment: string, mission: string, locations: string[], objectives: string[], interviewTarget: string, goal: string, success: string }>} */
 export const SQUAD_MISSIONS = {
@@ -15,7 +16,7 @@ export const SQUAD_MISSIONS = {
       'Understand the financial realities of young professionals beginning their careers. Explore budgeting, emergency funds, saving, career aspirations, and financial anxieties — never assume they need products.',
     interviewTarget: '5 Gen Z professionals',
     goal: 'Understand how they handle financial uncertainty.',
-    success: 'Complete 5 encoded interviews (minimum 3).',
+    success: 'Complete 3 encoded interviews (squad target: 9).',
     locations: [
       'Coffee shops',
       'Universities',
@@ -36,7 +37,7 @@ export const SQUAD_MISSIONS = {
       'Discover how young families make financial decisions — home ownership, cash flow, children\'s future, emergency planning, and life priorities.',
     interviewTarget: '5 young families',
     goal: 'Understand how families coordinate money and protection decisions.',
-    success: 'Complete 5 encoded interviews (minimum 3).',
+    success: 'Complete 3 encoded interviews (squad target: 9).',
     locations: [
       'Residential communities',
       'Parents groups',
@@ -57,7 +58,7 @@ export const SQUAD_MISSIONS = {
       'Understand families dependent on overseas income — remittances, protection, education, separation challenges, and long-term plans.',
     interviewTarget: '5 OFW-connected families',
     goal: 'Understand remittance flows and family financial security.',
-    success: 'Complete 5 encoded interviews (minimum 3).',
+    success: 'Complete 3 encoded interviews (squad target: 9).',
     locations: [
       'Families of OFWs',
       'OFW spouses',

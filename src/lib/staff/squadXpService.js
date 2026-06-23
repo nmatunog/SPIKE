@@ -4,6 +4,8 @@
  */
 import { getParticipantSquad } from '../cohortFormationService.js';
 import { loadWeek2Discovery } from '../customerDiscovery/week2DiscoveryStorage.js';
+import { isFecLabComplete } from '../customerDiscovery/week2FecValidationService.js';
+import { getSquadNameForParticipant } from '../customerDiscovery/week2SquadEvidenceService.js';
 import { deriveVentureMilestones } from '../myVentureHqService.js';
 import { isVentureDesignOutputComplete } from '../participantOutputMetrics.js';
 import { participantHasPitchDeckDeliverable } from '../portfolioDeliverableService.js';
@@ -60,6 +62,8 @@ function memberActivitySignals(participantId) {
   const missionDone = Boolean(w2.missionAcknowledged);
   const readinessDone = Boolean(w2.professionalReadinessAt);
   const pitchDone = Boolean(w2.pitchSubmittedAt);
+  const squadKey = getSquadNameForParticipant(participantId);
+  const fecDone = squadKey ? isFecLabComplete(squadKey) : false;
   const coachPct = getCoachProgress(participantId)?.percent ?? 0;
   const surveys = countSubmittedSurveys(participantId);
   const playbookActive = surveys > 0 || coachPct >= 20;
@@ -69,6 +73,7 @@ function memberActivitySignals(participantId) {
     && hasReflection
     && portfolioDone
     && readinessDone
+    && fecDone
     && pitchDone;
 
   return {
@@ -78,6 +83,7 @@ function memberActivitySignals(participantId) {
     assignmentDone,
     missionDone,
     readinessDone,
+    fecDone,
     pitchDone,
     playbookActive,
     stageGateMin,

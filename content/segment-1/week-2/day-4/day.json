@@ -3,23 +3,24 @@
   "segmentId": "segment-1",
   "weekId": "week-segment-1-2",
   "dayNumber": 4,
-  "title": "Day 9 — Research Consolidation",
+  "title": "Day 9 — FEC Validation Lab™",
   "theme": "Synthesize",
   "durationHours": 4,
   "learningObjectives": [
-    "Finish remaining interview encoding",
-    "Review AI-extracted insights",
-    "Build Squad Intelligence Board",
-    "Begin Market Validation Pitch outline"
+    "Transform 9 squad interviews into FEC validation",
+    "Complete 6-step FEC Validation Lab (boxes 1–5)",
+    "Approve AI-generated venture clarity statements",
+    "Build Market Validation Pitch draft automatically"
   ],
   "expectedOutputs": [
-    "Squad Intelligence Board",
-    "Pitch outline started"
+    "Validated FEC boxes 1–5",
+    "UVP Version 2",
+    "AI pitch structure"
   ],
   "portfolioDeliverables": ["portfolio-market-intelligence"],
   "businessPlanIntegration": "bp-chapter-2",
   "presentations": ["presentation-w2-d4-deck-01"],
-  "activities": ["activity-w2-d4-synthesis", "activity-w2-d4-pitch"],
+  "activities": ["activity-w2-d4-fec-lab"],
   "worksheets": [],
   "assessments": ["assessment-w2-d4"]
 }

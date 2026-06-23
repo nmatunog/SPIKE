@@ -4,6 +4,8 @@
 import { loadWeek2Discovery } from './week2DiscoveryStorage.js';
 import { week2OverallProgressPct } from './week2MissionService.js';
 import { MIN_ENCODED_INTERVIEWS } from './week2Constants.js';
+import { isFecLabComplete } from './week2FecValidationService.js';
+import { getSquadNameForParticipant } from './week2SquadEvidenceService.js';
 
 /** @param {string} participantId */
 export function deriveMemberWeek2Signals(participantId) {
@@ -34,9 +36,10 @@ export function deriveSquadWeek2Progress(memberIds) {
       interviewsMet: false,
       portfolioComplete: false,
       readinessComplete: false,
-      pitchReady: false,
-      pitchSubmitted: false,
-      stageGateReady: false,
+    pitchReady: false,
+    pitchSubmitted: false,
+    fecComplete: false,
+    stageGateReady: false,
       weekProgressPct: 0,
     };
   }
@@ -53,9 +56,10 @@ export function deriveSquadWeek2Progress(memberIds) {
     readinessComplete: all((s) => s.readinessComplete),
     pitchReady: all((s) => s.pitchStarted),
     pitchSubmitted: all((s) => s.pitchSubmitted),
-    stageGateReady: all(
-      (s) => s.interviewsMet && s.portfolioComplete && s.readinessComplete && s.pitchSubmitted,
-    ),
+    fecComplete: isFecLabComplete(getSquadNameForParticipant(memberIds[0] ?? '')),
+    stageGateReady:
+      isFecLabComplete(getSquadNameForParticipant(memberIds[0] ?? ''))
+      && all((s) => s.interviewsMet && s.portfolioComplete && s.readinessComplete && s.pitchSubmitted),
     weekProgressPct: Math.round(
       signals.reduce((sum, s) => sum + s.weekProgressPct, 0) / signals.length,
     ),

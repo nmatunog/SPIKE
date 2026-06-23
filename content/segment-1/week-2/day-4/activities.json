@@ -1,31 +1,11 @@
-{
-  "activities": [
-    {
-      "id": "activity-w2-d4-synthesis",
-      "dayId": "day-segment-1-week-2-day-4",
-      "title": "Research Consolidation & AI Insight Review",
-      "durationMinutes": 120,
-      "materials": ["SPIKE Studio Squad Intelligence Board"],
-      "instructions": [
-        "Finish remaining interview encoding",
-        "Review AI-extracted goals, pain points, quotes",
-        "Collaborate on squad discussion notes"
-      ],
-      "outputs": ["Squad Intelligence Board"],
-      "debriefQuestions": []
-    },
-    {
-      "id": "activity-w2-d4-pitch",
-      "dayId": "day-segment-1-week-2-day-4",
-      "title": "Pitch Builder — Begin Week 2 Pitch",
-      "durationMinutes": 90,
-      "materials": ["SPIKE Studio Pitch Builder"],
-      "instructions": [
-        "Draft slides 1–4 minimum",
-        "Prepare evidence-based narrative for Friday"
-      ],
-      "outputs": ["Pitch outline"],
-      "debriefQuestions": []
-    }
-  ]
-}
+[
+  {
+    "id": "activity-w2-d4-fec-lab",
+    "dayId": "day-segment-1-week-2-day-4",
+    "title": "FEC Validation Lab™",
+    "description": "Six progressive steps: Customer Reality → Problem → UVP Stress Test → Client Experience → Strategic Opportunity → Build Pitch. SPIKE AI generates; participants review, refine, approve. Updates FEC boxes 1–5 and portfolio automatically.",
+    "durationMinutes": 240,
+    "type": "studio",
+    "deliverable": "Validated FEC + pitch draft"
+  }
+]

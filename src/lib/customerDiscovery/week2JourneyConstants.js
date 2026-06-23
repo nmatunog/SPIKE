@@ -51,7 +51,7 @@ export const WEEK2_JOURNEY_PHASES = [
     programDay: 9,
     label: 'Synthesize',
     shortLabel: 'Synthesize',
-    theme: 'Research Consolidation',
+    theme: 'FEC Validation Lab™',
     coachStatus: 'Synthesize',
   },
   {
@@ -89,8 +89,6 @@ export const WEEK2_DAY_TASKS = {
     { id: 'interview-1', slug: 'interview-1', label: 'Interview 1', shortLabel: 'Int. 1', estMin: 15, day: 2 },
     { id: 'interview-2', slug: 'interview-2', label: 'Interview 2', shortLabel: 'Int. 2', estMin: 15, day: 2 },
     { id: 'interview-3', slug: 'interview-3', label: 'Interview 3', shortLabel: 'Int. 3', estMin: 15, day: 2 },
-    { id: 'interview-4', slug: 'interview-4', label: 'Interview 4', shortLabel: 'Int. 4', estMin: 15, day: 2, optional: true },
-    { id: 'interview-5', slug: 'interview-5', label: 'Interview 5', shortLabel: 'Int. 5', estMin: 15, day: 2, optional: true },
     { id: 'exchange', slug: 'exchange', label: 'Midweek intelligence reflection', shortLabel: 'Exchange', estMin: 10, day: 2 },
   ],
   3: [
@@ -98,12 +96,16 @@ export const WEEK2_DAY_TASKS = {
     { id: 'readiness-reflect', slug: 'readiness-reflect', label: 'Professional Readiness reflection', shortLabel: 'Reflect', estMin: 10, day: 3 },
   ],
   4: [
-    { id: 'synthesis', slug: 'synthesis', label: 'AI insight review', shortLabel: 'Insights', estMin: 15, day: 4 },
-    { id: 'intelligence-board', slug: 'intelligence-board', label: 'Squad Intelligence Board', shortLabel: 'Board', estMin: 20, day: 4 },
-    { id: 'pitch-start', slug: 'pitch-start', label: 'Begin Week 2 pitch', shortLabel: 'Pitch', estMin: 25, day: 4 },
+    { id: 'fec-lab', slug: 'fec-lab', label: 'FEC Validation Lab™', shortLabel: 'Lab', estMin: 10, day: 4, optional: true },
+    { id: 'fec-step-1', slug: 'fec-step-1', label: 'Customer Reality Check', shortLabel: 'Reality', estMin: 20, day: 4 },
+    { id: 'fec-step-2', slug: 'fec-step-2', label: 'Problem Validation', shortLabel: 'Problem', estMin: 20, day: 4 },
+    { id: 'fec-step-3', slug: 'fec-step-3', label: 'UVP Stress Test', shortLabel: 'UVP', estMin: 20, day: 4 },
+    { id: 'fec-step-4', slug: 'fec-step-4', label: 'Client Experience', shortLabel: 'Experience', estMin: 15, day: 4 },
+    { id: 'fec-step-5', slug: 'fec-step-5', label: 'Strategic Opportunity', shortLabel: 'Strategy', estMin: 15, day: 4 },
+    { id: 'fec-step-6', slug: 'fec-step-6', label: 'Build the Pitch', shortLabel: 'Pitch', estMin: 25, day: 4 },
   ],
   5: [
-    { id: 'validation-pitch', slug: 'validation-pitch', label: 'Market Validation Pitch', shortLabel: 'Validate', estMin: 30, day: 5 },
+    { id: 'market-validation-pitch', slug: 'market-validation-pitch', label: 'Market Validation Pitch', shortLabel: 'Validate', estMin: 30, day: 5 },
   ],
 };
 
@@ -171,14 +173,14 @@ export const WEEK2_COACH_TIMELINE = [
     weekday: 'Thursday',
     status: 'Synthesize',
     objectives: [
-      'Finish remaining interview encoding',
-      'Review AI-extracted insights',
-      'Squad synthesis and pitch builder start',
+      'FEC Validation Lab™ — from interviews to venture clarity',
+      'Progressive validation of FEC boxes 1–5',
+      'AI-generated pitch draft from evidence',
     ],
-    slides: ['Squad Intelligence Board', 'Pitch structure preview'],
-    activities: ['Interview encoding', 'Squad Intelligence Board', 'Collaborative discussion notes'],
-    deliverables: ['Squad Intelligence Board', 'Pitch outline started'],
-    outcomes: ['Consolidated goals, challenges, quotes, opportunities'],
+    slides: ['FEC Validation Lab™', 'Customer Reality → Strategic Opportunity', 'Build the Pitch'],
+    activities: ['FEC Validation Lab (6 steps)', 'Interactive FEC confidence scores', 'Squad role assignments'],
+    deliverables: ['Validated FEC boxes 1–5', 'AI pitch structure', 'Portfolio auto-sync'],
+    outcomes: ['UVP Version 2', 'Evidence-backed venture model', 'Pitch ready for Friday'],
   },
   {
     day: 5,
@@ -186,14 +188,14 @@ export const WEEK2_COACH_TIMELINE = [
     weekday: 'Friday',
     status: 'Market Validation Pitch',
     objectives: [
-      'Present evidence — not ideas (5 min per squad)',
-      'Week 2 Stage Gate — Market Validation',
-      'Squad XP + mentor review',
+      'Present evidence — What The Market Taught Us (5 min per squad)',
+      'Stage Gate — Ready For Build decision',
+      'Squad XP + mentor review (4 dimensions)',
     ],
-    slides: ['10-slide pitch structure', 'Stage Gate II ceremony'],
-    activities: ['Squad pitch', 'Audience Q&A', 'Stage gate decision'],
-    deliverables: ['Market Validation Pitch deck', 'Stage Gate evidence packet'],
-    outcomes: ['Squad validated for Week 3 Build stage'],
+    slides: ['10-slide presentation mode', 'Stage Gate II ceremony'],
+    activities: ['Market Validation Pitch', 'Coach squad evaluation', 'Unlock BUILD stage'],
+    deliverables: ['Market Validation Evidence portfolio', 'Stage Gate result'],
+    outcomes: ['Squad validated for Week 3 Build', '27 interviews → one venture story'],
   },
 ];
 

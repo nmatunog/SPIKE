@@ -7,12 +7,13 @@
   "theme": "Validate",
   "durationHours": 4,
   "learningObjectives": [
-    "Present 5-minute evidence-based squad pitch",
-    "Complete Week 2 Stage Gate II",
-    "Earn Squad XP and mentor review"
+    "Present What The Market Taught Us (5 min per squad)",
+    "Complete Stage Gate — Ready For Build",
+    "Squad XP + mentor review (4 dimensions)"
   ],
   "expectedOutputs": [
     "Market Validation Pitch",
+    "Market Validation Evidence portfolio",
     "Stage Gate II decision"
   ],
   "portfolioDeliverables": ["portfolio-market-intelligence"],

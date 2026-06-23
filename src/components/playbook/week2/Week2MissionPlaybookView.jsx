@@ -13,13 +13,9 @@ import { SquadAlignmentTask } from '../../customerDiscovery/SquadAlignmentTask.j
 import { InterviewEncodeTask } from '../../customerDiscovery/InterviewEncodeTask.jsx';
 import { ExchangeReflectionTask } from '../../customerDiscovery/ExchangeReflectionTask.jsx';
 import { ProfessionalReadinessTask } from '../../customerDiscovery/ProfessionalReadinessTask.jsx';
-import { SquadIntelligenceBoard } from '../../customerDiscovery/SquadIntelligenceBoard.jsx';
-import { PitchBuilderTask } from '../../customerDiscovery/PitchBuilderTask.jsx';
-import {
-  deriveWeek2MissionTrack,
-  getActiveWeek2Task,
-  week2OverallProgressPct,
-} from '../../../lib/customerDiscovery/week2MissionService.js';
+import { FecValidationLab } from '../../customerDiscovery/fecValidation/FecValidationLab.jsx';
+import { MarketValidationPitchView } from '../../customerDiscovery/fecValidation/MarketValidationPitchView.jsx';
+import { playbookWeek2MissionHref, deriveWeek2MissionTrack, getActiveWeek2Task, week2OverallProgressPct } from '../../../lib/customerDiscovery/week2MissionService.js';
 import { getWeek2PhaseForDay } from '../../../lib/customerDiscovery/week2JourneyConstants.js';
 
 /**
@@ -32,6 +28,7 @@ import { getWeek2PhaseForDay } from '../../../lib/customerDiscovery/week2Journey
  *   calendarDay?: number,
  *   onOpenCurriculum?: () => void,
  *   onProgress?: () => void,
+ *   onMissionNavigate?: (slug: string) => void,
  * }} props
  */
 export function Week2MissionPlaybookView({
@@ -42,6 +39,7 @@ export function Week2MissionPlaybookView({
   calendarDay = 5,
   onOpenCurriculum,
   onProgress,
+  onMissionNavigate,
 }) {
   const [, setTick] = useState(0);
   const refresh = () => {
@@ -59,6 +57,13 @@ export function Week2MissionPlaybookView({
 
   const progressPct = week2OverallProgressPct(participantId);
   const phase = getWeek2PhaseForDay(day);
+
+  function goToMission(slug) {
+    if (onMissionNavigate) onMissionNavigate(slug);
+    else if (typeof window !== 'undefined') {
+      window.location.assign(playbookWeek2MissionHref(slug, { day }));
+    }
+  }
 
   function renderTask() {
     if (slug.startsWith('interview-')) {
@@ -80,14 +85,25 @@ export function Week2MissionPlaybookView({
         return <ProfessionalReadinessTask participantId={participantId} onSaved={refresh} mode="mission" />;
       case 'readiness-reflect':
         return <ProfessionalReadinessTask participantId={participantId} onSaved={refresh} mode="reflect" />;
-      case 'synthesis':
-        return <SquadIntelligenceBoard participantId={participantId} onSaved={refresh} mode="synthesis" />;
-      case 'intelligence-board':
-        return <SquadIntelligenceBoard participantId={participantId} onSaved={refresh} mode="board" />;
-      case 'pitch-start':
-        return <PitchBuilderTask participantId={participantId} onSaved={refresh} variant="start" />;
+      case 'fec-lab':
+      case 'fec-step-1':
+      case 'fec-step-2':
+      case 'fec-step-3':
+      case 'fec-step-4':
+      case 'fec-step-5':
+      case 'fec-step-6':
+        return (
+          <FecValidationLab
+            participantId={participantId}
+            squadName={squadName}
+            stepSlug={slug}
+            onSaved={refresh}
+            onNavigate={(nextSlug) => goToMission(nextSlug)}
+          />
+        );
+      case 'market-validation-pitch':
       case 'validation-pitch':
-        return <PitchBuilderTask participantId={participantId} onSaved={refresh} variant="pitch" />;
+        return <MarketValidationPitchView participantId={participantId} onSaved={refresh} />;
       case 'mission':
       default:
         return (

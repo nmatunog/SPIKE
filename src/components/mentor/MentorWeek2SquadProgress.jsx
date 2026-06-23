@@ -77,6 +77,7 @@ export function MentorWeek2SquadProgress({ interns }) {
                 />
                 <ProgressRow label="Portfolio synced" done={progress.portfolioComplete} />
                 <ProgressRow label="Professional readiness" done={progress.readinessComplete} />
+                <ProgressRow label="FEC Validation Lab" done={progress.fecComplete} />
                 <ProgressRow label="Pitch started" done={progress.pitchReady} />
                 <ProgressRow label="Pitch submitted" done={progress.pitchSubmitted} />
               </ul>

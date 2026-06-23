@@ -10,6 +10,9 @@ import {
   WEEK2_JOURNEY_PHASES,
 } from './week2JourneyConstants.js';
 import { MIN_ENCODED_INTERVIEWS } from './week2Constants.js';
+import { isFecStepCompleteForParticipant } from './week2FecValidationService.js';
+import { loadFecValidation } from './week2FecValidationStorage.js';
+import { getSquadNameForParticipant } from './week2SquadEvidenceService.js';
 
 const BASE = `${ROUTES.ventureBlueprint}/customer-discovery`;
 
@@ -47,14 +50,24 @@ function isTaskComplete(participantId, taskId) {
       return Boolean(state.professionalReadinessAt);
     case 'readiness-reflect':
       return Boolean(state.readinessReflectionAt);
-    case 'synthesis':
-      return Boolean(state.synthesisReviewedAt);
-    case 'intelligence-board':
-      return Boolean(state.intelligenceBoardAt);
-    case 'pitch-start':
-      return Boolean(state.pitchStartedAt);
+    case 'fec-lab':
+      return isFecStepCompleteForParticipant(participantId, 'fec-step-1');
+    case 'fec-step-1':
+    case 'fec-step-2':
+    case 'fec-step-3':
+    case 'fec-step-4':
+    case 'fec-step-5':
+    case 'fec-step-6':
+      return isFecStepCompleteForParticipant(participantId, taskId);
+    case 'market-validation-pitch':
     case 'validation-pitch':
-      return Boolean(state.pitchSubmittedAt);
+      return Boolean(state.pitchSubmittedAt)
+        || Boolean(loadFecValidation(getSquadNameForParticipant(participantId)).pitchSubmittedAt);
+    case 'synthesis':
+    case 'intelligence-board':
+    case 'pitch-start':
+      return isFecStepCompleteForParticipant(participantId, 'fec-step-6')
+        || Boolean(state.pitchSubmittedAt);
     default:
       return false;
   }

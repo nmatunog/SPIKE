@@ -268,6 +268,11 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
         calendarDay={playbookDayNumber}
         onOpenCurriculum={openCurriculumView}
         onProgress={() => setRefreshKey((k) => k + 1)}
+        onMissionNavigate={(slug) => {
+          const next = new URLSearchParams(searchParams);
+          next.set('mission', slug);
+          setSearchParams(next);
+        }}
       />
     );
   } else if (bundle) {

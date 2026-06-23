@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { Check } from 'lucide-react';
 import { getWeek2State, saveEncodedInterview } from '../../lib/customerDiscovery/week2DiscoveryService.js';
-import { MIN_ENCODED_INTERVIEWS, TARGET_ENCODED_INTERVIEWS } from '../../lib/customerDiscovery/week2Constants.js';
+import { MIN_ENCODED_INTERVIEWS, TARGET_ENCODED_INTERVIEWS, SQUAD_INTERVIEW_TARGET } from '../../lib/customerDiscovery/week2Constants.js';
+import { squadEvidenceSummary } from '../../lib/customerDiscovery/week2SquadEvidenceService.js';
 
 /**
  * Discover mode — encode one field interview.
@@ -24,10 +25,7 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
   const [reflection, setReflection] = useState(existing.reflection ?? '');
   const [insights, setInsights] = useState(existing.aiInsights ?? null);
 
-  const encodedTotal = useMemo(
-    () => (state.interviews ?? []).filter((i) => i.encoded).length,
-    [state.interviews],
-  );
+  const squadEvidence = useMemo(() => squadEvidenceSummary(participantId), [participantId, state.interviews]);
 
   function persist(patch) {
     const next = saveEncodedInterview(participantId, interviewIndex, {
@@ -47,7 +45,7 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
         <p className="spike-label">Discover mode</p>
         <h2 className="text-xl font-bold text-slate-900">Interview {interviewIndex + 1}</h2>
         <p className="text-sm text-slate-600">
-          Minimum {MIN_ENCODED_INTERVIEWS} · Recommended {TARGET_ENCODED_INTERVIEWS} · Squad total: {encodedTotal}
+          Minimum {MIN_ENCODED_INTERVIEWS} per member · Squad target {SQUAD_INTERVIEW_TARGET} · Your squad: {squadEvidence.interviewCount}
         </p>
       </section>
 

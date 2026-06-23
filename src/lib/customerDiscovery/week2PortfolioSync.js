@@ -9,6 +9,9 @@ import { resolveSquadMission, WEEK2_COHORT_NAME } from './week2Constants.js';
 import { getCoachSummaryForMentor } from '../ventureCoachService.js';
 import { getParticipantSquad } from '../cohortFormationService.js';
 import { aggregateSquadIntelligence } from './week2InsightSynthesis.js';
+import { squadEvidenceSummary } from './week2SquadEvidenceService.js';
+import { loadFecValidation } from './week2FecValidationStorage.js';
+import { isFecLabComplete } from './week2FecValidationService.js';
 
 /** @param {string} participantId */
 function squadNameFor(participantId) {
@@ -186,20 +189,23 @@ export function syncWeek2PortfolioArtifacts(participantId, squadName = '') {
   }
 
   if (state.pitchStartedAt) {
+    const squadKey = squadName || squadNameFor(participantId);
+    const fec = loadFecValidation(squadKey);
+    const slides = fec.pitchSlides ?? {};
     const p = state.pitchOutline ?? {};
     const pitchBody = [
       '# Market Validation Pitch',
       '',
-      `## Our Mission\n${p.mission}`,
-      `## Who We Interviewed\n${p.whoInterviewed}`,
-      `## What We Thought\n${p.whatWeThought}`,
-      `## What We Learned\n${p.whatWeLearned}`,
-      `## Customer Voices\n${p.customerVoices}`,
-      `## The Biggest Problem\n${p.biggestProblem}`,
-      `## Belief Shift\n${p.beliefShift}`,
-      `## How Our Venture Changed\n${p.ventureChanged}`,
-      `## Next Steps\n${p.nextSteps}`,
-      `## One Insight Every Advisor Should Know\n${p.advisorInsight}`,
+      `## Mission\n${slides.mission || p.mission}`,
+      `## Who We Interviewed\n${slides.whoInterviewed || p.whoInterviewed}`,
+      `## What We Thought\n${slides.whatWeThought || p.whatWeThought}`,
+      `## What We Heard\n${slides.whatWeHeard || p.whatWeLearned}`,
+      `## Customer Voices\n${slides.customerVoices || p.customerVoices}`,
+      `## Validated Problem\n${slides.validatedProblem || p.biggestProblem}`,
+      `## UVP Before\n${slides.uvpBefore || ''}`,
+      `## UVP After\n${slides.uvpAfter || ''}`,
+      `## Strategic Opportunity\n${slides.strategicOpportunity || p.ventureChanged}`,
+      `## Next Step\n${slides.nextStep || p.nextSteps}`,
     ].join('\n\n');
     createPortfolioArtifactDraft({
       participantId,
@@ -211,6 +217,48 @@ export function syncWeek2PortfolioArtifacts(participantId, squadName = '') {
     });
     setSectionField(participantId, 'market-intelligence', 'validation_pitch', pitchBody, {
       sourceType: 'week2-discovery',
+    });
+  }
+
+  const squadKey = squadName || squadNameFor(participantId);
+  if (isFecLabComplete(squadKey)) {
+    const fec = loadFecValidation(squadKey);
+    const evidence = squadEvidenceSummary(participantId);
+    const marketEvidenceBody = [
+      '# Week 2 — Market Validation Evidence',
+      '',
+      `**Squad:** ${evidence.squadName}`,
+      `**Interviews:** ${evidence.interviewCount}`,
+      '',
+      '## Customer Segment Summary',
+      fec.steps['fec-step-1']?.approvedStatement ?? '',
+      '',
+      '## Validated Problem',
+      fec.steps['fec-step-2']?.approvedStatement ?? '',
+      '',
+      '## UVP Evolution',
+      `Before: ${fec.steps['fec-step-3']?.beforeText ?? ''}`,
+      `After: ${fec.steps['fec-step-3']?.afterText ?? fec.steps['fec-step-3']?.approvedStatement ?? ''}`,
+      '',
+      '## Client Experience',
+      fec.steps['fec-step-4']?.approvedStatement ?? '',
+      '',
+      '## Strategic Opportunity',
+      fec.steps['fec-step-5']?.approvedStatement ?? '',
+      '',
+      '## FEC Confidence Scores',
+      ...Object.entries(fec.boxScores ?? {}).map(([k, v]) => `- ${k}: ${v.before}% → ${v.after}% (${v.status})`),
+    ].join('\n');
+    createPortfolioArtifactDraft({
+      participantId,
+      sectionId: 'portfolio-market-intelligence',
+      title: 'Market Validation Evidence',
+      content: marketEvidenceBody,
+      sourceType: 'week2-fec-validation',
+      sourceId: 'market-evidence',
+    });
+    setSectionField(participantId, 'market-intelligence', 'market_validation_evidence', marketEvidenceBody, {
+      sourceType: 'week2-fec-validation',
     });
   }
 
