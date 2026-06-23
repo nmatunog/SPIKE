@@ -11,6 +11,8 @@ import { StageGateReadyCard } from '../../components/stageGate/StageGateReadyCar
 import { ROUTES, staffStageGateHref } from '../../routes/paths.js';
 import { DailyActivationCodeCard } from '../../components/dashboard/DailyActivationCodeCard.jsx';
 import { MentorWeek2ScoringSection } from '../../components/mentor/MentorWeek2ScoringSection.jsx';
+import { MentorWeek2SquadProgress } from '../../components/mentor/MentorWeek2SquadProgress.jsx';
+import { Week2CoachTimeline } from '../../components/playbook/week2/Week2CoachTimeline.jsx';
 import { UNLOCK_WEEK2 } from '../../lib/programUnlocks.js';
 
 /**
@@ -39,6 +41,14 @@ export function MentorHomePage({ user, interns, showToast }) {
         homeHref={ROUTES.mentorHome}
         cohortStartDate={cohortStartDate}
       />
+
+      {showWeek2Scoring ? (
+        <div className="mt-10">
+          <Week2CoachTimeline activeDay={programDay.day} role="mentor" />
+        </div>
+      ) : null}
+
+      {showWeek2Scoring ? <MentorWeek2SquadProgress interns={interns} /> : null}
 
       {showWeek2Scoring && user?.id ? (
         <MentorWeek2ScoringSection
