@@ -2,17 +2,17 @@
   "assessment": {
     "id": "assessment-w2-d3",
     "dayId": "day-segment-1-week-2-day-3",
-    "title": "Survey quality rubric",
-    "description": "Faculty delivery checklist — squad progress tracked via Squad XP.",
+    "title": "Professional Readiness — Squad Assessment",
+    "description": "Squad-first assessment via AIA Pre-Contract completion and reflection.",
     "rubricId": "rubric-assessment-w2-d3"
   },
   "rubric": {
     "id": "rubric-assessment-w2-d3",
     "assessmentId": "assessment-w2-d3",
-    "title": "Delivery checklist",
+    "title": "Professional Readiness checklist",
     "criteria": [
-      "Final survey instrument",
-      "Field execution plan"
+      "Professional Readiness completion evidence",
+      "Professional Readiness reflection"
     ]
   }
 }

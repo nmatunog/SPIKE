@@ -1,33 +1,52 @@
 {
   "dayId": "day-segment-1-week-2-day-2",
-  "theme": "Listening",
-  "title": "Mentor Guide — Day 7 — Financial Needs Analysis & Advisory Dyads",
-  "coachingObjective": "Develop patient discovery habits.",
+  "theme": "Discover",
+  "title": "Mentor Guide — Day 7 — Field Research & Market Exchange",
+  "coachingObjective": "Coach field interview discipline and squad evidence sharing at the Market Intelligence Exchange.",
   "timing": {
-    "preSession": "Review facilitator guide and deck speaker notes",
-    "duringSession": "Circulate during squad activities",
+    "preSession": "Check squad interview count in mentor dashboard",
+    "duringSession": "Roam during field research AM; attend exchange PM",
     "postSession": "Complete squad weekly review snapshot"
   },
   "discussionQuestions": [
-    "Who listened vs who lectured?",
-    "What needs appeared across multiple squads?",
-    "Are participants ready to design surveys?"
+    "What surprised your squad most from the field?",
+    "Which assumption changed after today's interviews?",
+    "What customer quote will stick with the squad?"
   ],
   "observationAreas": [
-    "Active listening",
-    "Note quality",
-    "Empathy cues"
+    "Interview encoding quality in Discover mode",
+    "No-pitch discipline in field conversations",
+    "Squad participation in Market Intelligence Exchange",
+    "Midweek reflection completion"
   ],
   "coachingTips": [
-    "Celebrate clarifying questions",
-    "Flag advisors who fill silence with jargon"
+    "Push for minimum 3 encoded interviews before exchange",
+    "Celebrate resilience after rejection in the field",
+    "Reinforce squad-shared evidence — not individual competition"
   ],
-  "warningSigns": [],
-  "reflectionPrompts": [],
+  "warningSigns": [
+    "Squad members interviewing friends only",
+    "Product recommendations during discovery conversations"
+  ],
+  "reflectionPrompts": [
+    "What pattern are you beginning to notice?"
+  ],
   "expectedOutcomes": [
-    "FNA dyad notes",
-    "Squad needs theme summary"
+    "Encoded field interviews",
+    "Midweek Intelligence Reflection"
   ],
-  "activityCoachingNotes": [],
-  "debriefWithFaculty": []
+  "activityCoachingNotes": [
+    {
+      "activityId": "activity-w2-d2-field",
+      "notes": "3 interviews per member · 9 per squad target."
+    },
+    {
+      "activityId": "activity-w2-d2-exchange",
+      "notes": "7 min per squad · no PowerPoint required."
+    }
+  ],
+  "debriefWithFaculty": [
+    "Squads behind on interview count",
+    "Strong quotes worth sharing cohort-wide"
+  ]
 }

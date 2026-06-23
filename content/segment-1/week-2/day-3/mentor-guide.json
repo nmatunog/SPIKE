@@ -1,32 +1,47 @@
 {
   "dayId": "day-segment-1-week-2-day-3",
-  "theme": "Rigor",
-  "title": "Mentor Guide — Day 8 — Needs Analysis Survey Design",
-  "coachingObjective": "Instill evidence standards.",
+  "theme": "Learn",
+  "title": "Mentor Guide — Day 8 — Professional Readiness",
+  "coachingObjective": "Support squads through AIA Pre-Contract Training and professional readiness reflection — never frame as licensing.",
   "timing": {
-    "preSession": "Review facilitator guide and deck speaker notes",
-    "duringSession": "Circulate during squad activities",
+    "preSession": "Confirm squad Professional Readiness status in mentor dashboard",
+    "duringSession": "Monitor course progress; offer mentor verification where needed",
     "postSession": "Complete squad weekly review snapshot"
   },
   "discussionQuestions": [
-    "Which questions survived pilot intact?",
-    "Where is sample bias risk?",
-    "Is field plan realistic for tomorrow?"
+    "How does professional readiness connect to the discovery work from Monday and Tuesday?",
+    "What stood out from the Pre-Contract course?",
+    "Is the squad on track for Thursday FEC Validation Lab?"
   ],
   "observationAreas": [
-    "Question quality",
-    "Ethics awareness",
-    "Squad collaboration"
+    "Course completion evidence",
+    "Professional Readiness reflection quality",
+    "Squad accountability for Friday deadline"
   ],
   "coachingTips": [
-    "Push squads to define what answer would change their venture thesis"
+    "Use Professional Readiness language — not licensing",
+    "Verify completion for squad members who cannot upload evidence",
+    "Connect privilege → responsibility → preparation in debrief"
   ],
-  "warningSigns": [],
-  "reflectionPrompts": [],
+  "warningSigns": [
+    "Participants skipping reflection after course completion",
+    "Squad members falling behind before Thursday"
+  ],
+  "reflectionPrompts": [
+    "What did you learn that will make you a better financial professional?"
+  ],
   "expectedOutcomes": [
-    "Final survey instrument",
-    "Field execution plan"
+    "Professional Readiness completion evidence",
+    "Professional Readiness reflection"
   ],
-  "activityCoachingNotes": [],
-  "debriefWithFaculty": []
+  "activityCoachingNotes": [
+    {
+      "activityId": "activity-w2-d3-readiness",
+      "notes": "~4 hour AIA Pre-Contract Training — complete before Friday."
+    }
+  ],
+  "debriefWithFaculty": [
+    "Squads not yet started on readiness course",
+    "Members needing mentor verification"
+  ]
 }

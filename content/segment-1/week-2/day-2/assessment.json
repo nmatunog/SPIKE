@@ -2,17 +2,18 @@
   "assessment": {
     "id": "assessment-w2-d2",
     "dayId": "day-segment-1-week-2-day-2",
-    "title": "FNA listening rubric",
-    "description": "Faculty delivery checklist — squad progress tracked via Squad XP.",
+    "title": "Field Research & Market Exchange — Squad Assessment",
+    "description": "Squad-first assessment via SPIKE Studio interview encoding and exchange reflection.",
     "rubricId": "rubric-assessment-w2-d2"
   },
   "rubric": {
     "id": "rubric-assessment-w2-d2",
     "assessmentId": "assessment-w2-d2",
-    "title": "Delivery checklist",
+    "title": "Discover day checklist",
     "criteria": [
-      "FNA dyad notes",
-      "Squad needs theme summary"
+      "Encoded field interviews (min 3 per member)",
+      "Midweek Intelligence Reflection",
+      "Market Intelligence Exchange participation"
     ]
   }
 }

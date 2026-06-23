@@ -1,60 +1,48 @@
 {
   "dayId": "day-segment-1-week-2-day-3",
-  "title": "Facilitator Guide — Day 8 — Needs Analysis Survey Design",
+  "title": "Facilitator Guide — Day 8 — Professional Readiness",
   "durationHours": 4,
   "prepChecklist": [
-    "Print survey templates",
-    "Confirm field locations and permissions",
-    "Safety briefing with admin"
+    "Do NOT call this licensing — use Professional Readiness language",
+    "Confirm AIA Pre-Contract Training Course access for all participants",
+    "Prepare transition deck: discovery → professional responsibility",
+    "Estimated course time: 4 hours — complete before Friday"
   ],
   "sessionFlow": [
     {
-      "time": "0:00–0:25",
-      "activity": "Deck 01 — Survey methods",
-      "notes": "Live rewrite of bad questions."
+      "time": "0:00–0:30",
+      "activity": "Deck — You've Learned To Discover",
+      "notes": "Good intentions are not enough. Every professional learns, practices, qualifies, serves."
     },
     {
-      "time": "0:25–1:15",
-      "activity": "Survey drafting workshop",
-      "notes": "Squads draft; mentors challenge bias."
+      "time": "0:30–0:45",
+      "activity": "Privilege → Responsibility → Preparation → Professional",
+      "notes": "SPIKE prepares entrepreneurs. AIA prepares professionals. Journeys connect this week."
     },
     {
-      "time": "1:15–1:25",
-      "activity": "Break",
-      "notes": ""
+      "time": "0:45–3:45",
+      "activity": "Professional Readiness Mission — AIA LMS Pre-Contract Training",
+      "notes": "Participants complete course in SPIKE Studio. Upload evidence, mentor verification, or LMS integration."
     },
     {
-      "time": "1:25–2:00",
-      "activity": "Pilot interviews inside cohort",
-      "notes": "3 respondents per squad minimum."
-    },
-    {
-      "time": "2:00–2:30",
-      "activity": "Peer review stations + revisions",
-      "notes": ""
-    },
-    {
-      "time": "2:30–2:50",
-      "activity": "Field plan approval with program coach",
-      "notes": "Sign-off checklist."
-    },
-    {
-      "time": "2:50–3:00",
-      "activity": "Day 8 reflection",
-      "notes": ""
+      "time": "3:45–4:00",
+      "activity": "Professional Readiness reflection",
+      "notes": "What did you learn that will make you a better financial professional?"
     }
   ],
   "debriefQuestions": [
-    "Which questions survived pilot intact?",
-    "Where is sample bias risk?",
-    "Is field plan realistic for tomorrow?"
+    "Who completed the Pre-Contract course today?",
+    "How does professional readiness connect to customer discovery?",
+    "Are squads ready for Thursday FEC Validation Lab?"
   ],
   "commonPitfalls": [
-    "Leading questions",
-    "No success metrics",
-    "Unsafe field assignments"
+    "Calling it licensing instead of professional readiness",
+    "Skipping reflection after course completion",
+    "Treating this as individual homework instead of squad milestone"
   ],
   "coachingTips": [
-    "Push squads to define what answer would change their venture thesis"
+    "Frame readiness as privilege and responsibility — not compliance",
+    "Badge and portfolio auto-sync on completion",
+    "Mentors verify completion for squads without upload access"
   ]
 }

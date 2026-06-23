@@ -1,61 +1,53 @@
 {
   "dayId": "day-segment-1-week-2-day-2",
-  "title": "Facilitator Guide — Day 7 — Financial Needs Analysis & Advisory Dyads",
+  "title": "Facilitator Guide — Day 7 — Field Research & Market Exchange",
   "durationHours": 4,
   "prepChecklist": [
-    "Print persona cards and dyad timers",
-    "Brief mentors on observation rubric",
-    "Prepare squad boards or digital doc"
+    "Confirm squads completed Day 6 prep (assumptions, 5 questions, field plan)",
+    "Brief mentors on Discover mode encoding in SPIKE Studio",
+    "Prepare Market Intelligence Exchange slide deck",
+    "Target: 3 interviews per member (9 per squad) — minimum 3 encoded to unlock exchange"
   ],
   "sessionFlow": [
     {
-      "time": "0:00–0:25",
-      "activity": "Deck 01 — FNA concepts",
-      "notes": "Interactive question practice on slide 3."
+      "time": "0:00–0:15",
+      "activity": "Deck — What Did The Market Tell You?",
+      "notes": "Frame Tuesday: AM field research, PM market exchange."
     },
     {
-      "time": "0:25–0:40",
-      "activity": "Deck 02 — Dyad setup",
-      "notes": "Assign pairs; mentors assigned to squads."
+      "time": "0:15–2:00",
+      "activity": "Field research — conduct & encode interviews",
+      "notes": "SPIKE Studio Discover mode. Capture alias, occupation, 5 Q answers, reflection. AI extracts goals, pain points, themes."
     },
     {
-      "time": "0:40–1:30",
-      "activity": "Advisory dyad rounds (2 cycles)",
-      "notes": "Strict timer; no product mentions."
-    },
-    {
-      "time": "1:30–1:40",
-      "activity": "Break",
+      "time": "2:00–2:10",
+      "activity": "Break / regroup",
       "notes": ""
     },
     {
-      "time": "1:40–2:10",
-      "activity": "Squad synthesis + gallery of needs themes",
-      "notes": "Scribes post top needs on board."
+      "time": "2:10–2:50",
+      "activity": "Market Intelligence Exchange",
+      "notes": "7 min per squad. Each answers: What surprised you? Which assumption changed? What quote stayed with you? What will you investigate next?"
     },
     {
-      "time": "2:10–2:35",
-      "activity": "Peer feedback clinic + assessment",
-      "notes": "Use listening rubric."
-    },
-    {
-      "time": "2:35–3:00",
-      "activity": "Reflection + survey",
-      "notes": "Preview Day 8 survey design."
+      "time": "2:50–3:00",
+      "activity": "Midweek intelligence reflection",
+      "notes": "SPIKE Studio auto-generates reflection prompt. Participants return to field with sharper hypotheses."
     }
   ],
   "debriefQuestions": [
-    "Who listened vs who lectured?",
-    "What needs appeared across multiple squads?",
-    "Are participants ready to design surveys?"
+    "Which squad showed the strongest interview evidence?",
+    "What patterns are emerging across Cassiopeia, Pegasus, and Argo Navis?",
+    "Are squads on track for 9 encoded interviews before Thursday FEC Lab?"
   ],
   "commonPitfalls": [
-    "Advisors pitching products in discovery",
-    "Clients breaking character",
-    "Skipping structured feedback"
+    "Pitching products during field interviews",
+    "Encoding without completing minimum 3 answer fields",
+    "Skipping Market Intelligence Exchange before reflection"
   ],
   "coachingTips": [
-    "Celebrate clarifying questions",
-    "Flag advisors who fill silence with jargon"
+    "One interview is a story — nine interviews are evidence",
+    "Celebrate customer quotes, not advisor opinions",
+    "Point squads back to SPIKE Studio — no duplicate forms"
   ]
 }
