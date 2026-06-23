@@ -1,7 +1,7 @@
 /**
  * Week 2 Customer Discovery — local persistence.
  */
-import { DEFAULT_INTERVIEW_QUESTIONS } from './week2Constants.js';
+import { DEFAULT_INTERVIEW_QUESTIONS, MAX_INTERVIEW_QUESTIONS } from './week2Constants.js';
 
 const STORAGE_KEY = 'spike_week2_discovery_v2';
 const LEGACY_STORAGE_KEY = 'spike_week2_discovery_v1';
@@ -19,6 +19,13 @@ function readAll() {
 
 function writeAll(data) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+/** @param {string[] | null | undefined} answers */
+export function padInterviewAnswers(answers) {
+  const base = [...(answers ?? [])];
+  while (base.length < MAX_INTERVIEW_QUESTIONS) base.push('');
+  return base.slice(0, MAX_INTERVIEW_QUESTIONS);
 }
 
 /** @returns {import('./week2DiscoveryTypes.js').Week2DiscoveryState} */
@@ -74,7 +81,7 @@ export function loadWeek2Discovery(participantId) {
       id: iv.id ?? `iv-${Date.now()}`,
       alias: iv.alias ?? '',
       occupation: iv.occupation ?? '',
-      answers: Array.isArray(iv.answers) ? iv.answers : [],
+      answers: padInterviewAnswers(iv.answers),
       reflection: iv.reflection ?? '',
       encoded: Boolean(iv.encoded),
       aiInsights: iv.aiInsights ?? undefined,

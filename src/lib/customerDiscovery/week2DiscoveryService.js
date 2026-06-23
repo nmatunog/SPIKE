@@ -1,7 +1,7 @@
 /**
  * Week 2 Customer Discovery — CRUD and business rules.
  */
-import { loadWeek2Discovery, saveWeek2Discovery } from './week2DiscoveryStorage.js';
+import { loadWeek2Discovery, saveWeek2Discovery, padInterviewAnswers } from './week2DiscoveryStorage.js';
 import { MAX_INTERVIEW_QUESTIONS, MIN_ENCODED_INTERVIEWS, resolveSquadMission } from './week2Constants.js';
 import { syncWeek2Day1Portfolio, syncWeek2PortfolioArtifacts } from './week2PortfolioSync.js';
 import { extractInterviewInsights, aggregateSquadIntelligence } from './week2InsightSynthesis.js';
@@ -76,6 +76,8 @@ export function acknowledgeMission(participantId) {
   return saveWeek2Discovery(participantId, { missionAcknowledged: true });
 }
 
+export { padInterviewAnswers } from './week2DiscoveryStorage.js';
+
 /**
  * @param {string} participantId
  * @param {number} interviewIndex 0-based
@@ -89,26 +91,30 @@ export function saveEncodedInterview(participantId, interviewIndex, data) {
       id: `iv-${interviews.length + 1}`,
       alias: '',
       occupation: '',
-      answers: ['', '', '', '', ''],
+      answers: padInterviewAnswers([]),
       reflection: '',
       encoded: false,
     });
   }
-  const answers = (data.answers ?? interviews[interviewIndex].answers ?? []).map((a) => String(a ?? '').trim());
-  const filledAnswers = answers.filter((a) => a.length > 8);
-  const encoded = filledAnswers.length >= 3 && String(data.alias ?? interviews[interviewIndex].alias ?? '').trim().length > 1;
-  const aiInsights = encoded ? extractInterviewInsights(answers) : undefined;
+  const prior = interviews[interviewIndex];
+  const answers = padInterviewAnswers(data.answers ?? prior.answers).map((a) => String(a ?? ''));
+  const filledAnswers = answers.filter((a) => a.trim().length > 8);
+  const alias = String(data.alias ?? prior.alias ?? '').trim();
+  const occupation = String(data.occupation ?? prior.occupation ?? '').trim();
+  const reflection = String(data.reflection ?? prior.reflection ?? '').trim();
+  const encoded = filledAnswers.length >= 3 && alias.length > 1;
+  const aiInsights = encoded ? extractInterviewInsights(answers) : prior.aiInsights;
 
   interviews[interviewIndex] = {
-    ...interviews[interviewIndex],
-    id: interviews[interviewIndex].id ?? `iv-${interviewIndex + 1}`,
-    alias: String(data.alias ?? '').trim(),
-    occupation: String(data.occupation ?? '').trim(),
-    answers: answers.slice(0, MAX_INTERVIEW_QUESTIONS),
-    reflection: String(data.reflection ?? '').trim(),
+    ...prior,
+    id: prior.id ?? `iv-${interviewIndex + 1}`,
+    alias,
+    occupation,
+    answers,
+    reflection,
     encoded,
-    aiInsights,
-    encodedAt: encoded ? new Date().toISOString() : null,
+    aiInsights: encoded ? aiInsights : prior.aiInsights,
+    encodedAt: encoded ? prior.encodedAt ?? new Date().toISOString() : prior.encodedAt,
   };
 
   const next = saveWeek2Discovery(participantId, { interviews });

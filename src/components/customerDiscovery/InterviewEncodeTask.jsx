@@ -1,55 +1,127 @@
-import { useMemo, useState } from 'react';
-import { Check } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Check, Save } from 'lucide-react';
 import {
   getWeek2State,
+  padInterviewAnswers,
   saveEncodedInterview,
   saveInterviewQuestions,
 } from '../../lib/customerDiscovery/week2DiscoveryService.js';
-import { MIN_ENCODED_INTERVIEWS, SQUAD_INTERVIEW_TARGET } from '../../lib/customerDiscovery/week2Constants.js';
+import {
+  MAX_INTERVIEW_QUESTIONS,
+  MIN_ENCODED_INTERVIEWS,
+  SQUAD_INTERVIEW_TARGET,
+} from '../../lib/customerDiscovery/week2Constants.js';
 import { squadEvidenceSummary } from '../../lib/customerDiscovery/week2SquadEvidenceService.js';
 
+function readInterviewDraft(participantId, interviewIndex) {
+  const state = getWeek2State(participantId);
+  const existing = state.interviews?.[interviewIndex] ?? {};
+  return {
+    questions: state.questions ?? [],
+    alias: existing.alias ?? '',
+    occupation: existing.occupation ?? '',
+    answers: padInterviewAnswers(existing.answers),
+    reflection: existing.reflection ?? '',
+    insights: existing.aiInsights ?? null,
+    encoded: Boolean(existing.encoded),
+  };
+}
+
 /**
- * Discover mode — encode one field interview; questions editable to match what was actually asked.
+ * Discover mode — encode one field interview; drafts persist on save and when leaving the screen.
  * @param {{ participantId: string, interviewIndex: number, onSaved?: () => void }} props
  */
 export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) {
-  const state = getWeek2State(participantId);
-  const [questions, setQuestions] = useState(state.questions ?? []);
-  const existing = state.interviews?.[interviewIndex] ?? {
-    alias: '',
-    occupation: '',
-    answers: ['', '', '', '', ''],
-    reflection: '',
-    encoded: false,
-  };
+  const initial = useMemo(
+    () => readInterviewDraft(participantId, interviewIndex),
+    [participantId, interviewIndex],
+  );
 
-  const [alias, setAlias] = useState(existing.alias ?? '');
-  const [occupation, setOccupation] = useState(existing.occupation ?? '');
-  const [answers, setAnswers] = useState(existing.answers ?? ['', '', '', '', '']);
-  const [reflection, setReflection] = useState(existing.reflection ?? '');
-  const [insights, setInsights] = useState(existing.aiInsights ?? null);
+  const [questions, setQuestions] = useState(initial.questions);
+  const [alias, setAlias] = useState(initial.alias);
+  const [occupation, setOccupation] = useState(initial.occupation);
+  const [answers, setAnswers] = useState(initial.answers);
+  const [reflection, setReflection] = useState(initial.reflection);
+  const [insights, setInsights] = useState(initial.insights);
+  const [encoded, setEncoded] = useState(initial.encoded);
+  const [saveState, setSaveState] = useState('idle');
+
+  const draftRef = useRef({ alias, occupation, answers, reflection, questions });
+
+  useEffect(() => {
+    const draft = readInterviewDraft(participantId, interviewIndex);
+    setQuestions(draft.questions);
+    setAlias(draft.alias);
+    setOccupation(draft.occupation);
+    setAnswers(draft.answers);
+    setReflection(draft.reflection);
+    setInsights(draft.insights);
+    setEncoded(draft.encoded);
+    setSaveState('idle');
+  }, [participantId, interviewIndex]);
+
+  useEffect(() => {
+    draftRef.current = { alias, occupation, answers, reflection, questions };
+  }, [alias, occupation, answers, reflection, questions]);
 
   const squadEvidence = useMemo(() => squadEvidenceSummary(participantId), [participantId]);
 
-  function persist(patch, { notify = false } = {}) {
-    const prior = getWeek2State(participantId).interviews?.[interviewIndex];
-    const wasEncoded = Boolean(prior?.encoded);
+  function flushDraft({ notify = false, showFeedback = false } = {}) {
+    const draft = draftRef.current;
+    saveInterviewQuestions(participantId, draft.questions);
     const next = saveEncodedInterview(participantId, interviewIndex, {
-      alias: patch.alias ?? alias,
-      occupation: patch.occupation ?? occupation,
-      answers: patch.answers ?? answers,
-      reflection: patch.reflection ?? reflection,
+      alias: draft.alias,
+      occupation: draft.occupation,
+      answers: draft.answers,
+      reflection: draft.reflection,
     });
     const iv = next.interviews?.[interviewIndex];
     if (iv?.aiInsights) setInsights(iv.aiInsights);
-    if (notify || (iv?.encoded && !wasEncoded)) onSaved?.();
+    setEncoded(Boolean(iv?.encoded));
+    if (showFeedback) {
+      setSaveState('saved');
+      window.setTimeout(() => setSaveState('idle'), 2000);
+    }
+    if (notify) onSaved?.();
+    return next;
+  }
+
+  useEffect(() => {
+    return () => {
+      const draft = draftRef.current;
+      saveInterviewQuestions(participantId, draft.questions);
+      saveEncodedInterview(participantId, interviewIndex, {
+        alias: draft.alias,
+        occupation: draft.occupation,
+        answers: draft.answers,
+        reflection: draft.reflection,
+      });
+    };
+  }, [participantId, interviewIndex]);
+
+  function persist(patch) {
+    const merged = {
+      alias: patch.alias ?? draftRef.current.alias,
+      occupation: patch.occupation ?? draftRef.current.occupation,
+      answers: patch.answers ?? draftRef.current.answers,
+      reflection: patch.reflection ?? draftRef.current.reflection,
+      questions: patch.questions ?? draftRef.current.questions,
+    };
+    draftRef.current = merged;
+    saveInterviewQuestions(participantId, merged.questions);
+    const next = saveEncodedInterview(participantId, interviewIndex, merged);
+    const iv = next.interviews?.[interviewIndex];
+    if (iv?.aiInsights) setInsights(iv.aiInsights);
+    setEncoded(Boolean(iv?.encoded));
   }
 
   function updateQuestion(qi, text) {
-    const next = questions.map((q, i) => (i === qi ? { ...q, text } : q));
-    setQuestions(next);
-    saveInterviewQuestions(participantId, next);
+    const nextQuestions = questions.map((q, i) => (i === qi ? { ...q, text } : q));
+    setQuestions(nextQuestions);
+    persist({ questions: nextQuestions });
   }
+
+  const filledAnswers = answers.filter((a) => String(a).trim().length > 0).length;
 
   return (
     <div className="space-y-6">
@@ -61,9 +133,35 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
           {squadEvidence.interviewCount}
         </p>
         <p className="text-xs text-slate-500">
-          Edit each question to match what you actually asked — answers save automatically.
+          Answers save as you type and when you leave this screen. Use Save before switching sections if you want to be sure.
         </p>
       </section>
+
+      <div className="flex flex-wrap items-center gap-3">
+        <button
+          type="button"
+          onClick={() => flushDraft({ notify: true, showFeedback: true })}
+          className="spike-btn-primary inline-flex min-h-[44px] items-center gap-2"
+        >
+          <Save size={16} aria-hidden />
+          Save interview
+        </button>
+        {saveState === 'saved' ? (
+          <span className="inline-flex items-center gap-1 text-sm font-medium text-venture-discover">
+            <Check size={14} aria-hidden />
+            Saved
+          </span>
+        ) : null}
+        {encoded ? (
+          <span className="rounded-full bg-venture-discover/15 px-2.5 py-0.5 text-xs font-semibold text-venture-discover">
+            Encoded ✓
+          </span>
+        ) : (
+          <span className="text-xs text-slate-500">
+            {filledAnswers} / {MAX_INTERVIEW_QUESTIONS} answers · alias required for encode
+          </span>
+        )}
+      </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="spike-surface block space-y-1">
@@ -96,7 +194,7 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
 
       <ol className="space-y-3">
         {answers.map((ans, qi) => (
-          <li key={questions[qi]?.id ?? qi} className="spike-surface space-y-2">
+          <li key={questions[qi]?.id ?? `q-${qi}`} className="spike-surface space-y-2">
             <p className="text-[10px] font-semibold uppercase text-slate-400">
               Q{qi + 1}
               {questions[qi]?.section ? ` · ${questions[qi].section}` : ''}
@@ -117,6 +215,7 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
                 setAnswers(next);
                 persist({ answers: next });
               }}
+              onBlur={() => flushDraft()}
               placeholder="Capture their answer — completion over length"
               className="w-full border-0 bg-transparent text-sm text-slate-800 focus:outline-none"
             />
@@ -133,6 +232,7 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
             setReflection(e.target.value);
             persist({ reflection: e.target.value });
           }}
+          onBlur={() => flushDraft()}
           placeholder="What surprised you?"
           className="w-full border-0 bg-transparent text-sm focus:outline-none"
         />
