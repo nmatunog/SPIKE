@@ -3,37 +3,23 @@
   "segmentId": "segment-1",
   "weekId": "week-segment-1-2",
   "dayNumber": 2,
-  "title": "Day 7 — Financial Needs Analysis & Advisory Dyads",
-  "theme": "FNA Process",
+  "title": "Day 7 — Field Research & Market Exchange",
+  "theme": "Discover",
   "durationHours": 4,
   "learningObjectives": [
-    "Describe the FNA steps: discover, quantify, prioritize, recommend framework",
-    "Conduct a 15-minute advisory dyad using FNA question bank",
-    "Document needs findings without recommending products",
-    "Give and receive structured peer feedback on listening skills"
+    "Conduct field interviews (minimum 3, target 5)",
+    "Encode interviews in SPIKE Studio Discover mode",
+    "Participate in Market Intelligence Exchange",
+    "Capture midweek intelligence reflection"
   ],
   "expectedOutputs": [
-    "FNA dyad notes",
-    "Squad needs theme summary"
+    "Encoded interviews",
+    "Midweek Intelligence Reflection"
   ],
-  "portfolioDeliverables": [
-    "portfolio-market-intelligence"
-  ],
+  "portfolioDeliverables": ["portfolio-market-intelligence"],
   "businessPlanIntegration": "bp-chapter-2",
-  "presentations": [
-    "presentation-w2-d2-deck-01",
-    "presentation-w2-d2-deck-02"
-  ],
-  "activities": [
-    "activity-w2-d2-01",
-    "activity-w2-d2-02",
-    "activity-w2-d2-03"
-  ],
-  "worksheets": [
-    "worksheet-w2-d2-01",
-    "worksheet-w2-d2-02"
-  ],
-  "assessments": [
-    "assessment-w2-d2"
-  ]
+  "presentations": ["presentation-w2-d2-deck-01"],
+  "activities": ["activity-w2-d2-field", "activity-w2-d2-exchange"],
+  "worksheets": [],
+  "assessments": ["assessment-w2-d2"]
 }

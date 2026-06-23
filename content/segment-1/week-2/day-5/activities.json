@@ -1,48 +1,31 @@
 {
   "activities": [
     {
-      "id": "activity-w2-d5-01",
+      "id": "activity-w2-d5-pitch",
       "dayId": "day-segment-1-week-2-day-5",
-      "title": "Presentation Rehearsal",
-      "durationMinutes": 45,
-      "materials": [],
+      "title": "Market Validation Pitch",
+      "durationMinutes": 150,
+      "materials": ["Pitch deck in SPIKE Studio", "Stage Gate rubric"],
       "instructions": [
-        "Time 8-minute deck",
-        "Mentor feedback on clarity"
+        "5 minutes per squad — present evidence, not ideas",
+        "Follow 10-slide pitch structure",
+        "Audience Q&A"
       ],
-      "outputs": [
-        "Rehearsal notes"
-      ],
+      "outputs": ["Market Validation Pitch"],
       "debriefQuestions": []
     },
     {
-      "id": "activity-w2-d5-02",
+      "id": "activity-w2-d5-gate",
       "dayId": "day-segment-1-week-2-day-5",
-      "title": "Market Review Presentations",
+      "title": "Week 2 Stage Gate II Ceremony",
       "durationMinutes": 90,
-      "materials": [],
+      "materials": ["Squad XP scores", "Mentor review panel"],
       "instructions": [
-        "Squad presents findings",
-        "Q&A from coaches and peers"
+        "Mentor squad review — 4 dimensions + optional commendations",
+        "Stage gate decision per squad",
+        "Unlock Week 3 Build"
       ],
-      "outputs": [
-        "Market review deck"
-      ],
-      "debriefQuestions": []
-    },
-    {
-      "id": "activity-w2-d5-03",
-      "dayId": "day-segment-1-week-2-day-5",
-      "title": "Market Gap Declaration",
-      "durationMinutes": 15,
-      "materials": [],
-      "instructions": [
-        "Each participant writes one-sentence gap thesis",
-        "Sync to Portfolio"
-      ],
-      "outputs": [
-        "Market gap statement"
-      ],
+      "outputs": ["Stage Gate II decision"],
       "debriefQuestions": []
     }
   ]

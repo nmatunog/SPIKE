@@ -1,5 +1,5 @@
 /**
- * Auto-sync Week 2 Day 1 Customer Discovery prep → Portfolio & Blueprint.
+ * Auto-sync Week 2 artifacts → Portfolio, Blueprint, timeline.
  */
 import { createPortfolioArtifactDraft } from '../blueprintArtifacts.js';
 import { setSectionField } from '../blueprintSectionStore.js';
@@ -7,94 +7,222 @@ import { appendBlueprintTimelineEvent } from '../blueprintTimeline.js';
 import { loadWeek2Discovery, saveWeek2Discovery } from './week2DiscoveryStorage.js';
 import { resolveSquadMission, WEEK2_COHORT_NAME } from './week2Constants.js';
 import { getCoachSummaryForMentor } from '../ventureCoachService.js';
+import { getParticipantSquad } from '../cohortFormationService.js';
+import { aggregateSquadIntelligence } from './week2InsightSynthesis.js';
+
+/** @param {string} participantId */
+function squadNameFor(participantId) {
+  return getParticipantSquad(participantId)?.name ?? '';
+}
 
 /** @param {string} participantId @param {string} [squadName] */
 export function syncWeek2Day1Portfolio(participantId, squadName = '') {
+  syncWeek2PortfolioArtifacts(participantId, squadName);
   const state = loadWeek2Discovery(participantId);
   if (state.portfolioSyncedAt) return state;
+  return saveWeek2Discovery(participantId, { portfolioSyncedAt: new Date().toISOString() });
+}
 
-  const mission = resolveSquadMission(squadName);
+/**
+ * Master sync — called after any Week 2 milestone.
+ * @param {string} participantId
+ * @param {string} [squadName]
+ */
+export function syncWeek2PortfolioArtifacts(participantId, squadName = '') {
+  const state = loadWeek2Discovery(participantId);
+  const mission = resolveSquadMission(squadName || squadNameFor(participantId));
   const coach = getCoachSummaryForMentor(participantId);
   const questions = (state.questions ?? [])
+    .filter((q) => String(q.text ?? '').trim())
     .map((q, i) => `${i + 1}. ${q.text}`)
     .join('\n');
   const assumptions = (state.assumptions ?? [])
-    .map((a) => `• ${a.belief ?? a.text ?? ''}`)
+    .map((a) => `• ${a.belief ?? ''}`)
     .join('\n');
-  const reflection = (state.thinkingShifts ?? [])[0]?.response ?? '';
-
+  const reflection = (state.thinkingShifts ?? []).map((s) => `**${s.prompt}**\n${s.response}`).join('\n\n');
   const preparedAt = new Date().toISOString().slice(0, 10);
 
-  const artifactBody = [
-    `# Week 2 Day 1 — Customer Discovery Preparation`,
-    '',
-    `**Cohort:** ${WEEK2_COHORT_NAME}`,
-    `**Squad:** ${mission.squadKey}`,
-    `**Customer Segment:** ${mission.marketSegment}`,
-    '',
-    '## Mission',
-    mission.mission,
-    '',
-    '## Research Objectives',
-    ...mission.objectives.map((o) => `- ${o}`),
-    '',
-    '## Five Interview Questions',
-    questions || '_Questions in progress_',
-    '',
-    '## Assumptions',
-    assumptions || '_None recorded yet_',
-    '',
-    '## Reflection',
-    reflection || '_Pending_',
-    '',
-    `**Prepared:** ${preparedAt}`,
-  ].join('\n');
+  if (state.guideCompletedAt || state.missionAcknowledged) {
+    const prepBody = [
+      `# Week 2 Day 1 — Customer Discovery Preparation`,
+      '',
+      `**Cohort:** ${WEEK2_COHORT_NAME}`,
+      `**Squad:** ${mission.squadKey}`,
+      `**Customer Segment:** ${mission.marketSegment}`,
+      '',
+      '## Assumptions',
+      assumptions || '_In progress_',
+      '',
+      '## Five Interview Questions',
+      questions || '_In progress_',
+      '',
+      '## Field Research Plan',
+      state.fieldResearchPlan || '_Pending_',
+      '',
+      '## Reflection',
+      reflection || '_Pending_',
+      '',
+      `**Updated:** ${preparedAt}`,
+    ].join('\n');
 
-  createPortfolioArtifactDraft({
-    participantId,
-    sectionId: 'portfolio-market-intelligence',
-    title: 'Customer Discovery Preparation',
-    content: artifactBody,
-    sourceType: 'week2-discovery',
-    sourceId: 'day1-prep',
-  });
+    createPortfolioArtifactDraft({
+      participantId,
+      sectionId: 'portfolio-market-intelligence',
+      title: 'Customer Discovery Preparation',
+      content: prepBody,
+      sourceType: 'week2-discovery',
+      sourceId: 'day1-prep',
+    });
 
-  setSectionField(participantId, 'market-intelligence', 'customer_discovery_prep', artifactBody, {
-    sourceType: 'week2-discovery',
-    sourceId: 'day1-prep',
-  });
+    setSectionField(participantId, 'market-intelligence', 'customer_discovery_prep', prepBody, {
+      sourceType: 'week2-discovery',
+      sourceId: 'day1-prep',
+    });
+    setSectionField(participantId, 'market-intelligence', 'assigned_squad', mission.squadKey, {
+      sourceType: 'week2-discovery',
+    });
+    setSectionField(participantId, 'market-intelligence', 'customer_segment', mission.marketSegment, {
+      sourceType: 'week2-discovery',
+    });
+    setSectionField(participantId, 'market-intelligence', 'interview_questions', questions, {
+      sourceType: 'week2-discovery',
+    });
+    setSectionField(participantId, 'market-intelligence', 'assumptions_list', assumptions, {
+      sourceType: 'week2-discovery',
+    });
+    setSectionField(participantId, 'market-intelligence', 'field_research_plan', state.fieldResearchPlan ?? '', {
+      sourceType: 'week2-discovery',
+    });
+    if (coach?.ambition) {
+      setSectionField(participantId, 'market-intelligence', 'dream_connection', coach.ambition, {
+        sourceType: 'week2-discovery',
+      });
+    }
+  }
 
-  setSectionField(participantId, 'market-intelligence', 'assigned_squad', mission.squadKey, {
-    sourceType: 'week2-discovery',
-  });
+  const encoded = (state.interviews ?? []).filter((i) => i.encoded);
+  if (encoded.length) {
+    const interviewBody = encoded
+      .map((iv, idx) => {
+        const answers = (iv.answers ?? [])
+          .map((a, i) => `Q${i + 1}: ${a}`)
+          .join('\n');
+        return [
+          `### Interview ${idx + 1} — ${iv.alias || 'Customer'}`,
+          `**Occupation:** ${iv.occupation || '—'}`,
+          answers,
+          iv.reflection ? `**Reflection:** ${iv.reflection}` : '',
+        ].filter(Boolean).join('\n');
+      })
+      .join('\n\n---\n\n');
 
-  setSectionField(participantId, 'market-intelligence', 'customer_segment', mission.marketSegment, {
-    sourceType: 'week2-discovery',
-  });
+    createPortfolioArtifactDraft({
+      participantId,
+      sectionId: 'portfolio-market-intelligence',
+      title: `Field Interviews (${encoded.length})`,
+      content: interviewBody,
+      sourceType: 'week2-discovery',
+      sourceId: 'interviews',
+    });
+    setSectionField(participantId, 'market-intelligence', 'encoded_interviews', interviewBody, {
+      sourceType: 'week2-discovery',
+    });
+  }
 
-  setSectionField(
-    participantId,
-    'market-intelligence',
-    'interview_questions',
-    questions,
-    { sourceType: 'week2-discovery' },
-  );
+  if (state.professionalReadinessAt) {
+    const readinessBody = [
+      '# Professional Readiness',
+      '',
+      state.readinessEvidenceNote || '_Completion recorded_',
+      '',
+      (state.thinkingShifts ?? [])
+        .filter((s) => s.taskId === 'readiness-reflect')
+        .map((s) => s.response)
+        .join('\n') || '',
+    ].join('\n');
+    createPortfolioArtifactDraft({
+      participantId,
+      sectionId: 'portfolio-market-intelligence',
+      title: 'Professional Readiness Reflection',
+      content: readinessBody,
+      sourceType: 'week2-discovery',
+      sourceId: 'readiness',
+    });
+    setSectionField(participantId, 'market-intelligence', 'professional_readiness', readinessBody, {
+      sourceType: 'week2-discovery',
+    });
+  }
 
-  if (coach?.ambition) {
-    setSectionField(participantId, 'market-intelligence', 'dream_connection', coach.ambition, {
+  const board = aggregateSquadIntelligence(state.interviews ?? []);
+  if (state.intelligenceBoardAt) {
+    const boardBody = [
+      '# Squad Intelligence Board',
+      '',
+      `**Interviews encoded:** ${board.interviewCount}`,
+      '',
+      '## Most Common Goals',
+      ...board.mostCommonGoals.map((g) => `- ${g}`),
+      '',
+      '## Most Common Challenges',
+      ...board.mostCommonChallenges.map((c) => `- ${c}`),
+      '',
+      '## Customer Quotes',
+      ...board.mostCommonQuotes.map((q) => `> ${q}`),
+      '',
+      '## Discussion Notes',
+      state.squadDiscussionNotes || '_—_',
+    ].join('\n');
+    createPortfolioArtifactDraft({
+      participantId,
+      sectionId: 'portfolio-market-intelligence',
+      title: 'Squad Intelligence Board',
+      content: boardBody,
+      sourceType: 'week2-discovery',
+      sourceId: 'intelligence-board',
+    });
+    setSectionField(participantId, 'market-intelligence', 'squad_intelligence_board', boardBody, {
+      sourceType: 'week2-discovery',
+    });
+  }
+
+  if (state.pitchStartedAt) {
+    const p = state.pitchOutline ?? {};
+    const pitchBody = [
+      '# Market Validation Pitch',
+      '',
+      `## Our Mission\n${p.mission}`,
+      `## Who We Interviewed\n${p.whoInterviewed}`,
+      `## What We Thought\n${p.whatWeThought}`,
+      `## What We Learned\n${p.whatWeLearned}`,
+      `## Customer Voices\n${p.customerVoices}`,
+      `## The Biggest Problem\n${p.biggestProblem}`,
+      `## Belief Shift\n${p.beliefShift}`,
+      `## How Our Venture Changed\n${p.ventureChanged}`,
+      `## Next Steps\n${p.nextSteps}`,
+      `## One Insight Every Advisor Should Know\n${p.advisorInsight}`,
+    ].join('\n\n');
+    createPortfolioArtifactDraft({
+      participantId,
+      sectionId: 'portfolio-market-intelligence',
+      title: 'Market Validation Pitch',
+      content: pitchBody,
+      sourceType: 'week2-discovery',
+      sourceId: 'validation-pitch',
+    });
+    setSectionField(participantId, 'market-intelligence', 'validation_pitch', pitchBody, {
       sourceType: 'week2-discovery',
     });
   }
 
   appendBlueprintTimelineEvent(participantId, {
     type: 'week2_discovery',
-    title: 'Week 2 · Customer Discovery Preparation saved',
+    title: 'Week 2 · Research studio updated',
     module: 'customer-discovery',
     sourceType: 'week2-discovery',
-    sourceId: 'day1-prep',
+    sourceId: 'sync',
   });
 
-  return saveWeek2Discovery(participantId, { portfolioSyncedAt: new Date().toISOString() });
+  return state;
 }
 
 /** @param {string} participantId */

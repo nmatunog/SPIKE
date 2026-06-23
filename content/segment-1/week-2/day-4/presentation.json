@@ -2,50 +2,27 @@
   "presentation": {
     "id": "presentation-w2-d4-deck-01",
     "dayId": "day-segment-1-week-2-day-4",
-    "title": "Program Coach Deck 01 — Field Day Briefing",
-    "slideIds": [
-      "slide-w2-d4-dk1-01",
-      "slide-w2-d4-dk1-02",
-      "slide-w2-d4-dk1-03",
-      "slide-w2-d4-dk1-04"
-    ]
+    "title": "Squad Intelligence Board",
+    "slideIds": ["slide-w2-d4-01", "slide-w2-d4-02"]
   },
   "slides": [
     {
-      "id": "slide-w2-d4-dk1-01",
+      "id": "slide-w2-d4-01",
       "presentationId": "presentation-w2-d4-deck-01",
-      "title": "Field Day Standards",
-      "body": "Dress, introduction script, consent.",
-      "speakerNotes": "Morning safety and professionalism.",
+      "title": "Squad Intelligence Board",
+      "body": "Auto-generated from encoded interviews — goals, challenges, quotes, opportunities.",
+      "speakerNotes": "",
       "discussionQuestions": [],
       "sortOrder": 1
     },
     {
-      "id": "slide-w2-d4-dk1-02",
+      "id": "slide-w2-d4-02",
       "presentationId": "presentation-w2-d4-deck-01",
-      "title": "Data Capture Protocol",
-      "body": "Device setup, offline backup.",
-      "speakerNotes": "Morning safety and professionalism.",
+      "title": "Begin Your Market Validation Pitch",
+      "body": "10-slide evidence structure — prepare for Friday Stage Gate.",
+      "speakerNotes": "",
       "discussionQuestions": [],
       "sortOrder": 2
-    },
-    {
-      "id": "slide-w2-d4-dk1-03",
-      "presentationId": "presentation-w2-d4-deck-01",
-      "title": "Mentor Check-in Schedule",
-      "body": "Hourly squad pings.",
-      "speakerNotes": "Morning safety and professionalism.",
-      "discussionQuestions": [],
-      "sortOrder": 3
-    },
-    {
-      "id": "slide-w2-d4-dk1-04",
-      "presentationId": "presentation-w2-d4-deck-01",
-      "title": "Deck 01 Close — Deploy",
-      "body": "Squads depart to zones.",
-      "speakerNotes": "Morning safety and professionalism.",
-      "discussionQuestions": [],
-      "sortOrder": 4
     }
   ]
 }

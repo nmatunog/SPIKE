@@ -4,12 +4,12 @@ import { deriveWeek2MissionTrack } from '../../lib/customerDiscovery/week2Missio
 import { getMisBreakdown } from '../../lib/customerDiscovery/week2MisService.js';
 
 /**
- * Vertical mission track — Duolingo-style progression.
- * @param {{ participantId: string, activeSlug?: string, context?: 'blueprint' | 'playbook' }} props
+ * Vertical mission track — day tasks within current phase.
+ * @param {{ participantId: string, activeSlug?: string, context?: 'blueprint' | 'playbook', playbookDay?: number }} props
  */
-export function MissionTrackNav({ participantId, activeSlug, context = 'blueprint' }) {
+export function MissionTrackNav({ participantId, activeSlug, context = 'blueprint', playbookDay = 1 }) {
   const location = useLocation();
-  const steps = deriveWeek2MissionTrack(participantId, context);
+  const steps = deriveWeek2MissionTrack(participantId, context, playbookDay);
   const mis = getMisBreakdown(participantId);
   const activeTask = steps.find((s) => !s.complete) ?? steps[steps.length - 1];
 
@@ -28,10 +28,17 @@ export function MissionTrackNav({ participantId, activeSlug, context = 'blueprin
         return (
           <Link
             key={step.id}
-            to={step.href}
+            to={step.locked ? '#' : step.href}
             className={`block rounded-xl px-3 py-2.5 transition ${
-              isActive ? 'spike-task-active' : step.complete ? 'spike-task-done' : 'spike-task-pending hover:bg-slate-50'
+              step.locked
+                ? 'cursor-not-allowed opacity-40'
+                : isActive
+                  ? 'spike-task-active'
+                  : step.complete
+                    ? 'spike-task-done'
+                    : 'spike-task-pending hover:bg-slate-50'
             }`}
+            onClick={step.locked ? (e) => e.preventDefault() : undefined}
           >
             <span className="flex items-center gap-2">
               <span

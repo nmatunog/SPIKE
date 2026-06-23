@@ -4,30 +4,14 @@
       "id": "session-w2-d2-full",
       "dayId": "day-segment-1-week-2-day-2",
       "sessionNumber": 1,
-      "title": "Day 7 — Financial Needs Analysis & Advisory Dyads",
+      "title": "Day 7 — Field Research & Market Exchange",
       "durationMinutes": 240,
-      "presentationIds": [
-        "presentation-w2-d2-deck-01",
-        "presentation-w2-d2-deck-02"
-      ],
-      "activityIds": [
-        "activity-w2-d2-01",
-        "activity-w2-d2-02",
-        "activity-w2-d2-03"
-      ],
-      "worksheetIds": [
-        "worksheet-w2-d2-01",
-        "worksheet-w2-d2-02"
-      ],
-      "assessmentIds": [
-        "assessment-w2-d2"
-      ],
-      "reflectionIds": [
-        "reflection-w2-d2"
-      ],
-      "surveyIds": [
-        "survey-w2-d2"
-      ]
+      "presentationIds": ["presentation-w2-d2-deck-01"],
+      "activityIds": ["activity-w2-d2-field", "activity-w2-d2-exchange"],
+      "worksheetIds": [],
+      "assessmentIds": ["assessment-w2-d2"],
+      "reflectionIds": ["reflection-w2-d2"],
+      "surveyIds": []
     }
   ]
 }

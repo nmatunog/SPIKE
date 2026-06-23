@@ -1,49 +1,30 @@
 {
   "activities": [
     {
-      "id": "activity-w2-d4-01",
+      "id": "activity-w2-d4-synthesis",
       "dayId": "day-segment-1-week-2-day-4",
-      "title": "Field Survey Execution",
-      "durationMinutes": 100,
-      "materials": [],
+      "title": "Research Consolidation & AI Insight Review",
+      "durationMinutes": 120,
+      "materials": ["SPIKE Studio Squad Intelligence Board"],
       "instructions": [
-        "Meet quota per field plan",
-        "Use introduction script",
-        "Log responses immediately"
+        "Finish remaining interview encoding",
+        "Review AI-extracted goals, pain points, quotes",
+        "Collaborate on squad discussion notes"
       ],
-      "outputs": [
-        "Raw survey dataset"
-      ],
+      "outputs": ["Squad Intelligence Board"],
       "debriefQuestions": []
     },
     {
-      "id": "activity-w2-d4-02",
+      "id": "activity-w2-d4-pitch",
       "dayId": "day-segment-1-week-2-day-4",
-      "title": "Hot Wash Debrief",
-      "durationMinutes": 30,
-      "materials": [],
+      "title": "Pitch Builder — Begin Week 2 Pitch",
+      "durationMinutes": 90,
+      "materials": ["SPIKE Studio Pitch Builder"],
       "instructions": [
-        "Squad shares 3 surprises",
-        "Identify data gaps"
+        "Draft slides 1–4 minimum",
+        "Prepare evidence-based narrative for Friday"
       ],
-      "outputs": [
-        "Debrief notes"
-      ],
-      "debriefQuestions": []
-    },
-    {
-      "id": "activity-w2-d4-03",
-      "dayId": "day-segment-1-week-2-day-4",
-      "title": "Data Hygiene Lab",
-      "durationMinutes": 20,
-      "materials": [],
-      "instructions": [
-        "Clean incomplete rows",
-        "Tag outliers for follow-up"
-      ],
-      "outputs": [
-        "Clean dataset v1"
-      ],
+      "outputs": ["Pitch outline"],
       "debriefQuestions": []
     }
   ]

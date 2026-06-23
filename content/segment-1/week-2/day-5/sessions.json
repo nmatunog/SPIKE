@@ -4,29 +4,14 @@
       "id": "session-w2-d5-full",
       "dayId": "day-segment-1-week-2-day-5",
       "sessionNumber": 1,
-      "title": "Day 10 — Survey Debrief & 80-Hour Market Review Gate",
+      "title": "Day 10 — Market Validation Pitch & Stage Gate",
       "durationMinutes": 240,
-      "presentationIds": [
-        "presentation-w2-d5-deck-01",
-        "presentation-w2-d5-deck-02"
-      ],
-      "activityIds": [
-        "activity-w2-d5-01",
-        "activity-w2-d5-02",
-        "activity-w2-d5-03"
-      ],
-      "worksheetIds": [
-        "worksheet-w2-d5-01"
-      ],
-      "assessmentIds": [
-        "assessment-w2-d5"
-      ],
-      "reflectionIds": [
-        "reflection-w2-d5"
-      ],
-      "surveyIds": [
-        "survey-w2-d5"
-      ]
+      "presentationIds": ["presentation-w2-d5-deck-01"],
+      "activityIds": ["activity-w2-d5-pitch", "activity-w2-d5-gate"],
+      "worksheetIds": [],
+      "assessmentIds": ["assessment-w2-d5"],
+      "reflectionIds": ["reflection-w2-d5"],
+      "surveyIds": []
     }
   ]
 }

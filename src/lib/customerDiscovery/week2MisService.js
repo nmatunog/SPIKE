@@ -68,20 +68,27 @@ export function getVentureStatus(participantId) {
   progress = Math.min(progress, 100);
 
   if (!missionDone) {
-    nextMilestone = 'Read your squad mission';
+    nextMilestone = 'Prepare — read your squad mission';
+  } else if (!state.assumptionsCompletedAt) {
+    nextMilestone = 'Identify your assumptions';
   } else if (!guideDone) {
-    nextMilestone = 'Design 5 interview questions';
+    nextMilestone = 'Create 5 interview questions';
+  } else if (!state.researchPlanSubmittedAt) {
+    nextMilestone = 'Submit field research plan';
   } else if (encoded < 3) {
-    nextMilestone = `Encode ${3 - encoded} more interview${encoded === 2 ? '' : 's'}`;
-  } else if (encoded < 5) {
-    nextMilestone = 'Reach 5 interviews for full research depth';
+    nextMilestone = `Discover — encode ${3 - encoded} more interview${encoded === 2 ? '' : 's'}`;
+  } else if (!state.professionalReadinessAt) {
+    nextMilestone = 'Complete Professional Readiness';
+    phase = 'Professional Readiness';
+  } else if (!state.pitchSubmittedAt) {
+    nextMilestone = 'Build your Market Validation Pitch';
     phase = 'Validating with Customers';
     phaseColor = 'validate';
   } else {
-    nextMilestone = 'Submit for Stage Gate review';
+    nextMilestone = 'Stage Gate II — Market Validation';
     phase = 'Ready for Validation Gate';
     phaseColor = 'validate';
-    progress = Math.max(progress, 85);
+    progress = Math.max(progress, 90);
   }
 
   return {

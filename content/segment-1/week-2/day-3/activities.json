@@ -1,49 +1,17 @@
 {
   "activities": [
     {
-      "id": "activity-w2-d3-01",
+      "id": "activity-w2-d3-readiness",
       "dayId": "day-segment-1-week-2-day-3",
-      "title": "Survey Drafting Workshop",
-      "durationMinutes": 50,
-      "materials": [],
+      "title": "Professional Readiness Mission",
+      "durationMinutes": 240,
+      "materials": ["AIA LMS Pre-Contract Training", "SPIKE Studio Professional Readiness module"],
       "instructions": [
-        "Draft 8–12 questions mapped to persona",
-        "Define success metrics"
+        "AM: Coach transition — privilege, responsibility, preparation",
+        "PM: Complete AIA Pre-Contract Training Course (~4 hours)",
+        "Submit completion evidence in SPIKE Studio"
       ],
-      "outputs": [
-        "Survey draft v1"
-      ],
-      "debriefQuestions": []
-    },
-    {
-      "id": "activity-w2-d3-02",
-      "dayId": "day-segment-1-week-2-day-3",
-      "title": "Internal Pilot Interviews",
-      "durationMinutes": 35,
-      "materials": [],
-      "instructions": [
-        "Pilot with peers outside squad",
-        "Capture confusion points"
-      ],
-      "outputs": [
-        "Pilot notes"
-      ],
-      "debriefQuestions": []
-    },
-    {
-      "id": "activity-w2-d3-03",
-      "dayId": "day-segment-1-week-2-day-3",
-      "title": "Peer Review Stations",
-      "durationMinutes": 30,
-      "materials": [],
-      "instructions": [
-        "Rotate surveys for bias check",
-        "Revise and finalize"
-      ],
-      "outputs": [
-        "Survey final v1",
-        "Field plan"
-      ],
+      "outputs": ["Professional Readiness badge", "Portfolio reflection"],
       "debriefQuestions": []
     }
   ]

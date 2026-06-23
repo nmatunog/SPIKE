@@ -1,50 +1,34 @@
 {
   "activities": [
     {
-      "id": "activity-w2-d2-01",
+      "id": "activity-w2-d2-field",
       "dayId": "day-segment-1-week-2-day-2",
-      "title": "FNA Question Drill",
-      "durationMinutes": 20,
-      "materials": [],
+      "title": "Field Research — Discover Mode",
+      "durationMinutes": 120,
+      "materials": ["SPIKE Studio", "Interview guide from Day 6"],
       "instructions": [
-        "Rotate through question bank stations",
-        "Practice follow-up probes"
+        "Conduct customer interviews in the field",
+        "Encode each interview in SPIKE Studio (minimum 3, target 5)",
+        "Capture alias, occupation, and five question answers only"
       ],
-      "outputs": [
-        "Question drill notes"
-      ],
+      "outputs": ["Encoded interviews"],
       "debriefQuestions": []
     },
     {
-      "id": "activity-w2-d2-02",
+      "id": "activity-w2-d2-exchange",
       "dayId": "day-segment-1-week-2-day-2",
-      "title": "Advisory Dyad — Round 1 & 2",
-      "durationMinutes": 50,
-      "materials": [],
+      "title": "Market Intelligence Exchange",
+      "durationMinutes": 90,
+      "materials": ["Coach slides", "Squad presentation order"],
       "instructions": [
-        "Role A: advisor conducts discovery",
-        "Role B: client uses persona card",
-        "Swap roles"
+        "Each squad shares: surprise, assumption change, memorable quote, next investigation",
+        "7 minutes per squad + 1 audience question",
+        "No PowerPoint required"
       ],
-      "outputs": [
-        "FNA discovery notes"
-      ],
-      "debriefQuestions": []
-    },
-    {
-      "id": "activity-w2-d2-03",
-      "dayId": "day-segment-1-week-2-day-2",
-      "title": "Needs Theme Synthesis",
-      "durationMinutes": 30,
-      "materials": [],
-      "instructions": [
-        "Squads cluster needs into themes",
-        "Prepare one-slide summary"
-      ],
-      "outputs": [
-        "Squad needs summary"
-      ],
-      "debriefQuestions": []
+      "outputs": ["Midweek Intelligence Reflection"],
+      "debriefQuestions": [
+        "What pattern are you beginning to notice?"
+      ]
     }
   ]
 }

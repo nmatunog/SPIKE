@@ -12,7 +12,8 @@ import { week1CompletionPct, getWeek1DayProgress } from './week1JourneyService.j
 import { isDay1MissionActive, isWeek1PlaybookDaysActive } from './day1BuilderService.js';
 import { playbookHref } from '../routes/paths.js';
 import { getNextBlueprintAction } from './blueprintRecommendations.js';
-import { getActiveWeek2Task, week2MissionProgressPct, playbookWeek2MissionHref } from './customerDiscovery/week2MissionService.js';
+import { getActiveWeek2Task, week2OverallProgressPct, playbookWeek2MissionHref, resolveWeek2PlaybookDay } from './customerDiscovery/week2MissionService.js';
+import { getWeek2PhaseForDay } from './customerDiscovery/week2JourneyConstants.js';
 import { WEEK1_DAY_META } from './mentorWeek1Constants.js';
 
 /** Day 1 journey steps — participant-facing order. */
@@ -106,18 +107,20 @@ export function deriveDay1Journey(participantId) {
 }
 
 /**
- * @param {string} participantId
- * @param {{ week: number, day: number, segment: number }} state
+ * Week 2 field research + validation missions.
  */
 function deriveWeek2DiscoveryMission(participantId, state) {
-  const active = getActiveWeek2Task(participantId);
+  const day = Math.max(1, Math.min(5, state.day ?? 1));
+  const resolvedDay = resolveWeek2PlaybookDay(participantId, day);
+  const active = getActiveWeek2Task(participantId, resolvedDay);
+  const phase = getWeek2PhaseForDay(resolvedDay);
   return {
     title: active.label,
-    stepLabel: `Week ${state.week} · Customer Discovery`,
-    href: playbookWeek2MissionHref(active.slug),
+    stepLabel: `Week 2 · ${phase.label}`,
+    href: playbookWeek2MissionHref(active.slug, { day: resolvedDay }),
     estimatedMinutes: active.estMin ?? 15,
     coachReady: false,
-    progressPercent: week2MissionProgressPct(participantId),
+    progressPercent: week2OverallProgressPct(participantId),
     journey: [],
     allComplete: false,
     day1: false,

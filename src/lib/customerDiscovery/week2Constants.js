@@ -113,10 +113,13 @@ export const DEFAULT_INTERVIEW_QUESTIONS = [
 ];
 
 /** @type {Array<{ id: string, label: string, shortLabel: string, slug: string, estMin: number }>} */
+/** @deprecated Use WEEK2_DAY_TASKS from week2JourneyConstants.js */
 export const WEEK2_MISSION_TASKS = [
-  { id: 'mission', label: 'Read your squad mission', shortLabel: 'Mission', slug: 'mission', estMin: 3 },
-  { id: 'guide', label: 'Design 5 interview questions', shortLabel: 'Questions', slug: 'guide', estMin: 12 },
-  { id: 'thinking', label: 'Capture what changed your thinking', shortLabel: 'Reflect', slug: 'thinking', estMin: 5 },
+  { id: 'mission', label: 'Prepare for Customer Discovery', shortLabel: 'Mission', slug: 'mission', estMin: 5 },
+  { id: 'assumptions', label: 'Identify assumptions', shortLabel: 'Assumptions', slug: 'assumptions', estMin: 10 },
+  { id: 'guide', label: 'Create 5 interview questions', shortLabel: 'Questions', slug: 'guide', estMin: 12 },
+  { id: 'research-plan', label: 'Submit field research plan', shortLabel: 'Plan', slug: 'research-plan', estMin: 8 },
+  { id: 'squad-align', label: 'Squad alignment', shortLabel: 'Squad', slug: 'squad-align', estMin: 5 },
 ];
 
 export const PREPARE_RULES = {

@@ -31,6 +31,7 @@ import {
 } from './staffCoachHomeConstants.js';
 import { playbookHref, staffStageGateHref } from '../routes/paths.js';
 
+import { WEEK2_COACH_TIMELINE } from './customerDiscovery/week2JourneyConstants.js';
 import { resolveEffectiveStaffProgramDay } from './programCalendar.js';
 
 /** Segment 1 playbook seeds ship for week 1 — map calendar week onto published content. */
@@ -125,28 +126,21 @@ export function deriveTodaySchedule(role, week = 1, day = 1, segment = 1) {
  */
 export function deriveTodayHero(role, week = 1, day = 1) {
   if (week >= 2) {
+    const card = WEEK2_COACH_TIMELINE.find((c) => c.day === day) ?? WEEK2_COACH_TIMELINE[0];
     const schedule = deriveTodaySchedule(role, week, day);
     const totalMinutes = schedule.items.reduce((sum, item) => sum + (item.minutes ?? 0), 0);
     return {
-      dayLabel: `Week ${week} · Day ${day}`,
-      themeLabel: 'Activate · Customer Discovery',
-      title: role === 'mentor' ? 'Score squads & coach research' : 'Activate — validation week',
+      dayLabel: `${card.weekday} · Day ${card.programDay}`,
+      themeLabel: card.status,
+      title: card.status,
       subtitle:
         role === 'mentor'
-          ? 'Weekly squad review (~1 min) sets stage gate readiness — pitch completion adds Squad XP bonus.'
-          : 'Facilitate customer discovery missions; mentors complete weekly squad reviews.',
-      objectives: [
-        'Squad mission acknowledged',
-        'Interview guide complete',
-        'Thinking shifts captured',
-      ],
-      expectedOutputs: [
-        'Squad XP leaderboard',
-        'Venture Proposition pitch bonus',
-        'Stage gate readiness',
-      ],
+          ? 'Review your squad — interviews, portfolio, professional readiness, pitch.'
+          : card.objectives[0] ?? 'Week 2 mission delivery',
+      objectives: card.objectives,
+      expectedOutputs: card.deliverables,
       estimatedMinutes: totalMinutes || 240,
-      topActivities: schedule.items.slice(0, 3),
+      topActivities: card.activities.slice(0, 3).map((title) => ({ title, description: '' })),
     };
   }
 

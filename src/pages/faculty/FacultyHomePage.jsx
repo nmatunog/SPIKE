@@ -14,6 +14,8 @@ import { DailyActivationCodeCard } from '../../components/dashboard/DailyActivat
 import { FacultyCohortSyncPanel } from '../../components/faculty/FacultyCohortSyncPanel.jsx';
 import { CohortOnboardingControls } from '../../components/faculty/CohortOnboardingControls.jsx';
 import { FacultySquadReviewPanel } from '../../components/staff/SquadWeeklyReviewPanel.jsx';
+import { UNLOCK_WEEK2 } from '../../lib/programUnlocks.js';
+import { Week2CoachTimeline } from '../../components/playbook/week2/Week2CoachTimeline.jsx';
 import { groupInternsBySquad } from '../../lib/mentorFrameworkService.js';
 
 /**
@@ -46,6 +48,12 @@ export function FacultyHomePage({
         homeHref={ROUTES.programCoachHome}
         cohortStartDate={cohortStartDate}
       />
+
+      {UNLOCK_WEEK2 && programDay.week >= 2 ? (
+        <div className="mt-10">
+          <Week2CoachTimeline activeDay={programDay.day} role="faculty" />
+        </div>
+      ) : null}
 
       <div className="mt-10 border-t border-slate-200 pt-8">
         <button

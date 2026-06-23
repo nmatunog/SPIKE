@@ -25,8 +25,8 @@ export function MissionBriefTask({ participantId, squadName, onComplete, mission
       <div className="spike-surface space-y-4 animate-spike-fade-in">
         <p className="spike-label text-venture-discover">Mission acknowledged ✓</p>
         <p className="text-sm text-slate-600">Next: design your 5 interview questions.</p>
-        <Link to={week2MissionHref('guide', missionContext)} className="spike-btn-primary inline-flex">
-          Design questions <ArrowRight size={16} />
+        <Link to={week2MissionHref('assumptions', missionContext, 1)} className="spike-btn-primary inline-flex">
+          Identify assumptions <ArrowRight size={16} />
         </Link>
       </div>
     );

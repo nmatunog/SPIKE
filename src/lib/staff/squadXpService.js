@@ -58,10 +58,18 @@ function memberActivitySignals(participantId) {
   const portfolioDone = Boolean(w2.portfolioSyncedAt);
   const assignmentDone = Boolean(w2.guideCompletedAt);
   const missionDone = Boolean(w2.missionAcknowledged);
+  const readinessDone = Boolean(w2.professionalReadinessAt);
+  const pitchDone = Boolean(w2.pitchSubmittedAt);
   const coachPct = getCoachProgress(participantId)?.percent ?? 0;
   const surveys = countSubmittedSurveys(participantId);
   const playbookActive = surveys > 0 || coachPct >= 20;
-  const stageGateMin = encoded >= 3 && assignmentDone && hasReflection && portfolioDone;
+  const stageGateMin =
+    encoded >= 3
+    && assignmentDone
+    && hasReflection
+    && portfolioDone
+    && readinessDone
+    && pitchDone;
 
   return {
     encoded,
@@ -69,9 +77,11 @@ function memberActivitySignals(participantId) {
     portfolioDone,
     assignmentDone,
     missionDone,
+    readinessDone,
+    pitchDone,
     playbookActive,
     stageGateMin,
-    hasAnyProgress: missionDone || encoded > 0 || coachPct > 0 || surveys > 0,
+    hasAnyProgress: missionDone || encoded > 0 || coachPct > 0 || surveys > 0 || readinessDone,
   };
 }
 
