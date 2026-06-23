@@ -122,6 +122,7 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
   }
 
   const filledAnswers = answers.filter((a) => String(a).trim().length > 0).length;
+  const substantialAnswers = answers.filter((a) => String(a).trim().length > 8).length;
 
   return (
     <div className="space-y-6">
@@ -158,7 +159,8 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
           </span>
         ) : (
           <span className="text-xs text-slate-500">
-            {filledAnswers} / {MAX_INTERVIEW_QUESTIONS} answers · alias required for encode
+            {substantialAnswers} / 3 substantial answers needed · {filledAnswers} / {MAX_INTERVIEW_QUESTIONS} started
+            {alias.trim().length <= 1 ? ' · alias required' : ''}
           </span>
         )}
       </div>
@@ -238,7 +240,7 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
         />
       </label>
 
-      {insights ? (
+      {insights && encoded ? (
         <section className="rounded-xl border border-venture-discover/20 bg-venture-discover/5 p-4 text-sm">
           <p className="mb-2 flex items-center gap-1 font-semibold text-venture-discover">
             <Check size={14} /> AI extracted insights

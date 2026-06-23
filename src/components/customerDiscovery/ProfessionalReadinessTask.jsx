@@ -27,11 +27,9 @@ export function ProfessionalReadinessTask({ participantId, onSaved, mode = 'miss
           value={reflection}
           onChange={(e) => {
             setReflection(e.target.value);
-            if (e.target.value.trim().length > 15) {
-              saveReadinessReflection(participantId, e.target.value);
-              onSaved?.();
-            }
+            saveReadinessReflection(participantId, e.target.value);
           }}
+          onBlur={() => onSaved?.()}
           rows={5}
           className="w-full rounded-xl border border-slate-200 p-4 text-sm focus:border-spike focus:outline-none"
         />

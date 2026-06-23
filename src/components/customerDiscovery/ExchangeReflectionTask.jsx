@@ -11,9 +11,7 @@ export function ExchangeReflectionTask({ participantId, onSaved }) {
 
   function persist(value) {
     setResponse(value);
-    if (value.trim().length > 15) {
-      saveExchangeReflection(participantId, value);
-    }
+    saveExchangeReflection(participantId, value);
   }
 
   return (

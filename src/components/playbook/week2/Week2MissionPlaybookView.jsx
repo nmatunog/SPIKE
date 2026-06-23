@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowRight, BookOpen, Sparkles } from 'lucide-react';
 import { StudioShell } from '../../customerDiscovery/StudioShell.jsx';
 import { MissionTrackNav } from '../../customerDiscovery/MissionTrackNav.jsx';
@@ -15,7 +15,12 @@ import { ExchangeReflectionTask } from '../../customerDiscovery/ExchangeReflecti
 import { ProfessionalReadinessTask } from '../../customerDiscovery/ProfessionalReadinessTask.jsx';
 import { FecValidationLab } from '../../customerDiscovery/fecValidation/FecValidationLab.jsx';
 import { MarketValidationPitchView } from '../../customerDiscovery/fecValidation/MarketValidationPitchView.jsx';
-import { playbookWeek2MissionHref, getActiveWeek2Task, week2OverallProgressPct } from '../../../lib/customerDiscovery/week2MissionService.js';
+import {
+  playbookWeek2MissionHref,
+  getActiveWeek2Task,
+  isWeek2MissionSlugForDay,
+  week2OverallProgressPct,
+} from '../../../lib/customerDiscovery/week2MissionService.js';
 import { getWeek2PhaseForDay } from '../../../lib/customerDiscovery/week2JourneyConstants.js';
 import { Week2PrepareReviseNav } from '../../customerDiscovery/Week2PrepareReviseNav.jsx';
 
@@ -50,7 +55,8 @@ export function Week2MissionPlaybookView({
 
   const day = Math.max(1, Math.min(5, playbookDay));
 
-  const slug = missionSlug || getActiveWeek2Task(participantId, day).slug;
+  const slugValid = isWeek2MissionSlugForDay(missionSlug, day);
+  const slug = slugValid && missionSlug ? missionSlug : getActiveWeek2Task(participantId, day).slug;
 
   const progressPct = week2OverallProgressPct(participantId);
   const phase = getWeek2PhaseForDay(day);
@@ -64,6 +70,11 @@ export function Week2MissionPlaybookView({
       window.location.assign(playbookWeek2MissionHref(nextSlug, { day: nextDay }));
     }
   }
+
+  useEffect(() => {
+    if (!missionSlug || slugValid) return;
+    goToMission(slug, day);
+  }, [missionSlug, slugValid, slug, day]);
 
   function renderTask() {
     if (slug.startsWith('interview-')) {

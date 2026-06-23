@@ -2,6 +2,7 @@
  * Week 2 Customer Discovery — local persistence.
  */
 import { DEFAULT_INTERVIEW_QUESTIONS, MAX_INTERVIEW_QUESTIONS } from './week2Constants.js';
+import { extractInterviewInsights } from './week2InsightSynthesis.js';
 
 const STORAGE_KEY = 'spike_week2_discovery_v2';
 const LEGACY_STORAGE_KEY = 'spike_week2_discovery_v1';
@@ -77,16 +78,20 @@ export function loadWeek2Discovery(participantId) {
     questions: stored.questions?.length ? stored.questions : defaultWeek2State().questions,
     assumptions: stored.assumptions ?? [],
     thinkingShifts: stored.thinkingShifts ?? [],
-    interviews: (stored.interviews ?? []).map((iv) => ({
-      id: iv.id ?? `iv-${Date.now()}`,
-      alias: iv.alias ?? '',
-      occupation: iv.occupation ?? '',
-      answers: padInterviewAnswers(iv.answers),
-      reflection: iv.reflection ?? '',
-      encoded: Boolean(iv.encoded),
-      aiInsights: iv.aiInsights ?? undefined,
-      encodedAt: iv.encodedAt ?? null,
-    })),
+    interviews: (stored.interviews ?? []).map((iv) => {
+      const answers = padInterviewAnswers(iv.answers);
+      const encoded = Boolean(iv.encoded);
+      return {
+        id: iv.id ?? `iv-${Date.now()}`,
+        alias: iv.alias ?? '',
+        occupation: iv.occupation ?? '',
+        answers,
+        reflection: iv.reflection ?? '',
+        encoded,
+        aiInsights: iv.aiInsights ?? (encoded ? extractInterviewInsights(answers) : undefined),
+        encodedAt: iv.encodedAt ?? null,
+      };
+    }),
     fieldResearchPlan: stored.fieldResearchPlan ?? '',
     squadDiscussionNotes: stored.squadDiscussionNotes ?? '',
     readinessEvidenceNote: stored.readinessEvidenceNote ?? '',

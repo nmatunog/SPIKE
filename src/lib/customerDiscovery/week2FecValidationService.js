@@ -209,7 +209,7 @@ function syncFecBox(participantId, boxId, text, evidenceCount) {
   if (boxId === 'uvp') {
     saveFecSummaryField(participantId, { unified_venture_proposition: text });
   } else {
-    saveFecField(participantId, 'create_value', meta.fieldKey, text);
+    saveFecField(participantId, meta.engineKey ?? 'create_value', meta.fieldKey, text);
   }
   const afterScore = Math.min(95, meta.before + Math.round(evidenceCount * 4.5) + 15);
   return afterScore;

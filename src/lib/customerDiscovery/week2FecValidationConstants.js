@@ -74,13 +74,13 @@ export const FEC_VALIDATION_STEPS = [
   },
 ];
 
-/** @type {Record<FecBoxId, { label: string, before: number, fieldKey: string, summaryKey?: string }>} */
+/** @type {Record<FecBoxId, { label: string, before: number, fieldKey: string, engineKey?: string, summaryKey?: string }>} */
 export const FEC_BOX_META = {
   uvp: { label: 'UVP', before: 45, fieldKey: 'unified_venture_proposition', summaryKey: 'unified_venture_proposition' },
-  who_we_serve: { label: 'Who We Serve', before: 60, fieldKey: 'customer_segments' },
-  problem_we_solve: { label: 'Problem We Solve', before: 40, fieldKey: 'customer_problem' },
-  client_experience: { label: 'Client Experience', before: 25, fieldKey: 'value_offering' },
-  winning_strategy: { label: 'Winning Strategy', before: 15, fieldKey: 'value_offering' },
+  who_we_serve: { label: 'Who We Serve', before: 60, fieldKey: 'customer_segments', engineKey: 'create_value' },
+  problem_we_solve: { label: 'Problem We Solve', before: 40, fieldKey: 'customer_problem', engineKey: 'create_value' },
+  client_experience: { label: 'Client Experience', before: 25, fieldKey: 'value_offering', engineKey: 'create_value' },
+  winning_strategy: { label: 'Winning Strategy', before: 15, fieldKey: 'growth_multipliers', engineKey: 'agency_leadership' },
 };
 
 /** @type {Array<{ id: string, label: string, responsibility: string }>} */

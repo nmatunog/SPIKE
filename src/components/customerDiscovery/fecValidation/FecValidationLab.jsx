@@ -39,9 +39,19 @@ export function FecValidationLab({ participantId, squadName = '', stepSlug, onSa
   const stepDef = FEC_VALIDATION_STEPS.find((s) => s.slug === activeSlug) ?? FEC_VALIDATION_STEPS[0];
   const stepIndex = FEC_VALIDATION_STEPS.findIndex((s) => s.slug === activeSlug);
   const prevStep = stepIndex > 0 ? FEC_VALIDATION_STEPS[stepIndex - 1] : null;
-  const locked = false;
+  const locked = prevStep ? !isFecStepCompleteForParticipant(participantId, prevStep.id) : false;
   const complete = isFecStepCompleteForParticipant(participantId, stepDef.id);
   const payload = useMemo(() => getFecStepPayload(participantId, stepDef.id), [participantId, stepDef.id]);
+
+  useEffect(() => {
+    setDraft('');
+    setSelections({});
+    setVerdict('supported');
+    const saved = getFecValidationLabState(participantId).fec.steps[stepDef.id];
+    if (saved?.approvedStatement) setDraft(String(saved.approvedStatement));
+    if (saved?.selections) setSelections(saved.selections);
+    if (saved?.verdict) setVerdict(String(saved.verdict));
+  }, [participantId, stepDef.id]);
 
   if (!stepSlug || stepSlug === 'fec-lab') {
     return (
@@ -54,23 +64,36 @@ export function FecValidationLab({ participantId, squadName = '', stepSlug, onSa
     );
   }
 
+  function defaultStatementForStep() {
+    switch (stepDef.id) {
+      case 'fec-step-1':
+        return String(payload.suggestedSummary ?? '');
+      case 'fec-step-2':
+        return String(payload.validatedStatement ?? '');
+      case 'fec-step-3':
+        return String(payload.uvpV2 ?? '');
+      case 'fec-step-4':
+        return String(payload.experienceStatement ?? '');
+      case 'fec-step-5':
+        return String(payload.strategicStatement ?? '');
+      default:
+        return '';
+    }
+  }
+
   function approve(statement) {
-    const candidates = [
-      statement,
-      draft,
-      payload.suggestedSummary,
-      payload.validatedStatement,
-      payload.experienceStatement,
-      payload.strategicStatement,
-      payload.uvpV2,
-    ];
-    const resolved = candidates.map((c) => String(c ?? '').trim()).find(Boolean) ?? '';
+    const resolved = [statement, draft, defaultStatementForStep()]
+      .map((c) => String(c ?? '').trim())
+      .find(Boolean) ?? '';
+    const afterText = stepDef.id === 'fec-step-3'
+      ? String(draft || payload.uvpV2 || resolved).trim()
+      : String(draft || defaultStatementForStep() || resolved).trim();
     approveFecStep(participantId, stepDef.id, {
       approvedStatement: resolved,
       selections: { ...selections, suggestedSummary: payload.suggestedSummary, topProblem: payload.topProblem },
       verdict,
       beforeText: String(payload.originalUvp ?? ''),
-      afterText: draft || String(payload.uvpV2 ?? payload.validatedStatement ?? payload.experienceStatement ?? payload.strategicStatement ?? ''),
+      afterText,
     });
     refresh();
   }

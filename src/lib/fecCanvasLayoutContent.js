@@ -44,7 +44,8 @@ export function buildFecLayoutParticipantContent(participantId) {
     || pickText(draft?.step4?.clientFeeling);
   const partners = pickText(getFecField(participantId, 'enable_value', 'key_partners'));
   const winningStrategy =
-    pickText(getFecField(participantId, 'create_value', 'value_offering'))
+    pickText(getFecField(participantId, 'agency_leadership', 'growth_multipliers'))
+    || pickText(getFecField(participantId, 'create_value', 'value_offering'))
     || pickText(draft?.step3?.different);
 
   const hasContent = Boolean(

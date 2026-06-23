@@ -5,6 +5,7 @@ import { loadWeek2Discovery, saveWeek2Discovery, padInterviewAnswers } from './w
 import { MAX_INTERVIEW_QUESTIONS, MIN_ENCODED_INTERVIEWS, resolveSquadMission } from './week2Constants.js';
 import { syncWeek2Day1Portfolio, syncWeek2PortfolioArtifacts } from './week2PortfolioSync.js';
 import { extractInterviewInsights, aggregateSquadIntelligence } from './week2InsightSynthesis.js';
+import { aggregateSquadInterviews, getSquadMemberIds } from './week2SquadEvidenceService.js';
 
 /** @param {string} participantId */
 export function getWeek2State(participantId) {
@@ -103,7 +104,9 @@ export function saveEncodedInterview(participantId, interviewIndex, data) {
   const occupation = String(data.occupation ?? prior.occupation ?? '').trim();
   const reflection = String(data.reflection ?? prior.reflection ?? '').trim();
   const encoded = filledAnswers.length >= 3 && alias.length > 1;
-  const aiInsights = encoded ? extractInterviewInsights(answers) : prior.aiInsights;
+  const aiInsights = encoded
+    ? extractInterviewInsights(answers)
+    : null;
 
   interviews[interviewIndex] = {
     ...prior,
@@ -113,8 +116,8 @@ export function saveEncodedInterview(participantId, interviewIndex, data) {
     answers,
     reflection,
     encoded,
-    aiInsights: encoded ? aiInsights : prior.aiInsights,
-    encodedAt: encoded ? prior.encodedAt ?? new Date().toISOString() : prior.encodedAt,
+    aiInsights,
+    encodedAt: encoded ? prior.encodedAt ?? new Date().toISOString() : null,
   };
 
   const next = saveWeek2Discovery(participantId, { interviews });
@@ -186,17 +189,24 @@ export function saveProfessionalReadiness(participantId, evidenceNote) {
 /** @param {string} participantId @param {string} response */
 export function saveReadinessReflection(participantId, response) {
   const text = String(response ?? '').trim();
+  const state = loadWeek2Discovery(participantId);
+  const thinkingShifts = [...(state.thinkingShifts ?? [])];
+  const existingIdx = thinkingShifts.findIndex((s) => s.taskId === 'readiness-reflect');
+  const shift = {
+    id: existingIdx >= 0 ? thinkingShifts[existingIdx].id : `shift-readiness-${participantId}`,
+    prompt: 'What did you learn that will make you a better financial professional?',
+    response: text,
+    taskId: 'readiness-reflect',
+    createdAt: existingIdx >= 0 ? thinkingShifts[existingIdx].createdAt : new Date().toISOString(),
+  };
+  if (existingIdx >= 0) thinkingShifts[existingIdx] = shift;
+  else thinkingShifts.push(shift);
+
   const next = saveWeek2Discovery(participantId, {
-    readinessReflectionAt: text.length > 15 ? new Date().toISOString() : null,
+    thinkingShifts,
+    readinessReflectionAt: text.length > 15 ? new Date().toISOString() : state.readinessReflectionAt,
   });
-  if (text.length > 15) {
-    saveThinkingShift(participantId, {
-      prompt: 'What did you learn that will make you a better financial professional?',
-      response: text,
-      taskId: 'readiness-reflect',
-    });
-    syncWeek2PortfolioArtifacts(participantId);
-  }
+  if (text.length > 15) syncWeek2PortfolioArtifacts(participantId);
   return next;
 }
 
@@ -243,8 +253,9 @@ export function savePitchOutline(participantId, outline) {
 /** @param {string} participantId */
 export function getSquadIntelligenceBoard(participantId) {
   const state = loadWeek2Discovery(participantId);
+  const interviews = aggregateSquadInterviews(getSquadMemberIds(participantId));
   return {
-    ...aggregateSquadIntelligence(state.interviews ?? []),
+    ...aggregateSquadIntelligence(interviews),
     discussionNotes: state.squadDiscussionNotes ?? '',
   };
 }

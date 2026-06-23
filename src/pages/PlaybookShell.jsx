@@ -225,7 +225,15 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
     setMobilePanel('content');
     const weekNum = selectedWeek?.week.weekNumber ?? entryWeek;
     const dayNum = Number.parseInt(slug.replace('day-', ''), 10) || 1;
-    syncPlaybookQuery(entrySegment, weekNum, dayNum);
+    const params = new URLSearchParams(searchParams);
+    params.set('segment', String(entrySegment));
+    params.set('week', String(weekNum));
+    params.set('day', String(dayNum));
+    if (showMissionFirst && participantId) {
+      const resolvedDay = resolveWeek2PlaybookDay(participantId, dayNum);
+      params.set('mission', getActiveWeek2Task(participantId, resolvedDay).slug);
+    }
+    setSearchParams(params, { replace: true });
   };
 
   const roleLabel =

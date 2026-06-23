@@ -130,6 +130,13 @@ export function deriveWeek2MissionTrack(participantId, context = 'blueprint', da
   }));
 }
 
+/** @param {string} slug @param {number} day */
+export function isWeek2MissionSlugForDay(slug, day) {
+  const normalized = String(slug ?? '').trim();
+  if (!normalized) return false;
+  return getWeek2TasksForDay(day).some((task) => task.slug === normalized);
+}
+
 /** @param {string} participantId @param {number} [day] */
 export function getActiveWeek2Task(participantId, day = 1) {
   const track = deriveWeek2MissionTrack(participantId, 'playbook', day);
