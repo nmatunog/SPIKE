@@ -1,33 +1,49 @@
 {
   "dayId": "day-segment-1-week-2-day-4",
-  "theme": "Professionalism",
-  "title": "Mentor Guide — Day 9 — Field Survey Execution",
-  "coachingObjective": "Coach conduct and resilience in the field.",
+  "theme": "Synthesize",
+  "title": "Mentor Guide — Day 9 — FEC Validation Lab™",
+  "coachingObjective": "Coach squads through evidence-based FEC validation — review and approve, never re-enter data.",
   "timing": {
-    "preSession": "Review facilitator guide and deck speaker notes",
-    "duringSession": "Circulate during squad activities",
+    "preSession": "Check squad interview count (target 9) in mentor dashboard",
+    "duringSession": "Circulate during FEC Validation Lab steps",
     "postSession": "Complete squad weekly review snapshot"
   },
   "discussionQuestions": [
-    "Did any squad fall short on quota — why?",
-    "What ethical issues arose?",
-    "What story is emerging in the data?"
+    "Which customer quotes drove the biggest FEC change?",
+    "Did the UVP stress test reveal assumptions that failed?",
+    "Who holds Research Lead, FEC Lead, and Pitch Lead roles?"
   ],
   "observationAreas": [
-    "Introduction quality",
-    "Resilience after rejection",
-    "Data discipline"
+    "Evidence aggregation quality (9 interviews)",
+    "Step-by-step FEC lab completion",
+    "Collaboration on approve/edit decisions",
+    "FEC poster confidence animation"
   ],
   "coachingTips": [
-    "Celebrate professional conduct publicly",
-    "Normalize rejection stories"
+    "Push squads to edit AI drafts — approval is not passive",
+    "Celebrate UVP Version 2 when evidence supports revision",
+    "Confirm portfolio auto-sync after each step"
   ],
-  "warningSigns": [],
-  "reflectionPrompts": [],
+  "warningSigns": [
+    "Squad approving steps with fewer than 6 encoded interviews",
+    "Duplicate pitch encoding outside SPIKE Studio"
+  ],
+  "reflectionPrompts": [
+    "What did validation teach you about your customer segment?"
+  ],
   "expectedOutcomes": [
-    "Survey dataset",
-    "Field debrief summary"
+    "Validated FEC boxes 1–5",
+    "UVP Version 2",
+    "AI pitch structure ready for Friday"
   ],
-  "activityCoachingNotes": [],
-  "debriefWithFaculty": []
+  "activityCoachingNotes": [
+    {
+      "activityId": "activity-w2-d4-fec-lab",
+      "notes": "Six progressive unlock steps. Squad state syncs across devices on login."
+    }
+  ],
+  "debriefWithFaculty": [
+    "Which squads are pitch-ready for Friday?",
+    "Any squads blocked on interview count?"
+  ]
 }

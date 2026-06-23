@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { ArrowRight, Check } from 'lucide-react';
 import {
   approveFecStep,
@@ -14,6 +14,8 @@ import {
   FecValidationCanvas,
   SquadRolesBanner,
 } from './FecValidationShared.jsx';
+import { FecValidationPoster } from './FecValidationPoster.jsx';
+import { hydrateParticipantFecValidation } from '../../../lib/customerDiscovery/week2FecValidationSync.js';
 
 /**
  * @param {{ participantId: string, squadName?: string, stepSlug?: string, onSaved?: () => void, memberNames?: Record<string, string>, onNavigate?: (slug: string) => void }} props
@@ -27,6 +29,10 @@ export function FecValidationLab({ participantId, squadName = '', stepSlug, onSa
     tick((n) => n + 1);
     onSaved?.();
   };
+
+  useEffect(() => {
+    void hydrateParticipantFecValidation(participantId).then(() => refresh());
+  }, [participantId]);
 
   const lab = useMemo(() => getFecValidationLabState(participantId), [participantId, squadName]);
   const activeSlug = stepSlug && stepSlug !== 'fec-lab' ? stepSlug : lab.activeStep.slug;
@@ -103,6 +109,7 @@ export function FecValidationLab({ participantId, squadName = '', stepSlug, onSa
           ) : null}
 
           <FecValidationCanvas boxScores={lab.fec.boxScores} />
+          <FecValidationPoster participantId={participantId} squadKey={lab.squadKey} />
 
           {!complete ? (
             <button
@@ -158,6 +165,7 @@ function FecValidationLanding({ lab, participantId, memberNames, onStart }) {
       <section className="space-y-3">
         <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500">FEC progress snapshot</h2>
         <FecValidationCanvas boxScores={lab.fec.boxScores} animate={false} />
+        <FecValidationPoster participantId={participantId} squadKey={lab.squadKey} animate={false} />
       </section>
 
       <section className="space-y-2">

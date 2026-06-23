@@ -104,10 +104,23 @@ function BoxBody({ mode, content, minHeight = '3.5rem' }) {
   );
 }
 
-function FecUvpCenter({ mode, centerContent, uvpDetailContent }) {
+function FecUvpCenter({ mode, centerContent, uvpDetailContent, scoreMeta, animateScore = true, focused = false }) {
   const content = centerContent ?? uvpDetailContent;
+  const validated = scoreMeta && scoreMeta.after > scoreMeta.before;
   return (
-    <section className="flex h-full flex-col rounded-xl border-2 border-spike bg-spike p-4 text-center text-white shadow-lg md:p-5">
+    <section className={`relative flex h-full flex-col rounded-xl border-2 bg-spike p-4 text-center text-white shadow-lg transition-all duration-700 md:p-5 ${focused ? 'ring-4 ring-emerald-300/60' : 'border-spike'}`}>
+      {scoreMeta ? (
+        <div className="absolute right-2 top-2 rounded-lg bg-black/40 px-2 py-1 text-[10px] font-bold">
+          {animateScore && validated ? (
+            <span>
+              <span className="text-red-200/70 line-through">{scoreMeta.before}%</span>{' '}
+              <span className="text-yellow-200">→ {scoreMeta.after}%</span>
+            </span>
+          ) : (
+            <span className="text-yellow-200">{scoreMeta.after}%</span>
+          )}
+        </div>
+      ) : null}
       <Heart size={22} className="mx-auto mb-2 text-white" aria-hidden />
       <h3 className="text-xs font-black uppercase tracking-wide md:text-sm">{FEC_LAYOUT_CENTER.title}</h3>
       <p className="mt-1 text-[11px] text-red-100">{FEC_LAYOUT_CENTER.tagline}</p>
@@ -183,6 +196,10 @@ function FecSideComplexBox({ box, mode, columnContent, compact = false }) {
  *   mode: 'blank' | 'full',
  *   content?: string,
  *   className?: string,
+ *   scoreMeta?: { before: number, after: number, status?: string, evidenceCount?: number },
+ *   animateScore?: boolean,
+ *   dimmed?: boolean,
+ *   focused?: boolean,
  * }} props
  */
 function FecSimpleBox({
@@ -195,11 +212,30 @@ function FecSimpleBox({
   mode,
   content,
   className = '',
+  scoreMeta,
+  animateScore = true,
+  dimmed = false,
+  focused = false,
 }) {
+  const validated = scoreMeta && scoreMeta.after > scoreMeta.before;
   return (
     <article
-      className={`flex h-full flex-col rounded-xl border-2 border-slate-200 bg-white p-3 shadow-sm md:p-4 ${className}`}
+      className={`relative flex h-full flex-col rounded-xl border-2 bg-white p-3 shadow-sm transition-all duration-700 md:p-4 ${
+        dimmed ? 'border-slate-100 opacity-40 grayscale' : focused ? 'border-emerald-400 ring-2 ring-emerald-200' : 'border-slate-200'
+      } ${className}`}
     >
+      {scoreMeta ? (
+        <div className="absolute right-2 top-2 z-10 rounded-lg bg-slate-900/90 px-2 py-1 text-[10px] font-bold text-white">
+          {animateScore && validated ? (
+            <span>
+              <span className="text-slate-400 line-through">{scoreMeta.before}%</span>{' '}
+              <span className="text-emerald-300">→ {scoreMeta.after}%</span>
+            </span>
+          ) : (
+            <span>{scoreMeta.after}%</span>
+          )}
+        </div>
+      ) : null}
       <div className="mb-2 flex items-start gap-2">
         <span className="flex h-6 w-6 shrink-0 items-center justify-center bg-spike text-[11px] font-black text-white">
           {number}
@@ -233,6 +269,10 @@ function FecSimpleBox({
  *   showHeader?: boolean,
  *   showFooter?: boolean,
  *   variant?: 'poster' | 'embedded',
+ *   validationFocus?: boolean,
+ *   boxScores?: Record<string, { before?: number, after?: number, status?: string, evidenceCount?: number }>,
+ *   animateScores?: boolean,
+ *   headerMeta?: { weekLabel?: string, dayLabel?: string, subtitle?: string },
  * }} props
  */
 export function FecCanvasLayout({
@@ -244,6 +284,10 @@ export function FecCanvasLayout({
   showHeader = true,
   showFooter = true,
   variant = 'poster',
+  validationFocus = false,
+  boxScores = {},
+  animateScores = true,
+  headerMeta,
 }) {
   const topBoxes = FEC_LAYOUT_SIMPLE_BOXES.filter((b) => b.grid === 'top');
   const partnersBox = FEC_LAYOUT_SIMPLE_BOXES.find((b) => b.grid === 'below-center');
@@ -252,6 +296,13 @@ export function FecCanvasLayout({
   const financialContent = complexContents.financial_engine ?? {};
   const roadmapContent = complexContents.venture_roadmap ?? {};
   const dashboardContent = complexContents.measurement_dashboard ?? {};
+
+  const activeBoxIds = new Set(['who_we_serve', 'problem_we_solve', 'client_experience', 'winning_strategy']);
+  const dimClass = validationFocus ? 'opacity-35 grayscale pointer-events-none' : '';
+
+  const weekBadge = headerMeta?.weekLabel ?? 'Week 1';
+  const dayBadge = headerMeta?.dayLabel ?? 'Day 4';
+  const subtitle = headerMeta?.subtitle ?? FEC_LAYOUT_SUBTITLE;
 
   const shellClass =
     variant === 'poster'
@@ -265,10 +316,10 @@ export function FecCanvasLayout({
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="flex flex-wrap items-center gap-2">
               <span className="rounded bg-spike px-2 py-0.5 text-[10px] font-black uppercase text-white">
-                Week 1
+                {weekBadge}
               </span>
               <span className="rounded-full border-2 border-spike px-2 py-0.5 text-[10px] font-black uppercase text-spike">
-                Day 4
+                {dayBadge}
               </span>
             </div>
             <div className="hidden items-center gap-2 text-right sm:flex">
@@ -290,7 +341,7 @@ export function FecCanvasLayout({
             )}
           </h2>
           <p className="mt-1 text-xs font-medium uppercase tracking-wide text-slate-500 md:text-sm">
-            {FEC_LAYOUT_SUBTITLE}
+            {subtitle}
           </p>
           <div className="mt-4 flex flex-wrap justify-end gap-4 md:gap-6">
             {FEC_PROCESS_STEPS.map((step) => (
@@ -308,12 +359,20 @@ export function FecCanvasLayout({
           {/* Row 1 — four customer/strategy boxes */}
           {topBoxes.map((box) => (
             <div key={box.id} className="lg:col-span-3">
-              <FecSimpleBox {...box} mode={mode} content={boxContents[box.id]} />
+              <FecSimpleBox
+                {...box}
+                mode={mode}
+                content={boxContents[box.id]}
+                scoreMeta={boxScores[box.id]}
+                animateScore={animateScores}
+                focused={validationFocus && activeBoxIds.has(box.id)}
+                dimmed={validationFocus && !activeBoxIds.has(box.id)}
+              />
             </div>
           ))}
 
           {/* Row 2 — Growth | UVP center | Financial */}
-          <div className="lg:col-span-4 lg:row-start-2">
+          <div className={`lg:col-span-4 lg:row-start-2 ${dimClass}`}>
             <FecSideComplexBox
               box={FEC_GROWTH_ENGINES_BOX}
               mode={mode}
@@ -322,9 +381,16 @@ export function FecCanvasLayout({
             />
           </div>
           <div className="lg:col-span-4 lg:col-start-5 lg:row-start-2">
-            <FecUvpCenter mode={mode} centerContent={centerContent} uvpDetailContent={uvpDetailContent} />
+            <FecUvpCenter
+              mode={mode}
+              centerContent={centerContent}
+              uvpDetailContent={uvpDetailContent}
+              scoreMeta={boxScores.uvp}
+              animateScore={animateScores}
+              focused={validationFocus}
+            />
           </div>
-          <div className="lg:col-span-4 lg:col-start-9 lg:row-start-2">
+          <div className={`lg:col-span-4 lg:col-start-9 lg:row-start-2 ${dimClass}`}>
             <FecSideComplexBox
               box={FEC_FINANCIAL_ENGINE_BOX}
               mode={mode}
@@ -335,13 +401,13 @@ export function FecCanvasLayout({
 
           {/* Row 3 — Key partners under UVP */}
           {partnersBox ? (
-            <div className="lg:col-span-4 lg:col-start-5 lg:row-start-3">
-              <FecSimpleBox {...partnersBox} mode={mode} content={boxContents[partnersBox.id]} />
+            <div className={`lg:col-span-4 lg:col-start-5 lg:row-start-3 ${dimClass}`}>
+              <FecSimpleBox {...partnersBox} mode={mode} content={boxContents[partnersBox.id]} dimmed={validationFocus} />
             </div>
           ) : null}
 
           {/* Row 4 — Roadmap + Dashboard side by side */}
-          <article className="overflow-hidden rounded-xl border-2 border-slate-200 bg-white shadow-sm lg:col-span-6 lg:row-start-4">
+          <article className={`overflow-hidden rounded-xl border-2 border-slate-200 bg-white shadow-sm lg:col-span-6 lg:row-start-4 ${dimClass}`}>
             <div className="bg-[#001F3F] px-4 py-2">
               <div className="flex items-center gap-2">
                 <span className="flex h-5 w-5 items-center justify-center bg-spike text-[10px] font-black text-white">
@@ -372,7 +438,7 @@ export function FecCanvasLayout({
             </p>
           </article>
 
-          <article className="overflow-hidden rounded-xl border-2 border-slate-200 bg-white shadow-sm lg:col-span-6 lg:col-start-7 lg:row-start-4">
+          <article className={`overflow-hidden rounded-xl border-2 border-slate-200 bg-white shadow-sm lg:col-span-6 lg:col-start-7 lg:row-start-4 ${dimClass}`}>
             <div className="bg-[#001F3F] px-4 py-2">
               <div className="flex items-center gap-2">
                 <span className="flex h-5 w-5 items-center justify-center bg-spike text-[10px] font-black text-white">

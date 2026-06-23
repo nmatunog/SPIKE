@@ -1,51 +1,53 @@
 {
   "dayId": "day-segment-1-week-2-day-5",
-  "title": "Facilitator Guide — Day 10 — Survey Debrief & 80-Hour Market Review Gate",
+  "title": "Facilitator Guide — Day 10 — Market Validation Pitch & Stage Gate II",
   "durationHours": 4,
   "prepChecklist": [
-    "Load gate checklist in admin",
-    "Confirm presentation AV",
-    "Invite venture partners if scheduled"
+    "Confirm squads completed FEC Validation Lab (6 steps)",
+    "Load Stage Gate ceremony in SPIKE (projector mode)",
+    "Review Squad XP leaderboard and mentor review panel",
+    "AV check for 5-minute squad presentations"
   ],
   "sessionFlow": [
     {
-      "time": "0:00–0:20",
-      "activity": "Deck 01 — Presentation standards",
-      "notes": "Show exemplar slide structure."
+      "time": "0:00–0:15",
+      "activity": "Opening — What The Market Taught Us",
+      "notes": "Frame: present evidence, not ideas."
     },
     {
-      "time": "0:20–1:05",
-      "activity": "Squad presentation rehearsals",
-      "notes": "Mentors time rehearsals."
+      "time": "0:15–2:15",
+      "activity": "Market Validation Pitch — 5 min per squad + Q&A",
+      "notes": "10-slide structure auto-generated from SPIKE Studio."
     },
     {
-      "time": "1:05–2:35",
-      "activity": "Market Review presentations + Q&A",
-      "notes": "Program coach scores with rubric."
-    },
-    {
-      "time": "2:35–2:50",
-      "activity": "80-hour gate confirmation",
-      "notes": "Admin verifies hours artifact."
-    },
-    {
-      "time": "2:50–3:00",
-      "activity": "Week 2 reflection + Week 3 prep",
+      "time": "2:15–2:30",
+      "activity": "Break",
       "notes": ""
+    },
+    {
+      "time": "2:30–3:00",
+      "activity": "Stage Gate II ceremony",
+      "notes": "Coach decision per squad: Not Ready / Almost Ready / Ready For Build."
+    },
+    {
+      "time": "3:00–3:15",
+      "activity": "Squad XP + mentor commendations",
+      "notes": "Four dimensions: Learning, Collaboration, Professionalism, Readiness."
     }
   ],
   "debriefQuestions": [
-    "Which squads showed strongest evidence?",
-    "Are market gaps actionable for operations week?",
-    "Who needs remediation before Week 3?"
+    "Which squad showed the strongest interview evidence?",
+    "What patterns emerged across Cassiopeia, Pegasus, and Argo Navis?",
+    "Who is ready for Week 3 BUILD stage?"
   ],
   "commonPitfalls": [
-    "Data dumps without insights",
-    "Ignoring persona link",
-    "Missing gate artifacts"
+    "Pitching ideas instead of customer quotes and validated problems",
+    "Missing FEC readiness on readiness cards",
+    "Individual grading instead of squad-first assessment"
   ],
   "coachingTips": [
-    "Push for one clear decision per presentation",
-    "Document remediation plans for weak gates"
+    "Use SPIKE presentation mode — slides already populated",
+    "Stage gate is squad decision only — no individual scores",
+    "Document remediation for Almost Ready squads before Week 3"
   ]
 }

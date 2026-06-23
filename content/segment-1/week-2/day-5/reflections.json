@@ -1,13 +1,13 @@
-{
-  "reflections": [
-    {
-      "id": "reflection-w2-d5",
-      "dayId": "day-segment-1-week-2-day-5",
-      "title": "Week 2 reflection",
-      "prompts": [
-        "What landed best with your squad today?",
-        "What needs remediation before tomorrow?"
-      ]
-    }
-  ]
-}
+[
+  {
+    "id": "reflection-w2-d5",
+    "dayId": "day-segment-1-week-2-day-5",
+    "title": "Week 2 Market Validation Reflection",
+    "prompts": [
+      "What did the market teach your squad this week?",
+      "Which assumption was most wrong — and how did you discover it?",
+      "What is your squad's strongest piece of interview evidence?",
+      "How ready do you feel for the BUILD stage?"
+    ]
+  }
+]

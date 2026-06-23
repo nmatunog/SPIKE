@@ -29,6 +29,7 @@ import {
   saveFecSummaryField,
 } from '../fecCanvasService.js';
 import { syncWeek2PortfolioArtifacts } from './week2PortfolioSync.js';
+import { syncFecValidationToCloud } from './week2FecValidationSync.js';
 
 /** @param {string} participantId */
 function squadKeyFor(participantId) {
@@ -398,6 +399,7 @@ export function approveFecStep(participantId, stepId, input) {
   for (const memberId of evidence.memberIds) {
     syncWeek2PortfolioArtifacts(memberId);
   }
+  void syncFecValidationToCloud(key, next, evidence.memberIds).catch(() => {});
   return next;
 }
 
@@ -411,6 +413,8 @@ export function submitMarketValidationPitch(participantId) {
     saveWeek2Discovery(memberId, { pitchSubmittedAt: now });
     syncWeek2PortfolioArtifacts(memberId);
   }
+  const fec = loadFecValidation(key);
+  void syncFecValidationToCloud(key, { ...fec, pitchSubmittedAt: now }, evidence.memberIds).catch(() => {});
 }
 
 /** @param {string} participantId @param {string} stepId */

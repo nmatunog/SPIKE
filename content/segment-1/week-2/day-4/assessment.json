@@ -1,18 +1,27 @@
-{
-  "assessment": {
+[
+  {
     "id": "assessment-w2-d4",
     "dayId": "day-segment-1-week-2-day-4",
-    "title": "Field professionalism rubric",
-    "description": "Faculty delivery checklist — squad progress tracked via Squad XP.",
-    "rubricId": "rubric-assessment-w2-d4"
-  },
-  "rubric": {
-    "id": "rubric-assessment-w2-d4",
-    "assessmentId": "assessment-w2-d4",
-    "title": "Delivery checklist",
-    "criteria": [
-      "Survey dataset",
-      "Field debrief summary"
-    ]
+    "title": "FEC Validation Lab — Squad Assessment",
+    "description": "Squad-first assessment via SPIKE Studio completion and mentor weekly review.",
+    "rubric": {
+      "criteria": [
+        {
+          "id": "fec-boxes",
+          "label": "Validated FEC boxes 1–5",
+          "weight": 40
+        },
+        {
+          "id": "uvp-v2",
+          "label": "UVP Version 2 (evidence-backed)",
+          "weight": 30
+        },
+        {
+          "id": "pitch-draft",
+          "label": "AI pitch structure completed",
+          "weight": 30
+        }
+      ]
+    }
   }
-}
+]

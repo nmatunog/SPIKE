@@ -16,6 +16,7 @@ import { assessLocalInternWork } from './internLocalWorkAssessment.js';
 import { fetchRemoteWorkAssessment } from './participantRemoteData.js';
 import { needsCloudRecovery, recoverInternWorkFromSupabase } from './internCloudRecovery.js';
 import { syncLocalPortfolioDeliverablesToSupabase } from './portfolioDeliverableService.js';
+import { backfillFecValidationToCloud, hydrateParticipantFecValidation } from './customerDiscovery/week2FecValidationSync.js';
 
 /** @type {Map<string, Promise<{ skipped?: boolean, uploaded?: boolean, alreadyDone?: boolean }>>} */
 const signInUploadByUser = new Map();
@@ -59,6 +60,7 @@ export async function syncInternLocalWorkToSupabase(participantId) {
     backfillLocalSurveysToSupabase(participantId),
     backfillLocalCanvasToSupabase(participantId),
     syncLocalPortfolioDeliverablesToSupabase(participantId),
+    backfillFecValidationToCloud(participantId),
   ]);
 }
 
@@ -76,6 +78,7 @@ export async function hydrateInternWorkFromSupabase(participantId) {
     hydrateVentureBlueprint(participantId, internHydrateOpts),
     hydratePlaybookProgressFromSupabase(participantId, { force: true, ...internHydrateOpts }),
     hydrateSurveysFromSupabase(participantId, { force: true, ...internHydrateOpts }),
+    hydrateParticipantFecValidation(participantId),
   ]);
 }
 

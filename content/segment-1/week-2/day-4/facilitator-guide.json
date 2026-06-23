@@ -1,51 +1,53 @@
 {
   "dayId": "day-segment-1-week-2-day-4",
-  "title": "Facilitator Guide — Day 9 — Field Survey Execution",
+  "title": "Facilitator Guide — Day 9 — FEC Validation Lab™",
   "durationHours": 4,
   "prepChecklist": [
-    "Confirm mentor zones and emergency contacts",
-    "Test data upload paths",
-    "Weather / venue backup plan"
+    "Confirm squads have 9 encoded interviews (3 per member)",
+    "Open FEC Validation Lab in SPIKE Studio for a demo squad",
+    "Review squad roles: Research Lead, FEC Lead, Pitch Lead",
+    "Test projector for interactive FEC poster (boxes 1–5 highlighted)"
   ],
   "sessionFlow": [
     {
       "time": "0:00–0:20",
-      "activity": "Deck 01 — Field briefing",
-      "notes": "Consent scripts practiced aloud."
+      "activity": "Deck — From Interviews to Venture Clarity",
+      "notes": "Interview evidence → squad intelligence → FEC validation → pitch."
     },
     {
-      "time": "0:20–2:00",
-      "activity": "Field survey execution",
-      "notes": "Mentors roam; program coach on call."
+      "time": "0:20–1:30",
+      "activity": "FEC Validation Lab — Steps 1–3",
+      "notes": "Customer Reality, Problem Validation, UVP Stress Test. SPIKE AI generates; squads approve."
     },
     {
-      "time": "2:00–2:10",
-      "activity": "Break / regroup",
+      "time": "1:30–1:40",
+      "activity": "Break",
       "notes": ""
     },
     {
-      "time": "2:10–2:40",
-      "activity": "Deck 02 — Hot wash debrief",
-      "notes": "Squads share surprises."
+      "time": "1:40–2:40",
+      "activity": "FEC Validation Lab — Steps 4–6",
+      "notes": "Client Experience, Strategic Opportunity, Build the Pitch."
     },
     {
       "time": "2:40–3:00",
-      "activity": "Data upload + reflection",
-      "notes": "Confirm Portfolio sync."
+      "activity": "Squad FEC poster review + portfolio sync check",
+      "notes": "Celebrate confidence score jumps on boxes 1–5."
     }
   ],
   "debriefQuestions": [
-    "Did any squad fall short on quota — why?",
-    "What ethical issues arose?",
-    "What story is emerging in the data?"
+    "Which FEC box shifted the most after validation?",
+    "What evidence changed your UVP from Week 1?",
+    "Is the squad pitch draft ready for Friday?"
   ],
   "commonPitfalls": [
-    "Interviewing friends only",
-    "No consent documentation",
-    "Premature product pitches in field"
+    "Approving AI text without reading interview evidence",
+    "One member doing all six steps while others watch",
+    "Skipping UVP stress test when evidence conflicts"
   ],
   "coachingTips": [
-    "Celebrate professional conduct publicly",
-    "Normalize rejection stories"
+    "FEC Lead owns step approvals; Research Lead owns evidence quality",
+    "Use before/after confidence scores to show venture clarity",
+    "No manual squad reports — everything syncs from SPIKE Studio"
   ]
 }

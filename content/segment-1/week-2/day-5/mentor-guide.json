@@ -1,34 +1,53 @@
 {
   "dayId": "day-segment-1-week-2-day-5",
-  "theme": "Evidence",
-  "title": "Mentor Guide — Day 10 — Survey Debrief & 80-Hour Market Review Gate",
-  "coachingObjective": "Help squads tell a credible market story.",
+  "theme": "Validate",
+  "title": "Mentor Guide — Day 10 — Market Validation Pitch",
+  "coachingObjective": "Coach squads through evidence-based pitch delivery and Stage Gate II readiness.",
   "timing": {
-    "preSession": "Review facilitator guide and deck speaker notes",
-    "duringSession": "Circulate during squad activities",
-    "postSession": "Complete squad weekly review snapshot"
+    "preSession": "Review pitch readiness cards: FEC, portfolio, professional readiness",
+    "duringSession": "Support pitch delivery; capture weekly squad review",
+    "postSession": "Submit stage gate decision and up to 3 commendations"
   },
   "discussionQuestions": [
-    "Which squads showed strongest evidence?",
-    "Are market gaps actionable for operations week?",
-    "Who needs remediation before Week 3?"
+    "Did the pitch reflect what the market taught the squad?",
+    "Which customer quotes landed strongest with the audience?",
+    "Is the squad Ready For Build?"
   ],
   "observationAreas": [
-    "Presentation clarity",
-    "Data integrity",
-    "Confidence under Q&A"
+    "10-slide pitch structure completeness",
+    "Evidence quality under audience Q&A",
+    "Squad collaboration during presentation",
+    "Professional readiness completion"
   ],
   "coachingTips": [
-    "Push for one clear decision per presentation",
-    "Document remediation plans for weak gates"
+    "Rate four dimensions only — no individual rubrics",
+    "Use Squad XP dashboard for automatic activity credit",
+    "Commendations max 3 per squad (Leadership, Best Interview, etc.)"
   ],
-  "warningSigns": [],
-  "reflectionPrompts": [],
+  "warningSigns": [
+    "Pitch slides manually rewritten outside SPIKE (duplicate encoding)",
+    "Squad missing FEC lab completion"
+  ],
+  "reflectionPrompts": [
+    "What is the one insight every advisor should know from your squad's research?"
+  ],
   "expectedOutcomes": [
-    "Market review presentation",
-    "Market gap declaration",
-    "80-hour gate clearance"
+    "Market Validation Pitch submitted",
+    "Market Validation Evidence portfolio",
+    "Stage Gate II decision recorded"
   ],
-  "activityCoachingNotes": [],
-  "debriefWithFaculty": []
+  "activityCoachingNotes": [
+    {
+      "activityId": "activity-w2-d5-pitch",
+      "notes": "Presentation mode in SPIKE Studio — large cards, minimal text."
+    },
+    {
+      "activityId": "activity-w2-d5-gate",
+      "notes": "Stage Gate: Not Ready / Almost Ready / Ready For Build."
+    }
+  ],
+  "debriefWithFaculty": [
+    "Squads needing remediation before Week 3",
+    "Commendation nominees"
+  ]
 }

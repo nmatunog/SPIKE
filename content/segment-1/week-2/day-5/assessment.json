@@ -1,19 +1,27 @@
-{
-  "assessment": {
+[
+  {
     "id": "assessment-w2-d5",
     "dayId": "day-segment-1-week-2-day-5",
-    "title": "Market review presentation rubric",
-    "description": "Faculty delivery checklist — squad progress tracked via Squad XP.",
-    "rubricId": "rubric-assessment-w2-d5"
-  },
-  "rubric": {
-    "id": "rubric-assessment-w2-d5",
-    "assessmentId": "assessment-w2-d5",
-    "title": "Delivery checklist",
-    "criteria": [
-      "Market review presentation",
-      "Market gap declaration",
-      "80-hour gate clearance"
-    ]
+    "title": "Market Validation Pitch — Squad Assessment",
+    "description": "Squad-first Stage Gate II assessment. Auto XP from SPIKE Studio + mentor weekly review.",
+    "rubric": {
+      "criteria": [
+        {
+          "id": "pitch",
+          "label": "Market Validation Pitch",
+          "weight": 40
+        },
+        {
+          "id": "evidence-portfolio",
+          "label": "Market Validation Evidence portfolio",
+          "weight": 30
+        },
+        {
+          "id": "stage-gate",
+          "label": "Stage Gate II decision",
+          "weight": 30
+        }
+      ]
+    }
   }
-}
+]
