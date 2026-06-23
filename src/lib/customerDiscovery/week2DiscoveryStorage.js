@@ -107,6 +107,7 @@ export function defaultWeek2State() {
       nextSteps: '',
       advisorInsight: '',
     },
+    cloudSyncedAt: null,
     updatedAt: null,
   };
 }
@@ -140,6 +141,7 @@ export function loadWeek2Discovery(participantId) {
     exchangeReflectionText: stored.exchangeReflectionText ?? '',
     readinessEvidenceNote: stored.readinessEvidenceNote ?? '',
     pitchOutline: { ...defaultWeek2State().pitchOutline, ...(stored.pitchOutline ?? {}) },
+    cloudSyncedAt: stored.cloudSyncedAt ?? null,
   };
 }
 

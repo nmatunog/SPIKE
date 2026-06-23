@@ -15,7 +15,9 @@ import { squadEvidenceSummary } from '../../lib/customerDiscovery/week2SquadEvid
 import {
   hydrateParticipantWeek2Discovery,
   hydrateSquadWeek2Discovery,
+  syncWeek2DiscoveryToCloud,
 } from '../../lib/customerDiscovery/week2DiscoverySync.js';
+import { Week2SyncStatus } from './Week2SyncStatus.jsx';
 
 function readInterviewDraft(participantId, interviewIndex) {
   const state = getWeek2State(participantId);
@@ -61,6 +63,8 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
   const [encoded, setEncoded] = useState(initial.encoded);
   const [saveState, setSaveState] = useState('idle');
   const [squadTick, setSquadTick] = useState(0);
+  const [syncTick, setSyncTick] = useState(0);
+  const [syncing, setSyncing] = useState(false);
 
   const draftRef = useRef({ alias, occupation, answers, reflection, questions });
 
@@ -84,6 +88,7 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
         readInterviewDraft(participantId, interviewIndex),
       );
       setSquadTick((n) => n + 1);
+      setSyncTick((n) => n + 1);
     })();
     return () => {
       cancelled = true;
@@ -110,11 +115,23 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
     });
   }
 
-  function flushDraft({ notify = false, showFeedback = false } = {}) {
+  async function flushDraft({ notify = false, showFeedback = false, awaitCloud = false } = {}) {
     const next = writeDraftToStorage();
     const iv = next.interviews?.[interviewIndex];
     if (iv?.aiInsights) setInsights(iv.aiInsights);
     setEncoded(Boolean(iv?.encoded));
+    setSyncTick((n) => n + 1);
+
+    if (awaitCloud) {
+      setSyncing(true);
+      try {
+        await syncWeek2DiscoveryToCloud(participantId, next);
+      } finally {
+        setSyncing(false);
+        setSyncTick((n) => n + 1);
+      }
+    }
+
     if (showFeedback) {
       setSaveState('saved');
       window.setTimeout(() => setSaveState('idle'), 2000);
@@ -153,6 +170,7 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
     const iv = next.interviews?.[interviewIndex];
     if (iv?.aiInsights) setInsights(iv.aiInsights);
     setEncoded(Boolean(iv?.encoded));
+    setSyncTick((n) => n + 1);
   }
 
   function updateQuestion(qi, text) {
@@ -165,15 +183,23 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
   const substantialAnswers = answers.filter((a) => String(a).trim().length > 8).length;
 
   const saveBar = (
-    <div className="flex flex-wrap items-center gap-3">
-      <button
-        type="button"
-        onClick={() => flushDraft({ notify: true, showFeedback: true })}
-        className="spike-btn-primary inline-flex min-h-[48px] w-full items-center justify-center gap-2 sm:w-auto"
-      >
-        <Save size={18} aria-hidden />
-        Save interview
-      </button>
+    <div className="space-y-2">
+      <Week2SyncStatus
+        participantId={participantId}
+        syncing={syncing}
+        refreshKey={syncTick}
+        className="sm:hidden"
+      />
+      <div className="flex flex-wrap items-center gap-3">
+        <button
+          type="button"
+          onClick={() => void flushDraft({ notify: true, showFeedback: true, awaitCloud: true })}
+          disabled={syncing}
+          className="spike-btn-primary inline-flex min-h-[48px] w-full items-center justify-center gap-2 disabled:opacity-60 sm:w-auto"
+        >
+          <Save size={18} aria-hidden />
+          {syncing ? 'Saving…' : 'Save interview'}
+        </button>
       {saveState === 'saved' ? (
         <span className="inline-flex items-center gap-1 text-sm font-medium text-venture-discover">
           <Check size={14} aria-hidden />
@@ -192,6 +218,7 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
           {alias.trim().length <= 1 ? ' · alias required' : ''}
         </span>
       )}
+      </div>
     </div>
   );
 
@@ -204,6 +231,12 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
           Minimum {MIN_ENCODED_INTERVIEWS} per member · Squad target {SQUAD_INTERVIEW_TARGET} · Your squad:{' '}
           {squadEvidence.interviewCount}
         </p>
+        <Week2SyncStatus
+          participantId={participantId}
+          syncing={syncing}
+          refreshKey={syncTick}
+          className="hidden sm:flex"
+        />
       </section>
 
       <div className="hidden sm:block">{saveBar}</div>

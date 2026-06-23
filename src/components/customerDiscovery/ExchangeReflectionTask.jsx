@@ -5,7 +5,11 @@ import {
   getWeek2State,
   saveExchangeReflection,
 } from '../../lib/customerDiscovery/week2DiscoveryService.js';
-import { hydrateParticipantWeek2Discovery } from '../../lib/customerDiscovery/week2DiscoverySync.js';
+import {
+  hydrateParticipantWeek2Discovery,
+  syncWeek2DiscoveryToCloud,
+} from '../../lib/customerDiscovery/week2DiscoverySync.js';
+import { Week2SyncStatus } from './Week2SyncStatus.jsx';
 
 /**
  * Tuesday PM — Market Intelligence Exchange reflection.
@@ -14,6 +18,8 @@ import { hydrateParticipantWeek2Discovery } from '../../lib/customerDiscovery/we
 export function ExchangeReflectionTask({ participantId, onSaved }) {
   const [response, setResponse] = useState(() => getExchangeReflectionText(getWeek2State(participantId)));
   const [saveState, setSaveState] = useState('idle');
+  const [syncTick, setSyncTick] = useState(0);
+  const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -21,6 +27,7 @@ export function ExchangeReflectionTask({ participantId, onSaved }) {
       await hydrateParticipantWeek2Discovery(participantId);
       if (cancelled) return;
       setResponse(getExchangeReflectionText(getWeek2State(participantId)));
+      setSyncTick((n) => n + 1);
     })();
     return () => {
       cancelled = true;
@@ -30,10 +37,18 @@ export function ExchangeReflectionTask({ participantId, onSaved }) {
   function persist(value) {
     setResponse(value);
     saveExchangeReflection(participantId, value);
+    setSyncTick((n) => n + 1);
   }
 
-  function saveNow() {
-    saveExchangeReflection(participantId, response);
+  async function saveNow() {
+    const next = saveExchangeReflection(participantId, response);
+    setSyncing(true);
+    try {
+      await syncWeek2DiscoveryToCloud(participantId, next);
+    } finally {
+      setSyncing(false);
+      setSyncTick((n) => n + 1);
+    }
     setSaveState('saved');
     window.setTimeout(() => setSaveState('idle'), 2000);
     onSaved?.();
@@ -61,12 +76,23 @@ export function ExchangeReflectionTask({ participantId, onSaved }) {
         <p className="text-sm text-slate-600">
           One interview is a story. Thirty interviews are evidence. What pattern are you beginning to notice?
         </p>
+        <Week2SyncStatus
+          participantId={participantId}
+          syncing={syncing}
+          refreshKey={syncTick}
+          className="hidden sm:flex"
+        />
       </section>
 
       <div className="hidden sm:flex sm:flex-wrap sm:items-center sm:gap-3">
-        <button type="button" onClick={saveNow} className="spike-btn-primary inline-flex min-h-[44px] items-center gap-2">
+        <button
+          type="button"
+          onClick={() => void saveNow()}
+          disabled={syncing}
+          className="spike-btn-primary inline-flex min-h-[44px] items-center gap-2 disabled:opacity-60"
+        >
           <Save size={16} aria-hidden />
-          Save reflection
+          {syncing ? 'Saving…' : 'Save reflection'}
         </button>
         {saveState === 'saved' ? (
           <span className="inline-flex items-center gap-1 text-sm font-medium text-venture-discover">
@@ -79,20 +105,22 @@ export function ExchangeReflectionTask({ participantId, onSaved }) {
       <textarea
         value={response}
         onChange={(e) => persist(e.target.value)}
-        onBlur={saveNow}
+        onBlur={() => void saveNow()}
         rows={6}
         placeholder="What surprised you most? Which assumption changed? What quote stayed with you?"
         className="w-full rounded-xl border border-slate-200 p-4 text-sm focus:border-spike focus:outline-none focus:ring-1 focus:ring-spike"
       />
 
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200 bg-white/95 px-4 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] backdrop-blur sm:hidden">
+        <Week2SyncStatus participantId={participantId} syncing={syncing} refreshKey={syncTick} className="mb-2" />
         <button
           type="button"
-          onClick={saveNow}
-          className="spike-btn-primary inline-flex min-h-[48px] w-full items-center justify-center gap-2"
+          onClick={() => void saveNow()}
+          disabled={syncing}
+          className="spike-btn-primary inline-flex min-h-[48px] w-full items-center justify-center gap-2 disabled:opacity-60"
         >
           <Save size={18} aria-hidden />
-          Save reflection
+          {syncing ? 'Saving…' : 'Save reflection'}
         </button>
         {saveState === 'saved' ? (
           <p className="mt-2 text-center text-xs font-medium text-venture-discover">Saved to device + cloud</p>

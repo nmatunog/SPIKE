@@ -14,20 +14,26 @@ export const WEEK2_DISCOVERY_ITEM_ID = 'week2-discovery';
  * @param {import('./week2DiscoveryTypes.js').Week2DiscoveryState} state
  */
 export async function syncWeek2DiscoveryToCloud(participantId, state) {
-  if (!participantId || isMockUserId(participantId)) return;
+  if (!participantId || isMockUserId(participantId)) return null;
 
   const payload = {
     state,
     updatedAt: state.updatedAt ?? new Date().toISOString(),
   };
 
-  await upsertPlaybookCompletion(
+  const ok = await upsertPlaybookCompletion(
     participantId,
     'activity',
     WEEK2_DISCOVERY_ITEM_ID,
     WEEK2_DISCOVERY_WEEK_ID,
     payload,
   );
+
+  if (!ok) return null;
+
+  const cloudSyncedAt = new Date().toISOString();
+  saveWeek2Discovery(participantId, { cloudSyncedAt }, { skipCloudSync: true });
+  return cloudSyncedAt;
 }
 
 /**

@@ -88,6 +88,7 @@
  * @property {string} squadDiscussionNotes
  * @property {string} readinessEvidenceNote
  * @property {Week2PitchOutline} pitchOutline
+ * @property {string | null} cloudSyncedAt
  * @property {string | null} updatedAt
  */
 
