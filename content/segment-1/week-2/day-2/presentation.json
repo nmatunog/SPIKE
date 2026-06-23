@@ -3,44 +3,68 @@
     "id": "presentation-w2-d2-deck-01",
     "dayId": "day-segment-1-week-2-day-2",
     "title": "Market Intelligence Exchange",
-    "slideIds": ["slide-w2-d2-01", "slide-w2-d2-02", "slide-w2-d2-03", "slide-w2-d2-04"]
+    "slideIds": [
+      "slide-w2-d2-01",
+      "slide-w2-d2-02",
+      "slide-w2-d2-03",
+      "slide-w2-d2-04",
+      "slide-w2-d2-05"
+    ],
+    "sourceFile": "faculty-deck-01.pdf",
+    "sourcePath": "content/segment-1/week-2/day-2/source/faculty-deck-01.pdf",
+    "importedAt": "2026-06-23T04:13:37.709Z",
+    "pdfUrl": "/content/segment-1/week-2/day-2/faculty-deck-01.pdf"
   },
   "slides": [
     {
       "id": "slide-w2-d2-01",
       "presentationId": "presentation-w2-d2-deck-01",
+      "sortOrder": 1,
       "title": "What Did The Market Tell You?",
-      "body": "Open Tuesday PM exchange session.",
+      "body": "",
       "speakerNotes": "Facilitate squad sharing — evidence over opinions.",
       "discussionQuestions": [],
-      "sortOrder": 1
+      "imageUrl": "/content/segment-1/week-2/day-2/deck-01/slide-01.png"
     },
     {
       "id": "slide-w2-d2-02",
       "presentationId": "presentation-w2-d2-deck-01",
+      "sortOrder": 2,
       "title": "Market Intelligence Exchange",
-      "body": "Each squad answers: surprise, assumption change, quote, next step.",
+      "body": "",
       "speakerNotes": "7 min per squad.",
       "discussionQuestions": [],
-      "sortOrder": 2
+      "imageUrl": "/content/segment-1/week-2/day-2/deck-01/slide-02.png"
     },
     {
       "id": "slide-w2-d2-03",
       "presentationId": "presentation-w2-d2-deck-01",
+      "sortOrder": 3,
       "title": "One Interview Is A Story. Thirty Interviews Are Evidence.",
-      "body": "Return to field with sharper hypotheses.",
+      "body": "",
       "speakerNotes": "",
       "discussionQuestions": [],
-      "sortOrder": 3
+      "imageUrl": "/content/segment-1/week-2/day-2/deck-01/slide-03.png"
     },
     {
       "id": "slide-w2-d2-04",
       "presentationId": "presentation-w2-d2-deck-01",
+      "sortOrder": 4,
       "title": "Go Back. Verify The Pattern.",
-      "body": "Participants return to field work.",
+      "body": "",
       "speakerNotes": "",
       "discussionQuestions": [],
-      "sortOrder": 4
+      "imageUrl": "/content/segment-1/week-2/day-2/deck-01/slide-04.png"
+    },
+    {
+      "id": "slide-w2-d2-05",
+      "presentationId": "presentation-w2-d2-deck-01",
+      "sortOrder": 5,
+      "title": "Slide 5",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-2/deck-01/slide-05.png"
     }
   ]
 }
