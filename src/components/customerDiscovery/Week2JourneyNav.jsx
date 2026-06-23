@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Check, Lock } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { deriveWeek2JourneyProgress } from '../../lib/customerDiscovery/week2MissionService.js';
 
 /**
@@ -18,22 +18,17 @@ export function Week2JourneyNav({ participantId, calendarDay = 5, activeDay }) {
       <ol className="space-y-1">
         {phases.map((phase, idx) => {
           const isActive = phase.day === active;
-          const locked = !phase.unlocked;
           return (
             <li key={phase.id}>
               <Link
                 to={phase.href}
                 className={`flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm transition ${
-                  locked
-                    ? 'cursor-not-allowed opacity-50'
-                    : isActive
-                      ? 'spike-task-active'
-                      : phase.complete
-                        ? 'spike-task-done'
-                        : 'spike-task-pending hover:bg-slate-50'
+                  isActive
+                    ? 'spike-task-active'
+                    : phase.complete
+                      ? 'spike-task-done'
+                      : 'spike-task-pending hover:bg-slate-50'
                 }`}
-                aria-disabled={locked}
-                onClick={locked ? (e) => e.preventDefault() : undefined}
               >
                 <span
                   className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
@@ -44,7 +39,7 @@ export function Week2JourneyNav({ participantId, calendarDay = 5, activeDay }) {
                         : 'bg-slate-100 text-slate-500'
                   }`}
                 >
-                  {phase.complete ? <Check size={14} /> : locked ? <Lock size={12} /> : idx + 1}
+                  {phase.complete ? <Check size={14} /> : idx + 1}
                 </span>
                 <span className="min-w-0">
                   <span className="block font-semibold text-slate-900">{phase.label}</span>

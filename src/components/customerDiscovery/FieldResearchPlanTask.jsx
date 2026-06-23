@@ -12,7 +12,6 @@ export function FieldResearchPlanTask({ participantId, squadName, onSaved }) {
   function persist(value) {
     setPlan(value);
     saveFieldResearchPlan(participantId, value);
-    onSaved?.();
   }
 
   return (
@@ -27,6 +26,7 @@ export function FieldResearchPlanTask({ participantId, squadName, onSaved }) {
       <textarea
         value={plan}
         onChange={(e) => persist(e.target.value)}
+        onBlur={() => onSaved?.()}
         rows={8}
         placeholder={`Squad locations:\n${mission.locations.slice(0, 3).join(', ')}\n\nSchedule:\n\nRoles:`}
         className="w-full rounded-xl border border-slate-200 p-4 text-sm text-slate-800 focus:border-spike focus:outline-none focus:ring-1 focus:ring-spike"

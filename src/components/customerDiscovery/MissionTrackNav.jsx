@@ -28,17 +28,14 @@ export function MissionTrackNav({ participantId, activeSlug, context = 'blueprin
         return (
           <Link
             key={step.id}
-            to={step.locked ? '#' : step.href}
+            to={step.href}
             className={`block rounded-xl px-3 py-2.5 transition ${
-              step.locked
-                ? 'cursor-not-allowed opacity-40'
-                : isActive
-                  ? 'spike-task-active'
-                  : step.complete
-                    ? 'spike-task-done'
-                    : 'spike-task-pending hover:bg-slate-50'
+              isActive
+                ? 'spike-task-active'
+                : step.complete
+                  ? 'spike-task-done'
+                  : 'spike-task-pending hover:bg-slate-50'
             }`}
-            onClick={step.locked ? (e) => e.preventDefault() : undefined}
           >
             <span className="flex items-center gap-2">
               <span

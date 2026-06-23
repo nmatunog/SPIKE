@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { ArrowRight, BookOpen, Sparkles } from 'lucide-react';
 import { StudioShell } from '../../customerDiscovery/StudioShell.jsx';
 import { MissionTrackNav } from '../../customerDiscovery/MissionTrackNav.jsx';
@@ -15,8 +15,9 @@ import { ExchangeReflectionTask } from '../../customerDiscovery/ExchangeReflecti
 import { ProfessionalReadinessTask } from '../../customerDiscovery/ProfessionalReadinessTask.jsx';
 import { FecValidationLab } from '../../customerDiscovery/fecValidation/FecValidationLab.jsx';
 import { MarketValidationPitchView } from '../../customerDiscovery/fecValidation/MarketValidationPitchView.jsx';
-import { playbookWeek2MissionHref, deriveWeek2MissionTrack, getActiveWeek2Task, week2OverallProgressPct } from '../../../lib/customerDiscovery/week2MissionService.js';
+import { playbookWeek2MissionHref, getActiveWeek2Task, week2OverallProgressPct } from '../../../lib/customerDiscovery/week2MissionService.js';
 import { getWeek2PhaseForDay } from '../../../lib/customerDiscovery/week2JourneyConstants.js';
+import { Week2PrepareReviseNav } from '../../customerDiscovery/Week2PrepareReviseNav.jsx';
 
 /**
  * Mission-first Week 2 SPIKE Studio — embedded in Playbook.
@@ -49,38 +50,58 @@ export function Week2MissionPlaybookView({
 
   const day = Math.max(1, Math.min(5, playbookDay));
 
-  const slug = useMemo(() => {
-    const track = deriveWeek2MissionTrack(participantId, 'playbook', day);
-    if (track.some((t) => t.slug === missionSlug && !t.locked)) return missionSlug;
-    return getActiveWeek2Task(participantId, day).slug;
-  }, [participantId, missionSlug, day]);
+  const slug = missionSlug || getActiveWeek2Task(participantId, day).slug;
 
   const progressPct = week2OverallProgressPct(participantId);
   const phase = getWeek2PhaseForDay(day);
 
-  function goToMission(slug) {
-    if (onMissionNavigate) onMissionNavigate(slug);
-    else if (typeof window !== 'undefined') {
-      window.location.assign(playbookWeek2MissionHref(slug, { day }));
+  function goToMission(nextSlug, nextDay = day) {
+    if (onMissionNavigate) {
+      onMissionNavigate(nextSlug, nextDay);
+      return;
+    }
+    if (typeof window !== 'undefined') {
+      window.location.assign(playbookWeek2MissionHref(nextSlug, { day: nextDay }));
     }
   }
 
   function renderTask() {
     if (slug.startsWith('interview-')) {
       const idx = Number(slug.replace('interview-', '')) - 1;
-      return <InterviewEncodeTask participantId={participantId} interviewIndex={idx} onSaved={refresh} />;
+      return <InterviewEncodeTask key={slug} participantId={participantId} interviewIndex={idx} onSaved={refresh} />;
     }
     switch (slug) {
       case 'assumptions':
-        return <AssumptionsTask participantId={participantId} onSaved={refresh} />;
+        return <AssumptionsTask key="assumptions" participantId={participantId} onSaved={refresh} />;
       case 'guide':
-        return <InterviewGuideTask participantId={participantId} onSaved={refresh} missionContext="playbook" />;
+        return (
+          <InterviewGuideTask
+            key="guide"
+            participantId={participantId}
+            onSaved={refresh}
+            missionContext="playbook"
+          />
+        );
       case 'research-plan':
-        return <FieldResearchPlanTask participantId={participantId} squadName={squadName} onSaved={refresh} />;
+        return (
+          <FieldResearchPlanTask
+            key="research-plan"
+            participantId={participantId}
+            squadName={squadName}
+            onSaved={refresh}
+          />
+        );
       case 'squad-align':
-        return <SquadAlignmentTask participantId={participantId} onComplete={refresh} missionContext="playbook" />;
+        return (
+          <SquadAlignmentTask
+            key="squad-align"
+            participantId={participantId}
+            onComplete={refresh}
+            missionContext="playbook"
+          />
+        );
       case 'exchange':
-        return <ExchangeReflectionTask participantId={participantId} onSaved={refresh} />;
+        return <ExchangeReflectionTask key="exchange" participantId={participantId} onSaved={refresh} />;
       case 'readiness':
         return <ProfessionalReadinessTask participantId={participantId} onSaved={refresh} mode="mission" />;
       case 'readiness-reflect':
@@ -134,6 +155,12 @@ export function Week2MissionPlaybookView({
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(180px,220px)_1fr]">
         <aside className="space-y-6">
           <Week2JourneyNav participantId={participantId} calendarDay={calendarDay} activeDay={day} />
+          {day > 1 ? (
+            <Week2PrepareReviseNav
+              activeSlug={slug}
+              onNavigate={(nextSlug, nextDay) => goToMission(nextSlug, nextDay)}
+            />
+          ) : null}
         </aside>
 
         <StudioShell

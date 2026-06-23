@@ -6,36 +6,31 @@ import { acknowledgeMission, getWeek2State } from '../../lib/customerDiscovery/w
 import { week2MissionHref } from '../../lib/customerDiscovery/week2MissionService.js';
 
 /**
- * Minimal mission brief — 4 lines default, expandable full brief.
+ * Minimal mission brief — always editable; acknowledgment is optional progress.
  * @param {{ participantId: string, squadName?: string, onComplete?: () => void, missionContext?: 'blueprint' | 'playbook' }} props
  */
 export function MissionBriefTask({ participantId, squadName, onComplete, missionContext = 'blueprint' }) {
   const mission = resolveSquadMission(squadName);
-  const [expanded, setExpanded] = useState(false);
-  const [done, setDone] = useState(() => Boolean(getWeek2State(participantId).missionAcknowledged));
+  const [expanded, setExpanded] = useState(true);
+  const [acknowledged, setAcknowledged] = useState(() => Boolean(getWeek2State(participantId).missionAcknowledged));
 
-  function handleStart() {
+  function handleAcknowledge() {
     acknowledgeMission(participantId);
-    setDone(true);
+    setAcknowledged(true);
     onComplete?.();
-  }
-
-  if (done) {
-    return (
-      <div className="spike-surface space-y-4 animate-spike-fade-in">
-        <p className="spike-label text-venture-discover">Mission acknowledged ✓</p>
-        <p className="text-sm text-slate-600">Next: design your 5 interview questions.</p>
-        <Link to={week2MissionHref('assumptions', missionContext, 1)} className="spike-btn-primary inline-flex">
-          Identify assumptions <ArrowRight size={16} />
-        </Link>
-      </div>
-    );
   }
 
   return (
     <div className="space-y-8">
       <section className="spike-surface space-y-4">
-        <p className="spike-label">Today&apos;s mission</p>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="spike-label">Today&apos;s mission</p>
+          {acknowledged ? (
+            <span className="rounded-full bg-venture-discover/15 px-2.5 py-0.5 text-xs font-semibold text-venture-discover">
+              Acknowledged ✓
+            </span>
+          ) : null}
+        </div>
         <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">
           Interview {mission.interviewTarget}
         </h2>
@@ -53,9 +48,15 @@ export function MissionBriefTask({ participantId, squadName, onComplete, mission
             <dd className="mt-0.5 font-medium text-spike">Research Validation Gate → Week 3 Build</dd>
           </div>
         </dl>
-        <button type="button" onClick={handleStart} className="spike-btn-primary w-full sm:w-auto">
-          I understand — continue <ArrowRight size={16} />
-        </button>
+        {!acknowledged ? (
+          <button type="button" onClick={handleAcknowledge} className="spike-btn-primary w-full sm:w-auto">
+            I understand — continue <ArrowRight size={16} />
+          </button>
+        ) : (
+          <Link to={week2MissionHref('assumptions', missionContext, 1)} className="spike-btn-primary inline-flex">
+            Identify assumptions <ArrowRight size={16} />
+          </Link>
+        )}
       </section>
 
       <button
@@ -63,7 +64,7 @@ export function MissionBriefTask({ participantId, squadName, onComplete, mission
         onClick={() => setExpanded((v) => !v)}
         className="flex w-full items-center justify-between text-sm font-semibold text-slate-500 hover:text-spike"
       >
-        View full mission brief
+        {expanded ? 'Hide full mission brief' : 'View full mission brief'}
         {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
       </button>
 

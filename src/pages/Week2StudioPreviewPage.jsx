@@ -102,7 +102,9 @@ export function Week2StudioPreviewPage({
         playbookDay={day}
         calendarDay={day}
         onOpenCurriculum={() => navigate(playbookHref({ segment: 1, week: 2, day }))}
-        onMissionNavigate={(slug) => syncQuery({ mission: slug })}
+        onMissionNavigate={(slug, missionDay) => {
+          syncQuery({ mission: slug, day: missionDay ?? day });
+        }}
       />
     </PageContainer>
   );

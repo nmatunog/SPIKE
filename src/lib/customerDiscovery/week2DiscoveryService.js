@@ -145,17 +145,24 @@ export function saveThinkingShift(participantId, input) {
 /** @param {string} participantId @param {string} response */
 export function saveExchangeReflection(participantId, response) {
   const text = String(response ?? '').trim();
+  const state = loadWeek2Discovery(participantId);
+  const thinkingShifts = [...(state.thinkingShifts ?? [])];
+  const existingIdx = thinkingShifts.findIndex((s) => s.taskId === 'exchange');
+  const shift = {
+    id: existingIdx >= 0 ? thinkingShifts[existingIdx].id : `shift-exchange-${participantId}`,
+    prompt: 'What pattern are you beginning to notice?',
+    response: text,
+    taskId: 'exchange',
+    createdAt: existingIdx >= 0 ? thinkingShifts[existingIdx].createdAt : new Date().toISOString(),
+  };
+  if (existingIdx >= 0) thinkingShifts[existingIdx] = shift;
+  else thinkingShifts.push(shift);
+
   const next = saveWeek2Discovery(participantId, {
-    exchangeReflectionAt: text.length > 15 ? new Date().toISOString() : null,
+    thinkingShifts,
+    exchangeReflectionAt: text.length > 15 ? new Date().toISOString() : state.exchangeReflectionAt,
   });
-  if (text.length > 15) {
-    saveThinkingShift(participantId, {
-      prompt: 'What pattern are you beginning to notice?',
-      response: text,
-      taskId: 'exchange',
-    });
-    syncWeek2PortfolioArtifacts(participantId);
-  }
+  if (text.length > 15) syncWeek2PortfolioArtifacts(participantId);
   return next;
 }
 

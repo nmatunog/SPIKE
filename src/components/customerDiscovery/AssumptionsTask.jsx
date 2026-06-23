@@ -47,6 +47,7 @@ export function AssumptionsTask({ participantId, onSaved }) {
           Assumptions are not evidence. List what your squad believes — then test it in the field.
         </p>
         <p className="text-xs font-semibold tabular-nums text-spike">{filled} / 2 minimum</p>
+        <p className="text-xs text-slate-500">Add, edit, or remove assumptions anytime — changes save automatically.</p>
       </section>
       <ul className="space-y-3">
         {rows.map((row, idx) => (

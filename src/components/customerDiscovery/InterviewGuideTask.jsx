@@ -93,8 +93,8 @@ export function InterviewGuideTask({ participantId, onSaved, missionContext = 'b
       {complete ? (
         <div className="space-y-3 animate-spike-fade-in">
           <p className="text-sm font-semibold text-slate-800">Guide complete — portfolio synced.</p>
-          <Link to={week2MissionHref('thinking', missionContext)} className="spike-btn-primary inline-flex">
-            Capture thinking shift <ArrowRight size={16} />
+          <Link to={week2MissionHref('research-plan', missionContext, 1)} className="spike-btn-primary inline-flex">
+            Field research plan <ArrowRight size={16} />
           </Link>
         </div>
       ) : (

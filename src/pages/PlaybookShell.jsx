@@ -19,7 +19,6 @@ import {
 import { resolveInternPlaybookDay, resolveInternProgramWeek, UNLOCK_WEEK2 } from '../lib/programUnlocks.js';
 import { getParticipantSquad } from '../lib/cohortFormationService.js';
 import {
-  deriveWeek2MissionTrack,
   getActiveWeek2Task,
   resolveWeek2PlaybookDay,
 } from '../lib/customerDiscovery/week2MissionService.js';
@@ -164,19 +163,6 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
     setSearchParams(params, { replace: true });
   }, [showMissionFirst, participantId, missionSlug, resolvedPlaybookDay, searchParams, setSearchParams]);
 
-  useEffect(() => {
-    if (!showMissionFirst || !participantId || !missionSlug) return;
-    const track = deriveWeek2MissionTrack(participantId, 'playbook', resolvedPlaybookDay);
-    const current = track.find((t) => t.slug === missionSlug);
-    if (!current?.complete) return;
-    const active = getActiveWeek2Task(participantId, resolvedPlaybookDay);
-    if (active.slug === missionSlug) return;
-    const params = new URLSearchParams(searchParams);
-    params.set('mission', active.slug);
-    params.set('day', String(resolvedPlaybookDay));
-    setSearchParams(params, { replace: true });
-  }, [showMissionFirst, participantId, missionSlug, resolvedPlaybookDay, searchParams, setSearchParams, hydrateVersion]);
-
   function openCurriculumView() {
     const params = new URLSearchParams(searchParams);
     params.set('view', 'curriculum');
@@ -268,9 +254,10 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
         calendarDay={playbookDayNumber}
         onOpenCurriculum={openCurriculumView}
         onProgress={() => setRefreshKey((k) => k + 1)}
-        onMissionNavigate={(slug) => {
+        onMissionNavigate={(slug, missionDay) => {
           const next = new URLSearchParams(searchParams);
           next.set('mission', slug);
+          if (missionDay) next.set('day', String(missionDay));
           setSearchParams(next);
         }}
       />

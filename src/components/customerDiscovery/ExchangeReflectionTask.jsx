@@ -13,7 +13,6 @@ export function ExchangeReflectionTask({ participantId, onSaved }) {
     setResponse(value);
     if (value.trim().length > 15) {
       saveExchangeReflection(participantId, value);
-      onSaved?.();
     }
   }
 
@@ -29,6 +28,7 @@ export function ExchangeReflectionTask({ participantId, onSaved }) {
       <textarea
         value={response}
         onChange={(e) => persist(e.target.value)}
+        onBlur={() => onSaved?.()}
         rows={6}
         placeholder="What surprised you most? Which assumption changed? What quote stayed with you?"
         className="w-full rounded-xl border border-slate-200 p-4 text-sm focus:border-spike focus:outline-none focus:ring-1 focus:ring-spike"

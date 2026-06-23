@@ -39,7 +39,7 @@ export function FecValidationLab({ participantId, squadName = '', stepSlug, onSa
   const stepDef = FEC_VALIDATION_STEPS.find((s) => s.slug === activeSlug) ?? FEC_VALIDATION_STEPS[0];
   const stepIndex = FEC_VALIDATION_STEPS.findIndex((s) => s.slug === activeSlug);
   const prevStep = stepIndex > 0 ? FEC_VALIDATION_STEPS[stepIndex - 1] : null;
-  const locked = prevStep ? !isFecStepCompleteForParticipant(participantId, prevStep.id) : false;
+  const locked = false;
   const complete = isFecStepCompleteForParticipant(participantId, stepDef.id);
   const payload = useMemo(() => getFecStepPayload(participantId, stepDef.id), [participantId, stepDef.id]);
 

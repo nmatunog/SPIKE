@@ -3,7 +3,6 @@
  */
 import { ROUTES } from '../../routes/paths.js';
 import { loadWeek2Discovery, saveWeek2Discovery } from './week2DiscoveryStorage.js';
-import { isCoachWeek2StudioPreviewParticipantId } from './coachWeek2StudioPreview.js';
 import {
   getWeek2PhaseForDay,
   getWeek2TasksForDay,
@@ -83,26 +82,16 @@ function isDayPhaseComplete(participantId, day) {
 }
 
 /** @param {string} participantId @param {number} day */
-export function isWeek2DayUnlocked(participantId, day) {
-  if (isCoachWeek2StudioPreviewParticipantId(participantId)) return day >= 1 && day <= 5;
-  if (day <= 1) return true;
-  for (let d = 1; d < day; d += 1) {
-    if (!isDayPhaseComplete(participantId, d)) return false;
-  }
-  return true;
+export function isWeek2DayUnlocked(_participantId, day) {
+  return day >= 1 && day <= 5;
 }
 
 /**
  * @param {string} participantId
  * @param {number} [calendarDay] Cohort calendar day 1–5 for week 2
  */
-export function resolveWeek2PlaybookDay(participantId, calendarDay = 1) {
-  const day = Math.max(1, Math.min(5, calendarDay));
-  if (isWeek2DayUnlocked(participantId, day)) return day;
-  for (let d = day; d >= 1; d -= 1) {
-    if (isWeek2DayUnlocked(participantId, d)) return d;
-  }
-  return 1;
+export function resolveWeek2PlaybookDay(_participantId, calendarDay = 1) {
+  return Math.max(1, Math.min(5, calendarDay));
 }
 
 /**
@@ -132,13 +121,12 @@ export function week2MissionHref(taskSlug, context = 'blueprint', day = 1) {
  */
 export function deriveWeek2MissionTrack(participantId, context = 'blueprint', day = 1) {
   const d = Math.max(1, Math.min(5, day));
-  const dayUnlocked = isWeek2DayUnlocked(participantId, d);
   return getWeek2TasksForDay(d).map((task, index) => ({
     ...task,
     index: index + 1,
     href: week2MissionHref(task.slug, context, d),
     complete: isTaskComplete(participantId, task.id),
-    locked: !dayUnlocked,
+    locked: false,
   }));
 }
 
@@ -160,8 +148,8 @@ export function deriveWeek2JourneyProgress(participantId, calendarDay = 5) {
     const required = tasks.filter((t) => !t.optional);
     const done = required.filter((t) => isTaskComplete(participantId, t.id)).length;
     const complete = isDayPhaseComplete(participantId, phase.day);
-    const unlocked = phase.day <= maxDay && isWeek2DayUnlocked(participantId, phase.day);
-    const active = unlocked && !complete && phase.day === resolveWeek2PlaybookDay(participantId, maxDay);
+    const unlocked = true;
+    const active = !complete && phase.day === resolveWeek2PlaybookDay(participantId, maxDay);
     return {
       ...phase,
       complete,

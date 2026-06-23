@@ -1,16 +1,20 @@
 import { useMemo, useState } from 'react';
 import { Check } from 'lucide-react';
-import { getWeek2State, saveEncodedInterview } from '../../lib/customerDiscovery/week2DiscoveryService.js';
-import { MIN_ENCODED_INTERVIEWS, TARGET_ENCODED_INTERVIEWS, SQUAD_INTERVIEW_TARGET } from '../../lib/customerDiscovery/week2Constants.js';
+import {
+  getWeek2State,
+  saveEncodedInterview,
+  saveInterviewQuestions,
+} from '../../lib/customerDiscovery/week2DiscoveryService.js';
+import { MIN_ENCODED_INTERVIEWS, SQUAD_INTERVIEW_TARGET } from '../../lib/customerDiscovery/week2Constants.js';
 import { squadEvidenceSummary } from '../../lib/customerDiscovery/week2SquadEvidenceService.js';
 
 /**
- * Discover mode — encode one field interview.
+ * Discover mode — encode one field interview; questions editable to match what was actually asked.
  * @param {{ participantId: string, interviewIndex: number, onSaved?: () => void }} props
  */
 export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) {
   const state = getWeek2State(participantId);
-  const questions = state.questions ?? [];
+  const [questions, setQuestions] = useState(state.questions ?? []);
   const existing = state.interviews?.[interviewIndex] ?? {
     alias: '',
     occupation: '',
@@ -25,9 +29,11 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
   const [reflection, setReflection] = useState(existing.reflection ?? '');
   const [insights, setInsights] = useState(existing.aiInsights ?? null);
 
-  const squadEvidence = useMemo(() => squadEvidenceSummary(participantId), [participantId, state.interviews]);
+  const squadEvidence = useMemo(() => squadEvidenceSummary(participantId), [participantId]);
 
-  function persist(patch) {
+  function persist(patch, { notify = false } = {}) {
+    const prior = getWeek2State(participantId).interviews?.[interviewIndex];
+    const wasEncoded = Boolean(prior?.encoded);
     const next = saveEncodedInterview(participantId, interviewIndex, {
       alias: patch.alias ?? alias,
       occupation: patch.occupation ?? occupation,
@@ -36,7 +42,13 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
     });
     const iv = next.interviews?.[interviewIndex];
     if (iv?.aiInsights) setInsights(iv.aiInsights);
-    onSaved?.();
+    if (notify || (iv?.encoded && !wasEncoded)) onSaved?.();
+  }
+
+  function updateQuestion(qi, text) {
+    const next = questions.map((q, i) => (i === qi ? { ...q, text } : q));
+    setQuestions(next);
+    saveInterviewQuestions(participantId, next);
   }
 
   return (
@@ -45,7 +57,11 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
         <p className="spike-label">Discover mode</p>
         <h2 className="text-xl font-bold text-slate-900">Interview {interviewIndex + 1}</h2>
         <p className="text-sm text-slate-600">
-          Minimum {MIN_ENCODED_INTERVIEWS} per member · Squad target {SQUAD_INTERVIEW_TARGET} · Your squad: {squadEvidence.interviewCount}
+          Minimum {MIN_ENCODED_INTERVIEWS} per member · Squad target {SQUAD_INTERVIEW_TARGET} · Your squad:{' '}
+          {squadEvidence.interviewCount}
+        </p>
+        <p className="text-xs text-slate-500">
+          Edit each question to match what you actually asked — answers save automatically.
         </p>
       </section>
 
@@ -80,11 +96,18 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
 
       <ol className="space-y-3">
         {answers.map((ans, qi) => (
-          <li key={questions[qi]?.id ?? qi} className="spike-surface space-y-1">
+          <li key={questions[qi]?.id ?? qi} className="spike-surface space-y-2">
             <p className="text-[10px] font-semibold uppercase text-slate-400">
-              Q{qi + 1}{questions[qi]?.section ? ` · ${questions[qi].section}` : ''}
+              Q{qi + 1}
+              {questions[qi]?.section ? ` · ${questions[qi].section}` : ''}
             </p>
-            <p className="text-xs text-slate-500">{questions[qi]?.text || questions[qi]?.placeholder || 'Your interview question'}</p>
+            <input
+              type="text"
+              value={questions[qi]?.text ?? ''}
+              onChange={(e) => updateQuestion(qi, e.target.value)}
+              placeholder={questions[qi]?.placeholder ?? 'Question you asked in the field'}
+              className="w-full border-0 bg-transparent text-sm font-medium text-slate-800 focus:outline-none"
+            />
             <textarea
               value={ans}
               rows={2}
