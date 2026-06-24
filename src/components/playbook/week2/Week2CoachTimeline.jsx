@@ -2,11 +2,13 @@ import { Link } from 'react-router-dom';
 import { playbookHref, playbookWeek2StudioHref } from '../../../routes/paths.js';
 import { WEEK2_COACH_TIMELINE } from '../../../lib/customerDiscovery/week2JourneyConstants.js';
 
+import { Week2Day3CoachDashboard } from './Week2Day3CoachDashboard.jsx';
+
 /**
  * Coach view — Week 2 timeline (replaces lesson-plan-first layout).
- * @param {{ activeDay?: number, role?: 'faculty' | 'mentor' }} props
+ * @param {{ activeDay?: number, role?: 'faculty' | 'mentor', interns?: Array<{ id: string, name?: string, squad?: string }> }} props
  */
-export function Week2CoachTimeline({ activeDay = 1, role = 'faculty' }) {
+export function Week2CoachTimeline({ activeDay = 1, role = 'faculty', interns = [] }) {
   return (
     <section className="space-y-4">
       <header className="flex flex-wrap items-end justify-between gap-3">
@@ -59,6 +61,9 @@ export function Week2CoachTimeline({ activeDay = 1, role = 'faculty' }) {
           );
         })}
       </div>
+      {activeDay === 3 && interns.length ? (
+        <Week2Day3CoachDashboard interns={interns} />
+      ) : null}
       {role === 'faculty' ? (
         <p className="text-xs text-slate-500">
           Interns follow the mission journey in SPIKE Studio — slides unlock via coach session notes.

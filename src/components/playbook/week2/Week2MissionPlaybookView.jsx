@@ -12,7 +12,7 @@ import { FieldResearchPlanTask } from '../../customerDiscovery/FieldResearchPlan
 import { SquadAlignmentTask } from '../../customerDiscovery/SquadAlignmentTask.jsx';
 import { InterviewEncodeTask } from '../../customerDiscovery/InterviewEncodeTask.jsx';
 import { ExchangeReflectionTask } from '../../customerDiscovery/ExchangeReflectionTask.jsx';
-import { ProfessionalReadinessTask } from '../../customerDiscovery/ProfessionalReadinessTask.jsx';
+import { ProfessionalReadinessMission } from '../../customerDiscovery/ProfessionalReadinessMission.jsx';
 import { FecValidationLab } from '../../customerDiscovery/fecValidation/FecValidationLab.jsx';
 import { MarketValidationPitchView } from '../../customerDiscovery/fecValidation/MarketValidationPitchView.jsx';
 import {
@@ -114,9 +114,17 @@ export function Week2MissionPlaybookView({
       case 'exchange':
         return <ExchangeReflectionTask key="exchange" participantId={participantId} onSaved={refresh} />;
       case 'readiness':
-        return <ProfessionalReadinessTask participantId={participantId} onSaved={refresh} mode="mission" />;
       case 'readiness-reflect':
-        return <ProfessionalReadinessTask participantId={participantId} onSaved={refresh} mode="reflect" />;
+      case 'readiness-mission':
+        return (
+          <ProfessionalReadinessMission
+            key="readiness-mission"
+            participantId={participantId}
+            squadName={squadName}
+            onSaved={refresh}
+            onContinueThursday={() => goToMission('fec-lab', 4)}
+          />
+        );
       case 'fec-lab':
       case 'fec-step-1':
       case 'fec-step-2':

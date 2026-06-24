@@ -13,6 +13,7 @@ import { MIN_ENCODED_INTERVIEWS } from './week2Constants.js';
 import { isFecStepCompleteForParticipant } from './week2FecValidationService.js';
 import { loadFecValidation } from './week2FecValidationStorage.js';
 import { getSquadNameForParticipant } from './week2SquadEvidenceService.js';
+import { getReadinessMissionState } from './week2ReadinessMissionService.js';
 
 const BASE = `${ROUTES.ventureBlueprint}/customer-discovery`;
 
@@ -56,7 +57,11 @@ function isTaskComplete(participantId, taskId) {
     case 'readiness':
       return Boolean(state.professionalReadinessAt);
     case 'readiness-reflect':
-      return Boolean(state.readinessReflectionAt);
+      return Boolean(state.readinessReflectionApprovedAt || state.readinessReflectionAt);
+    case 'readiness-mission': {
+      const mission = getReadinessMissionState(participantId);
+      return mission.pctcComplete && mission.reflectionApproved && mission.uvpDone;
+    }
     case 'fec-lab':
       return isFecStepCompleteForParticipant(participantId, 'fec-step-1');
     case 'fec-step-1':
@@ -141,6 +146,7 @@ export function deriveWeek2MissionTrack(participantId, context = 'blueprint', da
 export function isWeek2MissionSlugForDay(slug, day) {
   const normalized = String(slug ?? '').trim();
   if (!normalized) return false;
+  if (day === 3 && (normalized === 'readiness' || normalized === 'readiness-reflect')) return true;
   return getWeek2TasksForDay(day).some((task) => task.slug === normalized);
 }
 

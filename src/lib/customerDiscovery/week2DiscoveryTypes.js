@@ -87,6 +87,17 @@
  * @property {string} fieldResearchPlan
  * @property {string} squadDiscussionNotes
  * @property {string} readinessEvidenceNote
+ * @property {string | null} pctcStartedAt
+ * @property {string | null} readinessBadgeEarnedAt
+ * @property {string} readinessReflectionSurprised
+ * @property {string} readinessReflectionResponsibility
+ * @property {string} readinessReflectionTrustedAdvisor
+ * @property {string} readinessReflectionSummary
+ * @property {string | null} readinessReflectionApprovedAt
+ * @property {string} uvpCheckpointOriginal
+ * @property {string} uvpCheckpointVerdict
+ * @property {string} uvpCheckpointNotes
+ * @property {string | null} uvpCheckpointAt
  * @property {Week2PitchOutline} pitchOutline
  * @property {string | null} cloudSyncedAt
  * @property {string | null} updatedAt

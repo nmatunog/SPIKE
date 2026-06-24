@@ -12,6 +12,8 @@ import {
   listAllSquads,
   RESEARCH_MARKETS,
 } from '../../lib/cohortFormationService.js';
+import { WednesdayInsightsPanel } from '../../components/customerDiscovery/WednesdayInsightsPanel.jsx';
+import { UNLOCK_WEEK2 } from '../../lib/programUnlocks.js';
 import { ROUTES } from '../../routes/paths.js';
 
 /**
@@ -75,6 +77,10 @@ export function SquadDashboardPage({ participantId, participantName }) {
           week={programDay.week}
           allSquads={allSquads}
         />
+
+        {UNLOCK_WEEK2 && programDay.week >= 2 && programDay.day >= 3 ? (
+          <WednesdayInsightsPanel participantId={participantId} />
+        ) : null}
 
         <div className="grid gap-4 sm:grid-cols-2">
           <StatCard

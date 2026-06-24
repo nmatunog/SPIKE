@@ -132,21 +132,51 @@ export function syncWeek2PortfolioArtifacts(participantId, squadName = '') {
     });
   }
 
-  if (state.professionalReadinessAt) {
+  if (state.professionalReadinessAt || state.readinessReflectionApprovedAt) {
+    const verdictLabel = {
+      supported: '✓ Supported',
+      refinement: '⚠ Needs Refinement',
+      revision: '✗ Needs Revision',
+    }[state.uvpCheckpointVerdict] ?? '—';
+
     const readinessBody = [
-      '# Professional Readiness',
+      '# Week 2 — Professional Readiness',
       '',
+      '## PCTC Completion',
       state.readinessEvidenceNote || '_Completion recorded_',
+      state.professionalReadinessAt
+        ? `**Completed:** ${new Date(state.professionalReadinessAt).toLocaleString('en-PH', { timeZone: 'Asia/Manila' })}`
+        : '',
+      state.readinessBadgeEarnedAt ? '**Badge:** Professional Readiness ✓' : '',
       '',
-      (state.thinkingShifts ?? [])
-        .filter((s) => s.taskId === 'readiness-reflect')
-        .map((s) => s.response)
-        .join('\n') || '',
-    ].join('\n');
+      '## Reflection Responses',
+      state.readinessReflectionSurprised
+        ? `**What surprised you?**\n${state.readinessReflectionSurprised}` : '',
+      state.readinessReflectionResponsibility
+        ? `**What responsibility stood out?**\n${state.readinessReflectionResponsibility}` : '',
+      state.readinessReflectionTrustedAdvisor
+        ? `**Trusted advisor?**\n${state.readinessReflectionTrustedAdvisor}` : '',
+      '',
+      '## Reflection Summary',
+      state.readinessReflectionSummary
+        || (state.thinkingShifts ?? [])
+          .filter((s) => s.taskId === 'readiness-reflect')
+          .map((s) => s.response)
+          .join('\n')
+        || '',
+      '',
+      '## UVP Checkpoint',
+      state.uvpCheckpointOriginal ? `**Original UVP:** ${state.uvpCheckpointOriginal}` : '',
+      state.uvpCheckpointVerdict ? `**Decision:** ${verdictLabel}` : '',
+      state.uvpCheckpointNotes ? `**Notes:** ${state.uvpCheckpointNotes}` : '',
+      state.uvpCheckpointAt
+        ? `**Checkpoint:** ${new Date(state.uvpCheckpointAt).toLocaleString('en-PH', { timeZone: 'Asia/Manila' })}`
+        : '',
+    ].filter(Boolean).join('\n');
     createPortfolioArtifactDraft({
       participantId,
       sectionId: 'portfolio-market-intelligence',
-      title: 'Professional Readiness Reflection',
+      title: 'Professional Readiness',
       content: readinessBody,
       sourceType: 'week2-discovery',
       sourceId: 'readiness',
@@ -154,6 +184,27 @@ export function syncWeek2PortfolioArtifacts(participantId, squadName = '') {
     setSectionField(participantId, 'market-intelligence', 'professional_readiness', readinessBody, {
       sourceType: 'week2-discovery',
     });
+    if (state.uvpCheckpointAt) {
+      const uvpBody = [
+        '# UVP Checkpoint — Week 2 Day 3',
+        '',
+        `**Original UVP:** ${state.uvpCheckpointOriginal || '—'}`,
+        `**Decision:** ${verdictLabel}`,
+        state.uvpCheckpointNotes ? `**Why:** ${state.uvpCheckpointNotes}` : '',
+        `**Timestamp:** ${state.uvpCheckpointAt}`,
+      ].join('\n');
+      createPortfolioArtifactDraft({
+        participantId,
+        sectionId: 'portfolio-market-intelligence',
+        title: 'UVP Checkpoint',
+        content: uvpBody,
+        sourceType: 'week2-discovery',
+        sourceId: 'uvp-checkpoint',
+      });
+      setSectionField(participantId, 'market-intelligence', 'uvp_checkpoint', uvpBody, {
+        sourceType: 'week2-discovery',
+      });
+    }
   }
 
   const board = aggregateSquadIntelligence(state.interviews ?? []);

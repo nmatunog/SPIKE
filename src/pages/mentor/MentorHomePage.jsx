@@ -44,7 +44,7 @@ export function MentorHomePage({ user, interns, showToast }) {
 
       {showWeek2Scoring ? (
         <div className="mt-10">
-          <Week2CoachTimeline activeDay={programDay.day} role="mentor" />
+          <Week2CoachTimeline activeDay={programDay.day} role="mentor" interns={interns} />
         </div>
       ) : null}
 

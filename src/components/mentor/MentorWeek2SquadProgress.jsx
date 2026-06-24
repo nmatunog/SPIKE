@@ -4,6 +4,7 @@ import { groupInternsBySquad } from '../../lib/mentorFrameworkService.js';
 import { deriveSquadWeek2Progress } from '../../lib/customerDiscovery/week2MentorSquadService.js';
 import { MIN_ENCODED_INTERVIEWS, TARGET_ENCODED_INTERVIEWS } from '../../lib/customerDiscovery/week2Constants.js';
 import { ROUTES } from '../../routes/paths.js';
+import { useCohortProgramDay } from '../../hooks/useCohortProgramDay.js';
 
 /**
  * Mentor Week 2 — assigned squad progress (interviews, portfolio, readiness, pitch).
@@ -11,6 +12,8 @@ import { ROUTES } from '../../routes/paths.js';
  */
 export function MentorWeek2SquadProgress({ interns }) {
   const squads = groupInternsBySquad(interns);
+  const { programDay } = useCohortProgramDay();
+  const showDay3 = programDay.week >= 2 && programDay.day >= 3;
 
   if (!squads.length) {
     return (
@@ -81,6 +84,23 @@ export function MentorWeek2SquadProgress({ interns }) {
                 <ProgressRow label="Pitch started" done={progress.pitchReady} />
                 <ProgressRow label="Pitch submitted" done={progress.pitchSubmitted} />
               </ul>
+
+              {showDay3 ? (
+                <div className="mt-4 space-y-3 border-t border-slate-100 pt-4">
+                  <p className="text-xs font-bold uppercase text-slate-400">Day 3 — Professional Readiness</p>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <MetricPill label="PCTC" value={`${progress.day3Metrics?.pctcPct ?? 0}%`} />
+                    <MetricPill label="Reflection" value={`${progress.day3Metrics?.reflectionPct ?? 0}%`} />
+                    <MetricPill label="UVP" value={progress.day3Metrics?.uvpStatus ?? '—'} />
+                    <MetricPill label="Thursday" value={`${progress.day3Metrics?.thursdayReadinessPct ?? 0}%`} highlight />
+                  </div>
+                  {progress.interviewIntelligence?.mostCommonQuotes?.[0] ? (
+                    <p className="text-xs italic text-slate-600">
+                      Top quote: &ldquo;{progress.interviewIntelligence.mostCommonQuotes[0]}&rdquo;
+                    </p>
+                  ) : null}
+                </div>
+              ) : null}
             </article>
           );
         })}
@@ -98,5 +118,15 @@ function ProgressRow({ label, detail, done }) {
       <span className={done ? 'font-medium text-slate-900' : ''}>{label}</span>
       {detail ? <span className="ml-auto text-xs text-slate-500">{detail}</span> : null}
     </li>
+  );
+}
+
+/** @param {{ label: string, value: string, highlight?: boolean }} props */
+function MetricPill({ label, value, highlight }) {
+  return (
+    <div className={`rounded-lg px-2 py-1.5 ${highlight ? 'bg-spike/10 text-spike' : 'bg-slate-50 text-slate-700'}`}>
+      <span className="text-[10px] font-bold uppercase text-slate-400">{label}</span>
+      <p className="font-semibold">{value}</p>
+    </div>
   );
 }

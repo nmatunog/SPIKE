@@ -51,7 +51,7 @@ export function FacultyHomePage({
 
       {UNLOCK_WEEK2 && programDay.week >= 2 ? (
         <div className="mt-10">
-          <Week2CoachTimeline activeDay={programDay.day} role="faculty" />
+          <Week2CoachTimeline activeDay={programDay.day} role="faculty" interns={interns} />
         </div>
       ) : null}
 
