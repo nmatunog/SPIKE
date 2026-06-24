@@ -3,53 +3,145 @@
     "id": "presentation-w2-d3-deck-01",
     "dayId": "day-segment-1-week-2-day-3",
     "title": "Professional Readiness Transition",
-    "slideIds": ["slide-w2-d3-01", "slide-w2-d3-02", "slide-w2-d3-03", "slide-w2-d3-04", "slide-w2-d3-05"]
+    "slideIds": [
+      "slide-w2-d3-01",
+      "slide-w2-d3-02",
+      "slide-w2-d3-03",
+      "slide-w2-d3-04",
+      "slide-w2-d3-05",
+      "slide-d3-01-06",
+      "slide-d3-01-07",
+      "slide-d3-01-08",
+      "slide-d3-01-09",
+      "slide-d3-01-10",
+      "slide-d3-01-11",
+      "slide-d3-01-12"
+    ],
+    "sourceFile": "faculty-deck-01.pdf",
+    "sourcePath": "content/segment-1/week-2/day-3/source/faculty-deck-01.pdf",
+    "importedAt": "2026-06-24T05:56:17.618Z",
+    "pdfUrl": "/content/segment-1/week-2/day-3/faculty-deck-01.pdf"
   },
   "slides": [
     {
       "id": "slide-w2-d3-01",
       "presentationId": "presentation-w2-d3-deck-01",
-      "title": "You've Learned To Discover.",
-      "body": "Wednesday AM — professional readiness introduction.",
+      "sortOrder": 1,
+      "title": "You’ve Learned",
+      "body": "To Discover",
       "speakerNotes": "Do NOT call this licensing.",
       "discussionQuestions": [],
-      "sortOrder": 1
+      "imageUrl": "/content/segment-1/week-2/day-3/deck-01/slide-01.png"
     },
     {
       "id": "slide-w2-d3-02",
       "presentationId": "presentation-w2-d3-deck-01",
-      "title": "Good Intentions Are Not Enough.",
-      "body": "",
+      "sortOrder": 2,
+      "title": "Good Intentions",
+      "body": "Are Not Enough",
       "speakerNotes": "",
       "discussionQuestions": [],
-      "sortOrder": 2
+      "imageUrl": "/content/segment-1/week-2/day-3/deck-01/slide-02.png"
     },
     {
       "id": "slide-w2-d3-03",
       "presentationId": "presentation-w2-d3-deck-01",
+      "sortOrder": 3,
       "title": "Every Professional Learns · Practices · Qualifies · Serves",
       "body": "",
       "speakerNotes": "",
       "discussionQuestions": [],
-      "sortOrder": 3
+      "imageUrl": "/content/segment-1/week-2/day-3/deck-01/slide-03.png"
     },
     {
       "id": "slide-w2-d3-04",
       "presentationId": "presentation-w2-d3-deck-01",
+      "sortOrder": 4,
       "title": "Privilege → Responsibility → Preparation → Professional",
       "body": "",
       "speakerNotes": "",
       "discussionQuestions": [],
-      "sortOrder": 4
+      "imageUrl": "/content/segment-1/week-2/day-3/deck-01/slide-04.png"
     },
     {
       "id": "slide-w2-d3-05",
       "presentationId": "presentation-w2-d3-deck-01",
+      "sortOrder": 5,
       "title": "Professional Readiness Mission",
-      "body": "Complete AIA Pre-Contract Training · ~4 hours · before Friday",
+      "body": "",
       "speakerNotes": "SPIKE prepares entrepreneurs. AIA prepares professionals.",
       "discussionQuestions": [],
-      "sortOrder": 5
+      "imageUrl": "/content/segment-1/week-2/day-3/deck-01/slide-05.png"
+    },
+    {
+      "id": "slide-d3-01-06",
+      "presentationId": "presentation-w2-d3-deck-01",
+      "sortOrder": 6,
+      "title": "Slide 6",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-3/deck-01/slide-06.png"
+    },
+    {
+      "id": "slide-d3-01-07",
+      "presentationId": "presentation-w2-d3-deck-01",
+      "sortOrder": 7,
+      "title": "Slide 7",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-3/deck-01/slide-07.png"
+    },
+    {
+      "id": "slide-d3-01-08",
+      "presentationId": "presentation-w2-d3-deck-01",
+      "sortOrder": 8,
+      "title": "Slide 8",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-3/deck-01/slide-08.png"
+    },
+    {
+      "id": "slide-d3-01-09",
+      "presentationId": "presentation-w2-d3-deck-01",
+      "sortOrder": 9,
+      "title": "Slide 9",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-3/deck-01/slide-09.png"
+    },
+    {
+      "id": "slide-d3-01-10",
+      "presentationId": "presentation-w2-d3-deck-01",
+      "sortOrder": 10,
+      "title": "Slide 10",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-3/deck-01/slide-10.png"
+    },
+    {
+      "id": "slide-d3-01-11",
+      "presentationId": "presentation-w2-d3-deck-01",
+      "sortOrder": 11,
+      "title": "Slide 11",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-3/deck-01/slide-11.png"
+    },
+    {
+      "id": "slide-d3-01-12",
+      "presentationId": "presentation-w2-d3-deck-01",
+      "sortOrder": 12,
+      "title": "Slide 12",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-3/deck-01/slide-12.png"
     }
   ]
 }
