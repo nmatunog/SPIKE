@@ -80,6 +80,8 @@ import {
   PortfolioSettingsPage,
 } from './routes/lazyPages.js';
 import { InternWorkStatusBanner } from './components/intern/InternWorkStatusBanner.jsx';
+import { InternPendingReflectionBanner } from './components/intern/InternPendingReflectionBanner.jsx';
+import { useInternHasPendingReflection } from './hooks/useInternHasPendingReflection.js';
 import { useAuth } from './AuthContext.jsx';
 import { apiFetch } from './apiClient.js';
 import {
@@ -186,6 +188,8 @@ const SpikeMasterPortal = () => {
     && !week2WelcomeDismissed
     && internForWelcome?.id
     && shouldShowWeek2LoginWelcome(internForWelcome.id, internForWelcome.internProgress);
+
+  const hasPendingReflection = useInternHasPendingReflection();
 
   const [interns, setInterns] = useState([]);
   const [internsLoading, setInternsLoading] = useState(false);
@@ -2028,9 +2032,10 @@ const SpikeMasterPortal = () => {
         compactNav ? 'spike-app-shell--compact-nav' : 'spike-app-shell--desktop-nav'
       }${isSuperuserSession && compactNav ? ' spike-app-shell--superuser-preview' : ''}${
         internCloudSyncing || internWorkStatus?.showBanner ? ' spike-app-shell--cloud-syncing' : ''
-      }`}
+      }${hasPendingReflection ? ' spike-app-shell--pending-reflection' : ''}`}
     >
       <InternWorkStatusBanner />
+      <InternPendingReflectionBanner />
       <PortalHeader
         userRole={userRole}
         viewAsRole={viewAsRole}

@@ -1,10 +1,31 @@
 import { getReflectionMapping } from './activityBlueprintMappings.js';
 
 const CLOSING_REFLECTION_PATTERN = /^reflection-day-(\d+)-close$/;
+const WEEK2_REFLECTION_PATTERN = /^reflection-w2-d(\d+)$/;
 
 /** @param {string} reflectionId */
 export function isDayClosingReflection(reflectionId) {
-  return CLOSING_REFLECTION_PATTERN.test(reflectionId);
+  return CLOSING_REFLECTION_PATTERN.test(reflectionId) || WEEK2_REFLECTION_PATTERN.test(reflectionId);
+}
+
+/**
+ * @param {string} reflectionId
+ * @param {string} [dayId]
+ * @returns {{ week: number, day: number } | null}
+ */
+export function weekDayFromReflectionMeta(reflectionId, dayId) {
+  const w2 = reflectionId.match(WEEK2_REFLECTION_PATTERN);
+  if (w2) return { week: 2, day: Number(w2[1]) };
+
+  const w1 = reflectionId.match(CLOSING_REFLECTION_PATTERN);
+  if (w1) return { week: 1, day: Number(w1[1]) };
+
+  const fromDayId = String(dayId ?? '').match(/week-(\d+)-day-(\d+)/);
+  if (fromDayId) {
+    return { week: Number(fromDayId[1]), day: Number(fromDayId[2]) };
+  }
+
+  return null;
 }
 
 /**
@@ -13,7 +34,9 @@ export function isDayClosingReflection(reflectionId) {
  */
 export function dayNumberFromClosingReflectionId(reflectionId) {
   const match = reflectionId.match(CLOSING_REFLECTION_PATTERN);
-  return match ? Number(match[1]) : null;
+  if (match) return Number(match[1]);
+  const w2 = reflectionId.match(WEEK2_REFLECTION_PATTERN);
+  return w2 ? Number(w2[1]) : null;
 }
 
 /**
@@ -31,11 +54,31 @@ export function dayClosingReflectionLabel(dayNumber) {
 }
 
 /**
+ * @param {{ reflections?: { reflections?: Array<object> } | Array<object> }} bundle
+ * @returns {Array<{ id: string, title?: string, prompts?: string[], dayId?: string }>}
+ */
+export function normalizeBundleReflections(bundle) {
+  const raw = bundle?.reflections;
+  if (!raw) return [];
+  if (Array.isArray(raw)) return raw;
+  return Array.isArray(raw.reflections) ? raw.reflections : [];
+}
+
+/**
+ * End-of-playbook-day reflections interns must complete (Week 1 + Week 2).
+ * @param {{ reflections?: { reflections?: Array<object> } | Array<object> }} bundle
+ */
+export function getPlaybookDayReflections(bundle) {
+  return normalizeBundleReflections(bundle).filter((reflection) =>
+    isDayClosingReflection(reflection.id),
+  );
+}
+
+/**
  * @param {{ reflections?: { reflections?: Array<{ id: string, title?: string, prompts?: string[], dayId?: string }> } }} bundle
  */
 export function getDayClosingReflections(bundle) {
-  const list = bundle?.reflections?.reflections ?? [];
-  return list.filter((reflection) => isDayClosingReflection(reflection.id));
+  return getPlaybookDayReflections(bundle);
 }
 
 /**

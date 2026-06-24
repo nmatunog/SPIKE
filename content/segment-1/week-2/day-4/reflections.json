@@ -1,13 +1,15 @@
-[
-  {
-    "id": "reflection-w2-d4",
-    "dayId": "day-segment-1-week-2-day-4",
-    "title": "FEC Validation Reflection",
-    "prompts": [
-      "Which FEC box changed the most after today's validation?",
-      "What interview evidence surprised your squad?",
-      "How did your UVP evolve from Week 1 to Version 2?",
-      "What will you refine before Friday's pitch?"
-    ]
-  }
-]
+{
+  "reflections": [
+    {
+      "id": "reflection-w2-d4",
+      "dayId": "day-segment-1-week-2-day-4",
+      "title": "FEC Validation Reflection",
+      "prompts": [
+        "Which FEC box changed the most after today's validation?",
+        "What interview evidence surprised your squad?",
+        "How did your UVP evolve from Week 1 to Version 2?",
+        "What will you refine before Friday's pitch?"
+      ]
+    }
+  ]
+}

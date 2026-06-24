@@ -82,33 +82,44 @@ export function getReflectionMapping(reflectionId) {
   }
 
   const dayMatch = reflectionId.match(/^reflection-day-(\d+)-close$/);
-  if (!dayMatch) return null;
+  const w2Match = reflectionId.match(/^reflection-w2-d(\d+)$/);
+  if (!dayMatch && !w2Match) return null;
 
-  const dayNum = Number(dayMatch[1]);
+  const weekNum = w2Match ? 2 : 1;
+  const dayNum = Number((w2Match ?? dayMatch)[1]);
   /** @type {Record<number, string>} */
-  const portfolioByDay = {
-    1: 'portfolio-identity-purpose',
-    2: 'portfolio-market-intelligence',
-    3: 'portfolio-market-intelligence',
-    4: 'portfolio-financial-blueprint',
-    5: 'portfolio-three-year-blueprint',
+  const portfolioByWeekDay = {
+    '1-1': 'portfolio-identity-purpose',
+    '1-2': 'portfolio-market-intelligence',
+    '1-3': 'portfolio-market-intelligence',
+    '1-4': 'portfolio-financial-blueprint',
+    '1-5': 'portfolio-three-year-blueprint',
+    '2-2': 'portfolio-market-intelligence',
+    '2-3': 'portfolio-professional-development',
+    '2-4': 'portfolio-financial-blueprint',
+    '2-5': 'portfolio-advisor-startup',
   };
-  /** @type {Record<number, string>} */
-  const chapterByDay = {
-    1: 'bp-chapter-1',
-    2: 'bp-chapter-2',
-    3: 'bp-chapter-2',
-    4: 'bp-chapter-3',
-    5: 'bp-chapter-5',
+  /** @type {Record<string, string>} */
+  const chapterByWeekDay = {
+    '1-1': 'bp-chapter-1',
+    '1-2': 'bp-chapter-2',
+    '1-3': 'bp-chapter-2',
+    '1-4': 'bp-chapter-3',
+    '1-5': 'bp-chapter-5',
+    '2-2': 'bp-chapter-2',
+    '2-3': 'bp-chapter-2',
+    '2-4': 'bp-chapter-3',
+    '2-5': 'bp-chapter-5',
   };
+  const key = `${weekNum}-${dayNum}`;
 
   return {
-    portfolioSectionId: portfolioByDay[dayNum] ?? 'portfolio-identity-purpose',
-    businessPlanChapterId: chapterByDay[dayNum] ?? 'bp-chapter-1',
-    blueprintModule: dayNum <= 2 ? 'vision' : 'client-growth',
+    portfolioSectionId: portfolioByWeekDay[key] ?? 'portfolio-identity-purpose',
+    businessPlanChapterId: chapterByWeekDay[key] ?? 'bp-chapter-1',
+    blueprintModule: weekNum === 1 && dayNum <= 2 ? 'vision' : 'client-growth',
     completionWeight: 2,
-    artifactTitle: `Day ${dayNum} Closing Reflection`,
-    sourceDayId: `day-segment-1-week-1-day-${dayNum}`,
+    artifactTitle: `Week ${weekNum} Day ${dayNum} Closing Reflection`,
+    sourceDayId: `day-segment-1-week-${weekNum}-day-${dayNum}`,
   };
 }
 

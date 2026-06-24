@@ -4,6 +4,7 @@ import {
   dayClosingReflectionLabel,
   dayNumberFromBundle,
   getDayClosingReflections,
+  weekDayFromReflectionMeta,
 } from '../../lib/dayClosingReflection.js';
 import { ReflectionViewer } from './ReflectionViewer.jsx';
 
@@ -20,7 +21,14 @@ export function DayClosingReflectionSection({ bundle, participantId, onCompleted
   if (!closingReflections.length) return null;
 
   const dayNumber = dayNumberFromBundle(bundle);
-  const dayLabel = dayNumber ? `Day ${dayNumber}` : 'Today';
+  const weekDay = closingReflections[0]
+    ? weekDayFromReflectionMeta(closingReflections[0].id, closingReflections[0].dayId)
+    : null;
+  const dayLabel = weekDay
+    ? `Week ${weekDay.week} · Day ${weekDay.day}`
+    : dayNumber
+      ? `Day ${dayNumber}`
+      : 'Today';
   const allDone = participantId
     ? closingReflections.every((reflection) => isReflectionCompleted(participantId, reflection.id))
     : false;
@@ -33,7 +41,9 @@ export function DayClosingReflectionSection({ bundle, participantId, onCompleted
           Finish {dayLabel}
         </p>
         <h3 className="mt-1 text-xl font-bold text-slate-900">
-          {dayClosingReflectionLabel(dayNumber)}
+          {weekDay
+            ? `${dayClosingReflectionLabel(weekDay.day)} (Week ${weekDay.week})`
+            : dayClosingReflectionLabel(dayNumber)}
         </h3>
         <p className="mt-2 max-w-2xl text-sm text-slate-700">
           Before you leave today, answer these prompts. Your reflection saves to your venture portfolio
