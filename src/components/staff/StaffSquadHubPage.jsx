@@ -1,9 +1,10 @@
-import { createElement } from 'react';
+import { createElement, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Briefcase, LayoutGrid, MessageSquare, Sparkles, User } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Briefcase, ChevronDown, ChevronUp, LayoutGrid, MessageSquare, Sparkles, User } from 'lucide-react';
 import { PageContainer } from '../layout/PageContainer.jsx';
 import { deriveSquadHubDetail } from '../../lib/staffCoachHomeService.js';
 import { SquadXpInline, SquadXpSummaryCard } from './SquadXpDashboard.jsx';
+import { SquadWeek2MissionProgressPanel } from './SquadWeek2MissionProgressPanel.jsx';
 import { getSquadWeeklyXp } from '../../lib/staff/squadXpService.js';
 import {
   mentorParticipantReviewHref,
@@ -12,6 +13,7 @@ import {
 } from '../../routes/paths.js';
 import { groupInternsBySquad } from '../../lib/facultyMentorFrameworkService.js';
 import { useCohortProgramDay } from '../../hooks/useCohortProgramDay.js';
+import { useCohortHydration } from '../../hooks/useParticipantHydration.js';
 
 /**
  * @param {{
@@ -25,6 +27,11 @@ export function StaffSquadHubPage({ role, squadName, interns, homeHref }) {
   const detail = deriveSquadHubDetail(interns, squadName);
   const squadsHref = staffSquadsListHref(role);
   const memberIds = detail.memberRows.map((m) => m.id);
+  const { programDay } = useCohortProgramDay();
+  const { ready: cohortReady } = useCohortHydration(memberIds, {
+    enabled: memberIds.length > 0,
+    interns: detail.memberRows,
+  });
 
   return (
     <PageContainer>
@@ -55,6 +62,17 @@ export function StaffSquadHubPage({ role, squadName, interns, homeHref }) {
         memberIds={memberIds}
         week={detail.week}
       />
+
+      {programDay.week >= 2 ? (
+        <div className="mb-6">
+          <SquadWeek2MissionProgressPanel
+            squadName={detail.squadName}
+            memberIds={memberIds}
+            members={detail.memberRows}
+            cohortReady={cohortReady}
+          />
+        </div>
+      ) : null}
 
       <div className="mb-6 flex flex-wrap gap-2">
         <Link
@@ -152,33 +170,74 @@ export function StaffSquadHubPage({ role, squadName, interns, homeHref }) {
 export function StaffSquadsListPage({ role, interns, homeHref }) {
   const squads = groupInternsBySquad(interns);
   const { programDay } = useCohortProgramDay();
+  const [expandedSquad, setExpandedSquad] = useState('');
+  const cohortIds = useMemo(() => interns.map((i) => i.id), [interns]);
+  const { ready: cohortReady } = useCohortHydration(cohortIds, {
+    enabled: Boolean(expandedSquad) && cohortIds.length > 0,
+    interns,
+  });
 
   return (
     <PageContainer>
       <header className="mb-6">
         <h1 className="text-2xl font-bold text-slate-900">My squads</h1>
         <p className="mt-1 text-sm text-slate-600">
-          Venture boards, FECs, and portfolios — organized by squad.
+          Venture boards, FECs, portfolios, and Week 2 mission progress — organized by squad.
+          {programDay.week >= 2 ? ' Click a squad to expand today’s tasks.' : ''}
         </p>
       </header>
       <ul className="grid gap-4 sm:grid-cols-2">
         {squads.map((squad) => {
           const memberIds = (squad.members ?? []).map((m) => m.id);
           const xp = getSquadWeeklyXp(squad.name, memberIds, programDay.week);
+          const expanded = expandedSquad === squad.name;
+          const hubHref = `${staffSquadsListHref(role)}/${encodeURIComponent(squad.name)}`;
+
           return (
-          <li key={squad.name}>
-            <Link
-              to={`${staffSquadsListHref(role)}/${encodeURIComponent(squad.name)}`}
-              className="block rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-spike/30 hover:shadow-md"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div>
+          <li key={squad.name} className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div className="flex items-start justify-between gap-3 p-5">
+              <button
+                type="button"
+                onClick={() => setExpandedSquad(expanded ? '' : squad.name)}
+                className="min-w-0 flex-1 text-left"
+              >
+                <div className="flex items-center gap-2">
                   <h2 className="text-lg font-semibold text-slate-900">{squad.name}</h2>
-                  <p className="mt-1 text-sm text-slate-600">{squad.count} members</p>
+                  {programDay.week >= 2 ? (
+                    expanded ? (
+                      <ChevronUp size={18} className="text-slate-400" aria-hidden />
+                    ) : (
+                      <ChevronDown size={18} className="text-slate-400" aria-hidden />
+                    )
+                  ) : null}
                 </div>
-                <SquadXpInline totalXp={xp.totalXp} />
+                <p className="mt-1 text-sm text-slate-600">{squad.count} members</p>
+              </button>
+              <SquadXpInline totalXp={xp.totalXp} />
+            </div>
+
+            {expanded && programDay.week >= 2 ? (
+              <div className="border-t border-slate-100 px-2 pb-2">
+                <SquadWeek2MissionProgressPanel
+                  squadName={squad.name}
+                  memberIds={memberIds}
+                  members={squad.members ?? []}
+                  cohortReady={cohortReady}
+                  compact
+                  embedded
+                />
               </div>
-            </Link>
+            ) : null}
+
+            <div className="border-t border-slate-100 px-5 py-3">
+              <Link
+                to={hubHref}
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-spike hover:underline"
+              >
+                Open squad hub
+                <ArrowRight size={14} aria-hidden />
+              </Link>
+            </div>
           </li>
           );
         })}

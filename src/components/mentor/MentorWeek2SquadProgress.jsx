@@ -90,7 +90,7 @@ export function MentorWeek2SquadProgress({ interns }) {
                 <div className="mt-4 space-y-3 border-t border-slate-100 pt-4">
                   <p className="text-xs font-bold uppercase text-slate-400">Day 3 — Professional Readiness</p>
                   <div className="grid grid-cols-2 gap-2 text-xs">
-                    <MetricPill label="PCTC" value={`${progress.day3Metrics?.pctcPct ?? 0}%`} />
+                    <MetricPill label="PCTC (1+ cert)" value={`${progress.day3Metrics?.pctcPct ?? 0}%`} />
                     <MetricPill label="Reflection" value={`${progress.day3Metrics?.reflectionPct ?? 0}%`} />
                     <MetricPill label="UVP" value={progress.day3Metrics?.uvpStatus ?? '—'} />
                     <MetricPill label="Thursday" value={`${progress.day3Metrics?.thursdayReadinessPct ?? 0}%`} highlight />
