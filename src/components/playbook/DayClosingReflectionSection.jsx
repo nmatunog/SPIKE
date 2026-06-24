@@ -14,9 +14,10 @@ import { ReflectionViewer } from './ReflectionViewer.jsx';
  *   bundle: import('../../lib/contentLoader.js').DayContentBundle,
  *   participantId?: string,
  *   onCompleted?: () => void,
+ *   highlightPending?: boolean,
  * }} props
  */
-export function DayClosingReflectionSection({ bundle, participantId, onCompleted }) {
+export function DayClosingReflectionSection({ bundle, participantId, onCompleted, highlightPending = false }) {
   const closingReflections = getDayClosingReflections(bundle);
   if (!closingReflections.length) return null;
 
@@ -34,7 +35,13 @@ export function DayClosingReflectionSection({ bundle, participantId, onCompleted
     : false;
 
   return (
-    <section className="overflow-hidden rounded-2xl border-2 border-amber-300/80 bg-gradient-to-br from-amber-50 via-white to-spike-muted/30 shadow-card">
+    <section
+      className={`overflow-hidden rounded-2xl border-2 shadow-card ${
+        highlightPending && !allDone
+          ? 'border-amber-500 bg-gradient-to-br from-amber-100 via-amber-50 to-white ring-2 ring-amber-300/60'
+          : 'border-amber-300/80 bg-gradient-to-br from-amber-50 via-white to-spike-muted/30'
+      }`}
+    >
       <div className="border-b border-amber-200/80 bg-amber-100/60 px-5 py-4 sm:px-6">
         <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-900">
           <Sparkles size={14} aria-hidden />

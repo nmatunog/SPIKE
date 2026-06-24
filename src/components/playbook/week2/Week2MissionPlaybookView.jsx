@@ -23,6 +23,8 @@ import {
 } from '../../../lib/customerDiscovery/week2MissionService.js';
 import { getWeek2PhaseForDay } from '../../../lib/customerDiscovery/week2JourneyConstants.js';
 import { Week2PrepareReviseNav } from '../../customerDiscovery/Week2PrepareReviseNav.jsx';
+import { PlaybookDayClosingReflectionBlock } from '../PlaybookDayClosingReflectionBlock.jsx';
+import { PlaybookReflectionNudge } from '../PlaybookReflectionNudge.jsx';
 
 /**
  * Mission-first Week 2 SPIKE Studio — embedded in Playbook.
@@ -32,6 +34,9 @@ import { Week2PrepareReviseNav } from '../../customerDiscovery/Week2PrepareRevis
  *   missionSlug?: string,
  *   playbookDay?: number,
  *   calendarDay?: number,
+ *   programWeek?: number,
+ *   focusReflection?: boolean,
+ *   pendingReflection?: { week: number, day: number, title: string, label: string } | null,
  *   onOpenCurriculum?: () => void,
  *   onProgress?: () => void,
  *   onMissionNavigate?: (slug: string) => void,
@@ -43,6 +48,9 @@ export function Week2MissionPlaybookView({
   missionSlug = 'mission',
   playbookDay = 1,
   calendarDay = 5,
+  programWeek = 2,
+  focusReflection = false,
+  pendingReflection = null,
   onOpenCurriculum,
   onProgress,
   onMissionNavigate,
@@ -164,6 +172,15 @@ export function Week2MissionPlaybookView({
 
   return (
     <div className="space-y-6">
+      {pendingReflection ? (
+        <PlaybookReflectionNudge
+          week={pendingReflection.week}
+          day={pendingReflection.day}
+          title={pendingReflection.title}
+          label={pendingReflection.label}
+        />
+      ) : null}
+
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-venture-activate/20 bg-venture-activate/5 px-4 py-3">
         <p className="flex items-center gap-2 text-sm text-slate-700">
           <Sparkles size={16} className="shrink-0 text-venture-activate" aria-hidden />
@@ -199,6 +216,14 @@ export function Week2MissionPlaybookView({
           {renderTask()}
         </StudioShell>
       </div>
+
+      <PlaybookDayClosingReflectionBlock
+        week={programWeek}
+        day={day}
+        participantId={participantId}
+        focusReflection={focusReflection}
+        onCompleted={refresh}
+      />
 
       {onOpenCurriculum ? (
         <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/80 px-4 py-4">

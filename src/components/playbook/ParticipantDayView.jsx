@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Rocket, Target, LayoutGrid, FlaskConical } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { SessionView } from './SessionView.jsx';
@@ -19,6 +19,7 @@ import {
 import { Day4VentureDesignHero, WORKSHOP_HREF } from './ventureDesign/Day4VentureDesignHero.jsx';
 import { Week2ActivateHero } from './week2/Week2ActivateHero.jsx';
 import { Week2StudioLaunchCard } from './week2/Week2StudioLaunchCard.jsx';
+import { PlaybookReflectionNudge } from './PlaybookReflectionNudge.jsx';
 import { BLUEPRINT_LINKS, playbookHref, playbookWeek2StudioHref, ROUTES } from '../../routes/paths.js';
 import { UNLOCK_WEEK1_DAY2_PLUS } from '../../lib/programUnlocks.js';
 
@@ -35,6 +36,10 @@ import { UNLOCK_WEEK1_DAY2_PLUS } from '../../lib/programUnlocks.js';
  *   interns?: Array<{ id: string, name: string }>,
  *   mentorId?: string,
  *   skipWeek2Hero?: boolean,
+ *   focusReflection?: boolean,
+ *   pendingReflection?: { week: number, day: number, title: string, label: string } | null,
+ *   programWeek?: number,
+ *   programDay?: number,
  * }} props
  */
 export function ParticipantDayView({
@@ -45,6 +50,8 @@ export function ParticipantDayView({
   interns = [],
   mentorId,
   skipWeek2Hero = false,
+  focusReflection = false,
+  pendingReflection = null,
 }) {
   const location = useLocation();
   const sessions = bundle.sessions?.sessions ?? [];
@@ -73,8 +80,26 @@ export function ParticipantDayView({
   const week2DayMatch = bundle.day.id.match(/day-segment-1-week-2-day-(\d+)/);
   const week2Day = week2DayMatch ? Number(week2DayMatch[1]) : 0;
 
+  useEffect(() => {
+    if (!focusReflection && !pendingReflection) return;
+    const el = document.getElementById('playbook-day-reflection');
+    if (!el) return;
+    const timer = window.setTimeout(() => {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 120);
+    return () => window.clearTimeout(timer);
+  }, [focusReflection, pendingReflection, bundle.day?.id]);
+
   return (
     <div className="space-y-6">
+      {!staffPreview && pendingReflection ? (
+        <PlaybookReflectionNudge
+          week={pendingReflection.week}
+          day={pendingReflection.day}
+          title={pendingReflection.title}
+          label={pendingReflection.label}
+        />
+      ) : null}
       {isWeek2Day1 && !skipWeek2Hero ? (
         <Week2ActivateHero variant={staffPreview ? 'mentor' : 'intern'} />
       ) : null}
@@ -244,11 +269,14 @@ export function ParticipantDayView({
       ) : null}
 
       {!staffPreview ? (
-        <DayClosingReflectionSection
-          bundle={bundle}
-          participantId={participantId}
-          onCompleted={onProgress}
-        />
+        <div id="playbook-day-reflection" className="scroll-mt-24">
+          <DayClosingReflectionSection
+            bundle={bundle}
+            participantId={participantId}
+            onCompleted={onProgress}
+            highlightPending={Boolean(pendingReflection)}
+          />
+        </div>
       ) : null}
 
       <div className="rounded-xl border border-spike/15 bg-spike-muted/40 p-4">

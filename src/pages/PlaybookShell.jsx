@@ -23,6 +23,10 @@ import {
   resolveWeek2PlaybookDay,
 } from '../lib/customerDiscovery/week2MissionService.js';
 import { useInternWorkHydration } from '../hooks/useInternWorkHydration.js';
+import { useCohortProgramDay } from '../hooks/useCohortProgramDay.js';
+import { listPendingPlaybookReflections } from '../lib/pendingPlaybookReflectionService.js';
+import { PlaybookDayClosingReflectionBlock } from '../components/playbook/PlaybookDayClosingReflectionBlock.jsx';
+import { PlaybookReflectionNudge } from '../components/playbook/PlaybookReflectionNudge.jsx';
 
 const TABS = [
   { id: 'curriculum', label: 'Curriculum', icon: Layers, roles: ['intern', 'faculty', 'mentor', 'admin'] },
@@ -62,31 +66,49 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
 
   const missionSlug = searchParams.get('mission') ?? '';
   const showCurriculum = searchParams.get('view') === 'curriculum';
+  const focusReflection = searchParams.get('reflection') === '1';
+  const { programDay, ready: calendarReady } = useCohortProgramDay();
 
   const entryDay = useMemo(() => {
     const fromQuery = Number.parseInt(searchParams.get('day') ?? '', 10);
     if (Number.isFinite(fromQuery) && fromQuery >= 1 && fromQuery <= 5) {
       return fromQuery;
     }
+    if (userRole === 'intern' && calendarReady) {
+      return programDay.day;
+    }
     if (userRole === 'intern') {
       return resolveInternPlaybookDay(internProgress);
     }
     return 1;
-  }, [searchParams, userRole, internProgress]);
+  }, [searchParams, userRole, internProgress, calendarReady, programDay.day]);
 
   const entryWeek = useMemo(() => {
     const fromQuery = Number.parseInt(searchParams.get('week') ?? '', 10);
     if (Number.isFinite(fromQuery) && fromQuery >= 1) return fromQuery;
+    if (userRole === 'intern' && calendarReady) return programDay.week;
     if (userRole === 'intern') return resolveInternProgramWeek(internProgress);
     if (UNLOCK_WEEK2) return 2;
     return internProgress?.current_week ?? 1;
-  }, [searchParams, userRole, internProgress]);
+  }, [searchParams, userRole, internProgress, calendarReady, programDay.week]);
 
   const entrySegment = useMemo(() => {
     const fromQuery = Number.parseInt(searchParams.get('segment') ?? '', 10);
     if (Number.isFinite(fromQuery) && fromQuery >= 1) return fromQuery;
     return internProgress?.segment ?? 1;
   }, [searchParams, internProgress]);
+
+  useEffect(() => {
+    if (userRole !== 'intern' || !calendarReady) return;
+    const hasWeek = searchParams.has('week');
+    const hasDay = searchParams.has('day');
+    if (hasWeek && hasDay) return;
+    const params = new URLSearchParams(searchParams);
+    params.set('segment', String(entrySegment));
+    params.set('week', String(programDay.week));
+    params.set('day', String(programDay.day));
+    setSearchParams(params, { replace: true });
+  }, [userRole, calendarReady, searchParams, setSearchParams, entrySegment, programDay.week, programDay.day]);
 
   useEffect(() => {
     let active = true;
@@ -250,6 +272,13 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
   const squadRecord = participantId ? getParticipantSquad(participantId) : null;
   const internSquadName = squadRecord?.name ?? internProgress?.squad ?? '';
 
+  const pendingTodayReflection =
+    userRole === 'intern' && participantId && calendarReady
+      ? listPendingPlaybookReflections(participantId, programDay).find(
+          (row) => row.week === entryWeek && row.day === playbookDayNumber,
+        )
+      : null;
+
   let dayContent;
 
   if (showMissionFirst && participantId) {
@@ -260,6 +289,9 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
         missionSlug={missionSlug || 'mission'}
         playbookDay={resolvedPlaybookDay}
         calendarDay={playbookDayNumber}
+        programWeek={entryWeek}
+        focusReflection={focusReflection}
+        pendingReflection={pendingTodayReflection}
         onOpenCurriculum={openCurriculumView}
         onProgress={() => setRefreshKey((k) => k + 1)}
         onMissionNavigate={(slug, missionDay) => {
@@ -302,6 +334,10 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
             participantId={participantId}
             onProgress={() => setRefreshKey((k) => k + 1)}
             skipWeek2Hero={isInternWeek2}
+            focusReflection={focusReflection}
+            pendingReflection={pendingTodayReflection}
+            programWeek={entryWeek}
+            programDay={playbookDayNumber}
           />
         </>
       );

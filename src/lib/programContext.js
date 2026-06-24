@@ -4,6 +4,7 @@
 import { buildParticipantState } from './participantState.js';
 import { deriveTodayMission } from './buildStudioService.js';
 import { resolveInternPlaybookDay, resolveInternProgramWeek } from './programUnlocks.js';
+import { deriveProgramDayFromStartDate, effectiveCohortStartDate } from './programCalendar.js';
 import { COACH_SECTIONS } from './ventureCoachConstants.js';
 import { isCoachSectionComplete } from './ventureCoachStorage.js';
 import { ROUTES, playbookHref } from '../routes/paths.js';
@@ -14,8 +15,12 @@ import { ROUTES, playbookHref } from '../routes/paths.js';
  */
 export function getProgramContext(internProgress, participantId = '') {
   const segment = internProgress?.segment ?? 1;
-  const week = resolveInternProgramWeek(internProgress);
-  const day = resolveInternPlaybookDay(internProgress);
+  const calendarDay = deriveProgramDayFromStartDate(effectiveCohortStartDate(null)) ?? {
+    week: 1,
+    day: 1,
+  };
+  const week = Math.max(resolveInternProgramWeek(internProgress), calendarDay.week);
+  const day = calendarDay.week >= week ? calendarDay.day : resolveInternPlaybookDay(internProgress);
   const state = participantId
     ? buildParticipantState(participantId, internProgress)
     : { week, segment, day, blueprint_completion: internProgress?.blueprint_completion ?? 0 };

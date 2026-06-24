@@ -122,6 +122,15 @@ export function playbookHref(opts = {}) {
   return `${ROUTES.playbook}?${params.toString()}`;
 }
 
+/**
+ * Deep link to Playbook day reflection — scrolls/focuses closing reflection on arrival.
+ * @param {{ segment?: number, week?: number, day?: number }} [opts]
+ */
+export function playbookReflectionHref(opts = {}) {
+  const base = playbookHref(opts);
+  return `${base}&reflection=1`;
+}
+
 /** @param {string} pathname @param {string[]} validSectionIds */
 export function portfolioSectionFromPath(pathname, validSectionIds) {
   if (pathname === ROUTES.myVenturePortfolio) return 'overview';

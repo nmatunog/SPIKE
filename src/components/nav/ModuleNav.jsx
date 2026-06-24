@@ -11,7 +11,8 @@ import {
   Users,
 } from 'lucide-react';
 import { useCompactNav } from '../../hooks/useCompactNav.js';
-import { internNavActiveModule, moduleNavForRole } from '../../routes/paths.js';
+import { useInternPlaybookNavHref } from '../../hooks/useInternPlaybookNavHref.js';
+import { internNavActiveModule, moduleNavForRole, ROUTES } from '../../routes/paths.js';
 import { SuperuserPreviewPills } from './SuperuserPreviewPills.jsx';
 
 const ICONS = {
@@ -43,16 +44,18 @@ function NavItems({ userRole, variant }) {
   const isMobile = variant === 'mobile';
   const { pathname } = useLocation();
   const internActive = userRole === 'intern' ? internNavActiveModule(pathname) : null;
+  const internPlaybookHref = useInternPlaybookNavHref();
 
   return items.map(({ path, label, shortLabel, icon }) => {
     const Icon = ICONS[icon] || LayoutDashboard;
     const displayLabel = isMobile ? (shortLabel ?? label) : label;
     const isActive = userRole === 'intern' ? internActive === path : undefined;
+    const to = userRole === 'intern' && path === ROUTES.playbook ? internPlaybookHref : path;
 
     return (
       <NavLink
         key={`${variant}-${path}`}
-        to={path}
+        to={to}
         end={path === '/venture-blueprint'}
         className={({ isActive: linkActive }) =>
           linkClass(userRole === 'intern' ? isActive : linkActive, isMobile)
