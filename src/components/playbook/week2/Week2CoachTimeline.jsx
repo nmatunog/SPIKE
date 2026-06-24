@@ -3,6 +3,7 @@ import { playbookHref, playbookWeek2StudioHref } from '../../../routes/paths.js'
 import { WEEK2_COACH_TIMELINE } from '../../../lib/customerDiscovery/week2JourneyConstants.js';
 
 import { Week2Day3CoachDashboard } from './Week2Day3CoachDashboard.jsx';
+import { Week2Day4CoachDashboard } from './Week2Day4CoachDashboard.jsx';
 
 /**
  * Coach view — Week 2 timeline (replaces lesson-plan-first layout).
@@ -63,6 +64,9 @@ export function Week2CoachTimeline({ activeDay = 1, role = 'faculty', interns = 
       </div>
       {activeDay === 3 && interns.length ? (
         <Week2Day3CoachDashboard interns={interns} />
+      ) : null}
+      {activeDay === 4 && interns.length ? (
+        <Week2Day4CoachDashboard interns={interns} />
       ) : null}
       {role === 'faculty' ? (
         <p className="text-xs text-slate-500">

@@ -91,5 +91,7 @@ export function fecValidationProgressPct(squadKey) {
 
 /** @param {string} squadKey */
 export function isFecLabComplete(squadKey) {
+  const state = loadFecValidation(squadKey);
+  if (state.studio3ApprovedAt) return true;
   return FEC_VALIDATION_STEPS.every((s) => isFecStepComplete(squadKey, s.id));
 }

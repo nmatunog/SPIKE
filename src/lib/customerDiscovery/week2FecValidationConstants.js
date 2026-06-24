@@ -91,14 +91,51 @@ export const SQUAD_ROLE_DEFS = [
 ];
 
 export const PITCH_SLIDE_KEYS = [
-  { key: 'mission', label: 'Mission' },
+  { key: 'mission', label: 'Original Venture' },
+  { key: 'whatWeThought', label: 'What We Assumed' },
   { key: 'whoInterviewed', label: 'Who We Interviewed' },
-  { key: 'whatWeThought', label: 'What We Thought' },
-  { key: 'whatWeHeard', label: 'What We Heard' },
+  { key: 'whatWeHeard', label: 'What We Learned' },
   { key: 'customerVoices', label: 'Customer Voices' },
-  { key: 'validatedProblem', label: 'Validated Problem' },
-  { key: 'uvpBefore', label: 'UVP Before' },
-  { key: 'uvpAfter', label: 'UVP After' },
+  { key: 'whatChanged', label: 'What Changed' },
+  { key: 'fecBefore', label: 'FEC Before' },
+  { key: 'fecAfter', label: 'FEC After' },
   { key: 'strategicOpportunity', label: 'Strategic Opportunity' },
-  { key: 'nextStep', label: 'Next Step' },
+  { key: 'nextStep', label: 'What We Will Build Next' },
 ];
+
+/** Three-studio venture lab flow (replaces 6-step workshop pages). */
+export const FEC_STUDIO_PHASES = [
+  {
+    id: 'fec-studio-1',
+    slug: 'fec-studio-1',
+    phase: 1,
+    title: 'What Did We Learn?',
+    subtitle: 'Review evidence — not opinions, not assumptions.',
+    studioLabel: 'Studio 1',
+  },
+  {
+    id: 'fec-studio-2',
+    slug: 'fec-studio-2',
+    phase: 2,
+    title: 'What Must Change?',
+    subtitle: 'Upgrade the Financial Entrepreneurship Canvas.',
+    studioLabel: 'Studio 2',
+  },
+  {
+    id: 'fec-studio-3',
+    slug: 'fec-studio-3',
+    phase: 3,
+    title: 'What Will We Do Next?',
+    subtitle: 'Convert insight into action.',
+    studioLabel: 'Studio 3',
+  },
+];
+
+/** Maps FEC box → legacy step id for canvas sync. */
+export const FEC_BOX_STEP_MAP = {
+  who_we_serve: 'fec-step-1',
+  problem_we_solve: 'fec-step-2',
+  uvp: 'fec-step-3',
+  client_experience: 'fec-step-4',
+  winning_strategy: 'fec-step-5',
+};

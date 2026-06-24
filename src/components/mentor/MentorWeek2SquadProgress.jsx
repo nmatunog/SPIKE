@@ -14,6 +14,7 @@ export function MentorWeek2SquadProgress({ interns }) {
   const squads = groupInternsBySquad(interns);
   const { programDay } = useCohortProgramDay();
   const showDay3 = programDay.week >= 2 && programDay.day >= 3;
+  const showDay4 = programDay.week >= 2 && programDay.day >= 4;
 
   if (!squads.length) {
     return (
@@ -99,6 +100,17 @@ export function MentorWeek2SquadProgress({ interns }) {
                       Top quote: &ldquo;{progress.interviewIntelligence.mostCommonQuotes[0]}&rdquo;
                     </p>
                   ) : null}
+                </div>
+              ) : null}
+
+              {showDay4 ? (
+                <div className="mt-3 space-y-2 border-t border-slate-100 pt-3">
+                  <p className="text-xs font-bold uppercase text-slate-400">Day 4 — FEC Validation Lab</p>
+                  <div className="grid grid-cols-3 gap-2 text-xs">
+                    <MetricPill label="Clarity" value={`${progress.day4Metrics?.clarityScore ?? 0}%`} highlight />
+                    <MetricPill label="Pitch" value={progress.day4Metrics?.pitchReady ? 'Ready' : 'Draft'} />
+                    <MetricPill label="Build" value={progress.day4Metrics?.buildReady ? 'Ready' : '—'} />
+                  </div>
                 </div>
               ) : null}
             </article>

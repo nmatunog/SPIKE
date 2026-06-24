@@ -25,6 +25,14 @@
  * @property {Record<string, string>} pitchSlides
  * @property {string | null} pitchSubmittedAt
  * @property {string | null} updatedAt
+ * @property {string | null} [studio1ApprovedAt]
+ * @property {string | null} [studio2ApprovedAt]
+ * @property {string | null} [studio3ApprovedAt]
+ * @property {Record<string, unknown>} [evidenceBoard]
+ * @property {Record<string, string>} [ventureEvolutionReport]
+ * @property {string} [nextExperiment]
+ * @property {string} [week3BuildDirection]
+ * @property {string} [buildReadiness]
  */
 
 export {};

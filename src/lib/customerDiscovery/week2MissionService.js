@@ -14,6 +14,7 @@ import { isFecStepCompleteForParticipant } from './week2FecValidationService.js'
 import { loadFecValidation } from './week2FecValidationStorage.js';
 import { getSquadNameForParticipant } from './week2SquadEvidenceService.js';
 import { getReadinessMissionState } from './week2ReadinessMissionService.js';
+import { getFecStudioState } from './week2FecStudioService.js';
 
 const BASE = `${ROUTES.ventureBlueprint}/customer-discovery`;
 
@@ -63,7 +64,21 @@ function isTaskComplete(participantId, taskId) {
       return mission.pctcComplete && mission.reflectionApproved && mission.uvpDone;
     }
     case 'fec-lab':
-      return isFecStepCompleteForParticipant(participantId, 'fec-step-1');
+    case 'fec-studio':
+      return isFecStepCompleteForParticipant(participantId, 'fec-step-1')
+        || Boolean(loadFecValidation(getSquadNameForParticipant(participantId)).studio1ApprovedAt);
+    case 'fec-studio-1': {
+      const key = getSquadNameForParticipant(participantId);
+      return Boolean(loadFecValidation(key).studio1ApprovedAt) || isFecStepCompleteForParticipant(participantId, 'fec-step-1');
+    }
+    case 'fec-studio-2': {
+      const key = getSquadNameForParticipant(participantId);
+      return Boolean(loadFecValidation(key).studio2ApprovedAt) || isFecStepCompleteForParticipant(participantId, 'fec-step-5');
+    }
+    case 'fec-studio-3': {
+      const studio = getFecStudioState(participantId);
+      return studio.labComplete || isFecStepCompleteForParticipant(participantId, 'fec-step-6');
+    }
     case 'fec-step-1':
     case 'fec-step-2':
     case 'fec-step-3':
@@ -147,6 +162,7 @@ export function isWeek2MissionSlugForDay(slug, day) {
   const normalized = String(slug ?? '').trim();
   if (!normalized) return false;
   if (day === 3 && (normalized === 'readiness' || normalized === 'readiness-reflect')) return true;
+  if (day === 4 && (normalized === 'fec-lab' || normalized.startsWith('fec-step-'))) return true;
   return getWeek2TasksForDay(day).some((task) => task.slug === normalized);
 }
 

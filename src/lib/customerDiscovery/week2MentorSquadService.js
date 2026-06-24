@@ -7,6 +7,7 @@ import { MIN_ENCODED_INTERVIEWS } from './week2Constants.js';
 import { isFecLabComplete } from './week2FecValidationService.js';
 import { getSquadNameForParticipant } from './week2SquadEvidenceService.js';
 import { getReadinessMissionState, deriveSquadDay3CoachMetrics } from './week2ReadinessMissionService.js';
+import { getFecStudioState } from './week2FecStudioService.js';
 import { getSquadIntelligenceBoard } from './week2DiscoveryService.js';
 
 /** @param {string} participantId */
@@ -45,6 +46,7 @@ export function deriveSquadWeek2Progress(memberIds) {
       readinessComplete: false,
       reflectionApproved: false,
       day3Metrics: null,
+      day4Metrics: null,
       interviewIntelligence: null,
       pitchReady: false,
       pitchSubmitted: false,
@@ -58,6 +60,14 @@ export function deriveSquadWeek2Progress(memberIds) {
   const minInterviews = Math.min(...signals.map((s) => s.interviewCount));
   const all = (fn) => signals.every(fn);
   const day3 = deriveSquadDay3CoachMetrics(ids);
+  const day4 = ids[0] ? (() => {
+    const st = getFecStudioState(ids[0]);
+    return {
+      clarityScore: st.clarity.week2,
+      pitchReady: Boolean(st.pitchSlides?.mission),
+      buildReady: st.labComplete,
+    };
+  })() : null;
   const board = ids[0] ? getSquadIntelligenceBoard(ids[0]) : null;
 
   return {
@@ -68,6 +78,7 @@ export function deriveSquadWeek2Progress(memberIds) {
     readinessComplete: all((s) => s.readinessComplete),
     reflectionApproved: all((s) => s.reflectionApproved),
     day3Metrics: day3,
+    day4Metrics: day4,
     interviewIntelligence: board,
     pitchReady: all((s) => s.pitchStarted),
     pitchSubmitted: all((s) => s.pitchSubmitted),

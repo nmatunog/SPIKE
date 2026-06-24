@@ -252,9 +252,9 @@ export function syncWeek2PortfolioArtifacts(participantId, squadName = '') {
       `## What We Thought\n${slides.whatWeThought || p.whatWeThought}`,
       `## What We Heard\n${slides.whatWeHeard || p.whatWeLearned}`,
       `## Customer Voices\n${slides.customerVoices || p.customerVoices}`,
-      `## Validated Problem\n${slides.validatedProblem || p.biggestProblem}`,
-      `## UVP Before\n${slides.uvpBefore || ''}`,
-      `## UVP After\n${slides.uvpAfter || ''}`,
+      `## What Changed\n${slides.whatChanged || slides.validatedProblem || ''}`,
+      `## FEC Before\n${slides.fecBefore || slides.uvpBefore || ''}`,
+      `## FEC After\n${slides.fecAfter || slides.uvpAfter || ''}`,
       `## Strategic Opportunity\n${slides.strategicOpportunity || p.ventureChanged}`,
       `## Next Step\n${slides.nextStep || p.nextSteps}`,
     ].join('\n\n');
@@ -275,11 +275,26 @@ export function syncWeek2PortfolioArtifacts(participantId, squadName = '') {
   if (isFecLabComplete(squadKey)) {
     const fec = loadFecValidation(squadKey);
     const evidence = squadEvidenceSummary(participantId);
+    const clarityWeek1 = Math.round(
+      Object.values(fec.boxScores ?? {}).reduce((s, b) => s + (b.before ?? 0), 0)
+      / Math.max(1, Object.keys(fec.boxScores ?? {}).length),
+    );
+    const clarityWeek2 = Math.round(
+      Object.values(fec.boxScores ?? {}).reduce((s, b) => s + (b.after ?? 0), 0)
+      / Math.max(1, Object.keys(fec.boxScores ?? {}).length),
+    );
+    const report = fec.ventureEvolutionReport ?? {};
     const marketEvidenceBody = [
-      '# Week 2 — Market Validation Evidence',
+      '# Week 2 — FEC Validation Evidence',
       '',
       `**Squad:** ${evidence.squadName}`,
       `**Interviews:** ${evidence.interviewCount}`,
+      `**Canvas Clarity:** ${clarityWeek1}% → ${clarityWeek2}%`,
+      '',
+      '## Evidence Board',
+      fec.evidenceBoard?.marketSummary?.values ?? '',
+      fec.evidenceBoard?.marketSummary?.struggles ?? '',
+      fec.evidenceBoard?.marketSummary?.needs ?? '',
       '',
       '## Customer Segment Summary',
       fec.steps['fec-step-1']?.approvedStatement ?? '',
@@ -296,6 +311,19 @@ export function syncWeek2PortfolioArtifacts(participantId, squadName = '') {
       '',
       '## Strategic Opportunity',
       fec.steps['fec-step-5']?.approvedStatement ?? '',
+      '',
+      '## Venture Evolution Report',
+      report.topInsight ? `**Insight:** ${report.topInsight}` : '',
+      report.biggestOpportunity ? `**Opportunity:** ${report.biggestOpportunity}` : '',
+      '',
+      '## Next Experiment',
+      fec.nextExperiment ?? '',
+      '',
+      '## Week 3 Build Direction',
+      fec.week3BuildDirection ?? '',
+      '',
+      '## Build Readiness',
+      fec.buildReadiness ?? '',
       '',
       '## FEC Confidence Scores',
       ...Object.entries(fec.boxScores ?? {}).map(([k, v]) => `- ${k}: ${v.before}% → ${v.after}% (${v.status})`),

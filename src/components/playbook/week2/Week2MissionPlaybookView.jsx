@@ -13,7 +13,7 @@ import { SquadAlignmentTask } from '../../customerDiscovery/SquadAlignmentTask.j
 import { InterviewEncodeTask } from '../../customerDiscovery/InterviewEncodeTask.jsx';
 import { ExchangeReflectionTask } from '../../customerDiscovery/ExchangeReflectionTask.jsx';
 import { ProfessionalReadinessMission } from '../../customerDiscovery/ProfessionalReadinessMission.jsx';
-import { FecValidationLab } from '../../customerDiscovery/fecValidation/FecValidationLab.jsx';
+import { FecValidationStudio } from '../../customerDiscovery/fecValidation/FecValidationStudio.jsx';
 import { MarketValidationPitchView } from '../../customerDiscovery/fecValidation/MarketValidationPitchView.jsx';
 import {
   playbookWeek2MissionHref,
@@ -122,10 +122,14 @@ export function Week2MissionPlaybookView({
             participantId={participantId}
             squadName={squadName}
             onSaved={refresh}
-            onContinueThursday={() => goToMission('fec-lab', 4)}
+            onContinueThursday={() => goToMission('fec-studio', 4)}
           />
         );
       case 'fec-lab':
+      case 'fec-studio':
+      case 'fec-studio-1':
+      case 'fec-studio-2':
+      case 'fec-studio-3':
       case 'fec-step-1':
       case 'fec-step-2':
       case 'fec-step-3':
@@ -133,12 +137,13 @@ export function Week2MissionPlaybookView({
       case 'fec-step-5':
       case 'fec-step-6':
         return (
-          <FecValidationLab
+          <FecValidationStudio
             participantId={participantId}
             squadName={squadName}
             stepSlug={slug}
             onSaved={refresh}
-            onNavigate={(nextSlug) => goToMission(nextSlug)}
+            memberNames={{}}
+            onNavigate={(nextSlug, nextDay = day) => goToMission(nextSlug, nextDay)}
           />
         );
       case 'market-validation-pitch':
