@@ -71,7 +71,9 @@ function savePortfolioDeliverablesLocal(participantId, rows) {
 
 /** @param {string} participantId */
 export async function listPortfolioDeliverables(participantId) {
-  if (!participantId) return [];
+  if (!participantId || isMockUserId(participantId)) {
+    return listPortfolioDeliverablesLocal(participantId);
+  }
 
   const remote = await fetchPortfolioDeliverablesFromSupabase(participantId);
   if (remote) {

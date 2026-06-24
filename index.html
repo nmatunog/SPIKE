@@ -20,20 +20,25 @@
     <script>
       (function () {
         var key = 'spike_preload_reload';
+        var max = 2;
+        function reloadFresh() {
+          var count = parseInt(sessionStorage.getItem(key) || '0', 10) || 0;
+          if (count >= max) return;
+          sessionStorage.setItem(key, String(count + 1));
+          var url = new URL(window.location.href);
+          url.searchParams.set('_cb', String(Date.now()));
+          window.location.replace(url.toString());
+        }
         window.addEventListener('vite:preloadError', function (event) {
           event.preventDefault();
-          if (sessionStorage.getItem(key) === '1') return;
-          sessionStorage.setItem(key, '1');
-          window.location.reload();
+          reloadFresh();
         });
         window.addEventListener('error', function (event) {
           var target = event.target;
           if (!target || target.tagName !== 'SCRIPT') return;
           var src = target.src || '';
           if (!/\/assets\/.*\.js/.test(src)) return;
-          if (sessionStorage.getItem(key) === '1') return;
-          sessionStorage.setItem(key, '1');
-          window.location.reload();
+          reloadFresh();
         }, true);
       })();
     </script>

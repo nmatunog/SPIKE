@@ -1,4 +1,5 @@
 import { isSupabaseConfigured, supabase } from '../../supabaseClient.js';
+import { shouldSkipSupabaseUserWrite } from './writeGuards.js';
 
 const BUCKET = 'portfolio-deliverables';
 
@@ -40,7 +41,9 @@ export function buildDeliverableStoragePath(userId, deliverableId, fileName) {
 
 /** @param {string} userId */
 export async function fetchPortfolioDeliverablesFromSupabase(userId) {
-  if (!isSupabaseConfigured || !supabase || !userId) return null;
+  if (!isSupabaseConfigured || !supabase || !userId || shouldSkipSupabaseUserWrite(userId)) {
+    return null;
+  }
 
   const { data, error } = await supabase
     .from('portfolio_deliverables')

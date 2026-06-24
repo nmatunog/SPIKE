@@ -1,8 +1,22 @@
 import { lazy } from 'react';
+import { reloadIfStaleChunk } from '../lib/chunkReload.js';
 
 /** React.lazy requires a default export; route pages use named exports. */
 function lazyNamed(loader, name) {
-  return lazy(() => loader().then((module) => ({ default: module[name] })));
+  return lazy(() =>
+    loader()
+      .then((module) => {
+        if (!module?.[name]) {
+          reloadIfStaleChunk(`missing export ${name}`);
+          return Promise.reject(new Error(`Stale chunk: ${name}`));
+        }
+        return { default: module[name] };
+      })
+      .catch((err) => {
+        reloadIfStaleChunk(err instanceof Error ? err.message : 'dynamic import failed');
+        throw err;
+      }),
+  );
 }
 
 export const VentureBlueprintShell = lazyNamed(
