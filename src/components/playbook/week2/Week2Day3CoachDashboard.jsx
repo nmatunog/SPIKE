@@ -1,5 +1,8 @@
 import { deriveSquadDay3CoachMetrics } from '../../../lib/customerDiscovery/week2ReadinessMissionService.js';
+import { deriveSquadPctcCertificateMetrics } from '../../../lib/customerDiscovery/week2PctcCertificateService.js';
 import { groupInternsBySquad } from '../../../lib/mentorFrameworkService.js';
+
+import { Week2PctcCoachVerification } from './Week2PctcCoachVerification.jsx';
 
 /**
  * Coach / mentor Day 3 dashboard — squad readiness metrics.
@@ -25,6 +28,7 @@ export function Week2Day3CoachDashboard({ interns }) {
             <tr className="border-b border-slate-200 text-xs font-bold uppercase text-slate-400">
               <th className="pb-2 pr-4">Squad</th>
               <th className="pb-2 pr-4">PCTC</th>
+              <th className="pb-2 pr-4">Certs</th>
               <th className="pb-2 pr-4">Interviews</th>
               <th className="pb-2 pr-4">Reflection</th>
               <th className="pb-2 pr-4">UVP checkpoint</th>
@@ -35,10 +39,12 @@ export function Week2Day3CoachDashboard({ interns }) {
             {squads.map((squad) => {
               const memberIds = (squad.members ?? []).map((m) => m.id);
               const m = deriveSquadDay3CoachMetrics(memberIds);
+              const certs = deriveSquadPctcCertificateMetrics(memberIds);
               return (
                 <tr key={squad.name} className="border-b border-slate-100">
                   <td className="py-2.5 pr-4 font-semibold text-slate-900">{squad.name}</td>
                   <td className="py-2.5 pr-4 tabular-nums">{m.pctcPct}%</td>
+                  <td className="py-2.5 pr-4 tabular-nums">{certs.bothPct}%</td>
                   <td className="py-2.5 pr-4 tabular-nums">{m.interviewPct}%</td>
                   <td className="py-2.5 pr-4 tabular-nums">{m.reflectionPct}%</td>
                   <td className="py-2.5 pr-4">{m.uvpStatus}</td>
@@ -49,6 +55,7 @@ export function Week2Day3CoachDashboard({ interns }) {
           </tbody>
         </table>
       </div>
+      <Week2PctcCoachVerification interns={interns} />
     </section>
   );
 }

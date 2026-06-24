@@ -144,6 +144,8 @@ export function syncWeek2PortfolioArtifacts(participantId, squadName = '') {
       '',
       '## PCTC Completion',
       state.readinessEvidenceNote || '_Completion recorded_',
+      state.pctcCertificate1Id ? '**Certificate 1:** uploaded' : '**Certificate 1:** pending',
+      state.pctcCertificate2Id ? '**Certificate 2:** uploaded' : '**Certificate 2:** pending',
       state.professionalReadinessAt
         ? `**Completed:** ${new Date(state.professionalReadinessAt).toLocaleString('en-PH', { timeZone: 'Asia/Manila' })}`
         : '',

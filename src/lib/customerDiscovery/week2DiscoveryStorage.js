@@ -96,6 +96,8 @@ export function defaultWeek2State() {
     squadDiscussionNotes: '',
     readinessEvidenceNote: '',
     pctcStartedAt: null,
+    pctcCertificate1Id: '',
+    pctcCertificate2Id: '',
     readinessBadgeEarnedAt: null,
     readinessReflectionSurprised: '',
     readinessReflectionResponsibility: '',
@@ -151,6 +153,8 @@ export function loadWeek2Discovery(participantId) {
     squadDiscussionNotes: stored.squadDiscussionNotes ?? '',
     exchangeReflectionText: stored.exchangeReflectionText ?? '',
     readinessEvidenceNote: stored.readinessEvidenceNote ?? '',
+    pctcCertificate1Id: stored.pctcCertificate1Id ?? '',
+    pctcCertificate2Id: stored.pctcCertificate2Id ?? '',
     pitchOutline: { ...defaultWeek2State().pitchOutline, ...(stored.pitchOutline ?? {}) },
     cloudSyncedAt: stored.cloudSyncedAt ?? null,
   };

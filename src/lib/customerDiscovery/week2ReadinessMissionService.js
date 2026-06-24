@@ -9,6 +9,7 @@ import { getFecStepPayload } from './week2FecValidationService.js';
 import { assignSquadRoles } from './week2FecValidationService.js';
 import { syncWeek2PortfolioArtifacts } from './week2PortfolioSync.js';
 import { SQUAD_INTERVIEW_TARGET } from './week2FecValidationConstants.js';
+import { isPctcMissionComplete, pctcCertificatesComplete } from './week2PctcCertificateService.js';
 
 const REFLECTION_KEYS = ['surprised', 'responsibility', 'trustedAdvisor'];
 
@@ -28,8 +29,9 @@ export function getReadinessMissionState(participantId) {
   const board = getSquadIntelligenceBoard(participantId);
   const answers = reflectionAnswers(state);
 
-  const pctcComplete = Boolean(state.professionalReadinessAt);
-  const pctcStarted = pctcComplete || Boolean(state.pctcStartedAt) || String(state.readinessEvidenceNote ?? '').trim().length > 0;
+  const pctcComplete = isPctcMissionComplete(state);
+  const pctcStarted = pctcComplete || Boolean(state.pctcStartedAt) || String(state.readinessEvidenceNote ?? '').trim().length > 0
+    || Boolean(state.pctcCertificate1Id || state.pctcCertificate2Id);
   const reflectionFilled = REFLECTION_KEYS.every((k) => String(answers[k] ?? '').trim().length > 8);
   const reflectionApproved = Boolean(state.readinessReflectionApprovedAt);
   const uvpDone = Boolean(state.uvpCheckpointAt);
@@ -101,6 +103,7 @@ export function getReadinessMissionState(participantId) {
     reflectionSummary: state.readinessReflectionSummary ?? '',
     uvpVerdict: state.uvpCheckpointVerdict ?? '',
     uvpNotes: state.uvpCheckpointNotes ?? '',
+    pctcCertificatesComplete: pctcCertificatesComplete(state),
     badgeEarned: Boolean(state.readinessBadgeEarnedAt || state.professionalReadinessAt),
   };
 }
@@ -119,7 +122,7 @@ export function savePctcStatus(participantId, status, note) {
       ? loadWeek2Discovery(participantId).pctcStartedAt ?? new Date().toISOString()
       : null,
   };
-  if (status === 'completed' && text.length > 10) {
+  if (status === 'completed' && (text.length > 10 || pctcCertificatesComplete(loadWeek2Discovery(participantId)))) {
     patch.professionalReadinessAt = new Date().toISOString();
     patch.readinessBadgeEarnedAt = new Date().toISOString();
   } else if (status === 'in_progress') {

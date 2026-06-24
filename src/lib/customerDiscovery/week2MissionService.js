@@ -15,6 +15,7 @@ import { loadFecValidation } from './week2FecValidationStorage.js';
 import { getSquadNameForParticipant } from './week2SquadEvidenceService.js';
 import { getReadinessMissionState } from './week2ReadinessMissionService.js';
 import { getFecStudioState } from './week2FecStudioService.js';
+import { isPctcMissionComplete } from './week2PctcCertificateService.js';
 
 const BASE = `${ROUTES.ventureBlueprint}/customer-discovery`;
 
@@ -56,7 +57,7 @@ function isTaskComplete(participantId, taskId) {
     case 'exchange':
       return exchangeReflectionComplete(state);
     case 'readiness':
-      return Boolean(state.professionalReadinessAt);
+      return isPctcMissionComplete(state);
     case 'readiness-reflect':
       return Boolean(state.readinessReflectionApprovedAt || state.readinessReflectionAt);
     case 'readiness-mission': {

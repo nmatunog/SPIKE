@@ -9,6 +9,8 @@ import {
   saveReadinessReflectionAnswers,
   saveUvpCheckpoint,
 } from '../../lib/customerDiscovery/week2ReadinessMissionService.js';
+import { getPctcCertificateStatus } from '../../lib/customerDiscovery/week2PctcCertificateService.js';
+import { PctcCertificateUploadSlot } from './PctcCertificateUploadSlot.jsx';
 import { hydrateParticipantWeek2Discovery, syncWeek2DiscoveryToCloud } from '../../lib/customerDiscovery/week2DiscoverySync.js';
 import { Week2SyncStatus } from './Week2SyncStatus.jsx';
 import { getParticipantSquad } from '../../lib/cohortFormationService.js';
@@ -30,15 +32,18 @@ export function ProfessionalReadinessMission({ participantId, onSaved, onContinu
   const [syncing, setSyncing] = useState(false);
   const [syncTick, setSyncTick] = useState(0);
   const [recordingKey, setRecordingKey] = useState(/** @type {string | null} */ (null));
+  const [certStatus, setCertStatus] = useState(/** @type {Awaited<ReturnType<typeof getPctcCertificateStatus>> | null} */ (null));
 
   const refresh = () => {
     tick((n) => n + 1);
+    void getPctcCertificateStatus(participantId).then(setCertStatus);
     onSaved?.();
   };
 
   useEffect(() => {
     void hydrateParticipantWeek2Discovery(participantId).then(() => refresh());
     ensureWednesdaySquadRoles(participantId);
+    void getPctcCertificateStatus(participantId).then(setCertStatus);
   }, [participantId]);
 
   const mission = useMemo(() => getReadinessMissionState(participantId), [participantId, tick]);
@@ -155,17 +160,39 @@ export function ProfessionalReadinessMission({ participantId, onSaved, onContinu
         </div>
 
         <p className="text-sm text-slate-600">
-          Complete the AIA LMS Pre-Contract Training Course, then record your completion evidence below.
+          Complete the AIA LMS Pre-Contract Training Course, upload both certificates, then add any completion notes.
         </p>
 
+        <div className="space-y-2">
+          <span className="text-xs font-bold uppercase text-slate-400">PCTC certificates (required)</span>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {(certStatus?.slots ?? [{ slot: 1, label: 'PCTC Certificate 1' }, { slot: 2, label: 'PCTC Certificate 2' }]).map((s) => (
+              <PctcCertificateUploadSlot
+                key={s.slot}
+                participantId={participantId}
+                slot={/** @type {1 | 2} */ (s.slot)}
+                label={s.label}
+                deliverable={s.deliverable ?? null}
+                onChange={refresh}
+              />
+            ))}
+          </div>
+          {certStatus?.bothUploaded ? (
+            <p className="text-xs font-semibold text-emerald-700">Both certificates uploaded ✓</p>
+          ) : (
+            <p className="text-xs text-slate-500">Upload both certificates to complete PCTC.</p>
+          )}
+        </div>
+
         <label className="block space-y-2">
-          <span className="text-xs font-bold uppercase text-slate-400">Completion evidence</span>
+          <span className="text-xs font-bold uppercase text-slate-400">Completion notes (optional)</span>
           <textarea
             value={evidence}
             rows={3}
             onChange={(e) => {
               setEvidence(e.target.value);
-              const status = e.target.value.trim().length > 10 ? 'completed' : 'in_progress';
+              const certsDone = certStatus?.bothUploaded ?? mission.pctcCertificatesComplete;
+              const status = certsDone || e.target.value.trim().length > 10 ? 'completed' : 'in_progress';
               savePctcStatus(participantId, status, e.target.value);
               refresh();
             }}

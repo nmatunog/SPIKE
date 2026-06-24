@@ -88,6 +88,8 @@
  * @property {string} squadDiscussionNotes
  * @property {string} readinessEvidenceNote
  * @property {string | null} pctcStartedAt
+ * @property {string} pctcCertificate1Id
+ * @property {string} pctcCertificate2Id
  * @property {string | null} readinessBadgeEarnedAt
  * @property {string} readinessReflectionSurprised
  * @property {string} readinessReflectionResponsibility
