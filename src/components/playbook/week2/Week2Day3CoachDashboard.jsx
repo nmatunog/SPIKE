@@ -44,7 +44,7 @@ export function Week2Day3CoachDashboard({ interns }) {
                 <tr key={squad.name} className="border-b border-slate-100">
                   <td className="py-2.5 pr-4 font-semibold text-slate-900">{squad.name}</td>
                   <td className="py-2.5 pr-4 tabular-nums">{m.pctcPct}%</td>
-                  <td className="py-2.5 pr-4 tabular-nums">{certs.bothPct}%</td>
+                  <td className="py-2.5 pr-4 tabular-nums text-emerald-700">{certs.anyPct}%</td>
                   <td className="py-2.5 pr-4 tabular-nums">{m.interviewPct}%</td>
                   <td className="py-2.5 pr-4 tabular-nums">{m.reflectionPct}%</td>
                   <td className="py-2.5 pr-4">{m.uvpStatus}</td>

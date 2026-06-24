@@ -164,7 +164,7 @@ export function ProfessionalReadinessMission({ participantId, onSaved, onContinu
         </p>
 
         <div className="space-y-2">
-          <span className="text-xs font-bold uppercase text-slate-400">PCTC certificates (required)</span>
+          <span className="text-xs font-bold uppercase text-slate-400">PCTC certificates</span>
           <div className="grid gap-3 sm:grid-cols-2">
             {(certStatus?.slots ?? [{ slot: 1, label: 'PCTC Certificate 1' }, { slot: 2, label: 'PCTC Certificate 2' }]).map((s) => (
               <PctcCertificateUploadSlot
@@ -177,10 +177,13 @@ export function ProfessionalReadinessMission({ participantId, onSaved, onContinu
               />
             ))}
           </div>
-          {certStatus?.bothUploaded ? (
-            <p className="text-xs font-semibold text-emerald-700">Both certificates uploaded ✓</p>
+          {certStatus?.anyUploaded ? (
+            <p className="text-xs font-semibold text-emerald-700">
+              {certStatus.uploadedCount} of 2 certificates uploaded
+              {certStatus.bothUploaded ? ' ✓' : ' — upload both when ready'}
+            </p>
           ) : (
-            <p className="text-xs text-slate-500">Upload both certificates to complete PCTC.</p>
+            <p className="text-xs text-slate-500">Upload at least one certificate to complete PCTC.</p>
           )}
         </div>
 
@@ -191,7 +194,7 @@ export function ProfessionalReadinessMission({ participantId, onSaved, onContinu
             rows={3}
             onChange={(e) => {
               setEvidence(e.target.value);
-              const certsDone = certStatus?.bothUploaded ?? mission.pctcCertificatesComplete;
+              const certsDone = certStatus?.anyUploaded ?? mission.hasAnyPctcCertificate;
               const status = certsDone || e.target.value.trim().length > 10 ? 'completed' : 'in_progress';
               savePctcStatus(participantId, status, e.target.value);
               refresh();

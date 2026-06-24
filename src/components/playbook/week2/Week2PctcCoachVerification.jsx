@@ -30,7 +30,8 @@ export function Week2PctcCoachVerification({ interns }) {
               <p className="text-sm font-bold text-slate-900">
                 {squad.name}{' '}
                 <span className="font-normal text-slate-500">
-                  · both certs {metrics.bothPct}%
+                  · 1+ cert {metrics.anyPct}%
+                  {metrics.bothPct < metrics.anyPct ? ` · both ${metrics.bothPct}%` : ''}
                 </span>
               </p>
               <ul className="mt-2 space-y-2">

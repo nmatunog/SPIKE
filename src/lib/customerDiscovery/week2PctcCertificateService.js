@@ -19,6 +19,11 @@ export const PCTC_CERTIFICATE_SLOTS = [
 ];
 
 /** @param {import('./week2DiscoveryTypes.js').Week2DiscoveryState} state */
+export function hasAnyPctcCertificate(state) {
+  return Boolean(state.pctcCertificate1Id || state.pctcCertificate2Id);
+}
+
+/** @param {import('./week2DiscoveryTypes.js').Week2DiscoveryState} state */
 export function pctcCertificatesComplete(state) {
   return Boolean(state.pctcCertificate1Id && state.pctcCertificate2Id);
 }
@@ -27,33 +32,44 @@ export function pctcCertificatesComplete(state) {
 export function pctcLegacyTextComplete(state) {
   return Boolean(state.professionalReadinessAt)
     && String(state.readinessEvidenceNote ?? '').trim().length > 10
-    && !state.pctcCertificate1Id
-    && !state.pctcCertificate2Id;
+    && !hasAnyPctcCertificate(state);
 }
 
 /** @param {import('./week2DiscoveryTypes.js').Week2DiscoveryState} state */
 export function isPctcMissionComplete(state) {
-  return pctcCertificatesComplete(state) || pctcLegacyTextComplete(state);
+  return hasAnyPctcCertificate(state) || pctcLegacyTextComplete(state);
 }
 
 /** @param {string} participantId */
 function refreshPctcCompletion(participantId) {
   const state = loadWeek2Discovery(participantId);
-  if (!pctcCertificatesComplete(state)) return state;
-
   const now = new Date().toISOString();
-  if (state.professionalReadinessAt) {
+
+  if (hasAnyPctcCertificate(state)) {
+    if (!state.professionalReadinessAt) {
+      const next = saveWeek2Discovery(participantId, {
+        professionalReadinessAt: now,
+        readinessBadgeEarnedAt: now,
+      });
+      syncWeek2PortfolioArtifacts(participantId);
+      void syncWeek2DiscoveryToCloud(participantId, next).catch(() => {});
+      return next;
+    }
     syncWeek2PortfolioArtifacts(participantId);
     return state;
   }
 
-  const next = saveWeek2Discovery(participantId, {
-    professionalReadinessAt: now,
-    readinessBadgeEarnedAt: now,
-  });
-  syncWeek2PortfolioArtifacts(participantId);
-  void syncWeek2DiscoveryToCloud(participantId, next).catch(() => {});
-  return next;
+  const text = String(state.readinessEvidenceNote ?? '').trim();
+  if (state.professionalReadinessAt && text.length <= 10) {
+    const next = saveWeek2Discovery(participantId, {
+      professionalReadinessAt: null,
+      readinessBadgeEarnedAt: null,
+    });
+    void syncWeek2DiscoveryToCloud(participantId, next).catch(() => {});
+    return next;
+  }
+
+  return state;
 }
 
 /** @param {string} participantId */
@@ -75,6 +91,8 @@ export async function getPctcCertificateStatus(participantId) {
 
   return {
     slots,
+    uploadedCount: slots.filter((s) => s.uploaded).length,
+    anyUploaded: slots.some((s) => s.uploaded),
     bothUploaded: slots.every((s) => s.uploaded),
     complete: isPctcMissionComplete(state),
   };
@@ -155,22 +173,26 @@ export function getMemberPctcCertificateSummary(participantId) {
 /** @param {string[]} memberIds */
 export function deriveSquadPctcCertificateMetrics(memberIds) {
   const ids = memberIds.filter(Boolean);
-  if (!ids.length) return { cert1Pct: 0, cert2Pct: 0, bothPct: 0, members: [] };
+  if (!ids.length) return { cert1Pct: 0, cert2Pct: 0, anyPct: 0, bothPct: 0, members: [] };
 
   const members = ids.map((id) => {
     const slots = getMemberPctcCertificateSummary(id);
+    const any = slots.some((s) => s.uploaded);
     return {
       participantId: id,
       cert1: slots[0]?.uploaded ?? false,
       cert2: slots[1]?.uploaded ?? false,
+      any,
       both: slots.every((s) => s.uploaded),
+      uploadedCount: slots.filter((s) => s.uploaded).length,
       slots,
     };
   });
 
   const cert1Pct = Math.round((members.filter((m) => m.cert1).length / ids.length) * 100);
   const cert2Pct = Math.round((members.filter((m) => m.cert2).length / ids.length) * 100);
+  const anyPct = Math.round((members.filter((m) => m.any).length / ids.length) * 100);
   const bothPct = Math.round((members.filter((m) => m.both).length / ids.length) * 100);
 
-  return { cert1Pct, cert2Pct, bothPct, members };
+  return { cert1Pct, cert2Pct, anyPct, bothPct, members };
 }

@@ -9,7 +9,7 @@ import { getFecStepPayload } from './week2FecValidationService.js';
 import { assignSquadRoles } from './week2FecValidationService.js';
 import { syncWeek2PortfolioArtifacts } from './week2PortfolioSync.js';
 import { SQUAD_INTERVIEW_TARGET } from './week2FecValidationConstants.js';
-import { isPctcMissionComplete, pctcCertificatesComplete } from './week2PctcCertificateService.js';
+import { isPctcMissionComplete, pctcCertificatesComplete, hasAnyPctcCertificate } from './week2PctcCertificateService.js';
 
 const REFLECTION_KEYS = ['surprised', 'responsibility', 'trustedAdvisor'];
 
@@ -104,6 +104,7 @@ export function getReadinessMissionState(participantId) {
     uvpVerdict: state.uvpCheckpointVerdict ?? '',
     uvpNotes: state.uvpCheckpointNotes ?? '',
     pctcCertificatesComplete: pctcCertificatesComplete(state),
+    hasAnyPctcCertificate: hasAnyPctcCertificate(state),
     badgeEarned: Boolean(state.readinessBadgeEarnedAt || state.professionalReadinessAt),
   };
 }
@@ -122,7 +123,7 @@ export function savePctcStatus(participantId, status, note) {
       ? loadWeek2Discovery(participantId).pctcStartedAt ?? new Date().toISOString()
       : null,
   };
-  if (status === 'completed' && (text.length > 10 || pctcCertificatesComplete(loadWeek2Discovery(participantId)))) {
+  if (status === 'completed' && (text.length > 10 || hasAnyPctcCertificate(loadWeek2Discovery(participantId)))) {
     patch.professionalReadinessAt = new Date().toISOString();
     patch.readinessBadgeEarnedAt = new Date().toISOString();
   } else if (status === 'in_progress') {
