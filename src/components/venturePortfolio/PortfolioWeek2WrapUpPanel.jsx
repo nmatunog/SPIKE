@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { getWeek2WrapUpState, WEEK2_WRAP_UP_PROMPTS } from '../../lib/customerDiscovery/week2WrapUpService.js';
 import { playbookWeek2MissionHref } from '../../lib/customerDiscovery/week2MissionService.js';
 import { SquadScoringExplainer } from './SquadScoringExplainer.jsx';
+import { PortfolioPanelistFeedbackPanel } from './PortfolioPanelistFeedbackPanel.jsx';
 
 /**
  * Week 2 learnings + scoring — portfolio overview section.
@@ -49,6 +50,8 @@ export function PortfolioWeek2WrapUpPanel({ participantId }) {
       )}
 
       <SquadScoringExplainer variant="portfolio" participantId={participantId} />
+
+      <PortfolioPanelistFeedbackPanel participantId={participantId} />
     </section>
   );
 }

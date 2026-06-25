@@ -10,6 +10,7 @@ import {
   syncWeek2DiscoveryToCloud,
 } from '../../lib/customerDiscovery/week2DiscoverySync.js';
 import { SquadScoringExplainer } from '../venturePortfolio/SquadScoringExplainer.jsx';
+import { PortfolioPanelistFeedbackPanel } from '../venturePortfolio/PortfolioPanelistFeedbackPanel.jsx';
 import { Week2SyncStatus } from './Week2SyncStatus.jsx';
 
 /**
@@ -88,6 +89,8 @@ export function Week2WrapUpTask({ participantId, onSaved }) {
       </section>
 
       <SquadScoringExplainer variant="task" participantId={participantId} />
+
+      <PortfolioPanelistFeedbackPanel participantId={participantId} />
 
       <div className="space-y-5">
         {WEEK2_WRAP_UP_PROMPTS.map((prompt) => (

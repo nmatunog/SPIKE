@@ -24,6 +24,7 @@ export async function fetchPitchPanelSquads(pin) {
  *   panelistOrg?: string,
  *   squadName: string,
  *   ratings: { evidence: number, validation: number, presentation: number, team: number },
+ *   feedback: { keep: string, improve: string, explore: string },
  * }} input
  */
 export async function submitPitchPanelScoreRemote(input) {
@@ -39,8 +40,23 @@ export async function submitPitchPanelScoreRemote(input) {
     p_validation: input.ratings.validation,
     p_presentation: input.ratings.presentation,
     p_team: input.ratings.team,
+    p_keep_feedback: input.feedback.keep,
+    p_improve_feedback: input.feedback.improve,
+    p_explore_feedback: input.feedback.explore,
   });
   if (error) throw new Error(error.message);
+}
+
+/** @param {string} squadName @param {string} [sessionId] */
+export async function fetchPitchPanelSquadFeedbackRemote(squadName, sessionId = PITCH_PANEL_SESSION_ID) {
+  const client = assertClient();
+  const { data, error } = await client.rpc('fetch_pitch_panel_squad_feedback', {
+    p_squad_name: squadName,
+    p_session_id: sessionId,
+  });
+  if (error) throw new Error(error.message);
+  const rows = Array.isArray(data) ? data : [];
+  return rows;
 }
 
 /** @param {string} [sessionId] */

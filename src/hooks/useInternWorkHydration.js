@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { whenInternSignInUploadDone } from '../lib/internSessionSync.js';
 import { maybeRecoverInternWorkFromSupabase } from '../lib/internCloudRecovery.js';
+import { syncPitchPanelFeedbackToPortfolio } from '../lib/customerDiscovery/week2PanelFeedbackSync.js';
 import { maybeResetWeek2Day1Workshop } from '../lib/customerDiscovery/week2Day1Reset.js';
 import { isMockUserId } from '../lib/mockAuth.js';
 
@@ -29,6 +30,7 @@ export function useInternWorkHydration(participantId) {
         await whenInternSignInUploadDone(participantId);
         await maybeResetWeek2Day1Workshop(participantId);
         await maybeRecoverInternWorkFromSupabase(participantId);
+        await syncPitchPanelFeedbackToPortfolio(participantId);
         if (!cancelled) {
           setReady(true);
           setVersion((v) => v + 1);

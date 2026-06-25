@@ -12,6 +12,13 @@ export const PITCH_PANEL_DIMENSIONS = [
   { id: 'team', label: 'Team delivery', hint: 'Shared ownership, coherent squad story' },
 ];
 
+/** @type {Array<{ id: 'keep' | 'improve' | 'explore', label: string, placeholder: string }>} */
+export const PITCH_PANEL_FEEDBACK_FIELDS = [
+  { id: 'keep', label: 'Keep', placeholder: 'What should this squad keep doing?' },
+  { id: 'improve', label: 'Improve', placeholder: 'What should they sharpen before building?' },
+  { id: 'explore', label: 'Explore', placeholder: 'What opportunity should they investigate next?' },
+];
+
 export const PITCH_PANEL_LIVE_STORAGE_KEY = 'spike_pitch_panel_live_v1';
 export const PITCH_PANEL_FINAL_STORAGE_KEY = 'spike_pitch_panel_final_v1';
 export const PITCH_PANEL_TOKEN_STORAGE_KEY = 'spike_pitch_panel_token_v1';

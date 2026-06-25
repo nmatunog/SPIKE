@@ -3,6 +3,7 @@ import { CheckCircle, ChevronRight, Loader2, Star } from 'lucide-react';
 import {
   PITCH_PANEL_ACCESS_PIN,
   PITCH_PANEL_DIMENSIONS,
+  PITCH_PANEL_FEEDBACK_FIELDS,
   PITCH_PANEL_TOKEN_STORAGE_KEY,
 } from '../../lib/staff/pitchPanelConstants.js';
 import { fetchPitchPanelSquads, submitPitchPanelScoreRemote } from '../../lib/supabase/pitchPanel.js';
@@ -125,6 +126,7 @@ export function PitchPanelGuestPage() {
   const [squads, setSquads] = useState([]);
   const [squadName, setSquadName] = useState('');
   const [ratings, setRatings] = useState({ evidence: 0, validation: 0, presentation: 0, team: 0 });
+  const [feedback, setFeedback] = useState({ keep: '', improve: '', explore: '' });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [saved, setSaved] = useState(false);
@@ -132,7 +134,10 @@ export function PitchPanelGuestPage() {
 
   const ratedCount = PITCH_PANEL_DIMENSIONS.filter((d) => ratings[d.id] > 0).length;
   const allRated = ratedCount === PITCH_PANEL_DIMENSIONS.length;
-  const canSubmit = Boolean(name.trim() && squadName && allRated && !busy);
+  const feedbackComplete = PITCH_PANEL_FEEDBACK_FIELDS.every(
+    (f) => String(feedback[f.id] ?? '').trim().length >= 3,
+  );
+  const canSubmit = Boolean(name.trim() && squadName && allRated && feedbackComplete && !busy);
 
   useEffect(() => {
     document.title = 'SPIKE Pitch Panel';
@@ -180,6 +185,10 @@ export function PitchPanelGuestPage() {
       setError('Rate all four dimensions (1–5 stars).');
       return;
     }
+    if (!feedbackComplete) {
+      setError('Fill in Keep, Improve, and Explore for this squad.');
+      return;
+    }
     setBusy(true);
     try {
       await submitPitchPanelScoreRemote({
@@ -189,9 +198,15 @@ export function PitchPanelGuestPage() {
         panelistOrg: org.trim(),
         squadName,
         ratings,
+        feedback: {
+          keep: feedback.keep.trim(),
+          improve: feedback.improve.trim(),
+          explore: feedback.explore.trim(),
+        },
       });
       setSaved(true);
       setRatings({ evidence: 0, validation: 0, presentation: 0, team: 0 });
+      setFeedback({ keep: '', improve: '', explore: '' });
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not save score.');
@@ -203,6 +218,7 @@ export function PitchPanelGuestPage() {
   function handleScoreAnother() {
     setSaved(false);
     setRatings({ evidence: 0, validation: 0, presentation: 0, team: 0 });
+    setFeedback({ keep: '', improve: '', explore: '' });
     setError('');
   }
 
@@ -354,6 +370,29 @@ export function PitchPanelGuestPage() {
             ))}
           </section>
 
+          <section className="space-y-3 rounded-2xl border border-spike/20 bg-spike/5 p-4 sm:p-5">
+            <h2 className="text-sm font-bold uppercase tracking-wide text-spike">Coaching notes</h2>
+            <p className="text-sm text-slate-600">
+              One line each — this saves to the squad&apos;s intern portfolios for Week 2 Day 5.
+            </p>
+            {PITCH_PANEL_FEEDBACK_FIELDS.map((field) => (
+              <label key={field.id} className="block text-sm font-semibold text-slate-800">
+                {field.label}
+                <textarea
+                  value={feedback[field.id]}
+                  onChange={(e) => {
+                    setFeedback((prev) => ({ ...prev, [field.id]: e.target.value }));
+                    setSaved(false);
+                  }}
+                  rows={2}
+                  placeholder={field.placeholder}
+                  className={`${INPUT_CLASS} min-h-[72px] resize-y text-sm`}
+                  required
+                />
+              </label>
+            ))}
+          </section>
+
           {error ? (
             <p className="rounded-xl bg-red-50 px-4 py-3 text-sm leading-relaxed text-red-700" role="alert">
               {error}
@@ -378,7 +417,7 @@ export function PitchPanelGuestPage() {
             ) : (
               <>
                 <Star size={18} fill="currentColor" />
-                Submit score{squadName ? ` · ${squadName}` : ''}
+                Submit score card{squadName ? ` · ${squadName}` : ''}
               </>
             )}
           </button>
@@ -386,6 +425,10 @@ export function PitchPanelGuestPage() {
             <p className="mt-2 text-center text-xs text-slate-500">
               {PITCH_PANEL_DIMENSIONS.length - ratedCount} dimension
               {PITCH_PANEL_DIMENSIONS.length - ratedCount === 1 ? '' : 's'} left to rate
+            </p>
+          ) : allRated && !feedbackComplete ? (
+            <p className="mt-2 text-center text-xs text-slate-500">
+              Add Keep, Improve, and Explore notes to submit
             </p>
           ) : null}
         </div>

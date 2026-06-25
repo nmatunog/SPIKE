@@ -5,6 +5,7 @@ import { usePitchPanelLive } from '../../hooks/usePitchPanelLive.js';
 import {
   PITCH_PANEL_ACCESS_PIN,
   PITCH_PANEL_DIMENSIONS,
+  PITCH_PANEL_FEEDBACK_FIELDS,
   sortPitchPanelSquads,
 } from '../../lib/staff/pitchPanelConstants.js';
 import {
@@ -186,6 +187,15 @@ export function PitchPanelDashboard({ interns, staffId = '', showToast, embedded
           {PITCH_PANEL_DIMENSIONS.map((d) => (
             <li key={d.id} className="leading-relaxed">
               <strong className="text-slate-800">{d.label}:</strong> {d.hint}
+            </li>
+          ))}
+          <li className="border-t border-slate-200/80 pt-3 leading-relaxed">
+            <strong className="text-slate-800">Keep / Improve / Explore:</strong> Required written
+            notes on each score card — syncs to intern portfolios (Week 2 Day 5).
+          </li>
+          {PITCH_PANEL_FEEDBACK_FIELDS.map((f) => (
+            <li key={f.id} className="pl-3 text-xs leading-relaxed">
+              <strong className="text-slate-800">{f.label}:</strong> {f.placeholder}
             </li>
           ))}
         </ul>
