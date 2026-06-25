@@ -3,26 +3,211 @@
     "id": "presentation-w2-d4-deck-01",
     "dayId": "day-segment-1-week-2-day-4",
     "title": "Squad Intelligence Board",
-    "slideIds": ["slide-w2-d4-01", "slide-w2-d4-02"]
+    "slideIds": [
+      "slide-w2-d4-01",
+      "slide-w2-d4-02",
+      "slide-d4-01-03",
+      "slide-d4-01-04",
+      "slide-d4-01-05",
+      "slide-d4-01-06",
+      "slide-d4-01-07",
+      "slide-d4-01-08",
+      "slide-d4-01-09",
+      "slide-d4-01-10",
+      "slide-d4-01-11",
+      "slide-d4-01-12",
+      "slide-d4-01-13",
+      "slide-d4-01-14",
+      "slide-d4-01-15",
+      "slide-d4-01-16",
+      "slide-d4-01-17",
+      "slide-d4-01-18"
+    ],
+    "sourceFile": "faculty-deck-01.pdf",
+    "sourcePath": "content/segment-1/week-2/day-4/source/faculty-deck-01.pdf",
+    "importedAt": "2026-06-25T01:12:56.474Z",
+    "pdfUrl": "/content/segment-1/week-2/day-4/faculty-deck-01.pdf"
   },
   "slides": [
     {
       "id": "slide-w2-d4-01",
       "presentationId": "presentation-w2-d4-deck-01",
+      "sortOrder": 1,
       "title": "Squad Intelligence Board",
-      "body": "Auto-generated from encoded interviews — goals, challenges, quotes, opportunities.",
+      "body": "",
       "speakerNotes": "",
       "discussionQuestions": [],
-      "sortOrder": 1
+      "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-01.png"
     },
     {
       "id": "slide-w2-d4-02",
       "presentationId": "presentation-w2-d4-deck-01",
+      "sortOrder": 2,
       "title": "Begin Your Market Validation Pitch",
-      "body": "10-slide evidence structure — prepare for Friday Stage Gate.",
+      "body": "",
       "speakerNotes": "",
       "discussionQuestions": [],
-      "sortOrder": 2
+      "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-02.png"
+    },
+    {
+      "id": "slide-d4-01-03",
+      "presentationId": "presentation-w2-d4-deck-01",
+      "sortOrder": 3,
+      "title": "Slide 3",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-03.png"
+    },
+    {
+      "id": "slide-d4-01-04",
+      "presentationId": "presentation-w2-d4-deck-01",
+      "sortOrder": 4,
+      "title": "Slide 4",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-04.png"
+    },
+    {
+      "id": "slide-d4-01-05",
+      "presentationId": "presentation-w2-d4-deck-01",
+      "sortOrder": 5,
+      "title": "Slide 5",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-05.png"
+    },
+    {
+      "id": "slide-d4-01-06",
+      "presentationId": "presentation-w2-d4-deck-01",
+      "sortOrder": 6,
+      "title": "Slide 6",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-06.png"
+    },
+    {
+      "id": "slide-d4-01-07",
+      "presentationId": "presentation-w2-d4-deck-01",
+      "sortOrder": 7,
+      "title": "Slide 7",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-07.png"
+    },
+    {
+      "id": "slide-d4-01-08",
+      "presentationId": "presentation-w2-d4-deck-01",
+      "sortOrder": 8,
+      "title": "Slide 8",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-08.png"
+    },
+    {
+      "id": "slide-d4-01-09",
+      "presentationId": "presentation-w2-d4-deck-01",
+      "sortOrder": 9,
+      "title": "Slide 9",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-09.png"
+    },
+    {
+      "id": "slide-d4-01-10",
+      "presentationId": "presentation-w2-d4-deck-01",
+      "sortOrder": 10,
+      "title": "Slide 10",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-10.png"
+    },
+    {
+      "id": "slide-d4-01-11",
+      "presentationId": "presentation-w2-d4-deck-01",
+      "sortOrder": 11,
+      "title": "Slide 11",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-11.png"
+    },
+    {
+      "id": "slide-d4-01-12",
+      "presentationId": "presentation-w2-d4-deck-01",
+      "sortOrder": 12,
+      "title": "Slide 12",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-12.png"
+    },
+    {
+      "id": "slide-d4-01-13",
+      "presentationId": "presentation-w2-d4-deck-01",
+      "sortOrder": 13,
+      "title": "Slide 13",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-13.png"
+    },
+    {
+      "id": "slide-d4-01-14",
+      "presentationId": "presentation-w2-d4-deck-01",
+      "sortOrder": 14,
+      "title": "Slide 14",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-14.png"
+    },
+    {
+      "id": "slide-d4-01-15",
+      "presentationId": "presentation-w2-d4-deck-01",
+      "sortOrder": 15,
+      "title": "Slide 15",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-15.png"
+    },
+    {
+      "id": "slide-d4-01-16",
+      "presentationId": "presentation-w2-d4-deck-01",
+      "sortOrder": 16,
+      "title": "High Touch or High Tech?",
+      "body": "High Touch and High Tech!",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-16.png"
+    },
+    {
+      "id": "slide-d4-01-17",
+      "presentationId": "presentation-w2-d4-deck-01",
+      "sortOrder": 17,
+      "title": "Slide 17",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-17.png"
+    },
+    {
+      "id": "slide-d4-01-18",
+      "presentationId": "presentation-w2-d4-deck-01",
+      "sortOrder": 18,
+      "title": "Slide 18",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-18.png"
     }
   ]
 }
