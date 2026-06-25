@@ -5,7 +5,7 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist', 'api', 'ios', 'android', 'SPIKE_LIFE/dist', 'SPIKE_LIFE/node_modules']),
+  globalIgnores(['dist']),
   {
     files: ['**/*.{js,jsx}'],
     extends: [
@@ -24,14 +24,6 @@ export default defineConfig([
     },
     rules: {
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
-      'react-hooks/static-components': 'off',
-      'react-hooks/set-state-in-effect': 'off',
-    },
-  },
-  {
-    files: ['src/AuthContext.jsx'],
-    rules: {
-      'react-refresh/only-export-components': 'off',
     },
   },
   {

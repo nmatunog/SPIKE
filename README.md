@@ -184,6 +184,13 @@ The Venture Blueprint is the platform operating system (not an LMS page). Define
 - PRD (V1.1): [`PRD_SPIKE_VENTURE_BLUEPRINT_V1.md`](./PRD_SPIKE_VENTURE_BLUEPRINT_V1.md)
 - Gap analysis: [`PRD_SPIKE_VENTURE_BLUEPRINT_V1_GAP_ANALYSIS.md`](./PRD_SPIKE_VENTURE_BLUEPRINT_V1_GAP_ANALYSIS.md)
 
+## Major projects
+
+| Project | Path | Description |
+|---------|------|-------------|
+| **SPIKE Portal** | `/` (this repo root) | Venture incubator platform — playbook, blueprint, portfolio |
+| **SPIKE_LIFE** | [`SPIKE_LIFE/`](./SPIKE_LIFE/) | Major SPIKE initiative (bootstrap — see [`PRD_SPIKE_LIFE_V1.md`](./SPIKE_LIFE/PRD_SPIKE_LIFE_V1.md)) |
+
 ## Files
 
 - `public/_redirects` — SPA fallback for Cloudflare Pages
