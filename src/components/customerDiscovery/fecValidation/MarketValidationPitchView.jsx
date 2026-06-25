@@ -1,5 +1,7 @@
 import { useMemo } from 'react';
-import { Check, Circle, Presentation } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ArrowRight, Check, Circle, Presentation } from 'lucide-react';
+import { playbookWeek2MissionHref } from '../../../lib/customerDiscovery/week2MissionService.js';
 import {
   getFecValidationLabState,
   getFridayReadiness,
@@ -61,10 +63,19 @@ export function MarketValidationPitchView({ participantId, onSaved }) {
           Submit pitch for Stage Gate
         </button>
       ) : (
-        <p className="flex items-center gap-2 text-sm font-semibold text-emerald-700">
-          <Check size={18} aria-hidden />
-          Pitch submitted — ready for coach stage gate evaluation.
-        </p>
+        <div className="space-y-4">
+          <p className="flex items-center gap-2 text-sm font-semibold text-emerald-700">
+            <Check size={18} aria-hidden />
+            Pitch submitted — ready for coach stage gate evaluation.
+          </p>
+          <Link
+            to={playbookWeek2MissionHref('week-wrap-up', { day: 5 })}
+            className="inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-spike/30 bg-spike/5 px-5 py-2.5 text-sm font-bold text-spike hover:bg-spike/10"
+          >
+            Complete week wrap-up for your portfolio
+            <ArrowRight size={16} aria-hidden />
+          </Link>
+        </div>
       )}
     </div>
   );

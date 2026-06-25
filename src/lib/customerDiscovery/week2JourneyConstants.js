@@ -109,6 +109,7 @@ export const WEEK2_DAY_TASKS = {
   ],
   5: [
     { id: 'market-validation-pitch', slug: 'market-validation-pitch', label: 'Market Validation Pitch', shortLabel: 'Validate', estMin: 30, day: 5 },
+    { id: 'week-wrap-up', slug: 'week-wrap-up', label: 'Week wrap-up', shortLabel: 'Reflect', estMin: 8, day: 5 },
   ],
 };
 
@@ -197,7 +198,7 @@ export const WEEK2_COACH_TIMELINE = [
     ],
     slides: ['10-slide presentation mode', 'Stage Gate II ceremony'],
     activities: ['Market Validation Pitch', 'Coach squad evaluation', 'Unlock BUILD stage'],
-    deliverables: ['Market Validation Evidence portfolio', 'Stage Gate result'],
+    deliverables: ['Market Validation Evidence portfolio', 'Week wrap-up learnings', 'Stage Gate result'],
     outcomes: ['Squad validated for Week 3 Build', '27 interviews → one venture story'],
   },
 ];

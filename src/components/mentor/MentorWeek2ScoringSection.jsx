@@ -43,9 +43,9 @@ export function MentorWeek2ScoringSection({
           </p>
           <h2 className="mt-2 text-2xl font-bold text-slate-900">Squad-first assessment</h2>
           <p className="mt-2 max-w-2xl text-sm text-slate-600">
-            Auto XP from intern missions (80%) + Venture Proposition pitch bonus (20%) when the squad
-            completes their pitch. Weekly squad review (~1 minute) sets stage gate readiness — no per-intern
-            rubrics.
+            Mission XP (80) + Week 1 pitch (20) + guest panel average (20) = shared squad total.
+            Your weekly review rates the <strong>whole week</strong> — learning, teamwork, professionalism,
+            and stage-gate readiness — not the same four dimensions guests use on pitch day.
           </p>
         </div>
         <Link
@@ -61,12 +61,12 @@ export function MentorWeek2ScoringSection({
         <ScoringPrinciple
           icon={Star}
           title="Weekly review"
-          detail="4 dimensions + stage gate + commendations"
+          detail="4 week dimensions + stage gate + commendations"
         />
         <ScoringPrinciple
           icon={Trophy}
-          title="Squad XP"
-          detail="Shared by all members · leaderboard"
+          title="Guest panel"
+          detail="Evidence · validation · venture clarity · team (1–5 each)"
         />
       </div>
 

@@ -351,6 +351,44 @@ export function syncWeek2PortfolioArtifacts(participantId, squadName = '') {
     sourceId: 'sync',
   });
 
+  const wrapFilled = [
+    state.weekWrapBiggestLearning,
+    state.weekWrapEvidenceShift,
+    state.weekWrapVentureEvolution,
+    state.weekWrapWeek3Focus,
+  ].some((v) => String(v ?? '').trim());
+
+  if (wrapFilled || state.weekWrapCompletedAt) {
+    const wrapBody = [
+      '# Week 2 Wrap-up',
+      '',
+      '## Biggest learning',
+      state.weekWrapBiggestLearning || '_Pending_',
+      '',
+      '## Evidence shift',
+      state.weekWrapEvidenceShift || '_Pending_',
+      '',
+      '## Venture evolution',
+      state.weekWrapVentureEvolution || '_Pending_',
+      '',
+      '## Week 3 focus',
+      state.weekWrapWeek3Focus || '_Pending_',
+      '',
+      state.weekWrapCompletedAt ? `**Completed:** ${state.weekWrapCompletedAt.slice(0, 10)}` : '_In progress_',
+    ].join('\n');
+    createPortfolioArtifactDraft({
+      participantId,
+      sectionId: 'portfolio-market-intelligence',
+      title: 'Week 2 Wrap-up',
+      content: wrapBody,
+      sourceType: 'week2-wrap-up',
+      sourceId: 'week-wrap',
+    });
+    setSectionField(participantId, 'market-intelligence', 'week2_wrap_up', wrapBody, {
+      sourceType: 'week2-wrap-up',
+    });
+  }
+
   return state;
 }
 

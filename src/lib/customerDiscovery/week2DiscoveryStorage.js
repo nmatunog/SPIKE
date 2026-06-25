@@ -133,6 +133,11 @@ export function defaultWeek2State() {
       nextSteps: '',
       advisorInsight: '',
     },
+    weekWrapBiggestLearning: '',
+    weekWrapEvidenceShift: '',
+    weekWrapVentureEvolution: '',
+    weekWrapWeek3Focus: '',
+    weekWrapCompletedAt: null,
     cloudSyncedAt: null,
     updatedAt: null,
   };
@@ -169,6 +174,11 @@ export function loadWeek2Discovery(participantId) {
     pctcCertificate1Id: stored.pctcCertificate1Id ?? '',
     pctcCertificate2Id: stored.pctcCertificate2Id ?? '',
     pitchOutline: { ...defaultWeek2State().pitchOutline, ...(stored.pitchOutline ?? {}) },
+    weekWrapBiggestLearning: stored.weekWrapBiggestLearning ?? '',
+    weekWrapEvidenceShift: stored.weekWrapEvidenceShift ?? '',
+    weekWrapVentureEvolution: stored.weekWrapVentureEvolution ?? '',
+    weekWrapWeek3Focus: stored.weekWrapWeek3Focus ?? '',
+    weekWrapCompletedAt: stored.weekWrapCompletedAt ?? null,
     cloudSyncedAt: stored.cloudSyncedAt ?? null,
   };
 }

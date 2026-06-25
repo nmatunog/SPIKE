@@ -11,10 +11,11 @@ import {
 } from './week2JourneyConstants.js';
 import { MIN_ENCODED_INTERVIEWS } from './week2Constants.js';
 import { isFecStepCompleteForParticipant } from './week2FecValidationService.js';
+import { getFecStudioState } from './week2FecStudioService.js';
 import { loadFecValidation } from './week2FecValidationStorage.js';
 import { getSquadNameForParticipant } from './week2SquadEvidenceService.js';
 import { getReadinessMissionState } from './week2ReadinessMissionService.js';
-import { getFecStudioState } from './week2FecStudioService.js';
+import { isWeek2WrapUpComplete } from './week2WrapUpService.js';
 import { isPctcMissionComplete } from './week2PctcCertificateService.js';
 
 const BASE = `${ROUTES.ventureBlueprint}/customer-discovery`;
@@ -91,6 +92,8 @@ function isTaskComplete(participantId, taskId) {
     case 'validation-pitch':
       return Boolean(state.pitchSubmittedAt)
         || Boolean(loadFecValidation(getSquadNameForParticipant(participantId)).pitchSubmittedAt);
+    case 'week-wrap-up':
+      return isWeek2WrapUpComplete(participantId);
     case 'synthesis':
     case 'intelligence-board':
     case 'pitch-start':

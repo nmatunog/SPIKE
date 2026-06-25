@@ -101,6 +101,11 @@
  * @property {string} uvpCheckpointNotes
  * @property {string | null} uvpCheckpointAt
  * @property {Week2PitchOutline} pitchOutline
+ * @property {string} weekWrapBiggestLearning
+ * @property {string} weekWrapEvidenceShift
+ * @property {string} weekWrapVentureEvolution
+ * @property {string} weekWrapWeek3Focus
+ * @property {string | null} weekWrapCompletedAt
  * @property {string | null} cloudSyncedAt
  * @property {string | null} updatedAt
  */

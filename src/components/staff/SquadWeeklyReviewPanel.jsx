@@ -5,6 +5,7 @@ import {
   MENTOR_REVIEW_DIMENSIONS,
   STAGE_GATE_DECISIONS,
 } from '../../lib/staff/squadXpConstants.js';
+import { MENTOR_VS_PANEL_NOTE } from '../../lib/staff/squadScoringGuide.js';
 import {
   formatStarDisplay,
   generateSquadCoachingSummary,
@@ -95,7 +96,9 @@ export function SquadWeeklyReviewPanel({
         <div>
           <p className="spike-label">Weekly squad review</p>
           <h3 className="text-base font-bold text-slate-900">{squadName}</h3>
-          <p className="mt-1 text-xs text-slate-500">Week {week} — about 1 minute. No individual scores.</p>
+          <p className="mt-1 text-xs text-slate-500">
+            Week {week} — about 1 minute. Whole-week squad view (not the guest panel rubric).
+          </p>
         </div>
         <div className="text-right">
           <p className="text-2xl font-bold tabular-nums text-spike">{squadXp.totalXp} XP</p>
@@ -107,10 +110,13 @@ export function SquadWeeklyReviewPanel({
         </div>
       </div>
 
+      <p className="rounded-xl bg-slate-50 px-3 py-2 text-xs text-slate-600">{MENTOR_VS_PANEL_NOTE}</p>
+
       <div className="grid gap-3 sm:grid-cols-2">
         {MENTOR_REVIEW_DIMENSIONS.map((dim) => (
           <div key={dim.id} className="rounded-xl bg-slate-50 px-3 py-3">
             <p className="text-xs font-semibold text-slate-700">{dim.label}</p>
+            {dim.hint ? <p className="mt-0.5 text-[11px] text-slate-500">{dim.hint}</p> : null}
             <div className="mt-2 flex gap-1">
               {[1, 2, 3, 4, 5].map((n) => (
                 <button

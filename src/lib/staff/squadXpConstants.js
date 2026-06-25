@@ -24,12 +24,12 @@ export const COMMENDATION_TYPES = [
   { id: 'mentors_choice', label: "Mentor's Choice", emoji: '🏅' },
 ];
 
-/** @type {Array<{ id: string, label: string }>} */
+/** @type {Array<{ id: string, label: string, hint?: string }>} */
 export const MENTOR_REVIEW_DIMENSIONS = [
-  { id: 'quality_of_learning', label: 'Quality of Learning' },
-  { id: 'collaboration', label: 'Collaboration' },
-  { id: 'professionalism', label: 'Professionalism' },
-  { id: 'readiness_for_stage_gate', label: 'Readiness for Stage Gate' },
+  { id: 'quality_of_learning', label: 'Quality of Learning', hint: 'Depth of insight from interviews, FEC, and pitch story' },
+  { id: 'collaboration', label: 'Collaboration', hint: 'Shared ownership and squad accountability' },
+  { id: 'professionalism', label: 'Professionalism', hint: 'Preparation, follow-through, coachability' },
+  { id: 'readiness_for_stage_gate', label: 'Readiness for Stage Gate', hint: 'Evidence-backed venture — ready to build?' },
 ];
 
 /** @type {Array<{ id: 'not_ready' | 'almost_ready' | 'ready', label: string, color: string }>} */

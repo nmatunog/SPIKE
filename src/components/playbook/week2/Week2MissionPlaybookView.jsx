@@ -15,6 +15,7 @@ import { ExchangeReflectionTask } from '../../customerDiscovery/ExchangeReflecti
 import { ProfessionalReadinessMission } from '../../customerDiscovery/ProfessionalReadinessMission.jsx';
 import { FecValidationStudio } from '../../customerDiscovery/fecValidation/FecValidationStudio.jsx';
 import { MarketValidationPitchView } from '../../customerDiscovery/fecValidation/MarketValidationPitchView.jsx';
+import { Week2WrapUpTask } from '../../customerDiscovery/Week2WrapUpTask.jsx';
 import {
   playbookWeek2MissionHref,
   getActiveWeek2Task,
@@ -162,6 +163,8 @@ export function Week2MissionPlaybookView({
       case 'market-validation-pitch':
       case 'validation-pitch':
         return <MarketValidationPitchView participantId={participantId} onSaved={refresh} />;
+      case 'week-wrap-up':
+        return <Week2WrapUpTask participantId={participantId} onSaved={refresh} />;
       case 'mission':
       default:
         return (

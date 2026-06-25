@@ -9,6 +9,7 @@ import { DreamBoardSlideCollage } from './DreamBoardSlideCollage.jsx';
 import { ParticipantPhotoUpload } from './ParticipantPhotoUpload.jsx';
 import { PortfolioCoachingTimeline } from './PortfolioCoachingTimeline.jsx';
 import { PortfolioWeek1JourneyPanel } from './PortfolioWeek1JourneyPanel.jsx';
+import { PortfolioWeek2WrapUpPanel } from './PortfolioWeek2WrapUpPanel.jsx';
 import { ParticipantSquadXpCard } from '../staff/SquadXpDashboard.jsx';
 import { VentureTimeline } from './VentureTimeline.jsx';
 
@@ -25,6 +26,7 @@ export function PortfolioOverviewSection({ portfolio, participantId = '', partic
         </section>
       ) : null}
       {participantId ? <PortfolioWeek1JourneyPanel participantId={participantId} /> : null}
+      {participantId ? <PortfolioWeek2WrapUpPanel participantId={participantId} /> : null}
       {participantId ? <ParticipantSquadXpCard participantId={participantId} skipHydration /> : null}
       <section className="overflow-hidden rounded-3xl border border-spike/15 bg-gradient-to-br from-slate-900 via-slate-800 to-spike-dark p-8 text-white shadow-projection sm:p-10">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
