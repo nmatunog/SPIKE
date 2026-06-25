@@ -15,7 +15,7 @@ import {
   SquadRolesBanner,
 } from './FecValidationShared.jsx';
 import { FecValidationPoster } from './FecValidationPoster.jsx';
-import { hydrateParticipantFecValidation } from '../../../lib/customerDiscovery/week2FecValidationSync.js';
+import { hydrateSquadFecValidation } from '../../../lib/customerDiscovery/week2FecValidationSync.js';
 import { hydrateSquadWeek2Discovery } from '../../../lib/customerDiscovery/week2DiscoverySync.js';
 
 /**
@@ -32,7 +32,7 @@ export function FecValidationLab({ participantId, squadName = '', stepSlug, onSa
   };
 
   useEffect(() => {
-    void hydrateParticipantFecValidation(participantId).then(() => refresh());
+    void hydrateSquadFecValidation(participantId).then(() => refresh());
     void hydrateSquadWeek2Discovery(participantId).then(() => refresh());
   }, [participantId]);
 

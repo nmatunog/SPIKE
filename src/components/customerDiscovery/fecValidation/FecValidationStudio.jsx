@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowRight, Check, Sparkles, Star } from 'lucide-react';
 import {
   approveEvidenceBoard,
@@ -7,10 +7,11 @@ import {
   buildStudioPitchSlides,
   generateVentureEvolutionReport,
   getFecStudioState,
+  saveEvidenceBoardDraft,
 } from '../../../lib/customerDiscovery/week2FecStudioService.js';
 import { FEC_STUDIO_PHASES, PITCH_SLIDE_KEYS } from '../../../lib/customerDiscovery/week2FecValidationConstants.js';
 import { FecValidationCanvas, SquadRolesBanner } from './FecValidationShared.jsx';
-import { hydrateParticipantFecValidation } from '../../../lib/customerDiscovery/week2FecValidationSync.js';
+import { hydrateSquadFecValidation } from '../../../lib/customerDiscovery/week2FecValidationSync.js';
 import { hydrateSquadWeek2Discovery } from '../../../lib/customerDiscovery/week2DiscoverySync.js';
 
 /**
@@ -25,7 +26,7 @@ export function FecValidationStudio({ participantId, stepSlug, onSaved, memberNa
   };
 
   useEffect(() => {
-    void hydrateParticipantFecValidation(participantId).then(() => refresh());
+    void hydrateSquadFecValidation(participantId).then(() => refresh());
     void hydrateSquadWeek2Discovery(participantId).then(() => refresh());
   }, [participantId]);
 
@@ -231,13 +232,45 @@ function Studio1Evidence({ studio, participantId, onSaved, onNext, onNavigate })
   const [topProblems, setTopProblems] = useState(board.topProblems);
   const [topOpportunities, setTopOpportunities] = useState(board.topOpportunities);
   const [starred, setStarred] = useState(board.starredQuotes ?? []);
+  const draftTimerRef = useRef(null);
+  const skipDraftSaveRef = useRef(false);
 
   useEffect(() => {
+    skipDraftSaveRef.current = true;
     setTopGoals(board.topGoals);
     setTopProblems(board.topProblems);
     setTopOpportunities(board.topOpportunities);
     setStarred(board.starredQuotes ?? []);
   }, [participantId, board.topGoals, board.topProblems, board.topOpportunities, board.starredQuotes]);
+
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') {
+        void hydrateSquadFecValidation(participantId).then(() => onSaved());
+      }
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
+  }, [participantId, onSaved]);
+
+  useEffect(() => {
+    if (skipDraftSaveRef.current) {
+      skipDraftSaveRef.current = false;
+      return undefined;
+    }
+    if (draftTimerRef.current) window.clearTimeout(draftTimerRef.current);
+    draftTimerRef.current = window.setTimeout(() => {
+      saveEvidenceBoardDraft(participantId, {
+        topGoals,
+        topProblems,
+        topOpportunities,
+        starredQuotes: starred,
+      });
+    }, 1200);
+    return () => {
+      if (draftTimerRef.current) window.clearTimeout(draftTimerRef.current);
+    };
+  }, [participantId, topGoals, topProblems, topOpportunities, starred]);
 
   function toggleStar(quote) {
     setStarred((prev) => {
@@ -257,7 +290,7 @@ function Studio1Evidence({ studio, participantId, onSaved, onNext, onNavigate })
       <StudioHeader phase={FEC_STUDIO_PHASES[0]} />
 
       <p className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-        Review squad interview evidence. Edit each line if needed, then approve — this encodes <strong>Who we serve</strong> on your FEC Canvas.
+        Review squad interview evidence. Edit each line if needed — <strong>all squad members share these Top 3 fields</strong> and see updates after a short sync. Approve when ready to encode <strong>Who we serve</strong> on your FEC Canvas.
       </p>
 
       {board.interviewCount < 3 ? (

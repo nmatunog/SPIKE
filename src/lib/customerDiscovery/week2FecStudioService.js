@@ -233,6 +233,34 @@ export function getFecStudioState(participantId) {
 }
 
 /**
+ * Squad-shared draft for Studio 1 Top 3 fields (syncs to all members via cloud).
+ * @param {string} participantId
+ * @param {{
+ *   topGoals: Array<{ text: string, count: number }>,
+ *   topProblems: Array<{ text: string, count: number }>,
+ *   topOpportunities: Array<{ text: string, count: number }>,
+ *   starredQuotes?: string[],
+ * }} input
+ */
+export function saveEvidenceBoardDraft(participantId, input) {
+  const key = squadKeyFor(participantId);
+  const current = loadFecValidation(key);
+  const now = new Date().toISOString();
+  const evidenceBoard = {
+    ...(current.evidenceBoard ?? {}),
+    topGoals: input.topGoals,
+    topProblems: input.topProblems,
+    topOpportunities: input.topOpportunities,
+    starredQuotes: input.starredQuotes ?? current.evidenceBoard?.starredQuotes ?? [],
+    draftUpdatedAt: now,
+    draftBy: participantId,
+  };
+  const next = saveFecValidation(key, { evidenceBoard });
+  void syncFecValidationToCloud(key, next, squadEvidenceSummary(participantId).memberIds).catch(() => {});
+  return next;
+}
+
+/**
  * @param {string} participantId
  * @param {{
  *   topGoals?: Array<{ text: string, count: number }>,
@@ -285,6 +313,8 @@ export function approveEvidenceBoard(participantId, input) {
       topGoals,
       topProblems,
       topOpportunities,
+      draftUpdatedAt: now,
+      draftBy: participantId,
     },
   });
   void syncFecValidationToCloud(key, next, squadEvidenceSummary(participantId).memberIds).catch(() => {});

@@ -43,6 +43,78 @@ export async function syncFecValidationToCloud(squadKey, state, memberIds = []) 
   );
 }
 
+/** @param {Record<string, unknown>} board */
+function evidenceBoardDraftAt(board) {
+  return String(board?.draftUpdatedAt ?? '');
+}
+
+/** @param {Record<string, unknown>} board */
+function evidenceBoardFilledScore(board) {
+  const sections = [board?.topGoals, board?.topProblems, board?.topOpportunities];
+  return sections.reduce(
+    (n, rows) => n + (Array.isArray(rows) ? rows.filter((r) => String(r?.text ?? '').trim()).length : 0),
+    0,
+  );
+}
+
+/** @param {Record<string, unknown>} board */
+function mergeEvidenceBoardDraft(localBoard, remoteBoard) {
+  const local = localBoard ?? {};
+  const remote = remoteBoard ?? {};
+  const localAt = evidenceBoardDraftAt(local);
+  const remoteAt = evidenceBoardDraftAt(remote);
+  let newer = remote;
+  let older = local;
+
+  if (remoteAt > localAt) {
+    newer = remote;
+    older = local;
+  } else if (localAt > remoteAt) {
+    newer = local;
+    older = remote;
+  } else if (evidenceBoardFilledScore(remote) > evidenceBoardFilledScore(local)) {
+    newer = remote;
+    older = local;
+  } else {
+    newer = local;
+    older = remote;
+  }
+
+  return {
+    ...older,
+    ...newer,
+    topGoals: newer.topGoals ?? older.topGoals,
+    topProblems: newer.topProblems ?? older.topProblems,
+    topOpportunities: newer.topOpportunities ?? older.topOpportunities,
+    starredQuotes: newer.starredQuotes ?? older.starredQuotes,
+    draftUpdatedAt: remoteAt > localAt ? remoteAt : localAt || remoteAt,
+    draftBy: remoteAt > localAt ? remote.draftBy : local.draftBy ?? remote.draftBy,
+  };
+}
+
+/**
+ * @param {import('./week2FecValidationTypes.js').FecValidationSquadState} local
+ * @param {import('./week2FecValidationTypes.js').FecValidationSquadState} remote
+ */
+export function mergeFecValidationStates(local, remote) {
+  if (!remote || typeof remote !== 'object') return local;
+  if (!local || typeof local !== 'object') return remote;
+
+  const localAt = String(local.updatedAt ?? '');
+  const remoteAt = String(remote.updatedAt ?? '');
+  const base = remoteAt >= localAt ? { ...local, ...remote } : { ...remote, ...local };
+
+  return {
+    ...base,
+    boxScores: { ...(local.boxScores ?? {}), ...(remote.boxScores ?? {}), ...(base.boxScores ?? {}) },
+    steps: { ...(local.steps ?? {}), ...(remote.steps ?? {}) },
+    squadRoles: { ...(local.squadRoles ?? {}), ...(remote.squadRoles ?? {}) },
+    pitchSlides: { ...(local.pitchSlides ?? {}), ...(remote.pitchSlides ?? {}) },
+    evidenceBoard: mergeEvidenceBoardDraft(local.evidenceBoard, remote.evidenceBoard),
+    updatedAt: remoteAt >= localAt ? remoteAt : localAt,
+  };
+}
+
 /**
  * Merge remote squad FEC state into localStorage when cloud is newer.
  * @param {string} participantId
@@ -54,18 +126,65 @@ export async function hydrateFecValidationFromCloud(participantId, squadKey, opt
 
   const key = String(squadKey ?? '').trim() || 'default';
   const local = loadFecValidation(key);
-  const rows = await fetchPlaybookCompletions(participantId).catch(() => null);
+  const rows = await fetchPlaybookCompletions(participantId, WEEK_ID).catch(() => null);
   const row = rows?.find((r) => r.item_id === fecValidationItemId(key));
   const remoteState = row?.payload?.state;
   if (!remoteState || typeof remoteState !== 'object') return local;
 
+  const merged = mergeFecValidationStates(local, remoteState);
   const remoteAt = String(remoteState.updatedAt ?? row.completed_at ?? '');
   const localAt = String(local.updatedAt ?? '');
 
-  if (opts.preferLocal && localAt && (!remoteAt || localAt >= remoteAt)) return local;
-  if (localAt && remoteAt && localAt >= remoteAt) return local;
+  if (opts.preferLocal && localAt && (!remoteAt || localAt >= remoteAt)) {
+    return saveFecValidation(key, {
+      ...merged,
+      evidenceBoard: mergeEvidenceBoardDraft(merged.evidenceBoard, local.evidenceBoard),
+      updatedAt: localAt,
+    });
+  }
 
-  return saveFecValidation(key, remoteState);
+  return saveFecValidation(key, merged);
+}
+
+/**
+ * Pull squad FEC state from any member's cloud copy — merges newest evidence-board drafts.
+ * @param {string} participantId
+ * @param {{ preferLocalDraft?: boolean }} [opts]
+ */
+export async function hydrateSquadFecValidation(participantId, opts = {}) {
+  const { getSquadNameForParticipant } = await import('./week2SquadEvidenceService.js');
+  const key = getSquadNameForParticipant(participantId) || `solo-${participantId}`;
+  const memberIds = getSquadMemberIds(participantId);
+  const itemId = fecValidationItemId(key);
+  let merged = loadFecValidation(key);
+
+  const remotes = await Promise.all(
+    memberIds.map(async (memberId) => {
+      if (!memberId || isMockUserId(memberId)) return null;
+      const rows = await fetchPlaybookCompletions(memberId, WEEK_ID).catch(() => null);
+      const row = rows?.find((r) => r.item_id === itemId);
+      const state = row?.payload?.state;
+      return state && typeof state === 'object' ? state : null;
+    }),
+  );
+
+  for (const remote of remotes) {
+    if (remote) merged = mergeFecValidationStates(merged, remote);
+  }
+
+  if (opts.preferLocalDraft) {
+    const local = loadFecValidation(key);
+    merged = {
+      ...merged,
+      evidenceBoard: mergeEvidenceBoardDraft(merged.evidenceBoard, local.evidenceBoard),
+    };
+  }
+
+  const before = JSON.stringify(loadFecValidation(key));
+  const after = JSON.stringify(merged);
+  if (before === after) return merged;
+
+  return saveFecValidation(key, merged);
 }
 
 /** @param {string} participantId @param {string} [squadKey] */
@@ -79,7 +198,5 @@ export async function backfillFecValidationToCloud(participantId, squadKey) {
 
 /** @param {string} participantId */
 export async function hydrateParticipantFecValidation(participantId) {
-  const { getSquadNameForParticipant } = await import('./week2SquadEvidenceService.js');
-  const key = getSquadNameForParticipant(participantId) || `solo-${participantId}`;
-  return hydrateFecValidationFromCloud(participantId, key, { preferLocal: true });
+  return hydrateSquadFecValidation(participantId);
 }
