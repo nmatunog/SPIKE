@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { ArrowRight, BookOpen, Sparkles } from 'lucide-react';
 import { StudioShell } from '../../customerDiscovery/StudioShell.jsx';
 import { MissionTrackNav } from '../../customerDiscovery/MissionTrackNav.jsx';
@@ -65,7 +65,6 @@ export function Week2MissionPlaybookView({
 
   const slugValid = isWeek2MissionSlugForDay(missionSlug, day);
   const slug = slugValid && missionSlug ? missionSlug : getActiveWeek2Task(participantId, day).slug;
-  const lastSlugRedirectRef = useRef('');
 
   const progressPct = week2OverallProgressPct(participantId);
   const phase = getWeek2PhaseForDay(day);
@@ -79,17 +78,6 @@ export function Week2MissionPlaybookView({
       window.location.assign(playbookWeek2MissionHref(nextSlug, { day: nextDay }));
     }
   }
-
-  useEffect(() => {
-    if (!missionSlug || slugValid) {
-      lastSlugRedirectRef.current = '';
-      return;
-    }
-    const target = `${day}:${slug}`;
-    if (lastSlugRedirectRef.current === target) return;
-    lastSlugRedirectRef.current = target;
-    goToMission(slug, day);
-  }, [missionSlug, slugValid, slug, day]);
 
   function renderTask() {
     if (slug.startsWith('interview-')) {
@@ -222,7 +210,13 @@ export function Week2MissionPlaybookView({
           squadName={squadName}
           hero={<VentureStatusHero participantId={participantId} />}
           sidebar={
-            <MissionTrackNav participantId={participantId} activeSlug={slug} context="playbook" playbookDay={day} />
+            <MissionTrackNav
+              participantId={participantId}
+              activeSlug={slug}
+              context="playbook"
+              playbookDay={day}
+              onNavigate={(nextSlug, nextDay) => goToMission(nextSlug, nextDay ?? day)}
+            />
           }
         >
           <DreamRibbon participantId={participantId} squadName={squadName} />

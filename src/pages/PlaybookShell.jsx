@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { formatUiRoleLabel } from '../lib/terminology.js';
 import { ArrowLeft, BookOpen, ChevronRight, Layers, PlayCircle } from 'lucide-react';
@@ -20,6 +20,7 @@ import { resolveInternPlaybookDay, resolveInternProgramWeek, UNLOCK_WEEK2 } from
 import { getParticipantSquad } from '../lib/cohortFormationService.js';
 import {
   getActiveWeek2Task,
+  isWeek2MissionSlugForDay,
   resolveWeek2PlaybookDay,
 } from '../lib/customerDiscovery/week2MissionService.js';
 import { useInternWorkHydration } from '../hooks/useInternWorkHydration.js';
@@ -68,6 +69,7 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
   const showCurriculum = searchParams.get('view') === 'curriculum';
   const focusReflection = searchParams.get('reflection') === '1';
   const { programDay, ready: calendarReady } = useCohortProgramDay();
+  const missionNormalizeRef = useRef('');
 
   const entryDay = useMemo(() => {
     const fromQuery = Number.parseInt(searchParams.get('day') ?? '', 10);
@@ -105,8 +107,8 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
     if (hasWeek && hasDay) return;
     const params = new URLSearchParams(searchParams);
     params.set('segment', String(entrySegment));
-    params.set('week', String(programDay.week));
-    params.set('day', String(programDay.day));
+    if (!hasWeek) params.set('week', String(programDay.week));
+    if (!hasDay) params.set('day', String(programDay.day));
     setSearchParams(params, { replace: true });
   }, [userRole, calendarReady, searchParams, setSearchParams, entrySegment, programDay.week, programDay.day]);
 
@@ -163,7 +165,16 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
     && entrySegment === 1
     && (weekSlug === 'week-2' || selectedWeek?.week?.weekNumber === 2);
 
-  const playbookDayNumber = selectedDay?.day?.dayNumber ?? entryDay;
+  const urlPlaybookDay = useMemo(() => {
+    const fromQuery = Number.parseInt(searchParams.get('day') ?? '', 10);
+    if (Number.isFinite(fromQuery) && fromQuery >= 1 && fromQuery <= 5) return fromQuery;
+    return null;
+  }, [searchParams]);
+
+  const playbookDayNumber =
+    urlPlaybookDay != null
+      ? urlPlaybookDay
+      : (selectedDay?.day?.dayNumber ?? entryDay);
 
   const showMissionFirst =
     isInternWeek2
@@ -177,13 +188,46 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
 
   useEffect(() => {
     if (!showMissionFirst || !participantId) return;
-    if (missionSlug) return;
-    const active = getActiveWeek2Task(participantId, resolvedPlaybookDay);
+
+    const day = urlPlaybookDay ?? resolvedPlaybookDay;
+
+    if (!missionSlug) {
+      const active = getActiveWeek2Task(participantId, day);
+      const key = `empty:${day}:${active.slug}`;
+      if (missionNormalizeRef.current === key) return;
+      missionNormalizeRef.current = key;
+      const params = new URLSearchParams(searchParams);
+      params.set('mission', active.slug);
+      params.set('day', String(day));
+      setSearchParams(params, { replace: true });
+      return;
+    }
+
+    if (isWeek2MissionSlugForDay(missionSlug, day)) {
+      missionNormalizeRef.current = '';
+      return;
+    }
+
+    for (let d = 1; d <= 5; d += 1) {
+      if (isWeek2MissionSlugForDay(missionSlug, d)) {
+        const key = `dayfix:${missionSlug}:${d}`;
+        if (missionNormalizeRef.current === key) return;
+        missionNormalizeRef.current = key;
+        const params = new URLSearchParams(searchParams);
+        params.set('day', String(d));
+        setSearchParams(params, { replace: true });
+        return;
+      }
+    }
+
+    const active = getActiveWeek2Task(participantId, day);
+    const key = `reset:${day}:${active.slug}`;
+    if (missionNormalizeRef.current === key) return;
+    missionNormalizeRef.current = key;
     const params = new URLSearchParams(searchParams);
     params.set('mission', active.slug);
-    params.set('day', String(resolvedPlaybookDay));
     setSearchParams(params, { replace: true });
-  }, [showMissionFirst, participantId, missionSlug, resolvedPlaybookDay, searchParams, setSearchParams]);
+  }, [showMissionFirst, participantId, missionSlug, urlPlaybookDay, resolvedPlaybookDay, searchParams, setSearchParams]);
 
   function openCurriculumView() {
     const params = new URLSearchParams(searchParams);

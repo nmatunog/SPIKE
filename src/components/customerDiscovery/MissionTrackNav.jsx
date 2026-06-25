@@ -5,9 +5,21 @@ import { getMisBreakdown } from '../../lib/customerDiscovery/week2MisService.js'
 
 /**
  * Vertical mission track — day tasks within current phase.
- * @param {{ participantId: string, activeSlug?: string, context?: 'blueprint' | 'playbook', playbookDay?: number }} props
+ * @param {{
+ *   participantId: string,
+ *   activeSlug?: string,
+ *   context?: 'blueprint' | 'playbook',
+ *   playbookDay?: number,
+ *   onNavigate?: (slug: string, day?: number) => void,
+ * }} props
  */
-export function MissionTrackNav({ participantId, activeSlug, context = 'blueprint', playbookDay = 1 }) {
+export function MissionTrackNav({
+  participantId,
+  activeSlug,
+  context = 'blueprint',
+  playbookDay = 1,
+  onNavigate,
+}) {
   const location = useLocation();
   const steps = deriveWeek2MissionTrack(participantId, context, playbookDay);
   const mis = getMisBreakdown(participantId);
@@ -25,33 +37,52 @@ export function MissionTrackNav({ participantId, activeSlug, context = 'blueprin
             : location.pathname.includes(`/${step.slug}`)
               || (location.pathname.endsWith('/customer-discovery') && step.id === activeTask?.id);
 
-        return (
-          <Link
-            key={step.id}
-            to={step.href}
-            className={`block rounded-xl px-3 py-2.5 transition ${
-              isActive
-                ? 'spike-task-active'
-                : step.complete
-                  ? 'spike-task-done'
-                  : 'spike-task-pending hover:bg-slate-50'
-            }`}
-          >
-            <span className="flex items-center gap-2">
-              <span
-                className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
-                  step.complete
-                    ? 'bg-venture-discover text-white'
-                    : isActive
-                      ? 'bg-spike text-white'
-                      : 'bg-slate-100 text-slate-500'
-                }`}
-              >
-                {step.complete ? <Check size={14} /> : step.index}
-              </span>
-              <span className={step.complete ? '' : 'font-medium'}>{step.shortLabel}</span>
+        const isCurrent = context === 'playbook' && onNavigate && isActive;
+
+        const className = `block w-full rounded-xl px-3 py-2.5 text-left transition ${
+          isActive
+            ? 'spike-task-active'
+            : step.complete
+              ? 'spike-task-done'
+              : 'spike-task-pending hover:bg-slate-50'
+        } ${isCurrent ? 'cursor-default' : ''}`;
+
+        const inner = (
+          <span className="flex items-center gap-2">
+            <span
+              className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                step.complete
+                  ? 'bg-venture-discover text-white'
+                  : isActive
+                    ? 'bg-spike text-white'
+                    : 'bg-slate-100 text-slate-500'
+              }`}
+            >
+              {step.complete ? <Check size={14} /> : step.index}
             </span>
-          </Link>
+            <span className={step.complete ? '' : 'font-medium'}>{step.shortLabel}</span>
+          </span>
+        );
+
+        return (
+          <div key={step.id}>
+            {onNavigate && context === 'playbook' ? (
+              <button
+                type="button"
+                disabled={isCurrent}
+                onClick={() => {
+                  if (!isCurrent) onNavigate(step.slug, playbookDay);
+                }}
+                className={className}
+              >
+                {inner}
+              </button>
+            ) : (
+              <Link to={step.href} className={className}>
+                {inner}
+              </Link>
+            )}
+          </div>
         );
       })}
 

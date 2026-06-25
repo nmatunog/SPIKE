@@ -34,17 +34,6 @@ function readInterviewDraft(participantId, interviewIndex) {
   };
 }
 
-function applyDraft(setters, draft) {
-  setters.setQuestions(draft.questions);
-  setters.setAlias(draft.alias);
-  setters.setOccupation(draft.occupation);
-  setters.setAnswers(draft.answers);
-  setters.setReflection(draft.reflection);
-  setters.setInsights(draft.insights);
-  setters.setEncoded(draft.encoded);
-  setters.setSaveState('idle');
-}
-
 /**
  * Discover mode — encode one field interview; drafts persist on save and when leaving the screen.
  * @param {{ participantId: string, interviewIndex: number, onSaved?: () => void }} props
@@ -69,38 +58,17 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
 
   const draftRef = useRef({ alias, occupation, answers, reflection, questions });
   const dirtyRef = useRef(false);
-  const hydratingRef = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
-    hydratingRef.current = true;
-    dirtyRef.current = false;
     (async () => {
       await hydrateParticipantWeek2Discovery(participantId);
       await hydrateSquadWeek2Discovery(participantId);
       if (cancelled) return;
-      if (!dirtyRef.current) {
-        applyDraft(
-          {
-            setQuestions,
-            setAlias,
-            setOccupation,
-            setAnswers,
-            setReflection,
-            setInsights,
-            setEncoded,
-            setSaveState,
-          },
-          readInterviewDraft(participantId, interviewIndex),
-        );
-      }
-      hydratingRef.current = false;
       setSquadTick((n) => n + 1);
-      setSyncTick((n) => n + 1);
     })();
     return () => {
       cancelled = true;
-      hydratingRef.current = false;
     };
   }, [participantId, interviewIndex]);
 
@@ -195,7 +163,6 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
     const iv = next.interviews?.[interviewIndex];
     if (iv?.aiInsights) setInsights(iv.aiInsights);
     setEncoded(Boolean(iv?.encoded));
-    setSyncTick((n) => n + 1);
   }
 
   function updateQuestion(qi, text) {
