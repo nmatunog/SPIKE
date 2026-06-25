@@ -25,7 +25,7 @@ export function StudioShell({
   const isPlaybook = variant === 'playbook';
 
   return (
-    <div className="animate-spike-fade-in pb-8">
+    <div className={isPlaybook ? 'pb-8' : 'animate-spike-fade-in pb-8'}>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         {isPlaybook ? (
           <p className="text-xs font-bold uppercase tracking-[0.15em] text-slate-400">Week 2 Playbook</p>

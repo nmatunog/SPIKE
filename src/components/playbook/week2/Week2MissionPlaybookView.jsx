@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowRight, BookOpen, Sparkles } from 'lucide-react';
 import { StudioShell } from '../../customerDiscovery/StudioShell.jsx';
 import { MissionTrackNav } from '../../customerDiscovery/MissionTrackNav.jsx';
@@ -22,7 +22,6 @@ import {
   week2OverallProgressPct,
 } from '../../../lib/customerDiscovery/week2MissionService.js';
 import { getWeek2PhaseForDay } from '../../../lib/customerDiscovery/week2JourneyConstants.js';
-import { hydrateParticipantWeek2Discovery } from '../../../lib/customerDiscovery/week2DiscoverySync.js';
 import { Week2PrepareReviseNav } from '../../customerDiscovery/Week2PrepareReviseNav.jsx';
 import { PlaybookDayClosingReflectionBlock } from '../PlaybookDayClosingReflectionBlock.jsx';
 import { PlaybookReflectionNudge } from '../PlaybookReflectionNudge.jsx';
@@ -46,7 +45,7 @@ import { PlaybookReflectionNudge } from '../PlaybookReflectionNudge.jsx';
 export function Week2MissionPlaybookView({
   participantId,
   squadName = '',
-  missionSlug = 'mission',
+  missionSlug = '',
   playbookDay = 1,
   calendarDay = 5,
   programWeek = 2,
@@ -66,6 +65,7 @@ export function Week2MissionPlaybookView({
 
   const slugValid = isWeek2MissionSlugForDay(missionSlug, day);
   const slug = slugValid && missionSlug ? missionSlug : getActiveWeek2Task(participantId, day).slug;
+  const lastSlugRedirectRef = useRef('');
 
   const progressPct = week2OverallProgressPct(participantId);
   const phase = getWeek2PhaseForDay(day);
@@ -81,12 +81,13 @@ export function Week2MissionPlaybookView({
   }
 
   useEffect(() => {
-    if (!participantId) return;
-    void hydrateParticipantWeek2Discovery(participantId, { force: true }).then(() => refresh());
-  }, [participantId]);
-
-  useEffect(() => {
-    if (!missionSlug || slugValid) return;
+    if (!missionSlug || slugValid) {
+      lastSlugRedirectRef.current = '';
+      return;
+    }
+    const target = `${day}:${slug}`;
+    if (lastSlugRedirectRef.current === target) return;
+    lastSlugRedirectRef.current = target;
     goToMission(slug, day);
   }, [missionSlug, slugValid, slug, day]);
 
@@ -201,7 +202,13 @@ export function Week2MissionPlaybookView({
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(180px,220px)_1fr]">
         <aside className="space-y-6">
-          <Week2JourneyNav participantId={participantId} calendarDay={calendarDay} activeDay={day} />
+          <Week2JourneyNav
+            participantId={participantId}
+            calendarDay={calendarDay}
+            activeDay={day}
+            activeMissionSlug={slug}
+            onNavigate={(nextSlug, nextDay) => goToMission(nextSlug, nextDay)}
+          />
           {day > 1 ? (
             <Week2PrepareReviseNav
               activeSlug={slug}

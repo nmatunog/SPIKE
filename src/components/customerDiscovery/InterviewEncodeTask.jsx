@@ -76,7 +76,7 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
     hydratingRef.current = true;
     dirtyRef.current = false;
     (async () => {
-      await hydrateParticipantWeek2Discovery(participantId, { force: true });
+      await hydrateParticipantWeek2Discovery(participantId);
       await hydrateSquadWeek2Discovery(participantId);
       if (cancelled) return;
       if (!dirtyRef.current) {
@@ -153,25 +153,30 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
     const saveLocal = () => {
       writeDraftToStorage();
     };
-    const saveCloud = () => {
-      const state = loadWeek2Discovery(participantId);
-      void syncWeek2DiscoveryToCloud(participantId, state);
+    let cloudTimer = null;
+    const scheduleCloud = () => {
+      if (cloudTimer) window.clearTimeout(cloudTimer);
+      cloudTimer = window.setTimeout(() => {
+        const state = loadWeek2Discovery(participantId);
+        void syncWeek2DiscoveryToCloud(participantId, state);
+      }, 400);
     };
     window.addEventListener('pagehide', saveLocal);
-    window.addEventListener('pagehide', saveCloud);
+    window.addEventListener('pagehide', scheduleCloud);
     const onHide = () => {
       if (document.visibilityState === 'hidden') {
         saveLocal();
-        saveCloud();
+        scheduleCloud();
       }
     };
     document.addEventListener('visibilitychange', onHide);
     return () => {
       window.removeEventListener('pagehide', saveLocal);
-      window.removeEventListener('pagehide', saveCloud);
+      window.removeEventListener('pagehide', scheduleCloud);
       document.removeEventListener('visibilitychange', onHide);
       saveLocal();
-      saveCloud();
+      scheduleCloud();
+      if (cloudTimer) window.clearTimeout(cloudTimer);
     };
   }, [participantId, interviewIndex]);
 

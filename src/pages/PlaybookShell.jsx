@@ -286,7 +286,7 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
       <Week2MissionPlaybookView
         participantId={participantId}
         squadName={internSquadName}
-        missionSlug={missionSlug || 'mission'}
+        missionSlug={missionSlug}
         playbookDay={resolvedPlaybookDay}
         calendarDay={playbookDayNumber}
         programWeek={entryWeek}
@@ -298,7 +298,7 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
           const next = new URLSearchParams(searchParams);
           next.set('mission', slug);
           if (missionDay) next.set('day', String(missionDay));
-          setSearchParams(next);
+          setSearchParams(next, { replace: true });
         }}
       />
     );

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Cloud, CloudOff, Loader2 } from 'lucide-react';
 import { formatWeek2SyncTime, getWeek2SyncMeta } from '../../lib/customerDiscovery/week2SyncStatus.js';
 
@@ -7,14 +7,10 @@ import { formatWeek2SyncTime, getWeek2SyncMeta } from '../../lib/customerDiscove
  * @param {{ participantId: string, syncing?: boolean, refreshKey?: number, className?: string }} props
  */
 export function Week2SyncStatus({ participantId, syncing = false, refreshKey = 0, className = '' }) {
-  const [, pollTick] = useState(0);
-  const meta = useMemo(() => getWeek2SyncMeta(participantId), [participantId, refreshKey, pollTick]);
-
-  useEffect(() => {
-    if (!meta.pendingCloud || syncing) return undefined;
-    const id = window.setInterval(() => pollTick((n) => n + 1), 2000);
-    return () => window.clearInterval(id);
-  }, [meta.pendingCloud, syncing]);
+  const meta = useMemo(
+    () => getWeek2SyncMeta(participantId),
+    [participantId, refreshKey],
+  );
 
   const savedLabel = formatWeek2SyncTime(meta.savedAt);
   const cloudLabel = formatWeek2SyncTime(meta.cloudSyncedAt);
