@@ -189,7 +189,7 @@ The Venture Blueprint is the platform operating system (not an LMS page). Define
 | Project | Path | Description |
 |---------|------|-------------|
 | **SPIKE Portal** | `/` (this repo root) | Venture incubator platform — playbook, blueprint, portfolio |
-| **SPIKE_LIFE** | [`SPIKE_LIFE/`](./SPIKE_LIFE/) | Major SPIKE initiative (bootstrap — see [`PRD_SPIKE_LIFE_V1.md`](./SPIKE_LIFE/PRD_SPIKE_LIFE_V1.md)) |
+| **SPIKE_LIFE** | [`SPIKE_LIFE/`](./SPIKE_LIFE/) | Financial Decision Simulator — see [`ARCHITECTURE_ALIGNMENT_MEMO.md`](./SPIKE_LIFE/docs/architecture/ARCHITECTURE_ALIGNMENT_MEMO.md) |
 
 ## Files
 

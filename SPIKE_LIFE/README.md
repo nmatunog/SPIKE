@@ -1,34 +1,32 @@
-# SPIKE_LIFE
+# SPIKE LIFE™
 
-Major initiative under the **SPIKE ASC Platform** (`/SPIKE`).
+Major initiative under the **SPIKE ASC Platform**.
 
-SPIKE_LIFE is a standalone application within the SPIKE monorepo. It shares the SPIKE brand system and can integrate with the main portal (auth, Supabase, Venture Blueprint) as the product scope is defined.
+SPIKE LIFE is the world's first **Financial Decision Simulator** — not a life game, budgeting app, or literacy quiz.
 
-## Stack
+## Architecture (start here)
 
-- **Frontend:** Vite + React + Tailwind CSS
-- **Data (planned):** Supabase — same project as SPIKE Portal or a dedicated schema
-- **Deploy (planned):** Cloudflare Pages subdomain under `1cma.online`
+| Document | Purpose |
+|----------|---------|
+| [`docs/architecture/ARCHITECTURE_ALIGNMENT_MEMO.md`](./docs/architecture/ARCHITECTURE_ALIGNMENT_MEMO.md) | **Synthesis & MVP scope** — approve before coding |
+| [`docs/architecture/A0_CORE_DESIGN_REORIENTATION.md`](./docs/architecture/A0_CORE_DESIGN_REORIENTATION.md) | Constitutional amendment (highest authority) |
+| [`docs/architecture/README.md`](./docs/architecture/README.md) | Full document registry & priority order |
 
-## Local development
+## Status
+
+**Architecture alignment** — documents ingested; awaiting memo approval before domain implementation.
+
+## Local development (bootstrap shell)
 
 ```bash
 cd SPIKE_LIFE
 npm install
-cp .env.example .env
-npm run dev
+npm run dev   # port 5174
 ```
 
-Dev server defaults to **http://localhost:5174** (SPIKE Portal uses 5173).
+The current Vite scaffold is a placeholder. MVP implementation begins with `@spike-life/domain` (TypeScript), not UI features.
 
-## Project docs
+## Parent platform
 
-| Document | Purpose |
-|----------|---------|
-| [`PRD_SPIKE_LIFE_V1.md`](./PRD_SPIKE_LIFE_V1.md) | Product requirements (draft) |
-| [`../README.md`](../README.md) | SPIKE Portal root |
-| [`../SPIKE_MASTER_ROADMAP.md`](../SPIKE_MASTER_ROADMAP.md) | Platform roadmap |
-
-## Status
-
-**Bootstrap** — project scaffold created. Define scope in the PRD before building features.
+- SPIKE Portal: [`../README.md`](../README.md)
+- SPIKE FNA (real client work) is a **separate bounded context** from SPIKE LIFE simulated FNA.
