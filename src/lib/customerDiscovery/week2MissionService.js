@@ -33,7 +33,7 @@ function exchangeReflectionComplete(state) {
 }
 
 /** @param {string} participantId @param {string} taskId */
-function isTaskComplete(participantId, taskId) {
+export function isTaskComplete(participantId, taskId) {
   const state = loadWeek2Discovery(participantId);
   switch (taskId) {
     case 'mission':

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { ArrowRight, BookOpen, Sparkles } from 'lucide-react';
 import { StudioShell } from '../../customerDiscovery/StudioShell.jsx';
 import { MissionTrackNav } from '../../customerDiscovery/MissionTrackNav.jsx';
@@ -24,6 +24,7 @@ import {
 import { getWeek2PhaseForDay } from '../../../lib/customerDiscovery/week2JourneyConstants.js';
 import { getParticipantSquad } from '../../../lib/cohortFormationService.js';
 import { Week2PrepareReviseNav } from '../../customerDiscovery/Week2PrepareReviseNav.jsx';
+import { SquadDataAdoptPrompt } from '../../customerDiscovery/SquadDataAdoptPrompt.jsx';
 import { PlaybookDayClosingReflectionBlock } from '../PlaybookDayClosingReflectionBlock.jsx';
 import { PlaybookReflectionNudge } from '../PlaybookReflectionNudge.jsx';
 
@@ -66,12 +67,12 @@ export function Week2MissionPlaybookView({
 
   const day = Math.max(1, Math.min(5, playbookDay));
 
-  const memberNames = (() => {
+  const memberNames = useMemo(() => {
     const squad = getParticipantSquad(participantId);
     const ids = (squad?.members ?? []).map((m) => m.participantId).filter(Boolean);
     const nameById = Object.fromEntries(interns.map((i) => [i.id, i.name]));
     return Object.fromEntries(ids.map((id) => [id, nameById[id] || `Member ${String(id).slice(0, 6)}`]));
-  })();
+  }, [participantId, interns]);
 
   const slug = missionSlug?.trim()
     ? missionSlug.trim()
@@ -200,6 +201,12 @@ export function Week2MissionPlaybookView({
         </p>
         <p className="text-xs font-bold tabular-nums text-spike">{progressPct}% week complete</p>
       </div>
+
+      <SquadDataAdoptPrompt
+        participantId={participantId}
+        memberNames={memberNames}
+        onAdopted={refresh}
+      />
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(180px,220px)_1fr]">
         <aside className="space-y-6">
