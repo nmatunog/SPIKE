@@ -4,7 +4,7 @@
 import { loadWeek2Discovery, saveWeek2Discovery } from './week2DiscoveryStorage.js';
 import { mergeWeek2Interviews } from './week2DiscoveryMerge.js';
 import { getSquadMemberIds } from './week2SquadEvidenceService.js';
-import { isTaskComplete } from './week2MissionService.js';
+import { isTaskComplete, week2MissionProgressPct } from './week2MissionService.js';
 import { allWeek2MissionTasks } from './week2JourneyConstants.js';
 import { getExchangeReflectionText } from './week2DiscoveryService.js';
 import { syncWeek2Day1Portfolio, syncWeek2PortfolioArtifacts } from './week2PortfolioSync.js';
@@ -121,6 +121,7 @@ export function deriveSquadDataAdoptOffer(participantId, memberNames = {}) {
   ));
 
   if (richest.memberId === participantId) return null;
+  if (isWeek2DiscoveryEmpty(participantId)) return null;
 
   const taskGap = richest.score.filled - self.score.filled;
   const fieldGap = richest.score.fieldCount - self.score.fieldCount;
@@ -170,8 +171,9 @@ function mergePitchOutline(target, source) {
  * Copy richer squadmate discovery fields into the current intern's save.
  * @param {string} participantId
  * @param {string} sourceMemberId
+ * @param {{ skipCloudSync?: boolean }} [opts]
  */
-export function adoptSquadDiscoveryFromMember(participantId, sourceMemberId) {
+export function adoptSquadDiscoveryFromMember(participantId, sourceMemberId, opts = {}) {
   if (!participantId || !sourceMemberId || participantId === sourceMemberId) {
     return loadWeek2Discovery(participantId);
   }
@@ -258,10 +260,99 @@ export function adoptSquadDiscoveryFromMember(participantId, sourceMemberId) {
     patch.weekWrapCompletedAt = target.weekWrapCompletedAt || source.weekWrapCompletedAt || now;
   }
 
-  const next = saveWeek2Discovery(participantId, patch);
+  const next = saveWeek2Discovery(participantId, patch, { skipCloudSync: opts.skipCloudSync ?? false });
   syncWeek2PortfolioArtifacts(participantId);
   if (next.guideCompletedAt || next.missionAcknowledged) {
     syncWeek2Day1Portfolio(participantId);
   }
   return next;
+}
+
+/** @param {string} participantId */
+export function isWeek2DiscoveryEmpty(participantId) {
+  const score = scoreWeek2DiscoveryRichnessForMember(participantId);
+  return score.filled === 0 && score.fieldCount === 0;
+}
+
+/** @param {string} participantId */
+export function isWeek2DiscoveryDay1Complete(participantId) {
+  return week2MissionProgressPct(participantId, 1) === 100;
+}
+
+/**
+ * When one squadmate has Day 1 complete and others are empty, copy discovery into empty accounts.
+ * @param {string} triggerParticipantId
+ * @param {{ authUserId?: string | null }} [opts]
+ */
+export function autoHydrateEmptySquadMembers(triggerParticipantId, opts = {}) {
+  const memberIds = getSquadMemberIds(triggerParticipantId).filter(Boolean);
+  if (memberIds.length < 2) {
+    return { adoptedMemberIds: [], sourceMemberId: null };
+  }
+
+  const rows = memberIds.map((id) => ({
+    id,
+    score: scoreWeek2DiscoveryRichnessForMember(id),
+    day1Pct: week2MissionProgressPct(id, 1),
+  }));
+
+  const richest = rows.reduce((best, row) => (
+    row.day1Pct > best.day1Pct
+    || (row.day1Pct === best.day1Pct && row.score.fieldCount > best.score.fieldCount)
+    || (row.day1Pct === best.day1Pct && row.score.fieldCount === best.score.fieldCount && row.score.filled > best.score.filled)
+      ? row
+      : best
+  ));
+
+  if (richest.day1Pct < 100 && richest.score.fieldCount < 8) {
+    return { adoptedMemberIds: [], sourceMemberId: null };
+  }
+
+  const emptyIds = rows
+    .filter((row) => row.id !== richest.id && isWeek2DiscoveryEmpty(row.id))
+    .map((row) => row.id);
+
+  if (!emptyIds.length) {
+    return { adoptedMemberIds: [], sourceMemberId: richest.id };
+  }
+
+  const authUserId = opts.authUserId ?? null;
+  /** @type {string[]} */
+  const adoptedMemberIds = [];
+
+  for (const targetId of emptyIds) {
+    const skipCloudSync = authUserId ? targetId !== authUserId : true;
+    adoptSquadDiscoveryFromMember(targetId, richest.id, { skipCloudSync });
+    adoptedMemberIds.push(targetId);
+  }
+
+  return { adoptedMemberIds, sourceMemberId: richest.id };
+}
+
+/**
+ * Local adopt + cloud sync for self + server propagate for squadmates.
+ * @param {string} triggerParticipantId
+ */
+export async function autoHydrateAndSyncSquadWeek2Discovery(triggerParticipantId) {
+  const { supabase, isSupabaseConfigured } = await import('../../supabaseClient.js');
+  let authUserId = null;
+  if (isSupabaseConfigured && supabase) {
+    const { data } = await supabase.auth.getSession();
+    authUserId = data.session?.user?.id ?? null;
+  }
+
+  const local = autoHydrateEmptySquadMembers(triggerParticipantId, { authUserId });
+  const { syncWeek2DiscoveryToCloud } = await import('./week2DiscoverySync.js');
+
+  if (authUserId && local.adoptedMemberIds.includes(authUserId)) {
+    await syncWeek2DiscoveryToCloud(authUserId, loadWeek2Discovery(authUserId));
+  }
+
+  if (isSupabaseConfigured && supabase && authUserId) {
+    await supabase.rpc('propagate_week2_discovery_to_empty_squad_mates').catch((err) => {
+      console.warn('[week2SquadAdopt] propagate RPC failed:', err?.message ?? err);
+    });
+  }
+
+  return local;
 }

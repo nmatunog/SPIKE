@@ -5,6 +5,7 @@ import {
   adoptSquadDiscoveryFromMember,
   deriveSquadDataAdoptOffer,
   dismissSquadDataAdoptPrompt,
+  isWeek2DiscoveryEmpty,
 } from '../../lib/customerDiscovery/week2SquadDataAdoptService.js';
 
 /**
@@ -31,6 +32,10 @@ export function SquadDataAdoptPrompt({ participantId, memberNames = {}, onAdopte
       .finally(() => {
         if (cancelled) return;
         setSyncing(false);
+        if (isWeek2DiscoveryEmpty(participantId)) {
+          setOffer(null);
+          return;
+        }
         setOffer(deriveSquadDataAdoptOffer(participantId, memberNames));
       });
     return () => {

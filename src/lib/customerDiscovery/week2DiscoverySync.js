@@ -6,6 +6,7 @@ import { isMockUserId } from '../mockAuth.js';
 import { loadWeek2Discovery, saveWeek2Discovery } from './week2DiscoveryStorage.js';
 import { mergeWeek2DiscoveryStates } from './week2DiscoveryMerge.js';
 import { getSquadMemberIds } from './week2SquadEvidenceService.js';
+import { week2MissionProgressPct } from './week2MissionService.js';
 
 export const WEEK2_DISCOVERY_WEEK_ID = 'week-segment-1-2';
 export const WEEK2_DISCOVERY_ITEM_ID = 'week2-discovery';
@@ -37,6 +38,16 @@ export async function syncWeek2DiscoveryToCloud(participantId, state) {
 
   const cloudSyncedAt = new Date().toISOString();
   saveWeek2Discovery(participantId, { cloudSyncedAt }, { skipCloudSync: true });
+
+  if (week2MissionProgressPct(participantId, 1) === 100) {
+    const { supabase, isSupabaseConfigured } = await import('../../supabaseClient.js');
+    if (isSupabaseConfigured && supabase) {
+      await supabase.rpc('propagate_week2_discovery_to_empty_squad_mates').catch((err) => {
+        console.warn('[week2Discovery] propagate RPC failed:', err?.message ?? err);
+      });
+    }
+  }
+
   return cloudSyncedAt;
 }
 
@@ -105,10 +116,15 @@ export async function hydrateParticipantWeek2Discovery(participantId, opts = {})
   return hydrateWeek2DiscoveryFromCloud(participantId, { force: opts.force ?? false });
 }
 
-/** Hydrate all squad members before aggregating interview evidence. */
+/** Hydrate all squad members; auto-fill empty accounts from the fullest squadmate. */
 export async function hydrateSquadWeek2Discovery(participantId) {
   const memberIds = getSquadMemberIds(participantId);
-  await Promise.all(memberIds.map((id) => hydrateParticipantWeek2Discovery(id)));
+  await Promise.all(memberIds.map((id) => hydrateParticipantWeek2Discovery(id, { force: true })));
+
+  const { autoHydrateAndSyncSquadWeek2Discovery } = await import('./week2SquadDataAdoptService.js');
+  await autoHydrateAndSyncSquadWeek2Discovery(participantId);
+
+  await Promise.all(memberIds.map((id) => hydrateParticipantWeek2Discovery(id, { force: true })));
 }
 
 /** @param {string} participantId */
