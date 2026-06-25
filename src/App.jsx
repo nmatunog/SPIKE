@@ -6,8 +6,12 @@ import {
   clearChunkReloadFlag,
   lazyWithChunkRecovery,
 } from './lib/chunkLoadRecovery.js';
+import { ROUTES } from './routes/paths.js';
 
 const SpikeMasterPortal = lazy(lazyWithChunkRecovery(() => import('./SpikeMasterPortal.jsx')));
+const PitchPanelGuestPage = lazy(
+  lazyWithChunkRecovery(() => import('./pages/pitchPanel/PitchPanelGuestPage.jsx')),
+);
 
 function App() {
   useEffect(() => {
@@ -19,6 +23,7 @@ function App() {
       <BrowserRouter>
         <Suspense fallback={<PageLoader label="Loading SPIKE…" />}>
           <Routes>
+            <Route path={ROUTES.pitchPanel} element={<PitchPanelGuestPage />} />
             <Route path="/*" element={<SpikeMasterPortal />} />
           </Routes>
         </Suspense>
