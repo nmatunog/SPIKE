@@ -226,6 +226,19 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
       return;
     }
 
+    // Explicit ?day= wins — fix mission for that day instead of snapping back (e.g. Day 3 readiness slug + day=4).
+    if (urlPlaybookDay != null) {
+      const active = getActiveWeek2Task(participantId, urlPlaybookDay);
+      const key = `missionfix:${urlPlaybookDay}:${active.slug}`;
+      if (missionNormalizeRef.current === key) return;
+      missionNormalizeRef.current = key;
+      apply((params) => {
+        params.set('day', String(urlPlaybookDay));
+        params.set('mission', active.slug);
+      });
+      return;
+    }
+
     for (let d = 1; d <= 5; d += 1) {
       if (isWeek2MissionSlugForDay(missionSlug, d)) {
         const key = `dayfix:${missionSlug}:${d}`;
