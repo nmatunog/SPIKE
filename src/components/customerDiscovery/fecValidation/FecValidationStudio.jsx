@@ -52,18 +52,43 @@ export function FecValidationStudio({ participantId, stepSlug, onSaved, memberNa
         participantId={participantId}
         memberNames={memberNames}
         onStart={() => onNavigate?.(studio.activePhase.slug)}
+        onNavigate={onNavigate}
       />
     );
   }
 
   if (slug === 'fec-studio-1') {
-    return <Studio1Evidence studio={studio} participantId={participantId} onSaved={refresh} onNext={() => onNavigate?.('fec-studio-2')} />;
+    return (
+      <Studio1Evidence
+        studio={studio}
+        participantId={participantId}
+        onSaved={refresh}
+        onNext={() => onNavigate?.('fec-studio-2')}
+        onNavigate={onNavigate}
+      />
+    );
   }
   if (slug === 'fec-studio-2') {
-    return <Studio2Evolution studio={studio} participantId={participantId} onSaved={refresh} onNext={() => onNavigate?.('fec-studio-3')} />;
+    return (
+      <Studio2Evolution
+        studio={studio}
+        participantId={participantId}
+        onSaved={refresh}
+        onNext={() => onNavigate?.('fec-studio-3')}
+        onNavigate={onNavigate}
+      />
+    );
   }
   if (slug === 'fec-studio-3') {
-    return <Studio3NextSteps studio={studio} participantId={participantId} onSaved={refresh} onFriday={() => onNavigate?.('market-validation-pitch', 5)} />;
+    return (
+      <Studio3NextSteps
+        studio={studio}
+        participantId={participantId}
+        onSaved={refresh}
+        onFriday={() => onNavigate?.('market-validation-pitch', 5)}
+        onNavigate={onNavigate}
+      />
+    );
   }
 
   return (
@@ -72,14 +97,59 @@ export function FecValidationStudio({ participantId, stepSlug, onSaved, memberNa
       participantId={participantId}
       memberNames={memberNames}
       onStart={() => onNavigate?.(studio.activePhase.slug)}
+      onNavigate={onNavigate}
     />
   );
 }
 
-/** @param {{ studio: ReturnType<typeof getFecStudioState>, participantId: string, memberNames: Record<string, string>, onStart: () => void }} props */
-function FecStudioLanding({ studio, participantId, memberNames, onStart }) {
+/** @param {{ phases: Array<{ id: string, slug: string, studioLabel: string, title: string, done?: boolean }>, activeSlug: string, onNavigate?: (slug: string) => void }} props */
+function StudioPhaseNav({ phases, activeSlug, onNavigate }) {
+  return (
+    <nav aria-label="FEC studio path" className="space-y-2">
+      <p className="text-sm font-bold uppercase tracking-wider text-slate-500">Venture evolution path</p>
+      <ol className="space-y-2">
+        {phases.map((phase, idx) => {
+          const isActive = phase.slug === activeSlug;
+          const isNext = !phase.done && phases.findIndex((p) => !p.done) === idx;
+          return (
+            <li key={phase.id}>
+              <button
+                type="button"
+                onClick={() => onNavigate?.(phase.slug)}
+                className={`flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-left transition hover:border-spike/40 ${
+                  isActive
+                    ? 'border-spike bg-spike/10 ring-1 ring-spike/20'
+                    : phase.done
+                      ? 'border-emerald-200 bg-emerald-50'
+                      : isNext
+                        ? 'border-spike/30 bg-spike/5'
+                        : 'border-slate-200 bg-white'
+                }`}
+              >
+                <span className="text-xs font-bold text-spike">{phase.studioLabel}</span>
+                <span className="flex-1 font-medium text-slate-900">{phase.title}</span>
+                {phase.done ? (
+                  <Check size={16} className="shrink-0 text-emerald-600" aria-hidden />
+                ) : isActive ? (
+                  <span className="text-xs font-semibold text-spike">You are here</span>
+                ) : (
+                  <ArrowRight size={16} className="shrink-0 text-slate-400" aria-hidden />
+                )}
+              </button>
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
+  );
+}
+
+/** @param {{ studio: ReturnType<typeof getFecStudioState>, participantId: string, memberNames: Record<string, string>, onStart: () => void, onNavigate?: (slug: string) => void }} props */
+function FecStudioLanding({ studio, participantId, memberNames, onStart, onNavigate }) {
   const { lab, readiness, clarity, phases } = studio;
   const pctcDone = readiness.pctcComplete;
+  const activePhase = phases.find((p) => !p.done) ?? phases[phases.length - 1];
+  const evidenceLow = lab.evidence.interviewCount < 3;
 
   return (
     <div className="space-y-8 pb-8">
@@ -112,36 +182,50 @@ function FecStudioLanding({ studio, participantId, memberNames, onStart }) {
         <SquadRolesBanner roles={lab.roles} memberNames={memberNames} currentParticipantId={participantId} />
       </section>
 
-      <section className="space-y-3">
-        <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500">Venture evolution path</h2>
-        <ol className="space-y-2">
-          {phases.map((phase, idx) => (
-            <li
-              key={phase.id}
-              className={`flex items-center gap-3 rounded-xl border px-4 py-3 ${
-                phase.done ? 'border-emerald-200 bg-emerald-50' : idx === phases.findIndex((p) => !p.done) ? 'border-spike/30 bg-spike/5' : 'border-slate-200 bg-white'
-              }`}
-            >
-              <span className="text-xs font-bold text-spike">{phase.studioLabel}</span>
-              <span className="flex-1 font-medium text-slate-900">{phase.title}</span>
-              {phase.done ? <Check size={16} className="text-emerald-600" /> : null}
-            </li>
-          ))}
+      <section className="rounded-xl border border-indigo-100 bg-indigo-50/80 px-4 py-4 text-sm text-indigo-950">
+        <p className="font-semibold">How to encode your FEC Canvas today</p>
+        <ol className="mt-2 list-decimal space-y-1 pl-5 text-indigo-900">
+          <li>Open <strong>Studio 1</strong> — review interview evidence and approve the market summary.</li>
+          <li>Open <strong>Studio 2</strong> — for each FEC box, edit the Week 2 draft and tap <strong>Approve → update FEC</strong>.</li>
+          <li>Open <strong>Studio 3</strong> — lock build readiness and your Friday pitch draft.</li>
         </ol>
+        <p className="mt-2 text-xs text-indigo-800">You do not type into the canvas grid directly — approvals write into your FEC automatically.</p>
       </section>
+
+      {evidenceLow ? (
+        <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+          Your squad has <strong>{lab.evidence.interviewCount}</strong> encoded interviews so far. Finish Day 2 interviews first for stronger AI drafts — you can still start Studio 1.
+        </p>
+      ) : null}
+
+      {!pctcDone ? (
+        <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+          Complete Wednesday&apos;s <strong>Professional Readiness Mission</strong> when you can — the lab stays open while you work.
+        </p>
+      ) : null}
+
+      <StudioPhaseNav phases={phases} activeSlug="" onNavigate={onNavigate} />
+
+      <button
+        type="button"
+        onClick={onStart}
+        className="spike-btn-primary inline-flex min-h-[48px] w-full items-center justify-center gap-2 text-base sm:w-auto"
+      >
+        Open {activePhase.studioLabel} — {activePhase.title}
+        <ArrowRight size={18} aria-hidden />
+      </button>
 
       <FecValidationCanvas boxScores={lab.fec.boxScores} animate={clarity.delta > 0} />
 
-      <button type="button" onClick={onStart} className="spike-btn-primary inline-flex min-h-[48px] items-center gap-2 text-base">
-        Start venture upgrade
-        <ArrowRight size={18} />
-      </button>
+      <p className="text-center text-xs text-slate-500">
+        Or use <strong>Mission track</strong> on the right — Learn → Evolve → Act.
+      </p>
     </div>
   );
 }
 
-/** @param {{ studio: ReturnType<typeof getFecStudioState>, participantId: string, onSaved: () => void, onNext: () => void }} props */
-function Studio1Evidence({ studio, participantId, onSaved, onNext }) {
+/** @param {{ studio: ReturnType<typeof getFecStudioState>, participantId: string, onSaved: () => void, onNext: () => void, onNavigate?: (slug: string) => void }} props */
+function Studio1Evidence({ studio, participantId, onSaved, onNext, onNavigate }) {
   const board = studio.evidenceBoard;
   const [summary, setSummary] = useState(board.marketSummary);
   const [starred, setStarred] = useState(board.starredQuotes ?? []);
@@ -161,7 +245,14 @@ function Studio1Evidence({ studio, participantId, onSaved, onNext }) {
 
   return (
     <div className="space-y-8 pb-8">
+      <StudioPhaseNav phases={studio.phases} activeSlug="fec-studio-1" onNavigate={onNavigate} />
       <StudioHeader phase={FEC_STUDIO_PHASES[0]} />
+
+      {board.quotes.length === 0 ? (
+        <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+          No interview quotes yet — go back to <strong>Day 2 Discover</strong> and encode interviews, then return here. You can still edit the market summary below and approve.
+        </p>
+      ) : null}
 
       <section className="space-y-4">
         <h3 className="text-lg font-bold text-slate-900">Top quotes</h3>
@@ -212,21 +303,22 @@ function Studio1Evidence({ studio, participantId, onSaved, onNext }) {
 
       <button
         type="button"
-        className="spike-btn-primary"
+        className="spike-btn-primary w-full sm:w-auto"
         onClick={() => {
           approveEvidenceBoard(participantId, { marketSummary: summary, starredQuotes: starred });
           onSaved();
           onNext();
         }}
       >
-        Approve evidence board → save to portfolio
+        Approve evidence board → save to FEC &amp; portfolio
       </button>
+      <p className="text-xs text-slate-500">This encodes <strong>Who we serve</strong> on your FEC Canvas and unlocks Studio 2.</p>
     </div>
   );
 }
 
-/** @param {{ studio: ReturnType<typeof getFecStudioState>, participantId: string, onSaved: () => void, onNext: () => void }} props */
-function Studio2Evolution({ studio, participantId, onSaved, onNext }) {
+/** @param {{ studio: ReturnType<typeof getFecStudioState>, participantId: string, onSaved: () => void, onNext: () => void, onNavigate?: (slug: string) => void }} props */
+function Studio2Evolution({ studio, participantId, onSaved, onNext, onNavigate }) {
   const [activeBox, setActiveBox] = useState(0);
   const boxes = studio.evolutionBoxes;
   const box = boxes[activeBox];
@@ -251,7 +343,12 @@ function Studio2Evolution({ studio, participantId, onSaved, onNext }) {
 
   return (
     <div className="space-y-8 pb-8">
+      <StudioPhaseNav phases={studio.phases} activeSlug="fec-studio-2" onNavigate={onNavigate} />
       <StudioHeader phase={FEC_STUDIO_PHASES[1]} />
+
+      <p className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+        For each FEC box: read Week 1 vs Week 2, edit the draft if needed, choose Keep / Refine / Rebuild, then tap <strong>Approve → update FEC</strong>.
+      </p>
 
       <section className="rounded-2xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-white p-6 text-center">
         <p className="text-xs font-bold uppercase text-slate-500">Canvas Clarity Score</p>
@@ -343,8 +440,8 @@ function Studio2Evolution({ studio, participantId, onSaved, onNext }) {
   );
 }
 
-/** @param {{ studio: ReturnType<typeof getFecStudioState>, participantId: string, onSaved: () => void, onFriday: () => void }} props */
-function Studio3NextSteps({ studio, participantId, onSaved, onFriday }) {
+/** @param {{ studio: ReturnType<typeof getFecStudioState>, participantId: string, onSaved: () => void, onFriday: () => void, onNavigate?: (slug: string) => void }} props */
+function Studio3NextSteps({ studio, participantId, onSaved, onFriday, onNavigate }) {
   const [strategic, setStrategic] = useState(studio.lab.fec.steps['fec-step-5']?.approvedStatement ?? '');
   const [nextExp, setNextExp] = useState(studio.nextExperiment || 'Run a protection-gap conversation with 3 new prospects.');
   const [buildDir, setBuildDir] = useState(studio.week3BuildDirection || 'Prototype Week 3 build around validated problem and UVP v2.');
@@ -357,6 +454,7 @@ function Studio3NextSteps({ studio, participantId, onSaved, onFriday }) {
 
   return (
     <div className="space-y-8 pb-8">
+      <StudioPhaseNav phases={studio.phases} activeSlug="fec-studio-3" onNavigate={onNavigate} />
       <StudioHeader phase={FEC_STUDIO_PHASES[2]} />
 
       <p className="text-lg font-semibold text-slate-900">Now that the market has spoken… what should happen next?</p>
