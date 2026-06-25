@@ -19,10 +19,11 @@ import { loadWeek2Discovery } from './week2DiscoveryStorage.js';
 import { getReadinessMissionState } from './week2ReadinessMissionService.js';
 import { syncWeek2PortfolioArtifacts } from './week2PortfolioSync.js';
 import { syncFecValidationToCloud } from './week2FecValidationSync.js';
+import { getMemberRawEvidenceDraft } from './week2EvidenceBoardCandidates.js';
 import {
-  getEvidenceBoardChoiceContext,
-  getMemberEvidenceBoardSource,
-} from './week2EvidenceBoardCandidates.js';
+  getStudio2ChoiceContext,
+  getStudio3ChoiceContext,
+} from './week2FecStudioDraftCandidates.js';
 
 /** @param {string} participantId */
 function squadKeyFor(participantId) {
@@ -61,7 +62,7 @@ function padTopThree(ranked) {
 }
 
 /** @param {string} participantId */
-export function getEvidenceBoardPayload(participantId, memberNames = {}) {
+export function getEvidenceBoardPayload(participantId) {
   const lab = getFecValidationLabState(participantId);
   const fec = lab.fec;
   const interviews = aggregateSquadInterviews(lab.evidence.memberIds);
@@ -103,18 +104,14 @@ export function getEvidenceBoardPayload(participantId, memberNames = {}) {
     const ranked = padTopThree(rankedRows);
     return saved.map((slot, index) => {
       const savedText = String(slot?.text ?? '').trim();
-      const rankedText = String(ranked[index]?.text ?? '').trim();
       if (!savedText) return ranked[index] ?? slot;
-      if (!rankedText) return slot;
-      return savedText.length >= rankedText.length
-        ? { ...slot, text: savedText }
-        : { ...ranked[index], text: rankedText };
+      return slot;
     });
   };
 
   const saved = fec.studio1ApprovedAt && fec.evidenceBoard
     ? fec.evidenceBoard
-    : getEvidenceBoardChoiceContext(participantId, memberNames).activeBoard;
+    : getMemberRawEvidenceDraft(fec, participantId);
 
   const topGoals = mergeSavedWithRanked(saved.topGoals, rankedGoals);
   const topProblems = mergeSavedWithRanked(saved.topProblems, rankedProblems);
@@ -140,7 +137,6 @@ export function getEvidenceBoardPayload(participantId, memberNames = {}) {
     marketSummary,
     interviewCount: lab.evidence.interviewCount,
     target: lab.evidence.target,
-    sourceChoice: getMemberEvidenceBoardSource(fec, participantId),
   };
 }
 
@@ -236,8 +232,9 @@ export function getFecStudioState(participantId, memberNames = {}) {
     readiness,
     clarity,
     evolutionBoxes,
-    evidenceBoard: getEvidenceBoardPayload(participantId, memberNames),
-    evidenceBoardChoice: getEvidenceBoardChoiceContext(participantId, memberNames),
+    evidenceBoard: getEvidenceBoardPayload(participantId),
+    studio2Choice: getStudio2ChoiceContext(participantId, memberNames),
+    studio3Choice: getStudio3ChoiceContext(participantId, memberNames),
     phases,
     studioPct,
     activePhase,
@@ -258,7 +255,6 @@ export function getFecStudioState(participantId, memberNames = {}) {
  *   topProblems: Array<{ text: string, count: number }>,
  *   topOpportunities: Array<{ text: string, count: number }>,
  *   starredQuotes?: string[],
- *   source?: 'recent' | 'filled',
  * }} input
  */
 export function saveEvidenceBoardDraft(participantId, input) {
@@ -273,17 +269,11 @@ export function saveEvidenceBoardDraft(participantId, input) {
     draftUpdatedAt: now,
     draftBy: participantId,
   };
-  const source = input.source ?? getMemberEvidenceBoardSource(current, participantId);
   const next = saveFecValidation(key, {
     evidenceBoardDraftsByMember: {
       ...(current.evidenceBoardDraftsByMember ?? {}),
       [participantId]: draft,
     },
-    evidenceBoardSourceByMember: {
-      ...(current.evidenceBoardSourceByMember ?? {}),
-      [participantId]: source,
-    },
-    evidenceBoard: draft,
   });
   void syncFecValidationToCloud(key, next, squadEvidenceSummary(participantId).memberIds).catch(() => {});
   return next;

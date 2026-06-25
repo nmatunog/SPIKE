@@ -8,8 +8,12 @@ import { getSquadMemberIds } from './week2SquadEvidenceService.js';
 
 import {
   mergeMemberEvidenceDraftMaps,
-  mergeMemberEvidenceSourceMaps,
 } from './week2EvidenceBoardCandidates.js';
+import {
+  mergeStudio2DraftMaps,
+  mergeStudio3DraftMaps,
+  mergeStudioSourceMaps,
+} from './week2FecStudioDraftCandidates.js';
 
 const WEEK_ID = 'week-segment-1-2';
 const ITEM_PREFIX = 'week2-fec-validation';
@@ -73,7 +77,9 @@ export function mergeFecValidationStates(local, remote) {
     pitchSlides: { ...(local.pitchSlides ?? {}), ...(remote.pitchSlides ?? {}) },
     evidenceBoard: approvedBoard,
     evidenceBoardDraftsByMember: mergeMemberEvidenceDraftMaps(local, remote),
-    evidenceBoardSourceByMember: mergeMemberEvidenceSourceMaps(local, remote),
+    studio2DraftsByMember: mergeStudio2DraftMaps(local, remote),
+    studio3DraftsByMember: mergeStudio3DraftMaps(local, remote),
+    ...mergeStudioSourceMaps(local, remote),
     updatedAt: remoteAt >= localAt ? remoteAt : localAt,
   };
 }
@@ -102,7 +108,9 @@ export async function hydrateFecValidationFromCloud(participantId, squadKey, opt
     return saveFecValidation(key, {
       ...merged,
       evidenceBoardDraftsByMember: mergeMemberEvidenceDraftMaps(merged, local),
-      evidenceBoardSourceByMember: mergeMemberEvidenceSourceMaps(merged, local),
+      studio2DraftsByMember: mergeStudio2DraftMaps(merged, local),
+      studio3DraftsByMember: mergeStudio3DraftMaps(merged, local),
+      ...mergeStudioSourceMaps(merged, local),
       updatedAt: localAt,
     });
   }
@@ -141,7 +149,9 @@ export async function hydrateSquadFecValidation(participantId, opts = {}) {
     merged = {
       ...merged,
       evidenceBoardDraftsByMember: mergeMemberEvidenceDraftMaps(merged, local),
-      evidenceBoardSourceByMember: mergeMemberEvidenceSourceMaps(merged, local),
+      studio2DraftsByMember: mergeStudio2DraftMaps(merged, local),
+      studio3DraftsByMember: mergeStudio3DraftMaps(merged, local),
+      ...mergeStudioSourceMaps(merged, local),
     };
   }
 

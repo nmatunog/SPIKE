@@ -33,8 +33,11 @@
  * @property {string} [nextExperiment]
  * @property {string} [week3BuildDirection]
  * @property {string} [buildReadiness]
- * @property {Record<string, import('./week2EvidenceBoardCandidates.js').EvidenceBoardDraft>} [evidenceBoardDraftsByMember]
- * @property {Record<string, 'recent' | 'filled'>} [evidenceBoardSourceByMember]
+ * @property {Record<string, import('./week2EvidenceBoardCandidatesCore.js').EvidenceBoardDraft>} [evidenceBoardDraftsByMember]
+ * @property {Record<string, import('./week2FecStudioDraftCandidates.js').Studio2MemberDraft>} [studio2DraftsByMember]
+ * @property {Record<string, import('./week2FecStudioDraftCandidates.js').Studio3MemberDraft>} [studio3DraftsByMember]
+ * @property {Record<string, 'recent' | 'filled'>} [studio2SourceByMember]
+ * @property {Record<string, 'recent' | 'filled'>} [studio3SourceByMember]
  */
 
 export {};

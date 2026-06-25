@@ -9,7 +9,11 @@ import {
   getFecStudioState,
   saveEvidenceBoardDraft,
 } from '../../../lib/customerDiscovery/week2FecStudioService.js';
-import { setMemberEvidenceBoardSource } from '../../../lib/customerDiscovery/week2EvidenceBoardCandidates.js';
+import {
+  saveStudio2Draft,
+  saveStudio3Draft,
+  setMemberStudioDraftSource,
+} from '../../../lib/customerDiscovery/week2FecStudioDraftCandidates.js';
 import { FEC_STUDIO_PHASES, PITCH_SLIDE_KEYS } from '../../../lib/customerDiscovery/week2FecValidationConstants.js';
 import { FecValidationCanvas, SquadRolesBanner } from './FecValidationShared.jsx';
 import { hydrateSquadFecValidation } from '../../../lib/customerDiscovery/week2FecValidationSync.js';
@@ -229,8 +233,6 @@ function FecStudioLanding({ studio, participantId, memberNames, onStart, onNavig
 /** @param {{ studio: ReturnType<typeof getFecStudioState>, participantId: string, onSaved: () => void, onNext: () => void, onNavigate?: (slug: string) => void }} props */
 function Studio1Evidence({ studio, participantId, onSaved, onNext, onNavigate }) {
   const board = studio.evidenceBoard;
-  const choice = studio.evidenceBoardChoice;
-  const [sourceChoice, setSourceChoice] = useState(choice?.activeSource ?? 'filled');
   const [topGoals, setTopGoals] = useState(board.topGoals);
   const [topProblems, setTopProblems] = useState(board.topProblems);
   const [topOpportunities, setTopOpportunities] = useState(board.topOpportunities);
@@ -239,28 +241,12 @@ function Studio1Evidence({ studio, participantId, onSaved, onNext, onNavigate })
   const skipDraftSaveRef = useRef(false);
 
   useEffect(() => {
-    setSourceChoice(choice?.activeSource ?? 'filled');
-  }, [choice?.activeSource]);
-
-  useEffect(() => {
     skipDraftSaveRef.current = true;
     setTopGoals(board.topGoals);
     setTopProblems(board.topProblems);
     setTopOpportunities(board.topOpportunities);
     setStarred(board.starredQuotes ?? []);
   }, [participantId, board.topGoals, board.topProblems, board.topOpportunities, board.starredQuotes]);
-
-  function applySource(source) {
-    if (!choice || choice.locked) return;
-    const candidate = source === 'recent' ? choice.recent : choice.filled;
-    skipDraftSaveRef.current = true;
-    setSourceChoice(source);
-    setTopGoals(candidate.board.topGoals);
-    setTopProblems(candidate.board.topProblems);
-    setTopOpportunities(candidate.board.topOpportunities);
-    setStarred(candidate.board.starredQuotes ?? []);
-    setMemberEvidenceBoardSource(participantId, source);
-  }
 
   useEffect(() => {
     const onVisible = () => {
@@ -284,13 +270,12 @@ function Studio1Evidence({ studio, participantId, onSaved, onNext, onNavigate })
         topProblems,
         topOpportunities,
         starredQuotes: starred,
-        source: sourceChoice,
       });
     }, 1200);
     return () => {
       if (draftTimerRef.current) window.clearTimeout(draftTimerRef.current);
     };
-  }, [participantId, topGoals, topProblems, topOpportunities, starred, sourceChoice]);
+  }, [participantId, topGoals, topProblems, topOpportunities, starred]);
 
   function toggleStar(quote) {
     setStarred((prev) => {
@@ -310,20 +295,12 @@ function Studio1Evidence({ studio, participantId, onSaved, onNext, onNavigate })
       <StudioHeader phase={FEC_STUDIO_PHASES[0]} />
 
       <p className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-        Review squad interview evidence. Choose which squad save to start from, edit if needed, then approve to encode <strong>Who we serve</strong> on your FEC Canvas.
+        Capture <strong>your raw Top 3</strong> from squad interviews (empty slots are seeded from interview data). Edits save under your account. Approve when ready to encode <strong>Who we serve</strong> on the FEC.
       </p>
 
-      {choice && !choice.locked ? (
-        <EvidenceBoardSourcePicker
-          choice={choice}
-          activeSource={sourceChoice}
-          onSelect={applySource}
-        />
-      ) : null}
-
-      {choice?.locked ? (
+      {studio.phases[0]?.done ? (
         <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
-          Evidence board approved for your squad — fields below are locked for Studio 1.
+          Evidence board approved for your squad — Studio 1 fields are locked.
         </p>
       ) : null}
 
@@ -396,22 +373,75 @@ function Studio1Evidence({ studio, participantId, onSaved, onNext, onNavigate })
   );
 }
 
+/** @param {ReturnType<typeof getFecStudioState>} studio */
+function buildInitialStudio2Boxes(studio) {
+  const fromDraft = studio.studio2Choice?.activeDraft?.boxes ?? {};
+  /** @type {Record<string, { week2Text: string, verdict: string }>} */
+  const out = {};
+  for (const box of studio.evolutionBoxes) {
+    const saved = fromDraft[box.boxId];
+    out[box.boxId] = {
+      week2Text: saved?.week2Text || box.week2 || box.week2Suggested || '',
+      verdict: saved?.verdict || box.verdict || 'keep',
+    };
+  }
+  return out;
+}
+
 /** @param {{ studio: ReturnType<typeof getFecStudioState>, participantId: string, onSaved: () => void, onNext: () => void, onNavigate?: (slug: string) => void }} props */
 function Studio2Evolution({ studio, participantId, onSaved, onNext, onNavigate }) {
+  const choice = studio.studio2Choice;
+  const [sourceChoice, setSourceChoice] = useState(choice?.activeSource ?? 'filled');
+  const [boxDrafts, setBoxDrafts] = useState(() => buildInitialStudio2Boxes(studio));
   const [activeBox, setActiveBox] = useState(0);
   const boxes = studio.evolutionBoxes;
   const box = boxes[activeBox];
-  const [week2Draft, setWeek2Draft] = useState(box?.week2 ?? '');
-  const [verdict, setVerdict] = useState(box?.verdict || 'keep');
+  const week2Draft = box ? boxDrafts[box.boxId]?.week2Text ?? '' : '';
+  const verdict = box ? boxDrafts[box.boxId]?.verdict ?? 'keep' : 'keep';
   const clarity = studio.clarity;
   const allDone = boxes.every((b) => b.complete);
+  const draftTimerRef = useRef(null);
+  const skipDraftSaveRef = useRef(false);
 
   useEffect(() => {
-    if (box) {
-      setWeek2Draft(box.week2 || box.week2Suggested);
-      setVerdict(box.verdict || 'keep');
+    setSourceChoice(choice?.activeSource ?? 'filled');
+  }, [choice?.activeSource]);
+
+  useEffect(() => {
+    skipDraftSaveRef.current = true;
+    setBoxDrafts(buildInitialStudio2Boxes(studio));
+  }, [participantId, studio.studio2Choice?.activeDraft, studio.evolutionBoxes]);
+
+  function applySource(source) {
+    if (!choice || choice.locked) return;
+    const candidate = source === 'recent' ? choice.recent : choice.filled;
+    skipDraftSaveRef.current = true;
+    setSourceChoice(source);
+    setBoxDrafts(candidate.draft.boxes ?? buildInitialStudio2Boxes(studio));
+    setMemberStudioDraftSource(participantId, 'studio2', source);
+  }
+
+  function updateActiveBox(patch) {
+    if (!box) return;
+    setBoxDrafts((prev) => ({
+      ...prev,
+      [box.boxId]: { ...prev[box.boxId], ...patch },
+    }));
+  }
+
+  useEffect(() => {
+    if (skipDraftSaveRef.current) {
+      skipDraftSaveRef.current = false;
+      return undefined;
     }
-  }, [activeBox, participantId]);
+    if (draftTimerRef.current) window.clearTimeout(draftTimerRef.current);
+    draftTimerRef.current = window.setTimeout(() => {
+      saveStudio2Draft(participantId, boxDrafts, sourceChoice);
+    }, 1200);
+    return () => {
+      if (draftTimerRef.current) window.clearTimeout(draftTimerRef.current);
+    };
+  }, [participantId, boxDrafts, sourceChoice]);
 
   function approveBox() {
     if (!box) return;
@@ -426,8 +456,17 @@ function Studio2Evolution({ studio, participantId, onSaved, onNext, onNavigate }
       <StudioHeader phase={FEC_STUDIO_PHASES[1]} />
 
       <p className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-        For each FEC box: read Week 1 vs Week 2, edit the draft if needed, choose Keep / Refine / Rebuild, then tap <strong>Approve → update FEC</strong>.
+        For each FEC box: read Week 1 vs Week 2, edit the draft, choose Keep / Refine / Rebuild, then tap <strong>Approve → update FEC</strong>.
       </p>
+
+      {choice && !choice.locked ? (
+        <StudioDraftSourcePicker
+          choice={choice}
+          activeSource={sourceChoice}
+          onSelect={applySource}
+          studioLabel="Studio 2"
+        />
+      ) : null}
 
       <section className="rounded-2xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-white p-6 text-center">
         <p className="text-xs font-bold uppercase text-slate-500">Canvas Clarity Score</p>
@@ -467,7 +506,7 @@ function Studio2Evolution({ studio, participantId, onSaved, onNext, onNavigate }
               <p className="text-[10px] font-bold uppercase text-emerald-700">Week 2</p>
               <textarea
                 value={week2Draft}
-                onChange={(e) => setWeek2Draft(e.target.value)}
+                onChange={(e) => updateActiveBox({ week2Text: e.target.value })}
                 rows={4}
                 className="mt-2 w-full rounded-lg border border-emerald-100 bg-white p-3 text-sm"
               />
@@ -493,7 +532,7 @@ function Studio2Evolution({ studio, participantId, onSaved, onNext, onNavigate }
               <button
                 key={opt.id}
                 type="button"
-                onClick={() => setVerdict(opt.id)}
+                onClick={() => updateActiveBox({ verdict: opt.id })}
                 className={`rounded-full px-4 py-2 text-sm font-semibold ${verdict === opt.id ? 'bg-spike text-white' : 'bg-slate-100'}`}
               >
                 {opt.label}
@@ -521,15 +560,78 @@ function Studio2Evolution({ studio, participantId, onSaved, onNext, onNavigate }
 
 /** @param {{ studio: ReturnType<typeof getFecStudioState>, participantId: string, onSaved: () => void, onFriday: () => void, onNavigate?: (slug: string) => void }} props */
 function Studio3NextSteps({ studio, participantId, onSaved, onFriday, onNavigate }) {
-  const [strategic, setStrategic] = useState(studio.lab.fec.steps['fec-step-5']?.approvedStatement ?? '');
-  const [nextExp, setNextExp] = useState(studio.nextExperiment || 'Run a protection-gap conversation with 3 new prospects.');
-  const [buildDir, setBuildDir] = useState(studio.week3BuildDirection || 'Prototype Week 3 build around validated problem and UVP v2.');
+  const choice = studio.studio3Choice;
+  const initialDraft = choice?.activeDraft;
+  const [sourceChoice, setSourceChoice] = useState(choice?.activeSource ?? 'filled');
+  const [strategic, setStrategic] = useState(
+    initialDraft?.strategicOpportunity
+      || studio.lab.fec.steps['fec-step-5']?.approvedStatement
+      || '',
+  );
+  const [nextExp, setNextExp] = useState(
+    initialDraft?.nextExperiment || studio.nextExperiment || 'Run a protection-gap conversation with 3 new prospects.',
+  );
+  const [buildDir, setBuildDir] = useState(
+    initialDraft?.week3BuildDirection || studio.week3BuildDirection || 'Prototype Week 3 build around validated problem and UVP v2.',
+  );
   const [slides, setSlides] = useState(() => {
+    const fromDraft = initialDraft?.pitchSlides ?? {};
+    if (Object.values(fromDraft).some(Boolean)) return fromDraft;
     const existing = studio.pitchSlides ?? {};
     if (existing.mission) return existing;
     return buildStudioPitchSlides(participantId);
   });
+  const draftTimerRef = useRef(null);
+  const skipDraftSaveRef = useRef(false);
   const report = studio.ventureReport?.topInsight ? studio.ventureReport : generateVentureEvolutionReport(participantId);
+
+  useEffect(() => {
+    setSourceChoice(choice?.activeSource ?? 'filled');
+  }, [choice?.activeSource]);
+
+  useEffect(() => {
+    const draft = choice?.activeDraft;
+    if (!draft) return;
+    skipDraftSaveRef.current = true;
+    setStrategic(draft.strategicOpportunity || studio.lab.fec.steps['fec-step-5']?.approvedStatement || '');
+    setNextExp(draft.nextExperiment || studio.nextExperiment || '');
+    setBuildDir(draft.week3BuildDirection || studio.week3BuildDirection || '');
+    if (Object.values(draft.pitchSlides ?? {}).some(Boolean)) {
+      setSlides(draft.pitchSlides);
+    }
+  }, [participantId, choice?.activeDraft, studio.lab.fec.steps, studio.nextExperiment, studio.week3BuildDirection]);
+
+  function applySource(source) {
+    if (!choice || choice.locked) return;
+    const candidate = source === 'recent' ? choice.recent : choice.filled;
+    const draft = candidate.draft;
+    skipDraftSaveRef.current = true;
+    setSourceChoice(source);
+    setStrategic(draft.strategicOpportunity || '');
+    setNextExp(draft.nextExperiment || '');
+    setBuildDir(draft.week3BuildDirection || '');
+    setSlides(draft.pitchSlides ?? {});
+    setMemberStudioDraftSource(participantId, 'studio3', source);
+  }
+
+  useEffect(() => {
+    if (skipDraftSaveRef.current) {
+      skipDraftSaveRef.current = false;
+      return undefined;
+    }
+    if (draftTimerRef.current) window.clearTimeout(draftTimerRef.current);
+    draftTimerRef.current = window.setTimeout(() => {
+      saveStudio3Draft(participantId, {
+        strategicOpportunity: strategic,
+        nextExperiment: nextExp,
+        week3BuildDirection: buildDir,
+        pitchSlides: slides,
+      }, sourceChoice);
+    }, 1200);
+    return () => {
+      if (draftTimerRef.current) window.clearTimeout(draftTimerRef.current);
+    };
+  }, [participantId, strategic, nextExp, buildDir, slides, sourceChoice]);
 
   return (
     <div className="space-y-8 pb-8">
@@ -537,6 +639,15 @@ function Studio3NextSteps({ studio, participantId, onSaved, onFriday, onNavigate
       <StudioHeader phase={FEC_STUDIO_PHASES[2]} />
 
       <p className="text-lg font-semibold text-slate-900">Now that the market has spoken… what should happen next?</p>
+
+      {choice && !choice.locked ? (
+        <StudioDraftSourcePicker
+          choice={choice}
+          activeSource={sourceChoice}
+          onSelect={applySource}
+          studioLabel="Studio 3"
+        />
+      ) : null}
 
       <label className="block space-y-2">
         <span className="text-sm font-bold text-slate-700">Strategic opportunity</span>
@@ -633,21 +744,22 @@ function formatDraftAt(iso) {
 
 /**
  * @param {{
- *   choice: NonNullable<ReturnType<typeof getFecStudioState>['evidenceBoardChoice']>,
+ *   choice: NonNullable<ReturnType<typeof getFecStudioState>['studio2Choice']>,
  *   activeSource: 'recent' | 'filled',
  *   onSelect: (source: 'recent' | 'filled') => void,
+ *   studioLabel: string,
  * }} props
  */
-function EvidenceBoardSourcePicker({ choice, activeSource, onSelect }) {
+function StudioDraftSourcePicker({ choice, activeSource, onSelect, studioLabel }) {
   const options = [choice.recent, choice.filled];
 
   return (
     <section className="space-y-3 rounded-xl border border-indigo-100 bg-indigo-50/70 p-4">
       <div>
-        <p className="text-sm font-bold text-indigo-950">Your squad has two saves to choose from</p>
+        <p className="text-sm font-bold text-indigo-950">{studioLabel}: choose which squad save loads on your screen</p>
         <p className="mt-1 text-xs text-indigo-900">
-          Pick which version loads on <strong>your</strong> screen. Edits you make save under your account and feed the squad pool.
-          {choice.hasChoice ? ' These versions differ — choose the one you want to build from.' : ' Both options match right now; you can still set your preference.'}
+          Pick <strong>most recent</strong> or <strong>most filled</strong>. Your edits save under your account.
+          {choice.hasChoice ? ' These versions differ right now.' : ' Both match for now — you can still set a preference.'}
         </p>
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
@@ -674,12 +786,12 @@ function EvidenceBoardSourcePicker({ choice, activeSource, onSelect }) {
               </div>
               <p className="mt-1 text-xs text-slate-600">{option.description}</p>
               <p className="mt-3 text-xs font-semibold text-slate-800">
-                {option.meta.filledSlots}/{option.meta.totalSlots} slots filled
+                {option.meta.filledFields}/{option.meta.totalFields} fields filled
               </p>
               <p className="mt-1 text-[11px] text-slate-500">
                 {option.id === 'recent'
-                  ? `Last saved by ${option.meta.memberLabel} · ${formatDraftAt(option.meta.draftAt)}`
-                  : 'Best line in each rank across all squad saves'}
+                  ? `${option.meta.detail} · ${formatDraftAt(option.meta.draftAt)}`
+                  : option.meta.detail}
               </p>
             </button>
           );
