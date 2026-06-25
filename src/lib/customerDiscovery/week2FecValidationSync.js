@@ -48,47 +48,136 @@ function evidenceBoardDraftAt(board) {
   return String(board?.draftUpdatedAt ?? '');
 }
 
-/** @param {Record<string, unknown>} board */
-function evidenceBoardFilledScore(board) {
-  const sections = [board?.topGoals, board?.topProblems, board?.topOpportunities];
-  return sections.reduce(
-    (n, rows) => n + (Array.isArray(rows) ? rows.filter((r) => String(r?.text ?? '').trim()).length : 0),
-    0,
-  );
+/** @param {Array<{ text?: string, count?: number }> | undefined} rows */
+function rankedSectionFilledCount(rows) {
+  if (!Array.isArray(rows)) return 0;
+  return rows.filter((row) => String(row?.text ?? '').trim()).length;
 }
 
 /** @param {Record<string, unknown>} board */
+function evidenceBoardFilledScore(board) {
+  const sections = [board?.topGoals, board?.topProblems, board?.topOpportunities];
+  return sections.reduce((n, rows) => n + rankedSectionFilledCount(rows), 0);
+}
+
+/** @param {Array<{ text?: string, count?: number }> | undefined} rows @param {number} limit */
+function padRanked(rows, limit = 3) {
+  const out = (Array.isArray(rows) ? rows : []).slice(0, limit).map((row) => ({
+    text: String(row?.text ?? ''),
+    count: Number(row?.count ?? 0) || 0,
+  }));
+  while (out.length < limit) out.push({ text: '', count: 0 });
+  return out;
+}
+
+/** @param {{ text?: string, count?: number }} slotA @param {{ text?: string, count?: number }} slotB */
+function pickRicherRankedSlot(slotA, slotB) {
+  const textA = String(slotA?.text ?? '').trim();
+  const textB = String(slotB?.text ?? '').trim();
+  if (!textA && !textB) return { text: '', count: 0 };
+  if (!textA) return { text: textB, count: Number(slotB?.count ?? 0) || 0 };
+  if (!textB) return { text: textA, count: Number(slotA?.count ?? 0) || 0 };
+  if (textB.length > textA.length) return { text: textB, count: Number(slotB?.count ?? 0) || 0 };
+  if (textA.length > textB.length) return { text: textA, count: Number(slotA?.count ?? 0) || 0 };
+  const countA = Number(slotA?.count ?? 0) || 0;
+  const countB = Number(slotB?.count ?? 0) || 0;
+  return countB > countA ? { text: textB, count: countB } : { text: textA, count: countA };
+}
+
+/** @param {Array<{ text?: string, count?: number }> | undefined} a @param {Array<{ text?: string, count?: number }> | undefined} b */
+function mergeRankedSlotsBySlot(a, b, limit = 3) {
+  const left = padRanked(a, limit);
+  const right = padRanked(b, limit);
+  return left.map((slot, index) => pickRicherRankedSlot(slot, right[index]));
+}
+
+/** @param {string[] | undefined} a @param {string[] | undefined} b */
+function mergeStarredQuotes(a, b) {
+  const listA = Array.isArray(a) ? a.map((q) => String(q ?? '').trim()).filter(Boolean) : [];
+  const listB = Array.isArray(b) ? b.map((q) => String(q ?? '').trim()).filter(Boolean) : [];
+  const primary = listA.length >= listB.length ? listA : listB;
+  const secondary = listA.length >= listB.length ? listB : listA;
+  const merged = [...primary];
+  for (const quote of secondary) {
+    if (merged.length >= 5) break;
+    if (!merged.includes(quote)) merged.push(quote);
+  }
+  return merged.slice(0, 5);
+}
+
+/** @param {Record<string, string> | undefined} a @param {Record<string, string> | undefined} b */
+function mergeMarketSummary(a, b) {
+  const left = a ?? {};
+  const right = b ?? {};
+  const keys = new Set([...Object.keys(left), ...Object.keys(right)]);
+  /** @type {Record<string, string>} */
+  const out = {};
+  for (const key of keys) {
+    const textA = String(left[key] ?? '').trim();
+    const textB = String(right[key] ?? '').trim();
+    if (!textA) out[key] = textB;
+    else if (!textB) out[key] = textA;
+    else out[key] = textB.length > textA.length ? textB : textA;
+  }
+  return out;
+}
+
+/** @param {Record<string, unknown>} board */
+function evidenceBoardRichnessMeta(board) {
+  return {
+    score: evidenceBoardFilledScore(board),
+    chars:
+      rankedSectionCharCount(board?.topGoals)
+      + rankedSectionCharCount(board?.topProblems)
+      + rankedSectionCharCount(board?.topOpportunities),
+    starred: Array.isArray(board?.starredQuotes) ? board.starredQuotes.filter(Boolean).length : 0,
+    at: evidenceBoardDraftAt(board),
+    by: board?.draftBy,
+  };
+}
+
+/** @param {Array<{ text?: string }> | undefined} rows */
+function rankedSectionCharCount(rows) {
+  if (!Array.isArray(rows)) return 0;
+  return rows.reduce((n, row) => n + String(row?.text ?? '').trim().length, 0);
+}
+
+/** @param {Record<string, unknown>} localBoard @param {Record<string, unknown>} remoteBoard */
 function mergeEvidenceBoardDraft(localBoard, remoteBoard) {
   const local = localBoard ?? {};
   const remote = remoteBoard ?? {};
-  const localAt = evidenceBoardDraftAt(local);
-  const remoteAt = evidenceBoardDraftAt(remote);
-  let newer = remote;
-  let older = local;
 
-  if (remoteAt > localAt) {
-    newer = remote;
-    older = local;
-  } else if (localAt > remoteAt) {
-    newer = local;
-    older = remote;
-  } else if (evidenceBoardFilledScore(remote) > evidenceBoardFilledScore(local)) {
-    newer = remote;
-    older = local;
-  } else {
-    newer = local;
-    older = remote;
-  }
+  const topGoals = mergeRankedSlotsBySlot(local.topGoals, remote.topGoals);
+  const topProblems = mergeRankedSlotsBySlot(local.topProblems, remote.topProblems);
+  const topOpportunities = mergeRankedSlotsBySlot(local.topOpportunities, remote.topOpportunities);
+  const starredQuotes = mergeStarredQuotes(
+    /** @type {string[] | undefined} */ (local.starredQuotes),
+    /** @type {string[] | undefined} */ (remote.starredQuotes),
+  );
+  const marketSummary = mergeMarketSummary(
+    /** @type {Record<string, string> | undefined} */ (local.marketSummary),
+    /** @type {Record<string, string> | undefined} */ (remote.marketSummary),
+  );
+
+  const localMeta = evidenceBoardRichnessMeta(local);
+  const remoteMeta = evidenceBoardRichnessMeta(remote);
+  const richer =
+    remoteMeta.score > localMeta.score
+    || (remoteMeta.score === localMeta.score && remoteMeta.chars > localMeta.chars)
+    || (remoteMeta.score === localMeta.score && remoteMeta.chars === localMeta.chars && remoteMeta.starred > localMeta.starred)
+      ? remoteMeta
+      : localMeta;
 
   return {
-    ...older,
-    ...newer,
-    topGoals: newer.topGoals ?? older.topGoals,
-    topProblems: newer.topProblems ?? older.topProblems,
-    topOpportunities: newer.topOpportunities ?? older.topOpportunities,
-    starredQuotes: newer.starredQuotes ?? older.starredQuotes,
-    draftUpdatedAt: remoteAt > localAt ? remoteAt : localAt || remoteAt,
-    draftBy: remoteAt > localAt ? remote.draftBy : local.draftBy ?? remote.draftBy,
+    ...local,
+    ...remote,
+    marketSummary,
+    topGoals,
+    topProblems,
+    topOpportunities,
+    starredQuotes,
+    draftUpdatedAt: richer.at || localMeta.at || remoteMeta.at,
+    draftBy: richer.by,
   };
 }
 
@@ -147,7 +236,7 @@ export async function hydrateFecValidationFromCloud(participantId, squadKey, opt
 }
 
 /**
- * Pull squad FEC state from any member's cloud copy — merges newest evidence-board drafts.
+ * Pull squad FEC state from any member's cloud copy — merges richest evidence-board drafts.
  * @param {string} participantId
  * @param {{ preferLocalDraft?: boolean }} [opts]
  */

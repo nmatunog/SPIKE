@@ -94,15 +94,23 @@ export function getEvidenceBoardPayload(participantId) {
   const rankedProblems = rankTopItems(allProblems, 3);
   const rankedOpportunities = rankTopItems(allOpportunities, 3);
 
-  const topGoals = padTopThree(
-    saved.topGoals?.some((row) => row?.text) ? saved.topGoals : rankedGoals,
-  );
-  const topProblems = padTopThree(
-    saved.topProblems?.some((row) => row?.text) ? saved.topProblems : rankedProblems,
-  );
-  const topOpportunities = padTopThree(
-    saved.topOpportunities?.some((row) => row?.text) ? saved.topOpportunities : rankedOpportunities,
-  );
+  const mergeSavedWithRanked = (savedRows, rankedRows) => {
+    const saved = padTopThree(Array.isArray(savedRows) ? savedRows : []);
+    const ranked = padTopThree(rankedRows);
+    return saved.map((slot, index) => {
+      const savedText = String(slot?.text ?? '').trim();
+      const rankedText = String(ranked[index]?.text ?? '').trim();
+      if (!savedText) return ranked[index] ?? slot;
+      if (!rankedText) return slot;
+      return savedText.length >= rankedText.length
+        ? { ...slot, text: savedText }
+        : { ...ranked[index], text: rankedText };
+    });
+  };
+
+  const topGoals = mergeSavedWithRanked(saved.topGoals, rankedGoals);
+  const topProblems = mergeSavedWithRanked(saved.topProblems, rankedProblems);
+  const topOpportunities = mergeSavedWithRanked(saved.topOpportunities, rankedOpportunities);
 
   const uniqueQuotes = [...new Set(quotes.filter(Boolean))];
 
