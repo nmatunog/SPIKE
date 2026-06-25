@@ -28,7 +28,7 @@ export function StaffSquadHubPage({ role, squadName, interns, homeHref }) {
   const squadsHref = staffSquadsListHref(role);
   const memberIds = detail.memberRows.map((m) => m.id);
   const { programDay } = useCohortProgramDay();
-  const { ready: cohortReady } = useCohortHydration(memberIds, {
+  const { ready: cohortReady, version: cohortVersion } = useCohortHydration(memberIds, {
     enabled: memberIds.length > 0,
     interns: detail.memberRows,
   });
@@ -61,6 +61,8 @@ export function StaffSquadHubPage({ role, squadName, interns, homeHref }) {
         squadName={detail.squadName}
         memberIds={memberIds}
         week={detail.week}
+        skipHydration={cohortReady}
+        hydrationVersion={cohortVersion}
       />
 
       {programDay.week >= 2 ? (
@@ -172,10 +174,11 @@ export function StaffSquadsListPage({ role, interns, homeHref }) {
   const { programDay } = useCohortProgramDay();
   const [expandedSquad, setExpandedSquad] = useState('');
   const cohortIds = useMemo(() => interns.map((i) => i.id), [interns]);
-  const { ready: cohortReady } = useCohortHydration(cohortIds, {
+  const { ready: cohortReady, version: cohortVersion } = useCohortHydration(cohortIds, {
     enabled: Boolean(expandedSquad) && cohortIds.length > 0,
     interns,
   });
+  void cohortVersion;
 
   return (
     <PageContainer>

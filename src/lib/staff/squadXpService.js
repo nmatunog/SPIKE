@@ -12,6 +12,8 @@ import { participantHasPitchDeckDeliverable } from '../portfolioDeliverableServi
 import { countSubmittedSurveys } from '../surveyService.js';
 import { getCoachProgress } from '../ventureCoachStorage.js';
 import { loadSquadDesignRecord } from '../ventureDesignStudioService.js';
+import { hasDuePlaybookReflectionsComplete } from '../pendingPlaybookReflectionService.js';
+import { resolveEffectiveStaffProgramDay } from '../programCalendar.js';
 import {
   AUTO_XP_WEIGHTS,
   MENTOR_REVIEW_DIMENSIONS,
@@ -52,11 +54,16 @@ function reviewStorageKey(squadName, week) {
   return `${squadName}:w${week}`;
 }
 
-/** @param {string} participantId */
-function memberActivitySignals(participantId) {
+/** @param {string} participantId @param {number} [week] */
+function memberActivitySignals(participantId, week = 2) {
   const w2 = loadWeek2Discovery(participantId);
   const encoded = (w2.interviews ?? []).filter((i) => i.encoded).length;
-  const hasReflection = (w2.thinkingShifts ?? []).some((s) => String(s.response ?? '').trim().length > 10);
+  const programDay = resolveEffectiveStaffProgramDay(null);
+  const hasPlaybookReflection = hasDuePlaybookReflectionsComplete(participantId, week, programDay);
+  const hasLegacyReflection = (w2.thinkingShifts ?? []).some(
+    (s) => String(s.response ?? '').trim().length > 10,
+  );
+  const hasReflection = hasPlaybookReflection || hasLegacyReflection;
   const portfolioDone = Boolean(w2.portfolioSyncedAt);
   const assignmentDone = Boolean(w2.guideCompletedAt);
   const missionDone = Boolean(w2.missionAcknowledged);
@@ -100,7 +107,7 @@ export function computeSquadAutoXp(memberIds, week = 2) {
   const ids = memberIds.filter(Boolean);
   if (!ids.length) return { autoXp: 0, breakdown: {}, completionPct: 0 };
 
-  const signals = ids.map((id) => memberActivitySignals(id));
+  const signals = ids.map((id) => memberActivitySignals(id, week));
   const n = ids.length;
   const pct = (fn) => signals.filter(fn).length / n;
 
@@ -188,13 +195,13 @@ export function getSquadWeeklyXp(squadName, memberIds, week = 2) {
     starRating: xpToStars(totalXp),
     review,
     gate,
-    checklist: buildSquadChecklist(memberIds),
+    checklist: buildSquadChecklist(memberIds, week),
   };
 }
 
-/** @param {string[]} memberIds */
-function buildSquadChecklist(memberIds) {
-  const { breakdown } = computeSquadAutoXp(memberIds);
+/** @param {string[]} memberIds @param {number} [week] */
+function buildSquadChecklist(memberIds, week = 2) {
+  const { breakdown } = computeSquadAutoXp(memberIds, week);
   const pitchDone = squadVenturePropositionPitchComplete(memberIds);
   return [
     { id: 'interviews', label: 'Interviews completed', done: breakdown.interviews >= AUTO_XP_WEIGHTS.interviews * 0.8 },

@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
-import { Sparkles, Trophy } from 'lucide-react';
+import { Loader2, Sparkles, Trophy } from 'lucide-react';
 import { getParticipantSquad } from '../../lib/cohortFormationService.js';
 import { useCohortProgramDay } from '../../hooks/useCohortProgramDay.js';
+import { useSquadXpHydration } from '../../hooks/useParticipantHydration.js';
 import {
   formatStarDisplay,
   getSquadWeeklyXp,
@@ -33,13 +34,28 @@ export function SquadXpSummaryCard({
   week: weekProp,
   compact = false,
   className = '',
+  hydrationVersion = 0,
+  skipHydration = false,
 }) {
   const { programDay } = useCohortProgramDay();
   const week = weekProp ?? programDay.week;
+  const { ready, version: squadHydrationVersion } = useSquadXpHydration(memberIds, {
+    enabled: !skipHydration && memberIds.length > 0,
+  });
+  const dataVersion = hydrationVersion + squadHydrationVersion;
   const xp = useMemo(
     () => getSquadWeeklyXp(squadName, memberIds, week),
-    [squadName, memberIds, week],
+    [squadName, memberIds, week, dataVersion],
   );
+
+  if (!skipHydration && !ready) {
+    return (
+      <section className={`spike-venture-status flex items-center gap-2 text-sm text-slate-500 ${className}`}>
+        <Loader2 size={16} className="animate-spin" aria-hidden />
+        Syncing squad progress…
+      </section>
+    );
+  }
 
   if (compact) {
     return (
@@ -102,7 +118,13 @@ export function SquadXpSummaryCard({
  * Resolves squad from participant and shows XP card.
  * @param {{ participantId: string, week?: number, compact?: boolean, className?: string }} props
  */
-export function ParticipantSquadXpCard({ participantId, week, compact = false, className = '' }) {
+export function ParticipantSquadXpCard({
+  participantId,
+  week,
+  compact = false,
+  className = '',
+  skipHydration = false,
+}) {
   const squad = getParticipantSquad(participantId);
   if (!squad) return null;
   const memberIds = (squad.members ?? []).map((m) => m.participantId);
@@ -113,6 +135,7 @@ export function ParticipantSquadXpCard({ participantId, week, compact = false, c
       week={week}
       compact={compact}
       className={className}
+      skipHydration={skipHydration}
     />
   );
 }
@@ -133,16 +156,30 @@ export function SquadXpDashboard({
   participantId,
   week = 2,
   allSquads = [],
+  hydrationVersion = 0,
+  skipHydration = false,
 }) {
+  const { ready, version: squadHydrationVersion } = useSquadXpHydration(memberIds, {
+    enabled: !skipHydration && memberIds.length > 0,
+  });
+  const dataVersion = hydrationVersion + squadHydrationVersion;
   const xp = useMemo(
     () => getSquadWeeklyXp(squadName, memberIds, week),
-    [squadName, memberIds, week],
+    [squadName, memberIds, week, dataVersion],
   );
-
   const ranks = useMemo(() => {
     if (!allSquads.length) return [];
     return rankSquadsByXp(allSquads, week);
-  }, [allSquads, week]);
+  }, [allSquads, week, dataVersion]);
+
+  if (!skipHydration && !ready) {
+    return (
+      <section className="spike-venture-status flex items-center gap-2 text-sm text-slate-500">
+        <Loader2 size={16} className="animate-spin" aria-hidden />
+        Syncing squad progress…
+      </section>
+    );
+  }
 
   const myRank = ranks.find((r) => r.squadName === squadName)?.rank;
   const commendations = getSquadCommendations(squadName, week);

@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react';
-import { hydrateParticipantForStaffView, hydrateCohortForStaffView } from '../lib/participantDataHydration.js';
+import {
+  hydrateParticipantForStaffView,
+  hydrateCohortForStaffView,
+  hydrateSquadMembersForStaffView,
+} from '../lib/participantDataHydration.js';
 
 const HYDRATION_TIMEOUT_MS = 20_000;
 
@@ -103,6 +107,51 @@ export function useCohortHydration(participantIds, opts = {}) {
       cancelled = true;
     };
   }, [key, internKey, enabled]);
+
+  return { ready, version, error };
+}
+
+/**
+ * Hydrate all squad members' Week 2 discovery + playbook progress before Squad XP aggregation.
+ * @param {string[]} memberIds
+ * @param {{ enabled?: boolean }} [opts]
+ */
+export function useSquadXpHydration(memberIds, opts = {}) {
+  const enabled = opts.enabled !== false;
+  const [ready, setReady] = useState(false);
+  const [version, setVersion] = useState(0);
+  const [error, setError] = useState(null);
+  const key = memberIds.filter(Boolean).join(',');
+
+  useEffect(() => {
+    const ids = memberIds.filter(Boolean);
+    if (!enabled || !ids.length) {
+      setReady(false);
+      setError(null);
+      return;
+    }
+    let cancelled = false;
+    setReady(false);
+    setError(null);
+    (async () => {
+      try {
+        await withHydrationTimeout(hydrateSquadMembersForStaffView(ids, { force: true }));
+        if (!cancelled) {
+          setReady(true);
+          setVersion((v) => v + 1);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : 'Failed to load squad progress');
+          setReady(true);
+          setVersion((v) => v + 1);
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [key, enabled]);
 
   return { ready, version, error };
 }

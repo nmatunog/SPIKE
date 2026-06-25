@@ -25,7 +25,7 @@ export function PortfolioOverviewSection({ portfolio, participantId = '', partic
         </section>
       ) : null}
       {participantId ? <PortfolioWeek1JourneyPanel participantId={participantId} /> : null}
-      {participantId ? <ParticipantSquadXpCard participantId={participantId} /> : null}
+      {participantId ? <ParticipantSquadXpCard participantId={participantId} skipHydration /> : null}
       <section className="overflow-hidden rounded-3xl border border-spike/15 bg-gradient-to-br from-slate-900 via-slate-800 to-spike-dark p-8 text-white shadow-projection sm:p-10">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
           {cover.photoUrl ? (

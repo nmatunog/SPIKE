@@ -61,3 +61,29 @@ export function listPendingPlaybookReflections(participantId, programDay) {
 
   return pending.sort((a, b) => a.week * 5 + a.day - (b.week * 5 + b.day));
 }
+
+/**
+ * True when all due Playbook closing reflections for a week are complete
+ * and at least one reflection was due (avoids false positives before day 1 reflections exist).
+ * @param {string} participantId
+ * @param {number} week
+ * @param {{ week: number, day: number }} programDay
+ */
+export function hasDuePlaybookReflectionsComplete(participantId, week, programDay) {
+  if (!participantId || programDay.week < week) return false;
+
+  const pending = listPendingPlaybookReflections(participantId, programDay).filter(
+    (item) => item.week === week,
+  );
+  if (pending.length > 0) return false;
+
+  const lastDay = week < programDay.week ? 5 : Math.min(5, programDay.day);
+  let dueCount = 0;
+  for (let day = 1; day <= lastDay; day += 1) {
+    const bundle = safeDayBundle(week, day);
+    if (!bundle) continue;
+    dueCount += getPlaybookDayReflections(bundle).length;
+  }
+
+  return dueCount > 0;
+}
