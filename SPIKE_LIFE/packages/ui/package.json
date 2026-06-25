@@ -1,0 +1,7 @@
+{
+  "name": "@spike-life/ui",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "SPIKE LIFE presentation components — Phase 2+"
+}

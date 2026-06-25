@@ -2,7 +2,7 @@
 
 **Version:** 1.0  
 **Date:** 2026-06-26  
-**Status:** Awaiting approval before implementation  
+**Status:** Phase 1 complete — Financial Decision Engine validated (Promotion cycle)  
 **Authority chain:** Amendment A0 → this memo → Software Architecture Bible (when provided) → Technical specs → UX → Simulation blueprints → PRD v1.0/v1.1
 
 ---
@@ -263,15 +263,10 @@ Infrastructure   Hono (CF Workers), Neon PostgreSQL, repositories
 
 ## 12. Approval checklist
 
-Before Phase 1 coding begins, confirm:
+- [x] Canonical loop and Five-Lens UX approved
+- [x] Contradiction resolutions in §3 accepted
+- [x] MVP in/out scope in §7 accepted
+- [x] First archetype: **Fresh Graduate** + first situation: **Promotion**
+- [x] Tech phasing in §8 accepted (domain-first, in-memory)
 
-- [ ] Canonical loop and Five-Lens UX approved
-- [ ] Contradiction resolutions in §3 accepted
-- [ ] MVP in/out scope in §7 accepted
-- [ ] First archetype + first situation selected
-- [ ] Tech phasing in §8 accepted (domain-first, in-memory)
-
----
-
-**Prepared by:** Lead Software Architect (Cursor)  
-**Next step:** Stakeholder approval → Phase 1 domain implementation
+**Phase 1 delivered:** `@spike-life/domain` with 8 passing domain tests + 1 CQRS integration test.
