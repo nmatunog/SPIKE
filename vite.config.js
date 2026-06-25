@@ -11,6 +11,10 @@ export default defineConfig({
   build: {
     chunkSizeWarningLimit: 1200,
     rollupOptions: {
+      input: {
+        main: 'index.html',
+        pitchPanel: 'pitch-panel.html',
+      },
       output: {
         manualChunks(id) {
           if (!id.includes('node_modules')) return undefined

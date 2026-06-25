@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Ensure dist/index.html and bundled JS only reference assets that exist.
+ * Ensure dist HTML and bundled JS only reference assets that exist.
  * Prevents deploys where SPA fallback would serve HTML for missing chunks.
  */
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
@@ -10,20 +10,25 @@ import { dirname, join } from 'node:path';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const dist = join(root, 'dist');
 const assetsDir = join(dist, 'assets');
-const indexPath = join(dist, 'index.html');
-
-if (!existsSync(indexPath)) {
-  console.error('verify-dist-assets: dist/index.html missing — run npm run build first');
-  process.exit(1);
-}
 
 /** @param {string} text */
 function collectAssetRefs(text) {
   return [...text.matchAll(/\/assets\/[A-Za-z0-9_.-]+\.(?:js|css)/g)].map((match) => match[0]);
 }
 
-const html = readFileSync(indexPath, 'utf8');
-const assetRefs = new Set(collectAssetRefs(html));
+const htmlFiles = readdirSync(dist).filter((name) => name.endsWith('.html'));
+if (htmlFiles.length === 0) {
+  console.error('verify-dist-assets: no HTML files in dist — run npm run build first');
+  process.exit(1);
+}
+
+const assetRefs = new Set();
+for (const htmlFile of htmlFiles) {
+  const html = readFileSync(join(dist, htmlFile), 'utf8');
+  for (const ref of collectAssetRefs(html)) {
+    assetRefs.add(ref);
+  }
+}
 
 if (existsSync(assetsDir)) {
   for (const file of readdirSync(assetsDir)) {
@@ -45,4 +50,4 @@ if (missing.length > 0) {
   process.exit(1);
 }
 
-console.log(`verify-dist-assets OK (${assetRefs.size} asset refs)`);
+console.log(`verify-dist-assets OK (${assetRefs.size} asset refs, ${htmlFiles.length} HTML entries)`);
