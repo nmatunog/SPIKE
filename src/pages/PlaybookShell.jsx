@@ -21,6 +21,7 @@ import { getParticipantSquad } from '../lib/cohortFormationService.js';
 import {
   getActiveWeek2Task,
   isWeek2MissionSlugForDay,
+  parsePlaybookDayParam,
   resolveWeek2PlaybookDay,
 } from '../lib/customerDiscovery/week2MissionService.js';
 import { useInternWorkHydration } from '../hooks/useInternWorkHydration.js';
@@ -72,8 +73,8 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
   const missionNormalizeRef = useRef('');
 
   const entryDay = useMemo(() => {
-    const fromQuery = Number.parseInt(searchParams.get('day') ?? '', 10);
-    if (Number.isFinite(fromQuery) && fromQuery >= 1 && fromQuery <= 5) {
+    const fromQuery = parsePlaybookDayParam(searchParams.get('day'));
+    if (fromQuery != null) {
       return fromQuery;
     }
     if (userRole === 'intern' && calendarReady) {
@@ -165,11 +166,10 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
     && entrySegment === 1
     && (weekSlug === 'week-2' || selectedWeek?.week?.weekNumber === 2);
 
-  const urlPlaybookDay = useMemo(() => {
-    const fromQuery = Number.parseInt(searchParams.get('day') ?? '', 10);
-    if (Number.isFinite(fromQuery) && fromQuery >= 1 && fromQuery <= 5) return fromQuery;
-    return null;
-  }, [searchParams]);
+  const urlPlaybookDay = useMemo(
+    () => parsePlaybookDayParam(searchParams.get('day')),
+    [searchParams],
+  );
 
   const playbookDayNumber =
     urlPlaybookDay != null
@@ -187,19 +187,37 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
     : playbookDayNumber;
 
   useEffect(() => {
+    if (!showMissionFirst) return;
+    const raw = searchParams.get('day');
+    const parsed = parsePlaybookDayParam(raw);
+    if (parsed == null || raw === String(parsed)) return;
+    const params = new URLSearchParams(searchParams);
+    params.set('day', String(parsed));
+    setSearchParams(params, { replace: true });
+  }, [showMissionFirst, searchParams, setSearchParams]);
+
+  useEffect(() => {
     if (!showMissionFirst || !participantId) return;
 
     const day = urlPlaybookDay ?? resolvedPlaybookDay;
+
+    const apply = (mutate) => {
+      const params = new URLSearchParams(window.location.search);
+      const before = params.toString();
+      mutate(params);
+      if (params.toString() === before) return;
+      setSearchParams(params, { replace: true });
+    };
 
     if (!missionSlug) {
       const active = getActiveWeek2Task(participantId, day);
       const key = `empty:${day}:${active.slug}`;
       if (missionNormalizeRef.current === key) return;
       missionNormalizeRef.current = key;
-      const params = new URLSearchParams(searchParams);
-      params.set('mission', active.slug);
-      params.set('day', String(day));
-      setSearchParams(params, { replace: true });
+      apply((params) => {
+        params.set('mission', active.slug);
+        params.set('day', String(day));
+      });
       return;
     }
 
@@ -213,9 +231,9 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
         const key = `dayfix:${missionSlug}:${d}`;
         if (missionNormalizeRef.current === key) return;
         missionNormalizeRef.current = key;
-        const params = new URLSearchParams(searchParams);
-        params.set('day', String(d));
-        setSearchParams(params, { replace: true });
+        apply((params) => {
+          params.set('day', String(d));
+        });
         return;
       }
     }
@@ -224,10 +242,10 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
     const key = `reset:${day}:${active.slug}`;
     if (missionNormalizeRef.current === key) return;
     missionNormalizeRef.current = key;
-    const params = new URLSearchParams(searchParams);
-    params.set('mission', active.slug);
-    setSearchParams(params, { replace: true });
-  }, [showMissionFirst, participantId, missionSlug, urlPlaybookDay, resolvedPlaybookDay, searchParams, setSearchParams]);
+    apply((params) => {
+      params.set('mission', active.slug);
+    });
+  }, [showMissionFirst, participantId, missionSlug, urlPlaybookDay, resolvedPlaybookDay, setSearchParams]);
 
   function openCurriculumView() {
     const params = new URLSearchParams(searchParams);
@@ -341,7 +359,7 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
         onMissionNavigate={(slug, missionDay) => {
           const next = new URLSearchParams(searchParams);
           next.set('mission', slug);
-          if (missionDay) next.set('day', String(missionDay));
+          next.set('day', String(missionDay ?? urlPlaybookDay ?? resolvedPlaybookDay));
           setSearchParams(next, { replace: true });
         }}
       />

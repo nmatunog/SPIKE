@@ -58,10 +58,23 @@ function writeAll(data) {
   }
 }
 
-function scheduleCloudSync(participantId, state) {
-  void import('./week2DiscoverySync.js')
-    .then((m) => m.syncWeek2DiscoveryToCloud(participantId, state))
-    .catch(() => {});
+/** @type {Map<string, number>} */
+const cloudSyncTimers = new Map();
+
+function scheduleCloudSync(participantId) {
+  if (!participantId) return;
+  if (cloudSyncTimers.has(participantId)) {
+    window.clearTimeout(cloudSyncTimers.get(participantId));
+  }
+  cloudSyncTimers.set(
+    participantId,
+    window.setTimeout(() => {
+      cloudSyncTimers.delete(participantId);
+      void import('./week2DiscoverySync.js')
+        .then((m) => m.syncWeek2DiscoveryToCloud(participantId, loadWeek2Discovery(participantId)))
+        .catch(() => {});
+    }, 1200),
+  );
 }
 
 /** @param {string[] | null | undefined} answers */
@@ -176,7 +189,7 @@ export function saveWeek2Discovery(participantId, patch, opts = {}) {
   all[participantId] = next;
   memoryCache[participantId] = next;
   writeAll(all);
-  if (!opts.skipCloudSync) scheduleCloudSync(participantId, next);
+  if (!opts.skipCloudSync) scheduleCloudSync(participantId);
   return next;
 }
 

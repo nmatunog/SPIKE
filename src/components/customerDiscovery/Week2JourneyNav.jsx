@@ -15,6 +15,7 @@ import {
  *   activeDay?: number,
  *   activeMissionSlug?: string,
  *   onNavigate?: (slug: string, day: number) => void,
+ *   playbookMode?: boolean,
  * }} props
  */
 export function Week2JourneyNav({
@@ -23,9 +24,12 @@ export function Week2JourneyNav({
   activeDay,
   activeMissionSlug = '',
   onNavigate,
+  playbookMode = false,
 }) {
   const phases = deriveWeek2JourneyProgress(participantId, calendarDay);
-  const active = activeDay ?? phases.find((p) => p.active)?.day ?? 1;
+  const active = playbookMode
+    ? (activeDay ?? 1)
+    : (activeDay ?? phases.find((p) => p.active)?.day ?? 1);
 
   function missionSlugForPhase(phaseDay) {
     if (

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Check, Save } from 'lucide-react';
 import {
   getExchangeReflectionText,
@@ -20,13 +20,17 @@ export function ExchangeReflectionTask({ participantId, onSaved }) {
   const [saveState, setSaveState] = useState('idle');
   const [syncTick, setSyncTick] = useState(0);
   const [syncing, setSyncing] = useState(false);
+  const responseRef = useRef(response);
+
+  useEffect(() => {
+    responseRef.current = response;
+  }, [response]);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       await hydrateParticipantWeek2Discovery(participantId);
       if (cancelled) return;
-      setResponse(getExchangeReflectionText(getWeek2State(participantId)));
       setSyncTick((n) => n + 1);
     })();
     return () => {
@@ -37,11 +41,10 @@ export function ExchangeReflectionTask({ participantId, onSaved }) {
   function persist(value) {
     setResponse(value);
     saveExchangeReflection(participantId, value);
-    setSyncTick((n) => n + 1);
   }
 
-  async function saveNow() {
-    const next = saveExchangeReflection(participantId, response);
+  async function saveNow({ notify = false } = {}) {
+    const next = saveExchangeReflection(participantId, responseRef.current);
     setSyncing(true);
     try {
       await syncWeek2DiscoveryToCloud(participantId, next);
@@ -51,22 +54,24 @@ export function ExchangeReflectionTask({ participantId, onSaved }) {
     }
     setSaveState('saved');
     window.setTimeout(() => setSaveState('idle'), 2000);
-    onSaved?.();
+    if (notify) onSaved?.();
   }
 
   useEffect(() => {
-    const save = () => saveExchangeReflection(participantId, response);
-    window.addEventListener('pagehide', save);
+    const saveLocal = () => {
+      saveExchangeReflection(participantId, responseRef.current);
+    };
+    window.addEventListener('pagehide', saveLocal);
     const onHide = () => {
-      if (document.visibilityState === 'hidden') save();
+      if (document.visibilityState === 'hidden') saveLocal();
     };
     document.addEventListener('visibilitychange', onHide);
     return () => {
-      window.removeEventListener('pagehide', save);
+      window.removeEventListener('pagehide', saveLocal);
       document.removeEventListener('visibilitychange', onHide);
-      save();
+      saveLocal();
     };
-  }, [participantId, response]);
+  }, [participantId]);
 
   return (
     <div className="space-y-6 pb-20 sm:pb-6">
@@ -87,7 +92,7 @@ export function ExchangeReflectionTask({ participantId, onSaved }) {
       <div className="hidden sm:flex sm:flex-wrap sm:items-center sm:gap-3">
         <button
           type="button"
-          onClick={() => void saveNow()}
+          onClick={() => void saveNow({ notify: true })}
           disabled={syncing}
           className="spike-btn-primary inline-flex min-h-[44px] items-center gap-2 disabled:opacity-60"
         >
@@ -105,7 +110,6 @@ export function ExchangeReflectionTask({ participantId, onSaved }) {
       <textarea
         value={response}
         onChange={(e) => persist(e.target.value)}
-        onBlur={() => void saveNow()}
         rows={6}
         placeholder="What surprised you most? Which assumption changed? What quote stayed with you?"
         className="w-full rounded-xl border border-slate-200 p-4 text-sm focus:border-spike focus:outline-none focus:ring-1 focus:ring-spike"
@@ -115,7 +119,7 @@ export function ExchangeReflectionTask({ participantId, onSaved }) {
         <Week2SyncStatus participantId={participantId} syncing={syncing} refreshKey={syncTick} className="mb-2" />
         <button
           type="button"
-          onClick={() => void saveNow()}
+          onClick={() => void saveNow({ notify: true })}
           disabled={syncing}
           className="spike-btn-primary inline-flex min-h-[48px] w-full items-center justify-center gap-2 disabled:opacity-60"
         >

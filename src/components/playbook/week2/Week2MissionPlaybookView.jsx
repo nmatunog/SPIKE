@@ -18,7 +18,6 @@ import { MarketValidationPitchView } from '../../customerDiscovery/fecValidation
 import {
   playbookWeek2MissionHref,
   getActiveWeek2Task,
-  isWeek2MissionSlugForDay,
   week2OverallProgressPct,
 } from '../../../lib/customerDiscovery/week2MissionService.js';
 import { getWeek2PhaseForDay } from '../../../lib/customerDiscovery/week2JourneyConstants.js';
@@ -63,8 +62,9 @@ export function Week2MissionPlaybookView({
 
   const day = Math.max(1, Math.min(5, playbookDay));
 
-  const slugValid = isWeek2MissionSlugForDay(missionSlug, day);
-  const slug = slugValid && missionSlug ? missionSlug : getActiveWeek2Task(participantId, day).slug;
+  const slug = missionSlug?.trim()
+    ? missionSlug.trim()
+    : getActiveWeek2Task(participantId, day).slug;
 
   const progressPct = week2OverallProgressPct(participantId);
   const phase = getWeek2PhaseForDay(day);
@@ -196,6 +196,7 @@ export function Week2MissionPlaybookView({
             activeDay={day}
             activeMissionSlug={slug}
             onNavigate={(nextSlug, nextDay) => goToMission(nextSlug, nextDay)}
+            playbookMode
           />
           {day > 1 ? (
             <Week2PrepareReviseNav

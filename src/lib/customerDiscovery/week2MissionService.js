@@ -115,6 +115,18 @@ export function isWeek2DayUnlocked(_participantId, day) {
 }
 
 /**
+ * Parse playbook week-internal day (1–5) from URL ?day= — accepts legacy program days 6–10.
+ * @param {string | null | undefined} raw
+ */
+export function parsePlaybookDayParam(raw) {
+  const n = Number.parseInt(String(raw ?? '').trim(), 10);
+  if (!Number.isFinite(n)) return null;
+  if (n >= 1 && n <= 5) return n;
+  if (n >= 6 && n <= 10) return n - 5;
+  return null;
+}
+
+/**
  * @param {string} participantId
  * @param {number} [calendarDay] Cohort calendar day 1–5 for week 2
  */
