@@ -28,7 +28,7 @@ as $$
         from jsonb_array_elements(coalesce(state->'interviews', '[]'::jsonb)) iv
         where coalesce(iv->>'encoded', 'false') = 'true'
       ),
-      0,
+      0
     ) = 0;
 $$;
 
