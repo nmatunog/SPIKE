@@ -1,0 +1,44 @@
+---
+description: SPIKE LIFE™ — Financial Decision Simulator architectural governance (Domain-first, CQRS, deterministic simulation)
+globs: SPIKE_LIFE/**
+alwaysApply: false
+---
+
+# SPIKE LIFE™ — Architectural Governance
+
+## Mission
+
+SPIKE LIFE is a **Financial Decision Simulator**, not a life game, budgeting app, or literacy quiz.
+
+Life provides context. Financial decision-making is the product.
+
+## Document priority (conflicts)
+
+1. Architecture Amendment A0 (constitutional)
+2. Software Architecture Bible (domain, CQRS, layers, security)
+3. Technical architecture (DB, API, infra)
+4. UX blueprints (must not violate Bible)
+5. Simulation blueprints (reinterpret obsolete terms via A0)
+6. PRD v1.0/v1.1 (reinterpret through Bible if conflict)
+
+## Non-negotiable rules
+
+- **Domain Layer only** for business logic — never in React/Astro, API routes, DB queries, hooks, or utilities.
+- **CQRS** — commands mutate; queries never mutate.
+- **Deterministic simulation** — AI may explain/coach/summarize; AI must never determine financial outcomes.
+- **Domain model is source of truth** — DB stores domain state only.
+- **Feature gate** — every feature must improve at least one: cash flow, protection, FNA, goals, retirement, entrepreneurship, or advisory thinking.
+- **Simulation loop**: life situation → analysis → recommendations → decisions → consequences → reflection → judgment.
+- **No architectural drift** — if architecture is insufficient, STOP, explain trade-offs, recommend minimum change, wait for approval.
+
+## MVP scope (until loop validated)
+
+Domain layer, Simulation aggregate, Character, Financial Profile, Goal/Protection portfolios, FNA/Recommendation/Decision/Reflection engines, CQRS, unit tests, **one complete playable decision loop only**.
+
+## Coding
+
+Strongly typed, testable, modular domain. No god classes, no framework business logic, no premature optimization.
+
+## Security
+
+Validate all inputs; never trust client; OWASP-aware; least privilege; parameterized queries; no internal errors to clients.
