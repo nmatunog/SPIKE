@@ -3,6 +3,8 @@ import { Loader2, Sparkles, Trophy } from 'lucide-react';
 import { getParticipantSquad } from '../../lib/cohortFormationService.js';
 import { useCohortProgramDay } from '../../hooks/useCohortProgramDay.js';
 import { useSquadXpHydration } from '../../hooks/useParticipantHydration.js';
+import { usePitchPanelLive } from '../../hooks/usePitchPanelLive.js';
+import { SQUAD_XP_TOTAL_MAX } from '../../lib/staff/squadXpConstants.js';
 import {
   formatStarDisplay,
   getSquadWeeklyXp,
@@ -13,6 +15,17 @@ import {
   getSquadCommendations,
 } from '../../lib/staff/squadCommendationService.js';
 import { groupInternsBySquad } from '../../lib/facultyMentorFrameworkService.js';
+
+/** @param {ReturnType<typeof getSquadWeeklyXp>} xp */
+function squadXpDisplayMeta(xp) {
+  const progressPct = Math.round((xp.totalXp / SQUAD_XP_TOTAL_MAX) * 100);
+  const footerXp = xp.panelFinalized
+    ? `Auto ${xp.autoXp}/80 · W1 pitch ${xp.week1PitchXp}/20 · W2 panel ${xp.week2PanelXp}/20`
+    : xp.panelPending
+      ? `Auto ${xp.autoXp}/80 · W1 pitch ${xp.week1PitchXp}/20 · W2 panel ~${xp.provisionalWeek2PanelXp}/20 pending`
+      : `Auto ${xp.autoXp}/80 · W1 pitch ${xp.week1PitchXp}/20 · W2 panel 0/20`;
+  return { progressPct, footerXp };
+}
 
 /** Compact XP readout for tables and squad list cards. */
 export function SquadXpInline({ totalXp, className = '' }) {
@@ -43,10 +56,12 @@ export function SquadXpSummaryCard({
     enabled: !skipHydration && memberIds.length > 0,
   });
   const dataVersion = hydrationVersion + squadHydrationVersion;
+  const { version: panelVersion } = usePitchPanelLive(!skipHydration);
   const xp = useMemo(
     () => getSquadWeeklyXp(squadName, memberIds, week),
-    [squadName, memberIds, week, dataVersion],
+    [squadName, memberIds, week, dataVersion, panelVersion],
   );
+  const { progressPct, footerXp } = squadXpDisplayMeta(xp);
 
   if (!skipHydration && !ready) {
     return (
@@ -70,12 +85,10 @@ export function SquadXpSummaryCard({
         <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-200">
           <div
             className="h-full rounded-full bg-gradient-to-r from-venture-discover to-spike"
-            style={{ width: `${xp.totalXp}%` }}
+            style={{ width: `${progressPct}%` }}
           />
         </div>
-        <p className="mt-1 text-[10px] text-slate-500">
-          Auto {xp.autoXp} + Week 1 pitch {xp.pitchBonus} · shared by your squad
-        </p>
+        <p className="mt-1 text-[10px] text-slate-500">{footerXp} · shared by your squad</p>
       </div>
     );
   }
@@ -94,9 +107,19 @@ export function SquadXpSummaryCard({
       <div className="h-2 overflow-hidden rounded-full bg-slate-200/80">
         <div
           className="h-full rounded-full bg-gradient-to-r from-venture-discover to-spike transition-all"
-          style={{ width: `${xp.totalXp}%` }}
+          style={{ width: `${progressPct}%` }}
         />
       </div>
+      {xp.panelPending ? (
+        <p className="text-xs font-medium text-amber-700">
+          Panel score ★ {xp.panelAverage?.toFixed(1)} — Week 2 XP pending faculty finalize
+        </p>
+      ) : null}
+      {xp.panelFinalized && xp.panelAverage != null ? (
+        <p className="text-xs text-emerald-700">
+          Panel score ★ {xp.panelAverage.toFixed(1)} · +{xp.week2PanelXp} Week 2 XP
+        </p>
+      ) : null}
       <ul className="space-y-1 text-sm text-slate-700">
         {xp.checklist.map((item) => (
           <li key={item.id} className="flex items-center gap-2">
@@ -107,9 +130,7 @@ export function SquadXpSummaryCard({
           </li>
         ))}
       </ul>
-      <p className="text-[10px] text-slate-400">
-        Auto {xp.autoXp}/80 · Week 1 pitch {xp.pitchBonus}/20 · Shared by all squad members
-      </p>
+      <p className="text-[10px] text-slate-400">{footerXp} · Shared by all squad members</p>
     </section>
   );
 }
@@ -163,14 +184,16 @@ export function SquadXpDashboard({
     enabled: !skipHydration && memberIds.length > 0,
   });
   const dataVersion = hydrationVersion + squadHydrationVersion;
+  const { version: panelVersion } = usePitchPanelLive(!skipHydration);
   const xp = useMemo(
     () => getSquadWeeklyXp(squadName, memberIds, week),
-    [squadName, memberIds, week, dataVersion],
+    [squadName, memberIds, week, dataVersion, panelVersion],
   );
+  const { progressPct, footerXp } = squadXpDisplayMeta(xp);
   const ranks = useMemo(() => {
     if (!allSquads.length) return [];
     return rankSquadsByXp(allSquads, week);
-  }, [allSquads, week, dataVersion]);
+  }, [allSquads, week, dataVersion, panelVersion]);
 
   if (!skipHydration && !ready) {
     return (
@@ -192,7 +215,7 @@ export function SquadXpDashboard({
         ? 'ALMOST READY'
         : xp.gate?.decision === 'not_ready'
           ? 'NOT READY'
-          : xp.totalXp >= 75
+          : xp.totalXp >= 90
             ? 'READY FOR STAGE GATE'
             : 'IN PROGRESS';
   const gateColor =
@@ -227,9 +250,14 @@ export function SquadXpDashboard({
       <div className="h-2 overflow-hidden rounded-full bg-slate-200/80">
         <div
           className="h-full rounded-full bg-gradient-to-r from-venture-discover to-spike transition-all"
-          style={{ width: `${xp.totalXp}%` }}
+          style={{ width: `${progressPct}%` }}
         />
       </div>
+      {xp.panelPending ? (
+        <p className="text-xs font-medium text-amber-700">
+          Panel score ★ {xp.panelAverage?.toFixed(1)} — Week 2 XP pending faculty finalize
+        </p>
+      ) : null}
 
       <ul className="space-y-1.5 text-sm">
         {xp.checklist.map((item) => (
@@ -277,9 +305,7 @@ export function SquadXpDashboard({
         </div>
       ) : null}
 
-      <p className="text-[10px] text-slate-400">
-        Auto XP {xp.autoXp}/80 · Week 1 pitch {xp.pitchBonus}/20 · Shared by all squad members
-      </p>
+      <p className="text-[10px] text-slate-400">{footerXp} · Shared by all squad members</p>
     </section>
   );
 }

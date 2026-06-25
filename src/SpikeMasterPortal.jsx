@@ -39,7 +39,8 @@ import { Week2LoginWelcomeFlow } from './components/week2/Week2LoginWelcomeFlow.
 import { shouldShowWeek2LoginWelcome } from './lib/week2LoginWelcome.js';
 import { UNLOCK_WEEK2, ensureWeek2OpenForParticipant } from './lib/programUnlocks.js';
 import { StageGateCeremonyPage } from './components/stageGate/StageGateCeremonyPage.jsx';
-import { StageGatePresentationPage } from './pages/stageGate/StageGatePresentationPage.jsx';
+import { PitchPanelGuestPage } from './pages/pitchPanel/PitchPanelGuestPage.jsx';
+import { PitchPanelDashboard } from './components/staff/PitchPanelDashboard.jsx';
 import { PageContainer } from './components/layout/PageContainer.jsx';
 import {
   AdminCohortsPage,
@@ -1798,6 +1799,17 @@ const SpikeMasterPortal = () => {
           </LazyRoute>
         );
       }
+      if (path === ROUTES.programCoachPitchPanel) {
+        return (
+          <PageContainer wide>
+            <PitchPanelDashboard
+              interns={interns}
+              staffId={user?.id ?? ''}
+              showToast={showToast}
+            />
+          </PageContainer>
+        );
+      }
       if (path === ROUTES.programCoachHome) {
         return (
           <LazyRoute label="Loading program coach…">
@@ -2024,6 +2036,10 @@ const SpikeMasterPortal = () => {
   if (location.pathname === ROUTES.stageGatePresentation) {
     const closingWeek = Number(new URLSearchParams(location.search).get('week')) || 1;
     return <StageGatePresentationPage closingWeek={closingWeek} />;
+  }
+
+  if (location.pathname === ROUTES.pitchPanel) {
+    return <PitchPanelGuestPage />;
   }
 
   return (

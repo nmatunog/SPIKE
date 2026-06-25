@@ -19,10 +19,12 @@ import {
   AUTO_XP_WEIGHTS,
   MENTOR_REVIEW_DIMENSIONS,
   SQUAD_XP_AUTO_MAX,
-  SQUAD_XP_PITCH_BONUS_MAX,
   SQUAD_XP_TOTAL_MAX,
+  SQUAD_XP_WEEK1_PITCH_MAX,
+  SQUAD_XP_WEEK2_PANEL_MAX,
   STAGE_GATE_DECISIONS,
 } from './squadXpConstants.js';
+import { getSquadPitchPanelSnapshot } from './pitchPanelService.js';
 
 const REVIEW_KEY = 'spike_squad_mentor_review_v1';
 const GATE_KEY = 'spike_squad_stage_gate_v1';
@@ -186,8 +188,24 @@ export function squadWeek2PitchComplete(memberIds) {
 }
 
 /** @param {string[]} memberIds */
+export function computeWeek1PitchXp(memberIds) {
+  return squadWeek1PitchComplete(memberIds) ? SQUAD_XP_WEEK1_PITCH_MAX : 0;
+}
+
+/** @deprecated Use computeWeek1PitchXp */
 export function computePitchBonusXp(memberIds) {
-  return squadWeek1PitchComplete(memberIds) ? SQUAD_XP_PITCH_BONUS_MAX : 0;
+  return computeWeek1PitchXp(memberIds);
+}
+
+/**
+ * @param {string} squadName
+ * @param {string[]} memberIds
+ * @param {number} [week]
+ */
+export function computeWeek2PanelXp(squadName, memberIds, week = 2) {
+  const panel = getSquadPitchPanelSnapshot(squadName, memberIds, week);
+  if (panel.finalized) return panel.week2PanelXp ?? 0;
+  return 0;
 }
 
 /**
@@ -198,17 +216,31 @@ export function computePitchBonusXp(memberIds) {
 export function getSquadWeeklyXp(squadName, memberIds, week = 2) {
   const { autoXp, breakdown, completionPct } = computeSquadAutoXp(memberIds, week);
   const review = getSquadMentorReview(squadName, week);
-  const pitchBonus = computePitchBonusXp(memberIds);
-  const week1PitchComplete = pitchBonus > 0;
-  const week2PitchComplete = squadWeek2PitchComplete(memberIds);
-  const totalXp = Math.min(SQUAD_XP_TOTAL_MAX, autoXp + pitchBonus);
+  const week1PitchXp = computeWeek1PitchXp(memberIds);
+  const panel = getSquadPitchPanelSnapshot(squadName, memberIds, week);
+  const week2PanelXp = panel.finalized ? (panel.week2PanelXp ?? 0) : 0;
+  const week1PitchComplete = week1PitchXp > 0;
+  const week2PitchComplete = panel.finalized
+    ? week2PanelXp > 0
+    : squadWeek2PitchComplete(memberIds);
+  const totalXp = Math.min(
+    SQUAD_XP_TOTAL_MAX,
+    autoXp + week1PitchXp + week2PanelXp,
+  );
   const gate = getSquadStageGateDecision(squadName, week);
 
   return {
     squadName,
     week,
     autoXp,
-    pitchBonus,
+    pitchBonus: week1PitchXp,
+    week1PitchXp,
+    week2PanelXp,
+    provisionalWeek2PanelXp: panel.pending ? panel.provisionalWeek2PanelXp : null,
+    panelAverage: panel.panelAverage,
+    panelPending: panel.pending,
+    panelFinalized: panel.finalized,
+    panelSource: panel.source,
     pitchComplete: week1PitchComplete,
     week1PitchComplete,
     week2PitchComplete,
@@ -218,31 +250,40 @@ export function getSquadWeeklyXp(squadName, memberIds, week = 2) {
     starRating: xpToStars(totalXp),
     review,
     gate,
-    checklist: buildSquadChecklist(memberIds, week),
+    checklist: buildSquadChecklist(squadName, memberIds, week, panel),
   };
 }
 
-/** @param {string[]} memberIds @param {number} [week] */
-function buildSquadChecklist(memberIds, week = 2) {
+/** @param {string} squadName @param {string[]} memberIds @param {number} [week] @param {ReturnType<typeof getSquadPitchPanelSnapshot>} [panel] */
+function buildSquadChecklist(squadName, memberIds, week = 2, panel) {
   const { breakdown } = computeSquadAutoXp(memberIds, week);
   const week1PitchDone = squadWeek1PitchComplete(memberIds);
-  const week2PitchDone = squadWeek2PitchComplete(memberIds);
+  const snapshot = panel ?? getSquadPitchPanelSnapshot(squadName, memberIds, week);
+  const week2PitchDone = snapshot.finalized
+    ? (snapshot.week2PanelXp ?? 0) > 0
+    : snapshot.pending || squadWeek2PitchComplete(memberIds);
+  const week2Label = snapshot.finalized
+    ? 'Week 2 Pitch (panel)'
+    : snapshot.pending
+      ? `Week 2 Pitch (panel pending · ★ ${snapshot.panelAverage?.toFixed(1) ?? '—'})`
+      : 'Week 2 Pitch (panel)';
   return [
     { id: 'interviews', label: 'Interviews completed', done: breakdown.interviews >= AUTO_XP_WEIGHTS.interviews * 0.8 },
     { id: 'portfolio', label: 'Portfolio updated', done: breakdown.portfolio >= AUTO_XP_WEIGHTS.portfolio * 0.8 },
     { id: 'reflection', label: 'Reflection submitted', done: breakdown.reflection >= AUTO_XP_WEIGHTS.reflection * 0.8 },
     { id: 'assignment', label: 'Assignment submitted', done: breakdown.assignment >= AUTO_XP_WEIGHTS.assignment * 0.8 },
     { id: 'week1-pitch', label: 'Week 1 Pitch complete (+20 XP)', done: week1PitchDone },
-    { id: 'week2-pitch', label: 'Week 2 Pitch', done: week2PitchDone },
+    { id: 'week2-pitch', label: week2Label, done: week2PitchDone },
   ];
 }
 
-/** @param {number} xp */
-export function xpToStars(xp) {
-  if (xp >= 90) return 5;
-  if (xp >= 75) return 4;
-  if (xp >= 60) return 3;
-  if (xp >= 40) return 2;
+/** @param {number} xp @param {number} [max] */
+export function xpToStars(xp, max = SQUAD_XP_TOTAL_MAX) {
+  const pct = max > 0 ? xp / max : 0;
+  if (pct >= 0.9) return 5;
+  if (pct >= 0.75) return 4;
+  if (pct >= 0.6) return 3;
+  if (pct >= 0.4) return 2;
   return 1;
 }
 

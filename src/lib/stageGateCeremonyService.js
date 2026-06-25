@@ -14,6 +14,7 @@ import { getEffectiveCanvasCompletionPct } from './participantOutputMetrics.js';
 import { getParticipantSquad } from './cohortFormationService.js';
 import { countSquadsWithReviewForInterns } from './staff/squadAssessmentService.js';
 import { getSquadMentorReview, getSquadWeeklyXp } from './staff/squadXpService.js';
+import { getSquadPitchPanelSnapshot } from './staff/pitchPanelService.js';
 import { listPortfolioDeliverablesLocal } from './portfolioDeliverableService.js';
 import { deriveEngagementLevel } from './staffCoachHomeService.js';
 import { getStageGateDefinition } from './stageGateCeremonyConstants.js';
@@ -152,14 +153,17 @@ export function deriveStageGateCeremony(interns, opts = {}) {
     const assessmentAvg = ratingValues.length
       ? ratingValues.reduce((a, b) => a + b, 0) / ratingValues.length
       : 0;
+    const panel = getSquadPitchPanelSnapshot(squad.name, memberIds, closingWeek);
     const pitchScore =
-      review && assessmentAvg > 0
-        ? Math.round(assessmentAvg * 10) / 10
-        : squadDesign.mentorRating != null && squadDesign.mentorRating > 0
-          ? Number(squadDesign.mentorRating)
-          : squadXp.totalXp > 0
-            ? Math.round((squadXp.totalXp / 20) * 10) / 10
-            : null;
+      panel.panelAverage != null
+        ? Math.round(panel.panelAverage * 10) / 10
+        : review && assessmentAvg > 0
+          ? Math.round(assessmentAvg * 10) / 10
+          : squadDesign.mentorRating != null && squadDesign.mentorRating > 0
+            ? Number(squadDesign.mentorRating)
+            : squadXp.totalXp > 0
+              ? Math.round((squadXp.totalXp / 24) * 10) / 10
+              : null;
     const engagement = deriveEngagementLevel(outputs.avgOutputPct, assessmentAvg || squadXp.totalXp / 25);
     const ready = outputs.pitchPortfolioReady
       || (
