@@ -180,7 +180,14 @@ begin
     raise exception 'Invalid access PIN';
   end if;
 
-  select array_agg(distinct fs.name order by fs.name)
+  select array_agg(distinct fs.name order by
+    case lower(trim(fs.name))
+      when 'cassiopeia' then 1
+      when 'pegasus' then 2
+      when 'argo navis' then 3
+      else 99
+    end,
+    fs.name)
   into v_names
   from public.formation_squads fs
   join public.cohorts c on c.id = fs.cohort_id and c.is_active = true;

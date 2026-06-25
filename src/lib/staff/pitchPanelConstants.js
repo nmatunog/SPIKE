@@ -15,3 +15,17 @@ export const PITCH_PANEL_DIMENSIONS = [
 export const PITCH_PANEL_LIVE_STORAGE_KEY = 'spike_pitch_panel_live_v1';
 export const PITCH_PANEL_FINAL_STORAGE_KEY = 'spike_pitch_panel_final_v1';
 export const PITCH_PANEL_TOKEN_STORAGE_KEY = 'spike_pitch_panel_token_v1';
+
+/** Pitch order for Week 2 panel (Segment 1 cohort). */
+export const PITCH_PANEL_SQUAD_ORDER = ['Cassiopeia', 'Pegasus', 'Argo Navis'];
+
+/** @param {string[]} names */
+export function sortPitchPanelSquads(names) {
+  const rank = new Map(PITCH_PANEL_SQUAD_ORDER.map((name, index) => [name.toLowerCase(), index]));
+  return [...names].sort((a, b) => {
+    const aRank = rank.get(a.toLowerCase()) ?? 999;
+    const bRank = rank.get(b.toLowerCase()) ?? 999;
+    if (aRank !== bRank) return aRank - bRank;
+    return a.localeCompare(b);
+  });
+}

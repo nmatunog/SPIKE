@@ -1,5 +1,5 @@
 import { isSupabaseConfigured, supabase } from '../../supabaseClient.js';
-import { PITCH_PANEL_SESSION_ID } from '../staff/pitchPanelConstants.js';
+import { PITCH_PANEL_SESSION_ID, sortPitchPanelSquads } from '../staff/pitchPanelConstants.js';
 
 function assertClient() {
   if (!isSupabaseConfigured || !supabase) {
@@ -13,7 +13,7 @@ export async function fetchPitchPanelSquads(pin) {
   const client = assertClient();
   const { data, error } = await client.rpc('fetch_pitch_panel_squads', { p_pin: pin });
   if (error) throw new Error(error.message);
-  return /** @type {string[]} */ (data?.squads ?? []);
+  return sortPitchPanelSquads(/** @type {string[]} */ (data?.squads ?? []));
 }
 
 /**

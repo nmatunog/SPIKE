@@ -5,6 +5,7 @@ import { usePitchPanelLive } from '../../hooks/usePitchPanelLive.js';
 import {
   PITCH_PANEL_ACCESS_PIN,
   PITCH_PANEL_DIMENSIONS,
+  sortPitchPanelSquads,
 } from '../../lib/staff/pitchPanelConstants.js';
 import {
   buildFinalizePayload,
@@ -31,10 +32,14 @@ const ACTION_BTN =
  */
 export function PitchPanelDashboard({ interns, staffId = '', showToast, embedded = false }) {
   const squads = useMemo(() => {
-    return groupInternsBySquad(interns).map((s) => ({
-      name: s.name,
-      memberIds: (s.members ?? []).map((m) => m.id),
-    }));
+    const grouped = groupInternsBySquad(interns);
+    return sortPitchPanelSquads(grouped.map((s) => s.name)).map((name) => {
+      const squad = grouped.find((s) => s.name === name);
+      return {
+        name,
+        memberIds: (squad?.members ?? []).map((m) => m.id),
+      };
+    });
   }, [interns]);
 
   const { version, error, refresh, ready } = usePitchPanelLive(true);
