@@ -4,6 +4,7 @@
  */
 import { getParticipantSquad } from '../cohortFormationService.js';
 import { loadWeek2Discovery } from '../customerDiscovery/week2DiscoveryStorage.js';
+import { loadFecValidation } from '../customerDiscovery/week2FecValidationStorage.js';
 import { isFecLabComplete } from '../customerDiscovery/week2FecValidationService.js';
 import { getSquadNameForParticipant } from '../customerDiscovery/week2SquadEvidenceService.js';
 import { deriveVentureMilestones } from '../myVentureHqService.js';
@@ -150,11 +151,11 @@ function memberVenturePropositionReady(participantId) {
 }
 
 /**
- * Squad earns pitch bonus when consolidated UVP exists, a pitch deck is uploaded,
- * or every member has completed their Venture Proposition work.
+ * Week 1 — squad earned Venture Proposition pitch when consolidated UVP exists,
+ * a pitch deck is uploaded, or every member completed venture design / UVP work.
  * @param {string[]} memberIds
  */
-export function squadVenturePropositionPitchComplete(memberIds) {
+export function squadWeek1PitchComplete(memberIds) {
   const ids = memberIds.filter(Boolean);
   if (!ids.length) return false;
 
@@ -165,9 +166,28 @@ export function squadVenturePropositionPitchComplete(memberIds) {
   return ids.every((id) => memberVenturePropositionReady(id));
 }
 
+/** @deprecated Use squadWeek1PitchComplete */
+export const squadVenturePropositionPitchComplete = squadWeek1PitchComplete;
+
+/**
+ * Week 2 — market validation pitch submitted (squad FEC or ≥80% of members).
+ * @param {string[]} memberIds
+ */
+export function squadWeek2PitchComplete(memberIds) {
+  const ids = memberIds.filter(Boolean);
+  if (!ids.length) return false;
+
+  const squadKey = getSquadNameForParticipant(ids[0]);
+  if (squadKey && loadFecValidation(squadKey).pitchSubmittedAt) return true;
+
+  const signals = ids.map((id) => memberActivitySignals(id));
+  const n = ids.length;
+  return signals.filter((s) => s.pitchDone).length / n >= 0.8;
+}
+
 /** @param {string[]} memberIds */
 export function computePitchBonusXp(memberIds) {
-  return squadVenturePropositionPitchComplete(memberIds) ? SQUAD_XP_PITCH_BONUS_MAX : 0;
+  return squadWeek1PitchComplete(memberIds) ? SQUAD_XP_PITCH_BONUS_MAX : 0;
 }
 
 /**
@@ -179,7 +199,8 @@ export function getSquadWeeklyXp(squadName, memberIds, week = 2) {
   const { autoXp, breakdown, completionPct } = computeSquadAutoXp(memberIds, week);
   const review = getSquadMentorReview(squadName, week);
   const pitchBonus = computePitchBonusXp(memberIds);
-  const pitchComplete = pitchBonus > 0;
+  const week1PitchComplete = pitchBonus > 0;
+  const week2PitchComplete = squadWeek2PitchComplete(memberIds);
   const totalXp = Math.min(SQUAD_XP_TOTAL_MAX, autoXp + pitchBonus);
   const gate = getSquadStageGateDecision(squadName, week);
 
@@ -188,7 +209,9 @@ export function getSquadWeeklyXp(squadName, memberIds, week = 2) {
     week,
     autoXp,
     pitchBonus,
-    pitchComplete,
+    pitchComplete: week1PitchComplete,
+    week1PitchComplete,
+    week2PitchComplete,
     totalXp,
     breakdown,
     completionPct,
@@ -202,13 +225,15 @@ export function getSquadWeeklyXp(squadName, memberIds, week = 2) {
 /** @param {string[]} memberIds @param {number} [week] */
 function buildSquadChecklist(memberIds, week = 2) {
   const { breakdown } = computeSquadAutoXp(memberIds, week);
-  const pitchDone = squadVenturePropositionPitchComplete(memberIds);
+  const week1PitchDone = squadWeek1PitchComplete(memberIds);
+  const week2PitchDone = squadWeek2PitchComplete(memberIds);
   return [
     { id: 'interviews', label: 'Interviews completed', done: breakdown.interviews >= AUTO_XP_WEIGHTS.interviews * 0.8 },
     { id: 'portfolio', label: 'Portfolio updated', done: breakdown.portfolio >= AUTO_XP_WEIGHTS.portfolio * 0.8 },
     { id: 'reflection', label: 'Reflection submitted', done: breakdown.reflection >= AUTO_XP_WEIGHTS.reflection * 0.8 },
     { id: 'assignment', label: 'Assignment submitted', done: breakdown.assignment >= AUTO_XP_WEIGHTS.assignment * 0.8 },
-    { id: 'pitch', label: 'Venture Proposition pitch complete (+20 XP)', done: pitchDone },
+    { id: 'week1-pitch', label: 'Week 1 Pitch complete (+20 XP)', done: week1PitchDone },
+    { id: 'week2-pitch', label: 'Week 2 Pitch', done: week2PitchDone },
   ];
 }
 

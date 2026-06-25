@@ -1,7 +1,7 @@
 /** Squad-first assessment — shared weekly XP (0–100). */
 
 export const SQUAD_XP_AUTO_MAX = 80;
-/** Auto-awarded when the squad completes the Venture Proposition pitch (replaces mentor bonus XP). */
+/** Auto-awarded when the squad completes the Week 1 Venture Proposition pitch. */
 export const SQUAD_XP_PITCH_BONUS_MAX = 20;
 /** @deprecated Use SQUAD_XP_PITCH_BONUS_MAX — mentor ratings no longer drive XP. */
 export const SQUAD_XP_MENTOR_MAX = SQUAD_XP_PITCH_BONUS_MAX;

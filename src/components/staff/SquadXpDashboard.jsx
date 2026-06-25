@@ -74,7 +74,7 @@ export function SquadXpSummaryCard({
           />
         </div>
         <p className="mt-1 text-[10px] text-slate-500">
-          Auto {xp.autoXp} + Pitch {xp.pitchBonus} · shared by your squad
+          Auto {xp.autoXp} + Week 1 pitch {xp.pitchBonus} · shared by your squad
         </p>
       </div>
     );
@@ -108,7 +108,7 @@ export function SquadXpSummaryCard({
         ))}
       </ul>
       <p className="text-[10px] text-slate-400">
-        Auto {xp.autoXp}/80 · Pitch {xp.pitchBonus}/20 · Shared by all squad members
+        Auto {xp.autoXp}/80 · Week 1 pitch {xp.pitchBonus}/20 · Shared by all squad members
       </p>
     </section>
   );
@@ -278,7 +278,7 @@ export function SquadXpDashboard({
       ) : null}
 
       <p className="text-[10px] text-slate-400">
-        Auto XP {xp.autoXp}/80 · Pitch bonus {xp.pitchBonus}/20 · Shared by all squad members
+        Auto XP {xp.autoXp}/80 · Week 1 pitch {xp.pitchBonus}/20 · Shared by all squad members
       </p>
     </section>
   );
