@@ -10,6 +10,7 @@ import {
   PROJECTION_HREF,
   WORKSHOP_HREF,
 } from './Day4VentureDesignHero.jsx';
+import { internFecCanvasHref } from '../../../routes/paths.js';
 
 /**
  * Session-level CTA — complements the Day 4 hero (replaces Deck 02 in session flow).
@@ -72,13 +73,24 @@ export function VentureDesignLaunchCard({
             </Link>
           </>
         ) : (
-          <Link
-            to={WORKSHOP_HREF}
-            className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-spike hover:bg-red-50"
-          >
-            {percent > 0 ? 'Continue workshop' : 'Enter Venture Design Studio'}
-            <ArrowRight size={16} aria-hidden />
-          </Link>
+          <>
+            <Link
+              to={WORKSHOP_HREF}
+              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-spike hover:bg-red-50"
+            >
+              {percent > 0 ? 'Continue workshop' : 'Enter Venture Design Studio'}
+              <ArrowRight size={16} aria-hidden />
+            </Link>
+            {percent > 0 ? (
+              <Link
+                to={internFecCanvasHref()}
+                className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-white/25 px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/10"
+              >
+                <Layout size={16} aria-hidden />
+                My FEC Canvas
+              </Link>
+            ) : null}
+          </>
         )}
       </div>
     </section>

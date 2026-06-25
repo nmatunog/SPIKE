@@ -1,6 +1,6 @@
 import { ArrowRight, Layout, Monitor, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { BLUEPRINT_LINKS, ROUTES, ventureDesignWorkshopHref } from '../../../routes/paths.js';
+import { BLUEPRINT_LINKS, ROUTES, internFecCanvasHref, ventureDesignWorkshopHref } from '../../../routes/paths.js';
 
 const WORKSHOP_STEPS = [
   'Target Insight',
@@ -135,13 +135,22 @@ export function Day4VentureDesignHero({ variant, progressPercent = 0 }) {
                 </Link>
               </>
             ) : (
-              <Link
-                to={WORKSHOP_HREF}
-                className="inline-flex min-h-[52px] flex-1 items-center justify-center gap-2 rounded-2xl bg-white px-6 py-3 text-sm font-bold text-spike shadow-lg transition hover:bg-red-50 sm:flex-none sm:px-10 sm:text-base"
-              >
-                Enter Venture Design Studio
-                <ArrowRight size={18} aria-hidden />
-              </Link>
+              <>
+                <Link
+                  to={WORKSHOP_HREF}
+                  className="inline-flex min-h-[52px] flex-1 items-center justify-center gap-2 rounded-2xl bg-white px-6 py-3 text-sm font-bold text-spike shadow-lg transition hover:bg-red-50 sm:flex-none sm:px-10 sm:text-base"
+                >
+                  Enter Venture Design Studio
+                  <ArrowRight size={18} aria-hidden />
+                </Link>
+                <Link
+                  to={internFecCanvasHref()}
+                  className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-2xl border border-white/30 bg-white/5 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10"
+                >
+                  <Layout size={18} aria-hidden />
+                  My FEC Canvas
+                </Link>
+              </>
             )}
           </div>
         </div>

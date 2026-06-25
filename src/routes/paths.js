@@ -248,6 +248,17 @@ export function fecProjectionHref(participantId, opts = {}) {
 }
 
 /**
+ * Intern self-view — projection page resolves the signed-in participant.
+ * @param {{ exit?: string }} [opts]
+ */
+export function internFecCanvasHref(opts = {}) {
+  const params = new URLSearchParams();
+  if (opts.exit) params.set('exit', opts.exit);
+  const q = params.toString();
+  return q ? `${ROUTES.playbookFecProjection}?${q}` : ROUTES.playbookFecProjection;
+}
+
+/**
  * @param {string} pathname
  * @param {'faculty' | 'mentor'} role
  */

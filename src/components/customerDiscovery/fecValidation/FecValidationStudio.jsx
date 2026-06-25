@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowRight, Check, Sparkles, Star } from 'lucide-react';
+import { ViewMyFecCanvasLink } from '../../ventureDesign/ViewMyFecCanvasLink.jsx';
 import {
   approveEvidenceBoard,
   approveFecBoxEvolution,
@@ -186,6 +187,14 @@ function FecStudioLanding({ studio, participantId, memberNames, onStart, onNavig
         </div>
 
         <SquadRolesBanner roles={lab.roles} memberNames={memberNames} currentParticipantId={participantId} />
+
+        <div className="mt-6">
+          <ViewMyFecCanvasLink
+            compact
+            label="View my full FEC Canvas board →"
+            className="text-amber-200 hover:text-white"
+          />
+        </div>
       </section>
 
       <section className="rounded-xl border border-indigo-100 bg-indigo-50/80 px-4 py-4 text-sm text-indigo-950">
@@ -223,9 +232,12 @@ function FecStudioLanding({ studio, participantId, memberNames, onStart, onNavig
 
       <FecValidationCanvas boxScores={lab.fec.boxScores} animate={clarity.delta > 0} />
 
-      <p className="text-center text-xs text-slate-500">
-        Or use <strong>Mission track</strong> on the right — Learn → Evolve → Act.
-      </p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-xs text-slate-500">
+          Confidence scores above — open the full board to see every box with your venture outputs.
+        </p>
+        <ViewMyFecCanvasLink compact label="Full FEC board →" />
+      </div>
     </div>
   );
 }

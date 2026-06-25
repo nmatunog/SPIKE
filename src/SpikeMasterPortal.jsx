@@ -1466,9 +1466,9 @@ const SpikeMasterPortal = () => {
     </LazyRoute>
   );
 
-  const renderFecProjection = (viewerRole) => (
+  const renderFecProjection = (viewerRole, defaultParticipantId = '') => (
     <LazyRoute label="Loading FEC projection…">
-      <FecCanvasProjectionPage viewerRole={viewerRole} />
+      <FecCanvasProjectionPage viewerRole={viewerRole} defaultParticipantId={defaultParticipantId} />
     </LazyRoute>
   );
 
@@ -1654,7 +1654,7 @@ const SpikeMasterPortal = () => {
         );
       }
       if (path === ROUTES.playbookFecProjection) {
-        return renderFecProjection('intern');
+        return renderFecProjection('intern', internUser.id);
       }
       if (path === ROUTES.playbookVentureDesignWorkshop) {
         return renderVentureDesignWorkshop(internUser, { viewerRole: 'intern', readOnly: false });

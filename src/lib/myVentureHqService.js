@@ -1,10 +1,11 @@
 /**
  * My Venture HQ — venture-centric intern home (identity, stage, today, milestones, FEC preview).
  */
-import { ROUTES, BLUEPRINT_LINKS } from '../routes/paths.js';
+import { ROUTES, BLUEPRINT_LINKS, internFecCanvasHref } from '../routes/paths.js';
 import { deriveTodayMission } from './buildStudioService.js';
 import { computeCanvasCompletionPct } from './canvasService.js';
 import { getCanvasSummary } from './canvasSummaryService.js';
+import { buildFecLayoutParticipantContent } from './fecCanvasLayoutContent.js';
 import { loadVentureDesignRecord } from './ventureDesignStudioService.js';
 import { loadVentureStudioState } from './ventureStudioStorage.js';
 import { listPortfolioDeliverablesLocal } from './portfolioDeliverableService.js';
@@ -189,30 +190,14 @@ export function deriveVentureTodayMission(participantId, state) {
 
 /** @param {string} participantId */
 export function buildFecPreviewContent(participantId) {
-  const design = loadVentureDesignRecord(participantId);
-  const draft = design.individual;
-  const summary = getCanvasSummary(participantId);
-  const uvpFromSynthesis = hasText(draft?.step3?.synthesisA)
-    ? `We help ${draft.step3.synthesisA} achieve ${draft.step3.synthesisB || '…'} through ${draft.step3.synthesisC || '…'}.`
-    : '';
-  const centerContent = summary.unified_venture_proposition?.trim() || uvpFromSynthesis;
-  const hasContent = Boolean(
-    centerContent
-    || draft?.step1?.customer
-    || draft?.step1?.problem
-    || draft?.step4?.clientFeeling,
-  );
+  const layout = buildFecLayoutParticipantContent(participantId);
 
   return {
-    mode: hasContent ? 'full' : 'blank',
-    centerContent: centerContent || undefined,
-    uvpDetailContent: centerContent || undefined,
-    boxContents: {
-      who_we_serve: draft?.step1?.customer || undefined,
-      problem_we_solve: draft?.step1?.problem || undefined,
-      client_experience: draft?.step4?.clientFeeling || undefined,
-    },
-    canvasHref: BLUEPRINT_LINKS.businessPlan,
+    mode: layout.mode,
+    centerContent: layout.centerContent,
+    uvpDetailContent: layout.uvpDetailContent,
+    boxContents: layout.boxContents,
+    canvasHref: internFecCanvasHref(),
   };
 }
 

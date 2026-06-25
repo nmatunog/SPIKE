@@ -1,6 +1,8 @@
 /**
  * Map FEC exemplar records into FecCanvasLayout display props.
  */
+import { loadFecValidation } from './customerDiscovery/week2FecValidationStorage.js';
+import { getSquadNameForParticipant } from './customerDiscovery/week2SquadEvidenceService.js';
 import { getCanvasSummary } from './canvasSummaryService.js';
 import { getFecField, getFecUnifiedVentureProposition, getVentureScorecard } from './fecCanvasService.js';
 import { loadVentureDesignRecord } from './ventureDesignStudioService.js';
@@ -48,11 +50,38 @@ export function buildFecLayoutParticipantContent(participantId) {
     || pickText(getFecField(participantId, 'create_value', 'value_offering'))
     || pickText(draft?.step3?.different);
 
+  const squadKey = getSquadNameForParticipant(participantId) || `solo-${participantId}`;
+  const fecValidation = loadFecValidation(squadKey);
+  const boxScores = fecValidation.boxScores ?? {};
+  const validatedWho = pickText(boxScores.who_we_serve?.approvedText);
+  const validatedProblem = pickText(boxScores.problem_we_solve?.approvedText);
+  const validatedExperience = pickText(boxScores.client_experience?.approvedText);
+  const validatedStrategy = pickText(boxScores.winning_strategy?.approvedText);
+  const validatedUvp = pickText(boxScores.uvp?.approvedText);
+
+  const mergedCenter = validatedUvp || centerContent;
+  const mergedBoxes = {
+    who_we_serve: validatedWho || who,
+    problem_we_solve: validatedProblem || problem,
+    client_experience: validatedExperience || experience,
+    winning_strategy: validatedStrategy || winningStrategy,
+    key_partners: partners,
+  };
+
+  const hasValidationOverlay = Boolean(
+    validatedUvp
+    || validatedWho
+    || validatedProblem
+    || validatedExperience
+    || validatedStrategy,
+  );
+
   const hasContent = Boolean(
-    centerContent
-    || who
-    || problem
-    || experience
+    mergedCenter
+    || mergedBoxes.who_we_serve
+    || mergedBoxes.problem_we_solve
+    || mergedBoxes.client_experience
+    || mergedBoxes.winning_strategy
     || partners
     || pickText(summary.roadmap_12mo)
     || pickText(scorecard.revenue),
@@ -60,15 +89,18 @@ export function buildFecLayoutParticipantContent(participantId) {
 
   return {
     mode: hasContent ? /** @type {'full'} */ ('full') : /** @type {'blank'} */ ('blank'),
-    centerContent,
-    uvpDetailContent: centerContent,
-    boxContents: {
-      who_we_serve: who,
-      problem_we_solve: problem,
-      client_experience: experience,
-      winning_strategy: winningStrategy,
-      key_partners: partners,
-    },
+    centerContent: mergedCenter,
+    uvpDetailContent: mergedCenter,
+    boxContents: mergedBoxes,
+    validationFocus: hasValidationOverlay,
+    boxScores: hasValidationOverlay ? boxScores : undefined,
+    headerMeta: hasValidationOverlay
+      ? {
+          weekLabel: 'Week 2',
+          dayLabel: 'FEC Lab',
+          subtitle: 'Your validated venture canvas — boxes 1–5 from interview evidence.',
+        }
+      : undefined,
     complexContents: {
       growth_engines: {
         'ADVISOR EXCELLENCE': pickText(getFecField(participantId, 'create_value', 'value_offering')),

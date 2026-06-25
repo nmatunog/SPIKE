@@ -4,14 +4,17 @@ import { canToggleFecCanvasMode } from '../lib/fecProjectionAccess.js';
 import { playbookHref } from '../routes/paths.js';
 
 /**
- * Standalone FEC projection route (Playbook) — staff delivery + intern read-only blank view.
- * @param {{ viewerRole?: string }} props
+ * Standalone FEC projection route (Playbook) — staff delivery + intern self-view with outputs.
+ * @param {{ viewerRole?: string, defaultParticipantId?: string }} props
  */
-export function FecCanvasProjectionPage({ viewerRole = 'intern' }) {
+export function FecCanvasProjectionPage({ viewerRole = 'intern', defaultParticipantId = '' }) {
   const [searchParams] = useSearchParams();
-  const participantId = searchParams.get('participant')?.trim() || '';
+  const queryParticipant = searchParams.get('participant')?.trim() || '';
   const participantName = searchParams.get('name')?.trim() || '';
   const exitHref = searchParams.get('exit')?.trim() || playbookHref({ week: 1, day: 4 });
+  const participantId =
+    queryParticipant
+    || (viewerRole === 'intern' ? defaultParticipantId.trim() : '');
 
   return (
     <FecCanvasProjectionView

@@ -45,21 +45,24 @@ export function FecCanvasProjectionView({
   }, [participantId, participantReady, participantVersion]);
 
   const isParticipantView = Boolean(participantId);
+  const isSelfView = isParticipantView && viewerRole === 'intern';
   const displayMode = isParticipantView
     ? participantContent?.mode ?? 'blank'
     : canToggleMode
       ? mode
       : 'blank';
   const isFaculty = viewerRole === 'faculty';
-  const projectionLabel = isParticipantView
-    ? participantName
-      ? `${participantName} · FEC projection`
-      : 'Participant FEC projection'
-    : isFaculty
-      ? `${PROGRAM_COACH_LABEL} projection`
-      : viewerRole === 'mentor'
-        ? 'Mentor projection'
-        : 'FEC overview';
+  const projectionLabel = isSelfView
+    ? 'Your FEC Canvas'
+    : isParticipantView
+      ? participantName
+        ? `${participantName} · FEC projection`
+        : 'Participant FEC projection'
+      : isFaculty
+        ? `${PROGRAM_COACH_LABEL} projection`
+        : viewerRole === 'mentor'
+          ? 'Mentor projection'
+          : 'FEC overview';
 
   const exemplar =
     !isParticipantView && displayMode === 'full'
@@ -75,6 +78,7 @@ export function FecCanvasProjectionView({
     viewerRole === 'faculty'
       ? ventureDesignWorkshopHref({ coach: true })
       : ventureDesignWorkshopHref({ coach: false });
+  const internWorkshopHref = `${BLUEPRINT_LINKS.businessPlan}?start=1`;
 
   return (
     <div className="-mx-4 min-h-screen bg-stone-950 font-sans text-white md:-mx-0">
@@ -91,6 +95,10 @@ export function FecCanvasProjectionView({
                 <p className="mt-0.5 flex items-center gap-1.5 text-[10px] font-semibold text-stone-400">
                   <Loader2 size={12} className="animate-spin text-amber-400" />
                   Syncing from cloud…
+                </p>
+              ) : isSelfView && displayMode === 'full' ? (
+                <p className="mt-0.5 text-[10px] font-semibold text-emerald-400">
+                  Showing your saved venture outputs
                 </p>
               ) : null}
             </div>
@@ -143,19 +151,46 @@ export function FecCanvasProjectionView({
 
       <div className="mx-auto max-w-[100rem] px-4 py-6 md:px-8 md:py-10">
         {isParticipantView && displayMode === 'blank' ? (
-          <p className="mb-6 rounded-2xl border border-stone-700 bg-stone-900/80 px-5 py-4 text-center text-sm text-stone-300">
-            This participant has not filled their FEC yet. Ask them to save their canvas in Venture Blueprint
-            or Venture Design Studio.
-          </p>
+          isSelfView ? (
+            <div className="mb-6 space-y-3 rounded-2xl border border-stone-700 bg-stone-900/80 px-5 py-5 text-center text-sm text-stone-300">
+              <p>
+                Your FEC board fills in as you work through <strong className="text-white">Venture Design Studio</strong>{' '}
+                (Week 1) and <strong className="text-white">FEC Validation Lab</strong> (Week 2).
+              </p>
+              <div className="flex flex-wrap justify-center gap-3">
+                <Link
+                  to={internWorkshopHref}
+                  className="inline-flex min-h-[40px] items-center gap-2 rounded-xl bg-amber-400 px-4 py-2 text-xs font-bold text-stone-900 hover:bg-amber-300"
+                >
+                  Open Venture Design Studio
+                </Link>
+                <Link
+                  to={exitHref}
+                  className="inline-flex min-h-[40px] items-center gap-2 rounded-xl border border-stone-600 px-4 py-2 text-xs font-semibold text-stone-200 hover:bg-stone-800"
+                >
+                  Back to playbook
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <p className="mb-6 rounded-2xl border border-stone-700 bg-stone-900/80 px-5 py-4 text-center text-sm text-stone-300">
+              This participant has not filled their FEC yet. Ask them to save their canvas in Venture Blueprint
+              or Venture Design Studio.
+            </p>
+          )
         ) : (
           <p className="mb-6 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-5 py-4 text-center text-sm font-medium text-amber-100 md:text-base">
-            {FEC_TOP_BANNER}
+            {isSelfView ? 'Your venture outputs on the full Financial Entrepreneurship Canvas.' : FEC_TOP_BANNER}
           </p>
         )}
 
         <FecCanvasLayout
           mode={displayMode}
           variant="poster"
+          validationFocus={participantContent?.validationFocus}
+          boxScores={participantContent?.boxScores ?? {}}
+          animateScores={Boolean(participantContent?.validationFocus)}
+          headerMeta={participantContent?.headerMeta}
           centerContent={layoutContent?.centerContent}
           uvpDetailContent={layoutContent?.uvpDetailContent}
           boxContents={layoutContent?.boxContents}

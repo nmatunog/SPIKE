@@ -1,6 +1,7 @@
 import { ArrowRight, CheckCircle2, Circle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { FecCanvasLayout } from '../ventureDesign/FecCanvasLayout.jsx';
+import { ViewMyFecCanvasLink } from '../ventureDesign/ViewMyFecCanvasLink.jsx';
 import { deriveMyVentureHq } from '../../lib/myVentureHqService.js';
 import { StageGateCelebrationCard } from '../../components/stageGate/StageGateCelebrationCard.jsx';
 import { StageGateJourneyPanel } from '../../components/stageGate/StageGateJourneyPanel.jsx';
@@ -113,14 +114,13 @@ export function MyVentureHQ({ participantId, state, squadNameFallback = '' }) {
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-500">
             Financial Entrepreneurship Canvas
           </p>
-          <Link
-            to={fecPreview.canvasHref}
-            className="text-sm font-semibold text-spike hover:underline"
-          >
-            Live Preview →
-          </Link>
+          <ViewMyFecCanvasLink
+            compact
+            label={fecPreview.mode === 'full' ? 'Open full board →' : 'View FEC Canvas →'}
+          />
         </div>
-        <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-slate-50/50 p-2 sm:p-4">
+        <Link to={fecPreview.canvasHref} className="block rounded-2xl border border-slate-200 bg-slate-50/50 p-2 transition hover:border-spike/30 hover:shadow-sm sm:p-4">
+          <div className="overflow-x-auto">
           <div className="pointer-events-none min-w-[640px] scale-[0.92] origin-top-left sm:scale-100">
             <FecCanvasLayout
               mode={fecPreview.mode}
@@ -132,12 +132,17 @@ export function MyVentureHQ({ participantId, state, squadNameFallback = '' }) {
               boxContents={fecPreview.boxContents}
             />
           </div>
-        </div>
-        {!fecPreview.centerContent ? (
+          </div>
+        </Link>
+        {fecPreview.mode === 'blank' ? (
           <p className="mt-3 text-center text-sm text-slate-500">
-            Your canvas fills in as you work through Venture Design Studio.
+            Your canvas fills in as you work through Venture Design Studio and FEC Validation Lab.
           </p>
-        ) : null}
+        ) : (
+          <p className="mt-3 text-center text-sm text-slate-500">
+            Tap the preview to open your full FEC board.
+          </p>
+        )}
       </section>
     </div>
   );
