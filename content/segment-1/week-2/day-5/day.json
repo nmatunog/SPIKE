@@ -3,23 +3,30 @@
   "segmentId": "segment-1",
   "weekId": "week-segment-1-2",
   "dayNumber": 5,
-  "title": "Day 10 — Market Validation Pitch",
-  "theme": "Validate",
+  "title": "Day 10 — Pitch · Empathy · Advise",
+  "theme": "Pitch · Empathy · Advise",
   "durationHours": 4,
   "learningObjectives": [
-    "Present What The Market Taught Us (5 min per squad)",
-    "Complete Stage Gate — Ready For Build",
-    "Squad XP + mentor review (4 dimensions)"
+    "Present Market Validation Pitch — evidence, not ideas (5 min per squad)",
+    "Complete Empathy Lab with Miguel — understand before you advise",
+    "Reflect on advisor role and bridge to Week 3 ADVISE",
+    "Stage Gate II + Squad XP ceremony"
   ],
   "expectedOutputs": [
-    "Market Validation Pitch",
-    "Market Validation Evidence portfolio",
+    "Market Validation Pitch (SPIKE Studio)",
+    "Empathy Lab portfolio capture",
+    "Week wrap-up reflection",
     "Stage Gate II decision"
   ],
   "portfolioDeliverables": ["portfolio-market-intelligence"],
   "businessPlanIntegration": "bp-chapter-2",
   "presentations": ["presentation-w2-d5-deck-01"],
-  "activities": ["activity-w2-d5-pitch", "activity-w2-d5-gate"],
-  "worksheets": [],
+  "activities": [
+    "activity-w2-d5-opening",
+    "activity-w2-d5-pitch",
+    "activity-w2-d5-empathy-lab",
+    "activity-w2-d5-gate"
+  ],
+  "worksheets": ["worksheet-w2-d5-empathy"],
   "assessments": ["assessment-w2-d5"]
 }

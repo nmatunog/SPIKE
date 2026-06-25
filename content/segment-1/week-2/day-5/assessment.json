@@ -2,24 +2,29 @@
   {
     "id": "assessment-w2-d5",
     "dayId": "day-segment-1-week-2-day-5",
-    "title": "Market Validation Pitch — Squad Assessment",
-    "description": "Squad-first Stage Gate II assessment. Auto XP from SPIKE Studio + mentor weekly review.",
+    "title": "Week 2 Day 5 — Squad Assessment",
+    "description": "Squad-first Stage Gate II assessment. Pitch evidence + empathy lab + mentor weekly review.",
     "rubric": {
       "criteria": [
         {
           "id": "pitch",
           "label": "Market Validation Pitch",
-          "weight": 40
+          "weight": 30
+        },
+        {
+          "id": "empathy-lab",
+          "label": "Empathy Lab — Think Like Miguel",
+          "weight": 20
         },
         {
           "id": "evidence-portfolio",
           "label": "Market Validation Evidence portfolio",
-          "weight": 30
+          "weight": 25
         },
         {
           "id": "stage-gate",
           "label": "Stage Gate II decision",
-          "weight": 30
+          "weight": 25
         }
       ]
     }

@@ -4,11 +4,16 @@
       "id": "session-w2-d5-full",
       "dayId": "day-segment-1-week-2-day-5",
       "sessionNumber": 1,
-      "title": "Day 10 — Market Validation Pitch & Stage Gate",
+      "title": "Day 10 — Pitch · Empathy · Advise",
       "durationMinutes": 240,
       "presentationIds": ["presentation-w2-d5-deck-01"],
-      "activityIds": ["activity-w2-d5-pitch", "activity-w2-d5-gate"],
-      "worksheetIds": [],
+      "activityIds": [
+        "activity-w2-d5-opening",
+        "activity-w2-d5-pitch",
+        "activity-w2-d5-empathy-lab",
+        "activity-w2-d5-gate"
+      ],
+      "worksheetIds": ["worksheet-w2-d5-empathy"],
       "assessmentIds": ["assessment-w2-d5"],
       "reflectionIds": ["reflection-w2-d5"],
       "surveyIds": []

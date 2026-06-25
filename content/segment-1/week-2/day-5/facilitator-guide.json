@@ -1,53 +1,62 @@
 {
   "dayId": "day-segment-1-week-2-day-5",
-  "title": "Facilitator Guide — Day 10 — Market Validation Pitch & Stage Gate II",
+  "title": "Facilitator Guide — Day 10 — Pitch · Empathy · Advise",
   "durationHours": 4,
   "prepChecklist": [
-    "Confirm squads completed FEC Validation Lab (6 steps)",
-    "Load Stage Gate ceremony in SPIKE (projector mode)",
+    "Confirm squads completed FEC Validation Lab and pitch draft in SPIKE Studio",
+    "Load faculty deck (14 slides) in Coach presentation mode",
     "Review Squad XP leaderboard and mentor review panel",
-    "AV check for 5-minute squad presentations"
+    "AV check for 5-minute squad pitch presentations",
+    "Confirm Empathy Lab task is live in participant Playbooks"
   ],
   "sessionFlow": [
     {
-      "time": "0:00–0:15",
-      "activity": "Opening — What The Market Taught Us",
-      "notes": "Frame: present evidence, not ideas."
+      "time": "0:00–0:20",
+      "activity": "Opening — Venture Builder → Financial Entrepreneur (slides 1–4)",
+      "notes": "Frame Discover ✓ Validate ✓ → Advise. Introduce Miguel and the 5-stage journey."
     },
     {
-      "time": "0:15–2:15",
-      "activity": "Market Validation Pitch — 5 min per squad + Q&A",
-      "notes": "10-slide structure auto-generated from SPIKE Studio."
+      "time": "0:20–2:00",
+      "activity": "Market Validation Pitch — 5 min per squad + Q&A (slide 5 handoff)",
+      "notes": "SPIKE Studio presentation mode. Present evidence — customer quotes, FEC evolution, not ideas."
     },
     {
-      "time": "2:15–2:30",
+      "time": "2:00–2:10",
       "activity": "Break",
       "notes": ""
     },
     {
-      "time": "2:30–3:00",
-      "activity": "Stage Gate II ceremony",
-      "notes": "Coach decision per squad: Not Ready / Almost Ready / Ready For Build."
+      "time": "2:10–3:10",
+      "activity": "Empathy Lab workshop — Miguel (slides 6–10)",
+      "notes": "Empathy In Action → Think Like Miguel worksheet in SPIKE → squad discussion → reflect & share."
     },
     {
-      "time": "3:00–3:15",
-      "activity": "Squad XP + mentor commendations",
-      "notes": "Four dimensions: Learning, Collaboration, Professionalism, Readiness."
+      "time": "3:10–3:25",
+      "activity": "Week 3 bridge + wrap-up (slides 11–14)",
+      "notes": "What would you ask Miguel? Preview Week 3 ADVISE. Participants complete week wrap-up in Playbook."
+    },
+    {
+      "time": "3:25–4:00",
+      "activity": "Stage Gate II ceremony + Squad XP",
+      "notes": "Coach decision per squad: Not Ready / Almost Ready / Ready For Build. Mentor commendations."
     }
   ],
   "debriefQuestions": [
-    "Which squad showed the strongest interview evidence?",
-    "What patterns emerged across Cassiopeia, Pegasus, and Argo Navis?",
-    "Who is ready for Week 3 BUILD stage?"
+    "Which squad showed the strongest interview evidence in their pitch?",
+    "What did squads learn about Miguel that they did not expect?",
+    "How does empathy change the way you would advise a client?",
+    "Who is ready for Week 3 ADVISE?"
   ],
   "commonPitfalls": [
+    "Skipping empathy workshop to extend pitch time",
     "Pitching ideas instead of customer quotes and validated problems",
-    "Missing FEC readiness on readiness cards",
+    "Treating empathy map as a checklist instead of genuine perspective-taking",
     "Individual grading instead of squad-first assessment"
   ],
   "coachingTips": [
-    "Use SPIKE presentation mode — slides already populated",
+    "Use SPIKE presentation mode — deck aligns to pitch then workshop flow",
+    "After pitch block, return to slide 6 — do not skip the empathy lab",
     "Stage gate is squad decision only — no individual scores",
-    "Document remediation for Almost Ready squads before Week 3"
+    "Empathy Lab saves automatically to portfolio"
   ]
 }

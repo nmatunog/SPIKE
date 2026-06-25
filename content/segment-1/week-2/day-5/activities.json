@@ -1,31 +1,69 @@
 {
   "activities": [
     {
+      "id": "activity-w2-d5-opening",
+      "dayId": "day-segment-1-week-2-day-5",
+      "title": "Opening — Venture Builder to Financial Entrepreneur",
+      "durationMinutes": 20,
+      "materials": ["Faculty deck slides 1–4"],
+      "instructions": [
+        "Frame the arc: Discover ✓ Validate ✓ → Advise",
+        "Introduce Miguel and the 5-stage client journey",
+        "Set expectation: pitch first, empathy workshop after"
+      ],
+      "outputs": [],
+      "debriefQuestions": []
+    },
+    {
       "id": "activity-w2-d5-pitch",
       "dayId": "day-segment-1-week-2-day-5",
       "title": "Market Validation Pitch",
-      "durationMinutes": 150,
+      "durationMinutes": 100,
+      "type": "studio",
       "materials": ["Pitch deck in SPIKE Studio", "Stage Gate rubric"],
       "instructions": [
         "5 minutes per squad — present evidence, not ideas",
-        "Follow 10-slide pitch structure",
-        "Audience Q&A"
+        "SPIKE Studio auto-generates 10-slide pitch from FEC lab",
+        "Audience Q&A after each squad"
       ],
       "outputs": ["Market Validation Pitch"],
-      "debriefQuestions": []
+      "debriefQuestions": [
+        "Which customer quote was most convincing?",
+        "What evidence surprised the audience?"
+      ]
+    },
+    {
+      "id": "activity-w2-d5-empathy-lab",
+      "dayId": "day-segment-1-week-2-day-5",
+      "title": "Empathy Lab — Think Like Miguel",
+      "durationMinutes": 60,
+      "type": "worksheet",
+      "materials": ["Faculty deck slides 6–10", "SPIKE Playbook Empathy Lab task"],
+      "instructions": [
+        "Empathy In Action — four steps: Observe, Listen, Understand, Connect",
+        "Complete empathy map in SPIKE Playbook (5 fields)",
+        "Squad discussion — compare maps and share one insight",
+        "Reflect & share — connect to future advisor role"
+      ],
+      "outputs": ["Empathy Lab portfolio capture"],
+      "debriefQuestions": [
+        "What surprised your squad about Miguel?",
+        "How does understanding Miguel help you advise?"
+      ]
     },
     {
       "id": "activity-w2-d5-gate",
       "dayId": "day-segment-1-week-2-day-5",
       "title": "Week 2 Stage Gate II Ceremony",
-      "durationMinutes": 90,
+      "durationMinutes": 35,
       "materials": ["Squad XP scores", "Mentor review panel"],
       "instructions": [
+        "Week 3 ADVISE preview (slides 11–14)",
         "Mentor squad review — 4 dimensions + optional commendations",
         "Stage gate decision per squad",
-        "Unlock Week 3 Build"
+        "Unlock Week 3 Advise"
       ],
-      "outputs": ["Stage Gate II decision"],
+      "outputs": ["Stage Gate II decision", "Week wrap-up reflection"],
       "debriefQuestions": []
     }
   ]

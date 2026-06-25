@@ -1,53 +1,64 @@
 {
   "dayId": "day-segment-1-week-2-day-5",
-  "theme": "Validate",
-  "title": "Mentor Guide — Day 10 — Market Validation Pitch",
-  "coachingObjective": "Coach squads through evidence-based pitch delivery and Stage Gate II readiness.",
+  "theme": "Pitch · Empathy · Advise",
+  "title": "Mentor Guide — Day 10 — Pitch · Empathy · Advise",
+  "coachingObjective": "Coach squads through evidence-based pitch delivery, empathy practice with Miguel, and Stage Gate II readiness.",
   "timing": {
-    "preSession": "Review pitch readiness cards: FEC, portfolio, professional readiness",
-    "duringSession": "Support pitch delivery; capture weekly squad review",
+    "preSession": "Review pitch readiness cards: FEC lab, portfolio, professional readiness",
+    "duringSession": "Support pitch delivery; observe empathy lab discussion; capture weekly squad review",
     "postSession": "Submit stage gate decision and up to 3 commendations"
   },
   "discussionQuestions": [
     "Did the pitch reflect what the market taught the squad?",
     "Which customer quotes landed strongest with the audience?",
-    "Is the squad Ready For Build?"
+    "What did squads learn about Miguel that changes how they would advise?",
+    "Is the squad ready for Week 3 ADVISE?"
   ],
   "observationAreas": [
     "10-slide pitch structure completeness",
     "Evidence quality under audience Q&A",
-    "Squad collaboration during presentation",
+    "Empathy map depth — genuine perspective-taking vs surface answers",
+    "Squad collaboration during pitch and empathy discussion",
     "Professional readiness completion"
   ],
   "coachingTips": [
     "Rate four dimensions only — no individual rubrics",
     "Use Squad XP dashboard for automatic activity credit",
-    "Commendations max 3 per squad (Leadership, Best Interview, etc.)"
+    "Commendations max 3 per squad (Leadership, Best Interview, Empathy Insight, etc.)",
+    "Encourage squads to connect empathy lab insights to their validated FEC"
   ],
   "warningSigns": [
     "Pitch slides manually rewritten outside SPIKE (duplicate encoding)",
-    "Squad missing FEC lab completion"
+    "Squad missing FEC lab completion",
+    "Empathy worksheet completed individually without squad discussion"
   ],
   "reflectionPrompts": [
-    "What is the one insight every advisor should know from your squad's research?"
+    "What is the one insight every advisor should know from your squad's research?",
+    "How does understanding Miguel help your squad advise with empathy?"
   ],
   "expectedOutcomes": [
     "Market Validation Pitch submitted",
-    "Market Validation Evidence portfolio",
+    "Empathy Lab portfolio capture",
+    "Week wrap-up reflection",
     "Stage Gate II decision recorded"
   ],
   "activityCoachingNotes": [
     {
       "activityId": "activity-w2-d5-pitch",
-      "notes": "Presentation mode in SPIKE Studio — large cards, minimal text."
+      "notes": "SPIKE Studio presentation mode — large cards, evidence-first delivery."
+    },
+    {
+      "activityId": "activity-w2-d5-empathy-lab",
+      "notes": "Facilitate squad discussion after individual empathy maps. Push for specifics about Miguel."
     },
     {
       "activityId": "activity-w2-d5-gate",
-      "notes": "Stage Gate: Not Ready / Almost Ready / Ready For Build."
+      "notes": "Stage Gate: Not Ready / Almost Ready / Ready For Build. Week 3 unlocks ADVISE."
     }
   ],
   "debriefWithFaculty": [
     "Squads needing remediation before Week 3",
-    "Commendation nominees"
+    "Commendation nominees",
+    "Empathy lab highlights to carry into Week 3"
   ]
 }

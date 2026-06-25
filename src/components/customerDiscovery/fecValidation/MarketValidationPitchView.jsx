@@ -33,7 +33,10 @@ export function MarketValidationPitchView({ participantId, onSaved }) {
         </p>
         <h1 className="mt-2 text-3xl font-black text-slate-900">Market Validation Pitch</h1>
         <p className="mt-1 text-lg font-medium text-slate-700">What The Market Taught Us</p>
-        <p className="mt-2 text-sm text-slate-600">5 minutes per squad · Present evidence — not ideas</p>
+        <p className="mt-2 text-sm text-slate-600">
+          5 minutes per squad · Present evidence — not ideas. After your squad presents, continue to
+          the Empathy Lab workshop with Miguel.
+        </p>
       </header>
 
       <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -69,11 +72,18 @@ export function MarketValidationPitchView({ participantId, onSaved }) {
             Pitch submitted — ready for coach stage gate evaluation.
           </p>
           <Link
-            to={playbookWeek2MissionHref('week-wrap-up', { day: 5 })}
+            to={playbookWeek2MissionHref('empathy-lab', { day: 5 })}
             className="inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-spike/30 bg-spike/5 px-5 py-2.5 text-sm font-bold text-spike hover:bg-spike/10"
           >
-            Complete week wrap-up for your portfolio
+            Continue to Empathy Lab — Think Like Miguel
             <ArrowRight size={16} aria-hidden />
+          </Link>
+          <Link
+            to={playbookWeek2MissionHref('week-wrap-up', { day: 5 })}
+            className="inline-flex min-h-[44px] items-center gap-2 text-sm font-semibold text-slate-600 hover:text-spike"
+          >
+            Skip to week wrap-up
+            <ArrowRight size={14} aria-hidden />
           </Link>
         </div>
       )}

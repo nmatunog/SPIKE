@@ -2,36 +2,168 @@
   "presentation": {
     "id": "presentation-w2-d5-deck-01",
     "dayId": "day-segment-1-week-2-day-5",
-    "title": "Market Validation Pitch — Stage Gate II",
-    "slideIds": ["slide-w2-d5-01", "slide-w2-d5-02", "slide-w2-d5-03"]
+    "title": "Pitch · Empathy · Advise — Week 2 Day 5",
+    "slideIds": [
+      "slide-w2-d5-01",
+      "slide-w2-d5-02",
+      "slide-w2-d5-03",
+      "slide-d5-01-04",
+      "slide-d5-01-05",
+      "slide-d5-01-06",
+      "slide-d5-01-07",
+      "slide-d5-01-08",
+      "slide-d5-01-09",
+      "slide-d5-01-10",
+      "slide-d5-01-11",
+      "slide-d5-01-12",
+      "slide-d5-01-13",
+      "slide-d5-01-14"
+    ],
+    "sourceFile": "faculty-deck-01.pdf",
+    "sourcePath": "content/segment-1/week-2/day-5/source/faculty-deck-01.pdf",
+    "importedAt": "2026-06-25T15:14:37.747Z",
+    "pdfUrl": "/content/segment-1/week-2/day-5/faculty-deck-01.pdf"
   },
   "slides": [
     {
       "id": "slide-w2-d5-01",
       "presentationId": "presentation-w2-d5-deck-01",
-      "title": "Present Evidence — Not Ideas",
-      "body": "5 minutes per squad · Week 2 Stage Gate",
-      "speakerNotes": "",
+      "sortOrder": 1,
+      "title": "From Venture Builder To Financial Entrepreneur",
+      "body": "Discover ✓ Validate ✓ — today we shift toward Advise.",
+      "speakerNotes": "Frame the week arc: interns have discovered and validated; Friday bridges to advisor mindset.",
       "discussionQuestions": [],
-      "sortOrder": 1
+      "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-01.png"
     },
     {
       "id": "slide-w2-d5-02",
       "presentationId": "presentation-w2-d5-deck-01",
-      "title": "10-Slide Pitch Structure",
-      "body": "Mission · Who · Assumptions · Learned · Voices · Problem · Belief shift · Venture change · Next steps · Advisor insight",
-      "speakerNotes": "",
+      "sortOrder": 2,
+      "title": "Meet Miguel",
+      "body": "Our client profile for the empathy workshop.",
+      "speakerNotes": "Introduce Miguel before pitch block — he returns after presentations.",
       "discussionQuestions": [],
-      "sortOrder": 2
+      "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-02.png"
     },
     {
       "id": "slide-w2-d5-03",
       "presentationId": "presentation-w2-d5-deck-01",
-      "title": "Stage Gate II — Market Validation",
-      "body": "Squad XP · Mentor review · Week 3 Build unlock",
+      "sortOrder": 3,
+      "title": "The 5-Stage Client Journey",
+      "body": "Awareness → Interest → Consideration → Decision → Success",
+      "speakerNotes": "Connect discovery work to where Miguel sits on the journey.",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-03.png"
+    },
+    {
+      "id": "slide-d5-01-04",
+      "presentationId": "presentation-w2-d5-deck-01",
+      "sortOrder": 4,
+      "title": "From Understanding To Helping",
+      "body": "Validation proves the problem; empathy opens the door to advice.",
+      "speakerNotes": "Transition from researcher to future advisor.",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-04.png"
+    },
+    {
+      "id": "slide-d5-01-05",
+      "presentationId": "presentation-w2-d5-deck-01",
+      "sortOrder": 5,
+      "title": "Market Validation Pitch",
+      "body": "5 minutes per squad — present evidence, not ideas.",
+      "speakerNotes": "Hand off to SPIKE Studio pitch presentations. Return to deck after all squads present.",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-05.png"
+    },
+    {
+      "id": "slide-d5-01-06",
+      "presentationId": "presentation-w2-d5-deck-01",
+      "sortOrder": 6,
+      "title": "Client Profile — Miguel",
+      "body": "24, Marketing Associate, Cebu — first job, dreams of financial independence.",
+      "speakerNotes": "Resume workshop after pitches.",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-06.png"
+    },
+    {
+      "id": "slide-d5-01-07",
+      "presentationId": "presentation-w2-d5-deck-01",
+      "sortOrder": 7,
+      "title": "Empathy In Action",
+      "body": "Four steps: Observe → Listen → Understand → Connect",
+      "speakerNotes": "Model before individual worksheet time in SPIKE Playbook.",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-07.png"
+    },
+    {
+      "id": "slide-d5-01-08",
+      "presentationId": "presentation-w2-d5-deck-01",
+      "sortOrder": 8,
+      "title": "Think Like Miguel — Empathy Map",
+      "body": "Thinking · Feeling · Worries · Avoiding · Wants",
+      "speakerNotes": "Participants complete Empathy Lab in SPIKE Playbook.",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-08.png"
+    },
+    {
+      "id": "slide-d5-01-09",
+      "presentationId": "presentation-w2-d5-deck-01",
+      "sortOrder": 9,
+      "title": "Squad Discussion",
+      "body": "Compare empathy maps — what surprised your squad?",
+      "speakerNotes": "7 minutes per squad share.",
+      "discussionQuestions": ["What pattern did multiple squads see in Miguel?"],
+      "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-09.png"
+    },
+    {
+      "id": "slide-d5-01-10",
+      "presentationId": "presentation-w2-d5-deck-01",
+      "sortOrder": 10,
+      "title": "Reflect & Share",
+      "body": "Squad insight · Key takeaways · Connect to your role as a future advisor",
+      "speakerNotes": "Capture in SPIKE — saves to portfolio automatically.",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-10.png"
+    },
+    {
+      "id": "slide-d5-01-11",
+      "presentationId": "presentation-w2-d5-deck-01",
+      "sortOrder": 11,
+      "title": "What Would You Ask Miguel?",
+      "body": "Before you advise, you must understand.",
+      "speakerNotes": "Bridge to Week 3 ADVISE module.",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-11.png"
+    },
+    {
+      "id": "slide-d5-01-12",
+      "presentationId": "presentation-w2-d5-deck-01",
+      "sortOrder": 12,
+      "title": "Week 3 — ADVISE",
+      "body": "From validated problem to trusted guidance.",
+      "speakerNotes": "Preview Monday focus.",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-12.png"
+    },
+    {
+      "id": "slide-d5-01-13",
+      "presentationId": "presentation-w2-d5-deck-01",
+      "sortOrder": 13,
+      "title": "You Are Here To Help",
+      "body": "Empathy builds trust — advice follows understanding.",
       "speakerNotes": "",
       "discussionQuestions": [],
-      "sortOrder": 3
+      "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-13.png"
+    },
+    {
+      "id": "slide-d5-01-14",
+      "presentationId": "presentation-w2-d5-deck-01",
+      "sortOrder": 14,
+      "title": "See You Monday",
+      "body": "Stage Gate II · Squad XP · Week 3 Advise unlock",
+      "speakerNotes": "Close with Stage Gate ceremony if time permits.",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-14.png"
     }
   ]
 }

@@ -16,6 +16,7 @@ import { loadFecValidation } from './week2FecValidationStorage.js';
 import { getSquadNameForParticipant } from './week2SquadEvidenceService.js';
 import { getReadinessMissionState } from './week2ReadinessMissionService.js';
 import { isWeek2WrapUpComplete } from './week2WrapUpService.js';
+import { isWeek2EmpathyLabComplete, isWeek2EmpathyMapComplete } from './week2EmpathyLabService.js';
 import { isPctcMissionComplete } from './week2PctcCertificateService.js';
 
 const BASE = `${ROUTES.ventureBlueprint}/customer-discovery`;
@@ -94,6 +95,10 @@ export function isTaskComplete(participantId, taskId) {
         || Boolean(loadFecValidation(getSquadNameForParticipant(participantId)).pitchSubmittedAt);
     case 'week-wrap-up':
       return isWeek2WrapUpComplete(participantId);
+    case 'empathy-lab':
+      return isWeek2EmpathyLabComplete(participantId);
+    case 'empathy-map':
+      return isWeek2EmpathyMapComplete(participantId);
     case 'synthesis':
     case 'intelligence-board':
     case 'pitch-start':

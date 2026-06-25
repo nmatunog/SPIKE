@@ -60,8 +60,8 @@ export const WEEK2_JOURNEY_PHASES = [
     programDay: 10,
     label: 'Validate',
     shortLabel: 'Validate',
-    theme: 'Market Validation Pitch',
-    coachStatus: 'Market Validation Pitch',
+    theme: 'Pitch · Empathy · Advise',
+    coachStatus: 'Pitch · Empathy · Advise',
   },
 ];
 
@@ -108,8 +108,9 @@ export const WEEK2_DAY_TASKS = {
     { id: 'fec-studio-3', slug: 'fec-studio-3', label: 'What Will We Do Next?', shortLabel: 'Act', estMin: 25, day: 4 },
   ],
   5: [
-    { id: 'market-validation-pitch', slug: 'market-validation-pitch', label: 'Market Validation Pitch', shortLabel: 'Validate', estMin: 30, day: 5 },
-    { id: 'week-wrap-up', slug: 'week-wrap-up', label: 'Week wrap-up', shortLabel: 'Reflect', estMin: 8, day: 5 },
+    { id: 'market-validation-pitch', slug: 'market-validation-pitch', label: 'Market Validation Pitch', shortLabel: 'Pitch', estMin: 30, day: 5 },
+    { id: 'empathy-lab', slug: 'empathy-lab', label: 'Empathy Lab — Think Like Miguel', shortLabel: 'Empathy', estMin: 45, day: 5 },
+    { id: 'week-wrap-up', slug: 'week-wrap-up', label: 'Week wrap-up & Week 3 bridge', shortLabel: 'Reflect', estMin: 12, day: 5 },
   ],
 };
 
@@ -190,16 +191,36 @@ export const WEEK2_COACH_TIMELINE = [
     day: 5,
     programDay: 10,
     weekday: 'Friday',
-    status: 'Market Validation Pitch',
+    status: 'Pitch · Empathy · Advise',
     objectives: [
-      'Present evidence — What The Market Taught Us (5 min per squad)',
-      'Stage Gate — Ready For Build decision',
-      'Squad XP + mentor review (4 dimensions)',
+      'Open: From Venture Builder → Financial Entrepreneur (Discover ✓ Validate ✓ → Advise)',
+      'Market Validation Pitch — 5 min per squad, evidence not ideas',
+      'Empathy Lab with Miguel — understand before you advise',
+      'Stage Gate II + Week 3 Advise preview',
     ],
-    slides: ['10-slide presentation mode', 'Stage Gate II ceremony'],
-    activities: ['Market Validation Pitch', 'Coach squad evaluation', 'Unlock BUILD stage'],
-    deliverables: ['Market Validation Evidence portfolio', 'Week wrap-up learnings', 'Stage Gate result'],
-    outcomes: ['Squad validated for Week 3 Build', '27 interviews → one venture story'],
+    slides: [
+      'From Venture Builder To Financial Entrepreneur',
+      'Meet Miguel — Client Profile',
+      'Empathy In Action + Think Like Miguel',
+      'Reflect & Share — Week 3 Advise',
+    ],
+    activities: [
+      'Market Validation Pitch (SPIKE Studio)',
+      'Empathy Lab worksheet + squad discussion',
+      'Advisor reflection + week wrap-up',
+      'Stage Gate II ceremony',
+    ],
+    deliverables: [
+      'Market Validation Pitch submitted',
+      'Empathy Lab portfolio capture',
+      'Week wrap-up + Week 3 focus',
+      'Stage Gate result',
+    ],
+    outcomes: [
+      'Squads present validated evidence',
+      'Interns practice empathy → advisor mindset',
+      'Ready for Week 3 ADVISE',
+    ],
   },
 ];
 

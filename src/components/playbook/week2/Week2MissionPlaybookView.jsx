@@ -16,6 +16,7 @@ import { ProfessionalReadinessMission } from '../../customerDiscovery/Profession
 import { FecValidationStudio } from '../../customerDiscovery/fecValidation/FecValidationStudio.jsx';
 import { MarketValidationPitchView } from '../../customerDiscovery/fecValidation/MarketValidationPitchView.jsx';
 import { Week2WrapUpTask } from '../../customerDiscovery/Week2WrapUpTask.jsx';
+import { Week2EmpathyLabTask } from '../../customerDiscovery/Week2EmpathyLabTask.jsx';
 import {
   playbookWeek2MissionHref,
   getActiveWeek2Task,
@@ -164,6 +165,9 @@ export function Week2MissionPlaybookView({
       case 'market-validation-pitch':
       case 'validation-pitch':
         return <MarketValidationPitchView participantId={participantId} onSaved={refresh} />;
+      case 'empathy-lab':
+      case 'empathy-map':
+        return <Week2EmpathyLabTask key="empathy-lab" participantId={participantId} onSaved={refresh} />;
       case 'week-wrap-up':
         return <Week2WrapUpTask participantId={participantId} onSaved={refresh} />;
       case 'mission':

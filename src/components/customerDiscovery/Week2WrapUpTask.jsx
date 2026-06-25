@@ -74,11 +74,11 @@ export function Week2WrapUpTask({ participantId, onSaved }) {
   return (
     <div className="space-y-8 pb-20 sm:pb-6">
       <section className="spike-surface space-y-2">
-        <p className="spike-label">Week 2 · Validate</p>
-        <h2 className="text-xl font-bold text-slate-900">Week wrap-up</h2>
+        <p className="spike-label">Week 2 · Day 5</p>
+        <h2 className="text-xl font-bold text-slate-900">Week wrap-up &amp; Week 3 bridge</h2>
         <p className="text-sm text-slate-600">
-          Capture what you learned before you leave Friday. This saves to your Venture Portfolio and helps your
-          mentor see your growth — separate from guest panel scores.
+          After your pitch and empathy lab, capture what you learned. This saves to your Venture Portfolio,
+          sets your focus for Week 3 ADVISE, and helps your mentor see your growth — separate from guest panel scores.
         </p>
         <Week2SyncStatus
           participantId={participantId}

@@ -106,6 +106,15 @@
  * @property {string} weekWrapVentureEvolution
  * @property {string} weekWrapWeek3Focus
  * @property {string | null} weekWrapCompletedAt
+ * @property {string} empathyThinking
+ * @property {string} empathyFeeling
+ * @property {string} empathyWorries
+ * @property {string} empathyAvoiding
+ * @property {string} empathyWants
+ * @property {string} empathySquadInsight
+ * @property {string} empathyKeyTakeaways
+ * @property {string} empathyAdvisorConnection
+ * @property {string | null} empathyLabCompletedAt
  * @property {string | null} cloudSyncedAt
  * @property {string | null} updatedAt
  */

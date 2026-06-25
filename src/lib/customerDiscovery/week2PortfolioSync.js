@@ -12,6 +12,7 @@ import { aggregateSquadIntelligence } from './week2InsightSynthesis.js';
 import { squadEvidenceSummary } from './week2SquadEvidenceService.js';
 import { loadFecValidation } from './week2FecValidationStorage.js';
 import { isFecLabComplete } from './week2FecValidationService.js';
+import { EMPATHY_MAP_PROMPTS, ADVISOR_REFLECTION_PROMPTS } from './week2EmpathyLabService.js';
 
 /** @param {string} participantId */
 function squadNameFor(participantId) {
@@ -270,6 +271,39 @@ export function syncWeek2PortfolioArtifacts(participantId, squadName = '') {
     });
     setSectionField(participantId, 'market-intelligence', 'validation_pitch', pitchBody, {
       sourceType: 'week2-discovery',
+    });
+  }
+
+  const empathyFilled = [...EMPATHY_MAP_PROMPTS, ...ADVISOR_REFLECTION_PROMPTS].some(
+    (p) => String(state[p.id] ?? '').trim(),
+  );
+  if (empathyFilled || state.empathyLabCompletedAt) {
+    const empathyBody = [
+      '# Week 2 Day 5 — Empathy Lab (Think Like Miguel)',
+      '',
+      '## Client profile',
+      'Miguel, 24 — Marketing Associate in Cebu. First job, no savings plan, no emergency fund.',
+      '',
+      '## Empathy map',
+      ...EMPATHY_MAP_PROMPTS.map((p) => `**${p.label}**\n${state[p.id] || '_Pending_'}`),
+      '',
+      '## Reflect & share',
+      ...ADVISOR_REFLECTION_PROMPTS.map((p) => `**${p.label}**\n${state[p.id] || '_Pending_'}`),
+      '',
+      state.empathyLabCompletedAt
+        ? `**Completed:** ${state.empathyLabCompletedAt.slice(0, 10)}`
+        : '_In progress_',
+    ].join('\n\n');
+    createPortfolioArtifactDraft({
+      participantId,
+      sectionId: 'portfolio-market-intelligence',
+      title: 'Empathy Lab — Think Like Miguel',
+      content: empathyBody,
+      sourceType: 'week2-empathy-lab',
+      sourceId: 'empathy-lab',
+    });
+    setSectionField(participantId, 'market-intelligence', 'empathy_lab', empathyBody, {
+      sourceType: 'week2-empathy-lab',
     });
   }
 

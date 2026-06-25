@@ -1,11 +1,62 @@
 {
   "worksheets": [
     {
-      "id": "worksheet-w2-d5-01",
+      "id": "worksheet-w2-d5-empathy",
       "dayId": "day-segment-1-week-2-day-5",
-      "title": "Market review scoring sheet",
-      "questionIds": []
+      "title": "Empathy Lab — Think Like Miguel",
+      "description": "Five-field empathy map plus advisor reflection. Completed in SPIKE Playbook → saves to portfolio.",
+      "questionIds": [
+        "empathy-thinking",
+        "empathy-feeling",
+        "empathy-worries",
+        "empathy-avoiding",
+        "empathy-wants",
+        "empathy-squad-insight",
+        "empathy-takeaways",
+        "empathy-advisor-connection"
+      ]
     }
   ],
-  "questions": []
+  "questions": [
+    {
+      "id": "empathy-thinking",
+      "label": "What is Miguel thinking?",
+      "type": "textarea"
+    },
+    {
+      "id": "empathy-feeling",
+      "label": "What is Miguel feeling?",
+      "type": "textarea"
+    },
+    {
+      "id": "empathy-worries",
+      "label": "What worries Miguel?",
+      "type": "textarea"
+    },
+    {
+      "id": "empathy-avoiding",
+      "label": "What is Miguel avoiding?",
+      "type": "textarea"
+    },
+    {
+      "id": "empathy-wants",
+      "label": "What does Miguel want?",
+      "type": "textarea"
+    },
+    {
+      "id": "empathy-squad-insight",
+      "label": "Squad share — one key insight about Miguel",
+      "type": "textarea"
+    },
+    {
+      "id": "empathy-takeaways",
+      "label": "Key takeaways",
+      "type": "textarea"
+    },
+    {
+      "id": "empathy-advisor-connection",
+      "label": "Connect to our role as future advisors",
+      "type": "textarea"
+    }
+  ]
 }
