@@ -21,6 +21,7 @@ import {
   week2OverallProgressPct,
 } from '../../../lib/customerDiscovery/week2MissionService.js';
 import { getWeek2PhaseForDay } from '../../../lib/customerDiscovery/week2JourneyConstants.js';
+import { getParticipantSquad } from '../../../lib/cohortFormationService.js';
 import { Week2PrepareReviseNav } from '../../customerDiscovery/Week2PrepareReviseNav.jsx';
 import { PlaybookDayClosingReflectionBlock } from '../PlaybookDayClosingReflectionBlock.jsx';
 import { PlaybookReflectionNudge } from '../PlaybookReflectionNudge.jsx';
@@ -39,6 +40,7 @@ import { PlaybookReflectionNudge } from '../PlaybookReflectionNudge.jsx';
  *   onOpenCurriculum?: () => void,
  *   onProgress?: () => void,
  *   onMissionNavigate?: (slug: string) => void,
+ *   interns?: Array<{ id: string, name: string }>,
  * }} props
  */
 export function Week2MissionPlaybookView({
@@ -53,6 +55,7 @@ export function Week2MissionPlaybookView({
   onOpenCurriculum,
   onProgress,
   onMissionNavigate,
+  interns = [],
 }) {
   const [, setTick] = useState(0);
   const refresh = () => {
@@ -61,6 +64,13 @@ export function Week2MissionPlaybookView({
   };
 
   const day = Math.max(1, Math.min(5, playbookDay));
+
+  const memberNames = (() => {
+    const squad = getParticipantSquad(participantId);
+    const ids = (squad?.members ?? []).map((m) => m.participantId).filter(Boolean);
+    const nameById = Object.fromEntries(interns.map((i) => [i.id, i.name]));
+    return Object.fromEntries(ids.map((id) => [id, nameById[id] || `Member ${String(id).slice(0, 6)}`]));
+  })();
 
   const slug = missionSlug?.trim()
     ? missionSlug.trim()
@@ -145,7 +155,7 @@ export function Week2MissionPlaybookView({
             squadName={squadName}
             stepSlug={slug}
             onSaved={refresh}
-            memberNames={{}}
+            memberNames={memberNames}
             onNavigate={(nextSlug, nextDay = day) => goToMission(nextSlug, nextDay)}
           />
         );

@@ -9,6 +9,7 @@ import {
   getFecStudioState,
   saveEvidenceBoardDraft,
 } from '../../../lib/customerDiscovery/week2FecStudioService.js';
+import { setMemberEvidenceBoardSource } from '../../../lib/customerDiscovery/week2EvidenceBoardCandidates.js';
 import { FEC_STUDIO_PHASES, PITCH_SLIDE_KEYS } from '../../../lib/customerDiscovery/week2FecValidationConstants.js';
 import { FecValidationCanvas, SquadRolesBanner } from './FecValidationShared.jsx';
 import { hydrateSquadFecValidation } from '../../../lib/customerDiscovery/week2FecValidationSync.js';
@@ -30,7 +31,7 @@ export function FecValidationStudio({ participantId, stepSlug, onSaved, memberNa
     void hydrateSquadWeek2Discovery(participantId).then(() => refresh());
   }, [participantId]);
 
-  const studio = useMemo(() => getFecStudioState(participantId), [participantId, tick]);
+  const studio = useMemo(() => getFecStudioState(participantId, memberNames), [participantId, memberNames, tick]);
   const rawSlug = stepSlug && stepSlug !== 'fec-lab' && stepSlug !== 'fec-studio' ? stepSlug : null;
   const legacyMap = {
     'fec-step-1': 'fec-studio-1',
@@ -228,6 +229,8 @@ function FecStudioLanding({ studio, participantId, memberNames, onStart, onNavig
 /** @param {{ studio: ReturnType<typeof getFecStudioState>, participantId: string, onSaved: () => void, onNext: () => void, onNavigate?: (slug: string) => void }} props */
 function Studio1Evidence({ studio, participantId, onSaved, onNext, onNavigate }) {
   const board = studio.evidenceBoard;
+  const choice = studio.evidenceBoardChoice;
+  const [sourceChoice, setSourceChoice] = useState(choice?.activeSource ?? 'filled');
   const [topGoals, setTopGoals] = useState(board.topGoals);
   const [topProblems, setTopProblems] = useState(board.topProblems);
   const [topOpportunities, setTopOpportunities] = useState(board.topOpportunities);
@@ -236,12 +239,28 @@ function Studio1Evidence({ studio, participantId, onSaved, onNext, onNavigate })
   const skipDraftSaveRef = useRef(false);
 
   useEffect(() => {
+    setSourceChoice(choice?.activeSource ?? 'filled');
+  }, [choice?.activeSource]);
+
+  useEffect(() => {
     skipDraftSaveRef.current = true;
     setTopGoals(board.topGoals);
     setTopProblems(board.topProblems);
     setTopOpportunities(board.topOpportunities);
     setStarred(board.starredQuotes ?? []);
   }, [participantId, board.topGoals, board.topProblems, board.topOpportunities, board.starredQuotes]);
+
+  function applySource(source) {
+    if (!choice || choice.locked) return;
+    const candidate = source === 'recent' ? choice.recent : choice.filled;
+    skipDraftSaveRef.current = true;
+    setSourceChoice(source);
+    setTopGoals(candidate.board.topGoals);
+    setTopProblems(candidate.board.topProblems);
+    setTopOpportunities(candidate.board.topOpportunities);
+    setStarred(candidate.board.starredQuotes ?? []);
+    setMemberEvidenceBoardSource(participantId, source);
+  }
 
   useEffect(() => {
     const onVisible = () => {
@@ -265,12 +284,13 @@ function Studio1Evidence({ studio, participantId, onSaved, onNext, onNavigate })
         topProblems,
         topOpportunities,
         starredQuotes: starred,
+        source: sourceChoice,
       });
     }, 1200);
     return () => {
       if (draftTimerRef.current) window.clearTimeout(draftTimerRef.current);
     };
-  }, [participantId, topGoals, topProblems, topOpportunities, starred]);
+  }, [participantId, topGoals, topProblems, topOpportunities, starred, sourceChoice]);
 
   function toggleStar(quote) {
     setStarred((prev) => {
@@ -290,8 +310,22 @@ function Studio1Evidence({ studio, participantId, onSaved, onNext, onNavigate })
       <StudioHeader phase={FEC_STUDIO_PHASES[0]} />
 
       <p className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-        Review squad interview evidence. Edit each line if needed — <strong>all squad members share these Top 3 fields</strong> and see updates after a short sync. Approve when ready to encode <strong>Who we serve</strong> on your FEC Canvas.
+        Review squad interview evidence. Choose which squad save to start from, edit if needed, then approve to encode <strong>Who we serve</strong> on your FEC Canvas.
       </p>
+
+      {choice && !choice.locked ? (
+        <EvidenceBoardSourcePicker
+          choice={choice}
+          activeSource={sourceChoice}
+          onSelect={applySource}
+        />
+      ) : null}
+
+      {choice?.locked ? (
+        <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
+          Evidence board approved for your squad — fields below are locked for Studio 1.
+        </p>
+      ) : null}
 
       {board.interviewCount < 3 ? (
         <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
@@ -586,6 +620,72 @@ function HeroStat({ label, value, sub, highlight }) {
       <p className="mt-1 text-sm font-bold">{value}</p>
       {sub ? <p className="text-xs text-slate-400">{sub}</p> : null}
     </div>
+  );
+}
+
+/** @param {string} iso */
+function formatDraftAt(iso) {
+  if (!iso) return 'No save time yet';
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return 'Recently';
+  return date.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+}
+
+/**
+ * @param {{
+ *   choice: NonNullable<ReturnType<typeof getFecStudioState>['evidenceBoardChoice']>,
+ *   activeSource: 'recent' | 'filled',
+ *   onSelect: (source: 'recent' | 'filled') => void,
+ * }} props
+ */
+function EvidenceBoardSourcePicker({ choice, activeSource, onSelect }) {
+  const options = [choice.recent, choice.filled];
+
+  return (
+    <section className="space-y-3 rounded-xl border border-indigo-100 bg-indigo-50/70 p-4">
+      <div>
+        <p className="text-sm font-bold text-indigo-950">Your squad has two saves to choose from</p>
+        <p className="mt-1 text-xs text-indigo-900">
+          Pick which version loads on <strong>your</strong> screen. Edits you make save under your account and feed the squad pool.
+          {choice.hasChoice ? ' These versions differ — choose the one you want to build from.' : ' Both options match right now; you can still set your preference.'}
+        </p>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        {options.map((option) => {
+          const active = activeSource === option.id;
+          return (
+            <button
+              key={option.id}
+              type="button"
+              onClick={() => onSelect(option.id)}
+              className={`rounded-xl border p-4 text-left transition ${
+                active
+                  ? 'border-spike bg-white ring-2 ring-spike/25'
+                  : 'border-indigo-100 bg-white/90 hover:border-spike/40'
+              }`}
+            >
+              <div className="flex items-start justify-between gap-2">
+                <p className="font-semibold text-slate-900">{option.label}</p>
+                {active ? (
+                  <span className="shrink-0 rounded-full bg-spike px-2 py-0.5 text-[10px] font-bold uppercase text-white">
+                    Your view
+                  </span>
+                ) : null}
+              </div>
+              <p className="mt-1 text-xs text-slate-600">{option.description}</p>
+              <p className="mt-3 text-xs font-semibold text-slate-800">
+                {option.meta.filledSlots}/{option.meta.totalSlots} slots filled
+              </p>
+              <p className="mt-1 text-[11px] text-slate-500">
+                {option.id === 'recent'
+                  ? `Last saved by ${option.meta.memberLabel} · ${formatDraftAt(option.meta.draftAt)}`
+                  : 'Best line in each rank across all squad saves'}
+              </p>
+            </button>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 

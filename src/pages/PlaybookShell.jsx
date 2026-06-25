@@ -375,6 +375,7 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
           next.set('day', String(missionDay ?? urlPlaybookDay ?? resolvedPlaybookDay));
           setSearchParams(next, { replace: true });
         }}
+        interns={interns}
       />
     );
   } else if (bundle) {

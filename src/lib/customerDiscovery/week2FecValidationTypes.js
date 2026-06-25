@@ -33,6 +33,8 @@
  * @property {string} [nextExperiment]
  * @property {string} [week3BuildDirection]
  * @property {string} [buildReadiness]
+ * @property {Record<string, import('./week2EvidenceBoardCandidates.js').EvidenceBoardDraft>} [evidenceBoardDraftsByMember]
+ * @property {Record<string, 'recent' | 'filled'>} [evidenceBoardSourceByMember]
  */
 
 export {};

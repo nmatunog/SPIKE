@@ -19,6 +19,10 @@ import { loadWeek2Discovery } from './week2DiscoveryStorage.js';
 import { getReadinessMissionState } from './week2ReadinessMissionService.js';
 import { syncWeek2PortfolioArtifacts } from './week2PortfolioSync.js';
 import { syncFecValidationToCloud } from './week2FecValidationSync.js';
+import {
+  getEvidenceBoardChoiceContext,
+  getMemberEvidenceBoardSource,
+} from './week2EvidenceBoardCandidates.js';
 
 /** @param {string} participantId */
 function squadKeyFor(participantId) {
@@ -57,9 +61,9 @@ function padTopThree(ranked) {
 }
 
 /** @param {string} participantId */
-export function getEvidenceBoardPayload(participantId) {
+export function getEvidenceBoardPayload(participantId, memberNames = {}) {
   const lab = getFecValidationLabState(participantId);
-  const saved = lab.fec.evidenceBoard ?? {};
+  const fec = lab.fec;
   const interviews = aggregateSquadInterviews(lab.evidence.memberIds);
 
   const allGoals = [];
@@ -108,6 +112,10 @@ export function getEvidenceBoardPayload(participantId) {
     });
   };
 
+  const saved = fec.studio1ApprovedAt && fec.evidenceBoard
+    ? fec.evidenceBoard
+    : getEvidenceBoardChoiceContext(participantId, memberNames).activeBoard;
+
   const topGoals = mergeSavedWithRanked(saved.topGoals, rankedGoals);
   const topProblems = mergeSavedWithRanked(saved.topProblems, rankedProblems);
   const topOpportunities = mergeSavedWithRanked(saved.topOpportunities, rankedOpportunities);
@@ -132,6 +140,7 @@ export function getEvidenceBoardPayload(participantId) {
     marketSummary,
     interviewCount: lab.evidence.interviewCount,
     target: lab.evidence.target,
+    sourceChoice: getMemberEvidenceBoardSource(fec, participantId),
   };
 }
 
@@ -202,8 +211,8 @@ export function getFecEvolutionBoxes(participantId) {
   });
 }
 
-/** @param {string} participantId */
-export function getFecStudioState(participantId) {
+/** @param {string} participantId @param {Record<string, string>} [memberNames] */
+export function getFecStudioState(participantId, memberNames = {}) {
   const lab = getFecValidationLabState(participantId);
   const readiness = getReadinessMissionState(participantId);
   const fec = lab.fec;
@@ -227,7 +236,8 @@ export function getFecStudioState(participantId) {
     readiness,
     clarity,
     evolutionBoxes,
-    evidenceBoard: getEvidenceBoardPayload(participantId),
+    evidenceBoard: getEvidenceBoardPayload(participantId, memberNames),
+    evidenceBoardChoice: getEvidenceBoardChoiceContext(participantId, memberNames),
     phases,
     studioPct,
     activePhase,
@@ -248,22 +258,33 @@ export function getFecStudioState(participantId) {
  *   topProblems: Array<{ text: string, count: number }>,
  *   topOpportunities: Array<{ text: string, count: number }>,
  *   starredQuotes?: string[],
+ *   source?: 'recent' | 'filled',
  * }} input
  */
 export function saveEvidenceBoardDraft(participantId, input) {
   const key = squadKeyFor(participantId);
   const current = loadFecValidation(key);
   const now = new Date().toISOString();
-  const evidenceBoard = {
-    ...(current.evidenceBoard ?? {}),
+  const draft = {
     topGoals: input.topGoals,
     topProblems: input.topProblems,
     topOpportunities: input.topOpportunities,
-    starredQuotes: input.starredQuotes ?? current.evidenceBoard?.starredQuotes ?? [],
+    starredQuotes: input.starredQuotes ?? [],
     draftUpdatedAt: now,
     draftBy: participantId,
   };
-  const next = saveFecValidation(key, { evidenceBoard });
+  const source = input.source ?? getMemberEvidenceBoardSource(current, participantId);
+  const next = saveFecValidation(key, {
+    evidenceBoardDraftsByMember: {
+      ...(current.evidenceBoardDraftsByMember ?? {}),
+      [participantId]: draft,
+    },
+    evidenceBoardSourceByMember: {
+      ...(current.evidenceBoardSourceByMember ?? {}),
+      [participantId]: source,
+    },
+    evidenceBoard: draft,
+  });
   void syncFecValidationToCloud(key, next, squadEvidenceSummary(participantId).memberIds).catch(() => {});
   return next;
 }
@@ -323,6 +344,17 @@ export function approveEvidenceBoard(participantId, input) {
       topOpportunities,
       draftUpdatedAt: now,
       draftBy: participantId,
+    },
+    evidenceBoardDraftsByMember: {
+      ...(loadFecValidation(key).evidenceBoardDraftsByMember ?? {}),
+      [participantId]: {
+        topGoals,
+        topProblems,
+        topOpportunities,
+        starredQuotes: starred,
+        draftUpdatedAt: now,
+        draftBy: participantId,
+      },
     },
   });
   void syncFecValidationToCloud(key, next, squadEvidenceSummary(participantId).memberIds).catch(() => {});
