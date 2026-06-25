@@ -9,6 +9,7 @@ import { readCoachStore } from './ventureCoachStorage.js';
 import { computeCanvasCompletionPct } from './canvasService.js';
 import { builderEntryHasContent, fieldHasContent } from './syncMergeUtils.js';
 import { COACH_SECTIONS } from './ventureCoachConstants.js';
+import { loadWeek2Discovery } from './customerDiscovery/week2DiscoveryStorage.js';
 
 /** @param {string} participantId */
 export function assessLocalInternWork(participantId) {
@@ -41,10 +42,12 @@ export function assessLocalInternWork(participantId) {
   }
 
   const canvasPct = computeCanvasCompletionPct(participantId);
+  const week2Encoded = (loadWeek2Discovery(participantId).interviews ?? []).filter((i) => i.encoded).length;
   const substantiveScore =
     builderWithContent * 12
     + coachSectionsWithContent * 12
     + blueprintFields * 4
+    + week2Encoded * 25
     + Math.round(progress.percent / 4)
     + Math.round(coachProgress.percent / 4)
     + Math.round(canvasPct / 5);
@@ -55,7 +58,8 @@ export function assessLocalInternWork(participantId) {
     && blueprintFields < 2
     && builderWithContent < 2
     && coachSectionsWithContent < 2
-    && canvasPct < 10;
+    && canvasPct < 10
+    && week2Encoded < 1;
 
   return {
     day1Percent: progress.percent,
@@ -64,6 +68,7 @@ export function assessLocalInternWork(participantId) {
     builderWithContent,
     coachSectionsWithContent,
     canvasPct,
+    week2Encoded,
     substantiveScore,
     isSparse,
   };
@@ -77,6 +82,7 @@ function emptyLocalAssessment() {
     builderWithContent: 0,
     coachSectionsWithContent: 0,
     canvasPct: 0,
+    week2Encoded: 0,
     substantiveScore: 0,
     isSparse: true,
   };

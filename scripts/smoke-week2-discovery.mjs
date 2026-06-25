@@ -63,4 +63,12 @@ saveSquadMentorReview('mentor-smoke', 'Squad Cassiopeia', 2, {
   ratings: { quality_of_learning: 4, collaboration: 4, professionalism: 4, readiness_for_stage_gate: 3 },
 });
 
+const { mergeWeek2Interviews } = await import('../src/lib/customerDiscovery/week2DiscoveryMerge.js');
+const merged = mergeWeek2Interviews(
+  [{ alias: '', answers: [''], encoded: false }],
+  [{ alias: 'Gwyneth', answers: ['a', 'b', 'c'], encoded: true }],
+);
+assert.equal(merged[0].alias, 'Gwyneth');
+assert.equal(merged[0].encoded, true);
+
 console.log('smoke:week2-discovery OK');

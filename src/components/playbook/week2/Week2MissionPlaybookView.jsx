@@ -22,6 +22,7 @@ import {
   week2OverallProgressPct,
 } from '../../../lib/customerDiscovery/week2MissionService.js';
 import { getWeek2PhaseForDay } from '../../../lib/customerDiscovery/week2JourneyConstants.js';
+import { hydrateParticipantWeek2Discovery } from '../../../lib/customerDiscovery/week2DiscoverySync.js';
 import { Week2PrepareReviseNav } from '../../customerDiscovery/Week2PrepareReviseNav.jsx';
 import { PlaybookDayClosingReflectionBlock } from '../PlaybookDayClosingReflectionBlock.jsx';
 import { PlaybookReflectionNudge } from '../PlaybookReflectionNudge.jsx';
@@ -78,6 +79,11 @@ export function Week2MissionPlaybookView({
       window.location.assign(playbookWeek2MissionHref(nextSlug, { day: nextDay }));
     }
   }
+
+  useEffect(() => {
+    if (!participantId) return;
+    void hydrateParticipantWeek2Discovery(participantId, { force: true }).then(() => refresh());
+  }, [participantId]);
 
   useEffect(() => {
     if (!missionSlug || slugValid) return;

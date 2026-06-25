@@ -4,6 +4,7 @@
 import { upsertPlaybookCompletion, fetchPlaybookCompletions } from '../supabase/playbookProgress.js';
 import { isMockUserId } from '../mockAuth.js';
 import { loadWeek2Discovery, saveWeek2Discovery } from './week2DiscoveryStorage.js';
+import { mergeWeek2DiscoveryStates } from './week2DiscoveryMerge.js';
 import { getSquadMemberIds } from './week2SquadEvidenceService.js';
 
 export const WEEK2_DISCOVERY_WEEK_ID = 'week-segment-1-2';
@@ -74,15 +75,17 @@ export async function hydrateWeek2DiscoveryFromCloud(participantId, opts = {}) {
   }
 
   if (opts.preferLocal && localAt && (!remoteAt || localAt >= remoteAt)) {
+    const merged = saveWeek2Discovery(
+      participantId,
+      mergeWeek2DiscoveryStates(local, remoteState),
+      { skipCloudSync: true },
+    );
     hydratedParticipants.add(participantId);
-    return local;
-  }
-  if (localAt && remoteAt && localAt >= remoteAt) {
-    hydratedParticipants.add(participantId);
-    return local;
+    return merged;
   }
 
-  const merged = saveWeek2Discovery(participantId, remoteState, { skipCloudSync: true });
+  const mergedState = mergeWeek2DiscoveryStates(local, remoteState);
+  const merged = saveWeek2Discovery(participantId, mergedState, { skipCloudSync: true });
   hydratedParticipants.add(participantId);
   return merged;
 }
@@ -94,13 +97,21 @@ export async function backfillWeek2DiscoveryToCloud(participantId) {
   await syncWeek2DiscoveryToCloud(participantId, state);
 }
 
-/** @param {string} participantId */
-export async function hydrateParticipantWeek2Discovery(participantId) {
-  return hydrateWeek2DiscoveryFromCloud(participantId, { preferLocal: true });
+/**
+ * @param {string} participantId
+ * @param {{ force?: boolean }} [opts]
+ */
+export async function hydrateParticipantWeek2Discovery(participantId, opts = {}) {
+  return hydrateWeek2DiscoveryFromCloud(participantId, { force: opts.force ?? false });
 }
 
 /** Hydrate all squad members before aggregating interview evidence. */
 export async function hydrateSquadWeek2Discovery(participantId) {
   const memberIds = getSquadMemberIds(participantId);
   await Promise.all(memberIds.map((id) => hydrateParticipantWeek2Discovery(id)));
+}
+
+/** @param {string} participantId */
+export function invalidateWeek2DiscoveryHydration(participantId) {
+  hydratedParticipants.delete(participantId);
 }

@@ -17,6 +17,7 @@ import {
   hydrateSquadWeek2Discovery,
   syncWeek2DiscoveryToCloud,
 } from '../../lib/customerDiscovery/week2DiscoverySync.js';
+import { loadWeek2Discovery } from '../../lib/customerDiscovery/week2DiscoveryStorage.js';
 import { Week2SyncStatus } from './Week2SyncStatus.jsx';
 
 function readInterviewDraft(participantId, interviewIndex) {
@@ -67,31 +68,39 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
   const [syncing, setSyncing] = useState(false);
 
   const draftRef = useRef({ alias, occupation, answers, reflection, questions });
+  const dirtyRef = useRef(false);
+  const hydratingRef = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
+    hydratingRef.current = true;
+    dirtyRef.current = false;
     (async () => {
-      await hydrateParticipantWeek2Discovery(participantId);
+      await hydrateParticipantWeek2Discovery(participantId, { force: true });
       await hydrateSquadWeek2Discovery(participantId);
       if (cancelled) return;
-      applyDraft(
-        {
-          setQuestions,
-          setAlias,
-          setOccupation,
-          setAnswers,
-          setReflection,
-          setInsights,
-          setEncoded,
-          setSaveState,
-        },
-        readInterviewDraft(participantId, interviewIndex),
-      );
+      if (!dirtyRef.current) {
+        applyDraft(
+          {
+            setQuestions,
+            setAlias,
+            setOccupation,
+            setAnswers,
+            setReflection,
+            setInsights,
+            setEncoded,
+            setSaveState,
+          },
+          readInterviewDraft(participantId, interviewIndex),
+        );
+      }
+      hydratingRef.current = false;
       setSquadTick((n) => n + 1);
       setSyncTick((n) => n + 1);
     })();
     return () => {
       cancelled = true;
+      hydratingRef.current = false;
     };
   }, [participantId, interviewIndex]);
 
@@ -141,22 +150,33 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
   }
 
   useEffect(() => {
-    const save = () => {
+    const saveLocal = () => {
       writeDraftToStorage();
     };
-    window.addEventListener('pagehide', save);
+    const saveCloud = () => {
+      const state = loadWeek2Discovery(participantId);
+      void syncWeek2DiscoveryToCloud(participantId, state);
+    };
+    window.addEventListener('pagehide', saveLocal);
+    window.addEventListener('pagehide', saveCloud);
     const onHide = () => {
-      if (document.visibilityState === 'hidden') save();
+      if (document.visibilityState === 'hidden') {
+        saveLocal();
+        saveCloud();
+      }
     };
     document.addEventListener('visibilitychange', onHide);
     return () => {
-      window.removeEventListener('pagehide', save);
+      window.removeEventListener('pagehide', saveLocal);
+      window.removeEventListener('pagehide', saveCloud);
       document.removeEventListener('visibilitychange', onHide);
-      save();
+      saveLocal();
+      saveCloud();
     };
   }, [participantId, interviewIndex]);
 
   function persist(patch) {
+    dirtyRef.current = true;
     const merged = {
       alias: patch.alias ?? draftRef.current.alias,
       occupation: patch.occupation ?? draftRef.current.occupation,
@@ -206,7 +226,7 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
           Saved to device + cloud
         </span>
       ) : (
-        <span className="text-xs text-slate-500">Tap Save before switching sections (especially on Safari).</span>
+        <span className="text-xs text-slate-500">Drafts auto-save when you switch cards — tap Save to confirm cloud backup.</span>
       )}
       {encoded ? (
         <span className="rounded-full bg-venture-discover/15 px-2.5 py-0.5 text-xs font-semibold text-venture-discover">
