@@ -8,6 +8,7 @@ import { hydrateSurveysFromSupabase } from './surveyService.js';
 import { hydrateCanvasFromSupabase } from './canvasService.js';
 import { syncParticipantSquadCacheFromInterns } from './participantSquadCache.js';
 import { hydrateWeek2DiscoveryFromCloud } from './customerDiscovery/week2DiscoverySync.js';
+import { hydrateSquadFecValidation } from './customerDiscovery/week2FecValidationSync.js';
 
 /** Staff review — cloud is source of truth; never upsert participant rows from a coach device. */
 const remoteOpts = { preferRemote: true, readOnly: true };
@@ -58,6 +59,7 @@ export async function hydrateSquadMembersForStaffView(memberIds, opts = {}) {
     ids.flatMap((id) => [
       hydrateWeek2ForStaff(id, staffOpts),
       hydratePlaybookProgressFromSupabase(id, staffOpts),
+      hydrateSquadFecValidation(id, { preferLocalDraft: false }),
     ]),
   );
 }
