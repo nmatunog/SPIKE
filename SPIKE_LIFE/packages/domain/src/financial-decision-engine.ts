@@ -1,26 +1,26 @@
 import type { SimulationSession } from './aggregates/simulation-session.js'
 import type { FinancialGoal } from './entities/financial-state.js'
-import { createFreshGraduateBundle } from './scenarios/fresh-graduate.js'
+import { createFreshGraduateBundle } from './specifications/fresh-graduate.js'
 import {
   applySituationToIncome,
   createPromotionSituation,
   monthlyRaiseFromSituation,
-} from './engines/situation-engine.js'
-import { runDiscovery } from './engines/discovery-engine.js'
-import { runFnaAnalysis } from './engines/fna-engine.js'
-import { runRecommendationEngine } from './engines/recommendation-engine.js'
+} from './services/situation-engine.js'
+import { runDiscovery } from './services/discovery-engine.js'
+import { runFnaAnalysis } from './services/fna-engine.js'
+import { runRecommendationEngine } from './services/recommendation-engine.js'
 import {
   attachFnaScoreDelta,
   runConsequenceEngine,
-} from './engines/consequence-engine.js'
+} from './services/consequence-engine.js'
 import {
   runReflectionEngine,
   validateReflectionAnswers,
   type ReflectionAnswer,
-} from './engines/reflection-engine.js'
-import { isValidDecisionStrategy } from './engines/decision-engine.js'
+} from './services/reflection-engine.js'
+import { isValidDecisionStrategy } from './services/decision-engine.js'
 import type { DecisionStrategy } from './types.js'
-import { FRESH_GRADUATE_FINANCIAL_PROFILE } from './scenarios/fresh-graduate.js'
+import { FRESH_GRADUATE_FINANCIAL_PROFILE } from './specifications/fresh-graduate.js'
 
 export function createPromotionSession(sessionId: string): SimulationSession {
   const bundle = createFreshGraduateBundle()

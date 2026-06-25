@@ -5,7 +5,14 @@ Documents are ordered by **authority** (highest first). When documents conflict,
 | Priority | Document | File |
 |----------|----------|------|
 | **P1** | Architecture Amendment A0 — Core Design Reorientation | [`A0_CORE_DESIGN_REORIENTATION.md`](./A0_CORE_DESIGN_REORIENTATION.md) |
-| **P2** | Architecture Alignment Memo (synthesis) | [`ARCHITECTURE_ALIGNMENT_MEMO.md`](./ARCHITECTURE_ALIGNMENT_MEMO.md) |
+| **P1** | Architecture Amendment A1 — Domain-Centric Layered Architecture | [`AMENDMENT_A1_LAYERED_ARCHITECTURE.md`](./AMENDMENT_A1_LAYERED_ARCHITECTURE.md) |
+| **P1** | Architecture Amendment A2 — CQRS Application Architecture | [`AMENDMENT_A2_CQRS.md`](./AMENDMENT_A2_CQRS.md) |
+| **P2** | Volume I Ch 1 — Domain Vision & Ubiquitous Language | [`VOLUME_I_CHAPTER_01_DOMAIN_VISION.md`](./VOLUME_I_CHAPTER_01_DOMAIN_VISION.md) |
+| **P2** | Volume I Ch 2 — Bounded Contexts & Domain Map | [`VOLUME_I_CHAPTER_02_BOUNDED_CONTEXTS.md`](./VOLUME_I_CHAPTER_02_BOUNDED_CONTEXTS.md) |
+| **P2** | Volume I Ch 3 — Aggregates & Aggregate Roots | [`VOLUME_I_CHAPTER_03_AGGREGATES.md`](./VOLUME_I_CHAPTER_03_AGGREGATES.md) |
+| **P2** | Volume I Ch 4 — Entities, Value Objects & Specifications | [`VOLUME_I_CHAPTER_04_ENTITIES_VALUE_OBJECTS.md`](./VOLUME_I_CHAPTER_04_ENTITIES_VALUE_OBJECTS.md) |
+| **P2** | Bible Conformance (Phase 1) | [`BIBLE_CONFORMANCE.md`](./BIBLE_CONFORMANCE.md) |
+| **P3** | Architecture Alignment Memo (synthesis) | [`ARCHITECTURE_ALIGNMENT_MEMO.md`](./ARCHITECTURE_ALIGNMENT_MEMO.md) |
 | **P6** | PRD v1.0 | [`PRD_v1.0.md`](./PRD_v1.0.md) |
 | **P6** | PRD v1.1 — Simulation Engine Specification | [`PRD_v1.1_SIMULATION_ENGINE_SPEC.md`](./PRD_v1.1_SIMULATION_ENGINE_SPEC.md) |
 | **P5** | Domain Rule — FNA-Based Solution Architecture | [`DOMAIN_RULE_FNA_SOLUTIONS.md`](./DOMAIN_RULE_FNA_SOLUTIONS.md) |
@@ -20,4 +27,4 @@ Documents are ordered by **authority** (highest first). When documents conflict,
 | **P4** | UX Blueprint v1.1 — Screen Specs | [`UX_BLUEPRINT_v1.1_SCREENS.md`](./UX_BLUEPRINT_v1.1_SCREENS.md) |
 | **P4** | UX Amendment 1.1A — Five-Lens Workspace | [`UX_AMENDMENT_1.1A_FIVE_LENSES.md`](./UX_AMENDMENT_1.1A_FIVE_LENSES.md) |
 
-**Note:** A full “Software Architecture Bible” volume (bounded contexts, CQRS handlers, security chapter) was referenced in the initialization prompt but not yet provided as a separate file. The Alignment Memo derives structure from A0 + Simulation/UX blueprints until that volume arrives.
+**Note:** Volume I Chapters 1–4 and Amendments A1–A2 are canonical. Future Bible chapters (Domain Events, Security, etc.) will be added as they are published.

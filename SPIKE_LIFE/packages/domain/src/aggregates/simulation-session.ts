@@ -1,11 +1,11 @@
 import type { Character, FinancialProfile, GoalPortfolio, ProtectionPortfolio } from '../entities/financial-state.js'
 import type { CyclePhase, DecisionStrategy } from '../types.js'
-import type { ConsequenceOutcome } from '../engines/consequence-engine.js'
-import type { DiscoverySnapshot } from '../engines/discovery-engine.js'
-import type { FnaSnapshot } from '../engines/fna-engine.js'
-import type { Recommendation } from '../engines/recommendation-engine.js'
-import type { ReflectionSnapshot } from '../engines/reflection-engine.js'
-import type { SituationSnapshot } from '../engines/situation-engine.js'
+import type { ConsequenceOutcome } from '../services/consequence-engine.js'
+import type { DiscoverySnapshot } from '../services/discovery-engine.js'
+import type { FnaSnapshot } from '../services/fna-engine.js'
+import type { Recommendation } from '../services/recommendation-engine.js'
+import type { ReflectionSnapshot } from '../services/reflection-engine.js'
+import type { SituationSnapshot } from '../services/situation-engine.js'
 
 export interface DecisionRecord {
   strategy: DecisionStrategy

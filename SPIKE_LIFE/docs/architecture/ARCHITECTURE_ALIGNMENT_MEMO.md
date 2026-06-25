@@ -3,7 +3,7 @@
 **Version:** 1.0  
 **Date:** 2026-06-26  
 **Status:** Phase 1 complete — Financial Decision Engine validated (Promotion cycle)  
-**Authority chain:** Amendment A0 → this memo → Software Architecture Bible (when provided) → Technical specs → UX → Simulation blueprints → PRD v1.0/v1.1
+**Authority chain:** Amendment A0 → A1 → A2 → Volume I Chapters 1–4 → this memo → Technical specs → UX → Simulation blueprints → PRD v1.0/v1.1
 
 ---
 
@@ -243,7 +243,7 @@ Infrastructure   Hono (CF Workers), Neon PostgreSQL, repositories
 2. **Discovery step** — explicit Q&A UI in MVP, or implicit via FNA snapshot?
 3. **TypeScript monorepo layout** — `SPIKE_LIFE/packages/domain` + `SPIKE_LIFE/apps/web`?
 4. **Astro timing** — adopt now vs. after domain tests pass?
-5. **Software Architecture Bible** — full volume still needed for security chapter, exact aggregate boundaries, and event sourcing decisions.
+5. **Software Architecture Bible** — Volume I Chapters 1–4 and Amendments A1–A2 ingested (`BIBLE_CONFORMANCE.md`). Future chapters (Domain Events lifecycle, Security) still pending. **Event sourcing explicitly rejected** per A2; domain events yes, event store no.
 
 ---
 
@@ -269,4 +269,4 @@ Infrastructure   Hono (CF Workers), Neon PostgreSQL, repositories
 - [x] First archetype: **Fresh Graduate** + first situation: **Promotion**
 - [x] Tech phasing in §8 accepted (domain-first, in-memory)
 
-**Phase 1 delivered:** `@spike-life/domain` with 8 passing domain tests + 1 CQRS integration test.
+**Phase 1 delivered:** `@spike-life/domain` with 8 passing domain tests + 1 CQRS integration test. Bible Volume I Ch 1–4 + A1/A2 canonical docs in `docs/architecture/`.
