@@ -8,7 +8,7 @@ export const PITCH_PANEL_WEEK = 2;
 export const PITCH_PANEL_DIMENSIONS = [
   { id: 'evidence', label: 'Evidence quality', hint: 'Customer quotes, interview depth, data not opinions' },
   { id: 'validation', label: 'Problem validation', hint: 'Clear belief shift — what they thought vs learned' },
-  { id: 'presentation', label: 'Presentation', hint: 'Clarity, structure, professionalism, time' },
+  { id: 'presentation', label: 'Venture Clarity', hint: 'Clarity, structure, professionalism, time' },
   { id: 'team', label: 'Team delivery', hint: 'Shared ownership, coherent squad story' },
 ];
 
