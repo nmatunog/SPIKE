@@ -180,17 +180,20 @@ begin
     raise exception 'Invalid access PIN';
   end if;
 
-  select array_agg(distinct fs.name order by
-    case lower(trim(fs.name))
-      when 'cassiopeia' then 1
-      when 'pegasus' then 2
-      when 'argo navis' then 3
-      else 99
-    end,
-    fs.name)
+  select array_agg(name order by sort_key, name)
   into v_names
-  from public.formation_squads fs
-  join public.cohorts c on c.id = fs.cohort_id and c.is_active = true;
+  from (
+    select distinct
+      fs.name as name,
+      case lower(trim(fs.name))
+        when 'cassiopeia' then 1
+        when 'pegasus' then 2
+        when 'argo navis' then 3
+        else 99
+      end as sort_key
+    from public.formation_squads fs
+    join public.cohorts c on c.id = fs.cohort_id and c.is_active = true
+  ) squads;
 
   if v_names is null or array_length(v_names, 1) is null then
     v_names := array['Cassiopeia', 'Pegasus', 'Argo Navis'];
