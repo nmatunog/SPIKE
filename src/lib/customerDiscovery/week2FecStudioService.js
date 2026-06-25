@@ -13,7 +13,7 @@ import {
   isFecStepCompleteForParticipant,
 } from './week2FecValidationService.js';
 import { loadFecValidation, saveFecValidation } from './week2FecValidationStorage.js';
-import { getSquadNameForParticipant, squadEvidenceSummary } from './week2SquadEvidenceService.js';
+import { getSquadNameForParticipant, squadEvidenceSummary, aggregateSquadInterviews } from './week2SquadEvidenceService.js';
 import { buildFecLayoutParticipantContent } from '../fecCanvasLayoutContent.js';
 import { loadWeek2Discovery } from './week2DiscoveryStorage.js';
 import { getReadinessMissionState } from './week2ReadinessMissionService.js';
@@ -34,31 +34,94 @@ export function getCanvasClarityScore(boxScores) {
   return { week1, week2, delta: week2 - week1 };
 }
 
+/** @param {string[]} items @param {number} [limit] */
+function rankTopItems(items, limit = 3) {
+  /** @type {Record<string, number>} */
+  const map = {};
+  for (const item of items) {
+    const k = String(item ?? '').trim();
+    if (k.length < 8) continue;
+    map[k] = (map[k] ?? 0) + 1;
+  }
+  return Object.entries(map)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, limit)
+    .map(([text, count]) => ({ text, count }));
+}
+
+/** @param {Array<{ text: string, count: number }>} ranked */
+function padTopThree(ranked) {
+  const out = ranked.slice(0, 3).map((row) => ({ ...row }));
+  while (out.length < 3) out.push({ text: '', count: 0 });
+  return out;
+}
+
 /** @param {string} participantId */
 export function getEvidenceBoardPayload(participantId) {
-  const s1 = getFecStepPayload(participantId, 'fec-step-1');
-  const s2 = getFecStepPayload(participantId, 'fec-step-2');
   const lab = getFecValidationLabState(participantId);
   const saved = lab.fec.evidenceBoard ?? {};
+  const interviews = aggregateSquadInterviews(lab.evidence.memberIds);
 
-  const goals = s1.commonGoals ?? [];
-  const problems = (s2.rankedProblems ?? []).map((p) => ({ text: p.text, count: p.count }));
-  const quotes = s1.topQuotes ?? [];
-  const themes = [...new Set([...(s1.commonBehaviors ?? []), ...(s1.commonConcerns ?? [])])].slice(0, 8);
+  const allGoals = [];
+  const allProblems = [];
+  const allOpportunities = [];
+  const quotes = [];
 
-  const marketSummary = {
-    values: `The market appears to value ${goals[0]?.replace(/^Goal signal: /, '') || 'financial security and clear guidance'}.`,
-    struggles: `The market appears to struggle with ${problems[0]?.text || 'protection gaps and income stability'}.`,
-    needs: `The market appears to need ${themes[0] || 'trusted advisors who listen before recommending'}.`,
+  for (const iv of interviews) {
+    const ins = iv.aiInsights ?? {};
+    quotes.push(...(ins.quotes ?? []));
+    allGoals.push(...(ins.goals ?? []));
+    allProblems.push(...(ins.painPoints ?? []));
+    allOpportunities.push(...(ins.opportunities ?? []));
+
+    for (const raw of iv.answers ?? []) {
+      const ans = String(raw ?? '').trim();
+      if (ans.length < 12) continue;
+      const lower = ans.toLowerCase();
+      if (/goal|dream|want|hope|plan|save|invest|retire|education|future|aspir/.test(lower)) {
+        allGoals.push(ans.slice(0, 140));
+      }
+      if (/worry|stress|afraid|debt|struggle|hard|difficult|problem|can't|cannot|lack|confus|jargon/.test(lower)) {
+        allProblems.push(ans.slice(0, 140));
+      }
+      if (/help|advice|guidance|trust|coach|plan|structure|opportunit|referral|meet/.test(lower)) {
+        allOpportunities.push(ans.slice(0, 140));
+      }
+    }
+  }
+
+  const rankedGoals = rankTopItems(allGoals, 3);
+  const rankedProblems = rankTopItems(allProblems, 3);
+  const rankedOpportunities = rankTopItems(allOpportunities, 3);
+
+  const topGoals = padTopThree(
+    saved.topGoals?.some((row) => row?.text) ? saved.topGoals : rankedGoals,
+  );
+  const topProblems = padTopThree(
+    saved.topProblems?.some((row) => row?.text) ? saved.topProblems : rankedProblems,
+  );
+  const topOpportunities = padTopThree(
+    saved.topOpportunities?.some((row) => row?.text) ? saved.topOpportunities : rankedOpportunities,
+  );
+
+  const uniqueQuotes = [...new Set(quotes.filter(Boolean))];
+
+  const marketSummary = saved.marketSummary ?? {
+    values: topGoals.find((g) => g.text)?.text || 'Customers aspire to financial security and clearer life goals.',
+    struggles: topProblems.find((p) => p.text)?.text || 'Protection gaps and financial uncertainty recur across interviews.',
+    needs: topOpportunities.find((o) => o.text)?.text || 'Structured guidance and trusted advisor relationships emerged.',
   };
 
   return {
-    quotes,
-    starredQuotes: saved.starredQuotes ?? quotes.slice(0, 3),
-    problems,
-    goals,
-    themes,
-    marketSummary: saved.marketSummary ?? marketSummary,
+    quotes: uniqueQuotes.slice(0, 12),
+    starredQuotes: saved.starredQuotes ?? uniqueQuotes.slice(0, 3),
+    topGoals,
+    topProblems,
+    topOpportunities,
+    problems: topProblems.filter((p) => p.text),
+    goals: topGoals.map((g) => g.text).filter(Boolean),
+    themes: topOpportunities.map((o) => o.text).filter(Boolean),
+    marketSummary,
     interviewCount: lab.evidence.interviewCount,
     target: lab.evidence.target,
   };
@@ -171,24 +234,58 @@ export function getFecStudioState(participantId) {
 
 /**
  * @param {string} participantId
- * @param {{ marketSummary?: Record<string, string>, starredQuotes?: string[] }} input
+ * @param {{
+ *   topGoals?: Array<{ text: string, count: number }>,
+ *   topProblems?: Array<{ text: string, count: number }>,
+ *   topOpportunities?: Array<{ text: string, count: number }>,
+ *   starredQuotes?: string[],
+ *   marketSummary?: Record<string, string>,
+ * }} input
  */
 export function approveEvidenceBoard(participantId, input) {
   const board = getEvidenceBoardPayload(participantId);
-  const summary = input.marketSummary ?? board.marketSummary;
+  const topGoals = input.topGoals ?? board.topGoals;
+  const topProblems = input.topProblems ?? board.topProblems;
+  const topOpportunities = input.topOpportunities ?? board.topOpportunities;
   const starred = input.starredQuotes ?? board.starredQuotes;
-  const marketText = [summary.values, summary.struggles, summary.needs].filter(Boolean).join('\n\n');
+  const summary = input.marketSummary ?? {
+    values: topGoals.find((g) => g.text)?.text ?? board.marketSummary.values,
+    struggles: topProblems.find((p) => p.text)?.text ?? board.marketSummary.struggles,
+    needs: topOpportunities.find((o) => o.text)?.text ?? board.marketSummary.needs,
+  };
+  const marketText = [
+    'Top 3 Goals',
+    ...topGoals.map((g, i) => (g.text ? `${i + 1}. ${g.text}` : null)).filter(Boolean),
+    '',
+    'Top 3 Problems',
+    ...topProblems.map((p, i) => (p.text ? `${i + 1}. ${p.text}` : null)).filter(Boolean),
+    '',
+    'Top 3 Opportunities',
+    ...topOpportunities.map((o, i) => (o.text ? `${i + 1}. ${o.text}` : null)).filter(Boolean),
+  ].join('\n');
   const key = squadKeyFor(participantId);
   const now = new Date().toISOString();
 
   approveFecStep(participantId, 'fec-step-1', {
     approvedStatement: marketText,
-    selections: { topQuotes: starred, marketSummary: summary },
+    selections: {
+      topQuotes: starred,
+      marketSummary: summary,
+      topGoals,
+      topProblems,
+      topOpportunities,
+    },
   });
 
   const next = saveFecValidation(key, {
     studio1ApprovedAt: now,
-    evidenceBoard: { marketSummary: summary, starredQuotes: starred },
+    evidenceBoard: {
+      marketSummary: summary,
+      starredQuotes: starred,
+      topGoals,
+      topProblems,
+      topOpportunities,
+    },
   });
   void syncFecValidationToCloud(key, next, squadEvidenceSummary(participantId).memberIds).catch(() => {});
   syncWeek2PortfolioArtifacts(participantId);

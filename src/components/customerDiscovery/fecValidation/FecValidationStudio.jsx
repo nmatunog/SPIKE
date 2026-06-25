@@ -184,9 +184,9 @@ function FecStudioLanding({ studio, participantId, memberNames, onStart, onNavig
 
       <section className="rounded-xl border border-indigo-100 bg-indigo-50/80 px-4 py-4 text-sm text-indigo-950">
         <p className="font-semibold">How to encode your FEC Canvas today</p>
-        <ol className="mt-2 list-decimal space-y-1 pl-5 text-indigo-900">
-          <li>Open <strong>Studio 1</strong> — review interview evidence and approve the market summary.</li>
-          <li>Open <strong>Studio 2</strong> — for each FEC box, edit the Week 2 draft and tap <strong>Approve → update FEC</strong>.</li>
+        <ol className="list-decimal space-y-1 pl-5 text-indigo-900">
+          <li>Fill in <strong>Top 3 Goals</strong>, <strong>Top 3 Problems</strong>, and <strong>Top 3 Opportunities</strong> from squad interviews.</li>
+          <li>Open <strong>Studio 2</strong> — approve each FEC box (Keep / Refine / Rebuild).</li>
           <li>Open <strong>Studio 3</strong> — lock build readiness and your Friday pitch draft.</li>
         </ol>
         <p className="mt-2 text-xs text-indigo-800">You do not type into the canvas grid directly — approvals write into your FEC automatically.</p>
@@ -227,13 +227,17 @@ function FecStudioLanding({ studio, participantId, memberNames, onStart, onNavig
 /** @param {{ studio: ReturnType<typeof getFecStudioState>, participantId: string, onSaved: () => void, onNext: () => void, onNavigate?: (slug: string) => void }} props */
 function Studio1Evidence({ studio, participantId, onSaved, onNext, onNavigate }) {
   const board = studio.evidenceBoard;
-  const [summary, setSummary] = useState(board.marketSummary);
+  const [topGoals, setTopGoals] = useState(board.topGoals);
+  const [topProblems, setTopProblems] = useState(board.topProblems);
+  const [topOpportunities, setTopOpportunities] = useState(board.topOpportunities);
   const [starred, setStarred] = useState(board.starredQuotes ?? []);
 
   useEffect(() => {
-    setSummary(board.marketSummary);
+    setTopGoals(board.topGoals);
+    setTopProblems(board.topProblems);
+    setTopOpportunities(board.topOpportunities);
     setStarred(board.starredQuotes ?? []);
-  }, [participantId]);
+  }, [participantId, board.topGoals, board.topProblems, board.topOpportunities, board.starredQuotes]);
 
   function toggleStar(quote) {
     setStarred((prev) => {
@@ -243,76 +247,84 @@ function Studio1Evidence({ studio, participantId, onSaved, onNext, onNavigate })
     });
   }
 
+  function updateRanked(setter, index, text) {
+    setter((rows) => rows.map((row, i) => (i === index ? { ...row, text } : row)));
+  }
+
   return (
     <div className="space-y-8 pb-8">
       <StudioPhaseNav phases={studio.phases} activeSlug="fec-studio-1" onNavigate={onNavigate} />
       <StudioHeader phase={FEC_STUDIO_PHASES[0]} />
 
-      {board.quotes.length === 0 ? (
+      <p className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+        Review squad interview evidence. Edit each line if needed, then approve — this encodes <strong>Who we serve</strong> on your FEC Canvas.
+      </p>
+
+      {board.interviewCount < 3 ? (
         <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
-          No interview quotes yet — go back to <strong>Day 2 Discover</strong> and encode interviews, then return here. You can still edit the market summary below and approve.
+          Your squad has <strong>{board.interviewCount}</strong> encoded interviews — add more from Day 2 Discover for stronger patterns.
         </p>
       ) : null}
 
-      <section className="space-y-4">
-        <h3 className="text-lg font-bold text-slate-900">Top quotes</h3>
-        <div className="grid gap-3 sm:grid-cols-2">
-          {board.quotes.slice(0, 8).map((q) => (
-            <button
-              key={q}
-              type="button"
-              onClick={() => toggleStar(q)}
-              className={`rounded-xl border p-4 text-left text-sm transition ${
-                starred.includes(q) ? 'border-amber-300 bg-amber-50' : 'border-slate-200 bg-white hover:border-spike/30'
-              }`}
-            >
-              <Star size={14} className={starred.includes(q) ? 'text-amber-500' : 'text-slate-300'} />
-              <p className="mt-2 italic text-slate-800">&ldquo;{q}&rdquo;</p>
-            </button>
-          ))}
-        </div>
-      </section>
+      <TopThreeRankedEditor
+        title="Top 3 Goals"
+        hint="What customers aspire to — from interview answers."
+        items={topGoals}
+        onChange={(index, text) => updateRanked(setTopGoals, index, text)}
+      />
 
-      <section className="space-y-3">
-        <h3 className="text-lg font-bold text-slate-900">Top problems</h3>
-        <div className="grid gap-2 sm:grid-cols-2">
-          {board.problems.map((p) => (
-            <div key={p.text} className="rounded-xl border border-slate-200 bg-white p-3">
-              <p className="text-sm font-medium text-slate-900">{p.text}</p>
-              <p className="mt-1 text-xs font-bold text-spike">{p.count} interview refs</p>
-            </div>
-          ))}
-        </div>
-      </section>
+      <TopThreeRankedEditor
+        title="Top 3 Problems"
+        hint="Pain points or struggles that repeat across conversations."
+        items={topProblems}
+        onChange={(index, text) => updateRanked(setTopProblems, index, text)}
+      />
 
-      <InsightSection title="Top goals" items={board.goals} />
-      <InsightSection title="Top themes" items={board.themes} tag />
+      <TopThreeRankedEditor
+        title="Top 3 Opportunities"
+        hint="Where customers are open to guidance, trust, or new solutions."
+        items={topOpportunities}
+        onChange={(index, text) => updateRanked(setTopOpportunities, index, text)}
+      />
 
-      <section className="rounded-xl border border-spike/20 bg-spike/5 p-4 space-y-3">
-        <p className="flex items-center gap-2 text-sm font-bold text-spike"><Sparkles size={16} /> Market summary</p>
-        {['values', 'struggles', 'needs'].map((key) => (
-          <textarea
-            key={key}
-            value={summary[key] ?? ''}
-            onChange={(e) => setSummary({ ...summary, [key]: e.target.value })}
-            rows={2}
-            className="w-full rounded-lg border border-spike/10 bg-white p-3 text-sm"
-          />
-        ))}
-      </section>
+      {board.quotes.length > 0 ? (
+        <section className="space-y-4">
+          <h3 className="text-lg font-bold text-slate-900">Supporting quotes</h3>
+          <p className="text-sm text-slate-600">Star up to 5 quotes to carry into your portfolio pitch.</p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {board.quotes.slice(0, 8).map((q) => (
+              <button
+                key={q}
+                type="button"
+                onClick={() => toggleStar(q)}
+                className={`rounded-xl border p-4 text-left text-sm transition ${
+                  starred.includes(q) ? 'border-amber-300 bg-amber-50' : 'border-slate-200 bg-white hover:border-spike/30'
+                }`}
+              >
+                <Star size={14} className={starred.includes(q) ? 'text-amber-500' : 'text-slate-300'} />
+                <p className="mt-2 italic text-slate-800">&ldquo;{q}&rdquo;</p>
+              </button>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <button
         type="button"
         className="spike-btn-primary w-full sm:w-auto"
         onClick={() => {
-          approveEvidenceBoard(participantId, { marketSummary: summary, starredQuotes: starred });
+          approveEvidenceBoard(participantId, {
+            topGoals,
+            topProblems,
+            topOpportunities,
+            starredQuotes: starred,
+          });
           onSaved();
           onNext();
         }}
       >
         Approve evidence board → save to FEC &amp; portfolio
       </button>
-      <p className="text-xs text-slate-500">This encodes <strong>Who we serve</strong> on your FEC Canvas and unlocks Studio 2.</p>
     </div>
   );
 }
@@ -544,22 +556,33 @@ function HeroStat({ label, value, sub, highlight }) {
   );
 }
 
-/** @param {{ title: string, items: string[], tag?: boolean }} props */
-function InsightSection({ title, items, tag }) {
+/** @param {{ title: string, hint: string, items: Array<{ text: string, count: number }>, onChange: (index: number, text: string) => void }} props */
+function TopThreeRankedEditor({ title, hint, items, onChange }) {
   return (
-    <section>
-      <h3 className="text-lg font-bold text-slate-900">{title}</h3>
-      {items.length ? (
-        <div className="mt-2 flex flex-wrap gap-2">
-          {items.map((item) => (
-            <span key={item} className={`rounded-lg px-3 py-2 text-sm ${tag ? 'bg-spike/10 font-medium text-spike' : 'bg-slate-50 text-slate-700'}`}>
-              {item}
-            </span>
-          ))}
-        </div>
-      ) : (
-        <p className="mt-2 text-sm text-slate-400">Encode more interviews to populate.</p>
-      )}
+    <section className="space-y-3">
+      <div>
+        <h3 className="text-lg font-bold text-slate-900">{title}</h3>
+        <p className="text-sm text-slate-600">{hint}</p>
+      </div>
+      <ol className="space-y-3">
+        {items.map((item, index) => (
+          <li key={`${title}-${index}`} className="rounded-xl border border-slate-200 bg-white p-3">
+            <label className="block space-y-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                #{index + 1}
+                {item.count > 0 ? ` · ${item.count} interview ref${item.count === 1 ? '' : 's'}` : ''}
+              </span>
+              <textarea
+                value={item.text}
+                onChange={(e) => onChange(index, e.target.value)}
+                rows={2}
+                placeholder={`Enter ${title.toLowerCase()} #${index + 1} from your squad evidence…`}
+                className="w-full rounded-lg border border-slate-100 bg-slate-50 p-3 text-sm text-slate-800 focus:border-spike focus:outline-none focus:ring-1 focus:ring-spike"
+              />
+            </label>
+          </li>
+        ))}
+      </ol>
     </section>
   );
 }
