@@ -3,6 +3,7 @@
  */
 import { DEFAULT_INTERVIEW_QUESTIONS, MAX_INTERVIEW_QUESTIONS } from './week2Constants.js';
 import { extractInterviewInsights } from './week2InsightSynthesis.js';
+import { isInterviewEncoded } from './week2InterviewEncode.js';
 
 const STORAGE_KEY = 'spike_week2_discovery_v2';
 const LEGACY_STORAGE_KEY = 'spike_week2_discovery_v1';
@@ -164,7 +165,7 @@ export function loadWeek2Discovery(participantId) {
     thinkingShifts: stored.thinkingShifts ?? [],
     interviews: (stored.interviews ?? []).map((iv) => {
       const answers = padInterviewAnswers(iv.answers);
-      const encoded = Boolean(iv.encoded);
+      const encoded = isInterviewEncoded({ alias: iv.alias, answers });
       return {
         id: iv.id ?? `iv-${Date.now()}`,
         alias: iv.alias ?? '',

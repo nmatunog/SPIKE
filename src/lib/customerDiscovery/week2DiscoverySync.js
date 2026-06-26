@@ -86,12 +86,9 @@ export async function hydrateWeek2DiscoveryFromCloud(participantId, opts = {}) {
     return local;
   }
 
-  if (opts.preferLocal && localAt && (!remoteAt || localAt >= remoteAt)) {
-    const merged = saveWeek2Discovery(
-      participantId,
-      mergeWeek2DiscoveryStates(local, remoteState),
-      { skipCloudSync: true },
-    );
+  if (opts.preferLocal && localAt) {
+    const mergedState = mergeWeek2DiscoveryStates(local, remoteState);
+    const merged = saveWeek2Discovery(participantId, mergedState, { skipCloudSync: true });
     hydratedParticipants.add(participantId);
     return merged;
   }
@@ -111,16 +108,23 @@ export async function backfillWeek2DiscoveryToCloud(participantId) {
 
 /**
  * @param {string} participantId
- * @param {{ force?: boolean }} [opts]
+ * @param {{ force?: boolean, preferLocal?: boolean }} [opts]
  */
 export async function hydrateParticipantWeek2Discovery(participantId, opts = {}) {
-  return hydrateWeek2DiscoveryFromCloud(participantId, { force: opts.force ?? false });
+  return hydrateWeek2DiscoveryFromCloud(participantId, {
+    force: opts.force ?? false,
+    preferLocal: opts.preferLocal ?? false,
+  });
 }
 
 /** Hydrate all squad members; auto-fill empty accounts from the fullest squadmate. */
-export async function hydrateSquadWeek2Discovery(participantId) {
+export async function hydrateSquadWeek2Discovery(participantId, opts = {}) {
+  const hydrateOpts = {
+    force: opts.force ?? false,
+    preferLocal: opts.preferLocal ?? false,
+  };
   const memberIds = getSquadMemberIds(participantId);
-  await Promise.all(memberIds.map((id) => hydrateParticipantWeek2Discovery(id, { force: true })));
+  await Promise.all(memberIds.map((id) => hydrateParticipantWeek2Discovery(id, hydrateOpts)));
 
   try {
     const { autoHydrateAndSyncSquadWeek2Discovery } = await import('./week2SquadDataAdoptService.js');
@@ -129,7 +133,9 @@ export async function hydrateSquadWeek2Discovery(participantId) {
     console.warn('[week2Discovery] squad adopt sync failed:', err?.message ?? err);
   }
 
-  await Promise.all(memberIds.map((id) => hydrateParticipantWeek2Discovery(id, { force: true })));
+  if (opts.force) {
+    await Promise.all(memberIds.map((id) => hydrateParticipantWeek2Discovery(id, hydrateOpts)));
+  }
 }
 
 /** @param {string} participantId */

@@ -66,9 +66,14 @@ saveSquadMentorReview('mentor-smoke', 'Squad Cassiopeia', 2, {
 const { mergeWeek2Interviews } = await import('../src/lib/customerDiscovery/week2DiscoveryMerge.js');
 const merged = mergeWeek2Interviews(
   [{ alias: '', answers: [''], encoded: false }],
-  [{ alias: 'Gwyneth', answers: ['a', 'b', 'c'], encoded: true }],
+  [{
+    alias: 'Gwyneth',
+    answers: ['She wants to save more', 'Debt is stressful', 'Needs better budgeting help'],
+    encoded: true,
+  }],
 );
 assert.equal(merged[0].alias, 'Gwyneth');
 assert.equal(merged[0].encoded, true);
+assert.ok(merged[0].answers[0].includes('save'));
 
 console.log('smoke:week2-discovery OK');

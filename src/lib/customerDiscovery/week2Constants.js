@@ -4,6 +4,12 @@ export const WEEK2_COHORT_NAME = 'TYCOONS';
 
 export const MAX_INTERVIEW_QUESTIONS = 5;
 
+/** Minimum chars per answer to count toward interview encode completion. */
+export const MIN_INTERVIEW_ANSWER_CHARS = 3;
+
+/** Stricter threshold for progress UI ("substantial" answers). */
+export const SUBSTANTIAL_INTERVIEW_ANSWER_CHARS = 8;
+
 export const MIN_ENCODED_INTERVIEWS = 3;
 export const TARGET_ENCODED_INTERVIEWS = 3;
 export const SQUAD_INTERVIEW_TARGET = 9;

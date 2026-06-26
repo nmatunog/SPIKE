@@ -17,21 +17,9 @@ import {
   submitReflection,
   advanceTurn,
 } from '../lib/spike-life-client.js'
+import { SCENARIOS } from '../lib/scenarios.js'
 
-const SCENARIOS = [
-  {
-    id: 'promotion',
-    title: 'Scenario 1 — Promotion',
-    description: 'Fresh graduate receives a +15% raise. Practice allocating new income.',
-  },
-  {
-    id: 'protection_stress',
-    title: 'Scenario 2 — Family Health Concern',
-    description: 'A health event exposes protection gaps. Strengthen your protection plans.',
-  },
-]
-
-export default function LifeWorkspace() {
+export default function LifeWorkspace({ onOpenWorkshop }) {
   const [activeLens, setActiveLens] = useState('life')
   const [dashboard, setDashboard] = useState(null)
   const [lensView, setLensView] = useState(null)
@@ -165,6 +153,19 @@ export default function LifeWorkspace() {
   return (
     <div className="min-h-dvh bg-slate-50 pb-20 md:pb-0">
       <PersistentHeader dashboard={dashboard} />
+      {onOpenWorkshop && (
+        <div className="border-b border-slate-100 bg-white px-4 py-2">
+          <div className="mx-auto flex max-w-6xl justify-end">
+            <button
+              type="button"
+              onClick={onOpenWorkshop}
+              className="text-sm font-medium text-[#8B0000] hover:underline"
+            >
+              Open workshop room (up to 10 players) →
+            </button>
+          </div>
+        </div>
+      )}
       <div className="mx-auto max-w-6xl px-4 py-4 space-y-6">
         <LifeBoard
           dashboard={dashboard}

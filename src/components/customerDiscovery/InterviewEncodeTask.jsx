@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Check, Save } from 'lucide-react';
 import {
   getWeek2State,
@@ -10,11 +10,12 @@ import {
   MAX_INTERVIEW_QUESTIONS,
   MIN_ENCODED_INTERVIEWS,
   SQUAD_INTERVIEW_TARGET,
+  SUBSTANTIAL_INTERVIEW_ANSWER_CHARS,
 } from '../../lib/customerDiscovery/week2Constants.js';
+import { countSubstantialInterviewAnswers } from '../../lib/customerDiscovery/week2InterviewEncode.js';
 import { squadEvidenceSummary } from '../../lib/customerDiscovery/week2SquadEvidenceService.js';
 import {
   hydrateParticipantWeek2Discovery,
-  hydrateSquadWeek2Discovery,
   syncWeek2DiscoveryToCloud,
 } from '../../lib/customerDiscovery/week2DiscoverySync.js';
 import { loadWeek2Discovery } from '../../lib/customerDiscovery/week2DiscoveryStorage.js';
@@ -39,18 +40,13 @@ function readInterviewDraft(participantId, interviewIndex) {
  * @param {{ participantId: string, interviewIndex: number, onSaved?: () => void }} props
  */
 export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) {
-  const initial = useMemo(
-    () => readInterviewDraft(participantId, interviewIndex),
-    [participantId, interviewIndex],
-  );
-
-  const [questions, setQuestions] = useState(initial.questions);
-  const [alias, setAlias] = useState(initial.alias);
-  const [occupation, setOccupation] = useState(initial.occupation);
-  const [answers, setAnswers] = useState(initial.answers);
-  const [reflection, setReflection] = useState(initial.reflection);
-  const [insights, setInsights] = useState(initial.insights);
-  const [encoded, setEncoded] = useState(initial.encoded);
+  const [questions, setQuestions] = useState(() => readInterviewDraft(participantId, interviewIndex).questions);
+  const [alias, setAlias] = useState(() => readInterviewDraft(participantId, interviewIndex).alias);
+  const [occupation, setOccupation] = useState(() => readInterviewDraft(participantId, interviewIndex).occupation);
+  const [answers, setAnswers] = useState(() => readInterviewDraft(participantId, interviewIndex).answers);
+  const [reflection, setReflection] = useState(() => readInterviewDraft(participantId, interviewIndex).reflection);
+  const [insights, setInsights] = useState(() => readInterviewDraft(participantId, interviewIndex).insights);
+  const [encoded, setEncoded] = useState(() => readInterviewDraft(participantId, interviewIndex).encoded);
   const [saveState, setSaveState] = useState('idle');
   const [squadTick, setSquadTick] = useState(0);
   const [syncTick, setSyncTick] = useState(0);
@@ -59,18 +55,41 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
   const draftRef = useRef({ alias, occupation, answers, reflection, questions });
   const dirtyRef = useRef(false);
 
+  const loadDraft = useCallback(() => {
+    const draft = readInterviewDraft(participantId, interviewIndex);
+    setQuestions(draft.questions);
+    setAlias(draft.alias);
+    setOccupation(draft.occupation);
+    setAnswers(draft.answers);
+    setReflection(draft.reflection);
+    setInsights(draft.insights);
+    setEncoded(draft.encoded);
+    draftRef.current = {
+      alias: draft.alias,
+      occupation: draft.occupation,
+      answers: draft.answers,
+      reflection: draft.reflection,
+      questions: draft.questions,
+    };
+  }, [participantId, interviewIndex]);
+
+  useEffect(() => {
+    dirtyRef.current = false;
+    loadDraft();
+  }, [loadDraft]);
+
   useEffect(() => {
     let cancelled = false;
-    (async () => {
-      await hydrateParticipantWeek2Discovery(participantId);
-      await hydrateSquadWeek2Discovery(participantId);
-      if (cancelled) return;
+    void (async () => {
+      await hydrateParticipantWeek2Discovery(participantId, { preferLocal: true });
+      if (cancelled || dirtyRef.current) return;
+      loadDraft();
       setSquadTick((n) => n + 1);
     })();
     return () => {
       cancelled = true;
     };
-  }, [participantId, interviewIndex]);
+  }, [participantId, loadDraft]);
 
   useEffect(() => {
     draftRef.current = { alias, occupation, answers, reflection, questions };
@@ -96,7 +115,11 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
     const next = writeDraftToStorage();
     const iv = next.interviews?.[interviewIndex];
     if (iv?.aiInsights) setInsights(iv.aiInsights);
-    setEncoded(Boolean(iv?.encoded));
+    setEncoded((prev) => {
+      const nowEncoded = Boolean(iv?.encoded);
+      if (!prev && nowEncoded && notify) onSaved?.();
+      return nowEncoded;
+    });
     setSyncTick((n) => n + 1);
 
     if (awaitCloud) {
@@ -114,6 +137,7 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
       window.setTimeout(() => setSaveState('idle'), 2000);
     }
     if (notify) onSaved?.();
+    dirtyRef.current = false;
     return next;
   }
 
@@ -162,7 +186,11 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
     const next = saveEncodedInterview(participantId, interviewIndex, merged);
     const iv = next.interviews?.[interviewIndex];
     if (iv?.aiInsights) setInsights(iv.aiInsights);
-    setEncoded(Boolean(iv?.encoded));
+    setEncoded((prev) => {
+      const nowEncoded = Boolean(iv?.encoded);
+      if (!prev && nowEncoded) onSaved?.();
+      return nowEncoded;
+    });
   }
 
   function updateQuestion(qi, text) {
@@ -172,7 +200,7 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
   }
 
   const filledAnswers = answers.filter((a) => String(a).trim().length > 0).length;
-  const substantialAnswers = answers.filter((a) => String(a).trim().length > 8).length;
+  const substantialAnswers = countSubstantialInterviewAnswers(answers);
 
   const saveBar = (
     <div className="space-y-2">
@@ -206,7 +234,7 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
         </span>
       ) : (
         <span className="text-xs text-slate-500">
-          {substantialAnswers} / 3 substantial answers · {filledAnswers} / {MAX_INTERVIEW_QUESTIONS} started
+          {substantialAnswers} / 3 answers with {SUBSTANTIAL_INTERVIEW_ANSWER_CHARS}+ chars · {filledAnswers} / {MAX_INTERVIEW_QUESTIONS} started
           {alias.trim().length <= 1 ? ' · alias required' : ''}
         </span>
       )}
@@ -243,7 +271,7 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
               setAlias(e.target.value);
               persist({ alias: e.target.value });
             }}
-            onBlur={() => flushDraft()}
+            onBlur={() => void flushDraft({ notify: true })}
             placeholder="e.g. Alex"
             className="w-full border-0 bg-transparent text-sm font-medium focus:outline-none"
           />
@@ -257,7 +285,7 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
               setOccupation(e.target.value);
               persist({ occupation: e.target.value });
             }}
-            onBlur={() => flushDraft()}
+            onBlur={() => void flushDraft({ notify: true })}
             placeholder="e.g. Teacher, 3 years"
             className="w-full border-0 bg-transparent text-sm font-medium focus:outline-none"
           />
@@ -275,7 +303,7 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
               type="text"
               value={questions[qi]?.text ?? ''}
               onChange={(e) => updateQuestion(qi, e.target.value)}
-              onBlur={() => flushDraft()}
+              onBlur={() => void flushDraft({ notify: true })}
               placeholder={questions[qi]?.placeholder ?? 'Question you asked in the field'}
               className="w-full border-0 bg-transparent text-sm font-medium text-slate-800 focus:outline-none"
             />
@@ -288,7 +316,7 @@ export function InterviewEncodeTask({ participantId, interviewIndex, onSaved }) 
                 setAnswers(next);
                 persist({ answers: next });
               }}
-              onBlur={() => flushDraft()}
+              onBlur={() => void flushDraft({ notify: true })}
               placeholder="Capture their answer — completion over length"
               className="w-full border-0 bg-transparent text-sm text-slate-800 focus:outline-none"
             />

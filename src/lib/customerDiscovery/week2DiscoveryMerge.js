@@ -1,18 +1,52 @@
 /**
  * Merge local + cloud Week 2 discovery without dropping encoded interviews.
  */
+import { MAX_INTERVIEW_QUESTIONS } from './week2Constants.js';
+import { padInterviewAnswers } from './week2DiscoveryStorage.js';
+import { buildEncodedInterviewRecord } from './week2InterviewEncode.js';
 
-/** @param {import('./week2DiscoveryTypes.js').Week2EncodedInterview | undefined} iv */
-function interviewRichness(iv) {
-  if (!iv) return 0;
-  const answers = (iv.answers ?? []).filter((a) => String(a).trim().length > 0).length;
-  const substantial = (iv.answers ?? []).filter((a) => String(a).trim().length > 8).length;
-  return (
-    substantial * 20
-    + answers * 5
-    + (iv.encoded ? 200 : 0)
-    + (String(iv.alias ?? '').trim().length > 1 ? 10 : 0)
-    + String(iv.reflection ?? '').trim().length
+/** @param {string | null | undefined} a @param {string | null | undefined} b */
+function pickRicherText(a, b) {
+  const textA = String(a ?? '').trim();
+  const textB = String(b ?? '').trim();
+  if (!textA) return String(b ?? '');
+  if (!textB) return textA;
+  return textB.length >= textA.length ? textB : textA;
+}
+
+/**
+ * @param {import('./week2DiscoveryTypes.js').Week2EncodedInterview | undefined} localIv
+ * @param {import('./week2DiscoveryTypes.js').Week2EncodedInterview | undefined} remoteIv
+ */
+export function mergeWeek2InterviewSlot(localIv, remoteIv) {
+  if (!localIv && remoteIv) return { ...remoteIv };
+  if (localIv && !remoteIv) return { ...localIv };
+  if (!localIv && !remoteIv) return null;
+
+  const maxAnswers = Math.max(
+    localIv.answers?.length ?? 0,
+    remoteIv.answers?.length ?? 0,
+    MAX_INTERVIEW_QUESTIONS,
+  );
+  /** @type {string[]} */
+  const answers = [];
+  for (let i = 0; i < maxAnswers; i++) {
+    answers.push(pickRicherText(localIv.answers?.[i], remoteIv.answers?.[i]));
+  }
+
+  return buildEncodedInterviewRecord(
+    {
+      ...localIv,
+      ...remoteIv,
+      id: localIv.id ?? remoteIv.id,
+      encodedAt: localIv.encodedAt || remoteIv.encodedAt || null,
+    },
+    {
+      alias: pickRicherText(localIv.alias, remoteIv.alias),
+      occupation: pickRicherText(localIv.occupation, remoteIv.occupation),
+      reflection: pickRicherText(localIv.reflection, remoteIv.reflection),
+      answers: padInterviewAnswers(answers),
+    },
   );
 }
 
@@ -25,18 +59,8 @@ export function mergeWeek2Interviews(localArr, remoteArr) {
   /** @type {import('./week2DiscoveryTypes.js').Week2EncodedInterview[]} */
   const merged = [];
   for (let i = 0; i < maxLen; i++) {
-    const localIv = localArr?.[i];
-    const remoteIv = remoteArr?.[i];
-    if (!localIv && remoteIv) {
-      merged.push(remoteIv);
-      continue;
-    }
-    if (localIv && !remoteIv) {
-      merged.push(localIv);
-      continue;
-    }
-    if (!localIv && !remoteIv) continue;
-    merged.push(interviewRichness(localIv) >= interviewRichness(remoteIv) ? localIv : remoteIv);
+    const slot = mergeWeek2InterviewSlot(localArr?.[i], remoteArr?.[i]);
+    if (slot) merged.push(slot);
   }
   return merged;
 }
