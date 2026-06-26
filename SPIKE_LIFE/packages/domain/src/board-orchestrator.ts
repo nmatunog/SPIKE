@@ -33,7 +33,21 @@ export async function createSoloBoard(
   displayName: string = 'You',
 ): Promise<BoardState> {
   const existing = await deps.boardRepo.findById(boardId)
-  if (existing) return existing
+  if (existing) {
+    const label = displayName?.trim()
+    if (label && existing.tokens[0] && existing.tokens[0].displayName !== label) {
+      const updated: BoardState = {
+        ...existing,
+        tokens: existing.tokens.map((token, index) =>
+          index === 0 ? { ...token, displayName: label } : token,
+        ),
+        updatedAt: new Date().toISOString(),
+      }
+      await deps.boardRepo.save(updated)
+      return updated
+    }
+    return existing
+  }
 
   const workshop = createWorkshopSession(simulationId)
   await deps.simulationRepo.save(workshop)

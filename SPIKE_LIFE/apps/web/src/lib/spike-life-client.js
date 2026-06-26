@@ -25,7 +25,13 @@ export function getBoardId() {
 }
 
 export async function ensureSessionStarted() {
-  await boardCommands.ensureSoloBoard(BOARD_ID, SESSION_ID)
+  await financialCommands.createWorkshopSession(SESSION_ID)
+  const dashboard = await financialQueries.getDashboard(SESSION_ID)
+  await boardCommands.ensureSoloBoard(
+    BOARD_ID,
+    SESSION_ID,
+    dashboard?.characterName ?? 'Alex',
+  )
   return SESSION_ID
 }
 
