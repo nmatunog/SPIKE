@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Briefcase, ChevronDown, ChevronUp, LayoutGrid, MessageSquare, Sparkles, User } from 'lucide-react';
 import { PageContainer } from '../layout/PageContainer.jsx';
 import { deriveSquadHubDetail } from '../../lib/staffCoachHomeService.js';
+import { PitchPanelSquadSummaryPanel } from './PitchPanelSquadSummaryPanel.jsx';
 import { SquadXpInline, SquadXpSummaryCard } from './SquadXpDashboard.jsx';
 import { SquadWeek2MissionProgressPanel } from './SquadWeek2MissionProgressPanel.jsx';
 import { getSquadWeeklyXp } from '../../lib/staff/squadXpService.js';
@@ -67,12 +68,16 @@ export function StaffSquadHubPage({ role, squadName, interns, homeHref }) {
       />
 
       {programDay.week >= 2 ? (
-        <div className="mb-6">
+        <div className="mb-6 space-y-4">
           <SquadWeek2MissionProgressPanel
             squadName={detail.squadName}
             memberIds={memberIds}
             members={detail.memberRows}
             cohortReady={cohortReady}
+          />
+          <PitchPanelSquadSummaryPanel
+            squadName={detail.squadName}
+            memberIds={memberIds}
           />
         </div>
       ) : null}
@@ -188,8 +193,9 @@ export function StaffSquadsListPage({ role, interns, homeHref }) {
       <header className="mb-6">
         <h1 className="text-2xl font-bold text-slate-900">My squads</h1>
         <p className="mt-1 text-sm text-slate-600">
-          Venture boards, FECs, portfolios, and Week 2 mission progress — organized by squad.
-          {programDay.week >= 2 ? ' Click a squad to expand today’s tasks.' : ''}
+          Venture boards, FECs, portfolios, Week 2 mission progress, and pitch panel scores — organized
+          by squad.
+          {programDay.week >= 2 ? ' Click a squad to expand tasks and full panel summary.' : ''}
         </p>
       </header>
       <ul className="grid gap-4 sm:grid-cols-2">
@@ -272,6 +278,16 @@ function StaffSquadsListCard({
             ) : null}
           </div>
           <p className="mt-1 text-sm text-slate-600">{squad.count} members</p>
+          {programDay.week >= 2 ? (
+            <div className="mt-3">
+              <PitchPanelSquadSummaryPanel
+                squadName={squad.name}
+                memberIds={memberIds}
+                compact
+                fetchDetails={false}
+              />
+            </div>
+          ) : null}
         </button>
         {!xpReady ? (
           <span className="inline-flex items-center gap-1 text-xs text-slate-400">
@@ -284,7 +300,7 @@ function StaffSquadsListCard({
       </div>
 
       {expanded && programDay.week >= 2 ? (
-        <div className="border-t border-slate-100 px-2 pb-2">
+        <div className="space-y-3 border-t border-slate-100 px-2 pb-2 pt-2">
           <SquadWeek2MissionProgressPanel
             squadName={squad.name}
             memberIds={memberIds}
@@ -292,6 +308,11 @@ function StaffSquadsListCard({
             cohortReady={cohortReady}
             compact
             embedded
+          />
+          <PitchPanelSquadSummaryPanel
+            squadName={squad.name}
+            memberIds={memberIds}
+            className="mx-1"
           />
         </div>
       ) : null}
