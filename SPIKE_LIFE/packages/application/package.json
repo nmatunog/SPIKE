@@ -13,7 +13,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "npm run build -w @spike-life/domain && npm run build -w @spike-life/infrastructure && tsc -p tsconfig.json && vitest run --config vitest.dist.config.ts"
+    "test": "npm run build -w @spike-life/domain && npm run build -w @spike-life/ui && npm run build -w @spike-life/infrastructure && tsc -p tsconfig.json && vitest run --config vitest.dist.config.ts"
   },
   "dependencies": {
     "@spike-life/domain": "*",
