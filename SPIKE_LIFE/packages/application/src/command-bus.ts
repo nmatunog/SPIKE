@@ -53,11 +53,3 @@ export class FinancialDecisionCommandBus {
     return updated
   }
 }
-
-export class FinancialDecisionQueryBus {
-  constructor(private readonly repository: SimulationRepository) {}
-
-  async getSession(sessionId: string): Promise<SimulationSession | null> {
-    return this.repository.findById(sessionId)
-  }
-}

@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import {
   FinancialDecisionCommandBus,
-  FinancialDecisionQueryBus,
 } from './command-bus.js'
+import { FinancialDecisionQueryBus } from './query-bus.js'
 import { InMemorySimulationRepository } from '@spike-life/infrastructure'
 
 const REFLECTION = [

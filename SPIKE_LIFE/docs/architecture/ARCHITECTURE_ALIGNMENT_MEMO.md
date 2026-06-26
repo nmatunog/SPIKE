@@ -2,7 +2,7 @@
 
 **Version:** 1.0  
 **Date:** 2026-06-26  
-**Status:** Phase 1 complete — Financial Decision Engine validated (Promotion cycle)  
+**Status:** Phase 2 complete — Five-Lens UI + query read models (Promotion cycle playable)  
 **Authority chain:** Amendment A0 → A1 → A2 → Volume I Chapters 1–4 → this memo → Technical specs → UX → Simulation blueprints → PRD v1.0/v1.1
 
 ---
@@ -255,7 +255,7 @@ Infrastructure   Hono (CF Workers), Neon PostgreSQL, repositories
 | **1** | Domain package + FNA + Recommendation engines + tests | Unit tests pass on Fresh Graduate fixture |
 | **2** | Decision + Consequence + Reflection engines + tests | Full loop passes deterministically in tests |
 | **3** | CQRS handlers + in-memory repository | Command/query integration tests |
-| **4** | Thin Five-Lens UI | One situation playable in browser |
+| **4** | Thin Five-Lens UI | One situation playable in browser | **Done** — `npm run dev` in SPIKE_LIFE |
 | **5** | Hono API + Neon persistence | Session survives refresh |
 | **6** | Astro migration + auth + LMS hooks | Production MVP |
 
