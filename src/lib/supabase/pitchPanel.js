@@ -1,5 +1,9 @@
 import { isSupabaseConfigured, supabase } from '../../supabaseClient.js';
-import { PITCH_PANEL_SESSION_ID, sortPitchPanelSquads } from '../staff/pitchPanelConstants.js';
+import {
+  normalizePitchPanelFeedbackField,
+  PITCH_PANEL_SESSION_ID,
+  sortPitchPanelSquads,
+} from '../staff/pitchPanelConstants.js';
 
 function assertClient() {
   if (!isSupabaseConfigured || !supabase) {
@@ -40,9 +44,9 @@ export async function submitPitchPanelScoreRemote(input) {
     p_validation: input.ratings.validation,
     p_presentation: input.ratings.presentation,
     p_team: input.ratings.team,
-    p_keep_feedback: input.feedback.keep,
-    p_improve_feedback: input.feedback.improve,
-    p_explore_feedback: input.feedback.explore,
+    p_keep_feedback: normalizePitchPanelFeedbackField(input.feedback.keep),
+    p_improve_feedback: normalizePitchPanelFeedbackField(input.feedback.improve),
+    p_explore_feedback: normalizePitchPanelFeedbackField(input.feedback.explore),
   });
   if (error) throw new Error(error.message);
 }

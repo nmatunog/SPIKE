@@ -190,8 +190,9 @@ export function PitchPanelDashboard({ interns, staffId = '', showToast, embedded
             </li>
           ))}
           <li className="border-t border-slate-200/80 pt-3 leading-relaxed">
-            <strong className="text-slate-800">Keep / Improve / Explore:</strong> Required written
-            notes on each score card — syncs to intern portfolios (Week 2 Day 5).
+            <strong className="text-slate-800">Keep / Improve / Explore:</strong> Optional coaching
+            notes on each score card — at least 3 characters to save as written; shorter or blank
+            fields save as &ldquo;none&rdquo; and sync to intern portfolios (Week 2 Day 5).
           </li>
           {PITCH_PANEL_FEEDBACK_FIELDS.map((f) => (
             <li key={f.id} className="pl-3 text-xs leading-relaxed">

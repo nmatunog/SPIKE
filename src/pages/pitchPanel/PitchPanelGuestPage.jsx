@@ -4,7 +4,9 @@ import {
   PITCH_PANEL_ACCESS_PIN,
   PITCH_PANEL_DIMENSIONS,
   PITCH_PANEL_FEEDBACK_FIELDS,
+  PITCH_PANEL_FEEDBACK_MIN_CHARS,
   PITCH_PANEL_TOKEN_STORAGE_KEY,
+  pitchPanelFeedbackFieldComplete,
 } from '../../lib/staff/pitchPanelConstants.js';
 import { fetchPitchPanelSquads, submitPitchPanelScoreRemote } from '../../lib/supabase/pitchPanel.js';
 import { isSupabaseConfigured } from '../../supabaseClient.js';
@@ -134,10 +136,10 @@ export function PitchPanelGuestPage() {
 
   const ratedCount = PITCH_PANEL_DIMENSIONS.filter((d) => ratings[d.id] > 0).length;
   const allRated = ratedCount === PITCH_PANEL_DIMENSIONS.length;
-  const feedbackComplete = PITCH_PANEL_FEEDBACK_FIELDS.every(
-    (f) => String(feedback[f.id] ?? '').trim().length >= 3,
+  const feedbackComplete = PITCH_PANEL_FEEDBACK_FIELDS.every((f) =>
+    pitchPanelFeedbackFieldComplete(feedback[f.id]),
   );
-  const canSubmit = Boolean(name.trim() && squadName && allRated && feedbackComplete && !busy);
+  const canSubmit = Boolean(name.trim() && squadName && allRated && !busy);
 
   useEffect(() => {
     document.title = 'SPIKE Pitch Panel';
@@ -185,10 +187,6 @@ export function PitchPanelGuestPage() {
       setError('Rate all four dimensions (1–5 stars).');
       return;
     }
-    if (!feedbackComplete) {
-      setError('Fill in Keep, Improve, and Explore for this squad.');
-      return;
-    }
     setBusy(true);
     try {
       await submitPitchPanelScoreRemote({
@@ -199,9 +197,9 @@ export function PitchPanelGuestPage() {
         squadName,
         ratings,
         feedback: {
-          keep: feedback.keep.trim(),
-          improve: feedback.improve.trim(),
-          explore: feedback.explore.trim(),
+          keep: feedback.keep,
+          improve: feedback.improve,
+          explore: feedback.explore,
         },
       });
       setSaved(true);
@@ -373,24 +371,38 @@ export function PitchPanelGuestPage() {
           <section className="space-y-3 rounded-2xl border border-spike/20 bg-spike/5 p-4 sm:p-5">
             <h2 className="text-sm font-bold uppercase tracking-wide text-spike">Coaching notes</h2>
             <p className="text-sm text-slate-600">
-              One line each — this saves to the squad&apos;s intern portfolios for Week 2 Day 5.
+              One line each — saved to intern portfolios for Week 2 Day 5. Write at least{' '}
+              {PITCH_PANEL_FEEDBACK_MIN_CHARS} characters per field; shorter or blank fields save as
+              &ldquo;none&rdquo;.
             </p>
-            {PITCH_PANEL_FEEDBACK_FIELDS.map((field) => (
-              <label key={field.id} className="block text-sm font-semibold text-slate-800">
-                {field.label}
-                <textarea
-                  value={feedback[field.id]}
-                  onChange={(e) => {
-                    setFeedback((prev) => ({ ...prev, [field.id]: e.target.value }));
-                    setSaved(false);
-                  }}
-                  rows={2}
-                  placeholder={field.placeholder}
-                  className={`${INPUT_CLASS} min-h-[72px] resize-y text-sm`}
-                  required
-                />
-              </label>
-            ))}
+            {PITCH_PANEL_FEEDBACK_FIELDS.map((field) => {
+              const trimmed = String(feedback[field.id] ?? '').trim();
+              const complete = pitchPanelFeedbackFieldComplete(feedback[field.id]);
+              return (
+                <label key={field.id} className="block text-sm font-semibold text-slate-800">
+                  <span className="flex items-baseline justify-between gap-2">
+                    <span>{field.label}</span>
+                    <span
+                      className={`text-xs font-medium ${complete ? 'text-emerald-700' : 'text-slate-500'}`}
+                    >
+                      {complete
+                        ? 'Ready'
+                        : `${trimmed.length}/${PITCH_PANEL_FEEDBACK_MIN_CHARS} chars · saves as "none"`}
+                    </span>
+                  </span>
+                  <textarea
+                    value={feedback[field.id]}
+                    onChange={(e) => {
+                      setFeedback((prev) => ({ ...prev, [field.id]: e.target.value }));
+                      setSaved(false);
+                    }}
+                    rows={2}
+                    placeholder={field.placeholder}
+                    className={`${INPUT_CLASS} min-h-[72px] resize-y text-sm`}
+                  />
+                </label>
+              );
+            })}
           </section>
 
           {error ? (
@@ -428,7 +440,8 @@ export function PitchPanelGuestPage() {
             </p>
           ) : allRated && !feedbackComplete ? (
             <p className="mt-2 text-center text-xs text-slate-500">
-              Add Keep, Improve, and Explore notes to submit
+              Coaching notes under {PITCH_PANEL_FEEDBACK_MIN_CHARS} characters will save as
+              &ldquo;none&rdquo;
             </p>
           ) : null}
         </div>

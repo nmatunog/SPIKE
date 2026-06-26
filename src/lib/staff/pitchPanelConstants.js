@@ -19,6 +19,23 @@ export const PITCH_PANEL_FEEDBACK_FIELDS = [
   { id: 'explore', label: 'Explore', placeholder: 'What opportunity should they investigate next?' },
 ];
 
+/** Minimum trimmed length before a coaching note is stored as written (shorter → fallback). */
+export const PITCH_PANEL_FEEDBACK_MIN_CHARS = 3;
+
+/** Stored when a panelist leaves a coaching note blank or shorter than the minimum. */
+export const PITCH_PANEL_FEEDBACK_FALLBACK = 'none';
+
+/** @param {string} [raw] */
+export function normalizePitchPanelFeedbackField(raw) {
+  const trimmed = String(raw ?? '').trim();
+  return trimmed.length >= PITCH_PANEL_FEEDBACK_MIN_CHARS ? trimmed : PITCH_PANEL_FEEDBACK_FALLBACK;
+}
+
+/** @param {string} [raw] */
+export function pitchPanelFeedbackFieldComplete(raw) {
+  return String(raw ?? '').trim().length >= PITCH_PANEL_FEEDBACK_MIN_CHARS;
+}
+
 export const PITCH_PANEL_LIVE_STORAGE_KEY = 'spike_pitch_panel_live_v1';
 export const PITCH_PANEL_FINAL_STORAGE_KEY = 'spike_pitch_panel_final_v1';
 export const PITCH_PANEL_TOKEN_STORAGE_KEY = 'spike_pitch_panel_token_v1';
