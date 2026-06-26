@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { leaveActiveRoom } from './lib/spike-life-workshop-client.js'
 import LifeWorkspace from './components/LifeWorkspace.jsx'
 import WorkshopLobby from './components/workshop/WorkshopLobby.jsx'
 import WorkshopWorkspace from './components/workshop/WorkshopWorkspace.jsx'
@@ -30,7 +31,10 @@ export default function App() {
   return (
     <WorkshopWorkspace
       session={workshopSession}
-      onExit={() => setWorkshopSession(null)}
+      onExit={() => {
+        leaveActiveRoom()
+        setWorkshopSession(null)
+      }}
     />
   )
 }

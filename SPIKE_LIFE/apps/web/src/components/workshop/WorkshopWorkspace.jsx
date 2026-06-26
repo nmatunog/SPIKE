@@ -8,20 +8,20 @@ import JourneyLens from '../lenses/JourneyLens.jsx'
 import WorkshopBoard from './WorkshopBoard.jsx'
 import FacilitatorPanel from './FacilitatorPanel.jsx'
 import WorkshopScoreHud from './WorkshopScoreHud.jsx'
+import GameCodeBadge from './GameCodeBadge.jsx'
 import {
-  addPlayer,
   advanceRoomTurn,
   getGameBoard,
   getPlayerDashboard,
   getPlayerLensView,
-  slugifyPlayerId,
+  setActiveRoom,
   startRoomTurn,
   submitPlayerDecision,
   submitPlayerReflection,
 } from '../../lib/spike-life-workshop-client.js'
 
 export default function WorkshopWorkspace({ session, onExit }) {
-  const { role, playerId, displayName } = session
+  const { role, playerId, displayName, roomId, gameCode } = session
   const isFacilitator = role === 'facilitator'
 
   const [board, setBoard] = useState(null)
@@ -59,12 +59,13 @@ export default function WorkshopWorkspace({ session, onExit }) {
   }, [activePlayerId, activeLens, isFacilitator, playerId])
 
   useEffect(() => {
+    setActiveRoom(roomId)
     refreshAll().catch((err) => {
       setError(err.message)
       setLoading(false)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- mount only
-  }, [])
+  }, [roomId])
 
   async function selectPlayer(id) {
     setActivePlayerId(id)
@@ -117,15 +118,6 @@ export default function WorkshopWorkspace({ session, onExit }) {
   async function handleReflection(answers) {
     if (!canPlayAsSelected) return
     await runAction(() => submitPlayerReflection(actingPlayerId, answers))
-  }
-
-  async function handleAddPlayer(displayName) {
-    const playerId = slugifyPlayerId(displayName)
-    const existing = board?.players.some((p) => p.playerId === playerId)
-    if (existing) {
-      throw new Error('A player with that name is already in the room.')
-    }
-    await addPlayer(displayName)
   }
 
   function renderLens() {
@@ -185,6 +177,11 @@ export default function WorkshopWorkspace({ session, onExit }) {
                 ({role})
               </span>
             </h1>
+            {gameCode && (
+              <div className="mt-2">
+                <GameCodeBadge code={gameCode} compact />
+              </div>
+            )}
           </div>
           <button
             type="button"
@@ -205,8 +202,8 @@ export default function WorkshopWorkspace({ session, onExit }) {
           <FacilitatorPanel
             board={board}
             busy={busy}
+            gameCode={gameCode}
             isFacilitator={isFacilitator}
-            onAddPlayer={(name) => runAction(() => handleAddPlayer(name))}
             onStartTurn={(scenarioId) => runAction(() => startRoomTurn(scenarioId))}
           />
         )}

@@ -82,7 +82,7 @@ export default function WorkshopBoard({
 
       {board.players.length === 0 && (
         <p className="mt-4 text-center text-sm text-slate-500">
-          No players on the board yet — add players or wait for them to join from the lobby.
+          No players yet — share your game code so players can register and join.
         </p>
       )}
 
