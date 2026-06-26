@@ -1,7 +1,5 @@
 import { useState } from 'react'
-import { ensureRoom, joinAsPlayer, slugifyPlayerId } from '../../lib/spike-life-workshop-client.js'
-
-import { GAME_ROOM_MAX_PLAYERS } from '../../lib/spike-life-workshop-client.js'
+import { ensureRoom, joinAsPlayer, slugifyPlayerId, GAME_ROOM_MAX_PLAYERS } from '../../lib/spike-life-workshop-client.js'
 
 export default function WorkshopLobby({ onEnter, onBack }) {
   const [name, setName] = useState('')
@@ -81,7 +79,7 @@ export default function WorkshopLobby({ onEnter, onBack }) {
       </button>
 
       <div className="relative my-8 text-center text-xs text-slate-400">
-        <span className="bg-slate-50 px-2 relative z-10">or join as intern</span>
+        <span className="bg-slate-50 px-2 relative z-10">or join as player</span>
         <div className="absolute inset-x-0 top-1/2 border-t border-slate-200" aria-hidden />
       </div>
 

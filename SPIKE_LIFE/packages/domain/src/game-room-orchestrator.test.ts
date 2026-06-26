@@ -60,7 +60,7 @@ describe('GameRoom orchestrator — 6 players', () => {
     await createGameRoom(deps, roomId, 'coach-1')
 
     for (let i = 1; i <= GAME_ROOM_MAX_PLAYERS; i += 1) {
-      await joinGameRoom(deps, roomId, `player-${i}`, `Intern ${i}`)
+      await joinGameRoom(deps, roomId, `player-${i}`, `Player ${i}`)
     }
 
     const started = await startRoomTurn(deps, roomId, 'promotion')

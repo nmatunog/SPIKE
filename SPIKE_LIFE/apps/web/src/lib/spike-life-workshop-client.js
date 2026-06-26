@@ -55,24 +55,14 @@ export async function joinAsPlayer(playerId, displayName) {
   return roomCommands.joinRoom(roomId, playerId, displayName)
 }
 
-export async function addDemoPlayers(count = GAME_ROOM_MAX_PLAYERS) {
-  await ensureRoom()
-  const board = await getGameBoard()
-  const existing = new Set(board?.players.map((p) => p.playerId) ?? [])
-  let joined = 0
-
-  for (let i = 1; i <= count; i += 1) {
-    const playerId = `intern-${i}`
-    if (existing.has(playerId)) continue
-    try {
-      await roomCommands.joinRoom(roomId, playerId, `Intern ${i}`)
-      joined += 1
-    } catch {
-      break
-    }
+export async function addPlayer(displayName) {
+  const name = displayName.trim()
+  if (!name) {
+    throw new Error('Enter a player name.')
   }
-
-  return joined
+  const playerId = slugifyPlayerId(name)
+  await ensureRoom()
+  return roomCommands.joinRoom(roomId, playerId, name)
 }
 
 export async function startRoomTurn(scenarioId) {

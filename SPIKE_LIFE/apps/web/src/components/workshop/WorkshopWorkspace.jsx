@@ -9,12 +9,12 @@ import WorkshopBoard from './WorkshopBoard.jsx'
 import FacilitatorPanel from './FacilitatorPanel.jsx'
 import WorkshopScoreHud from './WorkshopScoreHud.jsx'
 import {
-  addDemoPlayers,
+  addPlayer,
   advanceRoomTurn,
-  GAME_ROOM_MAX_PLAYERS,
   getGameBoard,
   getPlayerDashboard,
   getPlayerLensView,
+  slugifyPlayerId,
   startRoomTurn,
   submitPlayerDecision,
   submitPlayerReflection,
@@ -119,6 +119,15 @@ export default function WorkshopWorkspace({ session, onExit }) {
     await runAction(() => submitPlayerReflection(actingPlayerId, answers))
   }
 
+  async function handleAddPlayer(displayName) {
+    const playerId = slugifyPlayerId(displayName)
+    const existing = board?.players.some((p) => p.playerId === playerId)
+    if (existing) {
+      throw new Error('A player with that name is already in the room.')
+    }
+    await addPlayer(displayName)
+  }
+
   function renderLens() {
     if (loading) return <p className="text-slate-500">Loading workspace…</p>
     if (!activePlayerId) {
@@ -197,7 +206,7 @@ export default function WorkshopWorkspace({ session, onExit }) {
             board={board}
             busy={busy}
             isFacilitator={isFacilitator}
-            onAddDemoPlayers={() => runAction(() => addDemoPlayers(GAME_ROOM_MAX_PLAYERS))}
+            onAddPlayer={(name) => runAction(() => handleAddPlayer(name))}
             onStartTurn={(scenarioId) => runAction(() => startRoomTurn(scenarioId))}
           />
         )}

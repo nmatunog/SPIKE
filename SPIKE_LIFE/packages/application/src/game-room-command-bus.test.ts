@@ -14,7 +14,7 @@ const REFLECTION = [
 ]
 
 describe('GameRoom CQRS — 6 player workshop', () => {
-  it('facilitator runs one macro turn with 6 interns', async () => {
+  it('facilitator runs one macro turn with 6 players', async () => {
     const gameRoomRepo = new InMemoryGameRoomRepository()
     const simulationRepo = new InMemorySimulationRepository()
     const commands = new GameRoomCommandBus(gameRoomRepo, simulationRepo)
@@ -24,7 +24,7 @@ describe('GameRoom CQRS — 6 player workshop', () => {
     await commands.createRoom(roomId, 'facilitator-1')
 
     for (let i = 1; i <= GAME_ROOM_MAX_PLAYERS; i += 1) {
-      await commands.joinRoom(roomId, `intern-${i}`, `Intern ${i}`)
+      await commands.joinRoom(roomId, `player-${i}`, `Player ${i}`)
     }
 
     await commands.startTurn(roomId, 'promotion')
@@ -37,10 +37,10 @@ describe('GameRoom CQRS — 6 player workshop', () => {
     for (let i = 1; i <= GAME_ROOM_MAX_PLAYERS; i += 1) {
       await commands.submitDecision(
         roomId,
-        `intern-${i}`,
+        `player-${i}`,
         'maintain_lifestyle_discipline',
       )
-      await commands.submitReflection(roomId, `intern-${i}`, REFLECTION)
+      await commands.submitReflection(roomId, `player-${i}`, REFLECTION)
     }
 
     board = await queries.getGameBoard(roomId)
