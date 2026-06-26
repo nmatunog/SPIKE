@@ -1,56 +1,4 @@
-const STAGE_ICONS = {
-  launch: '🚀',
-  build: '🏠',
-  grow: '📈',
-  lead: '👔',
-  legacy: '🌳',
-}
-
-function StageNode({ stage, isLast }) {
-  const icon = STAGE_ICONS[stage.lifeStage] ?? '●'
-  const isCurrent = stage.status === 'current'
-  const isPast = stage.status === 'past'
-
-  return (
-    <div className="flex flex-1 items-center min-w-0">
-      <div className="flex flex-col items-center flex-1 min-w-0">
-        <div
-          className={`relative flex h-14 w-14 items-center justify-center rounded-full border-2 text-xl transition-all ${
-            isCurrent
-              ? 'border-[#8B0000] bg-red-50 shadow-md ring-4 ring-red-100'
-              : isPast
-                ? 'border-emerald-500 bg-emerald-50'
-                : 'border-slate-200 bg-white text-slate-400'
-          }`}
-        >
-          <span aria-hidden>{icon}</span>
-          {isCurrent && (
-            <span
-              className="absolute -bottom-1 left-1/2 h-3 w-3 -translate-x-1/2 rounded-full bg-[#8B0000] ring-2 ring-white"
-              title="You are here"
-            />
-          )}
-        </div>
-        <p
-          className={`mt-2 text-center text-xs font-semibold uppercase tracking-wide ${
-            isCurrent ? 'text-[#8B0000]' : isPast ? 'text-emerald-700' : 'text-slate-400'
-          }`}
-        >
-          {stage.label}
-        </p>
-        <p className="text-[10px] text-slate-400">Turn {stage.turnNumber}</p>
-      </div>
-      {!isLast && (
-        <div
-          className={`mx-1 mb-6 h-0.5 flex-1 ${
-            isPast ? 'bg-emerald-400' : 'bg-slate-200'
-          }`}
-          aria-hidden
-        />
-      )}
-    </div>
-  )
-}
+import { StageTrack } from './StageTrack.jsx'
 
 export default function LifeBoard({
   dashboard,
@@ -92,14 +40,8 @@ export default function LifeBoard({
         )}
       </div>
 
-      <div className="mt-6 flex items-start overflow-x-auto pb-2">
-        {boardStages.map((stage, index) => (
-          <StageNode
-            key={stage.lifeStage}
-            stage={stage}
-            isLast={index === boardStages.length - 1}
-          />
-        ))}
+      <div className="mt-6">
+        <StageTrack boardStages={boardStages} />
       </div>
 
       {dashboard.currentEvent && (

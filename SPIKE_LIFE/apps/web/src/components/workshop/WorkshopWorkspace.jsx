@@ -28,69 +28,51 @@ export default function WorkshopWorkspace({ session, onExit }) {
     isFacilitator ? null : playerId,
   )
   const [activeLens, setActiveLens] = useState('life')
-  const [dashboard, setDashboard] = useState(null)
   const [lensView, setLensView] = useState(null)
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(null)
 
-  const refreshBoard = useCallback(async () => {
+  const refreshAll = useCallback(async (lens = activeLens) => {
     const nextBoard = await getGameBoard()
     setBoard(nextBoard)
 
-    if (!activePlayerId && nextBoard?.players.length > 0 && isFacilitator) {
-      setActivePlayerId(nextBoard.players[0].playerId)
+    const targetId = activePlayerId
+      ?? (isFacilitator ? nextBoard?.players[0]?.playerId : playerId)
+      ?? null
+
+    if (!activePlayerId && targetId) {
+      setActivePlayerId(targetId)
     }
 
-    return nextBoard
-  }, [activePlayerId, isFacilitator])
-
-  const refreshPlayer = useCallback(
-    async (targetId = activePlayerId, lens = activeLens) => {
-      if (!targetId) {
-        setDashboard(null)
-        setLensView(null)
-        return
-      }
-
-      const [dash, view] = await Promise.all([
+    if (targetId) {
+      const [, view] = await Promise.all([
         getPlayerDashboard(targetId),
         getPlayerLensView(targetId, lens),
       ])
-      setDashboard(dash)
       setLensView(view)
-    },
-    [activePlayerId, activeLens],
-  )
-
-  const refresh = useCallback(async () => {
-    const nextBoard = await refreshBoard()
-    const targetId =
-      activePlayerId
-      ?? (isFacilitator ? nextBoard?.players[0]?.playerId : playerId)
-    if (targetId && targetId !== activePlayerId) {
-      setActivePlayerId(targetId)
     }
-    await refreshPlayer(targetId ?? activePlayerId, activeLens)
+
     setLoading(false)
-  }, [refreshBoard, refreshPlayer, activePlayerId, activeLens, isFacilitator, playerId])
+    return nextBoard
+  }, [activePlayerId, activeLens, isFacilitator, playerId])
 
   useEffect(() => {
-    refresh().catch((err) => {
+    refreshAll().catch((err) => {
       setError(err.message)
       setLoading(false)
     })
-  }, [refresh])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount only
+  }, [])
 
   async function selectPlayer(id) {
     setActivePlayerId(id)
     setError(null)
     setActiveLens('life')
-    const [dash, view] = await Promise.all([
+    const [, view] = await Promise.all([
       getPlayerDashboard(id),
       getPlayerLensView(id, 'life'),
     ])
-    setDashboard(dash)
     setLensView(view)
   }
 
@@ -106,7 +88,7 @@ export default function WorkshopWorkspace({ session, onExit }) {
     setError(null)
     try {
       await action()
-      await refresh()
+      await refreshAll(activeLens)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -204,14 +186,20 @@ export default function WorkshopWorkspace({ session, onExit }) {
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-7xl gap-4 px-4 py-4 lg:grid-cols-[14rem_1fr_12rem]">
-        <FacilitatorPanel
-          board={board}
-          busy={busy}
-          isFacilitator={isFacilitator}
-          onAddDemoPlayers={() => runAction(() => addDemoPlayers(10))}
-          onStartTurn={(scenarioId) => runAction(() => startRoomTurn(scenarioId))}
-        />
+      <div
+        className={`mx-auto grid max-w-7xl gap-4 px-4 py-4 ${
+          isFacilitator ? 'lg:grid-cols-[14rem_1fr_12rem]' : 'lg:grid-cols-[1fr_12rem]'
+        }`}
+      >
+        {isFacilitator && (
+          <FacilitatorPanel
+            board={board}
+            busy={busy}
+            isFacilitator={isFacilitator}
+            onAddDemoPlayers={() => runAction(() => addDemoPlayers(10))}
+            onStartTurn={(scenarioId) => runAction(() => startRoomTurn(scenarioId))}
+          />
+        )}
 
         <div className="min-w-0 space-y-4">
           <WorkshopBoard

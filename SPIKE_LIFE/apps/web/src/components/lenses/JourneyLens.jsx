@@ -39,7 +39,7 @@ export default function JourneyLens({ data, onSubmitReflection, submitting, erro
         </ol>
       </section>
 
-      {showForm && (
+      {showForm && onSubmitReflection && (
         <section className="rounded-xl border-2 border-[#8B0000]/30 bg-white p-5 shadow-sm">
           <h3 className="font-semibold text-slate-900">Reflection</h3>
           <p className="mt-1 text-sm text-slate-600">

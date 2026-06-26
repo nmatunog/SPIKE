@@ -19,17 +19,31 @@
 | CQRS read model | `GetGameBoard` → `GameBoardView` with 10 tokens |
 | In-memory persistence | `InMemoryGameRoomRepository` |
 
-### Partial (Phase 3+)
+### Partial (Phase 4+)
 
 | Bible requirement | Gap |
 |-------------------|-----|
-| 10-token board UI | Query model ready; web UI pending |
-| Hono API + Neon | In-memory repos |
-| Realtime sync | Not yet |
+| Hono API + Neon | In-memory repos (browser session) |
+| Realtime sync | Manual refresh / same-tab demo |
+| SPIKE Portal auth | Local facilitator/player lobby |
 
 ---
 
-## Phase 3 — Scenario 2 + Domain Hardening
+## Phase 3 — Workshop board UI
+
+### Aligned
+
+| Bible requirement | Implementation |
+|-------------------|----------------|
+| 10-token board UI | `WorkshopBoard` + `PlayerToken` on current life stage |
+| Facilitator controls | `FacilitatorPanel` — add interns, start mission, advance turn |
+| Room HUD | `WorkshopScoreHud` — completion %, selected player score |
+| Per-player lenses | `WorkshopWorkspace` — Plan/Protect/Grow/Journey per slot |
+| Solo vs workshop | `App.jsx` mode switch + `WorkshopLobby` |
+
+---
+
+## Phase 3 (prior) — Scenario 2 + Domain Hardening
 
 ### Aligned
 

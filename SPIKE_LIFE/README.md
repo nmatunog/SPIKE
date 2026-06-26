@@ -8,13 +8,15 @@
 
 **Workshop macro turns (Phase 1)** — 5-turn life journey board: Launch → Build → Grow → Lead → Legacy. Complete a scenario cycle, then **Advance to next turn**; financial progress carries forward.
 
-**Multi-player GameRoom (Phase 2)** — Up to 10 players per workshop room; shared scenario per macro turn; parallel planning with per-player `Simulation` aggregates. Domain + CQRS ready; UI in Phase 3.
+**Multi-player GameRoom (Phase 2)** — Up to 10 players per workshop room; shared scenario per macro turn; parallel planning with per-player `Simulation` aggregates.
+
+**Workshop board UI (Phase 3)** — 10-token board, facilitator panel, room HUD, solo/workshop mode switch. Open via **Workshop room** from solo practice or facilitator lobby.
 
 ```bash
 cd SPIKE_LIFE
 npm install
 npm test          # domain (30) + application (9)
-npm run build:packages
+npm run dev       # http://localhost:5174
 ```
 
 ## Monorepo layout

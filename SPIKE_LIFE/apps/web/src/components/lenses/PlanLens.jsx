@@ -86,7 +86,7 @@ export default function PlanLens({
         </ul>
       </section>
 
-      {data.canDecide && (
+      {data.canDecide && onDecide && (
         <section className="rounded-xl border-2 border-[#8B0000]/30 bg-white p-5 shadow-sm">
           <h3 className="font-semibold text-slate-900">How will you use your raise?</h3>
           <p className="mt-1 text-sm text-slate-600">
