@@ -38,6 +38,7 @@ export const ROUTES = {
   stageGatePresentation: '/presentation/stagegate',
   pitchPanel: '/pitch-panel',
   programCoachPitchPanel: '/program-coach/pitch-panel',
+  mentorPitchPanel: '/mentor/pitch-panel',
   adminPortfolioSettings: '/admin/portfolio-settings',
   brandLexicon: '/brand-lexicon',
   facilitatorsReference: '/facilitators-content-reference',

@@ -25,6 +25,7 @@ import {
   STAGE_GATE_DECISIONS,
 } from './squadXpConstants.js';
 import { getSquadPitchPanelSnapshot } from './pitchPanelService.js';
+import { getSquadCoachBonus } from './squadCoachBonusService.js';
 
 const REVIEW_KEY = 'spike_squad_mentor_review_v1';
 const GATE_KEY = 'spike_squad_stage_gate_v1';
@@ -219,13 +220,14 @@ export function getSquadWeeklyXp(squadName, memberIds, week = 2) {
   const week1PitchXp = computeWeek1PitchXp(memberIds);
   const panel = getSquadPitchPanelSnapshot(squadName, memberIds, week);
   const week2PanelXp = panel.finalized ? (panel.week2PanelXp ?? 0) : 0;
+  const coachBonusXp = getSquadCoachBonus(squadName, week).bonusXp ?? 0;
   const week1PitchComplete = week1PitchXp > 0;
   const week2PitchComplete = panel.finalized
     ? week2PanelXp > 0
     : squadWeek2PitchComplete(memberIds);
   const totalXp = Math.min(
     SQUAD_XP_TOTAL_MAX,
-    autoXp + week1PitchXp + week2PanelXp,
+    autoXp + week1PitchXp + week2PanelXp + coachBonusXp,
   );
   const gate = getSquadStageGateDecision(squadName, week);
 
@@ -236,6 +238,7 @@ export function getSquadWeeklyXp(squadName, memberIds, week = 2) {
     pitchBonus: week1PitchXp,
     week1PitchXp,
     week2PanelXp,
+    coachBonusXp,
     provisionalWeek2PanelXp: panel.pending ? panel.provisionalWeek2PanelXp : null,
     panelAverage: panel.panelAverage,
     panelPending: panel.pending,

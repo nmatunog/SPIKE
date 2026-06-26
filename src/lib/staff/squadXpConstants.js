@@ -7,6 +7,8 @@ export const SQUAD_XP_WEEK1_PITCH_MAX = 20;
 export const SQUAD_XP_PITCH_BONUS_MAX = SQUAD_XP_WEEK1_PITCH_MAX;
 /** Week 2 market validation pitch — guest panel average mapped 0–20. */
 export const SQUAD_XP_WEEK2_PANEL_MAX = 20;
+/** Optional bonus XP coaches/mentors may award per squad per week. */
+export const SQUAD_COACH_BONUS_MAX = 15;
 /** @deprecated Use SQUAD_XP_WEEK1_PITCH_MAX */
 export const SQUAD_XP_MENTOR_MAX = SQUAD_XP_WEEK1_PITCH_MAX;
 export const SQUAD_XP_TOTAL_MAX = 120;

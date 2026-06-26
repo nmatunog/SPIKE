@@ -19,11 +19,12 @@ import { groupInternsBySquad } from '../../lib/facultyMentorFrameworkService.js'
 /** @param {ReturnType<typeof getSquadWeeklyXp>} xp */
 function squadXpDisplayMeta(xp) {
   const progressPct = Math.round((xp.totalXp / SQUAD_XP_TOTAL_MAX) * 100);
+  const coachBonus = xp.coachBonusXp > 0 ? ` · Coach +${xp.coachBonusXp}` : '';
   const footerXp = xp.panelFinalized
-    ? `Auto ${xp.autoXp}/80 · W1 pitch ${xp.week1PitchXp}/20 · W2 panel ${xp.week2PanelXp}/20`
+    ? `Auto ${xp.autoXp}/80 · W1 pitch ${xp.week1PitchXp}/20 · W2 panel ${xp.week2PanelXp}/20${coachBonus}`
     : xp.panelPending
-      ? `Auto ${xp.autoXp}/80 · W1 pitch ${xp.week1PitchXp}/20 · W2 panel ~${xp.provisionalWeek2PanelXp}/20 pending`
-      : `Auto ${xp.autoXp}/80 · W1 pitch ${xp.week1PitchXp}/20 · W2 panel 0/20`;
+      ? `Auto ${xp.autoXp}/80 · W1 pitch ${xp.week1PitchXp}/20 · W2 panel ~${xp.provisionalWeek2PanelXp}/20 pending${coachBonus}`
+      : `Auto ${xp.autoXp}/80 · W1 pitch ${xp.week1PitchXp}/20 · W2 panel 0/20${coachBonus}`;
   return { progressPct, footerXp };
 }
 
@@ -319,17 +320,30 @@ export function SquadXpLeaderboard({ interns, week = 2 }) {
     <section className="spike-surface space-y-3">
       <p className="spike-label">Squad XP leaderboard</p>
       <ol className="space-y-2">
-        {ranks.map((row) => (
-          <li
-            key={row.squadName}
-            className="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-2 text-sm"
-          >
-            <span className="font-semibold text-slate-900">
-              #{row.rank} {row.squadName}
-            </span>
-            <span className="font-bold tabular-nums text-spike">{row.totalXp} XP</span>
-          </li>
-        ))}
+        {ranks.map((row) => {
+          const memberIds = (squads.find((s) => s.name === row.squadName)?.members ?? []).map((m) => m.id);
+          const xp = getSquadWeeklyXp(row.squadName, memberIds, week);
+          return (
+            <li
+              key={row.squadName}
+              className="rounded-xl bg-slate-50 px-3 py-2.5 text-sm"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <span className="font-semibold text-slate-900">
+                  #{row.rank} {row.squadName}
+                </span>
+                <span className="font-bold tabular-nums text-spike">{row.totalXp} XP</span>
+              </div>
+              <p className="mt-1 text-xs text-slate-500">
+                {xp.panelAverage != null ? `Panel ★ ${xp.panelAverage.toFixed(1)}` : 'No panel scores'}
+                {xp.coachBonusXp > 0 ? ` · Coach +${xp.coachBonusXp}` : ''}
+                {xp.panelPending && xp.provisionalWeek2PanelXp
+                  ? ` · ~${xp.provisionalWeek2PanelXp} W2 pending`
+                  : ''}
+              </p>
+            </li>
+          );
+        })}
       </ol>
     </section>
   );

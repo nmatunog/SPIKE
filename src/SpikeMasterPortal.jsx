@@ -1829,6 +1829,8 @@ const SpikeMasterPortal = () => {
             role="faculty"
             interns={interns}
             homeHref={ROUTES.programCoachHome}
+            staffId={user?.id ?? ''}
+            showToast={showToast}
           />
         );
       }
@@ -1841,6 +1843,8 @@ const SpikeMasterPortal = () => {
               squadName={facultySquadName}
               interns={interns}
               homeHref={ROUTES.programCoachHome}
+              staffId={user?.id ?? ''}
+              showToast={showToast}
             />
           );
         }
@@ -1876,6 +1880,17 @@ const SpikeMasterPortal = () => {
           </LazyRoute>
         );
       }
+      if (path === ROUTES.mentorPitchPanel) {
+        return (
+          <PageContainer wide>
+            <PitchPanelDashboard
+              interns={mentorInterns}
+              staffId={user?.id ?? ''}
+              showToast={showToast}
+            />
+          </PageContainer>
+        );
+      }
       if (path === ROUTES.mentorHome) {
         return (
           <LazyRoute label="Loading mentor…">
@@ -1895,6 +1910,8 @@ const SpikeMasterPortal = () => {
             role="mentor"
             interns={mentorInterns}
             homeHref={ROUTES.mentorHome}
+            staffId={user?.id ?? ''}
+            showToast={showToast}
           />
         );
       }
@@ -1907,6 +1924,8 @@ const SpikeMasterPortal = () => {
               squadName={mentorSquadName}
               interns={mentorInterns}
               homeHref={ROUTES.mentorHome}
+              staffId={user?.id ?? ''}
+              showToast={showToast}
             />
           );
         }

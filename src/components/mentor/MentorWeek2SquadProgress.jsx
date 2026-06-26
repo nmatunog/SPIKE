@@ -1,8 +1,14 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, Circle, Users } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { groupInternsBySquad } from '../../lib/mentorFrameworkService.js';
 import { deriveSquadWeek2Progress } from '../../lib/customerDiscovery/week2MentorSquadService.js';
 import { MIN_ENCODED_INTERVIEWS, TARGET_ENCODED_INTERVIEWS } from '../../lib/customerDiscovery/week2Constants.js';
+import { getSquadWeeklyXp } from '../../lib/staff/squadXpService.js';
+import { PitchPanelSquadSummaryPanel } from '../staff/PitchPanelSquadSummaryPanel.jsx';
+import { SquadXpInline } from '../staff/SquadXpDashboard.jsx';
+import { usePitchPanelLive } from '../../hooks/usePitchPanelLive.js';
+import { SQUAD_COACH_BONUS_EVENT } from '../../lib/staff/squadCoachBonusService.js';
 import { ROUTES } from '../../routes/paths.js';
 import { useCohortProgramDay } from '../../hooks/useCohortProgramDay.js';
 
@@ -13,8 +19,16 @@ import { useCohortProgramDay } from '../../hooks/useCohortProgramDay.js';
 export function MentorWeek2SquadProgress({ interns }) {
   const squads = groupInternsBySquad(interns);
   const { programDay } = useCohortProgramDay();
+  const { version: panelVersion } = usePitchPanelLive(true);
+  const [bonusVersion, setBonusVersion] = useState(0);
   const showDay3 = programDay.week >= 2 && programDay.day >= 3;
   const showDay4 = programDay.week >= 2 && programDay.day >= 4;
+
+  useEffect(() => {
+    const bump = () => setBonusVersion((v) => v + 1);
+    window.addEventListener(SQUAD_COACH_BONUS_EVENT, bump);
+    return () => window.removeEventListener(SQUAD_COACH_BONUS_EVENT, bump);
+  }, []);
 
   if (!squads.length) {
     return (
@@ -49,6 +63,9 @@ export function MentorWeek2SquadProgress({ interns }) {
         {squads.map((squad) => {
           const memberIds = (squad.members ?? []).map((m) => m.id);
           const progress = deriveSquadWeek2Progress(memberIds);
+          const xp = getSquadWeeklyXp(squad.name, memberIds, programDay.week);
+          void panelVersion;
+          void bonusVersion;
           return (
             <article key={squad.name} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
               <div className="flex items-start justify-between gap-3">
@@ -62,15 +79,26 @@ export function MentorWeek2SquadProgress({ interns }) {
                     {progress.weekProgressPct}% week complete
                   </p>
                 </div>
-                <span
-                  className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${
-                    progress.stageGateReady
-                      ? 'bg-emerald-100 text-emerald-800'
-                      : 'bg-slate-100 text-slate-600'
-                  }`}
-                >
-                  {progress.stageGateReady ? 'Stage gate ready' : 'In progress'}
-                </span>
+                <div className="text-right">
+                  <SquadXpInline totalXp={xp.totalXp} />
+                  {xp.panelAverage != null ? (
+                    <p className="mt-1 text-[11px] font-medium text-amber-700">
+                      Panel ★ {xp.panelAverage.toFixed(1)}
+                      {xp.panelPending && xp.provisionalWeek2PanelXp
+                        ? ` · ~${xp.provisionalWeek2PanelXp} pending`
+                        : ''}
+                    </p>
+                  ) : null}
+                </div>
+              </div>
+
+              <div className="mt-3">
+                <PitchPanelSquadSummaryPanel
+                  squadName={squad.name}
+                  memberIds={memberIds}
+                  compact
+                  fetchDetails={false}
+                />
               </div>
 
               <ul className="mt-4 space-y-2 text-sm">

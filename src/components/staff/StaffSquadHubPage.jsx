@@ -1,13 +1,15 @@
-import { createElement, useMemo, useState } from 'react';
+import { createElement, useEffect, useMemo, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Briefcase, ChevronDown, ChevronUp, LayoutGrid, MessageSquare, Sparkles, User } from 'lucide-react';
 import { PageContainer } from '../layout/PageContainer.jsx';
 import { deriveSquadHubDetail } from '../../lib/staffCoachHomeService.js';
 import { PitchPanelSquadSummaryPanel } from './PitchPanelSquadSummaryPanel.jsx';
+import { SquadCoachBonusPanel } from './SquadCoachBonusPanel.jsx';
 import { SquadXpInline, SquadXpSummaryCard } from './SquadXpDashboard.jsx';
 import { SquadWeek2MissionProgressPanel } from './SquadWeek2MissionProgressPanel.jsx';
 import { getSquadWeeklyXp } from '../../lib/staff/squadXpService.js';
+import { SQUAD_COACH_BONUS_EVENT } from '../../lib/staff/squadCoachBonusService.js';
 import {
   mentorParticipantReviewHref,
   staffSquadsListHref,
@@ -23,9 +25,11 @@ import { useCohortHydration, useSquadXpHydration } from '../../hooks/useParticip
  *   squadName: string,
  *   interns: Array<{ id: string, name: string, squad?: string, hours?: number }>,
  *   homeHref: string,
+ *   staffId?: string,
+ *   showToast?: (message: string) => void,
  * }} props
  */
-export function StaffSquadHubPage({ role, squadName, interns, homeHref }) {
+export function StaffSquadHubPage({ role, squadName, interns, homeHref, staffId = '', showToast }) {
   const detail = deriveSquadHubDetail(interns, squadName);
   const squadsHref = staffSquadsListHref(role);
   const memberIds = detail.memberRows.map((m) => m.id);
@@ -79,6 +83,15 @@ export function StaffSquadHubPage({ role, squadName, interns, homeHref }) {
             squadName={detail.squadName}
             memberIds={memberIds}
           />
+          {staffId ? (
+            <SquadCoachBonusPanel
+              staffId={staffId}
+              squadName={detail.squadName}
+              week={programDay.week}
+              role={role}
+              showToast={showToast}
+            />
+          ) : null}
         </div>
       ) : null}
 
@@ -173,9 +186,15 @@ export function StaffSquadHubPage({ role, squadName, interns, homeHref }) {
 
 /**
  * Squad list when no slug in URL.
- * @param {{ role: 'faculty' | 'mentor', interns: Array<object>, homeHref: string }} props
+ * @param {{
+ *   role: 'faculty' | 'mentor',
+ *   interns: Array<object>,
+ *   homeHref: string,
+ *   staffId?: string,
+ *   showToast?: (message: string) => void,
+ * }} props
  */
-export function StaffSquadsListPage({ role, interns, homeHref }) {
+export function StaffSquadsListPage({ role, interns, homeHref, staffId = '', showToast }) {
   const squads = groupInternsBySquad(interns);
   const { programDay } = useCohortProgramDay();
   const [expandedSquad, setExpandedSquad] = useState('');
@@ -211,6 +230,8 @@ export function StaffSquadsListPage({ role, interns, homeHref }) {
             xpReady={xpReady}
             xpVersion={xpVersion}
             cohortVersion={cohortVersion}
+            staffId={staffId}
+            showToast={showToast}
           />
         ))}
       </ul>
@@ -239,6 +260,8 @@ export function StaffSquadsListPage({ role, interns, homeHref }) {
  *   xpReady: boolean,
  *   xpVersion: number,
  *   cohortVersion: number,
+ *   staffId?: string,
+ *   showToast?: (message: string) => void,
  * }} props
  */
 function StaffSquadsListCard({
@@ -251,11 +274,19 @@ function StaffSquadsListCard({
   xpReady,
   xpVersion,
   cohortVersion,
+  staffId = '',
+  showToast,
 }) {
   const memberIds = useMemo(() => (squad.members ?? []).map((m) => m.id), [squad.members]);
+  const [bonusVersion, setBonusVersion] = useState(0);
+  useEffect(() => {
+    const bump = () => setBonusVersion((v) => v + 1);
+    window.addEventListener(SQUAD_COACH_BONUS_EVENT, bump);
+    return () => window.removeEventListener(SQUAD_COACH_BONUS_EVENT, bump);
+  }, []);
   const xp = useMemo(
     () => getSquadWeeklyXp(squad.name, memberIds, programDay.week),
-    [squad.name, memberIds, programDay.week, xpVersion, cohortVersion],
+    [squad.name, memberIds, programDay.week, xpVersion, cohortVersion, bonusVersion],
   );
   const hubHref = `${staffSquadsListHref(role)}/${encodeURIComponent(squad.name)}`;
 
@@ -314,6 +345,17 @@ function StaffSquadsListCard({
             memberIds={memberIds}
             className="mx-1"
           />
+          {staffId ? (
+            <SquadCoachBonusPanel
+              staffId={staffId}
+              squadName={squad.name}
+              week={programDay.week}
+              role={role}
+              showToast={showToast}
+              compact
+              className="mx-1"
+            />
+          ) : null}
         </div>
       ) : null}
 

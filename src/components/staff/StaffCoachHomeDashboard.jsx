@@ -196,6 +196,9 @@ export function StaffCoachHomeDashboard({
                       <th className="px-3 py-3">Venture</th>
                       <th className="px-3 py-3">Progress</th>
                       <th className="px-3 py-3">Squad XP</th>
+                      {UNLOCK_WEEK2 && model.week >= 2 ? (
+                        <th className="px-3 py-3">Panel</th>
+                      ) : null}
                       <th className="px-3 py-3">Engagement</th>
                       <th className="px-3 py-3">Next</th>
                       <th className="px-3 py-3" aria-label="Open" />
@@ -221,7 +224,31 @@ export function StaffCoachHomeDashboard({
                         </td>
                         <td className="px-3 py-4">
                           <SquadXpInline totalXp={row.squadXp} />
+                          {row.coachBonusXp > 0 ? (
+                            <p className="mt-0.5 text-[10px] font-medium text-spike">+{row.coachBonusXp} coach</p>
+                          ) : null}
                         </td>
+                        {UNLOCK_WEEK2 && model.week >= 2 ? (
+                          <td className="px-3 py-4 text-xs text-slate-600">
+                            {row.panelAverage != null ? (
+                              <>
+                                <span className="font-bold text-amber-700">★ {row.panelAverage.toFixed(1)}</span>
+                                {row.panelPendingXp ? (
+                                  <span className="mt-0.5 block text-[10px] text-slate-500">
+                                    ~{row.panelPendingXp} pending
+                                  </span>
+                                ) : null}
+                                {row.mentorReviewAvg != null ? (
+                                  <span className="mt-0.5 block text-[10px] text-slate-500">
+                                    Mentor {row.mentorReviewAvg}/5
+                                  </span>
+                                ) : null}
+                              </>
+                            ) : (
+                              <span className="text-slate-400">—</span>
+                            )}
+                          </td>
+                        ) : null}
                         <td className="px-3 py-4">
                           <EngagementDot tone={row.engagement.tone} label={row.engagement.label} />
                         </td>
@@ -273,6 +300,13 @@ export function StaffCoachHomeDashboard({
                   to={playbookWeek2StudioHref({ day: model.day, mission: 'mission' })}
                   icon={FlaskConical}
                   label="Preview SPIKE Studio"
+                />
+              ) : null}
+              {UNLOCK_WEEK2 && model.week >= 2 ? (
+                <QuickAction
+                  to={role === 'mentor' ? ROUTES.mentorPitchPanel : ROUTES.programCoachPitchPanel}
+                  icon={Trophy}
+                  label="Pitch panel scores"
                 />
               ) : null}
               <QuickAction to={ROUTES.portfolio} icon={Briefcase} label="Portfolio review" />

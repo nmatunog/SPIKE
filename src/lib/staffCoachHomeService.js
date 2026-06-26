@@ -16,6 +16,7 @@ import {
   squadMemberIdsForIntern,
 } from './staff/squadAssessmentService.js';
 import { getSquadMentorReview, getSquadWeeklyXp } from './staff/squadXpService.js';
+import { getSquadPitchPanelSnapshot } from './staff/pitchPanelService.js';
 import { listSquadInternNotes } from './staff/squadInternNotesService.js';
 import { listCoachingNotesForParticipant } from './coachingService.js';
 import { WEEK1_DAY_META } from './mentorWeek1Constants.js';
@@ -290,6 +291,7 @@ export function deriveStaffCoachHome(interns, opts) {
       day,
     );
     const squadXpRow = getSquadWeeklyXp(squad.name, memberIds, week);
+    const panel = getSquadPitchPanelSnapshot(squad.name, memberIds, week);
 
     return {
       slug: encodeURIComponent(squad.name),
@@ -302,6 +304,10 @@ export function deriveStaffCoachHome(interns, opts) {
       memberCount: squad.count,
       progressPct,
       squadXp: squadXpRow.totalXp,
+      panelAverage: panel.panelAverage,
+      panelPendingXp: panel.pending ? panel.provisionalWeek2PanelXp : null,
+      coachBonusXp: squadXpRow.coachBonusXp ?? 0,
+      mentorReviewAvg: assessmentAvg > 0 ? Math.round(assessmentAvg * 10) / 10 : null,
       engagement,
       nextAction: next.label,
       nextActionSub: next.sub,

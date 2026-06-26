@@ -4,6 +4,8 @@ import { groupInternsBySquad } from '../../lib/mentorFrameworkService.js';
 import { ROUTES } from '../../routes/paths.js';
 import { SquadWeeklyReviewPanel } from '../staff/SquadWeeklyReviewPanel.jsx';
 import { SquadXpLeaderboard } from '../staff/SquadXpDashboard.jsx';
+import { PitchPanelSquadSummaryPanel } from '../staff/PitchPanelSquadSummaryPanel.jsx';
+import { SquadCoachBonusPanel } from '../staff/SquadCoachBonusPanel.jsx';
 
 /**
  * Week 2 mentor scoring — squad XP and weekly review (prominent on mentor home).
@@ -48,13 +50,22 @@ export function MentorWeek2ScoringSection({
             and stage-gate readiness — not the same four dimensions guests use on pitch day.
           </p>
         </div>
-        <Link
-          to={ROUTES.mentorSquads}
-          className="inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-spike hover:underline"
-        >
-          Open squad hub
-          <ArrowRight size={14} />
-        </Link>
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            to={ROUTES.mentorSquads}
+            className="inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-spike hover:underline"
+          >
+            Open squad hub
+            <ArrowRight size={14} />
+          </Link>
+          <Link
+            to={ROUTES.mentorPitchPanel}
+            className="inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-slate-600 hover:text-spike"
+          >
+            Pitch panel dashboard
+            <ArrowRight size={14} />
+          </Link>
+        </div>
       </header>
 
       <div className="grid gap-3 sm:grid-cols-2">
@@ -73,16 +84,34 @@ export function MentorWeek2ScoringSection({
       <SquadXpLeaderboard interns={interns} week={week} />
 
       <div className="space-y-6">
-        {squads.map((squad) => (
-          <SquadWeeklyReviewPanel
-            key={squad.name}
-            staffId={mentorId}
-            squadName={squad.name}
-            week={week}
-            interns={squad.members ?? []}
-            showToast={showToast}
-          />
-        ))}
+        {squads.map((squad) => {
+          const memberIds = (squad.members ?? []).map((m) => m.id);
+          return (
+            <div key={squad.name} className="space-y-4">
+              <PitchPanelSquadSummaryPanel
+                squadName={squad.name}
+                memberIds={memberIds}
+              />
+              {mentorId ? (
+                <SquadCoachBonusPanel
+                  staffId={mentorId}
+                  squadName={squad.name}
+                  week={week}
+                  role="mentor"
+                  showToast={showToast}
+                  compact
+                />
+              ) : null}
+              <SquadWeeklyReviewPanel
+                staffId={mentorId}
+                squadName={squad.name}
+                week={week}
+                interns={squad.members ?? []}
+                showToast={showToast}
+              />
+            </div>
+          );
+        })}
       </div>
     </section>
   );
