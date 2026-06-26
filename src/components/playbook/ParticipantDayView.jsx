@@ -22,6 +22,7 @@ import { Week2StudioLaunchCard } from './week2/Week2StudioLaunchCard.jsx';
 import { PlaybookReflectionNudge } from './PlaybookReflectionNudge.jsx';
 import { BLUEPRINT_LINKS, playbookHref, playbookWeek2StudioHref, ROUTES } from '../../routes/paths.js';
 import { UNLOCK_WEEK1_DAY2_PLUS } from '../../lib/programUnlocks.js';
+import { ParticipantSquadXpCard } from '../staff/SquadXpDashboard.jsx';
 
 /**
  * @typedef {import('../../lib/contentLoader.js').DayContentBundle} DayContentBundle
@@ -52,6 +53,7 @@ export function ParticipantDayView({
   skipWeek2Hero = false,
   focusReflection = false,
   pendingReflection = null,
+  programWeek,
 }) {
   const location = useLocation();
   const sessions = bundle.sessions?.sessions ?? [];
@@ -77,8 +79,9 @@ export function ParticipantDayView({
   const isDay3 = bundle.day.id === 'day-segment-1-week-1-day-3';
   const isDay4 = bundle.day.id === 'day-segment-1-week-1-day-4';
   const isWeek2Day1 = bundle.day.id === 'day-segment-1-week-2-day-1';
-  const week2DayMatch = bundle.day.id.match(/day-segment-1-week-2-day-(\d+)/);
-  const week2Day = week2DayMatch ? Number(week2DayMatch[1]) : 0;
+  const weekDayMatch = bundle.day.id.match(/day-segment-1-week-(\d+)-day-(\d+)/);
+  const week2Day = weekDayMatch && Number(weekDayMatch[1]) === 2 ? Number(weekDayMatch[2]) : 0;
+  const resolvedProgramWeek = programWeek ?? (weekDayMatch ? Number(weekDayMatch[1]) : 1);
 
   useEffect(() => {
     if (!focusReflection && !pendingReflection) return;
@@ -98,6 +101,13 @@ export function ParticipantDayView({
           day={pendingReflection.day}
           title={pendingReflection.title}
           label={pendingReflection.label}
+        />
+      ) : null}
+      {!staffPreview && participantId ? (
+        <ParticipantSquadXpCard
+          participantId={participantId}
+          week={resolvedProgramWeek}
+          compact
         />
       ) : null}
       {isWeek2Day1 && !skipWeek2Hero ? (

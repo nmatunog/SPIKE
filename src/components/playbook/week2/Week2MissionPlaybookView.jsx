@@ -28,6 +28,7 @@ import { Week2PrepareReviseNav } from '../../customerDiscovery/Week2PrepareRevis
 import { SquadDataAdoptPrompt } from '../../customerDiscovery/SquadDataAdoptPrompt.jsx';
 import { PlaybookDayClosingReflectionBlock } from '../PlaybookDayClosingReflectionBlock.jsx';
 import { PlaybookReflectionNudge } from '../PlaybookReflectionNudge.jsx';
+import { ParticipantSquadXpCard } from '../../staff/SquadXpDashboard.jsx';
 
 /**
  * Mission-first Week 2 SPIKE Studio — embedded in Playbook.
@@ -205,6 +206,12 @@ export function Week2MissionPlaybookView({
         </p>
         <p className="text-xs font-bold tabular-nums text-spike">{progressPct}% week complete</p>
       </div>
+
+      <ParticipantSquadXpCard
+        participantId={participantId}
+        week={programWeek ?? 2}
+        compact
+      />
 
       <SquadDataAdoptPrompt
         participantId={participantId}
