@@ -1,6 +1,13 @@
 import { useState } from 'react'
 
-export default function JourneyLens({ data, onSubmitReflection, submitting, error }) {
+export default function JourneyLens({
+  data,
+  onSubmitReflection,
+  submitting,
+  error,
+  sections = ['header', 'timeline', 'reflection', 'completed'],
+}) {
+  const show = (name) => sections.includes(name)
   const [drafts, setDrafts] = useState({})
   const reflection = data.reflection
   const showForm = reflection && !reflection.completed && reflection.prompts.length > 0
@@ -19,13 +26,16 @@ export default function JourneyLens({ data, onSubmitReflection, submitting, erro
   }
 
   return (
-    <div className="space-y-6">
-      <section>
-        <h2 className="text-lg font-semibold text-slate-900">What story am I creating?</h2>
-        <p className="mt-1 text-sm text-slate-500">Your financial life timeline and reflections.</p>
-      </section>
+    <div className="space-y-4">
+      {show('header') && (
+        <section>
+          <h2 className="text-base font-semibold text-slate-900">What story am I creating?</h2>
+          <p className="mt-1 text-xs text-slate-500">Your financial life timeline and reflections.</p>
+        </section>
+      )}
 
-      <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      {show('timeline') && (
+      <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
         <h3 className="font-semibold">Timeline</h3>
         <ol className="mt-4 space-y-4 border-l-2 border-slate-200 pl-4">
           {data.timeline.map((entry) => (
@@ -38,10 +48,11 @@ export default function JourneyLens({ data, onSubmitReflection, submitting, erro
           ))}
         </ol>
       </section>
+      )}
 
-      {showForm && onSubmitReflection && (
-        <section className="rounded-xl border-2 border-[#8B0000]/30 bg-white p-5 shadow-sm">
-          <h3 className="font-semibold text-slate-900">Reflection</h3>
+      {show('reflection') && showForm && onSubmitReflection && (
+        <section className="rounded-xl border-2 border-[#8B0000]/30 bg-white p-4 shadow-sm">
+          <h3 className="text-sm font-semibold text-slate-900">Reflection</h3>
           <p className="mt-1 text-sm text-slate-600">
             Answer at least three prompts thoughtfully to complete the cycle.
           </p>
@@ -71,7 +82,7 @@ export default function JourneyLens({ data, onSubmitReflection, submitting, erro
         </section>
       )}
 
-      {reflection?.completed && (
+      {show('completed') && reflection?.completed && (
         <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
           <div>
             <h3 className="font-semibold">Lessons learned</h3>

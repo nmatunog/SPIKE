@@ -17,17 +17,22 @@ export default function PlanLens({
   onDecide,
   deciding,
   error,
+  sections = ['header', 'fna', 'recommendations', 'goals', 'decisions', 'recorded'],
 }) {
-  return (
-    <div className="space-y-6">
-      <section>
-        <h2 className="text-lg font-semibold text-slate-900">What am I trying to achieve?</h2>
-        <p className="mt-1 text-sm text-slate-500">
-          Financial Needs Analysis drives every recommendation below.
-        </p>
-      </section>
+  const show = (name) => sections.includes(name)
 
-      {data.fna && (
+  return (
+    <div className="space-y-4">
+      {show('header') && (
+        <section>
+          <h2 className="text-base font-semibold text-slate-900">What am I trying to achieve?</h2>
+          <p className="mt-1 text-xs text-slate-500">
+            Financial Needs Analysis drives every recommendation below.
+          </p>
+        </section>
+      )}
+
+      {show('fna') && data.fna && (
         <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h3 className="font-semibold">FNA Summary</h3>
@@ -46,7 +51,8 @@ export default function PlanLens({
         </section>
       )}
 
-      <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      {show('recommendations') && (
+      <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
         <h3 className="font-semibold text-slate-900">Recommended actions</h3>
         <ol className="mt-4 space-y-3">
           {data.recommendations.map((rec) => (
@@ -62,8 +68,10 @@ export default function PlanLens({
           ))}
         </ol>
       </section>
+      )}
 
-      <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      {show('goals') && (
+      <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
         <h3 className="font-semibold text-slate-900">Goals</h3>
         <ul className="mt-4 space-y-3">
           {data.goals.map((goal) => (
@@ -85,34 +93,35 @@ export default function PlanLens({
           ))}
         </ul>
       </section>
+      )}
 
-      {data.canDecide && onDecide && (
-        <section className="rounded-xl border-2 border-[#8B0000]/30 bg-white p-5 shadow-sm">
-          <h3 className="font-semibold text-slate-900">How will you use your raise?</h3>
+      {show('decisions') && data.canDecide && onDecide && (
+        <section className="rounded-xl border-2 border-[#8B0000]/30 bg-white p-4 shadow-sm">
+          <h3 className="text-sm font-semibold text-slate-900">How will you respond?</h3>
           <p className="mt-1 text-sm text-slate-600">
             Choose a planning action. Outcomes are deterministic — calculated by the simulation engine.
           </p>
           {error && (
             <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
           )}
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <div className="mt-3 grid gap-2">
             {data.decisionOptions.map((opt) => (
               <button
                 key={opt.strategy}
                 type="button"
                 disabled={deciding}
                 onClick={() => onDecide(opt.strategy)}
-                className="rounded-lg border border-slate-200 p-4 text-left transition hover:border-[#8B0000]/40 hover:bg-red-50/30 disabled:opacity-50"
+                className="rounded-lg border border-slate-200 p-3 text-left transition hover:border-[#8B0000]/40 hover:bg-red-50/30 disabled:opacity-50"
               >
-                <p className="font-medium text-slate-900">{opt.label}</p>
-                <p className="mt-1 text-sm text-slate-600">{opt.description}</p>
+                <p className="text-sm font-medium text-slate-900">{opt.label}</p>
+                <p className="mt-0.5 text-xs text-slate-600">{opt.description}</p>
               </button>
             ))}
           </div>
         </section>
       )}
 
-      {data.selectedStrategy && !data.canDecide && (
+      {show('recorded') && data.selectedStrategy && !data.canDecide && (
         <section className="rounded-xl border border-slate-200 bg-slate-50 p-5">
           <p className="text-sm text-slate-600">Decision recorded</p>
           <p className="mt-1 font-medium capitalize">
