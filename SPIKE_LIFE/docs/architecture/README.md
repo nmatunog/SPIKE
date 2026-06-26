@@ -7,6 +7,7 @@ Documents are ordered by **authority** (highest first). When documents conflict,
 | **P1** | Architecture Amendment A0 — Core Design Reorientation | [`A0_CORE_DESIGN_REORIENTATION.md`](./A0_CORE_DESIGN_REORIENTATION.md) |
 | **P1** | Architecture Amendment A1 — Domain-Centric Layered Architecture | [`AMENDMENT_A1_LAYERED_ARCHITECTURE.md`](./AMENDMENT_A1_LAYERED_ARCHITECTURE.md) |
 | **P1** | Architecture Amendment A2 — CQRS Application Architecture | [`AMENDMENT_A2_CQRS.md`](./AMENDMENT_A2_CQRS.md) |
+| **P1** | Architecture Amendment A3 — Gameboard Engine | [`AMENDMENT_A3_GAMEBOARD_ENGINE.md`](./AMENDMENT_A3_GAMEBOARD_ENGINE.md) |
 | **P2** | Volume I Ch 1 — Domain Vision & Ubiquitous Language | [`VOLUME_I_CHAPTER_01_DOMAIN_VISION.md`](./VOLUME_I_CHAPTER_01_DOMAIN_VISION.md) |
 | **P2** | Volume I Ch 2 — Bounded Contexts & Domain Map | [`VOLUME_I_CHAPTER_02_BOUNDED_CONTEXTS.md`](./VOLUME_I_CHAPTER_02_BOUNDED_CONTEXTS.md) |
 | **P2** | Volume I Ch 3 — Aggregates & Aggregate Roots | [`VOLUME_I_CHAPTER_03_AGGREGATES.md`](./VOLUME_I_CHAPTER_03_AGGREGATES.md) |

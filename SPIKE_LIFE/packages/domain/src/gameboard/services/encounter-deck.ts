@@ -1,0 +1,130 @@
+import type { EncounterCard, EncounterCardId } from '../types.js'
+
+export const ENCOUNTER_DECK: Record<EncounterCardId, EncounterCard> = {
+  promotion: {
+    id: 'promotion',
+    title: 'Promotion',
+    teaser: 'A career lift changes your income — how will you allocate it?',
+    spaceTypes: ['career'],
+    scenarioId: 'promotion',
+    learningConcept: 'Income allocation after a raise',
+  },
+  salary_increase: {
+    id: 'salary_increase',
+    title: 'Salary Increase',
+    teaser: 'Your paycheck grows. Lifestyle creep or intentional planning?',
+    spaceTypes: ['finance', 'career'],
+    scenarioId: 'promotion',
+    learningConcept: 'Lifestyle discipline vs savings',
+  },
+  marriage: {
+    id: 'marriage',
+    title: 'Marriage',
+    teaser: 'Shared goals and protection needs enter the picture.',
+    spaceTypes: ['family', 'life_event'],
+    scenarioId: 'promotion',
+    learningConcept: 'Family financial planning',
+  },
+  business_opportunity: {
+    id: 'business_opportunity',
+    title: 'Business Opportunity',
+    teaser: 'A side venture opens — capital, risk, and cash flow trade-offs.',
+    spaceTypes: ['business', 'opportunity'],
+    scenarioId: 'promotion',
+    learningConcept: 'Entrepreneurial cash flow',
+  },
+  vehicle_breakdown: {
+    id: 'vehicle_breakdown',
+    title: 'Vehicle Breakdown',
+    teaser: 'An unexpected repair strains this month’s budget.',
+    spaceTypes: ['risk'],
+    scenarioId: 'protection_stress',
+    learningConcept: 'Emergency fund readiness',
+  },
+  medical_expense: {
+    id: 'medical_expense',
+    title: 'Medical Expense',
+    teaser: 'Health costs surface — protection gaps matter.',
+    spaceTypes: ['health', 'risk'],
+    scenarioId: 'protection_stress',
+    learningConcept: 'Health protection planning',
+  },
+  job_loss: {
+    id: 'job_loss',
+    title: 'Job Loss Risk',
+    teaser: 'Income uncertainty — how resilient is your plan?',
+    spaceTypes: ['career', 'risk'],
+    scenarioId: 'protection_stress',
+    learningConcept: 'Income protection',
+  },
+  economic_boom: {
+    id: 'economic_boom',
+    title: 'Economic Boom',
+    teaser: 'Markets rise — opportunity with discipline.',
+    spaceTypes: ['finance', 'investment'],
+    scenarioId: 'promotion',
+    learningConcept: 'Goal acceleration',
+  },
+  inflation: {
+    id: 'inflation',
+    title: 'Inflation',
+    teaser: 'Purchasing power erodes — adjust spending and protection.',
+    spaceTypes: ['finance'],
+    scenarioId: 'protection_stress',
+    learningConcept: 'Real vs nominal planning',
+  },
+  education: {
+    id: 'education',
+    title: 'Education Investment',
+    teaser: 'Upskilling costs compete with other goals.',
+    spaceTypes: ['education'],
+    scenarioId: 'promotion',
+    learningConcept: 'Education goal funding',
+  },
+  milestone: {
+    id: 'milestone',
+    title: 'Life Milestone',
+    teaser: 'A major life marker — revisit goals and protection.',
+    spaceTypes: ['milestone', 'life_event'],
+    scenarioId: 'promotion',
+    learningConcept: 'Goal portfolio review',
+  },
+  rest: {
+    id: 'rest',
+    title: 'Rest & Recharge',
+    teaser: 'A quieter season — maintain discipline without new income.',
+    spaceTypes: ['rest'],
+    scenarioId: 'promotion',
+    learningConcept: 'Maintaining financial habits',
+  },
+  bonus: {
+    id: 'bonus',
+    title: 'Bonus Windfall',
+    teaser: 'Unexpected cash — debt, goals, or lifestyle?',
+    spaceTypes: ['bonus'],
+    scenarioId: 'promotion',
+    learningConcept: 'Windfall allocation',
+  },
+  community: {
+    id: 'community',
+    title: 'Community Giving',
+    teaser: 'Generosity meets budget — plan giving intentionally.',
+    spaceTypes: ['community'],
+    scenarioId: 'promotion',
+    learningConcept: 'Values-based budgeting',
+  },
+  investment: {
+    id: 'investment',
+    title: 'Investment Review',
+    teaser: 'Portfolio check-in — growth vs protection balance.',
+    spaceTypes: ['investment'],
+    scenarioId: 'promotion',
+    learningConcept: 'Wealth building discipline',
+  },
+}
+
+export function getEncounterCard(id: EncounterCardId): EncounterCard {
+  const card = ENCOUNTER_DECK[id]
+  if (!card) throw new Error(`Unknown encounter card: ${id}`)
+  return card
+}

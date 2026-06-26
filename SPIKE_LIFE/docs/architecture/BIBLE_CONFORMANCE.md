@@ -72,8 +72,33 @@
 
 | Package | Tests |
 |---------|-------|
-| `@spike-life/domain` | 30 (8 promotion + 7 protection + 7 workshop + 7 game-room + 1 orchestrator) |
-| `@spike-life/application` | 9 |
+| `@spike-life/domain` | 35 (+5 board aggregate) |
+| `@spike-life/application` | 10 (+1 board CQRS) |
+
+---
+
+## Phase 4 — Gameboard Engine (Amendment A3)
+
+### Aligned
+
+| Requirement | Implementation |
+|-------------|----------------|
+| Board aggregate (spaces, dice, tokens, turns) | `gameboard/aggregates/board.ts` |
+| No financial logic on board | Board state has no FNA/cash flow fields |
+| Gameboard domain events | `DiceRolled` … `RoundCompleted` in `gameboard-events.ts` |
+| Encounter → situation routing | `encounter-deck.ts` → `ScenarioId` via orchestrator |
+| CQRS | `BoardCommandBus`, `BoardQueryBus`, `SpatialBoardView` |
+| Solo UI game loop | `LifeWorkspace` — roll, move, encounter, lenses |
+| A0 separation preserved | Dice paces situations; FDE computes outcomes |
+
+### Partial (next)
+
+| Requirement | Gap |
+|-------------|-----|
+| Workshop spatial board | Workshop still uses life-stage track |
+| 3D animations | CSS spatial layout only |
+| Cross-tab persistence | In-memory repos |
+
 
 ```bash
 cd SPIKE_LIFE && npm test
