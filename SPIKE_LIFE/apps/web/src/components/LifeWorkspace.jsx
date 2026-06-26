@@ -260,7 +260,17 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
         </aside>
       </div>
 
-      <FinancialSnapshotBar dashboard={dashboard} />
+      <FinancialSnapshotBar
+        dashboard={dashboard}
+        onOpenProtect={async () => {
+          await ensureLens('protect')
+          handleExpandPanel('protect')
+        }}
+        onOpenGrow={async () => {
+          await ensureLens('grow')
+          handleExpandPanel('grow')
+        }}
+      />
     </div>
   )
 }

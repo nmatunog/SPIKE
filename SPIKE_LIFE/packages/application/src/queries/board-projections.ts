@@ -2,13 +2,20 @@ import type { BoardState } from '@spike-life/domain'
 import { getEncounterCard } from '@spike-life/domain'
 import type { BoardSpaceView, EncounterCardView, SpatialBoardView } from './board-read-models.js'
 
-function circularCoords(index: number, total: number): { x: number; y: number } {
-  const angle = (index / total) * Math.PI * 2 - Math.PI / 2
-  const radius = 0.38
-  return {
-    x: 0.5 + Math.cos(angle) * radius,
-    y: 0.5 + Math.sin(angle) * radius,
-  }
+function serpentineCoords(index: number, total: number, cols = 4): { x: number; y: number } {
+  const rows = Math.ceil(total / cols)
+  const row = Math.floor(index / cols)
+  const colInRow = index % cols
+  const col = row % 2 === 0 ? colInRow : cols - 1 - colInRow
+
+  const paddingX = 0.1
+  const paddingY = 0.12
+  const usableX = 1 - 2 * paddingX
+  const usableY = 1 - 2 * paddingY
+  const x = paddingX + (cols <= 1 ? 0.5 : (col / (cols - 1)) * usableX)
+  const y = paddingY + (rows <= 1 ? 0.5 : (row / (rows - 1)) * usableY)
+
+  return { x, y }
 }
 
 function projectEncounter(id: BoardState['pendingEncounterId']): EncounterCardView | null {
@@ -26,7 +33,7 @@ export function projectSpatialBoard(board: BoardState): SpatialBoardView {
   const currentPlayerId = board.turnOrder[board.currentPlayerIndex] ?? board.turnOrder[0] ?? 'solo'
 
   const spaces: BoardSpaceView[] = board.spaces.map((space) => {
-    const { x, y } = circularCoords(space.index, board.spaces.length)
+    const { x, y } = serpentineCoords(space.index, board.spaces.length)
     const encounter = getEncounterCard(space.encounterId)
     return {
       index: space.index,
