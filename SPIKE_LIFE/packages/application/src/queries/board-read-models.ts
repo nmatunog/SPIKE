@@ -4,17 +4,24 @@ import type {
   EncounterCardId,
   SpaceType,
 } from '@spike-life/domain'
-import { ENCOUNTER_DECK, getEncounterCard } from '@spike-life/domain'
+import type { SpaceIconId } from '@spike-life/ui/layout'
 
 export interface BoardSpaceView {
   index: number
+  boardIndex: number
+  id: string
   type: SpaceType
+  category: SpaceType
   label: string
+  color: string
+  icon: SpaceIconId
+  description?: string
   encounterId: EncounterCardId
   encounterTitle: string
-  /** Normalized 0–1 coordinates for circular layout */
+  /** Normalized 0–1 coordinates from layout engine */
   x: number
   y: number
+  angle: number
 }
 
 export interface BoardTokenView {
@@ -48,4 +55,6 @@ export interface SpatialBoardView {
   tokens: BoardTokenView[]
   activeEncounter: EncounterCardView | null
   landedSpaceIndex: number | null
+  trackPath: string
+  layout: string
 }

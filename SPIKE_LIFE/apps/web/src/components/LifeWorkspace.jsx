@@ -1,17 +1,21 @@
-import { useCallback, useEffect, useState } from 'react'
-import GameTopBar from './gameboard/GameTopBar.jsx'
-import SpatialGameBoard from './gameboard/SpatialGameBoard.jsx'
-import EncounterModal from './gameboard/EncounterModal.jsx'
-import BoardLegendCard from './gameboard/BoardLegendCard.jsx'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import {
+  BoardHUD,
+  BoardLegend,
+  BoardOverlay,
+  DicePanel,
+  EncounterModal,
+  FinancialHUD,
+  GameBoard,
+  TurnIndicator,
+} from '@spike-life/ui'
+import ActionDock from './gameboard/ActionDock.jsx'
 import ObjectiveCard from './gameboard/ObjectiveCard.jsx'
-import LeftFinancialSnapshot from './gameboard/LeftFinancialSnapshot.jsx'
 import SituationSideCard from './gameboard/SituationSideCard.jsx'
 import PrioritiesSideCard from './gameboard/PrioritiesSideCard.jsx'
 import FnaSummaryCard from './gameboard/FnaSummaryCard.jsx'
 import RecentDecisionsCard from './gameboard/RecentDecisionsCard.jsx'
-import ActionDock from './gameboard/ActionDock.jsx'
-import FinancialSnapshotBar from './gameboard/FinancialSnapshotBar.jsx'
-import JourneyFooter from './gameboard/JourneyFooter.jsx'
+import { impactTagsForSpaceType } from './gameboard/encounter-impact.js'
 import {
   ensureSessionStarted,
   endBoardTurn,
@@ -22,6 +26,12 @@ import {
   submitDecision,
   submitReflection,
 } from '../lib/spike-life-client.js'
+import {
+  toBoardViewModel,
+  toFinancialHUD,
+  toTurnHUD,
+} from '../lib/board-view-adapter.js'
+import { useBoardUIStore } from '../store/board-ui-store.js'
 import { GAME_ROOM_MAX_PLAYERS } from '../lib/spike-life-workshop-client.js'
 
 export default function LifeWorkspace({ onOpenWorkshop }) {
@@ -35,9 +45,18 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
   const [busy, setBusy] = useState(false)
   const [rolling, setRolling] = useState(false)
   const [error, setError] = useState(null)
-  const [expandedCard, setExpandedCard] = useState(null)
-  const [expandedPanel, setExpandedPanel] = useState(null)
-  const [showEncounterModal, setShowEncounterModal] = useState(false)
+
+  const {
+    expandedCard,
+    expandedPanel,
+    showEncounterModal,
+    highlightSpaceIndex,
+    setExpandedCard,
+    setExpandedPanel,
+    setShowEncounterModal,
+    setHighlightSpaceIndex,
+    resetPanels,
+  } = useBoardUIStore()
 
   const refresh = useCallback(async () => {
     await ensureSessionStarted()
@@ -63,6 +82,13 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
       setLoading(false)
     })
   }, [refresh])
+
+  const boardView = useMemo(() => toBoardViewModel(board), [board])
+  const turnHUD = useMemo(() => toTurnHUD(dashboard, board), [dashboard, board])
+  const financialHUD = useMemo(
+    () => toFinancialHUD(dashboard, growView, planView),
+    [dashboard, growView, planView],
+  )
 
   async function ensureLens(lens) {
     if (lens === 'grow' && !growView) {
@@ -131,9 +157,7 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
     try {
       await submitReflection(answers)
       await endBoardTurn()
-      setExpandedCard(null)
-      setExpandedPanel(null)
-      setShowEncounterModal(false)
+      resetPanels()
       await refresh()
     } catch (err) {
       setError(err.message)
@@ -152,23 +176,20 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
   const canReflect = inDecisionPhase && dashboard?.canReflect
   const recommendations = planView?.lens === 'plan' ? planView.data.recommendations : []
   const landedSpace = board?.spaces.find((s) => s.index === board.landedSpaceIndex)
+  const priorityLabels = recommendations.slice(0, 3).map((r) => r.title)
+  const impactTags = landedSpace ? impactTagsForSpaceType(landedSpace.type) : []
 
   return (
-    <div className="flex min-h-dvh flex-col bg-slate-100">
-      <GameTopBar
-        dashboard={dashboard}
-        board={board}
-        onRoll={handleRollDice}
-        rolling={rolling}
-      />
+    <div className="flex h-dvh max-h-dvh flex-col overflow-hidden bg-slate-100">
+      <BoardHUD hud={turnHUD} onRoll={handleRollDice} rolling={rolling} />
 
       {onOpenWorkshop && (
-        <div className="border-b border-slate-200 bg-white px-3 py-1.5 md:px-4">
-          <div className="mx-auto flex max-w-[90rem] justify-end">
+        <div className="shrink-0 border-b border-slate-200 bg-white px-4 py-1">
+          <div className="mx-auto flex max-w-[100rem] justify-end">
             <button
               type="button"
               onClick={onOpenWorkshop}
-              className="text-xs font-medium text-[#8B0000] hover:underline md:text-sm"
+              className="text-xs font-semibold text-[#8B0000] hover:underline md:text-sm"
             >
               Workshop ({GAME_ROOM_MAX_PLAYERS} players) →
             </button>
@@ -176,9 +197,9 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
         </div>
       )}
 
-      <div className="mx-auto flex w-full max-w-[90rem] flex-1 flex-col gap-2 px-2 py-2 md:grid md:min-h-0 md:grid-cols-[12rem_minmax(0,1fr)_14rem] md:gap-3 md:px-3 md:py-3 lg:grid-cols-[13rem_minmax(0,1fr)_16rem]">
-        <aside className="hidden min-h-0 flex-col gap-2 overflow-y-auto md:flex">
-          <BoardLegendCard expanded={expandedCard} onToggle={toggleCard} />
+      <div className="mx-auto grid min-h-0 w-full max-w-[100rem] flex-1 grid-cols-1 gap-3 overflow-hidden px-3 py-3 lg:grid-cols-[minmax(11rem,14%)_minmax(0,1fr)_minmax(12rem,16%)] lg:gap-4 lg:px-4">
+        <aside className="hidden min-h-0 flex-col gap-3 overflow-y-auto lg:flex">
+          <BoardLegend compact />
           <ObjectiveCard
             expanded={expandedCard}
             onToggle={toggleCard}
@@ -186,89 +207,80 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
             dashboard={dashboard}
             planView={planView}
           />
-          <LeftFinancialSnapshot
-            dashboard={dashboard}
-            growView={growView}
-            planView={planView}
-          />
-          <div className="rounded-lg border border-dashed border-slate-300 bg-white/60 px-2 py-2 text-center">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-              Turn loop
-            </p>
-            <p className="mt-1 text-[11px] leading-snug text-slate-600">
-              Roll → Land → Analyze → Decide → Reflect
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <TurnIndicator phase={board?.phase ?? 'ready_to_roll'} />
+            <p className="mt-3 text-sm leading-relaxed text-slate-600">
+              Roll the dice, land on a space, review your situation, then decide how to respond.
             </p>
           </div>
         </aside>
 
-        <main className="relative flex min-h-0 min-w-0 flex-col">
-          <section className="relative flex flex-1 flex-col overflow-hidden rounded-xl border border-slate-700/50 bg-gradient-to-b from-slate-800 to-slate-950 p-3 shadow-lg md:p-4">
+        <main className="relative flex min-h-0 min-w-0 flex-col items-center justify-center">
+          <section className="relative flex h-full w-full max-w-[min(72vw,56rem)] flex-col items-center justify-center rounded-3xl border border-slate-700/60 bg-gradient-to-b from-slate-900 to-slate-950 p-3 shadow-2xl lg:p-4">
             {board?.gameComplete && (
-              <p className="mb-2 rounded-lg bg-emerald-500/20 px-3 py-2 text-center text-xs font-medium text-emerald-200">
+              <p className="absolute left-4 right-4 top-3 z-10 rounded-xl bg-emerald-500/20 px-4 py-2 text-center text-sm font-medium text-emerald-200">
                 Journey complete — all {board.maxRounds} years played.
               </p>
             )}
+
             {loading ? (
-              <div className="flex flex-1 items-center justify-center">
-                <p className="text-sm text-slate-400">Loading board…</p>
-              </div>
+              <p className="text-base text-slate-400">Loading board…</p>
             ) : (
-              <div className="flex flex-1 items-center justify-center py-2">
-                <SpatialGameBoard board={board} rolling={rolling} dark />
-              </div>
+              <GameBoard
+                board={boardView}
+                rolling={rolling}
+                highlightSpaceIndex={highlightSpaceIndex}
+                onSpaceSelect={(space) => setHighlightSpaceIndex(space.boardIndex)}
+                className="h-full"
+              />
             )}
 
-            <EncounterModal
-              encounter={board?.activeEncounter}
-              landedSpaceType={landedSpace?.type}
-              recommendations={recommendations}
+            <BoardOverlay
               visible={showEncounterModal && inDecisionPhase && !rolling}
-              onViewAnalysis={() => {
-                setShowEncounterModal(false)
-                handleExpandPanel('fna')
-              }}
-              onMakeDecision={() => {
-                setShowEncounterModal(false)
-                handleExpandPanel('decision')
-              }}
               onDismiss={() => setShowEncounterModal(false)}
-            />
+            >
+              <EncounterModal
+                encounter={board?.activeEncounter ?? null}
+                spaceCategory={landedSpace?.category}
+                impactTags={impactTags}
+                priorityLabels={priorityLabels}
+                onViewAnalysis={() => {
+                  setShowEncounterModal(false)
+                  handleExpandPanel('fna')
+                }}
+                onMakeDecision={() => {
+                  setShowEncounterModal(false)
+                  handleExpandPanel('decision')
+                }}
+                onDismiss={() => setShowEncounterModal(false)}
+              />
+            </BoardOverlay>
 
             {error && (
-              <p className="mt-2 rounded-lg bg-red-500/20 px-3 py-2 text-center text-xs text-red-200">
+              <p className="absolute bottom-3 left-3 right-3 rounded-xl bg-red-500/20 px-4 py-2 text-center text-sm text-red-200">
                 {error}
               </p>
             )}
           </section>
-
-          <div className="mt-2 grid gap-2 md:hidden">
-            <BoardLegendCard expanded={expandedCard} onToggle={toggleCard} />
-            <ObjectiveCard
-              expanded={expandedCard}
-              onToggle={toggleCard}
-              encounter={board?.activeEncounter}
-              dashboard={dashboard}
-              planView={planView}
-            />
-          </div>
         </main>
 
-        <aside className="flex min-h-0 flex-col gap-2 overflow-y-auto">
+        <aside className="flex min-h-0 flex-col gap-3 overflow-y-auto">
+          <div className="lg:hidden">
+            <DicePanel
+              canRoll={board?.canRoll ?? false}
+              rolling={rolling}
+              lastDiceRoll={board?.lastDiceRoll ?? null}
+              onRoll={handleRollDice}
+            />
+          </div>
+
           <SituationSideCard
             encounter={board?.activeEncounter}
             expanded={expandedCard}
             onToggle={toggleCard}
           />
-          <FnaSummaryCard
-            planView={planView}
-            expanded={expandedCard}
-            onToggle={toggleCard}
-          />
-          <PrioritiesSideCard
-            planView={planView}
-            expanded={expandedCard}
-            onToggle={toggleCard}
-          />
+          <FnaSummaryCard planView={planView} expanded={expandedCard} onToggle={toggleCard} />
+          <PrioritiesSideCard planView={planView} expanded={expandedCard} onToggle={toggleCard} />
           <RecentDecisionsCard
             journeyView={journeyView}
             expanded={expandedCard}
@@ -299,17 +311,15 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
         </aside>
       </div>
 
-      <JourneyFooter dashboard={dashboard} board={board} journeyView={journeyView} />
-
-      <FinancialSnapshotBar
-        dashboard={dashboard}
-        onOpenProtect={async () => {
-          await ensureLens('protect')
-          handleExpandPanel('protect')
-        }}
+      <FinancialHUD
+        data={financialHUD}
         onOpenGrow={async () => {
           await ensureLens('grow')
           handleExpandPanel('grow')
+        }}
+        onOpenProtect={async () => {
+          await ensureLens('protect')
+          handleExpandPanel('protect')
         }}
       />
     </div>

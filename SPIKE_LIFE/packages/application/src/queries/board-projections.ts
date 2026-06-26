@@ -1,22 +1,11 @@
-import type { BoardState } from '@spike-life/domain'
+import type { BoardState, EncounterCardId, SpaceType } from '@spike-life/domain'
+import {
+  DEFAULT_BOARD_CONFIG,
+  buildTrackPath,
+  positionSpaces,
+} from '@spike-life/ui/layout'
 import { getEncounterCard } from '@spike-life/domain'
 import type { BoardSpaceView, EncounterCardView, SpatialBoardView } from './board-read-models.js'
-
-function serpentineCoords(index: number, total: number, cols = 4): { x: number; y: number } {
-  const rows = Math.ceil(total / cols)
-  const row = Math.floor(index / cols)
-  const colInRow = index % cols
-  const col = row % 2 === 0 ? colInRow : cols - 1 - colInRow
-
-  const paddingX = 0.1
-  const paddingY = 0.12
-  const usableX = 1 - 2 * paddingX
-  const usableY = 1 - 2 * paddingY
-  const x = paddingX + (cols <= 1 ? 0.5 : (col / (cols - 1)) * usableX)
-  const y = paddingY + (rows <= 1 ? 0.5 : (row / (rows - 1)) * usableY)
-
-  return { x, y }
-}
 
 function projectEncounter(id: BoardState['pendingEncounterId']): EncounterCardView | null {
   if (!id) return null
@@ -29,22 +18,62 @@ function projectEncounter(id: BoardState['pendingEncounterId']): EncounterCardVi
   }
 }
 
+function configSpaceForIndex(boardIndex: number) {
+  return (
+    DEFAULT_BOARD_CONFIG.spaces.find((s) => s.boardIndex === boardIndex) ??
+    DEFAULT_BOARD_CONFIG.spaces[boardIndex]
+  )
+}
+
 export function projectSpatialBoard(board: BoardState): SpatialBoardView {
   const currentPlayerId = board.turnOrder[board.currentPlayerIndex] ?? board.turnOrder[0] ?? 'solo'
 
-  const spaces: BoardSpaceView[] = board.spaces.map((space) => {
-    const { x, y } = serpentineCoords(space.index, board.spaces.length)
-    const encounter = getEncounterCard(space.encounterId)
+  const configSpaces = board.spaces.map((space) => {
+    const cfg = configSpaceForIndex(space.index)
     return {
-      index: space.index,
-      type: space.type,
-      label: space.label,
+      id: cfg?.id ?? `space-${space.index}`,
+      title: space.label,
+      category: space.type,
+      color: cfg?.color ?? '#94A3B8',
+      icon: cfg?.icon ?? 'star',
+      description: cfg?.description,
+      boardIndex: space.index,
       encounterId: space.encounterId,
-      encounterTitle: encounter.title,
-      x,
-      y,
     }
   })
+
+  const positioned = positionSpaces(
+    configSpaces,
+    DEFAULT_BOARD_CONFIG.layout,
+    DEFAULT_BOARD_CONFIG.layoutOptions,
+  )
+
+  const spaces: BoardSpaceView[] = positioned.map((space) => {
+    const encounterId = space.encounterId as EncounterCardId
+    const encounter = getEncounterCard(encounterId)
+    return {
+      index: space.boardIndex,
+      boardIndex: space.boardIndex,
+      id: space.id,
+      type: space.category as SpaceType,
+      category: space.category as SpaceType,
+      label: space.title,
+      color: space.color,
+      icon: space.icon,
+      description: space.description,
+      encounterId,
+      encounterTitle: encounter.title,
+      x: space.x,
+      y: space.y,
+      angle: space.angle,
+    }
+  })
+
+  const trackPath = buildTrackPath(
+    DEFAULT_BOARD_CONFIG.layout,
+    board.spaces.length,
+    DEFAULT_BOARD_CONFIG.layoutOptions,
+  )
 
   return {
     boardId: board.id,
@@ -68,5 +97,7 @@ export function projectSpatialBoard(board: BoardState): SpatialBoardView {
     })),
     activeEncounter: projectEncounter(board.pendingEncounterId),
     landedSpaceIndex: board.landedSpaceIndex,
+    trackPath,
+    layout: DEFAULT_BOARD_CONFIG.layout,
   }
 }

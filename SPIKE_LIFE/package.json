@@ -11,10 +11,10 @@
     "packages/*"
   ],
   "scripts": {
-    "test": "npm run test -w @spike-life/domain && npm run test -w @spike-life/application",
+    "test": "npm run test -w @spike-life/domain && npm run test -w @spike-life/ui && npm run test -w @spike-life/application",
     "test:domain": "npm run test -w @spike-life/domain",
     "build:domain": "npm run build -w @spike-life/domain",
-    "build:packages": "npm run build -w @spike-life/domain && npm run build -w @spike-life/application && npm run build -w @spike-life/infrastructure",
+    "build:packages": "npm run build -w @spike-life/domain && npm run build -w @spike-life/ui && npm run build -w @spike-life/application && npm run build -w @spike-life/infrastructure",
     "dev": "npm run build:packages && npm run dev -w @spike-life/web",
     "build:web": "npm run build:packages && npm run build -w @spike-life/web"
   }
