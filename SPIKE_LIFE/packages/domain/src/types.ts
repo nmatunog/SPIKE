@@ -60,3 +60,15 @@ export type CareerType =
 export type ScenarioId = 'promotion' | 'protection_stress'
 
 export type SituationKind = 'income_opportunity' | 'protection_stress'
+
+/** Workshop room — up to 10 parallel players on one board. */
+export const GAME_ROOM_MAX_PLAYERS = 10
+
+export type RoomPhase = 'lobby' | 'turn_active' | 'workshop_complete'
+
+export type PlayerSlotStatus =
+  | 'joined'
+  | 'planning'
+  | 'decided'
+  | 'reflected'
+  | 'done'

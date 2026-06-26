@@ -349,9 +349,10 @@ export async function autoHydrateAndSyncSquadWeek2Discovery(triggerParticipantId
   }
 
   if (isSupabaseConfigured && supabase && authUserId) {
-    await supabase.rpc('propagate_week2_discovery_to_empty_squad_mates').catch((err) => {
-      console.warn('[week2SquadAdopt] propagate RPC failed:', err?.message ?? err);
-    });
+    const { error: propagateErr } = await supabase.rpc('propagate_week2_discovery_to_empty_squad_mates');
+    if (propagateErr) {
+      console.warn('[week2SquadAdopt] propagate RPC failed:', propagateErr.message);
+    }
   }
 
   return local;

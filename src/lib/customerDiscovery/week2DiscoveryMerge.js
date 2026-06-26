@@ -42,6 +42,14 @@ export function mergeWeek2Interviews(localArr, remoteArr) {
 }
 
 /**
+ * @param {string | null | undefined} a
+ * @param {string | null | undefined} b
+ */
+function orTimestamp(a, b) {
+  return a || b || null;
+}
+
+/**
  * @param {import('./week2DiscoveryTypes.js').Week2DiscoveryState} local
  * @param {import('./week2DiscoveryTypes.js').Week2DiscoveryState} remote
  */
@@ -60,6 +68,23 @@ export function mergeWeek2DiscoveryStates(local, remote) {
   return {
     ...olderBase,
     ...newerBase,
+    missionAcknowledged: Boolean(local.missionAcknowledged || remote.missionAcknowledged),
+    assumptionsCompletedAt: orTimestamp(local.assumptionsCompletedAt, remote.assumptionsCompletedAt),
+    guideCompletedAt: orTimestamp(local.guideCompletedAt, remote.guideCompletedAt),
+    researchPlanSubmittedAt: orTimestamp(local.researchPlanSubmittedAt, remote.researchPlanSubmittedAt),
+    squadAlignedAt: orTimestamp(local.squadAlignedAt, remote.squadAlignedAt),
+    exchangeReflectionAt: orTimestamp(local.exchangeReflectionAt, remote.exchangeReflectionAt),
+    professionalReadinessAt: orTimestamp(local.professionalReadinessAt, remote.professionalReadinessAt),
+    readinessReflectionAt: orTimestamp(local.readinessReflectionAt, remote.readinessReflectionAt),
+    readinessReflectionApprovedAt: orTimestamp(local.readinessReflectionApprovedAt, remote.readinessReflectionApprovedAt),
+    uvpCheckpointAt: orTimestamp(local.uvpCheckpointAt, remote.uvpCheckpointAt),
+    pctcStartedAt: orTimestamp(local.pctcStartedAt, remote.pctcStartedAt),
+    readinessBadgeEarnedAt: orTimestamp(local.readinessBadgeEarnedAt, remote.readinessBadgeEarnedAt),
+    pctcCertificate1Id: local.pctcCertificate1Id || remote.pctcCertificate1Id || '',
+    pctcCertificate2Id: local.pctcCertificate2Id || remote.pctcCertificate2Id || '',
+    weekWrapCompletedAt: orTimestamp(local.weekWrapCompletedAt, remote.weekWrapCompletedAt),
+    empathyLabCompletedAt: orTimestamp(local.empathyLabCompletedAt, remote.empathyLabCompletedAt),
+    pitchSubmittedAt: orTimestamp(local.pitchSubmittedAt, remote.pitchSubmittedAt),
     interviews: mergeWeek2Interviews(local.interviews, remote.interviews),
     questions: mergedQuestions?.length ? mergedQuestions : newerBase.questions ?? local.questions,
     assumptions:

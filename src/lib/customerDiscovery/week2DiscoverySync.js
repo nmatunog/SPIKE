@@ -42,9 +42,10 @@ export async function syncWeek2DiscoveryToCloud(participantId, state) {
   if (week2MissionProgressPct(participantId, 1) === 100) {
     const { supabase, isSupabaseConfigured } = await import('../../supabaseClient.js');
     if (isSupabaseConfigured && supabase) {
-      await supabase.rpc('propagate_week2_discovery_to_empty_squad_mates').catch((err) => {
-        console.warn('[week2Discovery] propagate RPC failed:', err?.message ?? err);
-      });
+      const { error: propagateErr } = await supabase.rpc('propagate_week2_discovery_to_empty_squad_mates');
+      if (propagateErr) {
+        console.warn('[week2Discovery] propagate RPC failed:', propagateErr.message);
+      }
     }
   }
 
@@ -121,8 +122,12 @@ export async function hydrateSquadWeek2Discovery(participantId) {
   const memberIds = getSquadMemberIds(participantId);
   await Promise.all(memberIds.map((id) => hydrateParticipantWeek2Discovery(id, { force: true })));
 
-  const { autoHydrateAndSyncSquadWeek2Discovery } = await import('./week2SquadDataAdoptService.js');
-  await autoHydrateAndSyncSquadWeek2Discovery(participantId);
+  try {
+    const { autoHydrateAndSyncSquadWeek2Discovery } = await import('./week2SquadDataAdoptService.js');
+    await autoHydrateAndSyncSquadWeek2Discovery(participantId);
+  } catch (err) {
+    console.warn('[week2Discovery] squad adopt sync failed:', err?.message ?? err);
+  }
 
   await Promise.all(memberIds.map((id) => hydrateParticipantWeek2Discovery(id, { force: true })));
 }
