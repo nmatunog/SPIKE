@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ensureRoom, joinAsPlayer, slugifyPlayerId } from '../../lib/spike-life-workshop-client.js'
 
-import { GAME_ROOM_MAX_PLAYERS } from '../lib/spike-life-workshop-client.js'
+import { GAME_ROOM_MAX_PLAYERS } from '../../lib/spike-life-workshop-client.js'
 
 export default function WorkshopLobby({ onEnter, onBack }) {
   const [name, setName] = useState('')
