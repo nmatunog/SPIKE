@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { SPACE_TYPE_COLORS } from './board-legend.js'
+import { tileStyleForType } from './board-legend.js'
 import { buildSerpentineTrackPath, interpolateTrackPosition } from './board-path.js'
-
-const SPACE_TYPE_COLORS_MAP = SPACE_TYPE_COLORS
 
 export default function SpatialGameBoard({ board, rolling = false, dark = false }) {
   const prevPositionRef = useRef(0)
@@ -88,7 +86,7 @@ export default function SpatialGameBoard({ board, rolling = false, dark = false 
       <div
         className={`absolute inset-0 overflow-hidden rounded-[1.5rem] border-2 shadow-inner ${
           dark
-            ? 'border-slate-600 bg-gradient-to-b from-slate-700/90 via-slate-800 to-slate-900'
+            ? 'border-slate-600 bg-gradient-to-b from-emerald-950/40 via-slate-800 to-slate-950'
             : 'border-slate-200 bg-gradient-to-b from-slate-100 via-white to-red-50/40'
         }`}
         style={{
@@ -97,9 +95,8 @@ export default function SpatialGameBoard({ board, rolling = false, dark = false 
             : 'inset 0 2px 24px rgba(15,23,42,0.06), 0 8px 32px rgba(15,23,42,0.08)',
         }}
       >
-        {/* Decorative landscape bands */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-1/4 bg-gradient-to-b from-emerald-900/25 to-transparent" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/5 bg-gradient-to-t from-slate-950/40 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-1/4 bg-gradient-to-b from-emerald-800/20 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/5 bg-gradient-to-t from-slate-950/50 to-transparent" />
 
         <svg
           className="pointer-events-none absolute inset-0 h-full w-full"
@@ -110,75 +107,65 @@ export default function SpatialGameBoard({ board, rolling = false, dark = false 
           <path
             d={trackPath}
             fill="none"
-            stroke={dark ? 'rgba(148,163,184,0.35)' : 'rgba(148,163,184,0.5)'}
-            strokeWidth="1.2"
+            stroke="rgba(255,255,255,0.12)"
+            strokeWidth="3"
             strokeLinecap="round"
-            strokeDasharray="2 2"
           />
           <path
             d={trackPath}
             fill="none"
-            stroke={dark ? 'rgba(251,191,36,0.25)' : 'rgba(139,0,0,0.15)'}
-            strokeWidth="2.5"
+            stroke="rgba(251,191,36,0.35)"
+            strokeWidth="1.5"
             strokeLinecap="round"
+            strokeDasharray="3 3"
           />
         </svg>
 
         <p className="absolute left-1/2 top-[46%] -translate-x-1/2 -translate-y-1/2 text-center">
-          <span
-            className={`block text-[10px] font-semibold uppercase tracking-wide ${
-              dark ? 'text-slate-500' : 'text-slate-400'
-            }`}
-          >
+          <span className="block text-[10px] font-semibold uppercase tracking-wide text-slate-500">
             Year
           </span>
-          <span className={`text-xl font-bold ${dark ? 'text-slate-300' : 'text-slate-600'}`}>
-            {board.boardYear}
-          </span>
+          <span className="text-xl font-bold text-white/90">{board.boardYear}</span>
         </p>
       </div>
 
       {board.spaces.map((space) => {
         const tokensHere = tokenByPosition.get(space.index) ?? []
         const isLanded = board.landedSpaceIndex === space.index && !isAnimating
-        const color = SPACE_TYPE_COLORS_MAP[space.type] ?? '#64748b'
+        const tile = tileStyleForType(space.type)
         const hideTokenOnSpace = isAnimating && tokensHere.some((t) => t.isCurrent)
 
         return (
           <div
             key={space.index}
-            className={`absolute flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-lg border text-center transition-all duration-300 md:h-10 md:w-10 ${
-              isLanded
-                ? 'z-20 scale-110 border-[#8B0000] bg-red-50 shadow-lg ring-2 ring-[#8B0000]/40'
-                : dark
-                  ? 'border-slate-600/80 bg-slate-700/95 shadow-md'
-                  : 'border-slate-200 bg-white shadow-sm'
+            className={`absolute flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-xl border-2 text-center transition-all duration-300 md:h-11 md:w-11 ${
+              isLanded ? 'z-20 scale-110 ring-2 ring-white' : 'z-10'
             }`}
             style={{
               left: `${space.x * 100}%`,
               top: `${space.y * 100}%`,
+              backgroundColor: tile.fill,
+              borderColor: isLanded ? '#ffffff' : tile.stroke,
+              color: tile.text,
+              boxShadow: isLanded
+                ? `0 0 20px ${tile.glow}, 0 4px 12px rgba(0,0,0,0.35)`
+                : `0 2px 8px rgba(0,0,0,0.25), 0 0 12px ${tile.glow}`,
             }}
             title={`${space.label} · ${space.encounterTitle}`}
           >
             <span
-              className="h-1.5 w-1.5 rounded-full"
-              style={{ backgroundColor: color }}
-              aria-hidden
-            />
-            <span
-              className={`line-clamp-2 px-0.5 text-[8px] font-semibold leading-tight md:text-[9px] ${
-                dark && !isLanded ? 'text-slate-200' : 'text-slate-700'
-              }`}
+              className="line-clamp-2 px-0.5 text-[8px] font-bold leading-tight drop-shadow-sm md:text-[9px]"
+              style={{ color: tile.text }}
             >
               {space.label}
             </span>
             {!hideTokenOnSpace && tokensHere.map((token) => (
               <span
                 key={token.playerId}
-                className={`absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full border-2 border-white text-[7px] font-bold text-white shadow md:h-5 md:w-5 md:text-[8px] ${
-                  token.isCurrent ? 'ring-2 ring-[#8B0000]' : ''
+                className={`absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full border-2 border-white text-[8px] font-bold text-white shadow-lg md:h-6 md:w-6 ${
+                  token.isCurrent ? 'ring-2 ring-yellow-300' : ''
                 } ${rolling && token.isCurrent && !isAnimating ? 'animate-pulse' : ''}`}
-                style={{ backgroundColor: token.color }}
+                style={{ backgroundColor: '#8B0000' }}
               >
                 {token.displayName.charAt(0)}
               </span>
@@ -189,11 +176,11 @@ export default function SpatialGameBoard({ board, rolling = false, dark = false 
 
       {currentToken && (isAnimating || rolling) && (
         <div
-          className="pointer-events-none absolute z-30 flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white text-xs font-bold text-white shadow-lg ring-2 ring-[#8B0000] md:h-9 md:w-9"
+          className="pointer-events-none absolute z-30 flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white text-xs font-bold text-white shadow-lg ring-2 ring-yellow-300 md:h-9 md:w-9"
           style={{
             left: `${animatedTokenPos.x}%`,
             top: `${animatedTokenPos.y}%`,
-            backgroundColor: currentToken.color,
+            backgroundColor: '#8B0000',
             transition: isAnimating ? 'none' : 'left 0.3s, top 0.3s',
           }}
         >

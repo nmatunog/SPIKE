@@ -1,3 +1,5 @@
+import LifeScoreRing from './LifeScoreRing.jsx'
+
 export default function GameTopBar({
   dashboard,
   board,
@@ -23,17 +25,13 @@ export default function GameTopBar({
             SPIKE LIFE™
           </p>
           <h1 className="truncate text-sm font-semibold md:text-base">{dashboard.characterName}</h1>
+          <p className="text-[11px] text-slate-400">
+            Year {board?.boardYear ?? dashboard.simulationYear} · Age {dashboard.age} · Turn{' '}
+            {board?.roundNumber ?? dashboard.turnNumber} of {board?.maxRounds ?? dashboard.maxTurns}
+          </p>
         </div>
 
-        <dl className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs md:gap-x-5 md:text-sm">
-          <div>
-            <dt className="text-slate-400">Year</dt>
-            <dd className="font-semibold">{board?.boardYear ?? dashboard.simulationYear}</dd>
-          </div>
-          <div>
-            <dt className="text-slate-400">Age</dt>
-            <dd className="font-semibold">{dashboard.age}</dd>
-          </div>
+        <dl className="hidden flex-wrap items-center gap-x-4 gap-y-1 text-xs lg:flex lg:gap-x-5 lg:text-sm">
           <div>
             <dt className="text-slate-400">Net worth</dt>
             <dd className="font-semibold">{dashboard.netWorth.formatted}</dd>
@@ -50,20 +48,14 @@ export default function GameTopBar({
             <dt className="text-slate-400">Goals</dt>
             <dd className="font-semibold">{dashboard.lifeScore.goals}/100</dd>
           </div>
-          <div>
-            <dt className="text-slate-400">Turn</dt>
-            <dd className="font-semibold">
-              {board?.roundNumber ?? dashboard.turnNumber}
-              <span className="text-slate-500">
-                /{board?.maxRounds ?? dashboard.maxTurns}
-              </span>
-            </dd>
-          </div>
         </dl>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          <div className="hidden md:block">
+            <LifeScoreRing score={dashboard.lifeScore.overall} size={44} strokeWidth={3} compact />
+          </div>
           <div
-            className={`hidden h-11 w-11 items-center justify-center rounded-xl border-2 text-lg font-bold md:flex ${
+            className={`hidden h-11 w-11 items-center justify-center rounded-xl border-2 text-lg font-bold sm:flex ${
               rolling
                 ? 'animate-pulse border-red-400 text-red-300'
                 : 'border-slate-600 bg-slate-800 text-white'
