@@ -43,5 +43,7 @@ Implemented in `@spike-life/domain` — see `promotion-cycle.test.ts`.
 ## Dev UI
 
 ```bash
-npm run dev   # http://localhost:5174
+npm run dev
 ```
+
+Open **http://localhost:5174**

@@ -39,8 +39,10 @@
 
 ```bash
 cd SPIKE_LIFE && npm test
-npm run dev    # scenario picker at http://localhost:5174
+npm run dev
 ```
+
+Then open http://localhost:5174
 
 ---
 
