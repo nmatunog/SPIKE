@@ -85,50 +85,22 @@ describe('GameRoom aggregate', () => {
     expect(state.slots[0]?.status).toBe('joined')
     expect(state.sharedScenarioId).toBeNull()
   })
-})
 
-describe('GameRoom — 10 player macro turn', () => {
-  const REFLECTION = [
-    { promptId: 'a', response: 'Learned to prioritize FNA.' },
-    { promptId: 'b', response: 'Protection gaps matter.' },
-    { promptId: 'c', response: 'Would decide sooner.' },
-  ]
+  it('marks workshop complete after final turn', () => {
+    let room = GameRoom.create('room-7', 'fac-1')
+    room = room.join('a', 'Alex', simulationIdForPlayer('room-7', 'a'))
 
-  it('10 players complete one shared macro turn in parallel', () => {
-    const {
-      createGameRoom,
-      joinGameRoom,
-      startRoomTurn,
-      submitPlayerDecision,
-      submitPlayerReflection,
-      advanceRoomTurn,
-    } = requireGameRoomOrchestrator()
-
-    const roomId = 'workshop-10'
-    createGameRoom(roomId, 'coach-1')
-
-    for (let i = 1; i <= 10; i += 1) {
-      joinGameRoom(roomId, `player-${i}`, `Intern ${i}`)
+    const atFinal = {
+      ...room.toState(),
+      turnNumber: 5,
+      maxTurns: 5,
+      lifeStage: 'legacy' as const,
+      roomPhase: 'turn_active' as const,
+      sharedScenarioId: 'promotion' as const,
+      slots: room.toState().slots.map((s) => ({ ...s, status: 'done' as const })),
     }
 
-    startRoomTurn(roomId, 'promotion')
-
-    for (let i = 1; i <= 10; i += 1) {
-      submitPlayerDecision(roomId, `player-${i}`, 'maintain_lifestyle_discipline')
-      submitPlayerReflection(roomId, `player-${i}`, REFLECTION)
-    }
-
-    const room = advanceRoomTurn(roomId)
-
-    expect(room.slots).toHaveLength(10)
-    expect(room.slots.every((s) => s.status === 'joined')).toBe(true)
-    expect(room.turnNumber).toBe(2)
-    expect(room.roomPhase).toBe('lobby')
+    room = GameRoom.fromState(atFinal).advanceTurn()
+    expect(room.toState().roomPhase).toBe('workshop_complete')
   })
 })
-
-/** In-memory orchestrator for domain integration tests (no application layer). */
-function requireGameRoomOrchestrator() {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  return require('./game-room-orchestrator.js') as typeof import('./game-room-orchestrator.js')
-}

@@ -1,0 +1,58 @@
+import { describe, expect, it } from 'vitest'
+import {
+  InMemoryGameRoomRepository,
+  InMemorySimulationRepository,
+} from '@spike-life/infrastructure'
+import { GameRoomCommandBus } from './game-room-command-bus.js'
+import { GameRoomQueryBus } from './game-room-query-bus.js'
+
+const REFLECTION = [
+  { promptId: 'a', response: 'Outcome improved savings.' },
+  { promptId: 'b', response: 'FNA guided the choice.' },
+  { promptId: 'c', response: 'Would protect income earlier.' },
+]
+
+describe('GameRoom CQRS — 10 player workshop', () => {
+  it('facilitator runs one macro turn with 10 interns', async () => {
+    const gameRoomRepo = new InMemoryGameRoomRepository()
+    const simulationRepo = new InMemorySimulationRepository()
+    const commands = new GameRoomCommandBus(gameRoomRepo, simulationRepo)
+    const queries = new GameRoomQueryBus(gameRoomRepo, simulationRepo)
+
+    const roomId = 'cqrs-room-10'
+    await commands.createRoom(roomId, 'facilitator-1')
+
+    for (let i = 1; i <= 10; i += 1) {
+      await commands.joinRoom(roomId, `intern-${i}`, `Intern ${i}`)
+    }
+
+    await commands.startTurn(roomId, 'promotion')
+
+    let board = await queries.getGameBoard(roomId)
+    expect(board?.playerCount).toBe(10)
+    expect(board?.roomPhase).toBe('turn_active')
+    expect(board?.players.every((p) => p.status === 'planning')).toBe(true)
+
+    for (let i = 1; i <= 10; i += 1) {
+      await commands.submitDecision(
+        roomId,
+        `intern-${i}`,
+        'maintain_lifestyle_discipline',
+      )
+      await commands.submitReflection(roomId, `intern-${i}`, REFLECTION)
+    }
+
+    board = await queries.getGameBoard(roomId)
+    expect(board?.allPlayersDone).toBe(true)
+    expect(board?.canAdvanceTurn).toBe(true)
+    expect(board?.completionSummary.done).toBe(10)
+
+    const advanced = await commands.advanceTurn(roomId)
+    expect(advanced.turnNumber).toBe(2)
+
+    board = await queries.getGameBoard(roomId)
+    expect(board?.turnNumber).toBe(2)
+    expect(board?.lifeStage).toBe('build')
+    expect(board?.players.every((p) => p.status === 'joined')).toBe(true)
+  })
+})

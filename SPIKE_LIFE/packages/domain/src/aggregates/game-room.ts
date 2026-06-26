@@ -120,7 +120,7 @@ export class GameRoom {
       playerId,
       displayName: displayName.trim() || `Player ${slotIndex + 1}`,
       simulationId,
-      tokenColor: PLAYER_TOKEN_COLORS[slotIndex % PLAYER_TOKEN_COLORS.length],
+      tokenColor: PLAYER_TOKEN_COLORS[slotIndex % PLAYER_TOKEN_COLORS.length] ?? '#8B0000',
       status: 'joined',
       joinedAt: new Date().toISOString(),
     }
