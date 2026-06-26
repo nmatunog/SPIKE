@@ -11,6 +11,7 @@ import {
   submitPlayerDecision,
   submitPlayerReflection,
 } from './game-room-orchestrator.js'
+import { GAME_ROOM_MAX_PLAYERS } from './types.js'
 
 const REFLECTION = [
   { promptId: 'a', response: 'Learned to prioritize FNA.' },
@@ -51,22 +52,22 @@ function makeDeps() {
   }
 }
 
-describe('GameRoom orchestrator — 10 players', () => {
-  it('10 players complete one shared macro turn in parallel', async () => {
+describe('GameRoom orchestrator — 6 players', () => {
+  it('6 players complete one shared macro turn in parallel', async () => {
     const deps = makeDeps()
-    const roomId = 'workshop-10'
+    const roomId = 'workshop-6'
 
     await createGameRoom(deps, roomId, 'coach-1')
 
-    for (let i = 1; i <= 10; i += 1) {
+    for (let i = 1; i <= GAME_ROOM_MAX_PLAYERS; i += 1) {
       await joinGameRoom(deps, roomId, `player-${i}`, `Intern ${i}`)
     }
 
     const started = await startRoomTurn(deps, roomId, 'promotion')
-    expect(started.slots).toHaveLength(10)
+    expect(started.slots).toHaveLength(GAME_ROOM_MAX_PLAYERS)
     expect(started.roomPhase).toBe('turn_active')
 
-    for (let i = 1; i <= 10; i += 1) {
+    for (let i = 1; i <= GAME_ROOM_MAX_PLAYERS; i += 1) {
       await submitPlayerDecision(
         deps,
         roomId,
@@ -82,8 +83,8 @@ describe('GameRoom orchestrator — 10 players', () => {
     expect(room.turnNumber).toBe(2)
     expect(room.roomPhase).toBe('lobby')
 
-    for (let i = 1; i <= 10; i += 1) {
-      const sim = await deps.simulationRepo.findById(`workshop-10:player-${i}`)
+    for (let i = 1; i <= GAME_ROOM_MAX_PLAYERS; i += 1) {
+      const sim = await deps.simulationRepo.findById(`workshop-6:player-${i}`)
       expect(sim?.turnNumber).toBe(2)
       expect(sim?.phase).toBe('created')
     }

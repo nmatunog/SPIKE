@@ -14,7 +14,7 @@
 | Player owns many Simulations (Ch3) | Each slot → `simulationId` workshop session |
 | Shared situation per macro turn | `GameRoom.startTurn(scenarioId)` |
 | Parallel player actions | `submitPlayerDecision` / `submitPlayerReflection` per `playerId` |
-| Up to 10 players | `GAME_ROOM_MAX_PLAYERS = 10`, slot colors |
+| Up to 6 players | `GAME_ROOM_MAX_PLAYERS = 6`, slot colors |
 | Facilitator advances turn | `advanceRoomTurn` when all slots `done` |
 | CQRS read model | `GetGameBoard` → `GameBoardView` with 10 tokens |
 | In-memory persistence | `InMemoryGameRoomRepository` |
@@ -35,7 +35,7 @@
 
 | Bible requirement | Implementation |
 |-------------------|----------------|
-| 10-token board UI | `WorkshopBoard` + `PlayerToken` on current life stage |
+| 6-token board UI | `WorkshopBoard` + `PlayerToken` on current life stage |
 | Facilitator controls | `FacilitatorPanel` — add interns, start mission, advance turn |
 | Room HUD | `WorkshopScoreHud` — completion %, selected player score |
 | Per-player lenses | `WorkshopWorkspace` — Plan/Protect/Grow/Journey per slot |

@@ -6,7 +6,10 @@ import {
   FinancialDecisionQueryBus,
   GameRoomCommandBus,
   GameRoomQueryBus,
+  GAME_ROOM_MAX_PLAYERS,
 } from '@spike-life/application'
+
+export { GAME_ROOM_MAX_PLAYERS }
 
 const DEFAULT_ROOM_ID = 'workshop-demo'
 
@@ -52,7 +55,7 @@ export async function joinAsPlayer(playerId, displayName) {
   return roomCommands.joinRoom(roomId, playerId, displayName)
 }
 
-export async function addDemoPlayers(count = 10) {
+export async function addDemoPlayers(count = GAME_ROOM_MAX_PLAYERS) {
   await ensureRoom()
   const board = await getGameBoard()
   const existing = new Set(board?.players.map((p) => p.playerId) ?? [])

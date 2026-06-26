@@ -18,6 +18,7 @@ import {
   advanceTurn,
 } from '../lib/spike-life-client.js'
 import { SCENARIOS } from '../lib/scenarios.js'
+import { GAME_ROOM_MAX_PLAYERS } from '../lib/spike-life-workshop-client.js'
 
 export default function LifeWorkspace({ onOpenWorkshop }) {
   const [activeLens, setActiveLens] = useState('life')
@@ -161,7 +162,7 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
               onClick={onOpenWorkshop}
               className="text-sm font-medium text-[#8B0000] hover:underline"
             >
-              Open workshop room (up to 10 players) →
+              Open workshop room (up to {GAME_ROOM_MAX_PLAYERS} players) →
             </button>
           </div>
         </div>

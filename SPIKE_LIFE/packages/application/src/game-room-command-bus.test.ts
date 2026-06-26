@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { GAME_ROOM_MAX_PLAYERS } from '@spike-life/domain'
 import {
   InMemoryGameRoomRepository,
   InMemorySimulationRepository,
@@ -12,28 +13,28 @@ const REFLECTION = [
   { promptId: 'c', response: 'Would protect income earlier.' },
 ]
 
-describe('GameRoom CQRS — 10 player workshop', () => {
-  it('facilitator runs one macro turn with 10 interns', async () => {
+describe('GameRoom CQRS — 6 player workshop', () => {
+  it('facilitator runs one macro turn with 6 interns', async () => {
     const gameRoomRepo = new InMemoryGameRoomRepository()
     const simulationRepo = new InMemorySimulationRepository()
     const commands = new GameRoomCommandBus(gameRoomRepo, simulationRepo)
     const queries = new GameRoomQueryBus(gameRoomRepo, simulationRepo)
 
-    const roomId = 'cqrs-room-10'
+    const roomId = 'cqrs-room-6'
     await commands.createRoom(roomId, 'facilitator-1')
 
-    for (let i = 1; i <= 10; i += 1) {
+    for (let i = 1; i <= GAME_ROOM_MAX_PLAYERS; i += 1) {
       await commands.joinRoom(roomId, `intern-${i}`, `Intern ${i}`)
     }
 
     await commands.startTurn(roomId, 'promotion')
 
     let board = await queries.getGameBoard(roomId)
-    expect(board?.playerCount).toBe(10)
+    expect(board?.playerCount).toBe(GAME_ROOM_MAX_PLAYERS)
     expect(board?.roomPhase).toBe('turn_active')
     expect(board?.players.every((p) => p.status === 'planning')).toBe(true)
 
-    for (let i = 1; i <= 10; i += 1) {
+    for (let i = 1; i <= GAME_ROOM_MAX_PLAYERS; i += 1) {
       await commands.submitDecision(
         roomId,
         `intern-${i}`,
@@ -45,7 +46,7 @@ describe('GameRoom CQRS — 10 player workshop', () => {
     board = await queries.getGameBoard(roomId)
     expect(board?.allPlayersDone).toBe(true)
     expect(board?.canAdvanceTurn).toBe(true)
-    expect(board?.completionSummary.done).toBe(10)
+    expect(board?.completionSummary.done).toBe(GAME_ROOM_MAX_PLAYERS)
 
     const advanced = await commands.advanceTurn(roomId)
     expect(advanced.turnNumber).toBe(2)

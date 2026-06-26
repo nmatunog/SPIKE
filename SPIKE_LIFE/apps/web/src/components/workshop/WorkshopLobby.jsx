@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { ensureRoom, joinAsPlayer, slugifyPlayerId } from '../../lib/spike-life-workshop-client.js'
 
+import { GAME_ROOM_MAX_PLAYERS } from '../lib/spike-life-workshop-client.js'
+
 export default function WorkshopLobby({ onEnter, onBack }) {
   const [name, setName] = useState('')
   const [busy, setBusy] = useState(false)
@@ -61,7 +63,7 @@ export default function WorkshopLobby({ onEnter, onBack }) {
         Join the financial planning room
       </h1>
       <p className="mt-2 text-slate-600">
-        Up to 10 players share one life journey board. Everyone gets the same mission each turn;
+        Up to {GAME_ROOM_MAX_PLAYERS} players share one life journey board. Everyone gets the same mission each turn;
         each player practices their own planning decisions.
       </p>
 

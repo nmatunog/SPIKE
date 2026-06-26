@@ -6,7 +6,7 @@ import {
 } from './index.js'
 
 describe('GameRoom aggregate', () => {
-  it('creates a lobby room for up to 10 players', () => {
+  it('creates a lobby room for up to 6 players', () => {
     const room = GameRoom.create('room-1', 'facilitator-1')
 
     expect(room.toState().maxPlayers).toBe(GAME_ROOM_MAX_PLAYERS)
@@ -18,25 +18,25 @@ describe('GameRoom aggregate', () => {
   it('joins players into numbered slots with token colors', () => {
     let room = GameRoom.create('room-2', 'fac-1')
 
-    for (let i = 1; i <= 10; i += 1) {
+    for (let i = 1; i <= GAME_ROOM_MAX_PLAYERS; i += 1) {
       const simId = simulationIdForPlayer('room-2', `player-${i}`)
       room = room.join(`player-${i}`, `Player ${i}`, simId)
     }
 
     const state = room.toState()
-    expect(state.slots).toHaveLength(10)
+    expect(state.slots).toHaveLength(GAME_ROOM_MAX_PLAYERS)
     expect(state.slots[0]?.tokenColor).toBeTruthy()
-    expect(state.slots[9]?.slotIndex).toBe(9)
+    expect(state.slots[GAME_ROOM_MAX_PLAYERS - 1]?.slotIndex).toBe(GAME_ROOM_MAX_PLAYERS - 1)
   })
 
   it('rejects join when room is full', () => {
     let room = GameRoom.create('room-3', 'fac-1')
-    for (let i = 1; i <= 10; i += 1) {
+    for (let i = 1; i <= GAME_ROOM_MAX_PLAYERS; i += 1) {
       room = room.join(`p${i}`, `P${i}`, simulationIdForPlayer('room-3', `p${i}`))
     }
 
     expect(() =>
-      room.join('p11', 'P11', simulationIdForPlayer('room-3', 'p11')),
+      room.join('p7', 'P7', simulationIdForPlayer('room-3', 'p7')),
     ).toThrow(/full/)
   })
 

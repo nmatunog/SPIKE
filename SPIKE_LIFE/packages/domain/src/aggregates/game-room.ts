@@ -18,10 +18,6 @@ export const PLAYER_TOKEN_COLORS = [
   '#b45309',
   '#7c3aed',
   '#be185d',
-  '#0e7490',
-  '#4d7c0f',
-  '#c2410c',
-  '#4338ca',
 ] as const
 
 export interface PlayerSlot {

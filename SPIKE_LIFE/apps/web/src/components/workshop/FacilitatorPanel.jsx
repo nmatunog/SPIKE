@@ -1,5 +1,7 @@
 import { SCENARIOS } from '../../lib/scenarios.js'
 
+import { GAME_ROOM_MAX_PLAYERS } from '../../lib/spike-life-workshop-client.js'
+
 export default function FacilitatorPanel({
   board,
   busy,
@@ -26,7 +28,7 @@ export default function FacilitatorPanel({
           onClick={onAddDemoPlayers}
           className="mt-4 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-100 disabled:opacity-50"
         >
-          Add 10 demo interns
+          Add {GAME_ROOM_MAX_PLAYERS} demo interns
         </button>
       )}
 

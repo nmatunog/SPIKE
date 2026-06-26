@@ -11,6 +11,7 @@ import WorkshopScoreHud from './WorkshopScoreHud.jsx'
 import {
   addDemoPlayers,
   advanceRoomTurn,
+  GAME_ROOM_MAX_PLAYERS,
   getGameBoard,
   getPlayerDashboard,
   getPlayerLensView,
@@ -196,7 +197,7 @@ export default function WorkshopWorkspace({ session, onExit }) {
             board={board}
             busy={busy}
             isFacilitator={isFacilitator}
-            onAddDemoPlayers={() => runAction(() => addDemoPlayers(10))}
+            onAddDemoPlayers={() => runAction(() => addDemoPlayers(GAME_ROOM_MAX_PLAYERS))}
             onStartTurn={(scenarioId) => runAction(() => startRoomTurn(scenarioId))}
           />
         )}
