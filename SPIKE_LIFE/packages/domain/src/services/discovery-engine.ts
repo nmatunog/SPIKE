@@ -29,6 +29,10 @@ export function runDiscovery(
   goals: GoalPortfolio,
   situation: SituationSnapshot,
 ): DiscoverySnapshot {
+  if (situation.situationKind === 'protection_stress') {
+    return runProtectionStressDiscovery(character, profile, situation)
+  }
+
   const surplus = monthlySurplus(profile)
   const annual = annualIncome(profile)
 
@@ -76,6 +80,72 @@ export function runDiscovery(
     {
       question: 'What should I recommend?',
       answer: `With annual income of ₱${annual.toLocaleString('en-PH')}, prioritize sustainability (cash flow), then protection, then goals.`,
+    },
+    {
+      question: 'Why?',
+      answer: situation.learningObjective,
+    },
+  ]
+
+  return {
+    situationEventId: situation.eventId,
+    observations,
+    whatChanged,
+    risks,
+    opportunities,
+    generatedAt: new Date().toISOString(),
+  }
+}
+
+function runProtectionStressDiscovery(
+  character: Character,
+  profile: FinancialProfile,
+  situation: SituationSnapshot,
+): DiscoverySnapshot {
+  const surplus = monthlySurplus(profile)
+  const annual = annualIncome(profile)
+
+  const whatChanged = [
+    situation.financialImpactSummary,
+    'Family health events increase both immediate costs and long-term protection needs.',
+  ]
+
+  const risks = [
+    'Without adequate protection plans, future medical costs could deplete savings and derail goals.',
+    'Delaying protection planning leaves the family exposed to income interruption.',
+    'Paying medical bills from cash alone does not close the protection gap.',
+  ]
+
+  if (character.dependents > 0) {
+    risks.push('Dependents rely on your income — income protection readiness is critical.')
+  }
+
+  const opportunities = [
+    'Strengthen Family Protection Plan and Health Protection Plan while gaps are visible.',
+    'Review Income Protection Plan readiness against two years of income.',
+    'Balance emergency fund preservation with protection planning priorities.',
+  ]
+
+  const observations: DiscoveryObservation[] = [
+    {
+      question: 'What changed?',
+      answer: `A family health concern created ${situation.financialImpactSummary} Monthly surplus is now approximately ₱${surplus.toLocaleString('en-PH')}.`,
+    },
+    {
+      question: 'What financial risks now exist?',
+      answer: risks.join(' '),
+    },
+    {
+      question: 'What financial opportunities now exist?',
+      answer: opportunities.join(' '),
+    },
+    {
+      question: 'What should I prioritize?',
+      answer: 'Run Financial Needs Analysis — protection gaps are likely the top priority.',
+    },
+    {
+      question: 'What should I recommend?',
+      answer: `With annual income of ₱${annual.toLocaleString('en-PH')} and ${character.dependents} dependent(s), prioritize protection planning before discretionary spending.`,
     },
     {
       question: 'Why?',

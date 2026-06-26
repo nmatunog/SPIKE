@@ -55,3 +55,8 @@ export type CareerType =
   | 'entrepreneur'
   | 'advisor'
   | 'hybrid'
+
+/** Active planning scenario — each maps to a life-event stress test. */
+export type ScenarioId = 'promotion' | 'protection_stress'
+
+export type SituationKind = 'income_opportunity' | 'protection_stress'

@@ -1,38 +1,48 @@
 import type {
   DecisionStrategy,
   ReflectionAnswer,
+  ScenarioId,
   SimulationRepository,
-  SimulationSession,
+  SimulationState,
 } from '@spike-life/domain'
 import {
-  completeDiscovery,
-  createPromotionSession,
-  presentPromotionSituation,
+  startPlanningCycle,
   submitDecision,
   submitReflection,
 } from '@spike-life/domain'
 
-export interface StartPromotionCycleResult {
+export interface StartCycleResult {
   sessionId: string
-  phase: SimulationSession['phase']
+  scenarioId: ScenarioId
+  phase: SimulationState['phase']
 }
 
 export class FinancialDecisionCommandBus {
   constructor(private readonly repository: SimulationRepository) {}
 
-  async startPromotionCycle(sessionId: string): Promise<StartPromotionCycleResult> {
-    let session = createPromotionSession(sessionId)
-    session = presentPromotionSituation(session)
-    session = completeDiscovery(session)
+  async startCycle(
+    sessionId: string,
+    scenarioId: ScenarioId = 'promotion',
+  ): Promise<StartCycleResult> {
+    const session = startPlanningCycle(sessionId, scenarioId)
     await this.repository.save(session)
-    return { sessionId: session.id, phase: session.phase }
+    return { sessionId: session.id, scenarioId: session.scenarioId, phase: session.phase }
   }
 
-  async submitPromotionDecision(
+  /** @deprecated Use startCycle(sessionId, 'promotion') */
+  async startPromotionCycle(sessionId: string): Promise<StartCycleResult> {
+    return this.startCycle(sessionId, 'promotion')
+  }
+
+  async startProtectionStressCycle(sessionId: string): Promise<StartCycleResult> {
+    return this.startCycle(sessionId, 'protection_stress')
+  }
+
+  async submitDecision(
     sessionId: string,
     strategy: DecisionStrategy,
     rationale?: string,
-  ): Promise<SimulationSession> {
+  ): Promise<SimulationState> {
     const session = await this.repository.findById(sessionId)
     if (!session) throw new Error(`Session not found: ${sessionId}`)
 
@@ -41,15 +51,32 @@ export class FinancialDecisionCommandBus {
     return updated
   }
 
-  async submitPromotionReflection(
+  /** @deprecated Use submitDecision */
+  async submitPromotionDecision(
+    sessionId: string,
+    strategy: DecisionStrategy,
+    rationale?: string,
+  ): Promise<SimulationState> {
+    return this.submitDecision(sessionId, strategy, rationale)
+  }
+
+  async submitReflection(
     sessionId: string,
     answers: ReflectionAnswer[],
-  ): Promise<SimulationSession> {
+  ): Promise<SimulationState> {
     const session = await this.repository.findById(sessionId)
     if (!session) throw new Error(`Session not found: ${sessionId}`)
 
     const updated = submitReflection(session, answers)
     await this.repository.save(updated)
     return updated
+  }
+
+  /** @deprecated Use submitReflection */
+  async submitPromotionReflection(
+    sessionId: string,
+    answers: ReflectionAnswer[],
+  ): Promise<SimulationState> {
+    return this.submitReflection(sessionId, answers)
   }
 }

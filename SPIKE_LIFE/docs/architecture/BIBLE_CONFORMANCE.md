@@ -1,44 +1,32 @@
-# SPIKE LIFE™ — Bible Conformance (Phase 2)
+# SPIKE LIFE™ — Bible Conformance (Phase 2–3)
 
 **Date:** 2026-06-26  
 **References:** A0, A1, A2, Volume I Chapters 1–4
 
 ---
 
-## Document authority
+## Phase 3 — Scenario 2 + Domain Hardening
 
-| Priority | Document | File | Status |
-|----------|----------|------|--------|
-| P1 | Amendment A0 | `A0_CORE_DESIGN_REORIENTATION.md` | In repo |
-| P1 | Amendment A1 | `AMENDMENT_A1_LAYERED_ARCHITECTURE.md` | In repo |
-| P1 | Amendment A2 | `AMENDMENT_A2_CQRS.md` | In repo |
-| P2 | Volume I Ch 1–4 | `VOLUME_I_CHAPTER_*.md` | In repo |
+### Aligned
 
----
+| Bible requirement | Implementation |
+|-------------------|----------------|
+| `Simulation` aggregate with behavior methods (Ch3 §18) | `Simulation` class: `presentSituation()`, `completeDiscovery()`, `recordDecision()`, `completeReflection()` |
+| Domain events on transitions (Ch2, A2) | `pullDomainEvents()` emits `LifeEventApplied`, `DecisionRecorded`, `LifeScoreUpdated`, etc. |
+| `Money` value object (Ch4) | `value-objects/money.ts` — immutable peso amounts |
+| Protection stress scenario | `protection_stress` — event H016, young family archetype |
+| Solution language in UI | Protection lens + decision cards use plan categories |
+| CQRS commands per scenario | `startCycle`, `startProtectionStressCycle` |
+| Read models | `GetDashboard` includes `scenarioId` / `scenarioLabel` |
 
-## Phase 2 implementation vs Bible
-
-### Aligned (new in Phase 2)
-
-| Bible requirement | Phase 2 implementation |
-|-------------------|------------------------|
-| Read models / query DTOs (A2) | `GetDashboard`, `GetFnaSummary`, `GetLensView` in `FinancialDecisionQueryBus` |
-| Life Score™ (Ch1, Ch3) | `calculateLifeScore()` in `@spike-life/domain` |
-| Five-Lens workspace (UX 1.1A) | `apps/web` — Life \| Plan \| Protect \| Grow \| Journey |
-| UI consumes queries only (A1, A2) | All lens panels render query DTOs; no financial math in React |
-| Commands mutate state (A2) | `submitDecision` / `submitReflection` via `FinancialDecisionCommandBus` |
-| Solution language in UI (Ch1) | Protection lens uses plan categories, not products |
-| Promotion cycle playable in browser | Full loop: start → decide → reflect |
-
-### Partial (Phase 3+ targets)
+### Partial (next)
 
 | Bible requirement | Gap |
 |-------------------|-----|
-| `Simulation` aggregate with behavior methods (Ch3 §18) | Still `SimulationSession` + lifecycle functions |
-| Domain events emitted on transitions | Event types defined; not yet published |
-| Value objects: `Money`, `Percentage`, `Age` (Ch4) | `MoneyDisplay` in read models only |
-| Hono API + Neon persistence | In-memory repo in browser |
-| `Player` / `Report` aggregates | Not in MVP scope yet |
+| Eight bounded context folders | Still single domain package |
+| Hono API + Neon | In-memory browser repo |
+| `Player` / `Report` aggregates | Not yet |
+| Full Journey entity | Timeline projected from session state |
 
 ---
 
@@ -46,21 +34,14 @@
 
 | Package | Tests |
 |---------|-------|
-| `@spike-life/domain` | 8 (Promotion cycle) |
-| `@spike-life/application` | 8 (1 CQRS command + 7 query read models) |
-
-Run: `cd SPIKE_LIFE && npm test`
-
----
-
-## Run locally
+| `@spike-life/domain` | 15 (8 promotion + 7 protection/events) |
+| `@spike-life/application` | 8 |
 
 ```bash
-cd SPIKE_LIFE
-npm install
-npm run dev    # http://localhost:5174
+cd SPIKE_LIFE && npm test
+npm run dev    # scenario picker at http://localhost:5174
 ```
 
 ---
 
-*End of Bible Conformance — Phase 2*
+*End of Bible Conformance — Phase 2–3*

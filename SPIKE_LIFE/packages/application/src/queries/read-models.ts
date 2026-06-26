@@ -25,6 +25,8 @@ export interface LifeScoreView {
 
 export interface DashboardView {
   sessionId: string
+  scenarioId: string
+  scenarioLabel: string
   phase: CyclePhase
   characterName: string
   age: number

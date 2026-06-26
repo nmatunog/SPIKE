@@ -1,4 +1,4 @@
-import type { DecisionStrategy } from '../types.js'
+import type { DecisionStrategy, ScenarioId } from '../types.js'
 
 export interface DecisionOption {
   strategy: DecisionStrategy
@@ -55,10 +55,61 @@ export const PROMOTION_DECISION_OPTIONS: DecisionOption[] = [
   },
 ]
 
-export function getDecisionOptions(): DecisionOption[] {
-  return [...PROMOTION_DECISION_OPTIONS]
+export const PROTECTION_STRESS_DECISION_OPTIONS: DecisionOption[] = [
+  {
+    strategy: 'improve_protection',
+    label: 'Strengthen Protection Plans',
+    description: 'Fund Family, Health, and Income Protection Plans per FNA priorities.',
+    alignsWithSolutions: [
+      'Strengthen Family Protection Plan',
+      'Strengthen Health Protection Plan',
+      'Protect Your Income',
+    ],
+  },
+  {
+    strategy: 'split_allocation',
+    label: 'Balance Protection and Savings',
+    description: 'Improve protection readiness while preserving part of the emergency fund.',
+    alignsWithSolutions: ['Strengthen Health Protection Plan', 'Build Emergency Fund'],
+  },
+  {
+    strategy: 'increase_savings',
+    label: 'Rebuild Emergency Fund Only',
+    description: 'Focus on cash reserves without improving protection plans.',
+    alignsWithSolutions: ['Build Emergency Fund'],
+  },
+  {
+    strategy: 'reduce_debt',
+    label: 'Reduce Debt First',
+    description: 'Pay down liabilities before addressing protection gaps.',
+    alignsWithSolutions: ['Reduce Unsustainable Debt'],
+  },
+  {
+    strategy: 'maintain_lifestyle_discipline',
+    label: 'Pay Medical Bills Only',
+    description: 'Cover immediate costs without changing protection planning.',
+    alignsWithSolutions: [],
+  },
+  {
+    strategy: 'increase_lifestyle',
+    label: 'Defer Protection Planning',
+    description: 'Postpone protection decisions and maintain current spending.',
+    alignsWithSolutions: [],
+  },
+]
+
+const OPTIONS_BY_SCENARIO: Record<ScenarioId, DecisionOption[]> = {
+  promotion: PROMOTION_DECISION_OPTIONS,
+  protection_stress: PROTECTION_STRESS_DECISION_OPTIONS,
 }
 
-export function isValidDecisionStrategy(value: string): value is DecisionStrategy {
-  return PROMOTION_DECISION_OPTIONS.some((o) => o.strategy === value)
+export function getDecisionOptions(scenarioId: ScenarioId = 'promotion'): DecisionOption[] {
+  return [...OPTIONS_BY_SCENARIO[scenarioId]]
+}
+
+export function isValidDecisionStrategy(
+  value: string,
+  scenarioId: ScenarioId = 'promotion',
+): value is DecisionStrategy {
+  return OPTIONS_BY_SCENARIO[scenarioId].some((o) => o.strategy === value)
 }

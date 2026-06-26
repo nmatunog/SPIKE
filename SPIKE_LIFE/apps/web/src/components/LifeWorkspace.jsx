@@ -8,11 +8,26 @@ import GrowLens from './lenses/GrowLens.jsx'
 import JourneyLens from './lenses/JourneyLens.jsx'
 import {
   ensureSessionStarted,
+  getActiveScenario,
   getDashboard,
   getLensView,
+  startScenario,
   submitDecision,
   submitReflection,
 } from '../lib/spike-life-client.js'
+
+const SCENARIOS = [
+  {
+    id: 'promotion',
+    title: 'Scenario 1 — Promotion',
+    description: 'Fresh graduate receives a +15% raise. Practice allocating new income.',
+  },
+  {
+    id: 'protection_stress',
+    title: 'Scenario 2 — Family Health Concern',
+    description: 'A health event exposes protection gaps. Strengthen your protection plans.',
+  },
+]
 
 export default function LifeWorkspace() {
   const [activeLens, setActiveLens] = useState('life')
@@ -21,6 +36,7 @@ export default function LifeWorkspace() {
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(null)
+  const [scenario, setScenario] = useState(null)
 
   const refresh = useCallback(async (lens = activeLens) => {
     await ensureSessionStarted()
@@ -30,6 +46,7 @@ export default function LifeWorkspace() {
     ])
     setDashboard(dash)
     setLensView(view)
+    setScenario(getActiveScenario())
     setLoading(false)
   }, [activeLens])
 
@@ -45,6 +62,21 @@ export default function LifeWorkspace() {
     setError(null)
     const view = await getLensView(lens)
     setLensView(view)
+  }
+
+  async function handleStartScenario(scenarioId) {
+    setBusy(true)
+    setError(null)
+    setLoading(true)
+    try {
+      await startScenario(scenarioId)
+      setActiveLens('life')
+      await refresh('life')
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setBusy(false)
+    }
   }
 
   async function handleDecide(strategy) {
@@ -117,7 +149,33 @@ export default function LifeWorkspace() {
   return (
     <div className="min-h-dvh bg-slate-50 pb-20 md:pb-0">
       <PersistentHeader dashboard={dashboard} />
-      <div className="mx-auto flex max-w-6xl gap-6 px-4 py-6">
+      <div className="mx-auto max-w-6xl px-4 py-4">
+        <section className="mb-6 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <h2 className="text-sm font-semibold text-slate-900">Choose a planning scenario</h2>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            {SCENARIOS.map((item) => {
+              const active = scenario === item.id
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  disabled={busy}
+                  onClick={() => handleStartScenario(item.id)}
+                  className={`rounded-lg border p-4 text-left transition ${
+                    active
+                      ? 'border-[#8B0000] bg-red-50/50'
+                      : 'border-slate-200 hover:border-slate-300'
+                  }`}
+                >
+                  <p className="font-medium text-slate-900">{item.title}</p>
+                  <p className="mt-1 text-sm text-slate-600">{item.description}</p>
+                </button>
+              )
+            })}
+          </div>
+        </section>
+      </div>
+      <div className="mx-auto flex max-w-6xl gap-6 px-4 pb-6">
         <LensNav activeLens={activeLens} onChange={changeLens} />
         <main className="min-w-0 flex-1">{renderLens()}</main>
       </div>

@@ -1,18 +1,32 @@
 import type { FinancialProfile } from '../entities/financial-state.js'
+import type { SituationKind } from '../types.js'
+import { Money } from '../value-objects/money.js'
 
 export const PROMOTION_EVENT_ID = 'C001_promotion'
+export const PROTECTION_STRESS_EVENT_ID = 'H016_family_breadwinner_illness'
 
 /** +15% income — Simulation Blueprint v2.1 C001 */
 export const PROMOTION_INCOME_MULTIPLIER = 1.15
 
+/** One-time medical cost applied when protection stress event occurs */
+export const PROTECTION_STRESS_MEDICAL_COST = 45_000
+
+/** Ongoing monthly care cost after the event */
+export const PROTECTION_STRESS_MONTHLY_CARE_COST = 2_500
+
 export interface SituationSnapshot {
   eventId: string
+  situationKind: SituationKind
   title: string
   narrative: string
   learningObjective: string
   incomeMultiplier: number
   expenseMultiplier: number
   financialImpactSummary: string
+  /** One-time cash impact (protection stress) */
+  medicalCostImpact?: number
+  /** Added to monthly expenses (protection stress) */
+  monthlyCareCost?: number
 }
 
 export function createPromotionSituation(
@@ -24,6 +38,7 @@ export function createPromotionSituation(
 
   return {
     eventId: PROMOTION_EVENT_ID,
+    situationKind: 'income_opportunity',
     title: 'Promotion',
     narrative:
       'Congratulations — you received a promotion. Your income has increased, '
@@ -56,4 +71,55 @@ export function monthlyRaiseFromSituation(
 ): number {
   const after = Math.round(profileBefore.monthlyIncome * situation.incomeMultiplier)
   return after - profileBefore.monthlyIncome
+}
+
+export function createProtectionStressSituation(
+  profile: FinancialProfile,
+): SituationSnapshot {
+  const medicalCost = PROTECTION_STRESS_MEDICAL_COST
+  const careCost = PROTECTION_STRESS_MONTHLY_CARE_COST
+  const cashAfter = Math.max(0, profile.cash - medicalCost)
+
+  return {
+    eventId: PROTECTION_STRESS_EVENT_ID,
+    situationKind: 'protection_stress',
+    title: 'Family Health Concern',
+    narrative:
+      'A close family member faces a serious health concern. Medical costs are mounting, '
+      + 'and your family\'s financial vulnerability is now visible.',
+    learningObjective:
+      'Health events expose protection gaps. Financial Needs Analysis should guide '
+      + 'protection planning — not panic spending or avoidance.',
+    incomeMultiplier: 1,
+    expenseMultiplier: 1,
+    medicalCostImpact: medicalCost,
+    monthlyCareCost: careCost,
+    financialImpactSummary:
+      `${Money.peso(medicalCost).format()} in immediate medical costs. `
+      + `Cash drops to ${Money.peso(cashAfter).format()}. `
+      + `Ongoing care adds ${Money.peso(careCost).format()}/month.`,
+  }
+}
+
+export function applyProtectionStressToProfile(
+  profile: FinancialProfile,
+  situation: SituationSnapshot,
+): FinancialProfile {
+  const medicalCost = situation.medicalCostImpact ?? 0
+  const careCost = situation.monthlyCareCost ?? 0
+
+  return {
+    ...profile,
+    cash: Math.max(0, profile.cash - medicalCost),
+    monthlyExpenses: profile.monthlyExpenses + careCost,
+  }
+}
+
+/** Monthly capacity the player can direct toward protection planning responses. */
+export function protectionDecisionCapacity(profile: FinancialProfile): number {
+  const surplus = profile.monthlyIncome
+    - profile.monthlyExpenses
+    - profile.monthlyDebtPayments
+    - profile.monthlyProtectionCost
+  return Math.max(0, Math.round(surplus * 0.6))
 }

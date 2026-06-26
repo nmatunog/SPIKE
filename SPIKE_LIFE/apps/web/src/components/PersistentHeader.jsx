@@ -17,6 +17,9 @@ export default function PersistentHeader({ dashboard }) {
           <h1 className="text-lg font-semibold text-slate-900">
             {dashboard.characterName}
           </h1>
+          {dashboard.scenarioLabel && (
+            <p className="text-xs text-slate-500">{dashboard.scenarioLabel}</p>
+          )}
         </div>
         <dl className="flex flex-wrap gap-4 text-sm">
           <div>

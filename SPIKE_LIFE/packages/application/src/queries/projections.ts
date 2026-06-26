@@ -86,6 +86,11 @@ export function projectFnaSummary(session: SimulationSession): FnaSummaryView | 
   }
 }
 
+const SCENARIO_LABELS: Record<string, string> = {
+  promotion: 'Promotion',
+  protection_stress: 'Family Health Concern',
+}
+
 export function projectDashboard(session: SimulationSession): DashboardView {
   const fna = activeFna(session)
   const profile = session.financialProfile
@@ -105,6 +110,8 @@ export function projectDashboard(session: SimulationSession): DashboardView {
 
   return {
     sessionId: session.id,
+    scenarioId: session.scenarioId,
+    scenarioLabel: SCENARIO_LABELS[session.scenarioId] ?? session.scenarioId,
     phase: session.phase,
     characterName: session.character.name,
     age: session.character.age,
@@ -158,7 +165,7 @@ export function projectPlanLens(session: SimulationSession): PlanLensView {
     fna: projectFnaSummary(session),
     recommendations,
     goals,
-    decisionOptions: getDecisionOptions().map((opt) => ({
+    decisionOptions: getDecisionOptions(session.scenarioId).map((opt) => ({
       strategy: opt.strategy,
       label: opt.label,
       description: opt.description,

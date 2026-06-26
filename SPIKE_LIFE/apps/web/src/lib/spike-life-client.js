@@ -9,16 +9,33 @@ const SESSION_ID = 'browser-demo'
 let repository = new InMemorySimulationRepository()
 let commandBus = new FinancialDecisionCommandBus(repository)
 let queryBus = new FinancialDecisionQueryBus(repository)
-let initialized = false
+let activeScenario = null
 
 export function getSessionId() {
   return SESSION_ID
 }
 
+export function getActiveScenario() {
+  return activeScenario
+}
+
+export async function startScenario(scenarioId) {
+  repository = new InMemorySimulationRepository()
+  commandBus = new FinancialDecisionCommandBus(repository)
+  queryBus = new FinancialDecisionQueryBus(repository)
+  activeScenario = scenarioId
+
+  if (scenarioId === 'protection_stress') {
+    await commandBus.startProtectionStressCycle(SESSION_ID)
+  } else {
+    await commandBus.startPromotionCycle(SESSION_ID)
+  }
+  return SESSION_ID
+}
+
 export async function ensureSessionStarted() {
-  if (initialized) return SESSION_ID
-  await commandBus.startPromotionCycle(SESSION_ID)
-  initialized = true
+  if (activeScenario) return SESSION_ID
+  await startScenario('promotion')
   return SESSION_ID
 }
 
@@ -34,18 +51,17 @@ export async function getLensView(lens) {
 
 export async function submitDecision(strategy, rationale) {
   await ensureSessionStarted()
-  await commandBus.submitPromotionDecision(SESSION_ID, strategy, rationale)
+  await commandBus.submitDecision(SESSION_ID, strategy, rationale)
 }
 
 export async function submitReflection(answers) {
   await ensureSessionStarted()
-  await commandBus.submitPromotionReflection(SESSION_ID, answers)
+  await commandBus.submitReflection(SESSION_ID, answers)
 }
 
-/** Reset for development hot reload */
 export function resetSession() {
   repository = new InMemorySimulationRepository()
   commandBus = new FinancialDecisionCommandBus(repository)
   queryBus = new FinancialDecisionQueryBus(repository)
-  initialized = false
+  activeScenario = null
 }

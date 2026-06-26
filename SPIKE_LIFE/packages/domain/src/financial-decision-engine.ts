@@ -1,198 +1,102 @@
-import type { SimulationSession } from './aggregates/simulation-session.js'
-import type { FinancialGoal } from './entities/financial-state.js'
-import { createFreshGraduateBundle } from './specifications/fresh-graduate.js'
-import {
-  applySituationToIncome,
-  createPromotionSituation,
-  monthlyRaiseFromSituation,
-} from './services/situation-engine.js'
-import { runDiscovery } from './services/discovery-engine.js'
-import { runFnaAnalysis } from './services/fna-engine.js'
-import { runRecommendationEngine } from './services/recommendation-engine.js'
-import {
-  attachFnaScoreDelta,
-  runConsequenceEngine,
-} from './services/consequence-engine.js'
-import {
-  runReflectionEngine,
-  validateReflectionAnswers,
-  type ReflectionAnswer,
-} from './services/reflection-engine.js'
-import { isValidDecisionStrategy } from './services/decision-engine.js'
-import type { DecisionStrategy } from './types.js'
-import { FRESH_GRADUATE_FINANCIAL_PROFILE } from './specifications/fresh-graduate.js'
+import type { SimulationState } from './aggregates/simulation-session.js'
+import type { DecisionStrategy, ScenarioId } from './types.js'
+import { Simulation } from './aggregates/simulation.js'
+import type { ReflectionAnswer } from './services/reflection-engine.js'
 
-export function createPromotionSession(sessionId: string): SimulationSession {
-  const bundle = createFreshGraduateBundle()
-  const now = new Date().toISOString()
+export type { SimulationState, SimulationSession } from './aggregates/simulation-session.js'
 
-  return {
-    id: sessionId,
-    character: bundle.character,
-    financialProfile: { ...bundle.financialProfile },
-    protectionPortfolio: { ...bundle.protectionPortfolio },
-    goalPortfolio: {
-      goals: bundle.goalPortfolio.goals.map((g: FinancialGoal) => ({ ...g })),
-    },
-    phase: 'created',
-    situation: null,
-    discovery: null,
-    fnaBeforeDecision: null,
-    fnaAfterDecision: null,
-    recommendations: [],
-    decision: null,
-    consequence: null,
-    reflection: null,
-    promotionMonthlyRaise: 0,
-    createdAt: now,
-    updatedAt: now,
-  }
+function loadSimulation(state: SimulationState): Simulation {
+  return Simulation.fromState(state)
 }
 
-export function presentPromotionSituation(session: SimulationSession): SimulationSession {
-  const situation = createPromotionSituation(FRESH_GRADUATE_FINANCIAL_PROFILE)
-  const profileAfterSituation = applySituationToIncome(session.financialProfile, situation)
-  const monthlyRaise = monthlyRaiseFromSituation(session.financialProfile, situation)
-
-  return {
-    ...session,
-    financialProfile: profileAfterSituation,
-    situation,
-    promotionMonthlyRaise: monthlyRaise,
-    phase: 'situation_presented',
-    updatedAt: new Date().toISOString(),
-  }
+function saveSimulation(simulation: Simulation): SimulationState {
+  return simulation.toState()
 }
 
-export function completeDiscovery(session: SimulationSession): SimulationSession {
-  if (!session.situation) {
-    throw new Error('Cannot run discovery without a presented situation.')
-  }
+export function createPromotionSession(sessionId: string): SimulationState {
+  return Simulation.createPromotion(sessionId).toState()
+}
 
-  const discovery = runDiscovery(
-    session.character,
-    session.financialProfile,
-    session.protectionPortfolio,
-    session.goalPortfolio,
-    session.situation,
-  )
+export function createProtectionStressSession(sessionId: string): SimulationState {
+  return Simulation.createProtectionStress(sessionId).toState()
+}
 
-  const fna = runFnaAnalysis(
-    session.character,
-    session.financialProfile,
-    session.protectionPortfolio,
-    session.goalPortfolio,
-  )
+export function presentPromotionSituation(session: SimulationState): SimulationState {
+  const sim = loadSimulation(session).presentSituation()
+  return saveSimulation(sim)
+}
 
-  const recommendations = runRecommendationEngine(fna, session.character)
+export function presentProtectionStressSituation(session: SimulationState): SimulationState {
+  const sim = loadSimulation(session).presentSituation()
+  return saveSimulation(sim)
+}
 
-  return {
-    ...session,
-    discovery,
-    fnaBeforeDecision: fna,
-    recommendations,
-    phase: 'decision_pending',
-    updatedAt: new Date().toISOString(),
-  }
+export function presentSituation(session: SimulationState): SimulationState {
+  const sim = loadSimulation(session).presentSituation()
+  return saveSimulation(sim)
+}
+
+export function completeDiscovery(session: SimulationState): SimulationState {
+  const sim = loadSimulation(session).completeDiscovery()
+  return saveSimulation(sim)
 }
 
 export function submitDecision(
-  session: SimulationSession,
+  session: SimulationState,
   strategy: DecisionStrategy,
   rationale?: string,
-): SimulationSession {
-  if (session.phase !== 'decision_pending') {
-    throw new Error(`Cannot submit decision in phase "${session.phase}".`)
-  }
-  if (!isValidDecisionStrategy(strategy)) {
-    throw new Error(`Invalid decision strategy: ${strategy}`)
-  }
-  if (!session.fnaBeforeDecision) {
-    throw new Error('FNA must be computed before decision.')
-  }
-
-  const consequence = runConsequenceEngine(
-    session.financialProfile,
-    session.protectionPortfolio,
-    session.goalPortfolio,
-    strategy,
-    session.promotionMonthlyRaise,
-    session.fnaBeforeDecision,
-    session.recommendations,
-  )
-
-  const fnaAfter = runFnaAnalysis(
-    session.character,
-    consequence.financialProfile,
-    consequence.protectionPortfolio,
-    consequence.goalPortfolio,
-  )
-
-  const consequenceWithDelta = attachFnaScoreDelta(
-    consequence,
-    session.fnaBeforeDecision,
-    fnaAfter,
-  )
-
-  return {
-    ...session,
-    financialProfile: consequence.financialProfile,
-    protectionPortfolio: consequence.protectionPortfolio,
-    goalPortfolio: consequence.goalPortfolio,
-    decision: {
-      strategy,
-      recordedAt: new Date().toISOString(),
-      monthlyRaiseApplied: session.promotionMonthlyRaise,
-      rationale,
-    },
-    consequence: consequenceWithDelta,
-    fnaAfterDecision: fnaAfter,
-    phase: 'consequences_applied',
-    updatedAt: new Date().toISOString(),
-  }
+): SimulationState {
+  const sim = loadSimulation(session).recordDecision(strategy, rationale)
+  return saveSimulation(sim)
 }
 
 export function submitReflection(
-  session: SimulationSession,
+  session: SimulationState,
   answers: ReflectionAnswer[],
-): SimulationSession {
-  if (session.phase !== 'consequences_applied') {
-    throw new Error(`Cannot submit reflection in phase "${session.phase}".`)
-  }
-  if (!session.decision || !session.consequence || !session.fnaBeforeDecision || !session.fnaAfterDecision) {
-    throw new Error('Decision and consequences required before reflection.')
-  }
-  if (!validateReflectionAnswers(answers)) {
-    throw new Error('At least three reflection answers with meaningful content are required.')
-  }
-
-  const reflection = runReflectionEngine(
-    session.decision.strategy,
-    session.consequence,
-    session.fnaBeforeDecision,
-    session.fnaAfterDecision,
-    session.recommendations,
-    answers,
-  )
-
-  return {
-    ...session,
-    reflection: { ...reflection, completedAt: new Date().toISOString() },
-    phase: 'cycle_complete',
-    updatedAt: new Date().toISOString(),
-  }
+): SimulationState {
+  const sim = loadSimulation(session).completeReflection(answers)
+  return saveSimulation(sim)
 }
 
-/** Runs the full Promotion planning cycle (for tests and validation). */
+/** Pull domain events emitted by the last aggregate operation (in-memory only). */
+export function pullEventsFromState(session: SimulationState): {
+  state: SimulationState
+  events: ReturnType<Simulation['pullDomainEvents']>
+} {
+  const sim = Simulation.fromState(session)
+  const events = sim.pullDomainEvents()
+  return { state: sim.toState(), events }
+}
+
+export function startPlanningCycle(
+  sessionId: string,
+  scenarioId: ScenarioId,
+): SimulationState {
+  const sim = scenarioId === 'protection_stress'
+    ? Simulation.createProtectionStress(sessionId)
+    : Simulation.createPromotion(sessionId)
+
+  return saveSimulation(sim.presentSituation().completeDiscovery())
+}
+
 export function runPromotionPlanningCycle(
   sessionId: string,
   strategy: DecisionStrategy,
   reflectionAnswers: ReflectionAnswer[],
-): SimulationSession {
-  let session = createPromotionSession(sessionId)
-  session = presentPromotionSituation(session)
-  session = completeDiscovery(session)
-  session = submitDecision(session, strategy)
-  session = submitReflection(session, reflectionAnswers)
-  return session
+): SimulationState {
+  let state = startPlanningCycle(sessionId, 'promotion')
+  state = submitDecision(state, strategy)
+  state = submitReflection(state, reflectionAnswers)
+  return state
+}
+
+export function runProtectionStressPlanningCycle(
+  sessionId: string,
+  strategy: DecisionStrategy,
+  reflectionAnswers: ReflectionAnswer[],
+): SimulationState {
+  let state = startPlanningCycle(sessionId, 'protection_stress')
+  state = submitDecision(state, strategy)
+  state = submitReflection(state, reflectionAnswers)
+  return state
 }

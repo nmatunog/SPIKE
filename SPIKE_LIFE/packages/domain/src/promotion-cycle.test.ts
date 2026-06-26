@@ -29,7 +29,7 @@ describe('Promotion Financial Decision Cycle', () => {
       Math.round(incomeBefore * PROMOTION_INCOME_MULTIPLIER),
     )
     expect(session.situation?.eventId).toBe('C001_promotion')
-    expect(session.promotionMonthlyRaise).toBeGreaterThan(0)
+    expect(session.decisionMonthlyCapacity).toBeGreaterThan(0)
   })
 
   it('runs discovery and produces FNA before decision', () => {

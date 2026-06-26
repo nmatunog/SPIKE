@@ -1,4 +1,4 @@
-import type { DecisionStrategy } from '../types.js'
+import type { DecisionStrategy, ScenarioId } from '../types.js'
 import type {
   FinancialProfile,
   GoalPortfolio,
@@ -119,8 +119,46 @@ function evaluateDecisionQuality(
   strategy: DecisionStrategy,
   fnaBefore: FnaSnapshot,
   recommendations: Recommendation[],
+  scenarioId: ScenarioId = 'promotion',
 ): { quality: DecisionQuality; explanation: string } {
   const topSolution = recommendations[0]?.solution
+
+  if (scenarioId === 'protection_stress') {
+    if (strategy === 'improve_protection' && fnaBefore.protectionScore < 70) {
+      return {
+        quality: 'excellent',
+        explanation: 'Strengthening protection plans directly addresses the family\'s exposed vulnerability.',
+      }
+    }
+    if (strategy === 'split_allocation' && fnaBefore.protectionScore < 70) {
+      return {
+        quality: 'good',
+        explanation: 'Balancing protection and savings is reasonable when cash is strained.',
+      }
+    }
+    if (strategy === 'increase_lifestyle') {
+      return {
+        quality: 'high_risk',
+        explanation: 'Deferring protection planning after a health event leaves the family exposed.',
+      }
+    }
+    if (strategy === 'increase_savings' && fnaBefore.topPriority.includes('Protection')) {
+      return {
+        quality: 'needs_attention',
+        explanation: 'Cash reserves help, but protection gaps remain the primary FNA priority.',
+      }
+    }
+    if (strategy === 'maintain_lifestyle_discipline') {
+      return {
+        quality: 'needs_attention',
+        explanation: 'Paying bills without protection planning does not improve readiness.',
+      }
+    }
+    return {
+      quality: 'good',
+      explanation: 'Decision partially addresses the situation with acceptable tradeoffs.',
+    }
+  }
 
   const aligned =
     (strategy === 'increase_savings' && topSolution === 'BUILD_EMERGENCY_FUND')
@@ -191,17 +229,18 @@ export function runConsequenceEngine(
   protection: ProtectionPortfolio,
   goals: GoalPortfolio,
   strategy: DecisionStrategy,
-  monthlyRaise: number,
+  monthlyCapacity: number,
   fnaBefore: FnaSnapshot,
   recommendations: Recommendation[],
+  scenarioId: ScenarioId = 'promotion',
 ): ConsequenceOutcome {
   const beforeCash = profile.cash
   const beforeExpenses = profile.monthlyExpenses
   const beforeProtection = protection.medicalCover + protection.incomeProtectionCover + protection.lifeCover
 
-  const allocation = allocateRaise(monthlyRaise, strategy)
+  let allocation = allocateRaise(monthlyCapacity, strategy)
 
-  const financialProfile: FinancialProfile = {
+  let financialProfile: FinancialProfile = {
     ...profile,
     monthlyExpenses: profile.monthlyExpenses + (allocation.profile.monthlyExpenses ?? 0),
     monthlyDebtPayments: Math.max(
@@ -213,12 +252,46 @@ export function runConsequenceEngine(
     creditCardDebt: Math.max(0, profile.creditCardDebt + (allocation.profile.creditCardDebt ?? 0)),
   }
 
-  const protectionPortfolio: ProtectionPortfolio = {
+  let protectionPortfolio: ProtectionPortfolio = {
     lifeCover: protection.lifeCover + (allocation.protection.lifeCover ?? 0),
     criticalIllnessCover: protection.criticalIllnessCover + (allocation.protection.criticalIllnessCover ?? 0),
     medicalCover: protection.medicalCover + (allocation.protection.medicalCover ?? 0),
     accidentCover: protection.accidentCover + (allocation.protection.accidentCover ?? 0),
     incomeProtectionCover: protection.incomeProtectionCover + (allocation.protection.incomeProtectionCover ?? 0),
+  }
+
+  if (scenarioId === 'protection_stress' && strategy === 'improve_protection') {
+    const familyNeed = fnaBefore.familyProtectionNeed
+    const healthNeed = fnaBefore.healthProtectionNeed
+    const incomeNeed = profile.monthlyIncome * 12 * 2
+
+    protectionPortfolio = {
+      lifeCover: Math.round(familyNeed * 0.4),
+      criticalIllnessCover: Math.round(healthNeed * 0.2),
+      medicalCover: Math.round(healthNeed * 0.45),
+      accidentCover: 50_000,
+      incomeProtectionCover: Math.round(incomeNeed * 0.45),
+    }
+    financialProfile = {
+      ...financialProfile,
+      monthlyProtectionCost: profile.monthlyProtectionCost + Math.round(monthlyCapacity * 0.75),
+      cash: Math.max(0, profile.cash - Math.round(monthlyCapacity * 6)),
+    }
+  }
+
+  if (scenarioId === 'protection_stress' && strategy === 'split_allocation') {
+    const familyNeed = fnaBefore.familyProtectionNeed
+    const healthNeed = fnaBefore.healthProtectionNeed
+
+    protectionPortfolio = {
+      ...protectionPortfolio,
+      lifeCover: Math.max(protectionPortfolio.lifeCover, Math.round(familyNeed * 0.2)),
+      medicalCover: Math.max(protectionPortfolio.medicalCover, Math.round(healthNeed * 0.25)),
+      incomeProtectionCover: Math.max(
+        protectionPortfolio.incomeProtectionCover,
+        Math.round(profile.monthlyIncome * 12 * 0.5),
+      ),
+    }
   }
 
   let goalPortfolio = applyGoalFunding(goals, allocation.goalFunding)
@@ -231,13 +304,18 @@ export function runConsequenceEngine(
     }
   }
 
-  const { quality, explanation } = evaluateDecisionQuality(strategy, fnaBefore, recommendations)
+  const { quality, explanation } = evaluateDecisionQuality(
+    strategy,
+    fnaBefore,
+    recommendations,
+    scenarioId,
+  )
 
   const afterProtection = protectionPortfolio.medicalCover
     + protectionPortfolio.incomeProtectionCover
     + protectionPortfolio.lifeCover
 
-  const narratives: Record<DecisionStrategy, string> = {
+  const promotionNarratives: Record<DecisionStrategy, string> = {
     increase_lifestyle: 'Expenses rose with income. Cash flow improved less than the raise suggests.',
     increase_savings: 'Cash reserves grew. Emergency fund progress improved.',
     reduce_debt: 'Liabilities decreased, reducing future interest burden.',
@@ -246,6 +324,18 @@ export function runConsequenceEngine(
     split_allocation: 'The raise was distributed across savings, protection, and goals.',
     maintain_lifestyle_discipline: 'Expenses held steady while planning priorities absorbed the raise.',
   }
+
+  const protectionNarratives: Record<DecisionStrategy, string> = {
+    increase_lifestyle: 'Protection planning was deferred. The family remains financially exposed.',
+    increase_savings: 'Cash reserves were rebuilt, but protection readiness improved little.',
+    reduce_debt: 'Debt decreased slightly. Protection gaps remain a priority.',
+    improve_protection: 'Family, health, and income protection readiness improved significantly.',
+    fund_goals: 'Education and emergency goals advanced; protection gaps may persist.',
+    split_allocation: 'Protection and savings were both strengthened with balanced tradeoffs.',
+    maintain_lifestyle_discipline: 'Immediate medical costs were covered without closing protection gaps.',
+  }
+
+  const narratives = scenarioId === 'protection_stress' ? protectionNarratives : promotionNarratives
 
   return {
     financialProfile,
