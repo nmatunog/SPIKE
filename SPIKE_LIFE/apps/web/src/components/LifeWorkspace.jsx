@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import LensNav from './LensNav.jsx'
 import PersistentHeader from './PersistentHeader.jsx'
 import LifeLens from './lenses/LifeLens.jsx'
+import LifeBoard from './LifeBoard.jsx'
 import PlanLens from './lenses/PlanLens.jsx'
 import ProtectLens from './lenses/ProtectLens.jsx'
 import GrowLens from './lenses/GrowLens.jsx'
@@ -14,6 +15,7 @@ import {
   startScenario,
   submitDecision,
   submitReflection,
+  advanceTurn,
 } from '../lib/spike-life-client.js'
 
 const SCENARIOS = [
@@ -62,6 +64,20 @@ export default function LifeWorkspace() {
     setError(null)
     const view = await getLensView(lens)
     setLensView(view)
+  }
+
+  async function handleAdvanceTurn() {
+    setBusy(true)
+    setError(null)
+    try {
+      await advanceTurn()
+      setActiveLens('life')
+      await refresh('life')
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setBusy(false)
+    }
   }
 
   async function handleStartScenario(scenarioId) {
@@ -149,22 +165,42 @@ export default function LifeWorkspace() {
   return (
     <div className="min-h-dvh bg-slate-50 pb-20 md:pb-0">
       <PersistentHeader dashboard={dashboard} />
-      <div className="mx-auto max-w-6xl px-4 py-4">
-        <section className="mb-6 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-          <h2 className="text-sm font-semibold text-slate-900">Choose a planning scenario</h2>
+      <div className="mx-auto max-w-6xl px-4 py-4 space-y-6">
+        <LifeBoard
+          dashboard={dashboard}
+          onAdvanceTurn={handleAdvanceTurn}
+          advancing={busy}
+        />
+
+        {error && (
+          <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
+        )}
+
+        <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <h2 className="text-sm font-semibold text-slate-900">Mission deck</h2>
+          <p className="mt-1 text-xs text-slate-500">
+            {dashboard?.canStartScenario
+              ? 'Pick a scenario for this turn.'
+              : dashboard?.canAdvanceTurn
+                ? 'Turn complete — advance to the next life stage.'
+                : 'Finish the planning cycle on the Plan and Journey lenses.'}
+          </p>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
             {SCENARIOS.map((item) => {
               const active = scenario === item.id
+              const disabled = busy || !dashboard?.canStartScenario
               return (
                 <button
                   key={item.id}
                   type="button"
-                  disabled={busy}
+                  disabled={disabled}
                   onClick={() => handleStartScenario(item.id)}
                   className={`rounded-lg border p-4 text-left transition ${
                     active
                       ? 'border-[#8B0000] bg-red-50/50'
-                      : 'border-slate-200 hover:border-slate-300'
+                      : disabled
+                        ? 'cursor-not-allowed border-slate-100 bg-slate-50 opacity-60'
+                        : 'border-slate-200 hover:border-slate-300'
                   }`}
                 >
                   <p className="font-medium text-slate-900">{item.title}</p>

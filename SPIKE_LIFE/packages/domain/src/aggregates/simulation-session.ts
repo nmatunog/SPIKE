@@ -1,4 +1,4 @@
-import type { CyclePhase, DecisionStrategy, ScenarioId } from '../types.js'
+import type { CyclePhase, DecisionStrategy, LifeStage, ScenarioId } from '../types.js'
 import type { ConsequenceOutcome } from '../services/consequence-engine.js'
 import type { DiscoverySnapshot } from '../services/discovery-engine.js'
 import type { FnaSnapshot } from '../services/fna-engine.js'
@@ -12,6 +12,16 @@ export interface DecisionRecord {
   recordedAt: string
   monthlyCapacityApplied: number
   rationale?: string
+}
+
+/** Completed macro turn — preserved when advancing the workshop board. */
+export interface TurnRecord {
+  turnNumber: number
+  simulationYear: number
+  lifeStage: LifeStage
+  scenarioId: ScenarioId
+  completedAt: string
+  lifeScoreOverall: number | null
 }
 
 /** Serializable simulation state — persistence and read-model projections use this shape. */
@@ -33,6 +43,11 @@ export interface SimulationState {
   reflection: ReflectionSnapshot | null
   /** Monthly raise (promotion) or protection-planning capacity (protection stress). */
   decisionMonthlyCapacity: number
+  /** Workshop macro turn (1–5). One turn = one life stage on the board. */
+  turnNumber: number
+  simulationYear: number
+  maxTurns: number
+  turnHistory: TurnRecord[]
   createdAt: string
   updatedAt: string
 }

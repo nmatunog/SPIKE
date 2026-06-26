@@ -20,9 +20,7 @@ export function getActiveScenario() {
 }
 
 export async function startScenario(scenarioId) {
-  repository = new InMemorySimulationRepository()
-  commandBus = new FinancialDecisionCommandBus(repository)
-  queryBus = new FinancialDecisionQueryBus(repository)
+  await ensureSessionStarted()
   activeScenario = scenarioId
 
   if (scenarioId === 'protection_stress') {
@@ -34,8 +32,7 @@ export async function startScenario(scenarioId) {
 }
 
 export async function ensureSessionStarted() {
-  if (activeScenario) return SESSION_ID
-  await startScenario('promotion')
+  await commandBus.createWorkshopSession(SESSION_ID)
   return SESSION_ID
 }
 
@@ -57,6 +54,12 @@ export async function submitDecision(strategy, rationale) {
 export async function submitReflection(answers) {
   await ensureSessionStarted()
   await commandBus.submitReflection(SESSION_ID, answers)
+}
+
+export async function advanceTurn() {
+  await ensureSessionStarted()
+  await commandBus.advanceTurn(SESSION_ID)
+  activeScenario = null
 }
 
 export function resetSession() {

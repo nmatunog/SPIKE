@@ -1,4 +1,4 @@
-import type { SimulationState, DecisionRecord } from './simulation-session.js'
+import type { SimulationState, DecisionRecord, TurnRecord } from './simulation-session.js'
 import type { ScenarioId, CyclePhase, DecisionStrategy } from '../types.js'
 import type { DomainEvent } from '../events/domain-events.js'
 import { DomainEventType, createDomainEvent } from '../events/domain-events.js'
@@ -29,6 +29,11 @@ import {
   validateReflectionAnswers,
 } from '../services/reflection-engine.js'
 import { calculateLifeScore } from '../services/life-score-engine.js'
+import {
+  WORKSHOP_MAX_TURNS,
+  ageForWorkshopTurn,
+  lifeStageForTurn,
+} from '../services/workshop-progression.js'
 import type { FinancialGoal } from '../entities/financial-state.js'
 
 /** Core aggregate root — all simulation state changes pass through this class. */
@@ -41,6 +46,11 @@ export class Simulation {
   }
 
   static createPromotion(id: string): Simulation {
+    const bundle = createFreshGraduateBundle()
+    return new Simulation(Simulation.emptyState(id, 'promotion', bundle))
+  }
+
+  static createWorkshop(id: string): Simulation {
     const bundle = createFreshGraduateBundle()
     return new Simulation(Simulation.emptyState(id, 'promotion', bundle))
   }
@@ -64,6 +74,10 @@ export class Simulation {
 
   get phase(): CyclePhase {
     return this.state.phase
+  }
+
+  get turnNumber(): number {
+    return this.state.turnNumber
   }
 
   toState(): SimulationState {
@@ -240,6 +254,93 @@ export class Simulation {
     return this
   }
 
+  /** Select scenario for the current macro turn without resetting financial progress. */
+  assignScenario(scenarioId: ScenarioId): Simulation {
+    if (this.state.phase !== 'created') {
+      throw new Error(
+        `Cannot assign scenario in phase "${this.state.phase}". Advance turn or finish the active cycle first.`,
+      )
+    }
+    this.state = {
+      ...this.state,
+      scenarioId,
+      updatedAt: new Date().toISOString(),
+    }
+    return this
+  }
+
+  /**
+   * Advance workshop macro turn after a completed planning cycle.
+   * Preserves financial profile; clears micro-cycle state for the next mission.
+   */
+  advanceTurn(): Simulation {
+    if (this.state.phase !== 'cycle_complete') {
+      throw new Error(
+        `Cannot advance turn in phase "${this.state.phase}". Complete reflection first.`,
+      )
+    }
+    if (this.state.turnNumber >= this.state.maxTurns) {
+      throw new Error('Workshop simulation is already complete.')
+    }
+
+    const fna = this.state.fnaAfterDecision
+    const lifeScore = fna
+      ? calculateLifeScore(
+          fna,
+          this.state.financialProfile,
+          this.state.consequence?.decisionQuality ?? null,
+        )
+      : null
+
+    const completedTurn: TurnRecord = {
+      turnNumber: this.state.turnNumber,
+      simulationYear: this.state.simulationYear,
+      lifeStage: this.state.character.lifeStage,
+      scenarioId: this.state.scenarioId,
+      completedAt: new Date().toISOString(),
+      lifeScoreOverall: lifeScore?.overall ?? null,
+    }
+
+    const nextTurn = this.state.turnNumber + 1
+    const nextStage = lifeStageForTurn(nextTurn)
+    const nextAge = ageForWorkshopTurn(nextTurn)
+
+    this.state = {
+      ...this.state,
+      turnNumber: nextTurn,
+      simulationYear: nextTurn,
+      character: {
+        ...this.state.character,
+        age: nextAge,
+        lifeStage: nextStage,
+      },
+      phase: 'created',
+      situation: null,
+      discovery: null,
+      fnaBeforeDecision: null,
+      fnaAfterDecision: null,
+      recommendations: [],
+      decision: null,
+      consequence: null,
+      reflection: null,
+      decisionMonthlyCapacity: 0,
+      turnHistory: [...this.state.turnHistory, completedTurn],
+      updatedAt: new Date().toISOString(),
+    }
+
+    this.record(createDomainEvent(DomainEventType.YEAR_ADVANCED, this.state.id, {
+      turnNumber: nextTurn,
+      simulationYear: nextTurn,
+      age: nextAge,
+    }))
+    this.record(createDomainEvent(DomainEventType.LIFE_STAGE_CHANGED, this.state.id, {
+      lifeStage: nextStage,
+      turnNumber: nextTurn,
+    }))
+
+    return this
+  }
+
   private applyPromotionSituation(): Simulation {
     const situation = createPromotionSituation(FRESH_GRADUATE_FINANCIAL_PROFILE)
     const profileAfter = applySituationToIncome(this.state.financialProfile, situation)
@@ -314,6 +415,10 @@ export class Simulation {
       consequence: null,
       reflection: null,
       decisionMonthlyCapacity: 0,
+      turnNumber: 1,
+      simulationYear: 1,
+      maxTurns: WORKSHOP_MAX_TURNS,
+      turnHistory: [],
       createdAt: now,
       updatedAt: now,
     }

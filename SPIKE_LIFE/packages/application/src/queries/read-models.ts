@@ -23,6 +23,21 @@ export interface LifeScoreView {
   rating: string
 }
 
+export interface BoardStageView {
+  turnNumber: number
+  lifeStage: LifeStage
+  label: string
+  status: 'past' | 'current' | 'future'
+}
+
+export interface TurnHistoryView {
+  turnNumber: number
+  lifeStageLabel: string
+  scenarioLabel: string
+  lifeScoreOverall: number | null
+  completedAt: string
+}
+
 export interface DashboardView {
   sessionId: string
   scenarioId: string
@@ -33,6 +48,13 @@ export interface DashboardView {
   lifeStage: LifeStage
   lifeStageLabel: string
   simulationYear: number
+  turnNumber: number
+  maxTurns: number
+  canAdvanceTurn: boolean
+  workshopComplete: boolean
+  canStartScenario: boolean
+  boardStages: BoardStageView[]
+  turnHistory: TurnHistoryView[]
   lifeScore: LifeScoreView
   monthlyIncome: MoneyDisplay
   monthlySurplus: MoneyDisplay

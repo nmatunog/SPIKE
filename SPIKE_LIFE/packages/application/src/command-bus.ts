@@ -9,6 +9,8 @@ import {
   startPlanningCycle,
   submitDecision,
   submitReflection,
+  advanceTurn as advanceTurnState,
+  createWorkshopSession as createWorkshopSessionState,
 } from '@spike-life/domain'
 
 export interface StartCycleResult {
@@ -24,9 +26,28 @@ export class FinancialDecisionCommandBus {
     sessionId: string,
     scenarioId: ScenarioId = 'promotion',
   ): Promise<StartCycleResult> {
-    const session = startPlanningCycle(sessionId, scenarioId)
+    const existing = await this.repository.findById(sessionId)
+    const session = startPlanningCycle(sessionId, scenarioId, existing)
     await this.repository.save(session)
     return { sessionId: session.id, scenarioId: session.scenarioId, phase: session.phase }
+  }
+
+  async createWorkshopSession(sessionId: string): Promise<SimulationState> {
+    const existing = await this.repository.findById(sessionId)
+    if (existing) return existing
+
+    const session = createWorkshopSessionState(sessionId)
+    await this.repository.save(session)
+    return session
+  }
+
+  async advanceTurn(sessionId: string): Promise<SimulationState> {
+    const session = await this.repository.findById(sessionId)
+    if (!session) throw new Error(`Session not found: ${sessionId}`)
+
+    const updated = advanceTurnState(session)
+    await this.repository.save(updated)
+    return updated
   }
 
   /** @deprecated Use startCycle(sessionId, 'promotion') */

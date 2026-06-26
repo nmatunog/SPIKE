@@ -37,6 +37,12 @@ export default function PersistentHeader({ dashboard }) {
             </dd>
           </div>
           <div>
+            <dt className="text-slate-500">Turn</dt>
+            <dd className="font-semibold">
+              {dashboard.turnNumber}/{dashboard.maxTurns}
+            </dd>
+          </div>
+          <div>
             <dt className="text-slate-500">Year</dt>
             <dd className="font-semibold">{dashboard.simulationYear}</dd>
           </div>

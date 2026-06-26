@@ -87,9 +87,9 @@ export default function LifeLens({ dashboard }) {
           Switch to the <strong>Journey</strong> lens to complete your reflection.
         </p>
       )}
-      {dashboard.cycleComplete && (
+      {dashboard.cycleComplete && !dashboard.canAdvanceTurn && !dashboard.workshopComplete && (
         <p className="rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-          Promotion cycle complete. You practiced the full planning loop: situation → FNA → recommendation → decision → reflection.
+          Planning cycle complete. Use <strong>Advance to next turn</strong> on the board when ready.
         </p>
       )}
     </div>

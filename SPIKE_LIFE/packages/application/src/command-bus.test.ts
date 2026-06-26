@@ -29,6 +29,11 @@ describe('CQRS command bus — Promotion cycle', () => {
     const complete = await commands.submitPromotionReflection(sessionId, REFLECTION)
     expect(complete.phase).toBe('cycle_complete')
 
+    const advanced = await commands.advanceTurn(sessionId)
+    expect(advanced.turnNumber).toBe(2)
+    expect(advanced.phase).toBe('created')
+    expect(advanced.character.lifeStage).toBe('build')
+
     const loaded = await queries.getSession(sessionId)
     expect(loaded?.reflection?.completedAt).not.toBeNull()
   })

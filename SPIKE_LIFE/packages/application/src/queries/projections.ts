@@ -8,6 +8,9 @@ import {
   netWorth,
   totalAssets,
   totalLiabilities,
+  WORKSHOP_MAX_TURNS,
+  WORKSHOP_STAGE_ORDER,
+  workshopStageLabel,
 } from '@spike-life/domain'
 import type {
   DashboardView,
@@ -22,6 +25,8 @@ import type {
   PlanLensView,
   ProtectLensView,
   RecommendationView,
+  BoardStageView,
+  TurnHistoryView,
 } from './read-models.js'
 
 const LIFE_STAGE_LABELS: Record<string, string> = {
@@ -91,6 +96,32 @@ const SCENARIO_LABELS: Record<string, string> = {
   protection_stress: 'Family Health Concern',
 }
 
+function projectBoardStages(turnNumber: number): BoardStageView[] {
+  return WORKSHOP_STAGE_ORDER.map((stage, index) => {
+    const stageTurn = index + 1
+    let status: BoardStageView['status'] = 'future'
+    if (stageTurn < turnNumber) status = 'past'
+    if (stageTurn === turnNumber) status = 'current'
+
+    return {
+      turnNumber: stageTurn,
+      lifeStage: stage,
+      label: workshopStageLabel(stage),
+      status,
+    }
+  })
+}
+
+function projectTurnHistory(session: SimulationSession): TurnHistoryView[] {
+  return session.turnHistory.map((record) => ({
+    turnNumber: record.turnNumber,
+    lifeStageLabel: workshopStageLabel(record.lifeStage),
+    scenarioLabel: SCENARIO_LABELS[record.scenarioId] ?? record.scenarioId,
+    lifeScoreOverall: record.lifeScoreOverall,
+    completedAt: record.completedAt,
+  }))
+}
+
 export function projectDashboard(session: SimulationSession): DashboardView {
   const fna = activeFna(session)
   const profile = session.financialProfile
@@ -117,7 +148,21 @@ export function projectDashboard(session: SimulationSession): DashboardView {
     age: session.character.age,
     lifeStage: session.character.lifeStage,
     lifeStageLabel: LIFE_STAGE_LABELS[session.character.lifeStage] ?? session.character.lifeStage,
-    simulationYear: 1,
+    simulationYear: session.simulationYear ?? 1,
+    turnNumber: session.turnNumber ?? 1,
+    maxTurns: session.maxTurns ?? WORKSHOP_MAX_TURNS,
+    canAdvanceTurn:
+      session.phase === 'cycle_complete'
+      && (session.turnNumber ?? 1) < (session.maxTurns ?? WORKSHOP_MAX_TURNS),
+    workshopComplete:
+      session.phase === 'cycle_complete'
+      && (session.turnNumber ?? 1) >= (session.maxTurns ?? WORKSHOP_MAX_TURNS),
+    canStartScenario: session.phase === 'created',
+    boardStages: projectBoardStages(session.turnNumber ?? 1),
+    turnHistory: projectTurnHistory({
+      ...session,
+      turnHistory: session.turnHistory ?? [],
+    }),
     lifeScore,
     monthlyIncome: formatPeso(profile.monthlyIncome),
     monthlySurplus: formatPeso(monthlySurplus(profile)),
@@ -285,6 +330,18 @@ export function projectGrowLens(session: SimulationSession): GrowLensView {
 
 export function projectJourneyLens(session: SimulationSession): JourneyLensView {
   const timeline: JourneyEntryView[] = []
+
+  for (const record of session.turnHistory) {
+    timeline.push({
+      id: `turn-${record.turnNumber}`,
+      kind: 'milestone',
+      title: `Turn ${record.turnNumber} — ${workshopStageLabel(record.lifeStage)}`,
+      summary: `${SCENARIO_LABELS[record.scenarioId] ?? record.scenarioId}${
+        record.lifeScoreOverall != null ? ` · Life Score ${record.lifeScoreOverall}` : ''
+      }`,
+      timestamp: record.completedAt,
+    })
+  }
 
   if (session.situation) {
     timeline.push({

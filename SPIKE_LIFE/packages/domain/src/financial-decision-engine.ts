@@ -17,6 +17,10 @@ export function createPromotionSession(sessionId: string): SimulationState {
   return Simulation.createPromotion(sessionId).toState()
 }
 
+export function createWorkshopSession(sessionId: string): SimulationState {
+  return Simulation.createWorkshop(sessionId).toState()
+}
+
 export function createProtectionStressSession(sessionId: string): SimulationState {
   return Simulation.createProtectionStress(sessionId).toState()
 }
@@ -58,6 +62,11 @@ export function submitReflection(
   return saveSimulation(sim)
 }
 
+export function advanceTurn(session: SimulationState): SimulationState {
+  const sim = loadSimulation(session).advanceTurn()
+  return saveSimulation(sim)
+}
+
 /** Pull domain events emitted by the last aggregate operation (in-memory only). */
 export function pullEventsFromState(session: SimulationState): {
   state: SimulationState
@@ -71,10 +80,23 @@ export function pullEventsFromState(session: SimulationState): {
 export function startPlanningCycle(
   sessionId: string,
   scenarioId: ScenarioId,
+  existing?: SimulationState | null,
 ): SimulationState {
-  const sim = scenarioId === 'protection_stress'
-    ? Simulation.createProtectionStress(sessionId)
-    : Simulation.createPromotion(sessionId)
+  if (existing?.phase === 'cycle_complete') {
+    throw new Error('Advance to the next turn before starting a new scenario.')
+  }
+  if (existing && existing.phase !== 'created') {
+    throw new Error('Finish the current planning cycle before starting a new scenario.')
+  }
+
+  let sim: Simulation
+  if (!existing) {
+    sim = scenarioId === 'protection_stress'
+      ? Simulation.createProtectionStress(sessionId)
+      : Simulation.createPromotion(sessionId)
+  } else {
+    sim = loadSimulation(existing).assignScenario(scenarioId)
+  }
 
   return saveSimulation(sim.presentSituation().completeDiscovery())
 }

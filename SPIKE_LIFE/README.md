@@ -6,10 +6,12 @@
 
 **Financial Decision Engine validated** — Promotion scenario completes full planning cycle in domain tests.
 
+**Workshop macro turns (Phase 1)** — 5-turn life journey board: Launch → Build → Grow → Lead → Legacy. Complete a scenario cycle, then **Advance to next turn**; financial progress carries forward.
+
 ```bash
 cd SPIKE_LIFE
 npm install
-npm test          # domain + CQRS tests
+npm test          # domain + CQRS tests (30)
 npm run build:packages
 ```
 
