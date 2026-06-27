@@ -28,12 +28,12 @@ export function EncounterCard({
       className="overflow-hidden rounded-2xl border border-slate-600/80 bg-gradient-to-b from-slate-800 to-slate-900 shadow-2xl"
       aria-label={`Encounter: ${encounter.title}`}
     >
-      <header className="border-b border-slate-700/80 px-5 py-4">
-        <p className="text-xs font-semibold uppercase tracking-widest text-amber-400">
+      <header className="border-b border-slate-700/80 px-6 py-5">
+        <p className="text-xs font-bold uppercase tracking-[0.15em] text-amber-400">
           {categoryDisplay}
         </p>
-        <h2 className="mt-1 text-xl font-bold text-white md:text-2xl">{encounter.title}</h2>
-        <p className="mt-2 text-sm leading-relaxed text-slate-300">{encounter.teaser}</p>
+        <h2 className="mt-1.5 text-2xl font-bold tracking-tight text-white">{encounter.title}</h2>
+        <p className="mt-3 text-base leading-relaxed text-slate-300">{encounter.teaser}</p>
       </header>
 
       {impactTags.length > 0 && (

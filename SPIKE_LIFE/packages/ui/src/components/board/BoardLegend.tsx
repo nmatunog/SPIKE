@@ -6,21 +6,18 @@ export function BoardLegend({
   items,
   compact = false,
   className = '',
-  title = 'Board legend',
+  title = 'Spaces',
 }: BoardLegendProps) {
   const visible = compact ? items.slice(0, 8) : items
 
   return (
-    <section
-      className={`rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm ${className}`}
-      aria-label={title}
-    >
-      <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500">{title}</h3>
-      <ul className={`mt-3 grid gap-2 ${compact ? 'grid-cols-2' : 'grid-cols-1'}`}>
+    <section className={`rounded-2xl border border-slate-200/90 bg-white px-4 py-3 shadow-card ${className}`} aria-label={title}>
+      <h3 className="text-label uppercase text-slate-500">{title}</h3>
+      <ul className={`mt-2.5 grid gap-1.5 ${compact ? 'grid-cols-2' : 'grid-cols-1'}`}>
         {visible.map((item) => (
-          <li key={item.category} className="flex items-center gap-2.5 text-sm">
+          <li key={item.category} className="flex items-center gap-2 text-sm">
             <span
-              className="h-3.5 w-3.5 shrink-0 rounded-md shadow-sm"
+              className="h-3 w-3 shrink-0 rounded-md shadow-sm ring-1 ring-black/5"
               style={{ backgroundColor: item.color }}
               aria-hidden
             />

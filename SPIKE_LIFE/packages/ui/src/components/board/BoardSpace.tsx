@@ -3,15 +3,15 @@ import { SpaceIcon } from '../SpaceIcon.js'
 import type { BoardSpaceProps } from '../../types/component-props.js'
 
 const SIZE_CLASSES = {
-  sm: 'h-[calc(2.25rem*1.3)] w-[calc(2.25rem*1.3)] text-[11.7px]',
-  md: 'h-[calc(2.75rem*1.3)] w-[calc(2.75rem*1.3)] text-[13px] md:h-[calc(3rem*1.3)] md:w-[calc(3rem*1.3)] md:text-[14.3px]',
-  lg: 'h-[calc(3.5rem*1.3)] w-[calc(3.5rem*1.3)] text-[0.975rem] md:h-[calc(4rem*1.3)] md:w-[calc(4rem*1.3)] md:text-[1.14rem]',
+  sm: 'h-12 w-12 text-xs',
+  md: 'h-[3.25rem] w-[3.25rem] text-sm md:h-14 md:w-14 md:text-base',
+  lg: 'h-[4.25rem] w-[4.25rem] text-sm md:h-[4.75rem] md:w-[4.75rem] md:text-base',
 }
 
 const ICON_SIZE_CLASSES = {
-  sm: 'h-[calc(0.875rem*1.3)] w-[calc(0.875rem*1.3)]',
-  md: 'h-[calc(0.875rem*1.3)] w-[calc(0.875rem*1.3)] md:h-[calc(1rem*1.3)] md:w-[calc(1rem*1.3)]',
-  lg: 'h-[calc(0.875rem*1.3)] w-[calc(0.875rem*1.3)] md:h-[calc(1rem*1.3)] md:w-[calc(1rem*1.3)]',
+  sm: 'h-4 w-4',
+  md: 'h-4 w-4 md:h-5 md:w-5',
+  lg: 'h-5 w-5 md:h-[1.35rem] md:w-[1.35rem]',
 }
 
 export type { BoardSpaceProps }

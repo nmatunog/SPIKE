@@ -6,11 +6,13 @@
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   body {
     margin: 0;
     font-family:
+      'Inter',
       ui-sans-serif,
       system-ui,
       -apple-system,
@@ -19,7 +21,26 @@
       'Helvetica Neue',
       Arial,
       sans-serif;
-    font-size: 16px;
+    font-size: 15px;
     line-height: 1.5;
+    color: #0f172a;
+  }
+}
+
+@layer components {
+  .game-card {
+    @apply rounded-2xl border border-slate-200/90 bg-white shadow-card;
+  }
+
+  .game-card-dark {
+    @apply rounded-2xl border border-slate-700/60 bg-slate-900/80 shadow-card-lg;
+  }
+
+  .btn-primary {
+    @apply rounded-xl bg-spike-brand px-5 py-3 text-sm font-bold uppercase tracking-wide text-white shadow-md transition hover:bg-spike-brand-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-45;
+  }
+
+  .btn-secondary {
+    @apply rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-slate-400 hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400;
   }
 }

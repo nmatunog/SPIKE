@@ -11,14 +11,14 @@ export function TurnCounter({
   turnLabel = 'Turn',
 }: TurnCounterProps) {
   return (
-    <dl className={`flex gap-4 text-sm ${className}`} aria-label="Turn counter">
+      <dl className={`flex gap-5 text-sm ${className}`} aria-label="Turn counter">
       <div>
-        <dt className="text-xs text-slate-400">{yearLabel}</dt>
-        <dd className="font-bold text-white">{boardYear}</dd>
+        <dt className="text-xs font-medium text-slate-400">{yearLabel}</dt>
+        <dd className="text-lg font-bold text-white">{boardYear}</dd>
       </div>
       <div>
-        <dt className="text-xs text-slate-400">{turnLabel}</dt>
-        <dd className="font-bold text-white">
+        <dt className="text-xs font-medium text-slate-400">{turnLabel}</dt>
+        <dd className="text-lg font-bold text-white">
           {roundNumber} / {maxRounds}
         </dd>
       </div>

@@ -7,15 +7,11 @@ import {
   EncounterModal,
   FinancialHUD,
   GameBoard,
-  TurnIndicator,
   SPACE_CATEGORY_LEGEND,
 } from '@spike-life/ui'
 import ActionDock from './gameboard/ActionDock.jsx'
-import ObjectiveCard from './gameboard/ObjectiveCard.jsx'
 import SituationSideCard from './gameboard/SituationSideCard.jsx'
-import PrioritiesSideCard from './gameboard/PrioritiesSideCard.jsx'
-import FnaSummaryCard from './gameboard/FnaSummaryCard.jsx'
-import RecentDecisionsCard from './gameboard/RecentDecisionsCard.jsx'
+import TurnFlowStepper from './gameboard/TurnFlowStepper.jsx'
 import { impactTagsForSpaceType } from './gameboard/encounter-impact.js'
 import {
   ensureSessionStarted,
@@ -48,11 +44,9 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
   const [error, setError] = useState(null)
 
   const {
-    expandedCard,
     expandedPanel,
     showEncounterModal,
     highlightSpaceIndex,
-    setExpandedCard,
     setExpandedPanel,
     setShowEncounterModal,
     setHighlightSpaceIndex,
@@ -125,7 +119,6 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
     setShowEncounterModal(false)
     try {
       await rollDice()
-      setExpandedCard('situation')
       await refresh()
       setShowEncounterModal(true)
     } catch (err) {
@@ -167,11 +160,6 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
     }
   }
 
-  function toggleCard(id) {
-    setExpandedCard(id)
-    if (id) setExpandedPanel(null)
-  }
-
   const inDecisionPhase = board?.phase === 'decision_phase'
   const canDecide = inDecisionPhase && dashboard?.canDecide
   const canReflect = inDecisionPhase && dashboard?.canReflect
@@ -181,16 +169,16 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
   const impactTags = landedSpace ? impactTagsForSpaceType(landedSpace.type) : []
 
   return (
-    <div className="flex h-dvh max-h-dvh flex-col overflow-hidden bg-slate-100">
+    <div className="flex h-dvh max-h-dvh flex-col overflow-hidden bg-slate-50">
       <BoardHUD hud={turnHUD} onRoll={handleRollDice} rolling={rolling} />
 
       {onOpenWorkshop && (
-        <div className="shrink-0 border-b border-slate-200 bg-white px-4 py-1">
+        <div className="shrink-0 border-b border-slate-200 bg-white px-4 py-0.5">
           <div className="mx-auto flex max-w-[100rem] justify-end">
             <button
               type="button"
               onClick={onOpenWorkshop}
-              className="text-xs font-semibold text-[#8B0000] hover:underline md:text-sm"
+              className="text-xs font-semibold text-spike-brand hover:underline"
             >
               Workshop ({GAME_ROOM_MAX_PLAYERS} players) →
             </button>
@@ -198,74 +186,67 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
         </div>
       )}
 
-      <div className="mx-auto grid min-h-0 w-full max-w-[100rem] flex-1 grid-cols-1 gap-2 overflow-hidden px-3 py-2 lg:grid-cols-[minmax(10rem,13%)_minmax(0,68%)_minmax(11rem,15%)] lg:gap-3 lg:px-4 lg:py-3">
-        <aside className="hidden min-h-0 flex-col gap-2 overflow-hidden lg:flex">
-          <BoardLegend compact items={SPACE_CATEGORY_LEGEND} />
-          <ObjectiveCard
-            expanded={expandedCard}
-            onToggle={toggleCard}
-            encounter={board?.activeEncounter}
-            dashboard={dashboard}
-            planView={planView}
+      <div className="mx-auto grid min-h-0 w-full max-w-[100rem] flex-1 grid-cols-1 overflow-hidden lg:grid-cols-[13.5rem_minmax(0,1fr)_17rem] lg:gap-4 lg:px-4 lg:py-3">
+        <aside className="hidden min-h-0 flex-col gap-3 overflow-hidden lg:flex">
+          <TurnFlowStepper
+            phase={board?.phase ?? 'ready_to_roll'}
+            rolling={rolling}
+            expandedPanel={expandedPanel}
+            showEncounterModal={showEncounterModal}
           />
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-            <TurnIndicator phase={board?.phase ?? 'ready_to_roll'} />
-            <p className="mt-3 text-sm leading-relaxed text-slate-600">
-              Roll the dice, land on a space, review your situation, then decide how to respond.
-            </p>
-          </div>
+          <BoardLegend compact items={SPACE_CATEGORY_LEGEND} title="Board" />
         </aside>
 
-        <main className="relative flex min-h-0 min-w-0 flex-col items-center justify-center lg:min-w-0">
-          <section className="relative flex h-full w-full flex-col items-center justify-center rounded-3xl border border-slate-700/60 bg-gradient-to-b from-slate-900 to-slate-950 p-2 shadow-2xl lg:p-3">
-            {board?.gameComplete && (
-              <p className="absolute left-4 right-4 top-3 z-10 rounded-xl bg-emerald-500/20 px-4 py-2 text-center text-sm font-medium text-emerald-200">
-                Journey complete — all {board.maxRounds} years played.
-              </p>
-            )}
+        <main className="relative flex min-h-0 min-w-0 flex-col px-2 py-2 lg:px-0 lg:py-0">
+          {board?.gameComplete && (
+            <p className="absolute left-4 right-4 top-2 z-10 rounded-xl bg-emerald-500/90 px-4 py-2 text-center text-sm font-semibold text-white shadow-md">
+              Journey complete — all {board.maxRounds} years played.
+            </p>
+          )}
 
-            {loading ? (
-              <p className="text-base text-slate-400">Loading board…</p>
-            ) : (
-              <GameBoard
-                board={boardView}
-                rolling={rolling}
-                highlightSpaceIndex={highlightSpaceIndex}
-                onSpaceSelect={(space) => setHighlightSpaceIndex(space.boardIndex)}
-                className="h-full"
-              />
-            )}
+          {loading ? (
+            <div className="flex flex-1 items-center justify-center">
+              <p className="text-body-lg text-slate-500">Loading board…</p>
+            </div>
+          ) : (
+            <GameBoard
+              board={boardView}
+              rolling={rolling}
+              highlightSpaceIndex={highlightSpaceIndex}
+              onSpaceSelect={(space) => setHighlightSpaceIndex(space.boardIndex)}
+              className="min-h-0 flex-1"
+            />
+          )}
 
-            <BoardOverlay
-              visible={showEncounterModal && inDecisionPhase && !rolling}
+          <BoardOverlay
+            visible={showEncounterModal && inDecisionPhase && !rolling}
+            onDismiss={() => setShowEncounterModal(false)}
+          >
+            <EncounterModal
+              encounter={board?.activeEncounter ?? null}
+              spaceCategory={landedSpace?.category}
+              impactTags={impactTags}
+              priorityLabels={priorityLabels}
+              onViewAnalysis={() => {
+                setShowEncounterModal(false)
+                handleExpandPanel('fna')
+              }}
+              onMakeDecision={() => {
+                setShowEncounterModal(false)
+                handleExpandPanel('decision')
+              }}
               onDismiss={() => setShowEncounterModal(false)}
-            >
-              <EncounterModal
-                encounter={board?.activeEncounter ?? null}
-                spaceCategory={landedSpace?.category}
-                impactTags={impactTags}
-                priorityLabels={priorityLabels}
-                onViewAnalysis={() => {
-                  setShowEncounterModal(false)
-                  handleExpandPanel('fna')
-                }}
-                onMakeDecision={() => {
-                  setShowEncounterModal(false)
-                  handleExpandPanel('decision')
-                }}
-                onDismiss={() => setShowEncounterModal(false)}
-              />
-            </BoardOverlay>
+            />
+          </BoardOverlay>
 
-            {error && (
-              <p className="absolute bottom-3 left-3 right-3 rounded-xl bg-red-500/20 px-4 py-2 text-center text-sm text-red-200">
-                {error}
-              </p>
-            )}
-          </section>
+          {error && (
+            <p className="absolute bottom-2 left-2 right-2 rounded-xl bg-red-600/90 px-4 py-2 text-center text-sm font-medium text-white shadow-lg">
+              {error}
+            </p>
+          )}
         </main>
 
-        <aside className="flex min-h-0 flex-col gap-2 overflow-y-auto lg:overflow-hidden">
+        <aside className="flex min-h-0 flex-col gap-3 overflow-hidden px-2 pb-2 lg:px-0 lg:pb-0">
           <div className="lg:hidden">
             <DicePanel
               canRoll={board?.canRoll ?? false}
@@ -277,38 +258,32 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
 
           <SituationSideCard
             encounter={board?.activeEncounter}
-            expanded={expandedCard}
-            onToggle={toggleCard}
-          />
-          <FnaSummaryCard planView={planView} expanded={expandedCard} onToggle={toggleCard} />
-          <PrioritiesSideCard planView={planView} expanded={expandedCard} onToggle={toggleCard} />
-          <RecentDecisionsCard
-            journeyView={journeyView}
-            expanded={expandedCard}
-            onToggle={toggleCard}
+            forceOpen
           />
 
-          <ActionDock
-            board={board}
-            expandedPanel={expandedPanel}
-            onExpandPanel={handleExpandPanel}
-            onRoll={handleRollDice}
-            rolling={rolling}
-            canDecide={canDecide}
-            canReflect={canReflect}
-            inDecisionPhase={inDecisionPhase}
-            planView={planView}
-            journeyView={journeyView}
-            growView={growView}
-            protectView={protectView}
-            onDecide={handleDecide}
-            onSubmitReflection={handleReflection}
-            busy={busy}
-            error={error}
-            onViewJourney={async () => {
-              setJourneyView(await getLensView('journey'))
-            }}
-          />
+          <div className="min-h-0 flex-1 overflow-hidden">
+            <ActionDock
+              board={board}
+              expandedPanel={expandedPanel}
+              onExpandPanel={handleExpandPanel}
+              onRoll={handleRollDice}
+              rolling={rolling}
+              canDecide={canDecide}
+              canReflect={canReflect}
+              inDecisionPhase={inDecisionPhase}
+              planView={planView}
+              journeyView={journeyView}
+              growView={growView}
+              protectView={protectView}
+              onDecide={handleDecide}
+              onSubmitReflection={handleReflection}
+              busy={busy}
+              error={error}
+              onViewJourney={async () => {
+                setJourneyView(await getLensView('journey'))
+              }}
+            />
+          </div>
         </aside>
       </div>
 

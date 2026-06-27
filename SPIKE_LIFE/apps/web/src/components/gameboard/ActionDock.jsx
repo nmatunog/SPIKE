@@ -3,6 +3,9 @@ import JourneyLens from '../lenses/JourneyLens.jsx'
 import GrowLens from '../lenses/GrowLens.jsx'
 import ProtectLens from '../lenses/ProtectLens.jsx'
 
+const PANEL_CLASS =
+  'max-h-[min(38vh,14rem)] overflow-y-auto rounded-2xl border bg-white p-4 shadow-card-lg'
+
 export default function ActionDock({
   board,
   expandedPanel,
@@ -29,15 +32,15 @@ export default function ActionDock({
   }
 
   return (
-    <div className="sticky bottom-0 z-10 mt-auto space-y-2 border-t border-slate-200 bg-gradient-to-t from-slate-50 via-slate-50 to-slate-50/95 pt-2">
+    <div className="flex min-h-0 flex-col gap-3">
       {expandedPanel === 'fna' && planView?.lens === 'plan' && (
-        <div className="max-h-[min(48vh,22rem)] overflow-y-auto rounded-lg border border-slate-200 bg-white p-3 shadow-md">
+        <div className={`${PANEL_CLASS} border-slate-200`}>
           <PlanLens data={planView.data} sections={['fna', 'recommendations', 'goals']} />
         </div>
       )}
 
       {expandedPanel === 'decision' && planView?.lens === 'plan' && (
-        <div className="max-h-[min(48vh,22rem)] overflow-y-auto rounded-lg border border-[#8B0000]/25 bg-white p-3 shadow-md">
+        <div className={`${PANEL_CLASS} border-spike-brand/30`}>
           <PlanLens
             data={planView.data}
             sections={['decisions']}
@@ -49,7 +52,7 @@ export default function ActionDock({
       )}
 
       {expandedPanel === 'reflect' && journeyView?.lens === 'journey' && (
-        <div className="max-h-[min(48vh,22rem)] overflow-y-auto rounded-lg border border-[#8B0000]/25 bg-white p-3 shadow-md">
+        <div className={`${PANEL_CLASS} border-spike-brand/30`}>
           <JourneyLens
             data={journeyView.data}
             sections={['reflection']}
@@ -61,90 +64,88 @@ export default function ActionDock({
       )}
 
       {expandedPanel === 'journey' && journeyView?.lens === 'journey' && (
-        <div className="max-h-[min(48vh,22rem)] overflow-y-auto rounded-lg border border-slate-200 bg-white p-3 shadow-md">
+        <div className={`${PANEL_CLASS} border-slate-200`}>
           <JourneyLens data={journeyView.data} sections={['timeline', 'completed']} />
         </div>
       )}
 
       {expandedPanel === 'grow' && growView?.lens === 'grow' && (
-        <div className="max-h-[min(48vh,22rem)] overflow-y-auto rounded-lg border border-slate-200 bg-white p-3 shadow-md">
+        <div className={`${PANEL_CLASS} border-slate-200`}>
           <GrowLens data={growView.data} />
         </div>
       )}
 
       {expandedPanel === 'protect' && protectView?.lens === 'protect' && (
-        <div className="max-h-[min(48vh,22rem)] overflow-y-auto rounded-lg border border-slate-200 bg-white p-3 shadow-md">
+        <div className={`${PANEL_CLASS} border-slate-200`}>
           <ProtectLens data={protectView.data} />
         </div>
       )}
 
-      <div className="flex flex-wrap gap-2">
-        {canRoll && (
-          <button
-            type="button"
-            disabled={!canRoll}
-            onClick={onRoll}
-            className="flex-1 rounded-lg bg-[#8B0000] px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-white shadow-sm hover:bg-[#6d0000] disabled:opacity-40 md:hidden"
-          >
-            {rolling ? 'Rolling…' : 'Roll dice'}
-          </button>
-        )}
+      <div className="game-card p-3">
+        <p className="mb-2 text-label uppercase text-slate-500">Actions</p>
+        <div className="flex flex-col gap-2">
+          {canRoll && (
+            <button type="button" disabled={!canRoll} onClick={onRoll} className="btn-primary lg:hidden">
+              {rolling ? 'Rolling…' : 'Roll dice'}
+            </button>
+          )}
 
-        {inDecisionPhase && (
-          <>
-            <button
-              type="button"
-              onClick={() => openPanel('fna')}
-              className={`flex-1 rounded-lg border px-3 py-2 text-xs font-semibold transition ${
-                expandedPanel === 'fna'
-                  ? 'border-[#8B0000] bg-red-50 text-[#8B0000]'
-                  : 'border-slate-200 bg-white text-slate-800 hover:border-slate-300'
-              }`}
-            >
-              View analysis
-            </button>
-            <button
-              type="button"
-              disabled={!canDecide && expandedPanel !== 'decision'}
-              onClick={() => openPanel('decision')}
-              className={`flex-1 rounded-lg px-3 py-2 text-xs font-semibold transition ${
-                expandedPanel === 'decision'
-                  ? 'bg-[#6d0000] text-white'
-                  : 'bg-[#8B0000] text-white hover:bg-[#6d0000] disabled:opacity-40'
-              }`}
-            >
-              Make decision
-            </button>
-            {(canReflect || expandedPanel === 'reflect') && (
+          {inDecisionPhase && (
+            <>
               <button
                 type="button"
-                onClick={() => openPanel('reflect')}
-                className={`flex-1 rounded-lg border px-3 py-2 text-xs font-semibold transition ${
-                  expandedPanel === 'reflect'
-                    ? 'border-[#8B0000] bg-red-50 text-[#8B0000]'
-                    : 'border-slate-200 bg-white text-slate-800 hover:border-slate-300'
+                onClick={() => openPanel('fna')}
+                className={`w-full rounded-xl px-4 py-3 text-sm font-semibold transition ${
+                  expandedPanel === 'fna'
+                    ? 'border-2 border-spike-brand bg-spike-brand-muted text-spike-brand'
+                    : 'btn-secondary'
                 }`}
               >
-                Reflect
+                View analysis
               </button>
-            )}
-          </>
-        )}
+              <button
+                type="button"
+                disabled={!canDecide && expandedPanel !== 'decision'}
+                onClick={() => openPanel('decision')}
+                className={`w-full rounded-xl px-4 py-3 text-sm font-bold transition ${
+                  expandedPanel === 'decision'
+                    ? 'bg-spike-brand-hover text-white shadow-md'
+                    : 'btn-primary'
+                }`}
+              >
+                Make decision
+              </button>
+              {(canReflect || expandedPanel === 'reflect') && (
+                <button
+                  type="button"
+                  onClick={() => openPanel('reflect')}
+                  className={`w-full rounded-xl px-4 py-3 text-sm font-semibold transition ${
+                    expandedPanel === 'reflect'
+                      ? 'border-2 border-spike-brand bg-spike-brand-muted text-spike-brand'
+                      : 'btn-secondary'
+                  }`}
+                >
+                  Reflect on choice
+                </button>
+              )}
+            </>
+          )}
 
-        <button
-          type="button"
-          onClick={() => {
-            onViewJourney?.()
-            openPanel('journey')
-          }}
-          className={`rounded-lg border px-3 py-2 text-xs font-semibold transition ${
-            expandedPanel === 'journey'
-              ? 'border-slate-400 bg-slate-100 text-slate-900'
-              : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
-          }`}
-        >
-          Journey
-        </button>
+          <button
+            type="button"
+            onClick={() => {
+              onViewJourney?.()
+              openPanel('journey')
+            }}
+            className={`w-full rounded-xl px-4 py-2.5 text-sm font-medium transition ${
+              expandedPanel === 'journey'
+                ? 'bg-slate-100 text-slate-900 ring-1 ring-slate-300'
+                : 'text-slate-600 hover:bg-slate-50'
+            }`}
+          >
+            Journey timeline
+          </button>
+        </div>
       </div>
     </div>
   )
