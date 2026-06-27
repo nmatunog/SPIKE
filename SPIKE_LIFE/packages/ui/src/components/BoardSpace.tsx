@@ -11,9 +11,15 @@ export interface BoardSpaceProps {
 }
 
 const SIZE_CLASSES = {
-  sm: 'h-9 w-9 text-[9px]',
-  md: 'h-11 w-11 text-[10px] md:h-12 md:w-12 md:text-[11px]',
-  lg: 'h-14 w-14 text-xs md:h-16 md:w-16 md:text-sm',
+  sm: 'h-[calc(2.25rem*1.3)] w-[calc(2.25rem*1.3)] text-[11.7px]',
+  md: 'h-[calc(2.75rem*1.3)] w-[calc(2.75rem*1.3)] text-[13px] md:h-[calc(3rem*1.3)] md:w-[calc(3rem*1.3)] md:text-[14.3px]',
+  lg: 'h-[calc(3.5rem*1.3)] w-[calc(3.5rem*1.3)] text-[0.975rem] md:h-[calc(4rem*1.3)] md:w-[calc(4rem*1.3)] md:text-[1.14rem]',
+}
+
+const ICON_SIZE_CLASSES = {
+  sm: 'h-[calc(0.875rem*1.3)] w-[calc(0.875rem*1.3)]',
+  md: 'h-[calc(0.875rem*1.3)] w-[calc(0.875rem*1.3)] md:h-[calc(1rem*1.3)] md:w-[calc(1rem*1.3)]',
+  lg: 'h-[calc(0.875rem*1.3)] w-[calc(0.875rem*1.3)] md:h-[calc(1rem*1.3)] md:w-[calc(1rem*1.3)]',
 }
 
 export function BoardSpace({
@@ -51,7 +57,7 @@ export function BoardSpace({
       aria-label={`${space.title}, ${space.category}`}
       onClick={() => onSelect?.(space)}
     >
-      <SpaceIcon icon={space.icon} className="h-3.5 w-3.5 opacity-95 md:h-4 md:w-4" />
+      <SpaceIcon icon={space.icon} className={`opacity-95 ${ICON_SIZE_CLASSES[size]}`} />
       <span className="line-clamp-2 px-0.5 text-center drop-shadow-sm">{space.title}</span>
     </motion.button>
   )
