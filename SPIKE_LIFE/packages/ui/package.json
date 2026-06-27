@@ -10,6 +10,10 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./board": {
+      "types": "./dist/components/board/index.d.ts",
+      "import": "./dist/components/board/index.js"
+    },
     "./layout": {
       "types": "./dist/layout/index.d.ts",
       "import": "./dist/layout/index.js"
@@ -27,7 +31,9 @@
   "devDependencies": {
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "framer-motion": "^11.18.2",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/jest-dom": "^6.8.0",
+    "jsdom": "^26.1.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "typescript": "^5.8.3",

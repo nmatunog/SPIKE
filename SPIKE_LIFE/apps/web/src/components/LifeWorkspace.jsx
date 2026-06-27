@@ -8,6 +8,7 @@ import {
   FinancialHUD,
   GameBoard,
   TurnIndicator,
+  SPACE_CATEGORY_LEGEND,
 } from '@spike-life/ui'
 import ActionDock from './gameboard/ActionDock.jsx'
 import ObjectiveCard from './gameboard/ObjectiveCard.jsx'
@@ -199,7 +200,7 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
 
       <div className="mx-auto grid min-h-0 w-full max-w-[100rem] flex-1 grid-cols-1 gap-2 overflow-hidden px-3 py-2 lg:grid-cols-[minmax(10rem,13%)_minmax(0,68%)_minmax(11rem,15%)] lg:gap-3 lg:px-4 lg:py-3">
         <aside className="hidden min-h-0 flex-col gap-2 overflow-hidden lg:flex">
-          <BoardLegend compact />
+          <BoardLegend compact items={SPACE_CATEGORY_LEGEND} />
           <ObjectiveCard
             expanded={expandedCard}
             onToggle={toggleCard}

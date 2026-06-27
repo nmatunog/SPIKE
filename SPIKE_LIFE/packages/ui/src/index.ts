@@ -1,4 +1,19 @@
-export type { BoardConfig, BoardLayoutKind, SpaceConfig, SpaceCategory, SpaceIconId } from './types/board-config.js'
+export type {
+  GameBoardProps,
+  BoardSpaceProps,
+  PlayerTokenProps,
+  BoardLegendProps,
+  EncounterCardProps,
+  TurnCounterProps,
+  DicePanelProps,
+  BoardHUDProps,
+  FinancialHUDProps,
+  BoardAnimationProps,
+  LifeScoreRingProps,
+  LegendItemViewModel,
+  BoardSpaceSize,
+} from './types/component-props.js'
+
 export type {
   BoardViewModel,
   BoardTokenViewModel,
@@ -8,6 +23,7 @@ export type {
   PositionedSpace,
   TurnHUDViewModel,
 } from './types/view-models.js'
+export type { BoardConfig, BoardLayoutKind, SpaceConfig, SpaceCategory, SpaceIconId } from './types/board-config.js'
 
 export { DEFAULT_BOARD_CONFIG, SPACE_CATEGORY_LEGEND } from './config/default-board.js'
 
@@ -25,19 +41,26 @@ export {
 export type { BoardLayoutResult, LayoutEngine, PathSampler } from './layout/index.js'
 export { normalizeSpaceConfig, validateBoardConfig } from './types/board-config.js'
 
-export { GameBoard } from './components/GameBoard.js'
+export {
+  GameBoard,
+  BoardSpace,
+  PlayerToken,
+  BoardLegend,
+  EncounterCard,
+  EncounterModal,
+  TurnCounter,
+  TurnIndicator,
+  DicePanel,
+  BoardHUD,
+  FinancialHUD,
+  BoardAnimation,
+  LifeScoreRing,
+} from './components/board/index.js'
+
 export { BoardPath } from './components/BoardPath.js'
-export { BoardSpace } from './components/BoardSpace.js'
-export { PlayerToken } from './components/PlayerToken.js'
 export { Dice, DiceRollAnimation } from './components/Dice.js'
 export { BoardOverlay } from './components/BoardOverlay.js'
-export { BoardAnimation } from './components/BoardAnimation.js'
 export { MovementAnimator } from './components/MovementAnimator.js'
-export { EncounterCard, EncounterModal } from './components/EncounterCard.js'
-export { TurnIndicator, TurnCounter } from './components/TurnIndicator.js'
-export { BoardLegend } from './components/BoardLegend.js'
-export { DicePanel } from './components/DicePanel.js'
-export { BoardHUD, LifeScoreRing } from './components/BoardHUD.js'
-export { FinancialHUD } from './components/FinancialHUD.js'
 export { SpaceIcon } from './components/SpaceIcon.js'
 export { useMovementAnimator } from './hooks/useMovementAnimator.js'
+export { groupTokensByPosition } from './utils/presentation.js'
