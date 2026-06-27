@@ -1,8 +1,7 @@
 import type { BoardState, EncounterCardId, SpaceType } from '@spike-life/domain'
 import {
   DEFAULT_BOARD_CONFIG,
-  buildTrackPath,
-  positionSpaces,
+  generateBoardLayout,
 } from '@spike-life/ui/layout'
 import { getEncounterCard } from '@spike-life/domain'
 import type { BoardSpaceView, EncounterCardView, SpatialBoardView } from './board-read-models.js'
@@ -32,23 +31,24 @@ export function projectSpatialBoard(board: BoardState): SpatialBoardView {
     const cfg = configSpaceForIndex(space.index)
     return {
       id: cfg?.id ?? `space-${space.index}`,
-      title: space.label,
+      name: space.label,
       category: space.type,
       color: cfg?.color ?? '#94A3B8',
       icon: cfg?.icon ?? 'star',
       description: cfg?.description,
       boardIndex: space.index,
+      connections: cfg?.connections,
+      eventPool: cfg?.eventPool,
       encounterId: space.encounterId,
     }
   })
 
-  const positioned = positionSpaces(
-    configSpaces,
-    DEFAULT_BOARD_CONFIG.layout,
-    DEFAULT_BOARD_CONFIG.layoutOptions,
-  )
+  const layoutResult = generateBoardLayout({
+    ...DEFAULT_BOARD_CONFIG,
+    spaces: configSpaces,
+  })
 
-  const spaces: BoardSpaceView[] = positioned.map((space) => {
+  const spaces: BoardSpaceView[] = layoutResult.spaces.map((space) => {
     const encounterId = space.encounterId as EncounterCardId
     const encounter = getEncounterCard(encounterId)
     return {
@@ -57,7 +57,7 @@ export function projectSpatialBoard(board: BoardState): SpatialBoardView {
       id: space.id,
       type: space.category as SpaceType,
       category: space.category as SpaceType,
-      label: space.title,
+      label: space.name,
       color: space.color,
       icon: space.icon,
       description: space.description,
@@ -69,11 +69,7 @@ export function projectSpatialBoard(board: BoardState): SpatialBoardView {
     }
   })
 
-  const trackPath = buildTrackPath(
-    DEFAULT_BOARD_CONFIG.layout,
-    board.spaces.length,
-    DEFAULT_BOARD_CONFIG.layoutOptions,
-  )
+  const trackPath = layoutResult.trackPath
 
   return {
     boardId: board.id,

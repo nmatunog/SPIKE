@@ -1,8 +1,8 @@
-import type { LayoutEngine, LayoutEngineInput, LayoutPoint } from './types.js'
+import type { LayoutEngineInput, LayoutPoint } from './types.js'
 import { DEFAULT_LAYOUT_OPTIONS } from './types.js'
 
 /** Grid serpentine — legacy layout, still supported for custom boards. */
-export const serpentineLayout: LayoutEngine = {
+export const serpentineLayout = {
   computePositions({ spaceCount, options }: LayoutEngineInput): LayoutPoint[] {
     const cols = options?.serpentineColumns ?? DEFAULT_LAYOUT_OPTIONS.serpentineColumns
     const paddingX = options?.padding ?? DEFAULT_LAYOUT_OPTIONS.padding

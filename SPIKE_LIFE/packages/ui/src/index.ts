@@ -16,7 +16,14 @@ export {
   computeSpacePositions,
   interpolateAlongSpaces,
   positionSpaces,
+  generateBoardLayout,
+  interpolateBoardMovement,
+  registerLayoutEngine,
+  boardLayoutEngine,
+  BoardLayoutEngine,
 } from './layout/index.js'
+export type { BoardLayoutResult, LayoutEngine, PathSampler } from './layout/index.js'
+export { normalizeSpaceConfig, validateBoardConfig } from './types/board-config.js'
 
 export { GameBoard } from './components/GameBoard.js'
 export { BoardPath } from './components/BoardPath.js'

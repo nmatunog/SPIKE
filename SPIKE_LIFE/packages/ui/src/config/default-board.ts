@@ -13,7 +13,7 @@ export const DEFAULT_BOARD_CONFIG: BoardConfig = {
   spaces: [
     {
       id: 'career-lift',
-      title: 'Career Lift',
+      name: 'Career Lift',
       category: 'career',
       color: '#E84855',
       icon: 'briefcase',
@@ -23,7 +23,7 @@ export const DEFAULT_BOARD_CONFIG: BoardConfig = {
     },
     {
       id: 'paycheck',
-      title: 'Paycheck',
+      name: 'Paycheck',
       category: 'finance',
       color: '#3B82F6',
       icon: 'wallet',
@@ -32,7 +32,7 @@ export const DEFAULT_BOARD_CONFIG: BoardConfig = {
     },
     {
       id: 'opportunity',
-      title: 'Opportunity',
+      name: 'Opportunity',
       category: 'opportunity',
       color: '#10B981',
       icon: 'sparkles',
@@ -41,7 +41,7 @@ export const DEFAULT_BOARD_CONFIG: BoardConfig = {
     },
     {
       id: 'unexpected',
-      title: 'Unexpected',
+      name: 'Unexpected',
       category: 'risk',
       color: '#F97316',
       icon: 'alert',
@@ -50,7 +50,7 @@ export const DEFAULT_BOARD_CONFIG: BoardConfig = {
     },
     {
       id: 'family',
-      title: 'Family',
+      name: 'Family',
       category: 'family',
       color: '#EC4899',
       icon: 'heart',
@@ -59,7 +59,7 @@ export const DEFAULT_BOARD_CONFIG: BoardConfig = {
     },
     {
       id: 'health',
-      title: 'Health',
+      name: 'Health',
       category: 'health',
       color: '#14B8A6',
       icon: 'medical',
@@ -68,7 +68,7 @@ export const DEFAULT_BOARD_CONFIG: BoardConfig = {
     },
     {
       id: 'business',
-      title: 'Business',
+      name: 'Business',
       category: 'business',
       color: '#8B5CF6',
       icon: 'building',
@@ -77,7 +77,7 @@ export const DEFAULT_BOARD_CONFIG: BoardConfig = {
     },
     {
       id: 'invest',
-      title: 'Invest',
+      name: 'Invest',
       category: 'investment',
       color: '#EAB308',
       icon: 'chart',
@@ -86,7 +86,7 @@ export const DEFAULT_BOARD_CONFIG: BoardConfig = {
     },
     {
       id: 'learn',
-      title: 'Learn',
+      name: 'Learn',
       category: 'education',
       color: '#6366F1',
       icon: 'book',
@@ -95,7 +95,7 @@ export const DEFAULT_BOARD_CONFIG: BoardConfig = {
     },
     {
       id: 'milestone',
-      title: 'Milestone',
+      name: 'Milestone',
       category: 'life_event',
       color: '#A855F7',
       icon: 'star',
@@ -104,7 +104,7 @@ export const DEFAULT_BOARD_CONFIG: BoardConfig = {
     },
     {
       id: 'rest',
-      title: 'Rest',
+      name: 'Rest',
       category: 'rest',
       color: '#94A3B8',
       icon: 'moon',
@@ -113,7 +113,7 @@ export const DEFAULT_BOARD_CONFIG: BoardConfig = {
     },
     {
       id: 'bonus',
-      title: 'Bonus',
+      name: 'Bonus',
       category: 'bonus',
       color: '#22C55E',
       icon: 'gift',
@@ -122,7 +122,7 @@ export const DEFAULT_BOARD_CONFIG: BoardConfig = {
     },
     {
       id: 'community',
-      title: 'Community',
+      name: 'Community',
       category: 'community',
       color: '#06B6D4',
       icon: 'users',
@@ -131,7 +131,7 @@ export const DEFAULT_BOARD_CONFIG: BoardConfig = {
     },
     {
       id: 'inflation',
-      title: 'Inflation',
+      name: 'Inflation',
       category: 'finance',
       color: '#2563EB',
       icon: 'trending',
@@ -140,7 +140,7 @@ export const DEFAULT_BOARD_CONFIG: BoardConfig = {
     },
     {
       id: 'job-risk',
-      title: 'Job Risk',
+      name: 'Job Risk',
       category: 'risk',
       color: '#EA580C',
       icon: 'alert',
@@ -149,7 +149,7 @@ export const DEFAULT_BOARD_CONFIG: BoardConfig = {
     },
     {
       id: 'boom',
-      title: 'Boom',
+      name: 'Boom',
       category: 'milestone',
       color: '#818CF8',
       icon: 'star',

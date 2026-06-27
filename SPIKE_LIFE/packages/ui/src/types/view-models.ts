@@ -3,12 +3,16 @@ import type { SpaceCategory, SpaceIconId } from './board-config.js'
 /** Normalized coordinates (0–1) produced by the layout engine. */
 export interface PositionedSpace {
   id: string
-  boardIndex: number
+  name: string
+  /** Display alias — same as name. */
   title: string
+  boardIndex: number
   category: SpaceCategory
   color: string
   icon: SpaceIconId
   description?: string
+  connections: number[]
+  eventPool: string[]
   encounterId: string
   encounterTitle?: string
   x: number

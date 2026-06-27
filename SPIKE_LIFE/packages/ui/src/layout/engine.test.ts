@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { computeSpacePositions, positionSpaces } from './engine.js'
+import { computeSpacePositions, generateBoardLayout, positionSpaces } from './engine.js'
 import type { SpaceConfig } from '../types/board-config.js'
 
-describe('layout engine', () => {
+describe('layout engine (legacy API)', () => {
   it('places N spaces on rounded rectangle without hardcoded coords', () => {
     const points = computeSpacePositions('rounded-rectangle', 16)
     expect(points).toHaveLength(16)
@@ -25,7 +25,7 @@ describe('layout engine', () => {
     const spaces: SpaceConfig[] = [
       {
         id: 'a',
-        title: 'A',
+        name: 'A',
         category: 'career',
         color: '#f00',
         icon: 'briefcase',
@@ -34,7 +34,7 @@ describe('layout engine', () => {
       },
       {
         id: 'b',
-        title: 'B',
+        name: 'B',
         category: 'finance',
         color: '#00f',
         icon: 'wallet',
@@ -48,5 +48,26 @@ describe('layout engine', () => {
     const dx = (positioned[0]?.x ?? 0) - (positioned[1]?.x ?? 0)
     const dy = (positioned[0]?.y ?? 0) - (positioned[1]?.y ?? 0)
     expect(dx * dx + dy * dy).toBeGreaterThan(0)
+  })
+
+  it('generateBoardLayout is the primary entry point', () => {
+    const result = generateBoardLayout({
+      id: 'primary',
+      title: 'Primary',
+      layout: 'rounded-rectangle',
+      spaces: [
+        {
+          id: 'only',
+          name: 'Only',
+          category: 'rest',
+          color: '#ccc',
+          icon: 'moon',
+          boardIndex: 0,
+          encounterId: 'rest',
+        },
+      ],
+    })
+    expect(result.spaces[0]?.name).toBe('Only')
+    expect(result.trackPath.length).toBeGreaterThan(0)
   })
 })

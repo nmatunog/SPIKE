@@ -1,20 +1,17 @@
-import type { LayoutEngine, LayoutEngineInput, LayoutPoint } from './types.js'
+import type { LayoutEngineInput, LayoutPoint } from './types.js'
 import { DEFAULT_LAYOUT_OPTIONS } from './types.js'
+import { circlePathSampler, distributeEvenlyOnPath } from './perimeter-distribution.js'
 
 /** Evenly distribute spaces around a circle (clockwise from top). */
-export const circleLayout: LayoutEngine = {
+export const circleLayout = {
   computePositions({ spaceCount, options }: LayoutEngineInput): LayoutPoint[] {
     const padding = options?.padding ?? DEFAULT_LAYOUT_OPTIONS.padding
     const radius = 0.5 - padding
-    const cx = 0.5
-    const cy = 0.5
+    const sampler = circlePathSampler(0.5, 0.5, radius)
 
-    return Array.from({ length: spaceCount }, (_, index) => {
-      const theta = -Math.PI / 2 + (index / spaceCount) * Math.PI * 2
-      const x = cx + radius * Math.cos(theta)
-      const y = cy + radius * Math.sin(theta)
-      const angle = theta + Math.PI / 2
-      return { x, y, angle }
+    return distributeEvenlyOnPath(spaceCount, sampler).map((point, index) => {
+      const theta = -Math.PI / 2 + (index / Math.max(1, spaceCount)) * Math.PI * 2
+      return { ...point, angle: theta + Math.PI / 2 }
     })
   },
 }
