@@ -197,8 +197,8 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
         </div>
       )}
 
-      <div className="mx-auto grid min-h-0 w-full max-w-[100rem] flex-1 grid-cols-1 gap-3 overflow-hidden px-3 py-3 lg:grid-cols-[minmax(11rem,14%)_minmax(0,1fr)_minmax(12rem,16%)] lg:gap-4 lg:px-4">
-        <aside className="hidden min-h-0 flex-col gap-3 overflow-y-auto lg:flex">
+      <div className="mx-auto grid min-h-0 w-full max-w-[100rem] flex-1 grid-cols-1 gap-2 overflow-hidden px-3 py-2 lg:grid-cols-[minmax(10rem,13%)_minmax(0,68%)_minmax(11rem,15%)] lg:gap-3 lg:px-4 lg:py-3">
+        <aside className="hidden min-h-0 flex-col gap-2 overflow-hidden lg:flex">
           <BoardLegend compact />
           <ObjectiveCard
             expanded={expandedCard}
@@ -215,8 +215,8 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
           </div>
         </aside>
 
-        <main className="relative flex min-h-0 min-w-0 flex-col items-center justify-center">
-          <section className="relative flex h-full w-full max-w-[min(72vw,56rem)] flex-col items-center justify-center rounded-3xl border border-slate-700/60 bg-gradient-to-b from-slate-900 to-slate-950 p-3 shadow-2xl lg:p-4">
+        <main className="relative flex min-h-0 min-w-0 flex-col items-center justify-center lg:min-w-0">
+          <section className="relative flex h-full w-full flex-col items-center justify-center rounded-3xl border border-slate-700/60 bg-gradient-to-b from-slate-900 to-slate-950 p-2 shadow-2xl lg:p-3">
             {board?.gameComplete && (
               <p className="absolute left-4 right-4 top-3 z-10 rounded-xl bg-emerald-500/20 px-4 py-2 text-center text-sm font-medium text-emerald-200">
                 Journey complete — all {board.maxRounds} years played.
@@ -264,7 +264,7 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
           </section>
         </main>
 
-        <aside className="flex min-h-0 flex-col gap-3 overflow-y-auto">
+        <aside className="flex min-h-0 flex-col gap-2 overflow-y-auto lg:overflow-hidden">
           <div className="lg:hidden">
             <DicePanel
               canRoll={board?.canRoll ?? false}
