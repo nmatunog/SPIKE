@@ -13,8 +13,12 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "tsc -p tsconfig.json && vitest run --config vitest.dist.config.ts",
+    "test": "npm run build -w @spike-life/content-core && tsc -p tsconfig.json && vitest run --config vitest.dist.config.ts",
     "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@spike-life/board-config": "*",
+    "@spike-life/content-core": "*"
   },
   "devDependencies": {
     "typescript": "^5.8.3",

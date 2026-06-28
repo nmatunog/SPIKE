@@ -1,0 +1,89 @@
+{
+  "domains": [
+    { "id": "career", "label": "Career", "category": "career", "icon": "briefcase", "color": "#3B82F6" },
+    { "id": "business", "label": "Business", "category": "business", "icon": "trending-up", "color": "#F97316" },
+    { "id": "income_finance", "label": "Income & Finance", "category": "finance", "icon": "wallet", "color": "#22C55E" },
+    { "id": "family", "label": "Family", "category": "family", "icon": "users", "color": "#A855F7" },
+    { "id": "health", "label": "Health", "category": "health", "icon": "heart-pulse", "color": "#EF4444" },
+    { "id": "housing", "label": "Housing", "category": "finance", "icon": "home", "color": "#14B8A6" },
+    { "id": "education", "label": "Education", "category": "education", "icon": "graduation-cap", "color": "#6366F1" },
+    { "id": "lifestyle", "label": "Lifestyle", "category": "finance", "icon": "shopping-bag", "color": "#EAB308" },
+    { "id": "community", "label": "Community", "category": "community", "icon": "hand-heart", "color": "#8B5CF6" },
+    { "id": "government", "label": "Government", "category": "finance", "icon": "landmark", "color": "#64748B" },
+    { "id": "investment", "label": "Investment", "category": "investment", "icon": "chart-line", "color": "#0EA5E9" },
+    { "id": "milestone", "label": "Milestone", "category": "milestone", "icon": "trophy", "color": "#FBBF24" }
+  ],
+  "weightBands": [
+    {
+      "maxAge": 29,
+      "label": "launch",
+      "weights": {
+        "career": 30,
+        "education": 20,
+        "lifestyle": 15,
+        "housing": 5,
+        "income_finance": 8,
+        "business": 5,
+        "family": 4,
+        "health": 4,
+        "community": 3,
+        "government": 2,
+        "investment": 3,
+        "milestone": 1
+      }
+    },
+    {
+      "maxAge": 49,
+      "label": "mid",
+      "weights": {
+        "career": 15,
+        "family": 20,
+        "housing": 20,
+        "health": 15,
+        "education": 5,
+        "income_finance": 10,
+        "business": 8,
+        "lifestyle": 5,
+        "investment": 5,
+        "community": 4,
+        "government": 3,
+        "milestone": 2
+      }
+    },
+    {
+      "maxAge": 120,
+      "label": "late",
+      "weights": {
+        "investment": 30,
+        "health": 25,
+        "milestone": 20,
+        "career": 5,
+        "family": 8,
+        "housing": 7,
+        "income_finance": 5,
+        "education": 2,
+        "lifestyle": 3,
+        "business": 5,
+        "community": 5,
+        "government": 5
+      }
+    }
+  ],
+  "advisorInsightProbability": 0.27,
+  "encounterWeightOverrides": [
+    { "id": "first_job", "domainIds": ["career"], "weightsByBand": { "launch": 35, "mid": 2, "late": 0 } },
+    { "id": "internship", "domainIds": ["career", "education"], "weightsByBand": { "launch": 25, "mid": 3, "late": 0 } },
+    { "id": "job_offer", "domainIds": ["career"], "weightsByBand": { "launch": 20, "mid": 15, "late": 5 } },
+    { "id": "executive_promotion", "domainIds": ["career"], "weightsByBand": { "launch": 0, "mid": 10, "late": 25 } },
+    { "id": "retirement_offer", "domainIds": ["career", "investment"], "weightsByBand": { "launch": 0, "mid": 5, "late": 30 } },
+    { "id": "redundancy", "domainIds": ["career"], "weightsByBand": { "launch": 2, "mid": 8, "late": 15 } },
+    { "id": "consulting_opportunity", "domainIds": ["career", "business"], "weightsByBand": { "launch": 3, "mid": 10, "late": 20 } },
+    { "id": "annual_checkup", "domainIds": ["health"], "weightsByBand": { "launch": 15, "mid": 20, "late": 18 } },
+    { "id": "minor_injury", "domainIds": ["health"], "weightsByBand": { "launch": 20, "mid": 18, "late": 15 } },
+    { "id": "hospitalization", "domainIds": ["health"], "weightsByBand": { "launch": 8, "mid": 15, "late": 25 } },
+    { "id": "pagibig_loan", "domainIds": ["housing", "government"], "weightsByBand": { "launch": 10, "mid": 25, "late": 12 } },
+    { "id": "tax_season", "domainIds": ["government"], "weightsByBand": { "launch": 8, "mid": 15, "late": 12 } },
+    { "id": "emergency_fund", "domainIds": ["income_finance"], "weightsByBand": { "launch": 25, "mid": 15, "late": 10 } },
+    { "id": "legacy_planning", "domainIds": ["milestone", "investment"], "weightsByBand": { "launch": 0, "mid": 5, "late": 30 } }
+  ]
+}

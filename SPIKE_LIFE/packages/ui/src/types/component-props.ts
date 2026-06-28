@@ -16,7 +16,7 @@ export interface LegendItemViewModel {
   color: string
 }
 
-export type BoardSpaceSize = 'sm' | 'md' | 'lg'
+export type BoardSpaceSize = 'sm' | 'md' | 'lg' | 'xl'
 
 export interface GameBoardProps {
   board: BoardViewModel | null
@@ -40,6 +40,7 @@ export interface PlayerTokenProps {
   x: number
   y: number
   rolling?: boolean
+  landing?: boolean
   size?: number
 }
 
@@ -114,6 +115,7 @@ export interface BoardAnimationProps {
   isAnimating?: boolean
   highlightSpaceIndex?: number | null
   landedSpaceIndex?: number | null
+  cameraFocus?: { x: number; y: number; scale: number }
   children: ReactNode
   className?: string
 }

@@ -1,3 +1,4 @@
+import type { CurrencyConfig } from '@spike-life/content-core'
 import type { DecisionStrategy, ScenarioId } from './types.js'
 import type { SimulationState } from './aggregates/simulation-session.js'
 import type { BoardState } from './gameboard/types.js'
@@ -8,6 +9,7 @@ import { Board } from './gameboard/aggregates/board.js'
 import { getEncounterCard } from './gameboard/services/encounter-deck.js'
 import {
   advanceTurn,
+  applyYearEndHiddenReveal,
   createWorkshopSession,
   startPlanningCycle,
   submitDecision,
@@ -30,6 +32,7 @@ export async function createSoloBoard(
   deps: BoardOrchestratorDeps,
   boardId: string,
   simulationId: string,
+  currency: CurrencyConfig,
   displayName: string = 'You',
 ): Promise<BoardState> {
   const existing = await deps.boardRepo.findById(boardId)
@@ -49,7 +52,7 @@ export async function createSoloBoard(
     return existing
   }
 
-  const workshop = createWorkshopSession(simulationId)
+  const workshop = createWorkshopSession(simulationId, currency)
   await deps.simulationRepo.save(workshop)
 
   const board = Board.create(boardId, simulationId, [
@@ -67,14 +70,16 @@ export async function rollBoardAndTriggerSituation(
   if (!existing) throw new Error(`Board not found: ${boardId}`)
 
   let board = Board.fromState(existing)
-  board = board.rollAndMove()
+  const sim = await deps.simulationRepo.findById(existing.simulationId)
+  const playerAge = sim?.character.age ?? sim?.startingAge ?? 22
+
+  board = board.beginNextYear(playerAge)
   board = board.enterDecisionPhase()
 
   const encounterId = board.pendingEncounter()
   if (!encounterId) throw new Error('Board did not produce an encounter.')
 
   const encounter = getEncounterCard(encounterId)
-  const sim = await deps.simulationRepo.findById(existing.simulationId)
   const started = startPlanningCycle(existing.simulationId, encounter.scenarioId, sim)
   await deps.simulationRepo.save(started)
 
@@ -100,7 +105,7 @@ export async function submitBoardDecision(
   if (!boardState) throw new Error(`Board not found: ${boardId}`)
 
   if (boardState.phase !== 'decision_phase') {
-    throw new Error('Roll the dice and land on a space before deciding.')
+    throw new Error('Begin the year before deciding.')
   }
 
   const sim = await deps.simulationRepo.findById(boardState.simulationId)
@@ -148,16 +153,17 @@ export async function endBoardTurn(
   let board = Board.fromState(boardState).endTurn()
   const events = board.pullGameboardEvents()
   const roundCompleted = events.some((e) => e.type === 'RoundCompleted')
+  const state = board.toState()
 
   if (roundCompleted) {
     const sim = await deps.simulationRepo.findById(boardState.simulationId)
     if (sim) {
-      const advanced = advanceTurn(sim)
+      const withReveal = applyYearEndHiddenReveal(sim, state.boardYear)
+      const advanced = advanceTurn(withReveal)
       await deps.simulationRepo.save(advanced)
     }
   }
 
-  const state = board.toState()
   await deps.boardRepo.save(state)
   return state
 }

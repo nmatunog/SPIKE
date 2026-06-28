@@ -124,7 +124,7 @@ describe('Board Component Library', () => {
   it('TurnCounter renders year and turn from props', () => {
     render(<TurnCounter roundNumber={2} maxRounds={5} boardYear={3} />)
     expect(screen.getByLabelText('Turn counter')).toHaveTextContent('3')
-    expect(screen.getByLabelText('Turn counter')).toHaveTextContent('2 / 5')
+    expect(screen.getByLabelText('Turn counter')).toHaveTextContent('2/5')
   })
 
   it('DicePanel disables roll when canRoll is false', () => {
@@ -141,7 +141,7 @@ describe('Board Component Library', () => {
 
   it('FinancialHUD renders metrics from data prop', () => {
     render(<FinancialHUD data={SAMPLE_FINANCIAL} />)
-    expect(screen.getByLabelText('Financial dashboard')).toHaveTextContent('₱120,000')
+    expect(screen.getByLabelText('Wealth summary')).toHaveTextContent('₱120,000')
   })
 
   it('BoardAnimation renders children', () => {

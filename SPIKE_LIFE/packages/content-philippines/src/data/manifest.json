@@ -1,0 +1,22 @@
+{
+  "id": "philippines",
+  "financialWorldId": "philippines",
+  "countryCode": "PH",
+  "edition": "mvp",
+  "label": "Philippine Financial World",
+  "defaultLocale": "en-PH",
+  "currency": {
+    "code": "PHP",
+    "locale": "en-PH",
+    "symbol": "₱",
+    "maximumFractionDigits": 0
+  },
+  "supportedLocales": [
+    {
+      "id": "en-PH",
+      "label": "English (Philippines)",
+      "language": "en",
+      "region": "PH"
+    }
+  ]
+}

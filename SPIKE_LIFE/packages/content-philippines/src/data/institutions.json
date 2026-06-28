@@ -1,0 +1,34 @@
+[
+  {
+    "id": "sss",
+    "name": "Social Security System",
+    "acronym": "SSS",
+    "category": "social_security",
+    "description": "Mandatory social insurance for private-sector employees and voluntary members.",
+    "programIds": ["sss_contribution", "sss_pension"]
+  },
+  {
+    "id": "philhealth",
+    "name": "Philippine Health Insurance Corporation",
+    "acronym": "PhilHealth",
+    "category": "health",
+    "description": "National health insurance program covering inpatient and outpatient benefits.",
+    "programIds": ["philhealth_premium", "philhealth_benefits"]
+  },
+  {
+    "id": "pagibig",
+    "name": "Home Development Mutual Fund",
+    "acronym": "Pag-IBIG",
+    "category": "housing",
+    "description": "Savings and affordable housing loan program for Filipino workers.",
+    "programIds": ["pagibig_savings", "pagibig_housing_loan"]
+  },
+  {
+    "id": "bir",
+    "name": "Bureau of Internal Revenue",
+    "acronym": "BIR",
+    "category": "tax",
+    "description": "National tax authority — income tax, withholding, and compliance.",
+    "programIds": ["bir_income_tax"]
+  }
+]

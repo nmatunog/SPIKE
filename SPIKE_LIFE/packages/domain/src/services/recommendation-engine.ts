@@ -1,5 +1,7 @@
+import type { CurrencyConfig } from '@spike-life/content-core'
 import type { Character } from '../entities/financial-state.js'
 import type { FnaSnapshot } from './fna-engine.js'
+import { formatAmount } from '../value-objects/money.js'
 import { SolutionCategory, SolutionLabels, type PriorityLevel, type SolutionCategory as SolutionCategoryType } from '../types.js'
 
 export interface Recommendation {
@@ -22,6 +24,7 @@ interface Candidate {
 export function runRecommendationEngine(
   fna: FnaSnapshot,
   character: Character,
+  currency: CurrencyConfig,
 ): Recommendation[] {
   const candidates: Candidate[] = []
 
@@ -42,7 +45,7 @@ export function runRecommendationEngine(
         solution: SolutionCategory.STRENGTHEN_FAMILY_PROTECTION,
         priority: fna.protectionScore < 40 ? 'critical' : 'high',
         rationale: 'Protection precedes wealth building (Recommendation Rule 2).',
-        addressesGap: `Family protection gap of ₱${fna.familyProtectionGap.toLocaleString('en-PH')}.`,
+        addressesGap: `Family protection gap of ${formatAmount(fna.familyProtectionGap, currency)}.`,
         sortWeight: (100 - fna.protectionScore) + 40,
       })
     }
@@ -51,7 +54,7 @@ export function runRecommendationEngine(
       solution: SolutionCategory.STRENGTHEN_HEALTH_PROTECTION,
       priority: fna.protectionScore < 40 ? 'critical' : 'high',
       rationale: 'Health protection reduces volatility from medical events.',
-      addressesGap: `Health protection need: ₱${fna.healthProtectionNeed.toLocaleString('en-PH')}.`,
+      addressesGap: `Health protection need: ${formatAmount(fna.healthProtectionNeed, currency)}.`,
       sortWeight: (100 - fna.protectionScore) + 30,
     })
 

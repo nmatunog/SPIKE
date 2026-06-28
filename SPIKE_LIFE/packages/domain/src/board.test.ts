@@ -3,6 +3,8 @@ import { Board } from './gameboard/aggregates/board.js'
 import { GameboardEventType } from './gameboard/events/gameboard-events.js'
 import { DEFAULT_BOARD_SPACES } from './gameboard/services/default-board-layout.js'
 
+const PLAYER_AGE = 22
+
 describe('Board aggregate', () => {
   const players = [{ playerId: 'solo', displayName: 'Alex' }]
 
@@ -13,38 +15,34 @@ describe('Board aggregate', () => {
     expect(state.spaces).toHaveLength(DEFAULT_BOARD_SPACES.length)
     expect(state.tokens[0]?.position).toBe(0)
     expect(state.phase).toBe('ready_to_roll')
-    expect(state.simulationId).toBe('sim-1')
+    expect(state.advisorInsightOffered).toBe(false)
   })
 
-  it('rolls dice and moves the current player without financial data', () => {
+  it('begins next year with age-weighted domain and situation', () => {
     let board = Board.create('board-2', 'sim-2', players)
-    board = board.rollAndMove(() => 0.5) // deterministic mid-range roll
+    board = board.beginNextYear(PLAYER_AGE, () => 0)
 
     const events = board.pullGameboardEvents()
-    expect(events.some((e) => e.type === GameboardEventType.DICE_ROLLED)).toBe(true)
-    expect(events.some((e) => e.type === GameboardEventType.PLAYER_MOVED)).toBe(true)
-    expect(events.some((e) => e.type === GameboardEventType.PLAYER_LANDED)).toBe(true)
+    expect(events.some((e) => e.type === GameboardEventType.DOMAIN_SELECTED)).toBe(true)
     expect(events.some((e) => e.type === GameboardEventType.SITUATION_TRIGGERED)).toBe(true)
 
     const state = board.toState()
-    expect(state.lastDiceRoll).toBeGreaterThanOrEqual(1)
+    expect(state.selectedDomainId).toBe('career')
     expect(state.pendingEncounterId).toBeTruthy()
-    expect(state.tokens[0]!.position).toBeGreaterThan(0)
   })
 
-  it('enters decision phase after landing', () => {
+  it('enters decision phase and may offer advisor insight', () => {
     let board = Board.create('board-3', 'sim-3', players)
-    board = board.rollAndMove(() => 0).enterDecisionPhase()
+    board = board.beginNextYear(PLAYER_AGE, () => 0).enterDecisionPhase(() => 0)
 
     expect(board.phase).toBe('decision_phase')
-    const events = board.pullGameboardEvents()
-    expect(events.some((e) => e.type === GameboardEventType.DECISION_PHASE_STARTED)).toBe(true)
+    expect(board.toState().advisorInsightOffered).toBe(true)
   })
 
   it('completes a full turn cycle', () => {
     let board = Board.create('board-4', 'sim-4', players)
     board = board
-      .rollAndMove(() => 0)
+      .beginNextYear(PLAYER_AGE, () => 0)
       .enterDecisionPhase()
       .markDecisionSubmitted()
       .markReflectionCompleted()
@@ -52,16 +50,12 @@ describe('Board aggregate', () => {
 
     expect(board.phase).toBe('ready_to_roll')
     expect(board.toState().roundNumber).toBe(2)
-
-    const events = board.pullGameboardEvents()
-    expect(events.some((e) => e.type === GameboardEventType.TURN_COMPLETED)).toBe(true)
-    expect(events.some((e) => e.type === GameboardEventType.ROUND_COMPLETED)).toBe(true)
   })
 
-  it('rejects dice roll during decision phase', () => {
+  it('rejects year start during decision phase', () => {
     let board = Board.create('board-5', 'sim-5', players)
-    board = board.rollAndMove(() => 0).enterDecisionPhase()
+    board = board.beginNextYear(PLAYER_AGE, () => 0).enterDecisionPhase()
 
-    expect(() => board.rollDice()).toThrow(/ready/)
+    expect(() => board.selectDomainForYear(PLAYER_AGE)).toThrow(/year/)
   })
 })

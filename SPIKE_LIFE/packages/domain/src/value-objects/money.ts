@@ -1,24 +1,35 @@
-const PHP = 'PHP' as const
+import type { CurrencyConfig } from '@spike-life/content-core'
+import { formatCurrency } from '@spike-life/content-core'
 
-export type Currency = typeof PHP
+export type CurrencyCode = string
 
-/** Immutable peso amount — domain calculations use `.amount`; formatting is for presentation. */
+/** Immutable monetary amount — calculations use `.amount`; formatting is presentation-only. */
 export class Money {
   readonly amount: number
-  readonly currency: Currency
+  readonly currency: CurrencyCode
 
-  private constructor(amount: number, currency: Currency = PHP) {
+  private constructor(amount: number, currency: CurrencyCode) {
     if (!Number.isFinite(amount)) throw new Error('Money amount must be finite.')
     this.amount = Math.round(amount)
     this.currency = currency
   }
 
-  static peso(amount: number): Money {
-    return new Money(amount, PHP)
+  static of(amount: number, currency: CurrencyCode): Money {
+    return new Money(amount, currency)
   }
 
-  static zero(): Money {
-    return new Money(0, PHP)
+  /** Convenience for callers that already hold a currency code from session state. */
+  static fromAmount(amount: number, currency: CurrencyCode): Money {
+    return Money.of(amount, currency)
+  }
+
+  /** @deprecated Prefer `Money.of(amount, currency.code)` with pack config */
+  static peso(amount: number): Money {
+    return new Money(amount, 'PHP')
+  }
+
+  static zero(currency: CurrencyCode = 'USD'): Money {
+    return new Money(0, currency)
   }
 
   add(other: Money): Money {
@@ -40,14 +51,17 @@ export class Money {
   }
 
   clampNonNegative(): Money {
-    return this.amount < 0 ? Money.zero() : this
+    return this.amount < 0 ? Money.zero(this.currency) : this
   }
 
-  format(locale = 'en-PH'): string {
-    return `₱${this.amount.toLocaleString(locale, { maximumFractionDigits: 0 })}`
+  format(config: CurrencyConfig): string {
+    return formatCurrency(this.amount, {
+      ...config,
+      code: config.code || this.currency,
+    })
   }
 
-  toJSON(): { amount: number; currency: Currency } {
+  toJSON(): { amount: number; currency: CurrencyCode } {
     return { amount: this.amount, currency: this.currency }
   }
 
@@ -56,4 +70,8 @@ export class Money {
       throw new Error(`Currency mismatch: ${this.currency} vs ${other.currency}`)
     }
   }
+}
+
+export function formatAmount(amount: number, config: CurrencyConfig): string {
+  return formatCurrency(amount, config)
 }

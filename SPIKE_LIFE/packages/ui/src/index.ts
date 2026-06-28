@@ -23,9 +23,16 @@ export type {
   PositionedSpace,
   TurnHUDViewModel,
 } from './types/view-models.js'
-export type { BoardConfig, BoardLayoutKind, SpaceConfig, SpaceCategory, SpaceIconId } from './types/board-config.js'
+export type { BoardConfig, BoardLayoutKind, SpaceConfig, SpaceCategory, SpaceIconId, BoardConfigInput } from './types/board-config.js'
 
-export { DEFAULT_BOARD_CONFIG, SPACE_CATEGORY_LEGEND } from './config/default-board.js'
+export {
+  DEFAULT_BOARD_CONFIG,
+  SPACE_CATEGORY_LEGEND,
+  loadBoardConfig,
+  legendFromBoardConfig,
+  resolveBoardConfig,
+  toDomainBoardSpaces,
+} from '@spike-life/board-config'
 
 export {
   buildTrackPath,
@@ -63,4 +70,17 @@ export { BoardOverlay } from './components/BoardOverlay.js'
 export { MovementAnimator } from './components/MovementAnimator.js'
 export { SpaceIcon } from './components/SpaceIcon.js'
 export { useMovementAnimator } from './hooks/useMovementAnimator.js'
+export { useDiceRollFaces } from './hooks/useDiceRollFaces.js'
+export { motionTokens } from './motion/index.js'
+export {
+  fadeUp,
+  fadeScale,
+  overlayBackdrop,
+  modalPanel,
+  cardFlip,
+  panelSlide,
+  staggerContainer,
+  staggerItem,
+  stepPulse,
+} from './motion/index.js'
 export { groupTokensByPosition } from './utils/presentation.js'

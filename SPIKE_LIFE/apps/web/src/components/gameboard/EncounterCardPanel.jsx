@@ -6,7 +6,7 @@ export default function EncounterCardPanel({ encounter }) {
           Encounter
         </p>
         <p className="mt-2 text-sm text-slate-600">
-          Roll the dice to land on a space and draw a financial situation.
+          Tap Next Year when you are ready. A domain lights up and your situation appears.
         </p>
       </div>
     )

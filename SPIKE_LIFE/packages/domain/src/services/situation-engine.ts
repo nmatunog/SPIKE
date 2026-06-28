@@ -1,3 +1,4 @@
+import type { CurrencyConfig } from '@spike-life/content-core'
 import type { FinancialProfile } from '../entities/financial-state.js'
 import type { SituationKind } from '../types.js'
 import { Money } from '../value-objects/money.js'
@@ -31,6 +32,7 @@ export interface SituationSnapshot {
 
 export function createPromotionSituation(
   profileBefore: FinancialProfile,
+  currency: CurrencyConfig,
 ): SituationSnapshot {
   const incomeBefore = profileBefore.monthlyIncome
   const incomeAfter = Math.round(incomeBefore * PROMOTION_INCOME_MULTIPLIER)
@@ -49,8 +51,8 @@ export function createPromotionSituation(
     incomeMultiplier: PROMOTION_INCOME_MULTIPLIER,
     expenseMultiplier: 1,
     financialImpactSummary:
-      `Monthly income increases from ₱${incomeBefore.toLocaleString('en-PH')} `
-      + `to ₱${incomeAfter.toLocaleString('en-PH')} (+₱${monthlyRaise.toLocaleString('en-PH')}/month).`,
+      `Monthly income increases from ${Money.of(incomeBefore, currency.code).format(currency)} `
+      + `to ${Money.of(incomeAfter, currency.code).format(currency)} (+${Money.of(monthlyRaise, currency.code).format(currency)}/month).`,
   }
 }
 
@@ -75,6 +77,7 @@ export function monthlyRaiseFromSituation(
 
 export function createProtectionStressSituation(
   profile: FinancialProfile,
+  currency: CurrencyConfig,
 ): SituationSnapshot {
   const medicalCost = PROTECTION_STRESS_MEDICAL_COST
   const careCost = PROTECTION_STRESS_MONTHLY_CARE_COST
@@ -95,9 +98,9 @@ export function createProtectionStressSituation(
     medicalCostImpact: medicalCost,
     monthlyCareCost: careCost,
     financialImpactSummary:
-      `${Money.peso(medicalCost).format()} in immediate medical costs. `
-      + `Cash drops to ${Money.peso(cashAfter).format()}. `
-      + `Ongoing care adds ${Money.peso(careCost).format()}/month.`,
+      `${Money.of(medicalCost, currency.code).format(currency)} in immediate medical costs. `
+      + `Cash drops to ${Money.of(cashAfter, currency.code).format(currency)}. `
+      + `Ongoing care adds ${Money.of(careCost, currency.code).format(currency)}/month.`,
   }
 }
 

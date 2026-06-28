@@ -10,6 +10,7 @@ import {
   PROMOTION_INCOME_MULTIPLIER,
   SolutionCategory,
 } from './index.js'
+import { TEST_CURRENCY } from './test/currency-fixture.js'
 
 const SAMPLE_REFLECTION = [
   { promptId: 'what_happened', response: 'My savings grew and protection improved slightly.' },
@@ -21,7 +22,7 @@ const SAMPLE_REFLECTION = [
 
 describe('Promotion Financial Decision Cycle', () => {
   it('applies +15% income on promotion situation', () => {
-    let session = createPromotionSession('test-1')
+    let session = createPromotionSession('test-1', TEST_CURRENCY)
     const incomeBefore = session.financialProfile.monthlyIncome
     session = presentPromotionSituation(session)
 
@@ -33,7 +34,7 @@ describe('Promotion Financial Decision Cycle', () => {
   })
 
   it('runs discovery and produces FNA before decision', () => {
-    let session = createPromotionSession('test-2')
+    let session = createPromotionSession('test-2', TEST_CURRENCY)
     session = presentPromotionSituation(session)
     session = completeDiscovery(session)
 
@@ -45,7 +46,7 @@ describe('Promotion Financial Decision Cycle', () => {
   })
 
   it('recommends emergency fund before lifestyle for fresh graduate after promotion', () => {
-    let session = createPromotionSession('test-3')
+    let session = createPromotionSession('test-3', TEST_CURRENCY)
     session = presentPromotionSituation(session)
     session = completeDiscovery(session)
 
@@ -55,7 +56,7 @@ describe('Promotion Financial Decision Cycle', () => {
   })
 
   it('never recommends insurance products — only solution categories', () => {
-    let session = createPromotionSession('test-4')
+    let session = createPromotionSession('test-4', TEST_CURRENCY)
     session = presentPromotionSituation(session)
     session = completeDiscovery(session)
 
@@ -66,7 +67,7 @@ describe('Promotion Financial Decision Cycle', () => {
   })
 
   it('produces deterministic consequences for maintain_lifestyle_discipline', () => {
-    let session = createPromotionSession('test-5')
+    let session = createPromotionSession('test-5', TEST_CURRENCY)
     session = presentPromotionSituation(session)
     session = completeDiscovery(session)
     const cashBefore = session.financialProfile.cash
@@ -81,7 +82,7 @@ describe('Promotion Financial Decision Cycle', () => {
   })
 
   it('flags lifestyle increase as high risk when emergency fund is low', () => {
-    let session = createPromotionSession('test-6')
+    let session = createPromotionSession('test-6', TEST_CURRENCY)
     session = presentPromotionSituation(session)
     session = completeDiscovery(session)
     session = submitDecision(session, 'increase_lifestyle')
@@ -97,6 +98,7 @@ describe('Promotion Financial Decision Cycle', () => {
       'test-7',
       'maintain_lifestyle_discipline',
       SAMPLE_REFLECTION,
+      TEST_CURRENCY,
     )
 
     expect(session.phase).toBe('cycle_complete')
@@ -105,7 +107,7 @@ describe('Promotion Financial Decision Cycle', () => {
   })
 
   it('FNA engine is deterministic for identical inputs', () => {
-    let session = createPromotionSession('test-8')
+    let session = createPromotionSession('test-8', TEST_CURRENCY)
     session = presentPromotionSituation(session)
     session = completeDiscovery(session)
 

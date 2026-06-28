@@ -13,6 +13,7 @@ import {
   submitPlayerDecision,
   submitPlayerReflection,
 } from '@spike-life/domain'
+import { DEFAULT_CURRENCY } from './content/bootstrap.js'
 
 export class GameRoomCommandBus {
   constructor(
@@ -32,7 +33,7 @@ export class GameRoomCommandBus {
   }
 
   joinRoom(roomId: string, playerId: string, displayName: string) {
-    return joinGameRoom(this.deps(), roomId, playerId, displayName)
+    return joinGameRoom(this.deps(), roomId, playerId, displayName, DEFAULT_CURRENCY)
   }
 
   startTurn(roomId: string, scenarioId: ScenarioId) {

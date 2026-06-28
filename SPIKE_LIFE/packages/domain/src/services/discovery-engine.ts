@@ -1,3 +1,4 @@
+import type { CurrencyConfig } from '@spike-life/content-core'
 import {
   annualIncome,
   monthlySurplus,
@@ -6,6 +7,7 @@ import {
   type GoalPortfolio,
   type ProtectionPortfolio,
 } from '../entities/financial-state.js'
+import { formatAmount } from '../value-objects/money.js'
 import type { SituationSnapshot } from './situation-engine.js'
 
 export interface DiscoveryObservation {
@@ -28,11 +30,22 @@ export function runDiscovery(
   _protection: ProtectionPortfolio,
   goals: GoalPortfolio,
   situation: SituationSnapshot,
+  currency: CurrencyConfig,
 ): DiscoverySnapshot {
   if (situation.situationKind === 'protection_stress') {
-    return runProtectionStressDiscovery(character, profile, situation)
+    return runProtectionStressDiscovery(character, profile, situation, currency)
   }
 
+  return runPromotionDiscovery(character, profile, goals, situation, currency)
+}
+
+function runPromotionDiscovery(
+  character: Character,
+  profile: FinancialProfile,
+  goals: GoalPortfolio,
+  situation: SituationSnapshot,
+  currency: CurrencyConfig,
+): DiscoverySnapshot {
   const surplus = monthlySurplus(profile)
   const annual = annualIncome(profile)
 
@@ -63,7 +76,7 @@ export function runDiscovery(
   const observations: DiscoveryObservation[] = [
     {
       question: 'What changed?',
-      answer: `Income increased following "${situation.title}". Monthly surplus is now approximately ₱${surplus.toLocaleString('en-PH')}.`,
+      answer: `Income increased following "${situation.title}". Monthly surplus is now approximately ${formatAmount(surplus, currency)}.`,
     },
     {
       question: 'What financial risks now exist?',
@@ -79,7 +92,7 @@ export function runDiscovery(
     },
     {
       question: 'What should I recommend?',
-      answer: `With annual income of ₱${annual.toLocaleString('en-PH')}, prioritize sustainability (cash flow), then protection, then goals.`,
+      answer: `With annual income of ${formatAmount(annual, currency)}, prioritize sustainability (cash flow), then protection, then goals.`,
     },
     {
       question: 'Why?',
@@ -101,6 +114,7 @@ function runProtectionStressDiscovery(
   character: Character,
   profile: FinancialProfile,
   situation: SituationSnapshot,
+  currency: CurrencyConfig,
 ): DiscoverySnapshot {
   const surplus = monthlySurplus(profile)
   const annual = annualIncome(profile)
@@ -129,7 +143,7 @@ function runProtectionStressDiscovery(
   const observations: DiscoveryObservation[] = [
     {
       question: 'What changed?',
-      answer: `A family health concern created ${situation.financialImpactSummary} Monthly surplus is now approximately ₱${surplus.toLocaleString('en-PH')}.`,
+      answer: `A family health concern created ${situation.financialImpactSummary} Monthly surplus is now approximately ${formatAmount(surplus, currency)}.`,
     },
     {
       question: 'What financial risks now exist?',
@@ -145,7 +159,7 @@ function runProtectionStressDiscovery(
     },
     {
       question: 'What should I recommend?',
-      answer: `With annual income of ₱${annual.toLocaleString('en-PH')} and ${character.dependents} dependent(s), prioritize protection planning before discretionary spending.`,
+      answer: `With annual income of ${formatAmount(annual, currency)} and ${character.dependents} dependent(s), prioritize protection planning before discretionary spending.`,
     },
     {
       question: 'Why?',

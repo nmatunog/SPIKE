@@ -1,0 +1,92 @@
+{
+  "id": "spike-life-default",
+  "title": "Financial Life Journey",
+  "layout": "rounded-rectangle",
+  "layoutOptions": {
+    "padding": 0.09,
+    "cornerRadius": 0.13
+  },
+  "maxPlayers": 6,
+  "spaces": [
+    {
+      "id": "career-lift",
+      "title": "Career Lift",
+      "category": "career",
+      "encounterId": "promotion"
+    },
+    {
+      "id": "paycheck",
+      "category": "finance"
+    },
+    {
+      "id": "opportunity",
+      "category": "opportunity",
+      "encounterId": "business_opportunity"
+    },
+    {
+      "id": "unexpected",
+      "title": "Unexpected",
+      "category": "risk",
+      "encounterId": "vehicle_breakdown"
+    },
+    {
+      "id": "family",
+      "category": "family",
+      "encounterId": "marriage"
+    },
+    {
+      "id": "health",
+      "category": "health",
+      "encounterId": "medical_expense"
+    },
+    {
+      "id": "business",
+      "category": "business",
+      "encounterId": "business_opportunity"
+    },
+    {
+      "id": "invest",
+      "title": "Invest",
+      "category": "investment",
+      "encounterId": "investment"
+    },
+    {
+      "id": "learn",
+      "title": "Learn",
+      "category": "education"
+    },
+    {
+      "id": "milestone",
+      "category": "life_event"
+    },
+    {
+      "id": "rest",
+      "category": "rest"
+    },
+    {
+      "id": "bonus",
+      "category": "bonus"
+    },
+    {
+      "id": "community",
+      "category": "community"
+    },
+    {
+      "id": "inflation",
+      "category": "finance",
+      "encounterId": "inflation"
+    },
+    {
+      "id": "job-risk",
+      "title": "Job Risk",
+      "category": "risk",
+      "encounterId": "job_loss"
+    },
+    {
+      "id": "boom",
+      "title": "Boom",
+      "category": "milestone",
+      "encounterId": "economic_boom"
+    }
+  ]
+}

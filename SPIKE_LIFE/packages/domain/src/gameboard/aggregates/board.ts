@@ -4,10 +4,9 @@ import type {
   BoardState,
   EncounterCardId,
   PlayerToken,
+  SpaceType,
 } from '../types.js'
 import {
-  BOARD_DICE_MAX,
-  BOARD_DICE_MIN,
   DEFAULT_BOARD_ROUNDS,
 } from '../types.js'
 import type { GameboardEvent } from '../events/gameboard-events.js'
@@ -15,8 +14,12 @@ import {
   GameboardEventType,
   createGameboardEvent,
 } from '../events/gameboard-events.js'
-import { DEFAULT_BOARD_SPACES, advancePosition, spaceAt } from '../services/default-board-layout.js'
+import { DEFAULT_BOARD_SPACES, spaceAt, spaceIndexForEncounter } from '../services/default-board-layout.js'
 import { getEncounterCard } from '../services/encounter-deck.js'
+import { selectLifeDomainForYear } from '../services/year-loop/domain-weights.js'
+import { pickWeightedEncounter } from '../services/year-loop/situation-weights.js'
+import { shouldOfferAdvisorInsight } from '../services/year-loop/advisor-insight.js'
+import { rollSituationDie } from '../services/year-loop/situation-die.js'
 import { PLAYER_TOKEN_COLORS } from '../../aggregates/game-room.js'
 
 export class Board {
@@ -58,7 +61,14 @@ export class Board {
       maxRounds,
       phase: 'ready_to_roll',
       lastDiceRoll: null,
+      lastCategoryDieRoll: null,
+      lastSituationDieRoll: null,
+      rolledCategory: null,
+      rolledCategoryLabel: null,
+      selectedDomainId: null,
       pendingEncounterId: null,
+      advisorInsightOffered: false,
+      playerAgeSnapshot: null,
       landedSpaceIndex: null,
       createdAt: now,
       updatedAt: now,
@@ -99,45 +109,89 @@ export class Board {
     return this.state.tokens.find((token) => token.playerId === playerId)
   }
 
-  rollDice(rng: () => number = Math.random): number {
+  /** Age-weighted life domain for the new year (UI: domain grid animation). */
+  selectDomainForYear(playerAge: number, rng: () => number = Math.random): Board {
     if (this.state.phase !== 'ready_to_roll') {
-      throw new Error('Dice can only be rolled when the board is ready.')
+      throw new Error('A new year can only begin when ready.')
     }
 
-    const value = Math.floor(rng() * (BOARD_DICE_MAX - BOARD_DICE_MIN + 1)) + BOARD_DICE_MIN
+    const domain = selectLifeDomainForYear(playerAge, rng)
     const playerId = this.currentPlayerId
 
     this.uncommittedEvents.push(
-      createGameboardEvent(GameboardEventType.DICE_ROLLED, this.state.id, {
+      createGameboardEvent(GameboardEventType.DOMAIN_SELECTED, this.state.id, {
         playerId,
-        value,
+        domainId: domain.id,
+        domainLabel: domain.label,
+        category: domain.category,
       }),
     )
 
     this.state = {
       ...this.state,
-      lastDiceRoll: value,
+      selectedDomainId: domain.id,
+      rolledCategory: domain.category,
+      rolledCategoryLabel: domain.label,
+      lastCategoryDieRoll: null,
+      phase: 'category_rolled',
       updatedAt: new Date().toISOString(),
     }
 
-    return value
+    return this
   }
 
-  moveCurrentPlayer(steps: number): Board {
+  /** @deprecated Internal — use selectDomainForYear */
+  rollCategoryDie(playerAge: number, rng: () => number = Math.random): Board {
+    return this.selectDomainForYear(playerAge, rng)
+  }
+
+  rollSituationDie(playerAge: number, rng: () => number = Math.random): Board {
+    if (this.state.phase !== 'category_rolled') {
+      throw new Error('Situation die can only be rolled after the category die.')
+    }
+    if (!this.state.rolledCategory) {
+      throw new Error('Category die must be rolled first.')
+    }
+
+    const situationRoll = rollSituationDie(rng)
+    const category = this.state.rolledCategory
+    const domainId = this.state.selectedDomainId ?? 'career'
+    const encounterId = pickWeightedEncounter(domainId, category, playerAge, rng)
     const playerId = this.currentPlayerId
     const token = this.getToken(playerId)
     if (!token) throw new Error(`Token not found for player: ${playerId}`)
 
+    const toPosition = spaceIndexForEncounter(
+      this.state.spaces,
+      encounterId,
+      category,
+    )
     const fromPosition = token.position
-    const toPosition = advancePosition(fromPosition, steps, this.state.spaces.length)
     const landed = spaceAt(this.state.spaces, toPosition)
+    const encounter = getEncounterCard(encounterId)
+
+    this.uncommittedEvents.push(
+      createGameboardEvent(GameboardEventType.SITUATION_DIE_ROLLED, this.state.id, {
+        playerId,
+        value: situationRoll,
+        category,
+        encounterId,
+      }),
+    )
+
+    this.uncommittedEvents.push(
+      createGameboardEvent(GameboardEventType.DICE_ROLLED, this.state.id, {
+        playerId,
+        value: situationRoll,
+      }),
+    )
 
     this.uncommittedEvents.push(
       createGameboardEvent(GameboardEventType.PLAYER_MOVED, this.state.id, {
         playerId,
         fromPosition,
         toPosition,
-        steps,
+        steps: toPosition - fromPosition,
       }),
     )
 
@@ -146,16 +200,14 @@ export class Board {
         playerId,
         spaceIndex: landed.index,
         spaceLabel: landed.label,
-        encounterId: landed.encounterId,
+        encounterId,
       }),
     )
-
-    const encounter = getEncounterCard(landed.encounterId)
 
     this.uncommittedEvents.push(
       createGameboardEvent(GameboardEventType.SITUATION_TRIGGERED, this.state.id, {
         playerId,
-        encounterId: landed.encounterId,
+        encounterId,
         scenarioId: encounter.scenarioId,
         simulationId: this.state.simulationId,
       }),
@@ -163,23 +215,50 @@ export class Board {
 
     this.state = {
       ...this.state,
+      lastSituationDieRoll: situationRoll,
+      lastDiceRoll: situationRoll,
       tokens: this.state.tokens.map((t) =>
         t.playerId === playerId ? { ...t, position: toPosition } : t,
       ),
-      pendingEncounterId: landed.encounterId,
+      pendingEncounterId: encounterId,
       landedSpaceIndex: landed.index,
+      phase: 'category_rolled',
       updatedAt: new Date().toISOString(),
     }
 
     return this
   }
 
-  rollAndMove(rng?: () => number): Board {
-    const steps = this.rollDice(rng)
-    return this.moveCurrentPlayer(steps)
+  /** Age-weighted domain + situation — one engine step, one UI reveal. */
+  beginNextYear(playerAge: number, rng?: () => number): Board {
+    const random = rng ?? Math.random
+    this.state = { ...this.state, playerAgeSnapshot: playerAge }
+    return this.selectDomainForYear(playerAge, random).rollSituationDie(playerAge, random)
   }
 
-  enterDecisionPhase(): Board {
+  /** @deprecated Use beginNextYear(playerAge) */
+  rollYearSituation(playerAge: number, rng?: () => number): Board {
+    return this.beginNextYear(playerAge, rng)
+  }
+
+  /** @deprecated Use rollYearSituation(playerAge) */
+  rollAndMove(playerAge: number, rng?: () => number): Board {
+    return this.rollYearSituation(playerAge, rng)
+  }
+
+  rollDice(playerAge: number, rng: () => number = Math.random): number {
+    if (this.state.phase === 'ready_to_roll') {
+      this.beginNextYear(playerAge, rng)
+      return this.state.lastSituationDieRoll ?? 0
+    }
+    throw new Error('Next year can only begin when the board is ready.')
+  }
+
+  moveCurrentPlayer(_steps: number): Board {
+    throw new Error('Spatial movement die retired — use rollYearSituation (A5).')
+  }
+
+  enterDecisionPhase(rng: () => number = Math.random): Board {
     if (!this.state.pendingEncounterId) {
       throw new Error('No encounter to resolve.')
     }
@@ -194,6 +273,7 @@ export class Board {
     this.state = {
       ...this.state,
       phase: 'decision_phase',
+      advisorInsightOffered: shouldOfferAdvisorInsight(rng),
       updatedAt: new Date().toISOString(),
     }
 
@@ -266,7 +346,14 @@ export class Board {
         currentPlayerIndex: this.state.currentPlayerIndex + 1,
         phase: 'ready_to_roll',
         lastDiceRoll: null,
+        lastCategoryDieRoll: null,
+        lastSituationDieRoll: null,
+        rolledCategory: null,
+        rolledCategoryLabel: null,
+        selectedDomainId: null,
         pendingEncounterId: null,
+        advisorInsightOffered: false,
+        playerAgeSnapshot: null,
         landedSpaceIndex: null,
         updatedAt: new Date().toISOString(),
       }
@@ -293,6 +380,11 @@ export class Board {
         pendingEncounterId: null,
         landedSpaceIndex: null,
         lastDiceRoll: null,
+        lastCategoryDieRoll: null,
+        lastSituationDieRoll: null,
+        rolledCategory: null,
+        rolledCategoryLabel: null,
+        selectedDomainId: null,
         updatedAt: new Date().toISOString(),
       }
       return this
@@ -305,7 +397,14 @@ export class Board {
       currentPlayerIndex: 0,
       phase: 'ready_to_roll',
       lastDiceRoll: null,
+      lastCategoryDieRoll: null,
+      lastSituationDieRoll: null,
+      rolledCategory: null,
+      rolledCategoryLabel: null,
+      selectedDomainId: null,
       pendingEncounterId: null,
+      advisorInsightOffered: false,
+      playerAgeSnapshot: null,
       landedSpaceIndex: null,
       updatedAt: new Date().toISOString(),
     }

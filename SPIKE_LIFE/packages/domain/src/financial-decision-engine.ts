@@ -1,7 +1,9 @@
+import type { CurrencyConfig } from '@spike-life/content-core'
 import type { SimulationState } from './aggregates/simulation-session.js'
 import type { DecisionStrategy, ScenarioId } from './types.js'
 import { Simulation } from './aggregates/simulation.js'
 import type { ReflectionAnswer } from './services/reflection-engine.js'
+import { revealDueHiddenConsequences } from './services/long-term-consequence-engine.js'
 
 export type { SimulationState, SimulationSession } from './aggregates/simulation-session.js'
 
@@ -13,16 +15,25 @@ function saveSimulation(simulation: Simulation): SimulationState {
   return simulation.toState()
 }
 
-export function createPromotionSession(sessionId: string): SimulationState {
-  return Simulation.createPromotion(sessionId).toState()
+export function createPromotionSession(
+  sessionId: string,
+  currency: CurrencyConfig,
+): SimulationState {
+  return Simulation.createPromotion(sessionId, currency).toState()
 }
 
-export function createWorkshopSession(sessionId: string): SimulationState {
-  return Simulation.createWorkshop(sessionId).toState()
+export function createWorkshopSession(
+  sessionId: string,
+  currency: CurrencyConfig,
+): SimulationState {
+  return Simulation.createWorkshop(sessionId, currency).toState()
 }
 
-export function createProtectionStressSession(sessionId: string): SimulationState {
-  return Simulation.createProtectionStress(sessionId).toState()
+export function createProtectionStressSession(
+  sessionId: string,
+  currency: CurrencyConfig,
+): SimulationState {
+  return Simulation.createProtectionStress(sessionId, currency).toState()
 }
 
 export function presentPromotionSituation(session: SimulationState): SimulationState {
@@ -67,6 +78,21 @@ export function advanceTurn(session: SimulationState): SimulationState {
   return saveSimulation(sim)
 }
 
+/** Reveal hidden long-term consequences when the simulation year advances (A5). */
+export function applyYearEndHiddenReveal(
+  session: SimulationState,
+  year: number,
+): SimulationState {
+  const existing = session.hiddenLongTermConsequences ?? []
+  const { updated } = revealDueHiddenConsequences(existing, year)
+  return {
+    ...session,
+    hiddenLongTermConsequences: updated,
+    simulationYear: year,
+    updatedAt: new Date().toISOString(),
+  }
+}
+
 /** Pull domain events emitted by the last aggregate operation (in-memory only). */
 export function pullEventsFromState(session: SimulationState): {
   state: SimulationState
@@ -81,7 +107,13 @@ export function startPlanningCycle(
   sessionId: string,
   scenarioId: ScenarioId,
   existing?: SimulationState | null,
+  currency?: CurrencyConfig,
 ): SimulationState {
+  const resolvedCurrency = existing?.currency ?? currency
+  if (!resolvedCurrency) {
+    throw new Error('Currency is required when creating a new simulation session.')
+  }
+
   if (existing?.phase === 'cycle_complete') {
     throw new Error('Advance to the next turn before starting a new scenario.')
   }
@@ -92,8 +124,8 @@ export function startPlanningCycle(
   let sim: Simulation
   if (!existing) {
     sim = scenarioId === 'protection_stress'
-      ? Simulation.createProtectionStress(sessionId)
-      : Simulation.createPromotion(sessionId)
+      ? Simulation.createProtectionStress(sessionId, resolvedCurrency)
+      : Simulation.createPromotion(sessionId, resolvedCurrency)
   } else {
     sim = loadSimulation(existing).assignScenario(scenarioId)
   }
@@ -105,8 +137,9 @@ export function runPromotionPlanningCycle(
   sessionId: string,
   strategy: DecisionStrategy,
   reflectionAnswers: ReflectionAnswer[],
+  currency: CurrencyConfig,
 ): SimulationState {
-  let state = startPlanningCycle(sessionId, 'promotion')
+  let state = startPlanningCycle(sessionId, 'promotion', undefined, currency)
   state = submitDecision(state, strategy)
   state = submitReflection(state, reflectionAnswers)
   return state
@@ -116,8 +149,9 @@ export function runProtectionStressPlanningCycle(
   sessionId: string,
   strategy: DecisionStrategy,
   reflectionAnswers: ReflectionAnswer[],
+  currency: CurrencyConfig,
 ): SimulationState {
-  let state = startPlanningCycle(sessionId, 'protection_stress')
+  let state = startPlanningCycle(sessionId, 'protection_stress', undefined, currency)
   state = submitDecision(state, strategy)
   state = submitReflection(state, reflectionAnswers)
   return state

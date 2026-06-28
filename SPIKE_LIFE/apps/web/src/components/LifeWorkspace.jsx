@@ -3,16 +3,22 @@ import {
   BoardHUD,
   BoardLegend,
   BoardOverlay,
-  DicePanel,
   EncounterModal,
   FinancialHUD,
   GameBoard,
   SPACE_CATEGORY_LEGEND,
 } from '@spike-life/ui'
 import ActionDock from './gameboard/ActionDock.jsx'
+import BoardWelcome from './gameboard/BoardWelcome.jsx'
+import DomainGridBoard from './gameboard/DomainGridBoard.jsx'
+import AdvisorInsightPrompt from './gameboard/AdvisorInsightPrompt.jsx'
+import YearRevealSequence from './gameboard/YearRevealSequence.jsx'
+import FinancialWorldsPanel from './gameboard/FinancialWorldsPanel.jsx'
+import LearningBeat from './gameboard/LearningBeat.jsx'
 import SituationSideCard from './gameboard/SituationSideCard.jsx'
 import TurnFlowStepper from './gameboard/TurnFlowStepper.jsx'
 import { impactTagsForSpaceType } from './gameboard/encounter-impact.js'
+import { useGameKeyboard } from '../hooks/useGameKeyboard.js'
 import {
   ensureSessionStarted,
   endBoardTurn,
@@ -40,7 +46,11 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
   const [protectView, setProtectView] = useState(null)
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(false)
-  const [rolling, setRolling] = useState(false)
+  const [yearRevealActive, setYearRevealActive] = useState(false)
+  const [yearRevealPending, setYearRevealPending] = useState(false)
+  const [yearRevealData, setYearRevealData] = useState(null)
+  const [showAdvisorPrompt, setShowAdvisorPrompt] = useState(false)
+  const [pendingAdvisorInsight, setPendingAdvisorInsight] = useState(false)
   const [error, setError] = useState(null)
 
   const {
@@ -112,22 +122,56 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
   }
 
   async function handleRollDice() {
-    setRolling(true)
+    setYearRevealActive(true)
+    setYearRevealPending(true)
+    setYearRevealData(null)
     setBusy(true)
     setError(null)
     setExpandedPanel(null)
     setShowEncounterModal(false)
+    setShowAdvisorPrompt(false)
     try {
+      const findingMinMs = 900
+      const started = Date.now()
       await rollDice()
-      await refresh()
-      setShowEncounterModal(true)
+      const { spatial } = await refresh()
+      const waitMs = Math.max(0, findingMinMs - (Date.now() - started))
+      if (waitMs > 0) {
+        await new Promise((resolve) => {
+          setTimeout(resolve, waitMs)
+        })
+      }
+      setYearRevealData({
+        domainId: spatial?.selectedDomainId ?? null,
+        domainLabel: spatial?.selectedDomainLabel ?? 'Life',
+        encounter: spatial?.activeEncounter ?? null,
+        situationShuffle: spatial?.situationShuffle ?? [],
+      })
+      setPendingAdvisorInsight(spatial?.advisorInsightOffered ?? false)
+      setYearRevealPending(false)
     } catch (err) {
       setError(err.message)
-    } finally {
-      setRolling(false)
+      setYearRevealActive(false)
+      setYearRevealPending(false)
+      setYearRevealData(null)
       setBusy(false)
     }
   }
+
+  const handleYearRevealComplete = useCallback(() => {
+    setYearRevealActive(false)
+    setYearRevealPending(false)
+    setYearRevealData(null)
+    setBusy(false)
+    if (pendingAdvisorInsight) {
+      setShowAdvisorPrompt(true)
+      setPendingAdvisorInsight(false)
+    } else {
+      setShowEncounterModal(true)
+    }
+  }, [pendingAdvisorInsight, setShowEncounterModal])
+
+  const rolling = yearRevealActive
 
   async function handleDecide(strategy) {
     setBusy(true)
@@ -136,6 +180,7 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
     try {
       await submitDecision(strategy)
       setExpandedPanel('reflect')
+      await refresh()
       setJourneyView(await getLensView('journey'))
       setPlanView(await getLensView('plan'))
     } catch (err) {
@@ -163,22 +208,62 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
   const inDecisionPhase = board?.phase === 'decision_phase'
   const canDecide = inDecisionPhase && dashboard?.canDecide
   const canReflect = inDecisionPhase && dashboard?.canReflect
+  const canRoll = board?.canRoll && !rolling
+  const showBoardWelcome =
+    !loading && canRoll && !board?.activeEncounter && !rolling && board?.roundNumber <= 1
   const recommendations = planView?.lens === 'plan' ? planView.data.recommendations : []
   const landedSpace = board?.spaces.find((s) => s.index === board.landedSpaceIndex)
   const priorityLabels = recommendations.slice(0, 3).map((r) => r.title)
   const impactTags = landedSpace ? impactTagsForSpaceType(landedSpace.type) : []
 
+  useGameKeyboard({
+    canRoll,
+    rolling,
+    onRoll: handleRollDice,
+    onDismiss: () => setShowEncounterModal(false),
+    onClosePanel: () => setExpandedPanel(null),
+  })
+
+  const domainProps = {
+    selectedDomainLabel: board?.selectedDomainLabel ?? null,
+  }
+
+  const gridStatusLabel = (() => {
+    if (yearRevealActive) return 'Let\'s see what life brings you this year…'
+    if (showEncounterModal || inDecisionPhase) {
+      return board?.selectedDomainLabel
+        ? `${board.selectedDomainLabel} — situation ready`
+        : 'Situation ready'
+    }
+    if (canRoll) {
+      return board?.roundNumber > 1
+        ? `Year ${board.roundNumber} — tap Next Year`
+        : 'Tap Next Year to begin'
+    }
+    return 'Life domains'
+  })()
+
   return (
-    <div className="flex h-dvh max-h-dvh flex-col overflow-hidden bg-slate-50">
-      <BoardHUD hud={turnHUD} onRoll={handleRollDice} rolling={rolling} />
+    <div className="game-shell">
+      <a href="#game-board" className="skip-link">
+        Skip to game
+      </a>
+
+      <BoardHUD
+        hud={turnHUD}
+        onRoll={handleRollDice}
+        rolling={rolling}
+        rollLabel="Next year"
+        rollingLabel="Let's see what life brings you this year…"
+      />
 
       {onOpenWorkshop && (
-        <div className="shrink-0 border-b border-slate-200 bg-white px-4 py-0.5">
-          <div className="mx-auto flex max-w-[100rem] justify-end">
+        <div className="shrink-0 border-b border-slate-200/70 bg-white/70 px-4 py-2 backdrop-blur-sm">
+          <div className="mx-auto flex max-w-[120rem] justify-end">
             <button
               type="button"
               onClick={onOpenWorkshop}
-              className="text-xs font-semibold text-spike-brand hover:underline"
+              className="focus-game rounded-lg px-3 py-2 text-caption font-semibold text-spike-brand hover:underline"
             >
               Workshop ({GAME_ROOM_MAX_PLAYERS} players) →
             </button>
@@ -186,37 +271,114 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
         </div>
       )}
 
-      <div className="mx-auto grid min-h-0 w-full max-w-[100rem] flex-1 grid-cols-1 overflow-hidden lg:grid-cols-[13.5rem_minmax(0,1fr)_17rem] lg:gap-4 lg:px-4 lg:py-3">
-        <aside className="hidden min-h-0 flex-col gap-3 overflow-hidden lg:flex">
+      <div className="shrink-0 border-b border-slate-200/60 bg-white/60 px-4 py-3 backdrop-blur-sm xl:hidden">
+        <FinancialWorldsPanel compact />
+      </div>
+
+      <div className="shrink-0 border-b border-slate-200/60 bg-white/60 px-4 py-3 backdrop-blur-sm xl:hidden">
+        <TurnFlowStepper
+          layout="horizontal"
+          phase={board?.phase ?? 'ready_to_roll'}
+          rolling={rolling}
+          expandedPanel={expandedPanel}
+          showEncounterModal={showEncounterModal}
+        />
+      </div>
+
+      <div className="mx-auto grid min-h-0 w-full max-w-[120rem] flex-1 grid-cols-1 grid-rows-[minmax(0,1fr)_auto] gap-0 overflow-hidden xl:grid-cols-[12.5rem_minmax(0,1fr)_20rem] xl:grid-rows-1 xl:gap-5 xl:px-6 xl:py-5">
+        <aside className="hidden min-h-0 flex-col gap-4 overflow-hidden xl:flex">
+          <FinancialWorldsPanel />
+          <LearningBeat
+            phase={board?.phase ?? 'ready_to_roll'}
+            rolling={rolling}
+            expandedPanel={expandedPanel}
+            showEncounterModal={showEncounterModal}
+            roundNumber={board?.roundNumber ?? 1}
+            hasEncounter={Boolean(board?.activeEncounter)}
+            {...domainProps}
+          />
           <TurnFlowStepper
             phase={board?.phase ?? 'ready_to_roll'}
             rolling={rolling}
             expandedPanel={expandedPanel}
             showEncounterModal={showEncounterModal}
           />
-          <BoardLegend compact items={SPACE_CATEGORY_LEGEND} title="Board" />
+          <BoardLegend compact items={SPACE_CATEGORY_LEGEND} title="Board" className="mt-auto" />
         </aside>
 
-        <main className="relative flex min-h-0 min-w-0 flex-col px-2 py-2 lg:px-0 lg:py-0">
+        <main
+          id="game-board"
+          className="relative flex min-h-0 min-w-0 flex-col px-3 py-3 sm:px-4 xl:px-0 xl:py-0"
+          tabIndex={-1}
+        >
           {board?.gameComplete && (
-            <p className="absolute left-4 right-4 top-2 z-10 rounded-xl bg-emerald-500/90 px-4 py-2 text-center text-sm font-semibold text-white shadow-md">
+            <p
+              className="absolute left-4 right-4 top-3 z-10 rounded-2xl bg-emerald-500 px-5 py-3 text-center text-body font-semibold text-white shadow-lg"
+              role="status"
+            >
               Journey complete — all {board.maxRounds} years played.
             </p>
           )}
 
-          {loading ? (
-            <div className="flex flex-1 items-center justify-center">
-              <p className="text-body-lg text-slate-500">Loading board…</p>
-            </div>
-          ) : (
-            <GameBoard
-              board={boardView}
-              rolling={rolling}
-              highlightSpaceIndex={highlightSpaceIndex}
-              onSpaceSelect={(space) => setHighlightSpaceIndex(space.boardIndex)}
-              className="min-h-0 flex-1"
-            />
-          )}
+          <div className="relative flex min-h-0 flex-1 items-center justify-center rounded-3xl bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 p-4 sm:p-6 xl:rounded-4xl xl:p-8">
+            {loading ? (
+              <p className="text-body-lg text-slate-400" role="status">
+                Loading…
+              </p>
+            ) : board?.lifeDomains?.length ? (
+              <div className="flex w-full max-w-lg flex-col items-center">
+                {yearRevealActive ? (
+                  <YearRevealSequence
+                    active={yearRevealActive}
+                    pending={yearRevealPending}
+                    domains={board.lifeDomains}
+                    animationCycle={board.domainAnimationCycle}
+                    reveal={yearRevealData}
+                    onComplete={handleYearRevealComplete}
+                  />
+                ) : (
+                  <>
+                    <p className="mb-4 text-center text-label uppercase tracking-wider text-amber-300/90">
+                      {gridStatusLabel}
+                    </p>
+                    <DomainGridBoard
+                      domains={board.lifeDomains}
+                      selectedDomainId={board?.selectedDomainId}
+                      animationCycle={board.domainAnimationCycle}
+                      mode="idle"
+                      className="w-full"
+                    />
+                    <BoardWelcome
+                      visible={showBoardWelcome}
+                      characterName={dashboard?.characterName}
+                      canRoll={canRoll}
+                      onRoll={handleRollDice}
+                    />
+                  </>
+                )}
+              </div>
+            ) : (
+              <GameBoard
+                board={boardView}
+                rolling={rolling}
+                highlightSpaceIndex={highlightSpaceIndex}
+                onSpaceSelect={(space) => setHighlightSpaceIndex(space.boardIndex)}
+                className="min-h-0 w-full flex-1"
+              />
+            )}
+          </div>
+
+          <AdvisorInsightPrompt
+            visible={showAdvisorPrompt && inDecisionPhase && !yearRevealActive}
+            onViewAdvice={() => {
+              setShowAdvisorPrompt(false)
+              handleExpandPanel('fna')
+            }}
+            onDecideMyself={() => {
+              setShowAdvisorPrompt(false)
+              setShowEncounterModal(true)
+            }}
+          />
 
           <BoardOverlay
             visible={showEncounterModal && inDecisionPhase && !rolling}
@@ -239,51 +401,55 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
             />
           </BoardOverlay>
 
+          <div aria-live="assertive" aria-atomic="true" className="sr-only">
+            {error}
+          </div>
           {error && (
-            <p className="absolute bottom-2 left-2 right-2 rounded-xl bg-red-600/90 px-4 py-2 text-center text-sm font-medium text-white shadow-lg">
+            <p
+              className="absolute bottom-3 left-3 right-3 rounded-2xl bg-red-600 px-5 py-3 text-center text-body font-medium text-white shadow-lg sm:left-auto sm:right-4 sm:max-w-md"
+              role="alert"
+            >
               {error}
             </p>
           )}
         </main>
 
-        <aside className="flex min-h-0 flex-col gap-3 overflow-hidden px-2 pb-2 lg:px-0 lg:pb-0">
-          <div className="lg:hidden">
-            <DicePanel
-              canRoll={board?.canRoll ?? false}
+        <aside className="flex min-h-0 shrink-0 flex-col gap-4 overflow-y-auto border-t border-slate-200/70 bg-white/85 px-4 py-4 backdrop-blur-md xl:max-h-none xl:shrink xl:overflow-hidden xl:border-0 xl:bg-transparent xl:px-0 xl:py-0 xl:backdrop-blur-none">
+          <div className="xl:hidden">
+            <LearningBeat
+              phase={board?.phase ?? 'ready_to_roll'}
               rolling={rolling}
-              lastDiceRoll={board?.lastDiceRoll ?? null}
-              onRoll={handleRollDice}
-            />
-          </div>
-
-          <SituationSideCard
-            encounter={board?.activeEncounter}
-            forceOpen
-          />
-
-          <div className="min-h-0 flex-1 overflow-hidden">
-            <ActionDock
-              board={board}
               expandedPanel={expandedPanel}
-              onExpandPanel={handleExpandPanel}
-              onRoll={handleRollDice}
-              rolling={rolling}
-              canDecide={canDecide}
-              canReflect={canReflect}
-              inDecisionPhase={inDecisionPhase}
-              planView={planView}
-              journeyView={journeyView}
-              growView={growView}
-              protectView={protectView}
-              onDecide={handleDecide}
-              onSubmitReflection={handleReflection}
-              busy={busy}
-              error={error}
-              onViewJourney={async () => {
-                setJourneyView(await getLensView('journey'))
-              }}
+              showEncounterModal={showEncounterModal}
+              roundNumber={board?.roundNumber ?? 1}
+              hasEncounter={Boolean(board?.activeEncounter)}
+              {...domainProps}
             />
           </div>
+
+          <SituationSideCard encounter={board?.activeEncounter} forceOpen />
+
+          <ActionDock
+            board={board}
+            expandedPanel={expandedPanel}
+            onExpandPanel={handleExpandPanel}
+            onRoll={handleRollDice}
+            rolling={rolling}
+            canDecide={canDecide}
+            canReflect={canReflect}
+            inDecisionPhase={inDecisionPhase}
+            planView={planView}
+            journeyView={journeyView}
+            growView={growView}
+            protectView={protectView}
+            onDecide={handleDecide}
+            onSubmitReflection={handleReflection}
+            busy={busy}
+            error={error}
+            onViewJourney={async () => {
+              setJourneyView(await getLensView('journey'))
+            }}
+          />
         </aside>
       </div>
 

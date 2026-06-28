@@ -16,6 +16,7 @@ import {
   submitBoardDecision,
   submitBoardReflection,
 } from '@spike-life/domain'
+import { DEFAULT_CURRENCY } from './content/bootstrap.js'
 
 export interface RollDiceResult {
   boardId: string
@@ -39,7 +40,13 @@ export class BoardCommandBus {
     simulationId: string,
     displayName?: string,
   ): Promise<BoardState> {
-    return createSoloBoard(this.deps(), boardId, simulationId, displayName)
+    return createSoloBoard(
+      this.deps(),
+      boardId,
+      simulationId,
+      DEFAULT_CURRENCY,
+      displayName,
+    )
   }
 
   async rollDice(boardId: string): Promise<RollDiceResult> {

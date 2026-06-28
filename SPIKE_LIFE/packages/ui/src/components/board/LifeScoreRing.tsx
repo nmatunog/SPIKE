@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
+import { motionTokens as t } from '../../motion/tokens.js'
 import type { LifeScoreRingProps } from '../../types/component-props.js'
 
 export type { LifeScoreRingProps }
@@ -9,14 +10,21 @@ export function LifeScoreRing({
   strokeWidth = 4,
   maxDisplay = 1000,
 }: LifeScoreRingProps) {
+  const reduceMotion = useReducedMotion()
   const display = Math.round(score * 10)
+
   const radius = (size - strokeWidth) / 2
   const circumference = 2 * Math.PI * radius
   const progress = Math.min(1, display / maxDisplay)
   const offset = circumference * (1 - progress)
+  const fontSize = size < 44 ? 10 : 11
 
   return (
-    <div
+    <motion.div
+      key={`score-${display}`}
+      initial={reduceMotion ? false : { scale: 1.08 }}
+      animate={{ scale: 1 }}
+      transition={{ duration: t.slow, ease: t.ease.snap }}
       className="relative inline-flex items-center justify-center"
       style={{ width: size, height: size }}
       aria-label={`Life score ${display} out of ${maxDisplay}`}
@@ -28,7 +36,7 @@ export function LifeScoreRing({
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="rgba(255,255,255,0.12)"
+          stroke="rgba(255,255,255,0.14)"
           strokeWidth={strokeWidth}
         />
         <motion.circle
@@ -42,13 +50,22 @@ export function LifeScoreRing({
           strokeDasharray={circumference}
           initial={false}
           animate={{ strokeDashoffset: offset }}
-          transition={{ duration: 0.28, ease: 'easeOut' }}
+          transition={{ duration: t.slow, ease: t.ease.out }}
         />
       </svg>
-      <span className="absolute text-[10px] font-bold text-white">
+      <motion.span
+        key={display}
+        initial={reduceMotion ? false : { opacity: 0, y: 4 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: t.normal }}
+        className="absolute text-center font-bold text-white"
+        style={{ fontSize }}
+      >
         {display}
-        <span className="block text-[8px] font-normal text-slate-400">/{maxDisplay}</span>
-      </span>
-    </div>
+        <span className="block font-normal text-slate-400" style={{ fontSize: fontSize - 2 }}>
+          /{maxDisplay}
+        </span>
+      </motion.span>
+    </motion.div>
   )
 }

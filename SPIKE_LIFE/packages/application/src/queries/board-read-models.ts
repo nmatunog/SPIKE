@@ -39,6 +39,14 @@ export interface EncounterCardView {
   learningConcept: string
 }
 
+export interface LifeDomainView {
+  id: string
+  label: string
+  category: SpaceType
+  icon: string
+  color: string
+}
+
 export interface SpatialBoardView {
   boardId: string
   simulationId: string
@@ -47,6 +55,17 @@ export interface SpatialBoardView {
   boardYear: number
   maxRounds: number
   lastDiceRoll: number | null
+  lastCategoryDieRoll: number | null
+  lastSituationDieRoll: number | null
+  rolledCategory: SpaceType | null
+  rolledCategoryLabel: string | null
+  selectedDomainId: string | null
+  selectedDomainLabel: string | null
+  lifeDomains: LifeDomainView[]
+  domainAnimationCycle: string[]
+  situationShuffle: EncounterCardView[]
+  advisorInsightOffered: boolean
+  playerAgeSnapshot: number | null
   canRoll: boolean
   canEndTurn: boolean
   gameComplete: boolean
@@ -57,4 +76,5 @@ export interface SpatialBoardView {
   landedSpaceIndex: number | null
   trackPath: string
   layout: string
+  boardConfigId?: string
 }

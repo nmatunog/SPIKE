@@ -1,5 +1,6 @@
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import type { ReactNode } from 'react'
+import { modalPanel, overlayBackdrop } from '../motion/variants.js'
 
 export interface BoardOverlayProps {
   visible: boolean
@@ -8,23 +9,26 @@ export interface BoardOverlayProps {
 }
 
 export function BoardOverlay({ visible, children, onDismiss }: BoardOverlayProps) {
+  const reduceMotion = useReducedMotion()
+
   return (
     <AnimatePresence>
       {visible && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          className="absolute inset-0 z-30 flex items-center justify-center bg-slate-950/55 p-4 backdrop-blur-[2px]"
+          variants={reduceMotion ? undefined : overlayBackdrop}
+          initial={reduceMotion ? { opacity: 0 } : 'hidden'}
+          animate={reduceMotion ? { opacity: 1 } : 'visible'}
+          exit={reduceMotion ? { opacity: 0 } : 'exit'}
+          className="absolute inset-0 z-30 flex items-center justify-center bg-slate-950/55 p-4 backdrop-blur-[3px]"
           onClick={onDismiss}
           role="presentation"
         >
           <motion.div
-            initial={{ opacity: 0, y: 12, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 8, scale: 0.97 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+            variants={reduceMotion ? undefined : modalPanel}
+            initial={reduceMotion ? { opacity: 0, y: 8 } : 'hidden'}
+            animate={reduceMotion ? { opacity: 1, y: 0 } : 'visible'}
+            exit={reduceMotion ? { opacity: 0, y: 6 } : 'exit'}
+            style={{ perspective: 1200 }}
             onClick={(e) => e.stopPropagation()}
             className="w-full max-w-md"
           >

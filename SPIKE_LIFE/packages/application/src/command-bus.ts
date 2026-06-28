@@ -12,6 +12,7 @@ import {
   advanceTurn as advanceTurnState,
   createWorkshopSession as createWorkshopSessionState,
 } from '@spike-life/domain'
+import { DEFAULT_CURRENCY } from './content/bootstrap.js'
 
 export interface StartCycleResult {
   sessionId: string
@@ -27,7 +28,7 @@ export class FinancialDecisionCommandBus {
     scenarioId: ScenarioId = 'promotion',
   ): Promise<StartCycleResult> {
     const existing = await this.repository.findById(sessionId)
-    const session = startPlanningCycle(sessionId, scenarioId, existing)
+    const session = startPlanningCycle(sessionId, scenarioId, existing, DEFAULT_CURRENCY)
     await this.repository.save(session)
     return { sessionId: session.id, scenarioId: session.scenarioId, phase: session.phase }
   }
@@ -36,7 +37,7 @@ export class FinancialDecisionCommandBus {
     const existing = await this.repository.findById(sessionId)
     if (existing) return existing
 
-    const session = createWorkshopSessionState(sessionId)
+    const session = createWorkshopSessionState(sessionId, DEFAULT_CURRENCY)
     await this.repository.save(session)
     return session
   }

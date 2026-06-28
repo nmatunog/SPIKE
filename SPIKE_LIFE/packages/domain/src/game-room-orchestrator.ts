@@ -1,3 +1,4 @@
+import type { CurrencyConfig } from '@spike-life/content-core'
 import type { DecisionStrategy, ScenarioId } from './types.js'
 import type { ReflectionAnswer } from './services/reflection-engine.js'
 import type { SimulationState } from './aggregates/simulation-session.js'
@@ -32,12 +33,13 @@ export async function joinGameRoom(
   roomId: string,
   playerId: string,
   displayName: string,
+  currency: CurrencyConfig,
 ): Promise<GameRoomState> {
   const existing = await deps.gameRoomRepo.findById(roomId)
   if (!existing) throw new Error(`Room not found: ${roomId}`)
 
   const simulationId = simulationIdForPlayer(roomId, playerId)
-  const workshop = createWorkshopSession(simulationId)
+  const workshop = createWorkshopSession(simulationId, currency)
   await deps.simulationRepo.save(workshop)
 
   const room = GameRoom.fromState(existing).join(playerId, displayName, simulationId)

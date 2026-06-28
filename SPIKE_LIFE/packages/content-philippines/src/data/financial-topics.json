@@ -1,0 +1,13 @@
+[
+  { "id": "emergency_fund", "label": "Emergency Fund", "priority": "core" },
+  { "id": "cash_flow", "label": "Cash Flow", "priority": "core" },
+  { "id": "family_support", "label": "Family Support", "priority": "core" },
+  { "id": "healthcare", "label": "Healthcare Costs", "priority": "core" },
+  { "id": "education", "label": "Education Planning", "priority": "core" },
+  { "id": "protection", "label": "Protection Planning", "priority": "core" },
+  { "id": "housing", "label": "Housing", "priority": "core" },
+  { "id": "entrepreneurship", "label": "Entrepreneurship", "priority": "core" },
+  { "id": "ofw", "label": "OFW Decisions", "priority": "core" },
+  { "id": "retirement", "label": "Retirement", "priority": "core" },
+  { "id": "legacy", "label": "Legacy", "priority": "core" }
+]

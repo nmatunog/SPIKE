@@ -11,6 +11,7 @@ import {
   submitPlayerDecision,
   submitPlayerReflection,
 } from './game-room-orchestrator.js'
+import { TEST_CURRENCY } from './test/currency-fixture.js'
 import { GAME_ROOM_MAX_PLAYERS } from './types.js'
 
 const REFLECTION = [
@@ -60,7 +61,7 @@ describe('GameRoom orchestrator — 6 players', () => {
     await createGameRoom(deps, roomId, 'coach-1')
 
     for (let i = 1; i <= GAME_ROOM_MAX_PLAYERS; i += 1) {
-      await joinGameRoom(deps, roomId, `player-${i}`, `Player ${i}`)
+      await joinGameRoom(deps, roomId, `player-${i}`, `Player ${i}`, TEST_CURRENCY)
     }
 
     const started = await startRoomTurn(deps, roomId, 'promotion')

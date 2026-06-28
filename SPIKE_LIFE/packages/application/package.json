@@ -13,9 +13,12 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "npm run build -w @spike-life/domain && npm run build -w @spike-life/ui && npm run build -w @spike-life/infrastructure && tsc -p tsconfig.json && vitest run --config vitest.dist.config.ts"
+    "test": "npm run build -w @spike-life/content-core && npm run build -w @spike-life/content-philippines && npm run build -w @spike-life/board-config && npm run build -w @spike-life/domain && npm run build -w @spike-life/ui && npm run build -w @spike-life/infrastructure && tsc -p tsconfig.json && vitest run --config vitest.dist.config.ts"
   },
   "dependencies": {
+    "@spike-life/board-config": "*",
+    "@spike-life/content-core": "*",
+    "@spike-life/content-philippines": "*",
     "@spike-life/domain": "*",
     "@spike-life/ui": "*"
   },

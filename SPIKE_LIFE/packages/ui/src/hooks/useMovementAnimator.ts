@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { interpolateAlongSpaces } from '../layout/engine.js'
+import { motionTokens as t } from '../motion/tokens.js'
 import type { BoardTokenViewModel, PositionedSpace } from '../types/view-models.js'
 
 export interface MovementAnimatorResult {
   animatedPositions: Map<string, { x: number; y: number }>
   isAnimating: boolean
+  justLanded: boolean
 }
 
 export interface MovementAnimatorInput {
@@ -14,6 +16,8 @@ export interface MovementAnimatorInput {
   lastDiceRoll: number | null
   phase: string
 }
+
+const MOVEMENT_MS = t.dramatic * 1000
 
 export function useMovementAnimator({
   spaces,
@@ -26,6 +30,7 @@ export function useMovementAnimator({
   const [animProgress, setAnimProgress] = useState(1)
   const [animFrom, setAnimFrom] = useState(0)
   const [animTo, setAnimTo] = useState(0)
+  const [justLanded, setJustLanded] = useState(false)
 
   const currentToken = tokens.find((t) => t.isCurrent) ?? tokens[0]
 
@@ -39,18 +44,21 @@ export function useMovementAnimator({
       setAnimFrom(prevPositionRef.current)
       setAnimTo(newPos)
       setAnimProgress(0)
+      setJustLanded(false)
 
       const start = performance.now()
-      const duration = 680
 
       function frame(now: number) {
-        const t = Math.min(1, (now - start) / duration)
-        const eased = 1 - (1 - t) ** 3
+        const elapsed = now - start
+        const progress = Math.min(1, elapsed / MOVEMENT_MS)
+        const eased = 1 - (1 - progress) ** 3
         setAnimProgress(eased)
-        if (t < 1) {
+        if (progress < 1) {
           requestAnimationFrame(frame)
         } else {
           prevPositionRef.current = newPos
+          setJustLanded(true)
+          window.setTimeout(() => setJustLanded(false), t.slow * 1000)
         }
       }
 
@@ -78,5 +86,5 @@ export function useMovementAnimator({
     }
   }
 
-  return { animatedPositions, isAnimating }
+  return { animatedPositions, isAnimating, justLanded }
 }

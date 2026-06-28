@@ -33,6 +33,11 @@ export function lifeStageForTurn(turnNumber: number): LifeStage {
   return WORKSHOP_STAGE_ORDER[index] ?? 'launch'
 }
 
+export function ageForSimulationYear(startingAge: number, simulationYear: number): number {
+  return startingAge + Math.max(0, simulationYear - 1)
+}
+
+/** @deprecated Use ageForSimulationYear with session.startingAge */
 export function ageForWorkshopTurn(turnNumber: number): number {
   return WORKSHOP_AGE_BY_STAGE[lifeStageForTurn(turnNumber)]
 }

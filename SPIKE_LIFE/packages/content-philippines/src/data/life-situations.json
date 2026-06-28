@@ -1,0 +1,20 @@
+[
+  { "id": "first_allowance", "title": "First Allowance", "lifeStage": "youth", "topics": ["cash_flow"] },
+  { "id": "graduation", "title": "Graduation", "lifeStage": "young_adult", "topics": ["education", "cash_flow"] },
+  { "id": "first_job", "title": "First Job", "lifeStage": "young_adult", "topics": ["cash_flow", "protection"] },
+  { "id": "bpo_career", "title": "BPO Career", "lifeStage": "early_career", "topics": ["cash_flow", "healthcare"] },
+  { "id": "government_employment", "title": "Government Employment", "lifeStage": "early_career", "topics": ["protection", "retirement"] },
+  { "id": "ofw_opportunity", "title": "OFW Opportunity", "lifeStage": "mid_career", "topics": ["ofw", "family_support"] },
+  { "id": "family_financial_support", "title": "Family Financial Support", "lifeStage": "mid_career", "topics": ["family_support", "cash_flow"] },
+  { "id": "sari_sari_store", "title": "Sari-sari Store", "lifeStage": "mid_career", "topics": ["entrepreneurship", "cash_flow"] },
+  { "id": "motorcycle_purchase", "title": "Motorcycle Purchase", "lifeStage": "mid_career", "topics": ["cash_flow", "protection"] },
+  { "id": "renting", "title": "Renting", "lifeStage": "mid_career", "topics": ["housing", "cash_flow"] },
+  { "id": "pagibig_housing_loan", "title": "Pag-IBIG Housing Loan", "lifeStage": "mid_career", "topics": ["housing", "protection"] },
+  { "id": "wedding", "title": "Wedding", "lifeStage": "mid_career", "topics": ["family_support", "protection"] },
+  { "id": "first_child", "title": "First Child", "lifeStage": "family", "topics": ["education", "protection", "healthcare"] },
+  { "id": "parents_dependent", "title": "Parents Becoming Dependent", "lifeStage": "mid_career", "topics": ["family_support", "healthcare"] },
+  { "id": "medical_emergency", "title": "Medical Emergency", "lifeStage": "any", "topics": ["emergency_fund", "healthcare", "protection"] },
+  { "id": "business_expansion", "title": "Business Expansion", "lifeStage": "mid_career", "topics": ["entrepreneurship", "cash_flow"] },
+  { "id": "retirement", "title": "Retirement", "lifeStage": "late_career", "topics": ["retirement", "legacy"] },
+  { "id": "legacy", "title": "Legacy", "lifeStage": "late_career", "topics": ["legacy", "protection"] }
+]

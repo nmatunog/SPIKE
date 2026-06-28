@@ -1,5 +1,6 @@
 import type { SimulationState, DecisionRecord, TurnRecord } from './simulation-session.js'
 import type { ScenarioId, CyclePhase, DecisionStrategy } from '../types.js'
+import type { CurrencyConfig } from '@spike-life/content-core'
 import type { DomainEvent } from '../events/domain-events.js'
 import { DomainEventType, createDomainEvent } from '../events/domain-events.js'
 import type { ReflectionAnswer } from '../services/reflection-engine.js'
@@ -25,13 +26,16 @@ import {
   runConsequenceEngine,
 } from '../services/consequence-engine.js'
 import {
+  recordHiddenLongTermConsequence,
+} from '../services/long-term-consequence-engine.js'
+import {
   runReflectionEngine,
   validateReflectionAnswers,
 } from '../services/reflection-engine.js'
 import { calculateLifeScore } from '../services/life-score-engine.js'
 import {
   WORKSHOP_MAX_TURNS,
-  ageForWorkshopTurn,
+  ageForSimulationYear,
   lifeStageForTurn,
 } from '../services/workshop-progression.js'
 import type { FinancialGoal } from '../entities/financial-state.js'
@@ -45,19 +49,19 @@ export class Simulation {
     this.state = state
   }
 
-  static createPromotion(id: string): Simulation {
+  static createPromotion(id: string, currency: CurrencyConfig): Simulation {
     const bundle = createFreshGraduateBundle()
-    return new Simulation(Simulation.emptyState(id, 'promotion', bundle))
+    return new Simulation(Simulation.emptyState(id, 'promotion', bundle, currency))
   }
 
-  static createWorkshop(id: string): Simulation {
+  static createWorkshop(id: string, currency: CurrencyConfig): Simulation {
     const bundle = createFreshGraduateBundle()
-    return new Simulation(Simulation.emptyState(id, 'promotion', bundle))
+    return new Simulation(Simulation.emptyState(id, 'promotion', bundle, currency))
   }
 
-  static createProtectionStress(id: string): Simulation {
+  static createProtectionStress(id: string, currency: CurrencyConfig): Simulation {
     const bundle = createProtectionStressBundle()
-    return new Simulation(Simulation.emptyState(id, 'protection_stress', bundle))
+    return new Simulation(Simulation.emptyState(id, 'protection_stress', bundle, currency))
   }
 
   static fromState(state: SimulationState): Simulation {
@@ -108,6 +112,7 @@ export class Simulation {
       this.state.protectionPortfolio,
       this.state.goalPortfolio,
       this.state.situation,
+      this.state.currency,
     )
 
     const fna = runFnaAnalysis(
@@ -117,7 +122,11 @@ export class Simulation {
       this.state.goalPortfolio,
     )
 
-    const recommendations = runRecommendationEngine(fna, this.state.character)
+    const recommendations = runRecommendationEngine(
+      fna,
+      this.state.character,
+      this.state.currency,
+    )
 
     this.state = {
       ...this.state,
@@ -187,6 +196,12 @@ export class Simulation {
       decision,
       consequence: consequenceWithDelta,
       fnaAfterDecision: fnaAfter,
+      hiddenLongTermConsequences: recordHiddenLongTermConsequence(
+        strategy,
+        consequenceWithDelta.decisionQuality,
+        this.state.simulationYear,
+        this.state.hiddenLongTermConsequences ?? [],
+      ),
       phase: 'consequences_applied',
       updatedAt: new Date().toISOString(),
     }
@@ -303,7 +318,10 @@ export class Simulation {
 
     const nextTurn = this.state.turnNumber + 1
     const nextStage = lifeStageForTurn(nextTurn)
-    const nextAge = ageForWorkshopTurn(nextTurn)
+    const nextAge = ageForSimulationYear(
+      this.state.startingAge ?? this.state.character.age,
+      nextTurn,
+    )
 
     this.state = {
       ...this.state,
@@ -342,7 +360,10 @@ export class Simulation {
   }
 
   private applyPromotionSituation(): Simulation {
-    const situation = createPromotionSituation(FRESH_GRADUATE_FINANCIAL_PROFILE)
+    const situation = createPromotionSituation(
+      FRESH_GRADUATE_FINANCIAL_PROFILE,
+      this.state.currency,
+    )
     const profileAfter = applySituationToIncome(this.state.financialProfile, situation)
     const monthlyCapacity = monthlyRaiseFromSituation(this.state.financialProfile, situation)
 
@@ -363,7 +384,10 @@ export class Simulation {
   }
 
   private applyProtectionStressSituation(): Simulation {
-    const situation = createProtectionStressSituation(PROTECTION_STRESS_FINANCIAL_PROFILE)
+    const situation = createProtectionStressSituation(
+      PROTECTION_STRESS_FINANCIAL_PROFILE,
+      this.state.currency,
+    )
     const profileAfter = applyProtectionStressToProfile(this.state.financialProfile, situation)
     const monthlyCapacity = protectionDecisionCapacity(profileAfter)
 
@@ -394,11 +418,14 @@ export class Simulation {
     id: string,
     scenarioId: ScenarioId,
     bundle: ReturnType<typeof createFreshGraduateBundle>,
+    currency: CurrencyConfig,
   ): SimulationState {
     const now = new Date().toISOString()
     return {
       id,
       scenarioId,
+      currency,
+      startingAge: bundle.character.age,
       character: bundle.character,
       financialProfile: { ...bundle.financialProfile },
       protectionPortfolio: { ...bundle.protectionPortfolio },
@@ -419,6 +446,7 @@ export class Simulation {
       simulationYear: 1,
       maxTurns: WORKSHOP_MAX_TURNS,
       turnHistory: [],
+      hiddenLongTermConsequences: [],
       createdAt: now,
       updatedAt: now,
     }

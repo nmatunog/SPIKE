@@ -1,3 +1,5 @@
+import type { CurrencyConfig } from '@spike-life/content-core'
+import type { HiddenLongTermConsequence } from '../services/long-term-consequence-engine.js'
 import type { CyclePhase, DecisionStrategy, LifeStage, ScenarioId } from '../types.js'
 import type { ConsequenceOutcome } from '../services/consequence-engine.js'
 import type { DiscoverySnapshot } from '../services/discovery-engine.js'
@@ -28,6 +30,10 @@ export interface TurnRecord {
 export interface SimulationState {
   id: string
   scenarioId: ScenarioId
+  /** Active content-pack currency — drives display formatting in narratives and projections. */
+  currency: CurrencyConfig
+  /** Age at turn 1 — increments +1 each year (Amendment A5 v1.1). */
+  startingAge: number
   character: Character
   financialProfile: FinancialProfile
   protectionPortfolio: ProtectionPortfolio
@@ -48,6 +54,8 @@ export interface SimulationState {
   simulationYear: number
   maxTurns: number
   turnHistory: TurnRecord[]
+  /** Recorded each decision; revealed when simulation year catches up (Amendment A5). */
+  hiddenLongTermConsequences: HiddenLongTermConsequence[]
   createdAt: string
   updatedAt: string
 }

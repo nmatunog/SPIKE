@@ -2,6 +2,9 @@ import type { EncounterCardId } from '../types.js'
 import type { ScenarioId } from '../../types.js'
 
 export const GameboardEventType = {
+  DOMAIN_SELECTED: 'DomainSelected',
+  CATEGORY_DIE_ROLLED: 'CategoryDieRolled',
+  SITUATION_DIE_ROLLED: 'SituationDieRolled',
   DICE_ROLLED: 'DiceRolled',
   PLAYER_MOVED: 'PlayerMoved',
   PLAYER_LANDED: 'PlayerLanded',
@@ -27,6 +30,27 @@ export interface GameboardEvent<T = unknown> {
 export interface DiceRolledPayload {
   playerId: string
   value: number
+}
+
+export interface CategoryDieRolledPayload {
+  playerId: string
+  value: number
+  category: string
+  categoryLabel: string
+}
+
+export interface DomainSelectedPayload {
+  playerId: string
+  domainId: string
+  domainLabel: string
+  category: string
+}
+
+export interface SituationDieRolledPayload {
+  playerId: string
+  value: number
+  category: string
+  encounterId: EncounterCardId
 }
 
 export interface PlayerMovedPayload {

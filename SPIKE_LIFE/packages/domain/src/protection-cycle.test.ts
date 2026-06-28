@@ -7,6 +7,7 @@ import {
   PROTECTION_STRESS_EVENT_ID,
   PROTECTION_STRESS_MEDICAL_COST,
 } from './index.js'
+import { TEST_CURRENCY } from './test/currency-fixture.js'
 
 const SAMPLE_REFLECTION = [
   { promptId: 'what_happened', response: 'Protection readiness improved after the health scare.' },
@@ -18,7 +19,7 @@ const SAMPLE_REFLECTION = [
 
 describe('Protection Stress Financial Decision Cycle (Scenario 2)', () => {
   it('applies medical cost and care expenses on family health event', () => {
-    const state = startPlanningCycle('ps-1', 'protection_stress')
+    const state = startPlanningCycle('ps-1', 'protection_stress', undefined, TEST_CURRENCY)
 
     expect(state.situation?.eventId).toBe(PROTECTION_STRESS_EVENT_ID)
     expect(state.situation?.situationKind).toBe('protection_stress')
@@ -28,7 +29,7 @@ describe('Protection Stress Financial Decision Cycle (Scenario 2)', () => {
   })
 
   it('surfaces protection gaps in FNA and recommendations', () => {
-    const state = startPlanningCycle('ps-2', 'protection_stress')
+    const state = startPlanningCycle('ps-2', 'protection_stress', undefined, TEST_CURRENCY)
 
     expect(state.fnaBeforeDecision!.protectionScore).toBeLessThan(60)
     const protectionGap = state.fnaBeforeDecision!.gaps.find((g) => g.dimension === 'protection')
@@ -40,7 +41,7 @@ describe('Protection Stress Financial Decision Cycle (Scenario 2)', () => {
   })
 
   it('never uses insurance product language in recommendations', () => {
-    const state = startPlanningCycle('ps-3', 'protection_stress')
+    const state = startPlanningCycle('ps-3', 'protection_stress', undefined, TEST_CURRENCY)
 
     for (const rec of state.recommendations) {
       expect(rec.label.toLowerCase()).not.toContain('buy ')
@@ -49,7 +50,7 @@ describe('Protection Stress Financial Decision Cycle (Scenario 2)', () => {
   })
 
   it('improves protection score when strengthening protection plans', () => {
-    let state = startPlanningCycle('ps-4', 'protection_stress')
+    let state = startPlanningCycle('ps-4', 'protection_stress', undefined, TEST_CURRENCY)
     const protectionBefore = state.fnaBeforeDecision!.protectionScore
     state = submitDecision(state, 'improve_protection')
 
@@ -58,7 +59,7 @@ describe('Protection Stress Financial Decision Cycle (Scenario 2)', () => {
   })
 
   it('flags deferring protection as high risk', () => {
-    let state = startPlanningCycle('ps-5', 'protection_stress')
+    let state = startPlanningCycle('ps-5', 'protection_stress', undefined, TEST_CURRENCY)
     state = submitDecision(state, 'increase_lifestyle')
 
     expect(state.consequence?.decisionQuality).toBe('high_risk')
@@ -72,6 +73,7 @@ describe('Protection Stress Financial Decision Cycle (Scenario 2)', () => {
       'ps-6',
       'improve_protection',
       SAMPLE_REFLECTION,
+      TEST_CURRENCY,
     )
 
     expect(state.phase).toBe('cycle_complete')
@@ -82,7 +84,7 @@ describe('Protection Stress Financial Decision Cycle (Scenario 2)', () => {
 
 describe('Simulation aggregate — domain events', () => {
   it('emits domain events through the planning lifecycle', () => {
-    const sim = Simulation.createProtectionStress('evt-1')
+    const sim = Simulation.createProtectionStress('evt-1', TEST_CURRENCY)
       .presentSituation()
       .completeDiscovery()
 

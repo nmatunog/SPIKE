@@ -8,6 +8,8 @@ Documents are ordered by **authority** (highest first). When documents conflict,
 | **P1** | Architecture Amendment A1 — Domain-Centric Layered Architecture | [`AMENDMENT_A1_LAYERED_ARCHITECTURE.md`](./AMENDMENT_A1_LAYERED_ARCHITECTURE.md) |
 | **P1** | Architecture Amendment A2 — CQRS Application Architecture | [`AMENDMENT_A2_CQRS.md`](./AMENDMENT_A2_CQRS.md) |
 | **P1** | Architecture Amendment A3 — Gameboard Engine | [`AMENDMENT_A3_GAMEBOARD_ENGINE.md`](./AMENDMENT_A3_GAMEBOARD_ENGINE.md) |
+| **P1** | Architecture Amendment A4 — Philippines-First, Global-Ready | [`AMENDMENT_A4_PHILIPPINES_GLOBAL_READY.md`](./AMENDMENT_A4_PHILIPPINES_GLOBAL_READY.md) |
+| **P1** | Architecture Amendment A5 — Year Loop | [`AMENDMENT_A5_YEAR_LOOP.md`](./AMENDMENT_A5_YEAR_LOOP.md) |
 | **P2** | Volume I Ch 1 — Domain Vision & Ubiquitous Language | [`VOLUME_I_CHAPTER_01_DOMAIN_VISION.md`](./VOLUME_I_CHAPTER_01_DOMAIN_VISION.md) |
 | **P2** | Volume I Ch 2 — Bounded Contexts & Domain Map | [`VOLUME_I_CHAPTER_02_BOUNDED_CONTEXTS.md`](./VOLUME_I_CHAPTER_02_BOUNDED_CONTEXTS.md) |
 | **P2** | Volume I Ch 3 — Aggregates & Aggregate Roots | [`VOLUME_I_CHAPTER_03_AGGREGATES.md`](./VOLUME_I_CHAPTER_03_AGGREGATES.md) |
@@ -25,6 +27,8 @@ Documents are ordered by **authority** (highest first). When documents conflict,
 | **P5** | Simulation Blueprint v2.6 — Scoring & Reflection | [`SIMULATION_BLUEPRINT_v2.6_SCORING.md`](./SIMULATION_BLUEPRINT_v2.6_SCORING.md) |
 | **P5** | Simulation Blueprint v2.7 — Economic Model | [`SIMULATION_BLUEPRINT_v2.7_ECONOMICS.md`](./SIMULATION_BLUEPRINT_v2.7_ECONOMICS.md) |
 | **P4** | UX Blueprint v1.0 | [`UX_BLUEPRINT_v1.0.md`](./UX_BLUEPRINT_v1.0.md) |
+| **P4** | GDD Volume I — Core Systems (Ch 1–10) | [`../gdd/VOLUME_I/README.md`](../gdd/VOLUME_I/README.md) |
+| **P4** | Production UI/UX Execution Plan | [`../ux/PRODUCTION_UI_EXECUTION_PLAN.md`](../ux/PRODUCTION_UI_EXECUTION_PLAN.md) |
 | **P4** | UX Blueprint v1.1 — Screen Specs | [`UX_BLUEPRINT_v1.1_SCREENS.md`](./UX_BLUEPRINT_v1.1_SCREENS.md) |
 | **P4** | UX Amendment 1.1A — Five-Lens Workspace | [`UX_AMENDMENT_1.1A_FIVE_LENSES.md`](./UX_AMENDMENT_1.1A_FIVE_LENSES.md) |
 

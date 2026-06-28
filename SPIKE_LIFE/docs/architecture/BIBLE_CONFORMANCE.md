@@ -100,10 +100,28 @@
 | Cross-tab persistence | In-memory repos |
 
 
-```bash
-cd SPIKE_LIFE && npm test
-npm run dev
-```
+## Phase 5 — Philippines-First Content (Amendment A4)
+
+### Aligned
+
+| Requirement | Implementation |
+|-------------|----------------|
+| Core vs content separation | `@spike-life/content-core` types; `@spike-life/content-philippines` MVP pack |
+| Institutions as data (SSS, PhilHealth, Pag-IBIG, BIR) | `content-philippines/src/data/institutions.json` |
+| Configurable currency | `Money.format(CurrencyConfig)`; session `currency` from pack |
+| Philippine life situations catalog | `life-situations.json`, `financial-topics.json` |
+| Application bootstrap | `application/src/content/bootstrap.ts` → `DEFAULT_CURRENCY` |
+
+### Partial (next)
+
+| Requirement | Gap |
+|-------------|-----|
+| Encounter deck in content pack | Still in `domain/gameboard/encounter-deck.ts` |
+| Archetypes in content pack | `fresh-graduate.ts` still in domain specifications |
+| Filipino / Cebuano / Ilocano locales | `en-PH` strings only |
+
+---
+
 
 Then open http://localhost:5174
 

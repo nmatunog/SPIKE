@@ -13,7 +13,7 @@ export {
   positionSpaces,
 } from './engine.js'
 export { DEFAULT_BOARD_CONFIG, SPACE_CATEGORY_LEGEND } from '../config/default-board.js'
-export type { BoardConfig, SpaceConfig, SpaceIconId, SpaceCategory, BoardLayoutKind } from '../types/board-config.js'
+export type { BoardConfig, SpaceConfig, SpaceIconId, SpaceCategory, BoardLayoutKind, BoardConfigInput } from '../types/board-config.js'
 export { normalizeSpaceConfig, validateBoardConfig } from '../types/board-config.js'
 export { circleLayout } from './circle.js'
 export { rectangleLayout, roundedRectangleLayout } from './rectangle.js'

@@ -1,4 +1,5 @@
 import type { SimulationSession } from '@spike-life/domain'
+import { formatCurrency, type CurrencyConfig } from '@spike-life/content-core'
 import {
   calculateLifeScore,
   buildReflectionPrompts,
@@ -28,6 +29,7 @@ import type {
   BoardStageView,
   TurnHistoryView,
 } from './read-models.js'
+import { DEFAULT_CURRENCY } from '../content/bootstrap.js'
 
 const LIFE_STAGE_LABELS: Record<string, string> = {
   launch: 'Launch',
@@ -45,11 +47,20 @@ const GAP_DIMENSION_LABELS: Record<string, string> = {
   retirement: 'Retirement',
 }
 
-export function formatPeso(amount: number): MoneyDisplay {
+function resolveCurrency(session: SimulationSession): CurrencyConfig {
+  return session.currency ?? DEFAULT_CURRENCY
+}
+
+export function formatMoney(amount: number, currency: CurrencyConfig = DEFAULT_CURRENCY): MoneyDisplay {
   return {
     amount,
-    formatted: `₱${amount.toLocaleString('en-PH', { maximumFractionDigits: 0 })}`,
+    formatted: formatCurrency(amount, currency),
   }
+}
+
+/** @deprecated Use formatMoney with session currency */
+export function formatPeso(amount: number): MoneyDisplay {
+  return formatMoney(amount, DEFAULT_CURRENCY)
 }
 
 function activeFna(session: SimulationSession) {
@@ -63,6 +74,7 @@ function fnaTiming(session: SimulationSession): FnaSummaryView['timing'] {
 export function projectFnaSummary(session: SimulationSession): FnaSummaryView | null {
   const fna = activeFna(session)
   if (!fna) return null
+  const currency = resolveCurrency(session)
 
   const gaps: FnaGapView[] = fna.gaps.map((gap) => ({
     dimension: gap.dimension,
@@ -86,7 +98,7 @@ export function projectFnaSummary(session: SimulationSession): FnaSummaryView | 
     goalScore: fna.goalScore,
     retirementScore: fna.retirementScore,
     gaps,
-    emergencyFundTarget: formatPeso(fna.emergencyFundTarget),
+    emergencyFundTarget: formatMoney(fna.emergencyFundTarget, currency),
     emergencyFundProgress: fna.emergencyFundProgress,
   }
 }
@@ -125,6 +137,7 @@ function projectTurnHistory(session: SimulationSession): TurnHistoryView[] {
 export function projectDashboard(session: SimulationSession): DashboardView {
   const fna = activeFna(session)
   const profile = session.financialProfile
+  const currency = resolveCurrency(session)
   const decisionQuality = session.consequence?.decisionQuality ?? null
   const lifeScore = fna
     ? calculateLifeScore(fna, profile, decisionQuality)
@@ -164,9 +177,9 @@ export function projectDashboard(session: SimulationSession): DashboardView {
       turnHistory: session.turnHistory ?? [],
     }),
     lifeScore,
-    monthlyIncome: formatPeso(profile.monthlyIncome),
-    monthlySurplus: formatPeso(monthlySurplus(profile)),
-    netWorth: formatPeso(netWorth(profile)),
+    monthlyIncome: formatMoney(profile.monthlyIncome, currency),
+    monthlySurplus: formatMoney(monthlySurplus(profile), currency),
+    netWorth: formatMoney(netWorth(profile), currency),
     topPriority: fna?.topPriority ?? null,
     fnaRating: fna?.rating ?? null,
     currentEvent: session.situation
@@ -184,6 +197,7 @@ export function projectDashboard(session: SimulationSession): DashboardView {
 }
 
 export function projectPlanLens(session: SimulationSession): PlanLensView {
+  const currency = resolveCurrency(session)
   const recommendations: RecommendationView[] = session.recommendations.map((rec) => ({
     rank: rec.rank,
     label: rec.label,
@@ -195,8 +209,8 @@ export function projectPlanLens(session: SimulationSession): PlanLensView {
   const goals = session.goalPortfolio.goals.map((goal) => ({
     goalId: goal.goalId,
     goalName: goal.goalName,
-    targetAmount: formatPeso(goal.targetAmount),
-    currentFunding: formatPeso(goal.currentFunding),
+    targetAmount: formatMoney(goal.targetAmount, currency),
+    currentFunding: formatMoney(goal.currentFunding, currency),
     progressPercent: goal.targetAmount > 0
       ? Math.round(Math.min(100, (goal.currentFunding / goal.targetAmount) * 100))
       : 0,
@@ -228,6 +242,7 @@ export function projectProtectLens(session: SimulationSession): ProtectLensView 
   const fna = activeFna(session)
   const protection = session.protectionPortfolio
   const profile = session.financialProfile
+  const currency = resolveCurrency(session)
 
   const familyNeed = fna?.familyProtectionNeed ?? 0
   const familyCover = protection.lifeCover
@@ -250,7 +265,7 @@ export function projectProtectLens(session: SimulationSession): ProtectLensView 
       category: 'Family Protection Plan',
       readinessPercent: familyReadiness,
       gapSummary: fna
-        ? `Gap of ${formatPeso(fna.familyProtectionGap).formatted} against need.`
+        ? `Gap of ${formatMoney(fna.familyProtectionGap, currency).formatted} against need.`
         : 'Assessment pending.',
       priority: familyReadiness < 50 ? 'critical' as const : familyReadiness < 75 ? 'high' as const : 'medium' as const,
     },
@@ -289,13 +304,14 @@ export function projectProtectLens(session: SimulationSession): ProtectLensView 
     phase: session.phase,
     overallProtectionScore: fna?.protectionScore ?? 0,
     plans,
-    familyProtectionGap: formatPeso(fna?.familyProtectionGap ?? 0),
-    healthProtectionNeed: formatPeso(fna?.healthProtectionNeed ?? 0),
+    familyProtectionGap: formatMoney(fna?.familyProtectionGap ?? 0, currency),
+    healthProtectionNeed: formatMoney(fna?.healthProtectionNeed ?? 0, currency),
   }
 }
 
 export function projectGrowLens(session: SimulationSession): GrowLensView {
   const profile = session.financialProfile
+  const currency = resolveCurrency(session)
   const income = profile.monthlyIncome
   const debtRatio = income > 0
     ? Math.round((profile.monthlyDebtPayments / income) * 100)
@@ -305,26 +321,26 @@ export function projectGrowLens(session: SimulationSession): GrowLensView {
     sessionId: session.id,
     phase: session.phase,
     cashFlow: {
-      monthlyIncome: formatPeso(profile.monthlyIncome),
-      monthlyExpenses: formatPeso(profile.monthlyExpenses),
-      monthlySurplus: formatPeso(monthlySurplus(profile)),
+      monthlyIncome: formatMoney(profile.monthlyIncome, currency),
+      monthlyExpenses: formatMoney(profile.monthlyExpenses, currency),
+      monthlySurplus: formatMoney(monthlySurplus(profile), currency),
       debtRatioPercent: debtRatio,
     },
     assets: {
-      cash: formatPeso(profile.cash),
-      investments: formatPeso(profile.investments),
-      property: formatPeso(profile.propertyValue),
-      business: formatPeso(profile.businessValue),
-      total: formatPeso(totalAssets(profile)),
+      cash: formatMoney(profile.cash, currency),
+      investments: formatMoney(profile.investments, currency),
+      property: formatMoney(profile.propertyValue, currency),
+      business: formatMoney(profile.businessValue, currency),
+      total: formatMoney(totalAssets(profile), currency),
     },
     liabilities: {
-      creditCard: formatPeso(profile.creditCardDebt),
-      personalLoan: formatPeso(profile.personalLoan),
-      housingLoan: formatPeso(profile.housingLoan),
-      businessLoan: formatPeso(profile.businessLoan),
-      total: formatPeso(totalLiabilities(profile)),
+      creditCard: formatMoney(profile.creditCardDebt, currency),
+      personalLoan: formatMoney(profile.personalLoan, currency),
+      housingLoan: formatMoney(profile.housingLoan, currency),
+      businessLoan: formatMoney(profile.businessLoan, currency),
+      total: formatMoney(totalLiabilities(profile), currency),
     },
-    netWorth: formatPeso(netWorth(profile)),
+    netWorth: formatMoney(netWorth(profile), currency),
   }
 }
 

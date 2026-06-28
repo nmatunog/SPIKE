@@ -21,26 +21,79 @@
       'Helvetica Neue',
       Arial,
       sans-serif;
-    font-size: 15px;
-    line-height: 1.5;
-    color: #0f172a;
+    font-size: 16px;
+    line-height: 1.6;
+    color: theme('colors.spike.ink');
+    background-color: theme('colors.spike.surface');
+  }
+
+  :focus {
+    outline: none;
+  }
+
+  :focus-visible {
+    outline: 2px solid theme('colors.game.accent');
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
 @layer components {
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-xl focus:bg-white focus:px-4 focus:py-3 focus:text-body focus:font-semibold focus:text-spike-ink focus:shadow-card-lg;
+  }
+
+  .game-shell {
+    @apply flex h-dvh max-h-dvh flex-col overflow-hidden bg-gradient-to-b from-spike-arena via-spike-surface to-white;
+  }
+
   .game-card {
-    @apply rounded-2xl border border-slate-200/90 bg-white shadow-card;
+    @apply rounded-2xl border border-slate-200/80 bg-white shadow-card;
+  }
+
+  .game-card-elevated {
+    @apply rounded-2xl border border-slate-200/70 bg-white shadow-card-lg;
   }
 
   .game-card-dark {
-    @apply rounded-2xl border border-slate-700/60 bg-slate-900/80 shadow-card-lg;
+    @apply rounded-2xl border border-slate-700/60 bg-slate-900/90 shadow-card-lg;
+  }
+
+  .game-panel {
+    @apply rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-card backdrop-blur-sm;
   }
 
   .btn-primary {
-    @apply rounded-xl bg-spike-brand px-5 py-3 text-sm font-bold uppercase tracking-wide text-white shadow-md transition hover:bg-spike-brand-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-45;
+    @apply inline-flex min-h-touch min-w-touch items-center justify-center rounded-2xl bg-spike-brand px-6 py-3.5 text-base font-bold tracking-wide text-white shadow-md transition hover:bg-spike-brand-hover active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45;
   }
 
   .btn-secondary {
-    @apply rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 shadow-sm transition hover:border-slate-400 hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400;
+    @apply inline-flex min-h-touch min-w-touch items-center justify-center rounded-2xl border border-slate-300/90 bg-white px-5 py-3.5 text-base font-semibold text-slate-800 shadow-sm transition hover:border-slate-400 hover:bg-slate-50 active:scale-[0.98];
+  }
+
+  .btn-ghost {
+    @apply inline-flex min-h-touch items-center justify-center rounded-2xl px-4 py-3 text-base font-medium text-slate-600 transition hover:bg-slate-100/80 active:scale-[0.98];
+  }
+
+  .focus-game {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-game-accent focus-visible:ring-offset-2 focus-visible:ring-offset-white;
+  }
+
+  .focus-game-dark {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-game-accent focus-visible:ring-offset-2 focus-visible:ring-offset-game-chrome;
+  }
+
+  .touch-target {
+    @apply min-h-touch min-w-touch;
   }
 }

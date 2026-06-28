@@ -1,9 +1,7 @@
 import type { BoardState, EncounterCardId, SpaceType } from '@spike-life/domain'
-import {
-  DEFAULT_BOARD_CONFIG,
-  generateBoardLayout,
-} from '@spike-life/ui/layout'
-import { getEncounterCard } from '@spike-life/domain'
+import { getEncounterCard, getLifeDomainGrid, getDomainAnimationCycleIds, buildSituationShuffleCards } from '@spike-life/domain'
+import { DEFAULT_BOARD_CONFIG } from '@spike-life/board-config'
+import { generateBoardLayout } from '@spike-life/ui/layout'
 import type { BoardSpaceView, EncounterCardView, SpatialBoardView } from './board-read-models.js'
 
 function projectEncounter(id: BoardState['pendingEncounterId']): EncounterCardView | null {
@@ -17,47 +15,22 @@ function projectEncounter(id: BoardState['pendingEncounterId']): EncounterCardVi
   }
 }
 
-function configSpaceForIndex(boardIndex: number) {
-  return (
-    DEFAULT_BOARD_CONFIG.spaces.find((s) => s.boardIndex === boardIndex) ??
-    DEFAULT_BOARD_CONFIG.spaces[boardIndex]
-  )
-}
-
 export function projectSpatialBoard(board: BoardState): SpatialBoardView {
   const currentPlayerId = board.turnOrder[board.currentPlayerIndex] ?? board.turnOrder[0] ?? 'solo'
-
-  const configSpaces = board.spaces.map((space) => {
-    const cfg = configSpaceForIndex(space.index)
-    return {
-      id: cfg?.id ?? `space-${space.index}`,
-      name: space.label,
-      category: space.type,
-      color: cfg?.color ?? '#94A3B8',
-      icon: cfg?.icon ?? 'star',
-      description: cfg?.description,
-      boardIndex: space.index,
-      connections: cfg?.connections,
-      eventPool: cfg?.eventPool,
-      encounterId: space.encounterId,
-    }
-  })
-
-  const layoutResult = generateBoardLayout({
-    ...DEFAULT_BOARD_CONFIG,
-    spaces: configSpaces,
-  })
+  const layoutResult = generateBoardLayout(DEFAULT_BOARD_CONFIG)
 
   const spaces: BoardSpaceView[] = layoutResult.spaces.map((space) => {
-    const encounterId = space.encounterId as EncounterCardId
+    const domainSpace = board.spaces.find((s) => s.index === space.boardIndex)
+    const encounterId = (domainSpace?.encounterId ?? space.encounterId) as EncounterCardId
     const encounter = getEncounterCard(encounterId)
+
     return {
       index: space.boardIndex,
       boardIndex: space.boardIndex,
       id: space.id,
-      type: space.category as SpaceType,
+      type: (domainSpace?.type ?? space.category) as SpaceType,
       category: space.category as SpaceType,
-      label: space.name,
+      label: domainSpace?.label ?? space.name,
       color: space.color,
       icon: space.icon,
       description: space.description,
@@ -69,8 +42,6 @@ export function projectSpatialBoard(board: BoardState): SpatialBoardView {
     }
   })
 
-  const trackPath = layoutResult.trackPath
-
   return {
     boardId: board.id,
     simulationId: board.simulationId,
@@ -79,6 +50,36 @@ export function projectSpatialBoard(board: BoardState): SpatialBoardView {
     boardYear: board.boardYear,
     maxRounds: board.maxRounds,
     lastDiceRoll: board.lastDiceRoll,
+    lastCategoryDieRoll: board.lastCategoryDieRoll ?? null,
+    lastSituationDieRoll: board.lastSituationDieRoll ?? null,
+    rolledCategory: board.rolledCategory ?? null,
+    rolledCategoryLabel: board.rolledCategoryLabel ?? null,
+    selectedDomainId: board.selectedDomainId ?? null,
+    selectedDomainLabel: board.rolledCategoryLabel ?? null,
+    lifeDomains: getLifeDomainGrid().map((domain) => ({
+      id: domain.id,
+      label: domain.label,
+      category: domain.category,
+      icon: domain.icon,
+      color: domain.color,
+    })),
+    domainAnimationCycle: [...getDomainAnimationCycleIds()],
+    situationShuffle:
+      board.pendingEncounterId && board.selectedDomainId && board.rolledCategory
+        ? buildSituationShuffleCards(
+            board.selectedDomainId,
+            board.rolledCategory,
+            board.playerAgeSnapshot ?? 22,
+            board.pendingEncounterId,
+          ).map((card) => ({
+            id: card.id,
+            title: card.title,
+            teaser: card.teaser,
+            learningConcept: card.learningConcept,
+          }))
+        : [],
+    advisorInsightOffered: board.advisorInsightOffered ?? false,
+    playerAgeSnapshot: board.playerAgeSnapshot ?? null,
     canRoll: board.phase === 'ready_to_roll',
     canEndTurn: board.phase === 'turn_complete',
     gameComplete: board.phase === 'game_complete',
@@ -93,7 +94,8 @@ export function projectSpatialBoard(board: BoardState): SpatialBoardView {
     })),
     activeEncounter: projectEncounter(board.pendingEncounterId),
     landedSpaceIndex: board.landedSpaceIndex,
-    trackPath,
+    trackPath: layoutResult.trackPath,
     layout: DEFAULT_BOARD_CONFIG.layout,
+    boardConfigId: DEFAULT_BOARD_CONFIG.id,
   }
 }

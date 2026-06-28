@@ -11,7 +11,12 @@ export * from './gameboard/types.js'
 export * from './gameboard/events/gameboard-events.js'
 export * from './gameboard/aggregates/board.js'
 export * from './gameboard/services/encounter-deck.js'
-export * from './gameboard/services/default-board-layout.js'
+export {
+  DEFAULT_BOARD_SPACES,
+  advancePosition,
+  spaceAt,
+  boardSpacesFromConfig,
+} from './gameboard/services/default-board-layout.js'
 export * from './gameboard/ports/board-repository.js'
 export * from './board-orchestrator.js'
 export * from './value-objects/money.js'
@@ -26,4 +31,13 @@ export * from './services/consequence-engine.js'
 export * from './services/reflection-engine.js'
 export * from './services/life-score-engine.js'
 export * from './services/workshop-progression.js'
+export * from './services/long-term-consequence-engine.js'
+export * from './gameboard/services/year-loop/year-loop-context.js'
+export * from './gameboard/services/year-loop/domain-grid.js'
+export * from './gameboard/services/year-loop/category-die.js'
+export * from './gameboard/services/year-loop/domain-weights.js'
+export * from './gameboard/services/year-loop/situation-weights.js'
+export * from './gameboard/services/year-loop/advisor-insight.js'
+export * from './gameboard/services/year-loop/situation-shuffle.js'
+export * from './gameboard/services/year-loop/situation-die.js'
 export * from './financial-decision-engine.js'

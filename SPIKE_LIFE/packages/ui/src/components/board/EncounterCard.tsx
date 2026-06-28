@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
+import { fadeScale } from '../../motion/variants.js'
 import type { EncounterCardProps } from '../../types/component-props.js'
 
 export type { EncounterCardProps }
@@ -14,34 +15,42 @@ export function EncounterCard({
   onMakeDecision,
   onDismiss,
 }: EncounterCardProps) {
+  const reduceMotion = useReducedMotion()
+
   if (!visible || !encounter) return null
 
   const categoryDisplay =
     spaceCategoryLabel ??
-    (spaceCategory ? spaceCategory.replace('_', ' ') : 'Encounter')
+    (spaceCategory ? spaceCategory.replace(/_/g, ' ') : 'Life event')
 
   return (
     <motion.article
-      initial={{ opacity: 0, rotateX: -8, y: 16 }}
-      animate={{ opacity: 1, rotateX: 0, y: 0 }}
-      transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
-      className="overflow-hidden rounded-2xl border border-slate-600/80 bg-gradient-to-b from-slate-800 to-slate-900 shadow-2xl"
+      variants={reduceMotion ? undefined : fadeScale}
+      initial={reduceMotion ? { opacity: 0 } : 'hidden'}
+      animate={reduceMotion ? { opacity: 1 } : 'visible'}
+      exit={reduceMotion ? { opacity: 0 } : 'exit'}
+      className="overflow-hidden rounded-2xl border border-slate-600/70 bg-gradient-to-b from-slate-800 to-slate-950 shadow-2xl"
       aria-label={`Encounter: ${encounter.title}`}
     >
-      <header className="border-b border-slate-700/80 px-6 py-5">
-        <p className="text-xs font-bold uppercase tracking-[0.15em] text-amber-400">
-          {categoryDisplay}
-        </p>
-        <h2 className="mt-1.5 text-2xl font-bold tracking-tight text-white">{encounter.title}</h2>
-        <p className="mt-3 text-base leading-relaxed text-slate-300">{encounter.teaser}</p>
+      <header className="border-b border-slate-700/70 px-6 py-6">
+        <p className="text-label uppercase text-amber-300/90">{categoryDisplay}</p>
+        <h2 className="mt-2 text-display-sm font-bold tracking-tight text-white">{encounter.title}</h2>
+        <p className="mt-3 text-body-lg leading-relaxed text-slate-200">{encounter.teaser}</p>
       </header>
 
+      {encounter.learningConcept && (
+        <div className="border-b border-slate-700/60 bg-slate-900/50 px-6 py-4">
+          <p className="text-label uppercase text-slate-400">You will discover</p>
+          <p className="mt-2 text-body leading-relaxed text-slate-100">{encounter.learningConcept}</p>
+        </div>
+      )}
+
       {impactTags.length > 0 && (
-        <div className="flex flex-wrap gap-2 px-5 py-3">
+        <div className="flex flex-wrap gap-2 px-6 py-4">
           {impactTags.map((tag) => (
             <span
               key={tag}
-              className="rounded-full bg-slate-700/80 px-3 py-1 text-xs font-medium text-slate-200"
+              className="rounded-full bg-slate-700/70 px-3 py-1 text-caption font-medium text-slate-200"
             >
               {tag}
             </span>
@@ -50,14 +59,12 @@ export function EncounterCard({
       )}
 
       {priorityLabels.length > 0 && (
-        <div className="border-t border-slate-700/60 px-5 py-3">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
-            Top priorities
-          </p>
-          <ul className="mt-2 space-y-1.5">
+        <div className="border-t border-slate-700/60 px-6 py-4">
+          <p className="text-label uppercase text-slate-400">FNA suggests focusing on</p>
+          <ul className="mt-3 space-y-2">
             {priorityLabels.slice(0, 3).map((label, i) => (
-              <li key={label} className="flex items-center gap-2 text-sm text-slate-200">
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#8B0000] text-[10px] font-bold text-white">
+              <li key={label} className="flex items-center gap-3 text-body text-slate-200">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-spike-brand text-caption font-bold text-white">
                   {i + 1}
                 </span>
                 {label}
@@ -67,32 +74,32 @@ export function EncounterCard({
         </div>
       )}
 
-      <footer className="flex flex-wrap gap-2 border-t border-slate-700/60 px-5 py-4">
+      <footer className="flex flex-col gap-2 border-t border-slate-700/60 px-6 py-5 sm:flex-row">
         {onViewAnalysis && (
           <button
             type="button"
             onClick={onViewAnalysis}
-            className="flex-1 rounded-xl border border-slate-500 bg-slate-800 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+            className="focus-game-dark flex-1 rounded-xl border border-slate-500 bg-slate-800 px-4 py-3.5 text-body font-semibold text-white transition hover:bg-slate-700"
           >
-            View analysis
+            Open FNA analysis
           </button>
         )}
         {onMakeDecision && (
           <button
             type="button"
             onClick={onMakeDecision}
-            className="flex-1 rounded-xl bg-[#8B0000] px-4 py-2.5 text-sm font-bold text-white shadow-lg transition hover:bg-[#a50000] focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
+            className="focus-game-dark flex-1 rounded-xl bg-spike-brand px-4 py-3.5 text-body font-bold text-white shadow-lg transition hover:bg-spike-brand-hover"
           >
-            Make decision
+            Choose your strategy
           </button>
         )}
         {onDismiss && (
           <button
             type="button"
             onClick={onDismiss}
-            className="w-full rounded-lg py-1.5 text-xs text-slate-400 hover:text-slate-200"
+            className="focus-game-dark w-full rounded-xl py-2 text-caption text-slate-400 hover:text-slate-200 sm:order-first sm:w-auto sm:px-2"
           >
-            Dismiss
+            Not now
           </button>
         )}
       </footer>
