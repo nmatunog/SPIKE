@@ -10,16 +10,15 @@
 }
 
 .gsv2-domain-tile--scan {
-  transform: scale(1.06);
-  filter: brightness(1.05);
+  transform: scale(1.08);
+  filter: brightness(1.08) saturate(1.15);
   z-index: 5;
 }
 
 .gsv2-domain-tile--selected {
-  transform: scale(1.12) translateY(-4px);
-  filter: brightness(1.02);
+  transform: scale(1.14) translateY(-4px);
+  filter: brightness(1.1) saturate(1.2);
   z-index: 10;
-  box-shadow: 0 8px 32px var(--domain-glow, rgba(99, 102, 241, 0.35));
 }
 
 .gsv2-situation-card {

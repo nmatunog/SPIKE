@@ -1,17 +1,17 @@
 {
   "domains": [
     { "id": "career", "label": "Career", "category": "career", "icon": "briefcase", "color": "#3B82F6" },
-    { "id": "business", "label": "Business", "category": "business", "icon": "trending-up", "color": "#F97316" },
+    { "id": "business", "label": "Business", "category": "business", "icon": "trending-up", "color": "#FF6B2C" },
     { "id": "income_finance", "label": "Income & Finance", "category": "finance", "icon": "wallet", "color": "#22C55E" },
-    { "id": "family", "label": "Family", "category": "family", "icon": "users", "color": "#A855F7" },
-    { "id": "health", "label": "Health", "category": "health", "icon": "heart-pulse", "color": "#EF4444" },
+    { "id": "family", "label": "Family", "category": "family", "icon": "users", "color": "#C026D3" },
+    { "id": "health", "label": "Health", "category": "health", "icon": "heart-pulse", "color": "#F43F5E" },
     { "id": "housing", "label": "Housing", "category": "finance", "icon": "home", "color": "#14B8A6" },
     { "id": "education", "label": "Education", "category": "education", "icon": "graduation-cap", "color": "#6366F1" },
-    { "id": "lifestyle", "label": "Lifestyle", "category": "finance", "icon": "shopping-bag", "color": "#EAB308" },
-    { "id": "community", "label": "Community", "category": "community", "icon": "hand-heart", "color": "#8B5CF6" },
-    { "id": "government", "label": "Government", "category": "finance", "icon": "landmark", "color": "#64748B" },
-    { "id": "investment", "label": "Investment", "category": "investment", "icon": "chart-line", "color": "#0EA5E9" },
-    { "id": "milestone", "label": "Milestone", "category": "milestone", "icon": "trophy", "color": "#FBBF24" }
+    { "id": "lifestyle", "label": "Lifestyle", "category": "finance", "icon": "shopping-bag", "color": "#FACC15" },
+    { "id": "community", "label": "Community", "category": "community", "icon": "hand-heart", "color": "#A855F7" },
+    { "id": "government", "label": "Government", "category": "finance", "icon": "landmark", "color": "#0EA5E9" },
+    { "id": "investment", "label": "Investment", "category": "investment", "icon": "chart-line", "color": "#06B6D4" },
+    { "id": "milestone", "label": "Milestone", "category": "milestone", "icon": "trophy", "color": "#FB923C" }
   ],
   "weightBands": [
     {
