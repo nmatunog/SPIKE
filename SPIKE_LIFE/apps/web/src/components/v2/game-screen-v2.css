@@ -1,8 +1,8 @@
-/* GameScreenV2 — GDS v1.0 single-focus board game shell */
+/* GameScreenV2 — GDS v1.0 single-focus board game shell (light) */
 
 .gsv2-shell {
-  @apply relative flex h-dvh max-h-dvh flex-col overflow-hidden;
-  background: radial-gradient(ellipse at 50% 20%, #1e293b 0%, #0f172a 55%, #020617 100%);
+  @apply relative flex h-dvh max-h-dvh flex-col overflow-hidden bg-slate-50 text-slate-900;
+  background: radial-gradient(ellipse at 50% 0%, #f8fafc 0%, #f1f5f9 45%, #e2e8f0 100%);
 }
 
 .gsv2-domain-tile {
@@ -11,38 +11,36 @@
 
 .gsv2-domain-tile--scan {
   transform: scale(1.06);
-  filter: brightness(1.25);
+  filter: brightness(1.05);
   z-index: 5;
 }
 
 .gsv2-domain-tile--selected {
   transform: scale(1.12) translateY(-4px);
-  filter: brightness(1.15);
+  filter: brightness(1.02);
   z-index: 10;
-  box-shadow: 0 0 32px var(--domain-glow, rgba(99, 102, 241, 0.55));
+  box-shadow: 0 8px 32px var(--domain-glow, rgba(99, 102, 241, 0.35));
 }
 
 .gsv2-situation-card {
-  @apply relative overflow-hidden rounded-3xl border border-white/15 shadow-2xl;
-  background: linear-gradient(165deg, rgba(255, 255, 255, 0.12) 0%, rgba(15, 23, 42, 0.92) 45%);
-  backdrop-filter: blur(16px);
+  @apply relative overflow-hidden rounded-3xl border border-slate-200/90 bg-white shadow-xl shadow-slate-200/60;
   min-height: min(68vh, 640px);
 }
 
 .gsv2-choice-card {
-  @apply rounded-2xl border border-white/10 bg-slate-900/70 p-4 text-left backdrop-blur-sm transition;
+  @apply rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition;
 }
 
 .gsv2-choice-card:hover:not(:disabled) {
-  @apply border-white/25 bg-slate-800/80;
+  @apply border-slate-300 bg-slate-50 shadow-md;
 }
 
 .gsv2-choice-card--selected {
-  @apply border-indigo-400/60 bg-indigo-950/50 ring-2 ring-indigo-400/40;
+  @apply border-indigo-400 bg-indigo-50 ring-2 ring-indigo-300/50;
 }
 
 .gsv2-drawer {
-  @apply fixed inset-y-0 right-0 z-50 w-full max-w-md border-l border-white/10 bg-slate-950/95 p-6 shadow-2xl backdrop-blur-xl;
+  @apply fixed inset-y-0 right-0 z-50 w-full max-w-md border-l border-slate-200 bg-white p-6 shadow-2xl;
 }
 
 .gsv2-stat-flash-up {
@@ -55,12 +53,12 @@
 
 @keyframes gsv2-flash-up {
   0% { background-color: rgba(16, 185, 129, 0); }
-  20% { background-color: rgba(16, 185, 129, 0.25); }
+  20% { background-color: rgba(16, 185, 129, 0.18); }
   100% { background-color: rgba(16, 185, 129, 0); }
 }
 
 @keyframes gsv2-flash-down {
   0% { background-color: rgba(239, 68, 68, 0); }
-  20% { background-color: rgba(239, 68, 68, 0.22); }
+  20% { background-color: rgba(239, 68, 68, 0.14); }
   100% { background-color: rgba(239, 68, 68, 0); }
 }

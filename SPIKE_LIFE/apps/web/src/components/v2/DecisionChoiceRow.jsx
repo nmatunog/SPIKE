@@ -18,7 +18,7 @@ export default function DecisionChoiceRow({
   return (
     <section className="mx-auto w-full max-w-4xl px-3 pb-4">
       {error && (
-        <p className="mb-3 rounded-xl bg-red-950/60 px-4 py-2 text-center text-sm text-red-200">
+        <p className="mb-3 rounded-xl bg-red-50 px-4 py-2 text-center text-sm text-red-700 ring-1 ring-red-200">
           {error}
         </p>
       )}
@@ -37,13 +37,13 @@ export default function DecisionChoiceRow({
               } disabled:opacity-45`}
             >
               <div className="flex items-start gap-2">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/15 bg-white/10 text-sm font-bold text-white">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-slate-100 text-sm font-bold text-slate-800">
                   {MARKERS[index]}
                 </span>
                 <div className="min-w-0">
-                  <p className="text-sm font-bold leading-snug text-white">{opt.label}</p>
+                  <p className="text-sm font-bold leading-snug text-slate-900">{opt.label}</p>
                   {opt.description && (
-                    <p className="mt-1 text-xs leading-relaxed text-slate-400">{opt.description}</p>
+                    <p className="mt-1 text-xs leading-relaxed text-slate-600">{opt.description}</p>
                   )}
                   {opt.costLabel && (
                     <p className="mt-2 font-mono text-[10px] font-bold text-slate-500">

@@ -58,8 +58,8 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
 
   if (loading) {
     return (
-      <div className="flex min-h-dvh items-center justify-center bg-slate-950">
-        <p className="text-slate-400">Loading SPIKE LIFE…</p>
+      <div className="flex min-h-dvh items-center justify-center bg-slate-50">
+        <p className="text-slate-500">Loading SPIKE LIFE…</p>
       </div>
     )
   }

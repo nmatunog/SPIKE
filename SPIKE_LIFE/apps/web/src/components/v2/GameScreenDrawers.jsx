@@ -22,7 +22,7 @@ export default function GameScreenDrawers({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0 z-40 bg-slate-900/20 backdrop-blur-sm"
           />
           <motion.aside
             initial={{ x: '100%' }}
@@ -32,7 +32,7 @@ export default function GameScreenDrawers({
             className="gsv2-drawer overflow-y-auto"
           >
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-white">
+              <h2 className="text-lg font-bold text-slate-900">
                 {drawer === 'stats' && 'Financial snapshot'}
                 {drawer === 'dreams' && 'Dream board'}
                 {drawer === 'advisor' && 'Advisor'}
@@ -40,28 +40,28 @@ export default function GameScreenDrawers({
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-lg p-2 text-slate-400 hover:bg-white/10 hover:text-white"
+                className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-900"
               >
                 ✕
               </button>
             </div>
 
             {drawer === 'stats' && dashboard && (
-              <dl className="space-y-4 text-sm text-slate-300">
+              <dl className="space-y-4 text-sm text-slate-600">
                 <div>
                   <dt className="text-xs uppercase text-slate-500">Net worth</dt>
-                  <dd className="text-xl font-bold text-white">{dashboard.netWorth?.formatted}</dd>
+                  <dd className="text-xl font-bold text-slate-900">{dashboard.netWorth?.formatted}</dd>
                 </div>
                 <div>
                   <dt className="text-xs uppercase text-slate-500">Monthly surplus</dt>
-                  <dd className="text-xl font-bold text-emerald-300">
+                  <dd className="text-xl font-bold text-emerald-700">
                     {dashboard.monthlySurplus?.formatted}
                   </dd>
                 </div>
                 {growData && (
                   <div>
                     <dt className="text-xs uppercase text-slate-500">Liquid cash</dt>
-                    <dd className="text-xl font-bold text-amber-200">
+                    <dd className="text-xl font-bold text-amber-700">
                       {growData.assets.cash.formatted}
                     </dd>
                   </div>

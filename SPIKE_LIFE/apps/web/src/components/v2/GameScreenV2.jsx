@@ -226,7 +226,7 @@ export default function GameScreenV2({ onOpenWorkshop }) {
           <button
             type="button"
             onClick={onOpenWorkshop}
-            className="text-[10px] font-semibold uppercase tracking-wider text-indigo-300 hover:text-white"
+            className="text-[10px] font-semibold uppercase tracking-wider text-indigo-600 hover:text-indigo-900"
           >
             Workshop mode →
           </button>
@@ -254,7 +254,7 @@ export default function GameScreenV2({ onOpenWorkshop }) {
                 exit={{ opacity: 0 }}
                 className="flex flex-1 flex-col items-center justify-center gap-4 px-4 py-8"
               >
-                <p className="max-w-md text-center text-sm text-slate-400">
+                <p className="max-w-md text-center text-sm text-slate-600">
                   Life will choose your domain. You choose how to respond — one decision per
                   planning cycle.
                 </p>
@@ -267,7 +267,7 @@ export default function GameScreenV2({ onOpenWorkshop }) {
                   {busy ? 'Rolling…' : 'Begin planning cycle'}
                 </button>
                 {board?.gameComplete && (
-                  <p className="text-sm font-semibold text-emerald-400">Journey complete.</p>
+                  <p className="text-sm font-semibold text-emerald-700">Journey complete.</p>
                 )}
               </motion.div>
             )}
@@ -277,7 +277,7 @@ export default function GameScreenV2({ onOpenWorkshop }) {
                 key="scanning"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="py-4 text-center text-xs font-bold uppercase tracking-[0.3em] text-indigo-300"
+                className="py-4 text-center text-xs font-bold uppercase tracking-[0.3em] text-indigo-600"
               >
                 Selecting life domain…
               </motion.p>

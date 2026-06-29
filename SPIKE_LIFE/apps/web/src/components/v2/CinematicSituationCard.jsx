@@ -28,19 +28,19 @@ export default function CinematicSituationCard({ situation, domainLabel, domainI
       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
       className="gsv2-situation-card mx-auto flex w-full max-w-4xl flex-col p-6 sm:p-8"
     >
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-rose-500/10" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-indigo-50/80 via-transparent to-rose-50/60" />
 
       <div className="relative flex flex-1 flex-col">
-        <span className="inline-flex w-fit rounded-full border border-indigo-300/30 bg-indigo-500/20 px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.2em] text-indigo-200">
+        <span className="inline-flex w-fit rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.2em] text-indigo-700">
           {(situation?.domainLabel ?? domainLabel ?? 'Life').toUpperCase()} SITUATION
         </span>
 
-        <h1 className="mt-4 text-2xl font-black leading-tight tracking-tight text-white sm:text-4xl">
+        <h1 className="mt-4 text-2xl font-black leading-tight tracking-tight text-slate-900 sm:text-4xl">
           {situation?.title ?? 'Life presents a moment…'}
         </h1>
 
         {situation?.narrative && (
-          <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
+          <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg">
             {situation.narrative}
           </p>
         )}
@@ -50,7 +50,7 @@ export default function CinematicSituationCard({ situation, domainLabel, domainI
             One meaningful choice this cycle — think like a person, not a spreadsheet.
           </p>
           <div
-            className="flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-black/30 text-5xl shadow-inner"
+            className="flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-5xl shadow-inner"
             aria-hidden
           >
             {icon}

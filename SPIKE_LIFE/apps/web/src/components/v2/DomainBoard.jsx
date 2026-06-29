@@ -49,16 +49,16 @@ export default function DomainBoard({
             } ${dim ? 'opacity-25' : isSelected || isScanning ? 'opacity-100' : 'opacity-55'}`}
             style={{
               '--domain-glow': domain.color,
-              borderColor: isSelected ? domain.color : 'rgba(255,255,255,0.12)',
+              borderColor: isSelected ? domain.color : 'rgba(148, 163, 184, 0.45)',
               background: isSelected
-                ? `linear-gradient(180deg, ${domain.color}44 0%, rgba(15,23,42,0.85) 100%)`
-                : 'rgba(15,23,42,0.55)',
+                ? `linear-gradient(180deg, ${domain.color}33 0%, #ffffff 100%)`
+                : 'rgba(255, 255, 255, 0.85)',
             }}
           >
             <span className="text-base sm:text-lg" aria-hidden>
               {ICONS[domain.icon] ?? '•'}
             </span>
-            <span className="mt-0.5 text-[0.55rem] font-bold uppercase leading-tight tracking-wide text-white/90 sm:text-[0.625rem]">
+            <span className="mt-0.5 text-[0.55rem] font-bold uppercase leading-tight tracking-wide text-slate-700 sm:text-[0.625rem]">
               {domain.label}
             </span>
           </motion.div>
