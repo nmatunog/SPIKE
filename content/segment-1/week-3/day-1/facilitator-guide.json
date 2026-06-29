@@ -1,54 +1,57 @@
 {
   "dayId": "day-segment-1-week-3-day-1",
-  "title": "Facilitator Guide — Day 11 — Underwriting Principles & Risk Assessment",
+  "title": "Facilitator Guide — Day 11 — Opportunity Analysis",
   "durationHours": 4,
   "prepChecklist": [
-    "Print mock applications",
-    "Brief mentors on compliance language",
-    "No real client data ever"
+    "Review squad Week 2 validation evidence — reference in debrief",
+    "Print entrepreneur lens worksheets and platform stack templates",
+    "Brief mentors: this is venture discovery, not product training",
+    "Prepare whiteboard for platform stack diagram"
   ],
   "sessionFlow": [
     {
-      "time": "0:00–0:30",
-      "activity": "Deck 01 — Underwriting concepts",
-      "notes": "Use protection story from Week 1 Day 2."
+      "time": "0:00–0:45",
+      "activity": "Deck 01 — From Financial Literacy to Financial Entrepreneurship",
+      "notes": "Tell the three-week story. Pause on the zero-capital question. Reveal the advisory practice. Do not pitch AIA yet — frame as platform."
     },
     {
-      "time": "0:30–1:30",
-      "activity": "Mock application lab — Round 1",
-      "notes": "Squads deliberate; mentors probe reasoning."
+      "time": "0:45–1:35",
+      "activity": "Opportunity Analysis discussion + stakeholder sort",
+      "notes": "Why millions struggle. Who helps. Entrepreneur lens: market, problem, demand, impact, income."
     },
     {
-      "time": "1:30–1:40",
+      "time": "1:35–1:45",
       "activity": "Break",
       "notes": ""
     },
     {
-      "time": "1:40–2:20",
-      "activity": "Mock application lab — Round 2",
-      "notes": "Harder cases with missing info."
+      "time": "1:45–2:30",
+      "activity": "Could YOUR venture be YOU? + platform stack",
+      "notes": "Draw YOU → Skills → AIA Platform → Clients → Income → Business → Leadership → Enterprise."
     },
     {
-      "time": "2:20–2:45",
-      "activity": "Squad case presentations",
-      "notes": ""
+      "time": "2:30–2:50",
+      "activity": "Squad opportunity analysis memos",
+      "notes": "Connect to Week 1 problem/market/customer/solution."
     },
     {
-      "time": "2:45–3:00",
-      "activity": "Reflection + Day 12 preview (digital portals)",
+      "time": "2:50–3:00",
+      "activity": "Reflection + Day 12 preview (Your First Business Tool)",
       "notes": ""
     }
   ],
   "debriefQuestions": [
-    "Where did squads disagree on risk?",
-    "Did anyone rationalize hiding information?",
-    "How does underwriting affect client trust?"
+    "When did the room shift from 'internship' to 'venture'?",
+    "Who still sees AIA as an employer vs a platform?",
+    "How does Week 1 discovery connect to this business model?"
   ],
   "commonPitfalls": [
-    "Treating lab as sales training",
-    "Oversimplified accept/decline without rationale"
+    "Teaching what financial advisors do instead of why it's a great business",
+    "Introducing products or compensation too early",
+    "Skipping the pause before the zero-capital reveal"
   ],
   "coachingTips": [
-    "Reward transparent reasoning over fast answers"
+    "Speak SPIKE — entrepreneurs think in market, problem, demand, impact, income",
+    "Use Week 2 interview quotes as proof during opportunity analysis"
   ]
 }

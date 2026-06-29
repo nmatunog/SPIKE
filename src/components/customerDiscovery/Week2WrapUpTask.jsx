@@ -78,7 +78,7 @@ export function Week2WrapUpTask({ participantId, onSaved }) {
         <h2 className="text-xl font-bold text-slate-900">Week wrap-up &amp; Week 3 bridge</h2>
         <p className="text-sm text-slate-600">
           After your pitch and empathy lab, capture what you learned. This saves to your Venture Portfolio,
-          sets your focus for Week 3 ADVISE, and helps your mentor see your growth — separate from guest panel scores.
+          sets your focus for Week 3 — Discover Your Business Model, and helps your mentor see your growth — separate from guest panel scores.
         </p>
         <Week2SyncStatus
           participantId={participantId}

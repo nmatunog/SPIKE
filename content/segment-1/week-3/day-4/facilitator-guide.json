@@ -1,48 +1,61 @@
 {
   "dayId": "day-segment-1-week-3-day-4",
-  "title": "Facilitator Guide — Day 14 — Operations Dyad Presentations",
+  "title": "Facilitator Guide — Day 14 — AIA as Your Business Platform",
   "durationHours": 4,
   "prepChecklist": [
-    "Schedule presentation panel",
-    "Load rubrics in Playbook when published"
+    "Prepare platform pillars reference slide or handout",
+    "Have compensation materials ready for AFTER platform section",
+    "Brief mentors: platform first, pay second — always"
   ],
   "sessionFlow": [
     {
-      "time": "0:00–0:20",
-      "activity": "Deck 01 — Journey integration",
+      "time": "0:00–0:35",
+      "activity": "Deck 01 — AIA as business platform",
+      "notes": "Ten pillars. No product pitch. Platform vs employer reframe."
+    },
+    {
+      "time": "0:35–1:15",
+      "activity": "Platform evaluation matrix workshop",
+      "notes": "Participants rate pillars for their venture."
+    },
+    {
+      "time": "1:15–1:25",
+      "activity": "Break",
       "notes": ""
     },
     {
-      "time": "0:20–1:00",
-      "activity": "Dyad rehearsal",
-      "notes": "Mentors coach transitions between ops stages."
+      "time": "1:25–1:55",
+      "activity": "THEN — Economic engine (compensation)",
+      "notes": "Compensation as fuel, not reason to join. Connect to FEC Financial Engine."
     },
     {
-      "time": "1:00–2:20",
-      "activity": "Operations dyad presentations",
-      "notes": "Panel feedback."
+      "time": "1:55–2:30",
+      "activity": "Why I chose AIA — draft platform rationale",
+      "notes": "Entrepreneur language only."
     },
     {
-      "time": "2:20–2:40",
-      "activity": "Peer review + efficiency recommendations",
+      "time": "2:30–2:50",
+      "activity": "Pitch structure preview for Day 15",
       "notes": ""
     },
     {
-      "time": "2:40–3:00",
-      "activity": "Gate prep + reflection",
+      "time": "2:50–3:00",
+      "activity": "Reflection",
       "notes": ""
     }
   ],
   "debriefQuestions": [
-    "Where did handoffs break down in roleplays?",
-    "Who demonstrates startup readiness?",
-    "What remediation before gate?"
+    "Did compensation feel different after the platform discussion?",
+    "Which platform pillar would be hardest to replicate alone?",
+    "Who can articulate why they chose AIA — without mentioning pay first?"
   ],
   "commonPitfalls": [
-    "Treating presentation as siloed demos",
-    "Ignoring compliance steps"
+    "Leading with commissions or products",
+    "Framing AIA as employer instead of platform",
+    "Skipping platform evaluation before pay discussion"
   ],
   "coachingTips": [
-    "Ask dyads to name one system they will use in Week 4"
+    "Use 'economic engine' language consistently",
+    "Connect compensation to Box 8 Financial Engine in FEC"
   ]
 }

@@ -23,8 +23,8 @@ export const WEEK2_WRAP_UP_PROMPTS = [
   },
   {
     id: 'weekWrapWeek3Focus',
-    label: 'Week 3 — Advise',
-    placeholder: 'What would you ask Miguel before offering advice? One question to open Week 3.',
+    label: 'Week 3 — Discover Your Business Model',
+    placeholder: 'What would you ask Miguel before building your venture? One question to open Week 3.',
   },
 ];
 

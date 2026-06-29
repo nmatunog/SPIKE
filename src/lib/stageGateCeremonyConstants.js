@@ -71,18 +71,18 @@ export const STAGE_GATE_BY_CLOSING_WEEK = {
     nextPhaseCards: [
       {
         title: 'Week 3 objective',
-        body: 'Venture Build',
-        detail: 'Translate validated insights into executable venture systems.',
+        body: 'Discover Your Business Model',
+        detail: 'From validated opportunity to financial advisory venture — opportunity analysis, FNA as business tool, growth engines, platform choice, and venture pitch.',
       },
       {
         title: 'Studio focus',
-        body: 'Blueprint execution',
-        detail: 'Operationalize FEC and portfolio milestones as a squad.',
+        body: 'Financial Entrepreneurship',
+        detail: 'Opportunity Analysis → FNA → Growth Engines → AIA Platform → Venture Pitch.',
       },
       {
         title: 'Metric requirement',
-        body: 'Build readiness',
-        detail: 'Complete squad build checkpoints before the next gate.',
+        body: 'Venture model readiness',
+        detail: 'Complete Financial Advisory Venture pitch artifacts before the 120-hour gate.',
       },
     ],
     hourRange: 'Hours 111 – 160',

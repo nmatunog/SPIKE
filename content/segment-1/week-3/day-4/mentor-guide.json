@@ -1,32 +1,31 @@
 {
   "dayId": "day-segment-1-week-3-day-4",
-  "theme": "Integration",
-  "title": "Mentor Guide — Day 14 — Operations Dyad Presentations",
-  "coachingObjective": "See the whole operating system.",
+  "theme": "Platform",
+  "title": "Mentor Guide — Day 14 — AIA as Your Business Platform",
+  "coachingObjective": "Ensure platform choice precedes compensation — entrepreneur framing throughout.",
   "timing": {
-    "preSession": "Review facilitator guide and deck speaker notes",
-    "duringSession": "Circulate during squad activities",
+    "preSession": "Review platform pillars and economic engine sequence",
+    "duringSession": "Listen for employer vs platform language",
     "postSession": "Complete squad weekly review snapshot"
   },
   "discussionQuestions": [
-    "Where did handoffs break down in roleplays?",
-    "Who demonstrates startup readiness?",
-    "What remediation before gate?"
+    "Can they articulate why they chose AIA without mentioning pay first?",
+    "Which platform pillar matters most to their venture?"
   ],
   "observationAreas": [
-    "Handoff clarity",
-    "Compliance mentions",
-    "Presentation poise"
+    "Platform evaluation quality",
+    "Economic engine framing",
+    "Pitch prep readiness"
   ],
   "coachingTips": [
-    "Ask dyads to name one system they will use in Week 4"
+    "Use 'economic engine' not 'commission plan'",
+    "Connect pay to FEC Financial Engine"
   ],
   "warningSigns": [],
   "reflectionPrompts": [],
   "expectedOutcomes": [
-    "Journey map",
-    "Dyad presentation",
-    "Efficiency memo"
+    "Platform evaluation matrix",
+    "Economic engine reflection"
   ],
   "activityCoachingNotes": [],
   "debriefWithFaculty": []

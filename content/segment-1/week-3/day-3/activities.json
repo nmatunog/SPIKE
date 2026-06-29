@@ -3,44 +3,47 @@
     {
       "id": "activity-w3-d3-01",
       "dayId": "day-segment-1-week-3-day-3",
-      "title": "Claims Workflow Mapping",
-      "durationMinutes": 25,
+      "title": "Client Growth Flywheel Map",
+      "durationMinutes": 45,
       "materials": [],
       "instructions": [
-        "Squads sketch workflow on canvas",
-        "Present one friction point"
+        "Map: one client → referral → five clients → twenty clients → recurring relationships → growing practice",
+        "Name first-client sources from Week 2 network",
+        "Identify referral trigger moments"
       ],
       "outputs": [
-        "Workflow map"
+        "Client growth flywheel map"
       ],
       "debriefQuestions": []
     },
     {
       "id": "activity-w3-d3-02",
       "dayId": "day-segment-1-week-3-day-3",
-      "title": "Claim Delivery Roleplays",
-      "durationMinutes": 70,
+      "title": "FEC Box 6 — Growth Engines Draft",
+      "durationMinutes": 40,
       "materials": [],
       "instructions": [
-        "Rotate advisor role through scenarios",
-        "Use empathy rubric feedback"
+        "Open Financial Entrepreneurship Canvas Box 6",
+        "Draft Advisor Excellence, Team & Leadership, Systems & Scale activation",
+        "Sync to Venture Blueprint growth engines"
       ],
       "outputs": [
-        "Roleplay reflections"
+        "FEC Growth Engines draft"
       ],
       "debriefQuestions": []
     },
     {
       "id": "activity-w3-d3-03",
       "dayId": "day-segment-1-week-3-day-3",
-      "title": "Documentation Drill",
-      "durationMinutes": 15,
+      "title": "Growth Engine Squad Share",
+      "durationMinutes": 25,
       "materials": [],
       "instructions": [
-        "Complete post-call checklist for scenario"
+        "Each squad shares primary growth engine and first 30-day action",
+        "Room Q&A — one question per squad"
       ],
       "outputs": [
-        "Claim documentation sample"
+        "Squad growth engine notes"
       ],
       "debriefQuestions": []
     }

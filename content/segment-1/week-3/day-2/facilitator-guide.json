@@ -1,53 +1,60 @@
 {
   "dayId": "day-segment-1-week-3-day-2",
-  "title": "Facilitator Guide — Day 12 — Policy Servicing & AIA Digital Portals",
+  "title": "Facilitator Guide — Day 12 — Your First Business Tool",
   "durationHours": 4,
   "prepChecklist": [
-    "Confirm portal sandbox access with IT",
-    "Prepare backup screenshots if live portal unavailable"
+    "Print persona cards and FNA dyad observation forms",
+    "Brief mentors: FNA is a business tool, not compliance paperwork",
+    "Load timers for dyad rounds"
   ],
   "sessionFlow": [
     {
       "time": "0:00–0:25",
-      "activity": "Deck 01 — Lifecycle + portals overview",
-      "notes": ""
+      "activity": "Deck 01 — FNA as business diagnostic",
+      "notes": "Restaurant / doctor / mechanic / advisor comparison. No products."
     },
     {
-      "time": "0:25–1:25",
-      "activity": "Portal hands-on lab (rotating stations)",
-      "notes": "Pairs complete task checklist."
+      "time": "0:25–0:40",
+      "activity": "Business tool comparison map",
+      "notes": "Squads map how ventures diagnose before delivering."
     },
     {
-      "time": "1:25–1:35",
+      "time": "0:40–1:30",
+      "activity": "FNA dyad rounds (2 cycles)",
+      "notes": "Strict discovery discipline. Mentors score listening."
+    },
+    {
+      "time": "1:30–1:40",
       "activity": "Break",
       "notes": ""
     },
     {
-      "time": "1:35–2:10",
-      "activity": "Client servicing roleplays",
-      "notes": "Explain portal outcome to mock client."
+      "time": "1:40–2:15",
+      "activity": "Squad synthesis — top needs themes",
+      "notes": "Connect needs to Week 2 validated problems."
     },
     {
-      "time": "2:10–2:40",
-      "activity": "Advisor startup systems workshop",
-      "notes": "Personal ops checklist in Blueprint."
+      "time": "2:15–2:45",
+      "activity": "Portfolio sync + assessment",
+      "notes": ""
     },
     {
-      "time": "2:40–3:00",
-      "activity": "Assessment + reflection",
+      "time": "2:45–3:00",
+      "activity": "Reflection + Day 13 preview (scalability)",
       "notes": ""
     }
   ],
   "debriefQuestions": [
-    "What task caused most friction?",
-    "Who can explain lifecycle to a client clearly?",
-    "What systems are still missing for startup readiness?"
+    "Who treated FNA as paperwork vs a business tool?",
+    "What needs appeared across multiple squads?",
+    "How does diagnosis connect to trust?"
   ],
   "commonPitfalls": [
-    "Clicking without understanding lifecycle",
-    "Sharing credentials against policy"
+    "Advisors pitching products during discovery",
+    "Teaching FNA as insurance process instead of entrepreneur diagnostic"
   ],
   "coachingTips": [
-    "Pair tech-confident with tech-anxious interns"
+    "Celebrate clarifying questions",
+    "Link every insight to client value, not form completion"
   ]
 }

@@ -42,7 +42,7 @@
       "title": "Ambition & Purpose",
       "theme": "Ambition & Purpose",
       "hourGate": 40,
-      "milestoneObjective": "Establish personal ambition, purpose, and venture identity foundations aligned with the 40-hour Ambition Review gate.",
+      "milestoneObjective": "Establish personal ambition, purpose, and venture identity foundations aligned with the 40-hour Ambition Review gate. Week arc: Find a problem.",
       "businessPlanChapter": "Business Plan Chapter 1 — Venture Identity & Direction",
       "portfolioSection": "Portfolio — Identity & Week 1 Journey",
       "status": "published",
@@ -3882,7 +3882,7 @@
           "learningObjectives": [
             "Present Market Validation Pitch — evidence, not ideas (5 min per squad)",
             "Complete Empathy Lab with Miguel — understand before you advise",
-            "Reflect on advisor role and bridge to Week 3 ADVISE",
+            "Reflect on advisor role and bridge to Week 3 — Discover Your Business Model",
             "Stage Gate II + Squad XP ceremony"
           ],
           "decks": [
@@ -3980,16 +3980,16 @@
                 {
                   "number": 11,
                   "title": "What Would You Ask Miguel?",
-                  "summary": "Before you advise, you must understand.",
-                  "facilitatorNotes": "Bridge to Week 3 ADVISE module.",
+                  "summary": "Before you build the venture, you must understand the opportunity.",
+                  "facilitatorNotes": "Bridge to Week 3 — Discover Your Business Model. Financial Entrepreneurship week opens Monday with Opportunity Analysis.",
                   "discussionQuestions": [],
                   "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-11.png"
                 },
                 {
                   "number": 12,
-                  "title": "Week 3 — ADVISE",
-                  "summary": "From validated problem to trusted guidance.",
-                  "facilitatorNotes": "Preview Monday focus.",
+                  "title": "Week 3 — Discover Your Business Model",
+                  "summary": "From validated opportunity to venture model. Week 1 — Find a problem. Week 2 — Validate the opportunity. Week 3 — Discover a business model.",
+                  "facilitatorNotes": "Preview Monday: Opportunity Analysis — why financial advice is one of the best businesses you can build.",
                   "discussionQuestions": [],
                   "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-12.png"
                 },
@@ -4004,7 +4004,7 @@
                 {
                   "number": 14,
                   "title": "See You Monday",
-                  "summary": "Stage Gate II · Squad XP · Week 3 Advise unlock",
+                  "summary": "Stage Gate II · Squad XP · Week 3 Financial Entrepreneurship unlock",
                   "facilitatorNotes": "Close with Stage Gate ceremony if time permits.",
                   "discussionQuestions": [],
                   "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-14.png"
@@ -4046,8 +4046,8 @@
                 },
                 {
                   "number": 4,
-                  "title": "Week 3 — Operations Preview",
-                  "summary": "Underwriting and portals ahead.",
+                  "title": "Week 3 — Discover Your Business Model",
+                  "summary": "Financial Entrepreneurship week. Mon — Opportunity Analysis Tue — Your First Business Tool (FNA) Wed — Why This Business Scales Thu — AIA as Platform Fri — My Financial Advisory Venture Pitch",
                   "facilitatorNotes": "Close Week 2.",
                   "discussionQuestions": [],
                   "imageUrl": null
@@ -4087,7 +4087,7 @@
             {
               "time": "3:10–3:25",
               "activity": "Week 3 bridge + wrap-up (slides 11–14)",
-              "notes": "What would you ask Miguel? Preview Week 3 ADVISE. Participants complete week wrap-up in Playbook."
+              "notes": "What would you ask Miguel? Preview Week 3 Financial Entrepreneurship — Opportunity Analysis Monday. Participants complete week wrap-up in Playbook."
             },
             {
               "time": "3:25–4:00",
@@ -4155,10 +4155,10 @@
               "title": "Week 2 Stage Gate II Ceremony",
               "durationMinutes": 35,
               "instructions": [
-                "Week 3 ADVISE preview (slides 11–14)",
+                "Week 3 Financial Entrepreneurship preview (slides 11–14)",
                 "Mentor squad review — 4 dimensions + optional commendations",
                 "Stage gate decision per squad",
-                "Unlock Week 3 Advise"
+                "Unlock Week 3 — Discover Your Business Model"
               ],
               "materials": [
                 "Squad XP scores",
@@ -4190,7 +4190,7 @@
             "Which squad showed the strongest interview evidence in their pitch?",
             "What did squads learn about Miguel that they did not expect?",
             "How does empathy change the way you would advise a client?",
-            "Who is ready for Week 3 ADVISE?"
+            "Who is ready to discover their business model in Week 3?"
           ],
           "commonPitfalls": [
             "Skipping empathy workshop to extend pitch time",
@@ -4217,7 +4217,7 @@
               "Did the pitch reflect what the market taught the squad?",
               "Which customer quotes landed strongest with the audience?",
               "What did squads learn about Miguel that changes how they would advise?",
-              "Is the squad ready for Week 3 ADVISE?"
+              "Is the squad ready to discover their business model in Week 3?"
             ],
             "observationAreas": [
               "10-slide pitch structure completeness",
@@ -4268,31 +4268,32 @@
     },
     {
       "weekNumber": 3,
-      "title": "Business Operations",
-      "theme": "Advisor Startup & Operations",
+      "title": "Financial Entrepreneurship",
+      "theme": "Discover Your Business Model",
       "hourGate": 120,
-      "milestoneObjective": "Establish venture operations, risk management, and advisor startup readiness for Hour 120 review.",
-      "businessPlanChapter": "Business Plan Chapter 3 — Advisor Startup & Operations",
+      "milestoneObjective": "Discover the professional financial advisory venture model, validate scalability, choose AIA as business platform, and pitch your Financial Advisory Venture at the 120-hour gate.",
+      "businessPlanChapter": "Business Plan Chapter 3 — Financial Advisory Venture Model",
       "portfolioSection": "Portfolio — Advisor Startup",
       "status": "partial",
       "days": [
         {
           "dayNumber": 1,
           "programDay": 11,
-          "title": "Day 11 — Underwriting Principles & Risk Assessment",
-          "theme": "Underwriting",
+          "title": "Day 11 — Opportunity Analysis",
+          "theme": "Opportunity Analysis",
           "durationHours": 4,
           "status": "published",
           "learningObjectives": [
-            "Explain underwriting purpose in the protection value chain",
-            "Identify key risk factors in life insurance applications",
-            "Apply basic risk assessment to mock profiles",
-            "Connect underwriting discipline to advisor ethics"
+            "Frame Week 3 as discovering a business model — not insurance training",
+            "Analyze why millions of Filipinos struggle financially despite working hard",
+            "Map market, problem, demand, impact, and income through an entrepreneur lens",
+            "Connect Week 1 discovery work to a venture where YOU are the business model",
+            "Introduce AIA as a business platform — not an employer"
           ],
           "decks": [
             {
               "id": "presentation-w3-d1-deck-01",
-              "title": "Program Coach Deck 01 — Why Underwriting Exists",
+              "title": "Program Coach Deck 01 — Opportunity Analysis",
               "purpose": "",
               "slideCount": 13,
               "status": "published",
@@ -4301,105 +4302,128 @@
               "slides": [
                 {
                   "number": 1,
-                  "title": "Day 11 — Backend Operations Week",
-                  "summary": "",
-                  "facilitatorNotes": "Conceptual foundations.",
-                  "discussionQuestions": [],
+                  "title": "Day 11 — From Financial Literacy to Financial Entrepreneurship",
+                  "summary": "Week 3: Discover a business model. You are not here to learn what financial advisors do. You are here to discover why financial advice is one of the best businesses you can build.",
+                  "facilitatorNotes": "Opening — don't read the slide. Walk toward the audience. Pause. Say: Now we're talking. Tell the three-week story slowly: Week 1 — you discovered opportunities. Week 2 — you proved the opportunity exists. Week 3 — now you need a business that creates value. This is the shift from financial literacy to financial entrepreneurship.",
+                  "discussionQuestions": [
+                    "What changed between Week 1 and Week 2 in how you see your venture?"
+                  ],
                   "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-01.png"
                 },
                 {
                   "number": 2,
-                  "title": "Underwriting in the Protection Story",
-                  "summary": "",
-                  "facilitatorNotes": "Conceptual foundations.",
-                  "discussionQuestions": [],
+                  "title": "Week 1 — You Discovered Opportunities",
+                  "summary": "Problem · Market · Customer · Solution",
+                  "facilitatorNotes": "Callback to Week 1. Ask the room: What problem did your squad discover? Who is your customer? What solution did you imagine? Do not rush — let them feel the continuity.",
+                  "discussionQuestions": [
+                    "Which Week 1 discovery still feels strongest after validation?"
+                  ],
                   "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-02.png"
                 },
                 {
                   "number": 3,
-                  "title": "Risk Factors Overview",
-                  "summary": "",
-                  "facilitatorNotes": "Conceptual foundations.",
-                  "discussionQuestions": [],
+                  "title": "Week 2 — You Proved the Opportunity Exists",
+                  "summary": "Evidence beats opinion.",
+                  "facilitatorNotes": "Callback to Week 2 validation. Reference field interviews, FEC updates, Market Validation Pitch. The market spoke. The opportunity is real. Now the entrepreneur question: what business will you build on it?",
+                  "discussionQuestions": [
+                    "What evidence from Week 2 surprised you most?"
+                  ],
                   "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-03.png"
                 },
                 {
                   "number": 4,
-                  "title": "Advisor Role vs Underwriter Role",
-                  "summary": "",
-                  "facilitatorNotes": "Conceptual foundations.",
+                  "title": "Now You Need a Business That Creates Value",
+                  "summary": "Discovery and validation are not enough. Entrepreneurs build ventures.",
+                  "facilitatorNotes": "Transition to the central question of Week 3. Speak SPIKE language: venture builders don't stop at research — they design a business model.",
                   "discussionQuestions": [],
                   "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-04.png"
                 },
                 {
                   "number": 5,
-                  "title": "Deck 01 Close — Case Lab",
-                  "summary": "",
-                  "facilitatorNotes": "Conceptual foundations.",
-                  "discussionQuestions": [],
+                  "title": "The Zero-Capital Question",
+                  "summary": "What business can you start today… with almost zero capital… that creates real impact… while building recurring income?",
+                  "facilitatorNotes": "Pause. Let silence work. Do not answer yet. Let participants think. Write their guesses on the board if available.",
+                  "discussionQuestions": [
+                    "What businesses did you think of?",
+                    "Which require capital you don't have?"
+                  ],
                   "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-05.png"
                 },
                 {
                   "number": 6,
-                  "title": "Slide 6",
-                  "summary": "",
-                  "facilitatorNotes": "",
-                  "discussionQuestions": [],
+                  "title": "Reveal — A Professional Financial Advisory Practice",
+                  "summary": "Not because it's AIA. Because it's the venture.",
+                  "facilitatorNotes": "Reveal slowly. A Professional Financial Advisory Practice. Now AIA becomes relevant — not as an employer, but as the venture you can build. This is the mind shift.",
+                  "discussionQuestions": [
+                    "Did anyone in the room think of this before the reveal?"
+                  ],
                   "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-06.png"
                 },
                 {
                   "number": 7,
-                  "title": "Slide 7",
-                  "summary": "",
-                  "facilitatorNotes": "",
-                  "discussionQuestions": [],
+                  "title": "Why Do Millions Struggle Financially?",
+                  "summary": "Despite working hard.",
+                  "facilitatorNotes": "Opportunity Analysis begins here — not with a financial picture of the client. Ask: Why do millions of Filipinos struggle financially despite working hard? Collect answers. Validate with empathy, not judgment.",
+                  "discussionQuestions": [
+                    "Why do hardworking people still struggle financially?"
+                  ],
                   "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-07.png"
                 },
                 {
                   "number": 8,
-                  "title": "Slide 8",
-                  "summary": "",
-                  "facilitatorNotes": "",
-                  "discussionQuestions": [],
+                  "title": "Who Helps Solve This Problem?",
+                  "summary": "Teacher? Bank? Government? Insurance Company? Financial Planner? Financial Advisor?",
+                  "facilitatorNotes": "Poll the room on each option. Discuss what each can and cannot do. Guide toward: there is a gap that a trusted advisor can fill.",
+                  "discussionQuestions": [
+                    "Who do families actually trust with money decisions?",
+                    "Where is the gap?"
+                  ],
                   "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-08.png"
                 },
                 {
                   "number": 9,
-                  "title": "Slide 9",
-                  "summary": "",
-                  "facilitatorNotes": "",
-                  "discussionQuestions": [],
+                  "title": "The Entrepreneur Lens",
+                  "summary": "There is a market. There is a problem. There is demand. There is impact. There is income.",
+                  "facilitatorNotes": "That is exactly how entrepreneurs think. Connect each line to their Week 1–2 work. Market = segments they interviewed. Problem = validated pain. Demand = willingness to pay signals. Impact = families becoming financially secure. Income = recurring advisory relationships.",
+                  "discussionQuestions": [
+                    "Which of these five did you already prove in Week 2?"
+                  ],
                   "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-09.png"
                 },
                 {
                   "number": 10,
-                  "title": "Slide 10",
-                  "summary": "",
-                  "facilitatorNotes": "",
-                  "discussionQuestions": [],
+                  "title": "Could YOUR Venture Be YOU?",
+                  "summary": "Could your business model be: Helping families become financially secure?",
+                  "facilitatorNotes": "This is the mind-blowing shift. Pause after asking. Let it land. You are not joining a company. You are building a venture — and the venture might be you as a professional financial advisor.",
+                  "discussionQuestions": [
+                    "Could your venture be you?",
+                    "What would that mean for your ambition statement?"
+                  ],
                   "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-10.png"
                 },
                 {
                   "number": 11,
-                  "title": "Slide 11",
-                  "summary": "",
-                  "facilitatorNotes": "",
-                  "discussionQuestions": [],
+                  "title": "AIA — Platform, Not Employer",
+                  "summary": "BIG difference.",
+                  "facilitatorNotes": "Introduce AIA as a platform — not an employer. Contrast: employee mindset vs venture builder mindset. You bring professional skills. AIA provides the platform. You serve clients. You earn income. You build a business. You grow into leadership. You build an enterprise.",
+                  "discussionQuestions": [
+                    "What's the difference between joining a company and building on a platform?"
+                  ],
                   "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-11.png"
                 },
                 {
                   "number": 12,
-                  "title": "Slide 12",
-                  "summary": "",
-                  "facilitatorNotes": "",
+                  "title": "The Platform Stack",
+                  "summary": "YOU ↓ Professional Skills ↓ AIA Platform ↓ Clients ↓ Income ↓ Business ↓ Leadership ↓ Enterprise",
+                  "facilitatorNotes": "Draw this on the board if possible. Walk down each layer slowly. Let them see the full venture architecture. This is SPIKE — startup thinking applied to financial advice.",
                   "discussionQuestions": [],
                   "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-12.png"
                 },
                 {
                   "number": 13,
-                  "title": "Slide 13",
-                  "summary": "",
-                  "facilitatorNotes": "",
+                  "title": "Deck 01 Close — Opportunity Analysis Workshop",
+                  "summary": "Afternoon: map the opportunity. Upload to Venture Portfolio.",
+                  "facilitatorNotes": "Transition to Deck 02 workshop. Preview tomorrow: Your First Business Tool — the FNA.",
                   "discussionQuestions": [],
                   "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-13.png"
                 }
@@ -4407,7 +4431,7 @@
             },
             {
               "id": "presentation-w3-d1-deck-02",
-              "title": "Program Coach Deck 02 — Mock Application Lab",
+              "title": "Program Coach Deck 02 — Opportunity Analysis Workshop",
               "purpose": "",
               "slideCount": 5,
               "status": "published",
@@ -4416,41 +4440,41 @@
               "slides": [
                 {
                   "number": 1,
-                  "title": "Case File Protocol",
-                  "summary": "Teams receive redacted mock apps.",
-                  "facilitatorNotes": "Hands-on evaluation.",
+                  "title": "Opportunity Analysis Protocol",
+                  "summary": "Map market, problem, demand, impact, and income for your validated segment.",
+                  "facilitatorNotes": "Squads use Week 2 evidence — not new assumptions.",
                   "discussionQuestions": [],
                   "imageUrl": null
                 },
                 {
                   "number": 2,
-                  "title": "Risk Scoring Worksheet",
-                  "summary": "Simple scoring — not actuarial.",
-                  "facilitatorNotes": "Hands-on evaluation.",
+                  "title": "Stakeholder Sort",
+                  "summary": "Who solves what? Where is the advisor's unique role?",
+                  "facilitatorNotes": "Gallery walk or card sort. Compare teacher, bank, government, insurer, planner, advisor.",
                   "discussionQuestions": [],
                   "imageUrl": null
                 },
                 {
                   "number": 3,
-                  "title": "Squad Deliberation Format",
-                  "summary": "Recommend accept / refer / decline with rationale.",
-                  "facilitatorNotes": "Hands-on evaluation.",
+                  "title": "Entrepreneur Lens Worksheet",
+                  "summary": "Five lenses: market · problem · demand · impact · income.",
+                  "facilitatorNotes": "Each squad completes for their target segment.",
                   "discussionQuestions": [],
                   "imageUrl": null
                 },
                 {
                   "number": 4,
-                  "title": "Ethics Corners",
-                  "summary": "What advisors must never conceal.",
-                  "facilitatorNotes": "Hands-on evaluation.",
+                  "title": "Platform Stack Exercise",
+                  "summary": "YOU → Skills → AIA Platform → Clients → Income → Business → Leadership → Enterprise",
+                  "facilitatorNotes": "Participants personalize the stack with their name and Week 1 ambition.",
                   "discussionQuestions": [],
                   "imageUrl": null
                 },
                 {
                   "number": 5,
                   "title": "Day 11 Deliverables",
-                  "summary": "Case memos uploaded.",
-                  "facilitatorNotes": "Hands-on evaluation.",
+                  "summary": "Opportunity analysis memo + platform stack diagram uploaded to portfolio.",
+                  "facilitatorNotes": "Preview Day 12: FNA as your first business tool.",
                   "discussionQuestions": [],
                   "imageUrl": null
                 }
@@ -4459,74 +4483,84 @@
           ],
           "sessionFlow": [
             {
-              "time": "0:00–0:30",
-              "activity": "Deck 01 — Underwriting concepts",
-              "notes": "Use protection story from Week 1 Day 2."
+              "time": "0:00–0:45",
+              "activity": "Deck 01 — From Financial Literacy to Financial Entrepreneurship",
+              "notes": "Tell the three-week story. Pause on the zero-capital question. Reveal the advisory practice. Do not pitch AIA yet — frame as platform."
             },
             {
-              "time": "0:30–1:30",
-              "activity": "Mock application lab — Round 1",
-              "notes": "Squads deliberate; mentors probe reasoning."
+              "time": "0:45–1:35",
+              "activity": "Opportunity Analysis discussion + stakeholder sort",
+              "notes": "Why millions struggle. Who helps. Entrepreneur lens: market, problem, demand, impact, income."
             },
             {
-              "time": "1:30–1:40",
+              "time": "1:35–1:45",
               "activity": "Break",
               "notes": ""
             },
             {
-              "time": "1:40–2:20",
-              "activity": "Mock application lab — Round 2",
-              "notes": "Harder cases with missing info."
+              "time": "1:45–2:30",
+              "activity": "Could YOUR venture be YOU? + platform stack",
+              "notes": "Draw YOU → Skills → AIA Platform → Clients → Income → Business → Leadership → Enterprise."
             },
             {
-              "time": "2:20–2:45",
-              "activity": "Squad case presentations",
-              "notes": ""
+              "time": "2:30–2:50",
+              "activity": "Squad opportunity analysis memos",
+              "notes": "Connect to Week 1 problem/market/customer/solution."
             },
             {
-              "time": "2:45–3:00",
-              "activity": "Reflection + Day 12 preview (digital portals)",
+              "time": "2:50–3:00",
+              "activity": "Reflection + Day 12 preview (Your First Business Tool)",
               "notes": ""
             }
           ],
           "activities": [
             {
-              "title": "Underwriting Concept Clusters",
+              "title": "Stakeholder Sort — Who Solves What?",
               "durationMinutes": 25,
               "instructions": [
-                "Gallery walk of risk factor cards",
-                "Squads sort into categories"
+                "Gallery walk or card sort: teacher, bank, government, insurer, planner, advisor",
+                "Squads debate where the trusted advisor fits",
+                "Post one insight per squad"
               ],
               "materials": [],
               "outputs": [
-                "Risk factor map"
+                "Stakeholder sort notes"
               ],
-              "debriefQuestions": []
+              "debriefQuestions": [
+                "Where is the gap only a financial advisor can fill?"
+              ]
             },
             {
-              "title": "Mock Application Lab",
-              "durationMinutes": 75,
+              "title": "Entrepreneur Lens Worksheet",
+              "durationMinutes": 40,
               "instructions": [
-                "Evaluate 2 cases per squad",
-                "Write recommendation memo"
+                "Map market, problem, demand, impact, income for validated segment",
+                "Use Week 2 interview evidence — not assumptions",
+                "Draft opportunity analysis memo"
               ],
               "materials": [],
               "outputs": [
-                "Underwriting case memo"
+                "Opportunity analysis memo"
               ],
-              "debriefQuestions": []
+              "debriefQuestions": [
+                "Which lens was hardest to prove with evidence?"
+              ]
             },
             {
-              "title": "Case Presentation Snapshots",
+              "title": "Platform Stack Exercise",
               "durationMinutes": 25,
               "instructions": [
-                "3-minute recommendation per squad"
+                "Personalize: YOU → Professional Skills → AIA Platform → Clients → Income → Business → Leadership → Enterprise",
+                "Pair-share: platform vs employer mindset",
+                "Upload platform stack diagram to portfolio"
               ],
               "materials": [],
               "outputs": [
-                "Presentation notes"
+                "Platform stack diagram"
               ],
-              "debriefQuestions": []
+              "debriefQuestions": [
+                "What changes when AIA is a platform, not an employer?"
+              ]
             }
           ],
           "worksheets": [
@@ -4535,49 +4569,52 @@
           ],
           "assessments": [],
           "reflections": [
-            "Day 11 ethics reflection"
+            "Day 11 opportunity reflection"
           ],
           "surveys": [],
           "prepChecklist": [
-            "Print mock applications",
-            "Brief mentors on compliance language",
-            "No real client data ever"
+            "Review squad Week 2 validation evidence — reference in debrief",
+            "Print entrepreneur lens worksheets and platform stack templates",
+            "Brief mentors: this is venture discovery, not product training",
+            "Prepare whiteboard for platform stack diagram"
           ],
           "debriefQuestions": [
-            "Where did squads disagree on risk?",
-            "Did anyone rationalize hiding information?",
-            "How does underwriting affect client trust?"
+            "When did the room shift from 'internship' to 'venture'?",
+            "Who still sees AIA as an employer vs a platform?",
+            "How does Week 1 discovery connect to this business model?"
           ],
           "commonPitfalls": [
-            "Treating lab as sales training",
-            "Oversimplified accept/decline without rationale"
+            "Teaching what financial advisors do instead of why it's a great business",
+            "Introducing products or compensation too early",
+            "Skipping the pause before the zero-capital reveal"
           ],
           "coachingTips": [
-            "Reward transparent reasoning over fast answers"
+            "Speak SPIKE — entrepreneurs think in market, problem, demand, impact, income",
+            "Use Week 2 interview quotes as proof during opportunity analysis"
           ],
           "mentorGuide": {
-            "theme": "Discipline",
-            "title": "Mentor Guide — Day 11 — Underwriting Principles & Risk Assessment",
-            "coachingObjective": "Build respect for backend rigor.",
+            "theme": "Opportunity",
+            "title": "Mentor Guide — Day 11 — Opportunity Analysis",
+            "coachingObjective": "Help participants see financial advice as a venture — not a job.",
             "timing": {
               "preSession": "Review facilitator guide and deck speaker notes",
               "duringSession": "Circulate during squad activities",
               "postSession": "Complete squad weekly review snapshot"
             },
             "discussionQuestions": [
-              "Where did squads disagree on risk?",
-              "Did anyone rationalize hiding information?",
-              "How does underwriting affect client trust?"
+              "When did the room shift from internship to venture?",
+              "Who still sees AIA as employer vs platform?",
+              "How does Week 2 evidence support this business model?"
             ],
             "observationAreas": [
-              "Analytical reasoning",
-              "Ethics language",
-              "Team deliberation"
+              "Entrepreneur lens thinking",
+              "Platform vs employer mindset",
+              "Connection to Week 1–2 work"
             ]
           },
           "expectedOutputs": [
-            "Underwriting case memo",
-            "Risk factor map"
+            "Opportunity analysis memo",
+            "Platform stack diagram"
           ],
           "dayId": "day-segment-1-week-3-day-1",
           "contentPath": "/content/segment-1/week-3/day-1",
@@ -4585,7 +4622,7 @@
           "sessions": [
             {
               "sessionNumber": 1,
-              "title": "Day 11 — Underwriting Principles & Risk Assessment",
+              "title": "Day 11 — Opportunity Analysis",
               "durationMinutes": 240,
               "presentationIds": [
                 "presentation-w3-d1-deck-01",

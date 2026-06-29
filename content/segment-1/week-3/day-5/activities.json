@@ -3,43 +3,46 @@
     {
       "id": "activity-w3-d5-01",
       "dayId": "day-segment-1-week-3-day-5",
-      "title": "Startup Readiness Presentations",
+      "title": "Financial Advisory Venture Pitch",
       "durationMinutes": 90,
       "materials": [],
       "instructions": [
-        "8-min presentation per participant or squad",
-        "Cover systems, ops learning, ethics"
+        "8-minute entrepreneur pitch covering: problem, target market, advisory experience, FNA process, client acquisition, growth model, why AIA as platform",
+        "Panel Q&A after each pitch",
+        "No product demos or commission focus"
       ],
       "outputs": [
-        "Operations review deck"
+        "Financial Advisory Venture pitch"
       ],
       "debriefQuestions": []
     },
     {
       "id": "activity-w3-d5-02",
       "dayId": "day-segment-1-week-3-day-5",
-      "title": "Gate Artifact Audit",
-      "durationMinutes": 20,
+      "title": "120-Hour Gate Artifact Audit",
+      "durationMinutes": 25,
       "materials": [],
       "instructions": [
-        "Program coach verifies checklist with participants"
+        "Verify opportunity memo, FNA notes, Growth Engines, platform rationale, pitch deck",
+        "Record gate status with remediation plan if needed"
       ],
       "outputs": [
-        "Gate status record"
+        "120-hour gate clearance"
       ],
       "debriefQuestions": []
     },
     {
       "id": "activity-w3-d5-03",
       "dayId": "day-segment-1-week-3-day-5",
-      "title": "Week 4 Study Plan Builder",
-      "durationMinutes": 10,
+      "title": "Week 4 Build Focus",
+      "durationMinutes": 15,
       "materials": [],
       "instructions": [
-        "Personal study schedule draft"
+        "Draft one sentence: what you will build in Week 4",
+        "Share with mentor for accountability"
       ],
       "outputs": [
-        "Study plan v1"
+        "Week 4 build focus"
       ],
       "debriefQuestions": []
     }

@@ -3,18 +3,19 @@
   "segmentId": "segment-1",
   "weekId": "week-segment-1-3",
   "dayNumber": 1,
-  "title": "Day 11 — Underwriting Principles & Risk Assessment",
-  "theme": "Underwriting",
+  "title": "Day 11 — Opportunity Analysis",
+  "theme": "Opportunity Analysis",
   "durationHours": 4,
   "learningObjectives": [
-    "Explain underwriting purpose in the protection value chain",
-    "Identify key risk factors in life insurance applications",
-    "Apply basic risk assessment to mock profiles",
-    "Connect underwriting discipline to advisor ethics"
+    "Frame Week 3 as discovering a business model — not insurance training",
+    "Analyze why millions of Filipinos struggle financially despite working hard",
+    "Map market, problem, demand, impact, and income through an entrepreneur lens",
+    "Connect Week 1 discovery work to a venture where YOU are the business model",
+    "Introduce AIA as a business platform — not an employer"
   ],
   "expectedOutputs": [
-    "Underwriting case memo",
-    "Risk factor map"
+    "Opportunity analysis memo",
+    "Platform stack diagram"
   ],
   "portfolioDeliverables": [
     "portfolio-advisor-startup"

@@ -2,7 +2,7 @@
   "presentation": {
     "id": "presentation-w3-d1-deck-01",
     "dayId": "day-segment-1-week-3-day-1",
-    "title": "Program Coach Deck 01 — Why Underwriting Exists",
+    "title": "Program Coach Deck 01 — Opportunity Analysis",
     "slideIds": [
       "slide-w3-d1-dk1-01",
       "slide-w3-d1-dk1-02",
@@ -28,39 +28,45 @@
       "id": "slide-w3-d1-dk1-01",
       "presentationId": "presentation-w3-d1-deck-01",
       "sortOrder": 1,
-      "title": "Day 11 — Backend Operations Week",
-      "body": "",
-      "speakerNotes": "Conceptual foundations.",
-      "discussionQuestions": [],
+      "title": "Day 11 — From Financial Literacy to Financial Entrepreneurship",
+      "body": "Week 3: Discover a business model.\n\nYou are not here to learn what financial advisors do.\nYou are here to discover why financial advice is one of the best businesses you can build.",
+      "speakerNotes": "Opening — don't read the slide.\nWalk toward the audience. Pause.\nSay: Now we're talking.\nTell the three-week story slowly:\nWeek 1 — you discovered opportunities.\nWeek 2 — you proved the opportunity exists.\nWeek 3 — now you need a business that creates value.\nThis is the shift from financial literacy to financial entrepreneurship.",
+      "discussionQuestions": [
+        "What changed between Week 1 and Week 2 in how you see your venture?"
+      ],
       "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-01.png"
     },
     {
       "id": "slide-w3-d1-dk1-02",
       "presentationId": "presentation-w3-d1-deck-01",
       "sortOrder": 2,
-      "title": "Underwriting in the Protection Story",
-      "body": "",
-      "speakerNotes": "Conceptual foundations.",
-      "discussionQuestions": [],
+      "title": "Week 1 — You Discovered Opportunities",
+      "body": "Problem · Market · Customer · Solution",
+      "speakerNotes": "Callback to Week 1.\nAsk the room: What problem did your squad discover?\nWho is your customer?\nWhat solution did you imagine?\nDo not rush — let them feel the continuity.",
+      "discussionQuestions": [
+        "Which Week 1 discovery still feels strongest after validation?"
+      ],
       "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-02.png"
     },
     {
       "id": "slide-w3-d1-dk1-03",
       "presentationId": "presentation-w3-d1-deck-01",
       "sortOrder": 3,
-      "title": "Risk Factors Overview",
-      "body": "",
-      "speakerNotes": "Conceptual foundations.",
-      "discussionQuestions": [],
+      "title": "Week 2 — You Proved the Opportunity Exists",
+      "body": "Evidence beats opinion.",
+      "speakerNotes": "Callback to Week 2 validation.\nReference field interviews, FEC updates, Market Validation Pitch.\nThe market spoke. The opportunity is real.\nNow the entrepreneur question: what business will you build on it?",
+      "discussionQuestions": [
+        "What evidence from Week 2 surprised you most?"
+      ],
       "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-03.png"
     },
     {
       "id": "slide-w3-d1-dk1-04",
       "presentationId": "presentation-w3-d1-deck-01",
       "sortOrder": 4,
-      "title": "Advisor Role vs Underwriter Role",
-      "body": "",
-      "speakerNotes": "Conceptual foundations.",
+      "title": "Now You Need a Business That Creates Value",
+      "body": "Discovery and validation are not enough.\nEntrepreneurs build ventures.",
+      "speakerNotes": "Transition to the central question of Week 3.\nSpeak SPIKE language: venture builders don't stop at research — they design a business model.",
       "discussionQuestions": [],
       "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-04.png"
     },
@@ -68,79 +74,96 @@
       "id": "slide-w3-d1-dk1-05",
       "presentationId": "presentation-w3-d1-deck-01",
       "sortOrder": 5,
-      "title": "Deck 01 Close — Case Lab",
-      "body": "",
-      "speakerNotes": "Conceptual foundations.",
-      "discussionQuestions": [],
+      "title": "The Zero-Capital Question",
+      "body": "What business can you start today…\nwith almost zero capital…\nthat creates real impact…\nwhile building recurring income?",
+      "speakerNotes": "Pause. Let silence work.\nDo not answer yet.\nLet participants think.\nWrite their guesses on the board if available.",
+      "discussionQuestions": [
+        "What businesses did you think of?",
+        "Which require capital you don't have?"
+      ],
       "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-05.png"
     },
     {
       "id": "slide-d1-01-06",
       "presentationId": "presentation-w3-d1-deck-01",
       "sortOrder": 6,
-      "title": "Slide 6",
-      "body": "",
-      "speakerNotes": "",
-      "discussionQuestions": [],
+      "title": "Reveal — A Professional Financial Advisory Practice",
+      "body": "Not because it's AIA.\nBecause it's the venture.",
+      "speakerNotes": "Reveal slowly.\nA Professional Financial Advisory Practice.\nNow AIA becomes relevant — not as an employer, but as the venture you can build.\nThis is the mind shift.",
+      "discussionQuestions": [
+        "Did anyone in the room think of this before the reveal?"
+      ],
       "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-06.png"
     },
     {
       "id": "slide-d1-01-07",
       "presentationId": "presentation-w3-d1-deck-01",
       "sortOrder": 7,
-      "title": "Slide 7",
-      "body": "",
-      "speakerNotes": "",
-      "discussionQuestions": [],
+      "title": "Why Do Millions Struggle Financially?",
+      "body": "Despite working hard.",
+      "speakerNotes": "Opportunity Analysis begins here — not with a financial picture of the client.\nAsk: Why do millions of Filipinos struggle financially despite working hard?\nCollect answers. Validate with empathy, not judgment.",
+      "discussionQuestions": [
+        "Why do hardworking people still struggle financially?"
+      ],
       "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-07.png"
     },
     {
       "id": "slide-d1-01-08",
       "presentationId": "presentation-w3-d1-deck-01",
       "sortOrder": 8,
-      "title": "Slide 8",
-      "body": "",
-      "speakerNotes": "",
-      "discussionQuestions": [],
+      "title": "Who Helps Solve This Problem?",
+      "body": "Teacher? Bank? Government?\nInsurance Company? Financial Planner? Financial Advisor?",
+      "speakerNotes": "Poll the room on each option.\nDiscuss what each can and cannot do.\nGuide toward: there is a gap that a trusted advisor can fill.",
+      "discussionQuestions": [
+        "Who do families actually trust with money decisions?",
+        "Where is the gap?"
+      ],
       "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-08.png"
     },
     {
       "id": "slide-d1-01-09",
       "presentationId": "presentation-w3-d1-deck-01",
       "sortOrder": 9,
-      "title": "Slide 9",
-      "body": "",
-      "speakerNotes": "",
-      "discussionQuestions": [],
+      "title": "The Entrepreneur Lens",
+      "body": "There is a market.\nThere is a problem.\nThere is demand.\nThere is impact.\nThere is income.",
+      "speakerNotes": "That is exactly how entrepreneurs think.\nConnect each line to their Week 1–2 work.\nMarket = segments they interviewed.\nProblem = validated pain.\nDemand = willingness to pay signals.\nImpact = families becoming financially secure.\nIncome = recurring advisory relationships.",
+      "discussionQuestions": [
+        "Which of these five did you already prove in Week 2?"
+      ],
       "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-09.png"
     },
     {
       "id": "slide-d1-01-10",
       "presentationId": "presentation-w3-d1-deck-01",
       "sortOrder": 10,
-      "title": "Slide 10",
-      "body": "",
-      "speakerNotes": "",
-      "discussionQuestions": [],
+      "title": "Could YOUR Venture Be YOU?",
+      "body": "Could your business model be:\nHelping families become financially secure?",
+      "speakerNotes": "This is the mind-blowing shift.\nPause after asking.\nLet it land.\nYou are not joining a company.\nYou are building a venture — and the venture might be you as a professional financial advisor.",
+      "discussionQuestions": [
+        "Could your venture be you?",
+        "What would that mean for your ambition statement?"
+      ],
       "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-10.png"
     },
     {
       "id": "slide-d1-01-11",
       "presentationId": "presentation-w3-d1-deck-01",
       "sortOrder": 11,
-      "title": "Slide 11",
-      "body": "",
-      "speakerNotes": "",
-      "discussionQuestions": [],
+      "title": "AIA — Platform, Not Employer",
+      "body": "BIG difference.",
+      "speakerNotes": "Introduce AIA as a platform — not an employer.\nContrast: employee mindset vs venture builder mindset.\nYou bring professional skills. AIA provides the platform. You serve clients. You earn income. You build a business. You grow into leadership. You build an enterprise.",
+      "discussionQuestions": [
+        "What's the difference between joining a company and building on a platform?"
+      ],
       "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-11.png"
     },
     {
       "id": "slide-d1-01-12",
       "presentationId": "presentation-w3-d1-deck-01",
       "sortOrder": 12,
-      "title": "Slide 12",
-      "body": "",
-      "speakerNotes": "",
+      "title": "The Platform Stack",
+      "body": "YOU\n↓ Professional Skills\n↓ AIA Platform\n↓ Clients\n↓ Income\n↓ Business\n↓ Leadership\n↓ Enterprise",
+      "speakerNotes": "Draw this on the board if possible.\nWalk down each layer slowly.\nLet them see the full venture architecture.\nThis is SPIKE — startup thinking applied to financial advice.",
       "discussionQuestions": [],
       "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-12.png"
     },
@@ -148,9 +171,9 @@
       "id": "slide-d1-01-13",
       "presentationId": "presentation-w3-d1-deck-01",
       "sortOrder": 13,
-      "title": "Slide 13",
-      "body": "",
-      "speakerNotes": "",
+      "title": "Deck 01 Close — Opportunity Analysis Workshop",
+      "body": "Afternoon: map the opportunity. Upload to Venture Portfolio.",
+      "speakerNotes": "Transition to Deck 02 workshop.\nPreview tomorrow: Your First Business Tool — the FNA.",
       "discussionQuestions": [],
       "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-13.png"
     }

@@ -3,46 +3,56 @@
     {
       "id": "activity-w3-d1-01",
       "dayId": "day-segment-1-week-3-day-1",
-      "title": "Underwriting Concept Clusters",
+      "title": "Stakeholder Sort — Who Solves What?",
       "durationMinutes": 25,
       "materials": [],
       "instructions": [
-        "Gallery walk of risk factor cards",
-        "Squads sort into categories"
+        "Gallery walk or card sort: teacher, bank, government, insurer, planner, advisor",
+        "Squads debate where the trusted advisor fits",
+        "Post one insight per squad"
       ],
       "outputs": [
-        "Risk factor map"
+        "Stakeholder sort notes"
       ],
-      "debriefQuestions": []
+      "debriefQuestions": [
+        "Where is the gap only a financial advisor can fill?"
+      ]
     },
     {
       "id": "activity-w3-d1-02",
       "dayId": "day-segment-1-week-3-day-1",
-      "title": "Mock Application Lab",
-      "durationMinutes": 75,
+      "title": "Entrepreneur Lens Worksheet",
+      "durationMinutes": 40,
       "materials": [],
       "instructions": [
-        "Evaluate 2 cases per squad",
-        "Write recommendation memo"
+        "Map market, problem, demand, impact, income for validated segment",
+        "Use Week 2 interview evidence — not assumptions",
+        "Draft opportunity analysis memo"
       ],
       "outputs": [
-        "Underwriting case memo"
+        "Opportunity analysis memo"
       ],
-      "debriefQuestions": []
+      "debriefQuestions": [
+        "Which lens was hardest to prove with evidence?"
+      ]
     },
     {
       "id": "activity-w3-d1-03",
       "dayId": "day-segment-1-week-3-day-1",
-      "title": "Case Presentation Snapshots",
+      "title": "Platform Stack Exercise",
       "durationMinutes": 25,
       "materials": [],
       "instructions": [
-        "3-minute recommendation per squad"
+        "Personalize: YOU → Professional Skills → AIA Platform → Clients → Income → Business → Leadership → Enterprise",
+        "Pair-share: platform vs employer mindset",
+        "Upload platform stack diagram to portfolio"
       ],
       "outputs": [
-        "Presentation notes"
+        "Platform stack diagram"
       ],
-      "debriefQuestions": []
+      "debriefQuestions": [
+        "What changes when AIA is a platform, not an employer?"
+      ]
     }
   ]
 }

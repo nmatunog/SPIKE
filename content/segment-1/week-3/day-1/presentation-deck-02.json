@@ -2,7 +2,7 @@
   "presentation": {
     "id": "presentation-w3-d1-deck-02",
     "dayId": "day-segment-1-week-3-day-1",
-    "title": "Program Coach Deck 02 — Mock Application Lab",
+    "title": "Program Coach Deck 02 — Opportunity Analysis Workshop",
     "slideIds": [
       "slide-w3-d1-dk2-01",
       "slide-w3-d1-dk2-02",
@@ -15,36 +15,36 @@
     {
       "id": "slide-w3-d1-dk2-01",
       "presentationId": "presentation-w3-d1-deck-02",
-      "title": "Case File Protocol",
-      "body": "Teams receive redacted mock apps.",
-      "speakerNotes": "Hands-on evaluation.",
+      "title": "Opportunity Analysis Protocol",
+      "body": "Map market, problem, demand, impact, and income for your validated segment.",
+      "speakerNotes": "Squads use Week 2 evidence — not new assumptions.",
       "discussionQuestions": [],
       "sortOrder": 1
     },
     {
       "id": "slide-w3-d1-dk2-02",
       "presentationId": "presentation-w3-d1-deck-02",
-      "title": "Risk Scoring Worksheet",
-      "body": "Simple scoring — not actuarial.",
-      "speakerNotes": "Hands-on evaluation.",
+      "title": "Stakeholder Sort",
+      "body": "Who solves what? Where is the advisor's unique role?",
+      "speakerNotes": "Gallery walk or card sort. Compare teacher, bank, government, insurer, planner, advisor.",
       "discussionQuestions": [],
       "sortOrder": 2
     },
     {
       "id": "slide-w3-d1-dk2-03",
       "presentationId": "presentation-w3-d1-deck-02",
-      "title": "Squad Deliberation Format",
-      "body": "Recommend accept / refer / decline with rationale.",
-      "speakerNotes": "Hands-on evaluation.",
+      "title": "Entrepreneur Lens Worksheet",
+      "body": "Five lenses: market · problem · demand · impact · income.",
+      "speakerNotes": "Each squad completes for their target segment.",
       "discussionQuestions": [],
       "sortOrder": 3
     },
     {
       "id": "slide-w3-d1-dk2-04",
       "presentationId": "presentation-w3-d1-deck-02",
-      "title": "Ethics Corners",
-      "body": "What advisors must never conceal.",
-      "speakerNotes": "Hands-on evaluation.",
+      "title": "Platform Stack Exercise",
+      "body": "YOU → Skills → AIA Platform → Clients → Income → Business → Leadership → Enterprise",
+      "speakerNotes": "Participants personalize the stack with their name and Week 1 ambition.",
       "discussionQuestions": [],
       "sortOrder": 4
     },
@@ -52,8 +52,8 @@
       "id": "slide-w3-d1-dk2-05",
       "presentationId": "presentation-w3-d1-deck-02",
       "title": "Day 11 Deliverables",
-      "body": "Case memos uploaded.",
-      "speakerNotes": "Hands-on evaluation.",
+      "body": "Opportunity analysis memo + platform stack diagram uploaded to portfolio.",
+      "speakerNotes": "Preview Day 12: FNA as your first business tool.",
       "discussionQuestions": [],
       "sortOrder": 5
     }

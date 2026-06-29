@@ -2,7 +2,7 @@
   "assessment": {
     "id": "assessment-w3-d5",
     "dayId": "day-segment-1-week-3-day-5",
-    "title": "Operations review rubric",
+    "title": "Financial Advisory Venture pitch rubric",
     "description": "Faculty delivery checklist — squad progress tracked via Squad XP.",
     "rubricId": "rubric-assessment-w3-d5"
   },
@@ -11,9 +11,9 @@
     "assessmentId": "assessment-w3-d5",
     "title": "Delivery checklist",
     "criteria": [
-      "Operations review presentation",
-      "120-hour gate clearance",
-      "Study plan v1"
+      "Entrepreneur pitch — not insurance career or product pitch",
+      "Evidence from Weeks 1–3 integrated",
+      "120-hour gate artifacts complete"
     ]
   }
 }

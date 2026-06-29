@@ -1,33 +1,31 @@
 {
   "dayId": "day-segment-1-week-3-day-3",
-  "theme": "Empathy",
-  "title": "Mentor Guide — Day 13 — Claims Processing & Empathy Delivery",
-  "coachingObjective": "Develop humane claim-side presence.",
+  "theme": "Scale",
+  "title": "Mentor Guide — Day 13 — Why This Business Scales",
+  "coachingObjective": "Help participants see referral and recurring relationships as growth engines.",
   "timing": {
-    "preSession": "Review facilitator guide and deck speaker notes",
-    "duringSession": "Circulate during squad activities",
+    "preSession": "Review FEC Box 6 layout",
+    "duringSession": "Probe flywheel maps for realism",
     "postSession": "Complete squad weekly review snapshot"
   },
   "discussionQuestions": [
-    "What phrases landed vs harmed?",
-    "Who needs more practice before client-facing work?",
-    "How do claims reinforce Week 1 impact statements?"
+    "What makes this venture scalable vs a salary job?",
+    "Which growth engine will they activate first?"
   ],
   "observationAreas": [
-    "Tone and pace",
-    "Appropriate silence",
-    "Clear next steps"
+    "Flywheel credibility",
+    "FEC Box 6 completeness",
+    "Referral thinking"
   ],
   "coachingTips": [
-    "Model pause and reflective listening",
-    "Debrief facilitator emotions too"
+    "No compensation discussion today",
+    "Ask: what happens at client 1, 5, and 20?"
   ],
   "warningSigns": [],
   "reflectionPrompts": [],
   "expectedOutcomes": [
-    "Workflow map",
-    "Roleplay reflection",
-    "Documentation sample"
+    "Client growth flywheel map",
+    "FEC Growth Engines draft"
   ],
   "activityCoachingNotes": [],
   "debriefWithFaculty": []

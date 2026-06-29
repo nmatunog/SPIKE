@@ -2,7 +2,7 @@
   "presentation": {
     "id": "presentation-w3-d4-deck-01",
     "dayId": "day-segment-1-week-3-day-4",
-    "title": "Program Coach Deck 01 — Client Journey Operations View",
+    "title": "Program Coach Deck 01 — AIA as Your Business Platform",
     "slideIds": [
       "slide-w3-d4-dk1-01",
       "slide-w3-d4-dk1-02",
@@ -15,45 +15,49 @@
     {
       "id": "slide-w3-d4-dk1-01",
       "presentationId": "presentation-w3-d4-deck-01",
-      "title": "Day 14 — Full Stack Advisor Ops",
-      "body": "Connect front office to back office.",
-      "speakerNotes": "Integrate the week.",
+      "title": "Day 14 — Now Introduce AIA",
+      "body": "Not with products.\nNot with commissions.\nWhy do thousands choose AIA as their business platform?",
+      "speakerNotes": "Today AIA enters as a platform choice — not a sales pitch.\nParticipants have already seen the opportunity, the tool, and the scalability.\nNow: why this platform?",
       "discussionQuestions": [],
       "sortOrder": 1
     },
     {
       "id": "slide-w3-d4-dk1-02",
       "presentationId": "presentation-w3-d4-deck-01",
-      "title": "Journey Map Template",
-      "body": "Sale → issue → service → claim.",
-      "speakerNotes": "Integrate the week.",
-      "discussionQuestions": [],
+      "title": "Platform Pillars",
+      "body": "Training · Mentoring · Technology · Products · Brand · Compliance · Marketing · Community · Licensing · Support",
+      "speakerNotes": "Walk each pillar as venture infrastructure — not HR benefits.\nAsk: which pillar would be hardest to build alone?",
+      "discussionQuestions": [
+        "Which platform pillar matters most to your venture?"
+      ],
       "sortOrder": 2
     },
     {
       "id": "slide-w3-d4-dk1-03",
       "presentationId": "presentation-w3-d4-deck-01",
-      "title": "Efficiency & Compliance Tension",
-      "body": "Speed vs accuracy.",
-      "speakerNotes": "Integrate the week.",
+      "title": "Platform vs Build-It-Yourself",
+      "body": "Entrepreneurs leverage platforms to launch faster.",
+      "speakerNotes": "Compare: starting a practice alone vs on AIA platform.\nTime, cost, risk, credibility.",
       "discussionQuestions": [],
       "sortOrder": 3
     },
     {
       "id": "slide-w3-d4-dk1-04",
       "presentationId": "presentation-w3-d4-deck-01",
-      "title": "Dyad Presentation Format",
-      "body": "10-minute integrated scenario.",
-      "speakerNotes": "Integrate the week.",
-      "discussionQuestions": [],
+      "title": "THEN — The Economic Engine",
+      "body": "Compensation is the economic engine of your venture.\nNot the reason you joined.",
+      "speakerNotes": "Huge psychological difference.\nFirst: venture model. Then: how the venture earns.\nCompensation follows platform choice — it does not drive it.",
+      "discussionQuestions": [
+        "How does this reframe how you think about pay?"
+      ],
       "sortOrder": 4
     },
     {
       "id": "slide-w3-d4-dk1-05",
       "presentationId": "presentation-w3-d4-deck-01",
-      "title": "Deck 01 Close — Rehearsal",
-      "body": "Deck 01 Close — Rehearsal",
-      "speakerNotes": "Integrate the week.",
+      "title": "Deck 01 Close — Platform Evaluation",
+      "body": "Afternoon: evaluate AIA as your chosen platform.",
+      "speakerNotes": "Transition to Deck 02 workshop.",
       "discussionQuestions": [],
       "sortOrder": 5
     }

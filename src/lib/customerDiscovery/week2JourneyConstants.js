@@ -196,13 +196,13 @@ export const WEEK2_COACH_TIMELINE = [
       'Open: From Venture Builder → Financial Entrepreneur (Discover ✓ Validate ✓ → Advise)',
       'Market Validation Pitch — 5 min per squad, evidence not ideas',
       'Empathy Lab with Miguel — understand before you advise',
-      'Stage Gate II + Week 3 Advise preview',
+      'Stage Gate II + Week 3 Discover Your Business Model preview',
     ],
     slides: [
       'From Venture Builder To Financial Entrepreneur',
       'Meet Miguel — Client Profile',
       'Empathy In Action + Think Like Miguel',
-      'Reflect & Share — Week 3 Advise',
+      'Reflect & Share — Week 3 Financial Entrepreneurship',
     ],
     activities: [
       'Market Validation Pitch (SPIKE Studio)',
@@ -219,7 +219,7 @@ export const WEEK2_COACH_TIMELINE = [
     outcomes: [
       'Squads present validated evidence',
       'Interns practice empathy → advisor mindset',
-      'Ready for Week 3 ADVISE',
+      'Ready for Week 3 — Discover Your Business Model',
     ],
   },
 ];

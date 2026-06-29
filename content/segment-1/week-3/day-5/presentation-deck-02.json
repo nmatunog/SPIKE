@@ -2,7 +2,7 @@
   "presentation": {
     "id": "presentation-w3-d5-deck-02",
     "dayId": "day-segment-1-week-3-day-5",
-    "title": "Program Coach Deck 02 — Week 4 Licensing Sprint Preview",
+    "title": "Program Coach Deck 02 — Week 3 Close & Week 4 Preview",
     "slideIds": [
       "slide-w3-d5-dk2-01",
       "slide-w3-d5-dk2-02",
@@ -15,36 +15,36 @@
     {
       "id": "slide-w3-d5-dk2-01",
       "presentationId": "presentation-w3-d5-deck-02",
-      "title": "Week 4 Overview",
-      "body": "Ethics, Trad Life, VUL, exams.",
-      "speakerNotes": "Set study culture.",
+      "title": "The SPIKE Arc So Far",
+      "body": "Week 1 — Find a problem.\nWeek 2 — Validate the opportunity.\nWeek 3 — Discover a business model.",
+      "speakerNotes": "Celebrate the narrative shift. They are venture builders.",
       "discussionQuestions": [],
       "sortOrder": 1
     },
     {
       "id": "slide-w3-d5-dk2-02",
       "presentationId": "presentation-w3-d5-deck-02",
-      "title": "Study Squad Norms",
-      "body": "Daily drills, peer quizzing.",
-      "speakerNotes": "Set study culture.",
+      "title": "Week 4 — Build the Business",
+      "body": "Professional systems, licensing, and venture infrastructure.",
+      "speakerNotes": "Preview Week 4 without diluting today's win.",
       "discussionQuestions": [],
       "sortOrder": 2
     },
     {
       "id": "slide-w3-d5-dk2-03",
       "presentationId": "presentation-w3-d5-deck-02",
-      "title": "Licensing Milestone Hour 110 Target",
-      "body": "Connect to syllabus Module 4.",
-      "speakerNotes": "Set study culture.",
+      "title": "Week 5 — Launch Yourself",
+      "body": "Venture Board · Partnership pitch · Public commitment.",
+      "speakerNotes": "Paint the finish line.",
       "discussionQuestions": [],
       "sortOrder": 3
     },
     {
       "id": "slide-w3-d5-dk2-04",
       "presentationId": "presentation-w3-d5-deck-02",
-      "title": "Wellness & Intensity Balance",
-      "body": "Sustainable sprint.",
-      "speakerNotes": "Set study culture.",
+      "title": "120-Hour Gate Confirmation",
+      "body": "Gate cleared · Remediation if needed · Squad XP",
+      "speakerNotes": "Admin sign-off protocol.",
       "discussionQuestions": [],
       "sortOrder": 4
     },
@@ -52,8 +52,8 @@
       "id": "slide-w3-d5-dk2-05",
       "presentationId": "presentation-w3-d5-deck-02",
       "title": "Week 3 Close",
-      "body": "Celebrate ops competence.",
-      "speakerNotes": "Set study culture.",
+      "body": "You discovered a business model. Now build it.",
+      "speakerNotes": "Close with energy. See you Monday — Week 4.",
       "discussionQuestions": [],
       "sortOrder": 5
     }

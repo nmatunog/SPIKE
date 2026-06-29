@@ -3,19 +3,19 @@
   "segmentId": "segment-1",
   "weekId": "week-segment-1-3",
   "dayNumber": 5,
-  "title": "Day 15 — Business Operations Review & 120-Hour Gate",
-  "theme": "Operations Gate",
+  "title": "Day 15 — My Financial Advisory Venture Pitch",
+  "theme": "Venture Pitch & 120-Hour Gate",
   "durationHours": 4,
   "learningObjectives": [
-    "Demonstrate advisor startup readiness across systems checklist",
-    "Present Business Operations Review to faculty panel",
-    "Complete 120-hour gate with remediation plan if needed",
-    "Preview Week 4 licensing intensity and study norms"
+    "Deliver an entrepreneur's pitch — not an insurance career or product presentation",
+    "Present problem, target market, advisory experience, FNA process, client acquisition, growth model, and platform choice",
+    "Complete 120-hour gate with venture readiness evidence",
+    "Preview Week 4 — Build the Business"
   ],
   "expectedOutputs": [
-    "Operations review presentation",
+    "Financial Advisory Venture pitch",
     "120-hour gate clearance",
-    "Study plan v1"
+    "Week 4 build focus"
   ],
   "portfolioDeliverables": [
     "portfolio-advisor-startup"

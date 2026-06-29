@@ -2,7 +2,7 @@
   "assessment": {
     "id": "assessment-w3-d4",
     "dayId": "day-segment-1-week-3-day-4",
-    "title": "Operations dyad rubric",
+    "title": "Platform evaluation rubric",
     "description": "Faculty delivery checklist — squad progress tracked via Squad XP.",
     "rubricId": "rubric-assessment-w3-d4"
   },
@@ -11,9 +11,9 @@
     "assessmentId": "assessment-w3-d4",
     "title": "Delivery checklist",
     "criteria": [
-      "Journey map",
-      "Dyad presentation",
-      "Efficiency memo"
+      "Platform evaluation matrix",
+      "Platform rationale in entrepreneur language",
+      "Economic engine reflection without pay-first framing"
     ]
   }
 }

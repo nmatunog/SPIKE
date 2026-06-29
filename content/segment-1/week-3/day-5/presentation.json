@@ -2,7 +2,7 @@
   "presentation": {
     "id": "presentation-w3-d5-deck-01",
     "dayId": "day-segment-1-week-3-day-5",
-    "title": "Program Coach Deck 01 — 120-Hour Gate Standards",
+    "title": "Program Coach Deck 01 — My Financial Advisory Venture Pitch",
     "slideIds": [
       "slide-w3-d5-dk1-01",
       "slide-w3-d5-dk1-02",
@@ -15,45 +15,45 @@
     {
       "id": "slide-w3-d5-dk1-01",
       "presentationId": "presentation-w3-d5-deck-01",
-      "title": "Day 15 — Operations Gate",
-      "body": "Explain hour 120 expectations.",
-      "speakerNotes": "Gate criteria and professionalism.",
+      "title": "Day 15 — My Financial Advisory Venture",
+      "body": "Not your insurance career.\nNot your product.\nNot your sales presentation.\nAn entrepreneur's pitch.",
+      "speakerNotes": "Open with the contrast.\nThis week built toward one deliverable: your venture pitch.",
       "discussionQuestions": [],
       "sortOrder": 1
     },
     {
       "id": "slide-w3-d5-dk1-02",
       "presentationId": "presentation-w3-d5-deck-01",
-      "title": "Gate Evidence Checklist",
-      "body": "Portfolio, BP Ch.3, lab logs, checklists.",
-      "speakerNotes": "Gate criteria and professionalism.",
+      "title": "Pitch Structure",
+      "body": "Problem I solve · Target market · Advisory experience · FNA process · Client acquisition · Business growth · Why AIA as platform",
+      "speakerNotes": "Walk each section with examples from the week.\nThis is a venture pitch to mentors and coaches — not a product demo.",
       "discussionQuestions": [],
       "sortOrder": 2
     },
     {
       "id": "slide-w3-d5-dk1-03",
       "presentationId": "presentation-w3-d5-deck-01",
-      "title": "Presentation Structure",
-      "body": "Startup readiness story in 8 minutes.",
-      "speakerNotes": "Gate criteria and professionalism.",
+      "title": "120-Hour Gate Evidence",
+      "body": "Opportunity memo · FNA notes · Growth Engines · Platform rationale · Venture pitch",
+      "speakerNotes": "Gate checklist. Portfolio + BP Chapter 3 artifacts.",
       "discussionQuestions": [],
       "sortOrder": 3
     },
     {
       "id": "slide-w3-d5-dk1-04",
       "presentationId": "presentation-w3-d5-deck-01",
-      "title": "Remediation Pathway",
-      "body": "How to recover if gate incomplete.",
-      "speakerNotes": "Gate criteria and professionalism.",
+      "title": "Presentation Standards",
+      "body": "8 minutes · Entrepreneur presence · Evidence from Weeks 1–3",
+      "speakerNotes": "Panel Q&A standards. Mentor scoring rubric.",
       "discussionQuestions": [],
       "sortOrder": 4
     },
     {
       "id": "slide-w3-d5-dk1-05",
       "presentationId": "presentation-w3-d5-deck-01",
-      "title": "Deck 01 Close",
-      "body": "Deck 01 Close",
-      "speakerNotes": "Gate criteria and professionalism.",
+      "title": "Deck 01 Close — Pitch Block",
+      "body": "Present. Defend. Graduate the gate.",
+      "speakerNotes": "Transition to presentations.",
       "discussionQuestions": [],
       "sortOrder": 5
     }

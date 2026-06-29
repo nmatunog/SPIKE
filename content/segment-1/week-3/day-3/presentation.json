@@ -2,7 +2,7 @@
   "presentation": {
     "id": "presentation-w3-d3-deck-01",
     "dayId": "day-segment-1-week-3-day-3",
-    "title": "Program Coach Deck 01 — Claims as Promise Keeping",
+    "title": "Program Coach Deck 01 — Why This Business Scales",
     "slideIds": [
       "slide-w3-d3-dk1-01",
       "slide-w3-d3-dk1-02",
@@ -15,45 +15,49 @@
     {
       "id": "slide-w3-d3-dk1-01",
       "presentationId": "presentation-w3-d3-deck-01",
-      "title": "Day 13 — When Protection Is Tested",
-      "body": "Story-first — why claims matter.",
-      "speakerNotes": "Emotional and process frame.",
-      "discussionQuestions": [],
+      "title": "Day 13 — Introduce the Business",
+      "body": "Not compensation yet.\nWhy is this business scalable?",
+      "speakerNotes": "Today is about the venture model — not pay plans.\nAsk: Why is a financial advisory practice scalable?",
+      "discussionQuestions": [
+        "What makes a business scalable vs a job?"
+      ],
       "sortOrder": 1
     },
     {
       "id": "slide-w3-d3-dk1-02",
       "presentationId": "presentation-w3-d3-deck-01",
-      "title": "Claims Workflow Map",
-      "body": "FNOL to decision to payout.",
-      "speakerNotes": "Emotional and process frame.",
+      "title": "The Client Growth Flywheel",
+      "body": "One client → Referral → Five clients → Twenty clients → Recurring relationships → Growing practice",
+      "speakerNotes": "Draw the flywheel.\nEmphasize recurring relationships — not one-time transactions.\nThis is how ventures compound.",
       "discussionQuestions": [],
       "sortOrder": 2
     },
     {
       "id": "slide-w3-d3-dk1-03",
       "presentationId": "presentation-w3-d3-deck-01",
-      "title": "Advisor Role at Claim Time",
-      "body": "Advocate, communicator, documenter.",
-      "speakerNotes": "Emotional and process frame.",
+      "title": "Recurring Relationships = Recurring Income",
+      "body": "Service businesses win on retention and referrals.",
+      "speakerNotes": "Connect to Week 2 empathy work.\nTrust drives referrals. Referrals drive scale.",
       "discussionQuestions": [],
       "sortOrder": 3
     },
     {
       "id": "slide-w3-d3-dk1-04",
       "presentationId": "presentation-w3-d3-deck-01",
-      "title": "Empathy vs Sympathy",
-      "body": "Language that helps.",
-      "speakerNotes": "Emotional and process frame.",
-      "discussionQuestions": [],
+      "title": "FEC Box 6 — Growth Engines",
+      "body": "Advisor Excellence · Team & Leadership · Systems & Scale",
+      "speakerNotes": "Open Financial Entrepreneurship Canvas Box 6.\nNow Growth Engines make sense — they are how your venture scales.\nPreview Venture Blueprint Client, Talent, and Leadership engines.",
+      "discussionQuestions": [
+        "Which growth engine will you activate first?"
+      ],
       "sortOrder": 4
     },
     {
       "id": "slide-w3-d3-dk1-05",
       "presentationId": "presentation-w3-d3-deck-01",
-      "title": "Deck 01 Close — Roleplay Brief",
-      "body": "Assign claim scenarios.",
-      "speakerNotes": "Emotional and process frame.",
+      "title": "Deck 01 Close — Growth Engines Workshop",
+      "body": "Draft Box 6 in your FEC.",
+      "speakerNotes": "Transition to Deck 02 workshop.",
       "discussionQuestions": [],
       "sortOrder": 5
     }

@@ -16,14 +16,14 @@ export function Week3Day1PlaybookHero({ className = '' }) {
     >
       <img
         src={WEEK3_DAY1_HERO_IMAGE}
-        alt="Week 3 Day 1 — Underwriting Principles and Risk Assessment"
+        alt="Week 3 Day 1 — Opportunity Analysis"
         className="block h-auto w-full"
         width={1920}
         height={1080}
         decoding="async"
       />
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 bg-slate-50/90 px-4 py-3 sm:px-5">
-        <p className="text-sm font-semibold text-slate-700">Program Coach Deck 01 — Why Underwriting Exists</p>
+        <p className="text-sm font-semibold text-slate-700">Program Coach Deck 01 — Opportunity Analysis</p>
         <a
           href={WEEK3_DAY1_PDF_URL}
           target="_blank"

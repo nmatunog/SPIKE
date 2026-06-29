@@ -1,31 +1,32 @@
 {
   "dayId": "day-segment-1-week-3-day-1",
-  "theme": "Discipline",
-  "title": "Mentor Guide — Day 11 — Underwriting Principles & Risk Assessment",
-  "coachingObjective": "Build respect for backend rigor.",
+  "theme": "Opportunity",
+  "title": "Mentor Guide — Day 11 — Opportunity Analysis",
+  "coachingObjective": "Help participants see financial advice as a venture — not a job.",
   "timing": {
     "preSession": "Review facilitator guide and deck speaker notes",
     "duringSession": "Circulate during squad activities",
     "postSession": "Complete squad weekly review snapshot"
   },
   "discussionQuestions": [
-    "Where did squads disagree on risk?",
-    "Did anyone rationalize hiding information?",
-    "How does underwriting affect client trust?"
+    "When did the room shift from internship to venture?",
+    "Who still sees AIA as employer vs platform?",
+    "How does Week 2 evidence support this business model?"
   ],
   "observationAreas": [
-    "Analytical reasoning",
-    "Ethics language",
-    "Team deliberation"
+    "Entrepreneur lens thinking",
+    "Platform vs employer mindset",
+    "Connection to Week 1–2 work"
   ],
   "coachingTips": [
-    "Reward transparent reasoning over fast answers"
+    "Speak SPIKE — market, problem, demand, impact, income",
+    "Do not introduce products or compensation today"
   ],
   "warningSigns": [],
   "reflectionPrompts": [],
   "expectedOutcomes": [
-    "Underwriting case memo",
-    "Risk factor map"
+    "Opportunity analysis memo",
+    "Platform stack diagram"
   ],
   "activityCoachingNotes": [],
   "debriefWithFaculty": []

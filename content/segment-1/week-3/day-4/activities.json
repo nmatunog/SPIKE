@@ -3,44 +3,48 @@
     {
       "id": "activity-w3-d4-01",
       "dayId": "day-segment-1-week-3-day-4",
-      "title": "Client Journey Mapping",
-      "durationMinutes": 30,
+      "title": "Platform Evaluation Matrix",
+      "durationMinutes": 40,
       "materials": [],
       "instructions": [
-        "Map one persona through full ops lifecycle",
-        "Flag handoff risks"
+        "Rate each AIA platform pillar for your venture",
+        "Note build-yourself cost if platform were unavailable",
+        "Identify top 3 pillars for your launch"
       ],
       "outputs": [
-        "Journey map"
+        "Platform evaluation matrix"
       ],
       "debriefQuestions": []
     },
     {
       "id": "activity-w3-d4-02",
       "dayId": "day-segment-1-week-3-day-4",
-      "title": "Operations Dyad Presentations",
-      "durationMinutes": 80,
+      "title": "Economic Engine Reflection",
+      "durationMinutes": 30,
       "materials": [],
       "instructions": [
-        "10-min integrated roleplay per dyad",
-        "Q&A from coaches"
+        "After platform section, review compensation as venture fuel",
+        "Draft how income supports your growth flywheel",
+        "Avoid 'join for money' framing — write 'engine that powers the venture'"
       ],
       "outputs": [
-        "Dyad presentation recording or notes"
+        "Economic engine reflection"
       ],
       "debriefQuestions": []
     },
     {
       "id": "activity-w3-d4-03",
       "dayId": "day-segment-1-week-3-day-4",
-      "title": "Efficiency Recommendation Workshop",
-      "durationMinutes": 20,
+      "title": "Why I Chose AIA — Platform Rationale",
+      "durationMinutes": 35,
       "materials": [],
       "instructions": [
-        "Each squad proposes one ops improvement"
+        "Write platform choice in entrepreneur language",
+        "Include at least three pillars with venture-specific rationale",
+        "Peer review: platform or employer mindset?"
       ],
       "outputs": [
-        "Efficiency memo"
+        "Platform rationale draft"
       ],
       "debriefQuestions": []
     }

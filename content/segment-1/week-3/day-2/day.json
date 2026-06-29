@@ -3,18 +3,18 @@
   "segmentId": "segment-1",
   "weekId": "week-segment-1-3",
   "dayNumber": 2,
-  "title": "Day 12 — Policy Servicing & AIA Digital Portals",
-  "theme": "Policy Servicing",
+  "title": "Day 12 — Your First Business Tool",
+  "theme": "FNA as Business Tool",
   "durationHours": 4,
   "learningObjectives": [
-    "Navigate AIA digital portals for common servicing tasks",
-    "Explain policy lifecycle events to a mock client",
-    "Complete hands-on portal simulations with audit trail",
-    "Document advisor startup systems checklist"
+    "Reframe Financial Needs Analysis as an entrepreneur's diagnostic tool",
+    "Compare how different businesses diagnose customer problems before prescribing solutions",
+    "Conduct structured FNA discovery without product pitching",
+    "Document client needs findings as venture intelligence — not paperwork"
   ],
   "expectedOutputs": [
-    "Portal lab log",
-    "Advisor startup checklist"
+    "FNA discovery notes",
+    "Business tool comparison map"
   ],
   "portfolioDeliverables": [
     "portfolio-advisor-startup"

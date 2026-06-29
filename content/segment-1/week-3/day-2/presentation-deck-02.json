@@ -2,7 +2,7 @@
   "presentation": {
     "id": "presentation-w3-d2-deck-02",
     "dayId": "day-segment-1-week-3-day-2",
-    "title": "Program Coach Deck 02 — Portal Hands-On Lab",
+    "title": "Program Coach Deck 02 — FNA Diagnostic Workshop",
     "slideIds": [
       "slide-w3-d2-dk2-01",
       "slide-w3-d2-dk2-02",
@@ -15,36 +15,36 @@
     {
       "id": "slide-w3-d2-dk2-01",
       "presentationId": "presentation-w3-d2-deck-02",
-      "title": "Task Menu",
-      "body": "Status check, beneficiary update, premium inquiry.",
-      "speakerNotes": "Simulated tasks.",
+      "title": "Business Tool Comparison Map",
+      "body": "Map how different ventures diagnose before they deliver.",
+      "speakerNotes": "Squads add their own examples beyond restaurant/doctor/mechanic.",
       "discussionQuestions": [],
       "sortOrder": 1
     },
     {
       "id": "slide-w3-d2-dk2-02",
       "presentationId": "presentation-w3-d2-deck-02",
-      "title": "Troubleshooting Scenarios",
-      "body": "Locked account, mismatch data.",
-      "speakerNotes": "Simulated tasks.",
+      "title": "FNA Dyad Protocol",
+      "body": "8 min discovery / 4 min feedback / swap roles.",
+      "speakerNotes": "Strict timer. No product mentions.",
       "discussionQuestions": [],
       "sortOrder": 2
     },
     {
       "id": "slide-w3-d2-dk2-03",
       "presentationId": "presentation-w3-d2-deck-02",
-      "title": "Client Communication Scripts",
-      "body": "Professional email / call templates.",
-      "speakerNotes": "Simulated tasks.",
+      "title": "Client Persona Cards",
+      "body": "Use Week 1 persona or validated segment from Week 2.",
+      "speakerNotes": "Client stays in character. Advisor practices diagnosis only.",
       "discussionQuestions": [],
       "sortOrder": 3
     },
     {
       "id": "slide-w3-d2-dk2-04",
       "presentationId": "presentation-w3-d2-deck-02",
-      "title": "Advisor Startup Checklist",
-      "body": "Systems an advisor must have on Day 1.",
-      "speakerNotes": "Simulated tasks.",
+      "title": "Needs Documentation",
+      "body": "Document findings as venture intelligence.",
+      "speakerNotes": "FNA notes feed Client Growth Engine later — preview only.",
       "discussionQuestions": [],
       "sortOrder": 4
     },
@@ -52,8 +52,8 @@
       "id": "slide-w3-d2-dk2-05",
       "presentationId": "presentation-w3-d2-deck-02",
       "title": "Day 12 Deliverables",
-      "body": "Portal lab completion log.",
-      "speakerNotes": "Simulated tasks.",
+      "body": "FNA discovery notes + business tool comparison map uploaded.",
+      "speakerNotes": "Preview Day 13: Why this business scales.",
       "discussionQuestions": [],
       "sortOrder": 5
     }

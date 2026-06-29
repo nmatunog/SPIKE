@@ -52,25 +52,29 @@ export const fullSyllabusData = [
         ],
       },
       {
-        title: 'Module 3: Business Process Orientation (30 Hours)',
-        objective: 'Understand the backend operations of a modern financial agency.',
+        title: 'Module 3: Financial Entrepreneurship — Discover Your Business Model (30 Hours)',
+        objective:
+          'Shift from financial literacy to financial entrepreneurship — discover the professional financial advisory venture model and pitch it at the 120-hour gate.',
         tasks: [
           {
-            name: 'Task 3.1: Underwriting Principles (8 hours)',
-            details: 'AM (4h): Risk assessment basics. | PM (4h): Evaluating mock applications.',
-          },
-          {
-            name: 'Task 3.2: Policy Servicing Tools (8 hours)',
-            details: 'AM (4h): AIA Digital Portals intro. | PM (4h): Hands-on portal navigation.',
-          },
-          {
-            name: 'Task 3.3: Claims Processing Overview (8 hours)',
+            name: 'Task 3.1: Opportunity Analysis (8 hours)',
             details:
-              'AM (4h): Claims workflow. | PM (4h): Empathy training & claim delivery roleplays.',
+              'AM (4h): Why financial advice is a venture — market, problem, demand, impact, income. | PM (4h): AIA as platform, not employer.',
           },
           {
-            name: 'Task 3.4: Operations Debrief (6 hours)',
-            details: 'AM (4h): Dyad roleplay presentations. | PM (2h): Backend efficiency review.',
+            name: 'Task 3.2: Your First Business Tool — FNA (8 hours)',
+            details:
+              'AM (4h): FNA as entrepreneur diagnostic. | PM (4h): FNA discovery dyads — no product pitch.',
+          },
+          {
+            name: 'Task 3.3: Scalable Venture & Growth Engines (8 hours)',
+            details:
+              'AM (4h): Client growth flywheel. | PM (4h): FEC Box 6 Growth Engines workshop.',
+          },
+          {
+            name: 'Task 3.4: Platform, Economic Engine & Venture Pitch (6 hours)',
+            details:
+              'AM (4h): AIA platform pillars + compensation as economic engine. | PM (2h): My Financial Advisory Venture pitch + 120-hour gate.',
           },
         ],
       },

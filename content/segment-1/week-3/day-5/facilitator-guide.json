@@ -1,48 +1,57 @@
 {
   "dayId": "day-segment-1-week-3-day-5",
-  "title": "Facilitator Guide — Day 15 — Business Operations Review & 120-Hour Gate",
+  "title": "Facilitator Guide — Day 15 — My Financial Advisory Venture Pitch",
   "durationHours": 4,
   "prepChecklist": [
-    "Coordinate gate sign-off with admin",
-    "Distribute Week 4 study materials"
+    "Schedule pitch panel (program coaches + mentors)",
+    "Load venture pitch rubric in Playbook",
+    "Prepare 120-hour gate checklist",
+    "Coordinate gate sign-off with admin"
   ],
   "sessionFlow": [
     {
-      "time": "0:00–0:20",
-      "activity": "Deck 01 — Gate briefing",
+      "time": "0:00–0:15",
+      "activity": "Deck 01 — Entrepreneur pitch standards",
+      "notes": "Not insurance career. Not product. Not sales deck."
+    },
+    {
+      "time": "0:15–1:30",
+      "activity": "Financial Advisory Venture pitches",
+      "notes": "8 min per participant or squad. Panel Q&A."
+    },
+    {
+      "time": "1:30–1:40",
+      "activity": "Break",
       "notes": ""
     },
     {
-      "time": "0:20–1:05",
-      "activity": "Startup readiness presentations",
+      "time": "1:40–2:20",
+      "activity": "Panel scoring + gate artifact audit",
       "notes": ""
     },
     {
-      "time": "1:05–2:25",
-      "activity": "Panel Q&A + scoring",
-      "notes": ""
-    },
-    {
-      "time": "2:25–2:45",
+      "time": "2:20–2:40",
       "activity": "120-hour gate confirmation",
       "notes": ""
     },
     {
-      "time": "2:45–3:00",
-      "activity": "Deck 02 — Week 4 preview + reflection",
-      "notes": ""
+      "time": "2:40–3:00",
+      "activity": "Deck 02 — Week 3 close + Week 4 Build preview",
+      "notes": "SPIKE arc: Find → Validate → Discover → Build → Launch."
     }
   ],
   "debriefQuestions": [
-    "Who is truly startup-ready?",
-    "What ops gaps remain?",
-    "Is study plan realistic for licensing week?"
+    "Who pitched a venture vs a job application?",
+    "What evidence from Weeks 1–3 was strongest in pitches?",
+    "Who is ready to build in Week 4?"
   ],
   "commonPitfalls": [
-    "Gate as formality without evidence",
+    "Pitching products instead of venture model",
+    "Gate as formality without portfolio evidence",
     "Skipping remediation documentation"
   ],
   "coachingTips": [
-    "Be explicit about licensing week expectations"
+    "Score entrepreneur presence, not sales polish",
+    "Ask: would you invest in this venture?"
   ]
 }

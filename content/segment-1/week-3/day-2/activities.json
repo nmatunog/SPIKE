@@ -3,44 +3,48 @@
     {
       "id": "activity-w3-d2-01",
       "dayId": "day-segment-1-week-3-day-2",
-      "title": "Portal Hands-On Lab",
-      "durationMinutes": 60,
+      "title": "Business Tool Comparison Map",
+      "durationMinutes": 20,
       "materials": [],
       "instructions": [
-        "Complete 5 servicing tasks in sandbox",
-        "Screenshot or log proof"
+        "Map how restaurants, doctors, mechanics, and advisors diagnose problems",
+        "Add one venture from your squad's experience",
+        "Post comparison on squad board"
       ],
       "outputs": [
-        "Portal lab log"
+        "Business tool comparison map"
       ],
       "debriefQuestions": []
     },
     {
       "id": "activity-w3-d2-02",
       "dayId": "day-segment-1-week-3-day-2",
-      "title": "Client Servicing Roleplay",
-      "durationMinutes": 35,
+      "title": "FNA Diagnostic Dyads",
+      "durationMinutes": 50,
       "materials": [],
       "instructions": [
-        "Explain lifecycle event to client",
-        "Handle confusion with empathy"
+        "8 min discovery / 4 min feedback / swap roles",
+        "Use Week 1 persona or Week 2 validated segment",
+        "No product mentions — diagnosis only"
       ],
       "outputs": [
-        "Roleplay feedback notes"
+        "FNA discovery notes"
       ],
       "debriefQuestions": []
     },
     {
       "id": "activity-w3-d2-03",
       "dayId": "day-segment-1-week-3-day-2",
-      "title": "Advisor Startup Checklist Builder",
-      "durationMinutes": 25,
+      "title": "Needs Theme Synthesis",
+      "durationMinutes": 30,
       "materials": [],
       "instructions": [
-        "Draft personal CRM, calendar, compliance folders"
+        "Squads cluster discovered needs into themes",
+        "Link each theme to opportunity from Day 11",
+        "Prepare one-sentence venture insight"
       ],
       "outputs": [
-        "Startup checklist v1"
+        "Squad needs summary"
       ],
       "debriefQuestions": []
     }

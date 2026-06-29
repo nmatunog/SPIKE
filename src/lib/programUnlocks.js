@@ -14,7 +14,7 @@ export const UNLOCK_WEEK1_DAY2_PLUS = true;
 /** When true, Segment 1 interns enter Week 2 (Activate) on login — stage gate Week 1 treated complete. */
 export const UNLOCK_WEEK2 = true;
 
-/** When true, Segment 1 interns may access Week 3 (Business Operations / Advise). */
+/** When true, Segment 1 interns may access Week 3 (Financial Entrepreneurship / Discover Your Business Model). */
 export const UNLOCK_WEEK3 = true;
 
 /**

@@ -3,19 +3,18 @@
   "segmentId": "segment-1",
   "weekId": "week-segment-1-3",
   "dayNumber": 4,
-  "title": "Day 14 — Operations Dyad Presentations",
-  "theme": "Operations Integration",
+  "title": "Day 14 — AIA as Your Business Platform",
+  "theme": "Platform & Economic Engine",
   "durationHours": 4,
   "learningObjectives": [
-    "Integrate underwriting, servicing, and claims into one client journey story",
-    "Present operations dyad roleplay to program coach panel",
-    "Peer review backend efficiency recommendations",
-    "Prepare 120-hour Business Operations gate portfolio"
+    "Evaluate why thousands choose AIA as a business platform — before products or commissions",
+    "Map platform pillars: training, mentoring, technology, products, brand, compliance, marketing, community, licensing, support",
+    "Reframe compensation as the economic engine of the venture — not the reason to join",
+    "Draft why AIA is your chosen platform in the Venture Blueprint"
   ],
   "expectedOutputs": [
-    "Journey map",
-    "Dyad presentation",
-    "Efficiency memo"
+    "Platform evaluation matrix",
+    "Economic engine reflection"
   ],
   "portfolioDeliverables": [
     "portfolio-advisor-startup"

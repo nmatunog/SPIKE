@@ -3,19 +3,18 @@
   "segmentId": "segment-1",
   "weekId": "week-segment-1-3",
   "dayNumber": 3,
-  "title": "Day 13 — Claims Processing & Empathy Delivery",
-  "theme": "Claims & Empathy",
+  "title": "Day 13 — Why This Business Scales",
+  "theme": "Scalable Venture Model",
   "durationHours": 4,
   "learningObjectives": [
-    "Map claims workflow from intake to payout",
-    "Demonstrate empathetic claim notification and support",
-    "Identify advisor responsibilities during claim events",
-    "Practice difficult conversations with roleplay standards"
+    "Explain why a financial advisory practice is a scalable venture",
+    "Map the client growth flywheel: one client → referrals → recurring relationships → growing practice",
+    "Draft FEC Box 6 — Growth Engines for your advisory venture",
+    "Connect growth engines to Client, Talent, and Leadership engines in the Venture Blueprint"
   ],
   "expectedOutputs": [
-    "Workflow map",
-    "Roleplay reflection",
-    "Documentation sample"
+    "Client growth flywheel map",
+    "FEC Growth Engines draft"
   ],
   "portfolioDeliverables": [
     "portfolio-advisor-startup"

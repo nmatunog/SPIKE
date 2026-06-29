@@ -291,12 +291,12 @@ export const DRAFT_WEEKS = [
   },
   {
     weekNumber: 3,
-    title: 'Business Operations',
-    theme: 'Advisor Startup & Operations',
+    title: 'Financial Entrepreneurship',
+    theme: 'Discover Your Business Model',
     hourGate: 120,
     milestoneObjective:
-      'Establish venture operations, risk management, and advisor startup readiness for Hour 120 review.',
-    businessPlanChapter: 'Business Plan Chapter 3 — Advisor Startup & Operations',
+      'Discover the professional financial advisory venture model, validate scalability, choose AIA as business platform, and pitch your Financial Advisory Venture at the 120-hour gate.',
+    businessPlanChapter: 'Business Plan Chapter 3 — Financial Advisory Venture Model',
     portfolioSection: 'Portfolio — Advisor Startup',
     status: 'draft',
     days: [
