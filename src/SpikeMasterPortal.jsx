@@ -33,7 +33,7 @@ import { PageLoader } from './components/ui/PageLoader.jsx';
 import { RoleRouteGuard } from './components/routing/RoleRouteGuard.jsx';
 import { playbookWeek2MissionHref } from './lib/customerDiscovery/week2MissionService.js';
 import { buildSuperuserMentorPreviewInterns } from './lib/superuserMentorPreview.js';
-import { ROUTES, brandLexiconBackHrefForRole, facilitatorsReferenceBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath, isPlaybookPath, parseStaffSquadHubPath, parseStaffStageGatePath } from './routes/paths.js';
+import { ROUTES, brandLexiconBackHrefForRole, facilitatorsReferenceBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath, isPlaybookPath, isSpikeLifePath, parseStaffSquadHubPath, parseStaffStageGatePath } from './routes/paths.js';
 import { StaffSquadHubPage, StaffSquadsListPage } from './components/staff/StaffSquadHubPage.jsx';
 import { Week2LoginWelcomeFlow } from './components/week2/Week2LoginWelcomeFlow.jsx';
 import { shouldShowWeek2LoginWelcome } from './lib/week2LoginWelcome.js';
@@ -249,7 +249,7 @@ const SpikeMasterPortal = () => {
     let cancelled = false;
     hydrateOnboardingStatus(user.id).then((done) => {
       if (cancelled || done) return;
-      if (isVentureBlueprintPath(location.pathname) || isPlaybookPath(location.pathname)) return;
+      if (isVentureBlueprintPath(location.pathname) || isPlaybookPath(location.pathname) || isSpikeLifePath(location.pathname)) return;
       if (location.pathname !== ROUTES.cohortIdentity) {
         navigate(ROUTES.cohortIdentity, { replace: true });
       }
@@ -1629,7 +1629,7 @@ const SpikeMasterPortal = () => {
         userRole !== 'superuser'
         && shouldUseSupabaseForUser(internUser)
         && shouldGateInternOnboarding(internUser.id, internUser?.internProgress);
-      if (needsOnboarding && path !== ROUTES.cohortIdentity && !isVentureBlueprintPath(path) && !isPlaybookPath(path)) {
+      if (needsOnboarding && path !== ROUTES.cohortIdentity && !isVentureBlueprintPath(path) && !isPlaybookPath(path) && !isSpikeLifePath(path)) {
         return <Navigate to={ROUTES.cohortIdentity} replace />;
       }
 

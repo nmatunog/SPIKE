@@ -1433,7 +1433,7 @@
           "title": "Day 3 — Discover The Market",
           "theme": "Customer",
           "durationHours": 4,
-          "status": "published",
+          "status": "draft",
           "contentPath": "/content/segment-1/week-1/day-3",
           "playbookPath": "/playbook?segment=1&week=1&day=3",
           "learningObjectives": [
@@ -2620,574 +2620,851 @@
       "milestoneObjective": "Build market understanding and client discovery foundations for the 80-hour Market Review gate.",
       "businessPlanChapter": "Business Plan Chapter 2 — Market Intelligence",
       "portfolioSection": "Portfolio — Market Intelligence",
-      "status": "draft",
+      "status": "published",
       "days": [
         {
           "dayNumber": 1,
           "programDay": 6,
-          "title": "Day 6 — Cash Flow & Personal Risk Foundations",
-          "theme": "Personal Finance Core",
+          "title": "Day 6 — Customer Discovery Mission",
+          "theme": "Prepare",
           "durationHours": 4,
-          "status": "draft",
+          "status": "published",
           "learningObjectives": [
-            "Explain income, expenses, and net cash flow in plain language",
-            "Distinguish liquidity, protection, and long-term accumulation needs",
-            "Complete a personal cash-flow snapshot as advisor credibility practice",
-            "Connect personal finance literacy to trustworthy client conversations"
+            "Validate mindset — assumptions are not evidence",
+            "Identify squad assumptions and create interview guide",
+            "Submit field research plan and align squad"
           ],
           "decks": [
             {
-              "title": "Program Coach Deck 01 — Why Advisors Master Personal Finance First",
-              "purpose": "Frame Module 2: interns must understand money before recommending products.",
-              "slideCount": 5,
+              "id": "presentation-day-2-deck-01",
+              "title": "Program Coach Deck 01 — Activate: From Ideas to Evidence",
+              "purpose": "",
+              "slideCount": 13,
+              "status": "published",
+              "pptxUrl": null,
+              "pdfUrl": "/content/segment-1/week-2/day-1/faculty-deck-01.pdf",
               "slides": [
                 {
-                  "title": "Opening — From Industry to Personal Finance",
-                  "purpose": "Bridge Week 1 identity work to technical credibility.",
-                  "facilitatorNotes": "Reference Day 1 ambition statements. Today is about earning the right to advise.",
-                  "discussionQuestions": [
-                    "Why would a client trust an advisor who cannot explain their own cash flow?"
-                  ]
+                  "number": 1,
+                  "title": "Slide 6",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-1/deck-01/slide-01.png"
                 },
                 {
-                  "title": "Income, Expenses & Net Cash Flow",
-                  "purpose": "Define core vocabulary without product jargon.",
-                  "facilitatorNotes": "Use whiteboard examples — salary, side hustle, family support, rent, debt.",
-                  "discussionQuestions": [
-                    "What expense category surprises most young professionals?"
-                  ]
+                  "number": 2,
+                  "title": "Slide 7",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-1/deck-01/slide-02.png"
                 },
                 {
-                  "title": "Risk Events That Break Cash Flow",
-                  "purpose": "Introduce protection mindset before product names.",
-                  "facilitatorNotes": "Stories: job loss, medical event, breadwinner disability.",
-                  "discussionQuestions": [
-                    "Which risk feels most real to your persona from Week 1?"
-                  ]
+                  "number": 3,
+                  "title": "Slide 8",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-1/deck-01/slide-03.png"
                 },
                 {
-                  "title": "Liquidity vs Protection vs Growth",
-                  "purpose": "Three-bucket framework for needs conversations.",
-                  "facilitatorNotes": "No product pitch — conceptual only.",
-                  "discussionQuestions": [
-                    "When is growth the wrong priority?"
-                  ]
+                  "number": 4,
+                  "title": "Slide 9",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-1/deck-01/slide-04.png"
                 },
                 {
-                  "title": "Deck 01 Close — Personal Blueprint Preview",
-                  "purpose": "Transition to afternoon builders.",
-                  "facilitatorNotes": "Preview Portfolio market-intelligence section update."
+                  "number": 5,
+                  "title": "Slide 10",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-1/deck-01/slide-05.png"
+                },
+                {
+                  "number": 6,
+                  "title": "Slide 11",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-1/deck-01/slide-06.png"
+                },
+                {
+                  "number": 7,
+                  "title": "Slide 12",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-1/deck-01/slide-07.png"
+                },
+                {
+                  "number": 8,
+                  "title": "Slide 13",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-1/deck-01/slide-08.png"
+                },
+                {
+                  "number": 9,
+                  "title": "Slide 14",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-1/deck-01/slide-09.png"
+                },
+                {
+                  "number": 10,
+                  "title": "Slide 15",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-1/deck-01/slide-10.png"
+                },
+                {
+                  "number": 11,
+                  "title": "Slide 16",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-1/deck-01/slide-11.png"
+                },
+                {
+                  "number": 12,
+                  "title": "Slide 17",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-1/deck-01/slide-12.png"
+                },
+                {
+                  "number": 13,
+                  "title": "Slide 18",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-1/deck-01/slide-13.png"
                 }
-              ],
-              "status": "draft"
+              ]
             },
             {
-              "title": "Program Coach Deck 02 — Personal Blueprint Workshop",
-              "purpose": "Guide hands-on personal finance builders.",
-              "slideCount": 5,
+              "id": "presentation-day-2-deck-02",
+              "title": "Program Coach Deck 02 — Customer Discovery Missions",
+              "purpose": "",
+              "slideCount": 15,
+              "status": "published",
+              "pptxUrl": null,
+              "pdfUrl": "/content/segment-1/week-2/day-1/faculty-deck-02.pdf",
               "slides": [
                 {
-                  "title": "Blueprint Rules — Honest Numbers",
-                  "purpose": "Psychological safety for real data.",
-                  "facilitatorNotes": "Emphasize learning, not judgment."
+                  "number": 1,
+                  "title": "Slide 1",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-1/deck-02/slide-01.png"
                 },
                 {
-                  "title": "Cash Flow Builder Walkthrough",
-                  "purpose": "Step-by-step in Venture Blueprint / worksheets.",
-                  "facilitatorNotes": "Mentors circulate — check for skipped line items."
+                  "number": 2,
+                  "title": "Slide 2",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-1/deck-02/slide-02.png"
                 },
                 {
-                  "title": "Risk Gap Reflection",
-                  "purpose": "Identify top personal risk exposure.",
-                  "facilitatorNotes": "Dyad share: one risk + one mitigation habit."
+                  "number": 3,
+                  "title": "Slide 3",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-1/deck-02/slide-03.png"
                 },
                 {
-                  "title": "Squad Teaching Moment",
-                  "purpose": "Each squad teaches one cash-flow concept to room.",
-                  "facilitatorNotes": "2 minutes per squad — program coach synthesizes."
+                  "number": 4,
+                  "title": "Slide 4",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-1/deck-02/slide-04.png"
                 },
                 {
-                  "title": "Day 6 Deliverables & Tomorrow Preview",
-                  "purpose": "FNA concepts tomorrow — bring persona and survey plan.",
-                  "facilitatorNotes": "Assign pre-read if available."
+                  "number": 5,
+                  "title": "Slide 5",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-1/deck-02/slide-05.png"
+                },
+                {
+                  "number": 6,
+                  "title": "Slide 6",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-1/deck-02/slide-06.png"
+                },
+                {
+                  "number": 7,
+                  "title": "Slide 7",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-1/deck-02/slide-07.png"
+                },
+                {
+                  "number": 8,
+                  "title": "Slide 8",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-1/deck-02/slide-08.png"
+                },
+                {
+                  "number": 9,
+                  "title": "Slide 9",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-1/deck-02/slide-09.png"
+                },
+                {
+                  "number": 10,
+                  "title": "Slide 10",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-1/deck-02/slide-10.png"
+                },
+                {
+                  "number": 11,
+                  "title": "Slide 11",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-1/deck-02/slide-11.png"
+                },
+                {
+                  "number": 12,
+                  "title": "Slide 12",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-1/deck-02/slide-12.png"
+                },
+                {
+                  "number": 13,
+                  "title": "Slide 13",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-1/deck-02/slide-13.png"
+                },
+                {
+                  "number": 14,
+                  "title": "Slide 14",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-1/deck-02/slide-14.png"
+                },
+                {
+                  "number": 15,
+                  "title": "Slide 15",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-1/deck-02/slide-15.png"
                 }
-              ],
-              "status": "draft"
+              ]
             }
           ],
           "sessionFlow": [
-            {
-              "time": "0:00–0:30",
-              "activity": "Deck 01 — Personal finance foundations",
-              "notes": "Story-led delivery; poll room on cash-flow confidence."
-            },
-            {
-              "time": "0:30–0:45",
-              "activity": "Deck 02 intro + Cash Flow Builder",
-              "notes": "Live demo one row; then individual work."
-            },
-            {
-              "time": "0:45–1:35",
-              "activity": "Cash Flow Builder + Risk Gap reflection",
-              "notes": "Mentors use observation form — look for honesty vs performance."
-            },
-            {
-              "time": "1:35–1:45",
-              "activity": "Break",
-              "notes": ""
-            },
-            {
-              "time": "1:45–2:20",
-              "activity": "Squad teaching moments + debrief",
-              "notes": "Each squad presents one concept; program coach links to client trust."
-            },
-            {
-              "time": "2:20–2:45",
-              "activity": "Portfolio sync + Day 6 assessment",
-              "notes": "Confirm artifacts in Venture Portfolio."
-            },
-            {
-              "time": "2:45–3:00",
-              "activity": "Reflection + mentor snapshot",
-              "notes": "Mentors note who needs coaching on numeracy anxiety."
-            }
+            "Open with Week 2 Activate hero — From Ideas to Evidence",
+            "Squads acknowledge mission brief in Customer Discovery Studio",
+            "Walk through interview guide encoding (credit for completion, not length)",
+            "Thinking-shift prompt: What changed your thinking today?",
+            "Close with squad MIS / venture status check"
           ],
           "activities": [
             {
-              "title": "Cash Flow Snapshot Builder",
-              "durationMinutes": 50,
+              "title": "Customer Discovery Studio — Squad Mission",
+              "durationMinutes": 180,
               "instructions": [
-                "Complete monthly inflow/outflow table",
-                "Flag negative months and seasonal spikes"
+                "Open Venture Blueprint → Customer Discovery and acknowledge your squad mission.",
+                "Review the interview guide and prepare 3–5 customer conversations.",
+                "Encode interviews — credit for completion, not length of notes.",
+                "Submit at least one thinking-shift reflection: What changed your thinking today?",
+                "Sync portfolio artifacts as missions complete."
+              ],
+              "materials": [
+                "Venture Blueprint → Customer Discovery",
+                "Squad mission brief (Cassiopeia, Pegasus, or Argo Navis)",
+                "Interview encoding workspace"
               ],
               "outputs": [
-                "Personal cash-flow artifact"
+                "Squad MIS progress and venture status metrics",
+                "Portfolio market intelligence updates",
+                "Thinking-shift log for mentor coaching"
               ],
               "debriefQuestions": [
-                "What number was hardest to admit?",
-                "How does this change your client empathy?"
-              ]
-            },
-            {
-              "title": "Personal Risk Gap Clinic",
-              "durationMinutes": 35,
-              "instructions": [
-                "Identify top 3 personal risks from worksheet",
-                "Pair-share mitigation habits"
-              ],
-              "outputs": [
-                "Risk gap notes"
-              ],
-              "debriefQuestions": [
-                "Which risk would hurt your persona most?"
-              ]
-            },
-            {
-              "title": "Squad Concept Teach-Back",
-              "durationMinutes": 25,
-              "instructions": [
-                "Squad selects one term to teach in 2 minutes",
-                "Room Q&A"
-              ],
-              "outputs": [
-                "Squad teach-back notes"
-              ],
-              "debriefQuestions": [
-                "Which squad explanation was clearest?"
+                "What assumption did your squad challenge today?",
+                "Which interview surprised your team most?",
+                "What evidence do you still need before Stage Gate II?"
               ]
             }
           ],
-          "worksheets": [
-            "Personal cash-flow worksheet",
-            "Risk gap reflection"
-          ],
-          "assessments": [
-            "Cash-flow completeness check",
-            "Participation rubric"
-          ],
-          "reflections": [
-            "Day 6 personal finance confidence reflection"
-          ],
-          "surveys": [
-            "Day 6 technical confidence survey"
-          ],
+          "worksheets": [],
+          "assessments": [],
+          "reflections": [],
+          "surveys": [],
           "prepChecklist": [
-            "Load draft Deck 01/02 or substitute slides from Module 2 syllabus",
-            "Print cash-flow worksheets",
-            "Brief mentors on numeracy sensitivity",
-            "Confirm Portfolio section paths"
+            "Confirm squads can open Venture Blueprint → Customer Discovery",
+            "Review squad missions (Cassiopeia, Pegasus, Argo Navis)",
+            "Review Program Coach Deck 02 — customer discovery missions in Venture Blueprint"
           ],
           "debriefQuestions": [
-            "Who gained confidence vs who shut down during numbers work?",
-            "Which squads connected cash flow to Week 1 persona?",
-            "What remediation before FNA day?"
+            "What assumption did your squad challenge today?",
+            "Which interview will you run first this week?",
+            "What evidence do you need before Stage Gate II?"
           ],
           "commonPitfalls": [
-            "Jumping to product solutions",
-            "Shaming low income or high debt disclosures",
-            "Skipping squad teach-back"
+            "Squads writing essays instead of encoding interviews",
+            "Skipping portfolio sync after mission prep",
+            "Treating Week 2 as individual competition — reinforce Squad XP"
           ],
           "coachingTips": [
-            "Mentors normalize estimation — perfect numbers not required",
-            "Link every insight to client trust narrative"
+            "Week 2 is open for all squads — no Week 1 submission gate",
+            "Mentors use squad weekly review (~1 min), not individual rubrics",
+            "Point squads to Customer Discovery as the primary workspace"
           ],
           "mentorGuide": {
-            "theme": "Credibility",
-            "coachingObjective": "Help participants be honest with numbers without shame.",
+            "theme": "Activate",
+            "title": "Week 2 — Squad Customer Discovery",
+            "coachingObjective": "Coach squads through validation missions — interviews, thinking shifts, and portfolio evidence.",
+            "timing": "Circulate during Customer Discovery Studio; end-of-week squad review only.",
+            "discussionQuestions": [
+              "What did your squad learn that contradicts your Week 1 assumption?",
+              "Who will you interview next and why?",
+              "How is squad collaboration showing up in MIS scores?"
+            ],
             "observationAreas": [
-              "Numeracy confidence",
-              "Honesty in builders",
-              "Peer support in squads"
+              "Interview encoding completion (not note length)",
+              "Squad mission acknowledgment",
+              "Thinking-shift reflections submitted",
+              "Portfolio market intelligence updates"
             ]
           },
           "expectedOutputs": [
-            "Personal cash-flow snapshot",
-            "Risk gap reflection",
-            "Portfolio market-intelligence draft"
-          ]
+            "Assumptions list",
+            "Five interview questions",
+            "Field research plan",
+            "Customer Discovery Preparation portfolio artifact"
+          ],
+          "dayId": "day-segment-1-week-2-day-1",
+          "contentPath": "/content/segment-1/week-2/day-1",
+          "playbookPath": "/playbook?segment=1&week=2&day=1",
+          "sessions": [
+            {
+              "sessionNumber": 1,
+              "title": "Week 2 Activate — Customer Discovery",
+              "durationMinutes": 240,
+              "presentationIds": [
+                "presentation-day-2-deck-01",
+                "presentation-day-2-deck-02"
+              ],
+              "activityIds": [
+                "activity-day-2-customer-discovery"
+              ],
+              "worksheetIds": [],
+              "assessmentIds": [
+                "assessment-day-2-participation"
+              ],
+              "reflectionIds": [],
+              "surveyIds": [
+                "survey-day-2-activate"
+              ]
+            }
+          ],
+          "evaluations": []
         },
         {
           "dayNumber": 2,
           "programDay": 7,
-          "title": "Day 7 — Financial Needs Analysis & Advisory Dyads",
-          "theme": "FNA Process",
+          "title": "Day 7 — Field Research & Market Exchange",
+          "theme": "Discover",
           "durationHours": 4,
-          "status": "draft",
+          "status": "published",
           "learningObjectives": [
-            "Describe the FNA steps: discover, quantify, prioritize, recommend framework",
-            "Conduct a 15-minute advisory dyad using FNA question bank",
-            "Document needs findings without recommending products",
-            "Give and receive structured peer feedback on listening skills"
+            "Conduct field interviews (minimum 3, target 5)",
+            "Encode interviews in SPIKE Studio Discover mode",
+            "Participate in Market Intelligence Exchange",
+            "Capture midweek intelligence reflection"
           ],
           "decks": [
             {
-              "title": "Program Coach Deck 01 — The FNA Conversation",
-              "purpose": "Teach discovery discipline before solutions.",
+              "id": "presentation-w2-d2-deck-01",
+              "title": "Market Intelligence Exchange",
+              "purpose": "",
               "slideCount": 5,
+              "status": "published",
+              "pptxUrl": null,
+              "pdfUrl": "/content/segment-1/week-2/day-2/faculty-deck-01.pdf",
               "slides": [
                 {
-                  "title": "Day 7 Opening — Problems, Numbers, Priorities",
-                  "purpose": "Connect persona work to structured needs analysis."
+                  "number": 1,
+                  "title": "What Did The Market Tell You?",
+                  "summary": "",
+                  "facilitatorNotes": "Facilitate squad sharing — evidence over opinions.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-2/deck-01/slide-01.png"
                 },
                 {
-                  "title": "FNA Stages Overview",
-                  "purpose": "Discover → Quantify → Prioritize → Plan (no product).",
-                  "facilitatorNotes": "Use SPIKE language: venture builders listen before they prescribe."
+                  "number": 2,
+                  "title": "Market Intelligence Exchange",
+                  "summary": "",
+                  "facilitatorNotes": "7 min per squad.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-2/deck-01/slide-02.png"
                 },
                 {
-                  "title": "Powerful Questions Bank",
-                  "purpose": "Open vs closed questions; follow-up probes.",
-                  "discussionQuestions": [
-                    "What question would you hate being asked as a client?"
-                  ]
+                  "number": 3,
+                  "title": "One Interview Is A Story. Thirty Interviews Are Evidence.",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-2/deck-01/slide-03.png"
                 },
                 {
-                  "title": "Ethical Boundaries in Discovery",
-                  "purpose": "No product talk until needs documented.",
-                  "facilitatorNotes": "Compliance frame early."
+                  "number": 4,
+                  "title": "Go Back. Verify The Pattern.",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-2/deck-01/slide-04.png"
                 },
                 {
-                  "title": "Deck 01 Close — Dyad Launch",
-                  "purpose": "Assign roles: advisor / client."
+                  "number": 5,
+                  "title": "Slide 5",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-2/deck-01/slide-05.png"
                 }
-              ],
-              "status": "draft"
+              ]
             },
             {
+              "id": "presentation-w2-d2-deck-02",
               "title": "Program Coach Deck 02 — Advisory Dyad Workshop",
-              "purpose": "Facilitate practice and feedback.",
+              "purpose": "",
               "slideCount": 5,
+              "status": "published",
+              "pptxUrl": null,
+              "pdfUrl": null,
               "slides": [
                 {
+                  "number": 1,
                   "title": "Dyad Protocol & Timing",
-                  "purpose": "8 min discovery / 4 min feedback / swap."
+                  "summary": "8 min discovery / 4 min feedback / swap.",
+                  "facilitatorNotes": "Facilitate practice and feedback.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 },
                 {
+                  "number": 2,
                   "title": "Client Persona Cards",
-                  "purpose": "Use Week 1 persona or provided scenarios."
+                  "summary": "Use Week 1 persona or provided scenarios.",
+                  "facilitatorNotes": "Facilitate practice and feedback.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 },
                 {
+                  "number": 3,
                   "title": "Observation Checklist",
-                  "purpose": "Mentors score listening, empathy, note-taking."
+                  "summary": "Mentors score listening, empathy, note-taking.",
+                  "facilitatorNotes": "Facilitate practice and feedback.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 },
                 {
+                  "number": 4,
                   "title": "Squad Synthesis",
-                  "purpose": "Top 3 needs themes per squad."
+                  "summary": "Top 3 needs themes per squad.",
+                  "facilitatorNotes": "Facilitate practice and feedback.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 },
                 {
+                  "number": 5,
                   "title": "Day 7 Deliverables",
-                  "purpose": "FNA notes uploaded; preview field survey planning."
+                  "summary": "FNA notes uploaded; preview field survey planning.",
+                  "facilitatorNotes": "Facilitate practice and feedback.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 }
-              ],
-              "status": "draft"
+              ]
             }
           ],
           "sessionFlow": [
             {
-              "time": "0:00–0:25",
-              "activity": "Deck 01 — FNA concepts",
-              "notes": "Interactive question practice on slide 3."
+              "time": "0:00–0:15",
+              "activity": "Deck — What Did The Market Tell You?",
+              "notes": "Frame Tuesday: AM field research, PM market exchange."
             },
             {
-              "time": "0:25–0:40",
-              "activity": "Deck 02 — Dyad setup",
-              "notes": "Assign pairs; mentors assigned to squads."
+              "time": "0:15–2:00",
+              "activity": "Field research — conduct & encode interviews",
+              "notes": "SPIKE Studio Discover mode. Capture alias, occupation, 5 Q answers, reflection. AI extracts goals, pain points, themes."
             },
             {
-              "time": "0:40–1:30",
-              "activity": "Advisory dyad rounds (2 cycles)",
-              "notes": "Strict timer; no product mentions."
-            },
-            {
-              "time": "1:30–1:40",
-              "activity": "Break",
+              "time": "2:00–2:10",
+              "activity": "Break / regroup",
               "notes": ""
             },
             {
-              "time": "1:40–2:10",
-              "activity": "Squad synthesis + gallery of needs themes",
-              "notes": "Scribes post top needs on board."
+              "time": "2:10–2:50",
+              "activity": "Market Intelligence Exchange",
+              "notes": "7 min per squad. Each answers: What surprised you? Which assumption changed? What quote stayed with you? What will you investigate next?"
             },
             {
-              "time": "2:10–2:35",
-              "activity": "Peer feedback clinic + assessment",
-              "notes": "Use listening rubric."
-            },
-            {
-              "time": "2:35–3:00",
-              "activity": "Reflection + survey",
-              "notes": "Preview Day 8 survey design."
+              "time": "2:50–3:00",
+              "activity": "Midweek intelligence reflection",
+              "notes": "SPIKE Studio auto-generates reflection prompt. Participants return to field with sharper hypotheses."
             }
           ],
           "activities": [
             {
-              "title": "FNA Question Drill",
-              "durationMinutes": 20,
+              "title": "Field Research — Discover Mode",
+              "durationMinutes": 120,
               "instructions": [
-                "Rotate through question bank stations",
-                "Practice follow-up probes"
+                "Conduct customer interviews in the field",
+                "Encode each interview in SPIKE Studio (minimum 3, target 5)",
+                "Capture alias, occupation, and five question answers only"
+              ],
+              "materials": [
+                "SPIKE Studio",
+                "Interview guide from Day 6"
               ],
               "outputs": [
-                "Question drill notes"
+                "Encoded interviews"
               ],
               "debriefQuestions": []
             },
             {
-              "title": "Advisory Dyad — Round 1 & 2",
-              "durationMinutes": 50,
+              "title": "Market Intelligence Exchange",
+              "durationMinutes": 90,
               "instructions": [
-                "Role A: advisor conducts discovery",
-                "Role B: client uses persona card",
-                "Swap roles"
+                "Each squad shares: surprise, assumption change, memorable quote, next investigation",
+                "7 minutes per squad + 1 audience question",
+                "No PowerPoint required"
+              ],
+              "materials": [
+                "Coach slides",
+                "Squad presentation order"
               ],
               "outputs": [
-                "FNA discovery notes"
+                "Midweek Intelligence Reflection"
               ],
-              "debriefQuestions": []
-            },
-            {
-              "title": "Needs Theme Synthesis",
-              "durationMinutes": 30,
-              "instructions": [
-                "Squads cluster needs into themes",
-                "Prepare one-slide summary"
-              ],
-              "outputs": [
-                "Squad needs summary"
-              ],
-              "debriefQuestions": []
+              "debriefQuestions": [
+                "What pattern are you beginning to notice?"
+              ]
             }
           ],
           "worksheets": [
             "FNA dyad observation form",
             "Client persona scenario cards"
           ],
-          "assessments": [
-            "FNA listening rubric",
-            "Dyad participation check"
-          ],
+          "assessments": [],
           "reflections": [
-            "Day 7 listening reflection"
+            "Midweek Intelligence Reflection"
           ],
-          "surveys": [
-            "Day 7 FNA confidence survey"
-          ],
+          "surveys": [],
           "prepChecklist": [
-            "Print persona cards and dyad timers",
-            "Brief mentors on observation rubric",
-            "Prepare squad boards or digital doc"
+            "Confirm squads completed Day 6 prep (assumptions, 5 questions, field plan)",
+            "Brief mentors on Discover mode encoding in SPIKE Studio",
+            "Prepare Market Intelligence Exchange slide deck",
+            "Target: 3 interviews per member (9 per squad) — minimum 3 encoded to unlock exchange"
           ],
           "debriefQuestions": [
-            "Who listened vs who lectured?",
-            "What needs appeared across multiple squads?",
-            "Are participants ready to design surveys?"
+            "Which squad showed the strongest interview evidence?",
+            "What patterns are emerging across Cassiopeia, Pegasus, and Argo Navis?",
+            "Are squads on track for 9 encoded interviews before Thursday FEC Lab?"
           ],
           "commonPitfalls": [
-            "Advisors pitching products in discovery",
-            "Clients breaking character",
-            "Skipping structured feedback"
+            "Pitching products during field interviews",
+            "Encoding without completing minimum 3 answer fields",
+            "Skipping Market Intelligence Exchange before reflection"
           ],
           "coachingTips": [
-            "Celebrate clarifying questions",
-            "Flag advisors who fill silence with jargon"
+            "One interview is a story — nine interviews are evidence",
+            "Celebrate customer quotes, not advisor opinions",
+            "Point squads back to SPIKE Studio — no duplicate forms"
           ],
           "mentorGuide": {
-            "theme": "Listening",
-            "coachingObjective": "Develop patient discovery habits.",
+            "theme": "Discover",
+            "title": "Mentor Guide — Day 7 — Field Research & Market Exchange",
+            "coachingObjective": "Coach field interview discipline and squad evidence sharing at the Market Intelligence Exchange.",
+            "timing": {
+              "preSession": "Check squad interview count in mentor dashboard",
+              "duringSession": "Roam during field research AM; attend exchange PM",
+              "postSession": "Complete squad weekly review snapshot"
+            },
+            "discussionQuestions": [
+              "What surprised your squad most from the field?",
+              "Which assumption changed after today's interviews?",
+              "What customer quote will stick with the squad?"
+            ],
             "observationAreas": [
-              "Active listening",
-              "Note quality",
-              "Empathy cues"
+              "Interview encoding quality in Discover mode",
+              "No-pitch discipline in field conversations",
+              "Squad participation in Market Intelligence Exchange",
+              "Midweek reflection completion"
             ]
           },
           "expectedOutputs": [
-            "FNA dyad notes",
-            "Squad needs theme summary"
-          ]
+            "Encoded interviews",
+            "Midweek Intelligence Reflection"
+          ],
+          "dayId": "day-segment-1-week-2-day-2",
+          "contentPath": "/content/segment-1/week-2/day-2",
+          "playbookPath": "/playbook?segment=1&week=2&day=2",
+          "sessions": [
+            {
+              "sessionNumber": 1,
+              "title": "Day 7 — Field Research & Market Exchange",
+              "durationMinutes": 240,
+              "presentationIds": [
+                "presentation-w2-d2-deck-01"
+              ],
+              "activityIds": [
+                "activity-w2-d2-field",
+                "activity-w2-d2-exchange"
+              ],
+              "worksheetIds": [],
+              "assessmentIds": [
+                "assessment-w2-d2"
+              ],
+              "reflectionIds": [
+                "reflection-w2-d2"
+              ],
+              "surveyIds": []
+            }
+          ],
+          "evaluations": []
         },
         {
           "dayNumber": 3,
           "programDay": 8,
-          "title": "Day 8 — Needs Analysis Survey Design",
-          "theme": "Survey Methods",
+          "title": "Day 8 — Professional Readiness",
+          "theme": "Learn",
           "durationHours": 4,
-          "status": "draft",
+          "status": "published",
           "learningObjectives": [
-            "Design unbiased survey questions for target demographic (e.g., Gen Z)",
-            "Pilot survey with squad critique for leading questions",
-            "Finalize field survey plan with ethics and safety protocols",
-            "Align survey metrics to Business Plan Chapter 2 evidence standards"
+            "Connect discovery journey to professional responsibility",
+            "Complete AIA Pre-Contract Training Course (~4 hours)",
+            "Reflect on professional readiness"
           ],
           "decks": [
             {
-              "title": "Program Coach Deck 01 — Evidence Over Opinions",
-              "purpose": "Survey science for venture builders.",
-              "slideCount": 5,
+              "id": "presentation-w2-d3-deck-01",
+              "title": "Professional Readiness Transition",
+              "purpose": "",
+              "slideCount": 12,
+              "status": "published",
+              "pptxUrl": null,
+              "pdfUrl": "/content/segment-1/week-2/day-3/faculty-deck-01.pdf",
               "slides": [
                 {
-                  "title": "Day 8 — From Conversations to Sample Size",
-                  "purpose": "Bridge dyads to structured research."
+                  "number": 1,
+                  "title": "You’ve Learned",
+                  "summary": "To Discover",
+                  "facilitatorNotes": "Do NOT call this licensing.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-3/deck-01/slide-01.png"
                 },
                 {
-                  "title": "Good vs Bad Survey Questions",
-                  "purpose": "Leading, double-barreled, jargon examples."
+                  "number": 2,
+                  "title": "Good Intentions",
+                  "summary": "Are Not Enough",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-3/deck-01/slide-02.png"
                 },
                 {
-                  "title": "Sampling & Field Safety",
-                  "purpose": "Consent, privacy, mentor escorts where required."
+                  "number": 3,
+                  "title": "Every Professional Learns · Practices · Qualifies · Serves",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-3/deck-01/slide-03.png"
                 },
                 {
-                  "title": "Gen Z / Persona Targeting",
-                  "purpose": "Connect to Week 1 persona segments."
+                  "number": 4,
+                  "title": "Privilege → Responsibility → Preparation → Professional",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-3/deck-01/slide-04.png"
                 },
                 {
-                  "title": "Deck 01 Close — Workshop Launch",
-                  "purpose": "Squads draft 8–12 questions."
+                  "number": 5,
+                  "title": "Professional Readiness Mission",
+                  "summary": "",
+                  "facilitatorNotes": "SPIKE prepares entrepreneurs. AIA prepares professionals.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-3/deck-01/slide-05.png"
+                },
+                {
+                  "number": 6,
+                  "title": "Slide 6",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-3/deck-01/slide-06.png"
+                },
+                {
+                  "number": 7,
+                  "title": "Slide 7",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-3/deck-01/slide-07.png"
+                },
+                {
+                  "number": 8,
+                  "title": "Slide 8",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-3/deck-01/slide-08.png"
+                },
+                {
+                  "number": 9,
+                  "title": "Slide 9",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-3/deck-01/slide-09.png"
+                },
+                {
+                  "number": 10,
+                  "title": "Slide 10",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-3/deck-01/slide-10.png"
+                },
+                {
+                  "number": 11,
+                  "title": "Slide 11",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-3/deck-01/slide-11.png"
+                },
+                {
+                  "number": 12,
+                  "title": "Slide 12",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-3/deck-01/slide-12.png"
                 }
-              ],
-              "status": "draft"
+              ]
             },
             {
+              "id": "presentation-w2-d3-deck-02",
               "title": "Program Coach Deck 02 — Survey Workshop & Pilot",
-              "purpose": "Critique and finalize.",
+              "purpose": "",
               "slideCount": 5,
+              "status": "published",
+              "pptxUrl": null,
+              "pdfUrl": null,
               "slides": [
                 {
+                  "number": 1,
                   "title": "Survey Blueprint Template",
-                  "purpose": "Hypothesis, questions, success metrics."
+                  "summary": "Hypothesis, questions, success metrics.",
+                  "facilitatorNotes": "Critique and finalize.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 },
                 {
+                  "number": 2,
                   "title": "Pilot Protocol",
-                  "purpose": "3 internal pilots before field day."
+                  "summary": "3 internal pilots before field day.",
+                  "facilitatorNotes": "Critique and finalize.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 },
                 {
+                  "number": 3,
                   "title": "Peer Review Stations",
-                  "purpose": "Rotate squads for critique."
+                  "summary": "Rotate squads for critique.",
+                  "facilitatorNotes": "Critique and finalize.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 },
                 {
+                  "number": 4,
                   "title": "Field Plan Logistics",
-                  "purpose": "Locations, quotas, timestamps."
+                  "summary": "Locations, quotas, timestamps.",
+                  "facilitatorNotes": "Critique and finalize.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 },
                 {
+                  "number": 5,
                   "title": "Day 8 Deliverables",
-                  "purpose": "Approved survey ready for Day 9 field execution."
+                  "summary": "Approved survey ready for Day 9 field execution.",
+                  "facilitatorNotes": "Critique and finalize.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 }
-              ],
-              "status": "draft"
+              ]
             }
           ],
           "sessionFlow": [
             {
-              "time": "0:00–0:25",
-              "activity": "Deck 01 — Survey methods",
-              "notes": "Live rewrite of bad questions."
+              "time": "0:00–0:30",
+              "activity": "Deck — You've Learned To Discover",
+              "notes": "Good intentions are not enough. Every professional learns, practices, qualifies, serves."
             },
             {
-              "time": "0:25–1:15",
-              "activity": "Survey drafting workshop",
-              "notes": "Squads draft; mentors challenge bias."
+              "time": "0:30–0:45",
+              "activity": "Privilege → Responsibility → Preparation → Professional",
+              "notes": "SPIKE prepares entrepreneurs. AIA prepares professionals. Journeys connect this week."
             },
             {
-              "time": "1:15–1:25",
-              "activity": "Break",
-              "notes": ""
+              "time": "0:45–3:45",
+              "activity": "Professional Readiness Mission — AIA LMS Pre-Contract Training",
+              "notes": "Participants complete course in SPIKE Studio. Upload evidence, mentor verification, or LMS integration."
             },
             {
-              "time": "1:25–2:00",
-              "activity": "Pilot interviews inside cohort",
-              "notes": "3 respondents per squad minimum."
-            },
-            {
-              "time": "2:00–2:30",
-              "activity": "Peer review stations + revisions",
-              "notes": ""
-            },
-            {
-              "time": "2:30–2:50",
-              "activity": "Field plan approval with program coach",
-              "notes": "Sign-off checklist."
-            },
-            {
-              "time": "2:50–3:00",
-              "activity": "Day 8 reflection",
-              "notes": ""
+              "time": "3:45–4:00",
+              "activity": "Professional Readiness reflection",
+              "notes": "What did you learn that will make you a better financial professional?"
             }
           ],
           "activities": [
             {
-              "title": "Survey Drafting Workshop",
-              "durationMinutes": 50,
+              "title": "Professional Readiness Mission",
+              "durationMinutes": 240,
               "instructions": [
-                "Draft 8–12 questions mapped to persona",
-                "Define success metrics"
+                "AM: Coach transition — privilege, responsibility, preparation",
+                "PM: Complete AIA Pre-Contract Training Course (~4 hours)",
+                "Submit completion evidence in SPIKE Studio"
+              ],
+              "materials": [
+                "AIA LMS Pre-Contract Training",
+                "SPIKE Studio Professional Readiness module"
               ],
               "outputs": [
-                "Survey draft v1"
-              ],
-              "debriefQuestions": []
-            },
-            {
-              "title": "Internal Pilot Interviews",
-              "durationMinutes": 35,
-              "instructions": [
-                "Pilot with peers outside squad",
-                "Capture confusion points"
-              ],
-              "outputs": [
-                "Pilot notes"
-              ],
-              "debriefQuestions": []
-            },
-            {
-              "title": "Peer Review Stations",
-              "durationMinutes": 30,
-              "instructions": [
-                "Rotate surveys for bias check",
-                "Revise and finalize"
-              ],
-              "outputs": [
-                "Survey final v1",
-                "Field plan"
+                "Professional Readiness badge",
+                "Portfolio reflection"
               ],
               "debriefQuestions": []
             }
@@ -3196,400 +3473,796 @@
             "Survey blueprint template",
             "Field safety checklist"
           ],
-          "assessments": [
-            "Survey quality rubric"
-          ],
+          "assessments": [],
           "reflections": [
-            "Day 8 research ethics reflection"
+            "Professional Readiness Reflection"
           ],
-          "surveys": [
-            "Day 8 survey design confidence"
-          ],
+          "surveys": [],
           "prepChecklist": [
-            "Print survey templates",
-            "Confirm field locations and permissions",
-            "Safety briefing with admin"
+            "Do NOT call this licensing — use Professional Readiness language",
+            "Confirm AIA Pre-Contract Training Course access for all participants",
+            "Prepare transition deck: discovery → professional responsibility",
+            "Estimated course time: 4 hours — complete before Friday"
           ],
           "debriefQuestions": [
-            "Which questions survived pilot intact?",
-            "Where is sample bias risk?",
-            "Is field plan realistic for tomorrow?"
+            "Who completed the Pre-Contract course today?",
+            "How does professional readiness connect to customer discovery?",
+            "Are squads ready for Thursday FEC Validation Lab?"
           ],
           "commonPitfalls": [
-            "Leading questions",
-            "No success metrics",
-            "Unsafe field assignments"
+            "Calling it licensing instead of professional readiness",
+            "Skipping reflection after course completion",
+            "Treating this as individual homework instead of squad milestone"
           ],
           "coachingTips": [
-            "Push squads to define what answer would change their venture thesis"
+            "Frame readiness as privilege and responsibility — not compliance",
+            "Badge and portfolio auto-sync on completion",
+            "Mentors verify completion for squads without upload access"
           ],
           "mentorGuide": {
-            "theme": "Rigor",
-            "coachingObjective": "Instill evidence standards.",
+            "theme": "Learn",
+            "title": "Mentor Guide — Day 8 — Professional Readiness",
+            "coachingObjective": "Support squads through AIA Pre-Contract Training and professional readiness reflection — never frame as licensing.",
+            "timing": {
+              "preSession": "Confirm squad Professional Readiness status in mentor dashboard",
+              "duringSession": "Monitor course progress; offer mentor verification where needed",
+              "postSession": "Complete squad weekly review snapshot"
+            },
+            "discussionQuestions": [
+              "How does professional readiness connect to the discovery work from Monday and Tuesday?",
+              "What stood out from the Pre-Contract course?",
+              "Is the squad on track for Thursday FEC Validation Lab?"
+            ],
             "observationAreas": [
-              "Question quality",
-              "Ethics awareness",
-              "Squad collaboration"
+              "Course completion evidence",
+              "Professional Readiness reflection quality",
+              "Squad accountability for Friday deadline"
             ]
           },
           "expectedOutputs": [
-            "Final survey instrument",
-            "Field execution plan"
-          ]
+            "Professional Readiness completion evidence",
+            "Professional Readiness reflection"
+          ],
+          "dayId": "day-segment-1-week-2-day-3",
+          "contentPath": "/content/segment-1/week-2/day-3",
+          "playbookPath": "/playbook?segment=1&week=2&day=3",
+          "sessions": [
+            {
+              "sessionNumber": 1,
+              "title": "Day 8 — Professional Readiness",
+              "durationMinutes": 240,
+              "presentationIds": [
+                "presentation-w2-d3-deck-01"
+              ],
+              "activityIds": [
+                "activity-w2-d3-readiness"
+              ],
+              "worksheetIds": [],
+              "assessmentIds": [
+                "assessment-w2-d3"
+              ],
+              "reflectionIds": [
+                "reflection-w2-d3"
+              ],
+              "surveyIds": []
+            }
+          ],
+          "evaluations": []
         },
         {
           "dayNumber": 4,
           "programDay": 9,
-          "title": "Day 9 — Field Survey Execution",
-          "theme": "Field Research",
+          "title": "Day 9 — FEC Validation Lab™",
+          "theme": "Synthesize",
           "durationHours": 4,
-          "status": "draft",
+          "status": "published",
           "learningObjectives": [
-            "Execute field surveys with professional conduct",
-            "Capture minimum viable sample per squad quota",
-            "Log raw data with timestamps and context notes",
-            "Debrief field surprises without premature solutioning"
+            "Transform 9 squad interviews into FEC validation",
+            "Complete 6-step FEC Validation Lab (boxes 1–5)",
+            "Approve AI-generated venture clarity statements",
+            "Build Market Validation Pitch draft automatically"
           ],
           "decks": [
             {
-              "title": "Program Coach Deck 01 — Field Day Briefing",
-              "purpose": "Morning safety and professionalism.",
-              "slideCount": 4,
+              "id": "presentation-w2-d4-deck-01",
+              "title": "Squad Intelligence Board",
+              "purpose": "",
+              "slideCount": 18,
+              "status": "published",
+              "pptxUrl": null,
+              "pdfUrl": "/content/segment-1/week-2/day-4/faculty-deck-01.pdf",
               "slides": [
                 {
-                  "title": "Field Day Standards",
-                  "purpose": "Dress, introduction script, consent."
+                  "number": 1,
+                  "title": "Squad Intelligence Board",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-01.png"
                 },
                 {
-                  "title": "Data Capture Protocol",
-                  "purpose": "Device setup, offline backup."
+                  "number": 2,
+                  "title": "Begin Your Market Validation Pitch",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-02.png"
                 },
                 {
-                  "title": "Mentor Check-in Schedule",
-                  "purpose": "Hourly squad pings."
+                  "number": 3,
+                  "title": "Slide 3",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-03.png"
                 },
                 {
-                  "title": "Deck 01 Close — Deploy",
-                  "purpose": "Squads depart to zones."
+                  "number": 4,
+                  "title": "Slide 4",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-04.png"
+                },
+                {
+                  "number": 5,
+                  "title": "Slide 5",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-05.png"
+                },
+                {
+                  "number": 6,
+                  "title": "Slide 6",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-06.png"
+                },
+                {
+                  "number": 7,
+                  "title": "Slide 7",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-07.png"
+                },
+                {
+                  "number": 8,
+                  "title": "Slide 8",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-08.png"
+                },
+                {
+                  "number": 9,
+                  "title": "Slide 9",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-09.png"
+                },
+                {
+                  "number": 10,
+                  "title": "Slide 10",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-10.png"
+                },
+                {
+                  "number": 11,
+                  "title": "Slide 11",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-11.png"
+                },
+                {
+                  "number": 12,
+                  "title": "Slide 12",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-12.png"
+                },
+                {
+                  "number": 13,
+                  "title": "Slide 13",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-13.png"
+                },
+                {
+                  "number": 14,
+                  "title": "Slide 14",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-14.png"
+                },
+                {
+                  "number": 15,
+                  "title": "Slide 15",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-15.png"
+                },
+                {
+                  "number": 16,
+                  "title": "High Touch or High Tech?",
+                  "summary": "High Touch and High Tech!",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-16.png"
+                },
+                {
+                  "number": 17,
+                  "title": "Slide 17",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-17.png"
+                },
+                {
+                  "number": 18,
+                  "title": "Slide 18",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-18.png"
                 }
-              ],
-              "status": "draft"
+              ]
             },
             {
+              "id": "presentation-w2-d4-deck-02",
               "title": "Program Coach Deck 02 — Field Return Debrief",
-              "purpose": "Afternoon synthesis.",
+              "purpose": "",
               "slideCount": 4,
+              "status": "published",
+              "pptxUrl": null,
+              "pdfUrl": null,
               "slides": [
                 {
+                  "number": 1,
                   "title": "Hot Wash Format",
-                  "purpose": "What happened / So what / Now what."
+                  "summary": "What happened / So what / Now what.",
+                  "facilitatorNotes": "Afternoon synthesis.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 },
                 {
+                  "number": 2,
                   "title": "Data Quality Check",
-                  "purpose": "Incomplete rows, outliers."
+                  "summary": "Incomplete rows, outliers.",
+                  "facilitatorNotes": "Afternoon synthesis.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 },
                 {
+                  "number": 3,
                   "title": "Surprise Findings Gallery",
-                  "purpose": "Post top quotes (anonymized)."
+                  "summary": "Post top quotes (anonymized).",
+                  "facilitatorNotes": "Afternoon synthesis.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 },
                 {
+                  "number": 4,
                   "title": "Tomorrow Preview — Market Review presentations",
-                  "purpose": "Prep deck for Day 10 gate."
+                  "summary": "Prep deck for Day 10 gate.",
+                  "facilitatorNotes": "Afternoon synthesis.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 }
-              ],
-              "status": "draft"
+              ]
             }
           ],
           "sessionFlow": [
             {
               "time": "0:00–0:20",
-              "activity": "Deck 01 — Field briefing",
-              "notes": "Consent scripts practiced aloud."
+              "activity": "Deck — From Interviews to Venture Clarity",
+              "notes": "Interview evidence → squad intelligence → FEC validation → pitch."
             },
             {
-              "time": "0:20–2:00",
-              "activity": "Field survey execution",
-              "notes": "Mentors roam; program coach on call."
+              "time": "0:20–1:30",
+              "activity": "FEC Validation Lab — Steps 1–3",
+              "notes": "Customer Reality, Problem Validation, UVP Stress Test. SPIKE AI generates; squads approve."
             },
             {
-              "time": "2:00–2:10",
-              "activity": "Break / regroup",
+              "time": "1:30–1:40",
+              "activity": "Break",
               "notes": ""
             },
             {
-              "time": "2:10–2:40",
-              "activity": "Deck 02 — Hot wash debrief",
-              "notes": "Squads share surprises."
+              "time": "1:40–2:40",
+              "activity": "FEC Validation Lab — Steps 4–6",
+              "notes": "Client Experience, Strategic Opportunity, Build the Pitch."
             },
             {
               "time": "2:40–3:00",
-              "activity": "Data upload + reflection",
-              "notes": "Confirm Portfolio sync."
+              "activity": "Squad FEC poster review + portfolio sync check",
+              "notes": "Celebrate confidence score jumps on boxes 1–5."
             }
           ],
-          "activities": [
-            {
-              "title": "Field Survey Execution",
-              "durationMinutes": 100,
-              "instructions": [
-                "Meet quota per field plan",
-                "Use introduction script",
-                "Log responses immediately"
-              ],
-              "outputs": [
-                "Raw survey dataset"
-              ],
-              "debriefQuestions": []
-            },
-            {
-              "title": "Hot Wash Debrief",
-              "durationMinutes": 30,
-              "instructions": [
-                "Squad shares 3 surprises",
-                "Identify data gaps"
-              ],
-              "outputs": [
-                "Debrief notes"
-              ],
-              "debriefQuestions": []
-            },
-            {
-              "title": "Data Hygiene Lab",
-              "durationMinutes": 20,
-              "instructions": [
-                "Clean incomplete rows",
-                "Tag outliers for follow-up"
-              ],
-              "outputs": [
-                "Clean dataset v1"
-              ],
-              "debriefQuestions": []
-            }
-          ],
+          "activities": [],
           "worksheets": [
             "Field observation log"
           ],
-          "assessments": [
-            "Field professionalism rubric",
-            "Sample size check"
-          ],
+          "assessments": [],
           "reflections": [
-            "Day 9 field reflection"
+            "FEC Validation Reflection"
           ],
-          "surveys": [
-            "Day 9 field experience survey"
-          ],
+          "surveys": [],
           "prepChecklist": [
-            "Confirm mentor zones and emergency contacts",
-            "Test data upload paths",
-            "Weather / venue backup plan"
+            "Confirm squads have 9 encoded interviews (3 per member)",
+            "Open FEC Validation Lab in SPIKE Studio for a demo squad",
+            "Review squad roles: Research Lead, FEC Lead, Pitch Lead",
+            "Test projector for interactive FEC poster (boxes 1–5 highlighted)"
           ],
           "debriefQuestions": [
-            "Did any squad fall short on quota — why?",
-            "What ethical issues arose?",
-            "What story is emerging in the data?"
+            "Which FEC box shifted the most after validation?",
+            "What evidence changed your UVP from Week 1?",
+            "Is the squad pitch draft ready for Friday?"
           ],
           "commonPitfalls": [
-            "Interviewing friends only",
-            "No consent documentation",
-            "Premature product pitches in field"
+            "Approving AI text without reading interview evidence",
+            "One member doing all six steps while others watch",
+            "Skipping UVP stress test when evidence conflicts"
           ],
           "coachingTips": [
-            "Celebrate professional conduct publicly",
-            "Normalize rejection stories"
+            "FEC Lead owns step approvals; Research Lead owns evidence quality",
+            "Use before/after confidence scores to show venture clarity",
+            "No manual squad reports — everything syncs from SPIKE Studio"
           ],
           "mentorGuide": {
-            "theme": "Professionalism",
-            "coachingObjective": "Coach conduct and resilience in the field.",
+            "theme": "Synthesize",
+            "title": "Mentor Guide — Day 9 — FEC Validation Lab™",
+            "coachingObjective": "Coach squads through evidence-based FEC validation — review and approve, never re-enter data.",
+            "timing": {
+              "preSession": "Check squad interview count (target 9) in mentor dashboard",
+              "duringSession": "Circulate during FEC Validation Lab steps",
+              "postSession": "Complete squad weekly review snapshot"
+            },
+            "discussionQuestions": [
+              "Which customer quotes drove the biggest FEC change?",
+              "Did the UVP stress test reveal assumptions that failed?",
+              "Who holds Research Lead, FEC Lead, and Pitch Lead roles?"
+            ],
             "observationAreas": [
-              "Introduction quality",
-              "Resilience after rejection",
-              "Data discipline"
+              "Evidence aggregation quality (9 interviews)",
+              "Step-by-step FEC lab completion",
+              "Collaboration on approve/edit decisions",
+              "FEC poster confidence animation"
             ]
           },
           "expectedOutputs": [
-            "Survey dataset",
-            "Field debrief summary"
-          ]
+            "Validated FEC boxes 1–5",
+            "UVP Version 2",
+            "AI pitch structure"
+          ],
+          "dayId": "day-segment-1-week-2-day-4",
+          "contentPath": "/content/segment-1/week-2/day-4",
+          "playbookPath": "/playbook?segment=1&week=2&day=4",
+          "sessions": [
+            {
+              "sessionNumber": 1,
+              "title": "Day 9 — Research Consolidation",
+              "durationMinutes": 240,
+              "presentationIds": [
+                "presentation-w2-d4-deck-01"
+              ],
+              "activityIds": [
+                "activity-w2-d4-synthesis",
+                "activity-w2-d4-pitch"
+              ],
+              "worksheetIds": [],
+              "assessmentIds": [
+                "assessment-w2-d4"
+              ],
+              "reflectionIds": [
+                "reflection-w2-d4"
+              ],
+              "surveyIds": []
+            }
+          ],
+          "evaluations": []
         },
         {
           "dayNumber": 5,
           "programDay": 10,
-          "title": "Day 10 — Survey Debrief & 80-Hour Market Review Gate",
-          "theme": "Market Review Gate",
+          "title": "Day 10 — Pitch · Empathy · Advise",
+          "theme": "Pitch · Empathy · Advise",
           "durationHours": 4,
-          "status": "draft",
+          "status": "published",
           "learningObjectives": [
-            "Present survey findings with charts and quotes",
-            "Identify actionable market gaps for Business Plan Chapter 2",
-            "Complete 80-hour Market Review gate requirements",
-            "Receive program coach and mentor feedback for Week 3 operations pivot"
+            "Present Market Validation Pitch — evidence, not ideas (5 min per squad)",
+            "Complete Empathy Lab with Miguel — understand before you advise",
+            "Reflect on advisor role and bridge to Week 3 ADVISE",
+            "Stage Gate II + Squad XP ceremony"
           ],
           "decks": [
             {
-              "title": "Program Coach Deck 01 — From Data to Decisions",
-              "purpose": "Presentation standards.",
-              "slideCount": 4,
+              "id": "presentation-w2-d5-deck-01",
+              "title": "Pitch · Empathy · Advise — Week 2 Day 5",
+              "purpose": "",
+              "slideCount": 14,
+              "status": "published",
+              "pptxUrl": null,
+              "pdfUrl": "/content/segment-1/week-2/day-5/faculty-deck-01.pdf",
               "slides": [
                 {
-                  "title": "Day 10 — Market Review Gate",
-                  "purpose": "Explain 80-hour gate criteria."
+                  "number": 1,
+                  "title": "From Venture Builder To Financial Entrepreneur",
+                  "summary": "Discover ✓ Validate ✓ — today we shift toward Advise.",
+                  "facilitatorNotes": "Frame the week arc: interns have discovered and validated; Friday bridges to advisor mindset.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-01.png"
                 },
                 {
-                  "title": "Insight > Information",
-                  "purpose": "So what / Now what framework."
+                  "number": 2,
+                  "title": "Meet Miguel",
+                  "summary": "Our client profile for the empathy workshop.",
+                  "facilitatorNotes": "Introduce Miguel before pitch block — he returns after presentations.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-02.png"
                 },
                 {
-                  "title": "Presentation Rubric",
-                  "purpose": "Evidence, clarity, persona link."
+                  "number": 3,
+                  "title": "The 5-Stage Client Journey",
+                  "summary": "Awareness → Interest → Consideration → Decision → Success",
+                  "facilitatorNotes": "Connect discovery work to where Miguel sits on the journey.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-03.png"
                 },
                 {
-                  "title": "Deck 01 Close — Rehearsal",
-                  "purpose": "Squads prep 8-minute presentations."
+                  "number": 4,
+                  "title": "From Understanding To Helping",
+                  "summary": "Validation proves the problem; empathy opens the door to advice.",
+                  "facilitatorNotes": "Transition from researcher to future advisor.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-04.png"
+                },
+                {
+                  "number": 5,
+                  "title": "Market Validation Pitch",
+                  "summary": "5 minutes per squad — present evidence, not ideas.",
+                  "facilitatorNotes": "Hand off to SPIKE Studio pitch presentations. Return to deck after all squads present.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-05.png"
+                },
+                {
+                  "number": 6,
+                  "title": "Client Profile — Miguel",
+                  "summary": "24, Marketing Associate, Cebu — first job, dreams of financial independence.",
+                  "facilitatorNotes": "Resume workshop after pitches.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-06.png"
+                },
+                {
+                  "number": 7,
+                  "title": "Empathy In Action",
+                  "summary": "Four steps: Observe → Listen → Understand → Connect",
+                  "facilitatorNotes": "Model before individual worksheet time in SPIKE Playbook.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-07.png"
+                },
+                {
+                  "number": 8,
+                  "title": "Think Like Miguel — Empathy Map",
+                  "summary": "Thinking · Feeling · Worries · Avoiding · Wants",
+                  "facilitatorNotes": "Participants complete Empathy Lab in SPIKE Playbook.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-08.png"
+                },
+                {
+                  "number": 9,
+                  "title": "Squad Discussion",
+                  "summary": "Compare empathy maps — what surprised your squad?",
+                  "facilitatorNotes": "7 minutes per squad share.",
+                  "discussionQuestions": [
+                    "What pattern did multiple squads see in Miguel?"
+                  ],
+                  "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-09.png"
+                },
+                {
+                  "number": 10,
+                  "title": "Reflect & Share",
+                  "summary": "Squad insight · Key takeaways · Connect to your role as a future advisor",
+                  "facilitatorNotes": "Capture in SPIKE — saves to portfolio automatically.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-10.png"
+                },
+                {
+                  "number": 11,
+                  "title": "What Would You Ask Miguel?",
+                  "summary": "Before you advise, you must understand.",
+                  "facilitatorNotes": "Bridge to Week 3 ADVISE module.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-11.png"
+                },
+                {
+                  "number": 12,
+                  "title": "Week 3 — ADVISE",
+                  "summary": "From validated problem to trusted guidance.",
+                  "facilitatorNotes": "Preview Monday focus.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-12.png"
+                },
+                {
+                  "number": 13,
+                  "title": "You Are Here To Help",
+                  "summary": "Empathy builds trust — advice follows understanding.",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-13.png"
+                },
+                {
+                  "number": 14,
+                  "title": "See You Monday",
+                  "summary": "Stage Gate II · Squad XP · Week 3 Advise unlock",
+                  "facilitatorNotes": "Close with Stage Gate ceremony if time permits.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-14.png"
                 }
-              ],
-              "status": "draft"
+              ]
             },
             {
+              "id": "presentation-w2-d5-deck-02",
               "title": "Program Coach Deck 02 — Gate Ceremony & Week 3 Preview",
-              "purpose": "Close Week 2.",
+              "purpose": "",
               "slideCount": 5,
+              "status": "published",
+              "pptxUrl": null,
+              "pdfUrl": null,
               "slides": [
                 {
+                  "number": 1,
                   "title": "Squad Presentation Format",
-                  "purpose": "8 min present / 4 min Q&A."
+                  "summary": "8 min present / 4 min Q&A.",
+                  "facilitatorNotes": "Close Week 2.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 },
                 {
+                  "number": 2,
                   "title": "Market Gap Declaration",
-                  "purpose": "One sentence opportunity thesis."
+                  "summary": "One sentence opportunity thesis.",
+                  "facilitatorNotes": "Close Week 2.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 },
                 {
+                  "number": 3,
                   "title": "80-Hour Gate Checklist",
-                  "purpose": "Portfolio + BP Chapter 2 + hours."
+                  "summary": "Portfolio + BP Chapter 2 + hours.",
+                  "facilitatorNotes": "Close Week 2.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 },
                 {
+                  "number": 4,
                   "title": "Week 3 — Operations Preview",
-                  "purpose": "Underwriting and portals ahead."
+                  "summary": "Underwriting and portals ahead.",
+                  "facilitatorNotes": "Close Week 2.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 },
                 {
+                  "number": 5,
                   "title": "Week 2 Close",
-                  "purpose": "Celebration + commitments."
+                  "summary": "Celebration + commitments.",
+                  "facilitatorNotes": "Close Week 2.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 }
-              ],
-              "status": "draft"
+              ]
             }
           ],
           "sessionFlow": [
             {
               "time": "0:00–0:20",
-              "activity": "Deck 01 — Presentation standards",
-              "notes": "Show exemplar slide structure."
+              "activity": "Opening — Venture Builder → Financial Entrepreneur (slides 1–4)",
+              "notes": "Frame Discover ✓ Validate ✓ → Advise. Introduce Miguel and the 5-stage journey."
             },
             {
-              "time": "0:20–1:05",
-              "activity": "Squad presentation rehearsals",
-              "notes": "Mentors time rehearsals."
+              "time": "0:20–2:00",
+              "activity": "Market Validation Pitch — 5 min per squad + Q&A (slide 5 handoff)",
+              "notes": "SPIKE Studio presentation mode. Present evidence — customer quotes, FEC evolution, not ideas."
             },
             {
-              "time": "1:05–2:35",
-              "activity": "Market Review presentations + Q&A",
-              "notes": "Program coach scores with rubric."
-            },
-            {
-              "time": "2:35–2:50",
-              "activity": "80-hour gate confirmation",
-              "notes": "Admin verifies hours artifact."
-            },
-            {
-              "time": "2:50–3:00",
-              "activity": "Week 2 reflection + Week 3 prep",
+              "time": "2:00–2:10",
+              "activity": "Break",
               "notes": ""
+            },
+            {
+              "time": "2:10–3:10",
+              "activity": "Empathy Lab workshop — Miguel (slides 6–10)",
+              "notes": "Empathy In Action → Think Like Miguel worksheet in SPIKE → squad discussion → reflect & share."
+            },
+            {
+              "time": "3:10–3:25",
+              "activity": "Week 3 bridge + wrap-up (slides 11–14)",
+              "notes": "What would you ask Miguel? Preview Week 3 ADVISE. Participants complete week wrap-up in Playbook."
+            },
+            {
+              "time": "3:25–4:00",
+              "activity": "Stage Gate II ceremony + Squad XP",
+              "notes": "Coach decision per squad: Not Ready / Almost Ready / Ready For Build. Mentor commendations."
             }
           ],
           "activities": [
             {
-              "title": "Presentation Rehearsal",
-              "durationMinutes": 45,
+              "title": "Opening — Venture Builder to Financial Entrepreneur",
+              "durationMinutes": 20,
               "instructions": [
-                "Time 8-minute deck",
-                "Mentor feedback on clarity"
+                "Frame the arc: Discover ✓ Validate ✓ → Advise",
+                "Introduce Miguel and the 5-stage client journey",
+                "Set expectation: pitch first, empathy workshop after"
               ],
-              "outputs": [
-                "Rehearsal notes"
+              "materials": [
+                "Faculty deck slides 1–4"
               ],
+              "outputs": [],
               "debriefQuestions": []
             },
             {
-              "title": "Market Review Presentations",
-              "durationMinutes": 90,
+              "title": "Market Validation Pitch",
+              "durationMinutes": 100,
               "instructions": [
-                "Squad presents findings",
-                "Q&A from coaches and peers"
+                "5 minutes per squad — present evidence, not ideas",
+                "SPIKE Studio auto-generates 10-slide pitch from FEC lab",
+                "Audience Q&A after each squad"
+              ],
+              "materials": [
+                "Pitch deck in SPIKE Studio",
+                "Stage Gate rubric"
               ],
               "outputs": [
-                "Market review deck"
+                "Market Validation Pitch"
               ],
-              "debriefQuestions": []
+              "debriefQuestions": [
+                "Which customer quote was most convincing?",
+                "What evidence surprised the audience?"
+              ]
             },
             {
-              "title": "Market Gap Declaration",
-              "durationMinutes": 15,
+              "title": "Empathy Lab — Think Like Miguel",
+              "durationMinutes": 60,
               "instructions": [
-                "Each participant writes one-sentence gap thesis",
-                "Sync to Portfolio"
+                "Empathy In Action — four steps: Observe, Listen, Understand, Connect",
+                "Complete empathy map in SPIKE Playbook (5 fields)",
+                "Squad discussion — compare maps and share one insight",
+                "Reflect & share — connect to future advisor role"
+              ],
+              "materials": [
+                "Faculty deck slides 6–10",
+                "SPIKE Playbook Empathy Lab task"
               ],
               "outputs": [
-                "Market gap statement"
+                "Empathy Lab portfolio capture"
+              ],
+              "debriefQuestions": [
+                "What surprised your squad about Miguel?",
+                "How does understanding Miguel help you advise?"
+              ]
+            },
+            {
+              "title": "Week 2 Stage Gate II Ceremony",
+              "durationMinutes": 35,
+              "instructions": [
+                "Week 3 ADVISE preview (slides 11–14)",
+                "Mentor squad review — 4 dimensions + optional commendations",
+                "Stage gate decision per squad",
+                "Unlock Week 3 Advise"
+              ],
+              "materials": [
+                "Squad XP scores",
+                "Mentor review panel"
+              ],
+              "outputs": [
+                "Stage Gate II decision",
+                "Week wrap-up reflection"
               ],
               "debriefQuestions": []
             }
           ],
           "worksheets": [
-            "Market review scoring sheet"
+            "Empathy Lab — Think Like Miguel"
           ],
-          "assessments": [
-            "Market review presentation rubric",
-            "80-hour gate checklist"
-          ],
+          "assessments": [],
           "reflections": [
-            "Week 2 reflection"
+            "Week 2 Day 5 — Pitch & Empathy Reflection"
           ],
-          "surveys": [
-            "Week 2 program survey"
-          ],
+          "surveys": [],
           "prepChecklist": [
-            "Load gate checklist in admin",
-            "Confirm presentation AV",
-            "Invite venture partners if scheduled"
+            "Confirm squads completed FEC Validation Lab and pitch draft in SPIKE Studio",
+            "Load faculty deck (14 slides) in Coach presentation mode",
+            "Review Squad XP leaderboard and mentor review panel",
+            "AV check for 5-minute squad pitch presentations",
+            "Confirm Empathy Lab task is live in participant Playbooks"
           ],
           "debriefQuestions": [
-            "Which squads showed strongest evidence?",
-            "Are market gaps actionable for operations week?",
-            "Who needs remediation before Week 3?"
+            "Which squad showed the strongest interview evidence in their pitch?",
+            "What did squads learn about Miguel that they did not expect?",
+            "How does empathy change the way you would advise a client?",
+            "Who is ready for Week 3 ADVISE?"
           ],
           "commonPitfalls": [
-            "Data dumps without insights",
-            "Ignoring persona link",
-            "Missing gate artifacts"
+            "Skipping empathy workshop to extend pitch time",
+            "Pitching ideas instead of customer quotes and validated problems",
+            "Treating empathy map as a checklist instead of genuine perspective-taking",
+            "Individual grading instead of squad-first assessment"
           ],
           "coachingTips": [
-            "Push for one clear decision per presentation",
-            "Document remediation plans for weak gates"
+            "Use SPIKE presentation mode — deck aligns to pitch then workshop flow",
+            "After pitch block, return to slide 6 — do not skip the empathy lab",
+            "Stage gate is squad decision only — no individual scores",
+            "Empathy Lab saves automatically to portfolio"
           ],
           "mentorGuide": {
-            "theme": "Evidence",
-            "coachingObjective": "Help squads tell a credible market story.",
+            "theme": "Pitch · Empathy · Advise",
+            "title": "Mentor Guide — Day 10 — Pitch · Empathy · Advise",
+            "coachingObjective": "Coach squads through evidence-based pitch delivery, empathy practice with Miguel, and Stage Gate II readiness.",
+            "timing": {
+              "preSession": "Review pitch readiness cards: FEC lab, portfolio, professional readiness",
+              "duringSession": "Support pitch delivery; observe empathy lab discussion; capture weekly squad review",
+              "postSession": "Submit stage gate decision and up to 3 commendations"
+            },
+            "discussionQuestions": [
+              "Did the pitch reflect what the market taught the squad?",
+              "Which customer quotes landed strongest with the audience?",
+              "What did squads learn about Miguel that changes how they would advise?",
+              "Is the squad ready for Week 3 ADVISE?"
+            ],
             "observationAreas": [
-              "Presentation clarity",
-              "Data integrity",
-              "Confidence under Q&A"
+              "10-slide pitch structure completeness",
+              "Evidence quality under audience Q&A",
+              "Empathy map depth — genuine perspective-taking vs surface answers",
+              "Squad collaboration during pitch and empathy discussion",
+              "Professional readiness completion"
             ]
           },
           "expectedOutputs": [
-            "Market review presentation",
-            "Market gap declaration",
-            "80-hour gate clearance"
-          ]
+            "Market Validation Pitch (SPIKE Studio)",
+            "Empathy Lab portfolio capture",
+            "Week wrap-up reflection",
+            "Stage Gate II decision"
+          ],
+          "dayId": "day-segment-1-week-2-day-5",
+          "contentPath": "/content/segment-1/week-2/day-5",
+          "playbookPath": "/playbook?segment=1&week=2&day=5",
+          "sessions": [
+            {
+              "sessionNumber": 1,
+              "title": "Day 10 — Pitch · Empathy · Advise",
+              "durationMinutes": 240,
+              "presentationIds": [
+                "presentation-w2-d5-deck-01"
+              ],
+              "activityIds": [
+                "activity-w2-d5-opening",
+                "activity-w2-d5-pitch",
+                "activity-w2-d5-empathy-lab",
+                "activity-w2-d5-gate"
+              ],
+              "worksheetIds": [
+                "worksheet-w2-d5-empathy"
+              ],
+              "assessmentIds": [
+                "assessment-w2-d5"
+              ],
+              "reflectionIds": [
+                "reflection-w2-d5"
+              ],
+              "surveyIds": []
+            }
+          ],
+          "evaluations": []
         }
       ]
     },
@@ -3601,7 +4274,7 @@
       "milestoneObjective": "Establish venture operations, risk management, and advisor startup readiness for Hour 120 review.",
       "businessPlanChapter": "Business Plan Chapter 3 — Advisor Startup & Operations",
       "portfolioSection": "Portfolio — Advisor Startup",
-      "status": "draft",
+      "status": "partial",
       "days": [
         {
           "dayNumber": 1,
@@ -3609,7 +4282,7 @@
           "title": "Day 11 — Underwriting Principles & Risk Assessment",
           "theme": "Underwriting",
           "durationHours": 4,
-          "status": "draft",
+          "status": "published",
           "learningObjectives": [
             "Explain underwriting purpose in the protection value chain",
             "Identify key risk factors in life insurance applications",
@@ -3618,60 +4291,170 @@
           ],
           "decks": [
             {
+              "id": "presentation-w3-d1-deck-01",
               "title": "Program Coach Deck 01 — Why Underwriting Exists",
-              "purpose": "Conceptual foundations.",
-              "slideCount": 5,
+              "purpose": "",
+              "slideCount": 13,
+              "status": "published",
+              "pptxUrl": null,
+              "pdfUrl": "/content/segment-1/week-3/day-1/faculty-deck-01.pdf",
               "slides": [
                 {
+                  "number": 1,
                   "title": "Day 11 — Backend Operations Week",
-                  "purpose": "Pivot from market to operating model."
+                  "summary": "",
+                  "facilitatorNotes": "Conceptual foundations.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-01.png"
                 },
                 {
+                  "number": 2,
                   "title": "Underwriting in the Protection Story",
-                  "purpose": "Fair pricing and insurability."
+                  "summary": "",
+                  "facilitatorNotes": "Conceptual foundations.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-02.png"
                 },
                 {
+                  "number": 3,
                   "title": "Risk Factors Overview",
-                  "purpose": "Health, occupation, financial justification."
+                  "summary": "",
+                  "facilitatorNotes": "Conceptual foundations.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-03.png"
                 },
                 {
+                  "number": 4,
                   "title": "Advisor Role vs Underwriter Role",
-                  "purpose": "Full disclosure expectations."
+                  "summary": "",
+                  "facilitatorNotes": "Conceptual foundations.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-04.png"
                 },
                 {
+                  "number": 5,
                   "title": "Deck 01 Close — Case Lab",
-                  "purpose": "Introduce mock applications."
+                  "summary": "",
+                  "facilitatorNotes": "Conceptual foundations.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-05.png"
+                },
+                {
+                  "number": 6,
+                  "title": "Slide 6",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-06.png"
+                },
+                {
+                  "number": 7,
+                  "title": "Slide 7",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-07.png"
+                },
+                {
+                  "number": 8,
+                  "title": "Slide 8",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-08.png"
+                },
+                {
+                  "number": 9,
+                  "title": "Slide 9",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-09.png"
+                },
+                {
+                  "number": 10,
+                  "title": "Slide 10",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-10.png"
+                },
+                {
+                  "number": 11,
+                  "title": "Slide 11",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-11.png"
+                },
+                {
+                  "number": 12,
+                  "title": "Slide 12",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-12.png"
+                },
+                {
+                  "number": 13,
+                  "title": "Slide 13",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-3/day-1/deck-01/slide-13.png"
                 }
-              ],
-              "status": "draft"
+              ]
             },
             {
+              "id": "presentation-w3-d1-deck-02",
               "title": "Program Coach Deck 02 — Mock Application Lab",
-              "purpose": "Hands-on evaluation.",
+              "purpose": "",
               "slideCount": 5,
+              "status": "published",
+              "pptxUrl": null,
+              "pdfUrl": null,
               "slides": [
                 {
+                  "number": 1,
                   "title": "Case File Protocol",
-                  "purpose": "Teams receive redacted mock apps."
+                  "summary": "Teams receive redacted mock apps.",
+                  "facilitatorNotes": "Hands-on evaluation.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 },
                 {
+                  "number": 2,
                   "title": "Risk Scoring Worksheet",
-                  "purpose": "Simple scoring — not actuarial."
+                  "summary": "Simple scoring — not actuarial.",
+                  "facilitatorNotes": "Hands-on evaluation.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 },
                 {
+                  "number": 3,
                   "title": "Squad Deliberation Format",
-                  "purpose": "Recommend accept / refer / decline with rationale."
+                  "summary": "Recommend accept / refer / decline with rationale.",
+                  "facilitatorNotes": "Hands-on evaluation.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 },
                 {
+                  "number": 4,
                   "title": "Ethics Corners",
-                  "purpose": "What advisors must never conceal."
+                  "summary": "What advisors must never conceal.",
+                  "facilitatorNotes": "Hands-on evaluation.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 },
                 {
+                  "number": 5,
                   "title": "Day 11 Deliverables",
-                  "purpose": "Case memos uploaded."
+                  "summary": "Case memos uploaded.",
+                  "facilitatorNotes": "Hands-on evaluation.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 }
-              ],
-              "status": "draft"
+              ]
             }
           ],
           "sessionFlow": [
@@ -3714,6 +4497,7 @@
                 "Gallery walk of risk factor cards",
                 "Squads sort into categories"
               ],
+              "materials": [],
               "outputs": [
                 "Risk factor map"
               ],
@@ -3726,6 +4510,7 @@
                 "Evaluate 2 cases per squad",
                 "Write recommendation memo"
               ],
+              "materials": [],
               "outputs": [
                 "Underwriting case memo"
               ],
@@ -3737,6 +4522,7 @@
               "instructions": [
                 "3-minute recommendation per squad"
               ],
+              "materials": [],
               "outputs": [
                 "Presentation notes"
               ],
@@ -3747,15 +4533,11 @@
             "Mock application packets",
             "Risk scoring worksheet"
           ],
-          "assessments": [
-            "Case memo rubric"
-          ],
+          "assessments": [],
           "reflections": [
             "Day 11 ethics reflection"
           ],
-          "surveys": [
-            "Day 11 operations confidence survey"
-          ],
+          "surveys": [],
           "prepChecklist": [
             "Print mock applications",
             "Brief mentors on compliance language",
@@ -3775,7 +4557,18 @@
           ],
           "mentorGuide": {
             "theme": "Discipline",
+            "title": "Mentor Guide — Day 11 — Underwriting Principles & Risk Assessment",
             "coachingObjective": "Build respect for backend rigor.",
+            "timing": {
+              "preSession": "Review facilitator guide and deck speaker notes",
+              "duringSession": "Circulate during squad activities",
+              "postSession": "Complete squad weekly review snapshot"
+            },
+            "discussionQuestions": [
+              "Where did squads disagree on risk?",
+              "Did anyone rationalize hiding information?",
+              "How does underwriting affect client trust?"
+            ],
             "observationAreas": [
               "Analytical reasoning",
               "Ethics language",
@@ -3785,7 +4578,40 @@
           "expectedOutputs": [
             "Underwriting case memo",
             "Risk factor map"
-          ]
+          ],
+          "dayId": "day-segment-1-week-3-day-1",
+          "contentPath": "/content/segment-1/week-3/day-1",
+          "playbookPath": "/playbook?segment=1&week=3&day=1",
+          "sessions": [
+            {
+              "sessionNumber": 1,
+              "title": "Day 11 — Underwriting Principles & Risk Assessment",
+              "durationMinutes": 240,
+              "presentationIds": [
+                "presentation-w3-d1-deck-01",
+                "presentation-w3-d1-deck-02"
+              ],
+              "activityIds": [
+                "activity-w3-d1-01",
+                "activity-w3-d1-02",
+                "activity-w3-d1-03"
+              ],
+              "worksheetIds": [
+                "worksheet-w3-d1-01",
+                "worksheet-w3-d1-02"
+              ],
+              "assessmentIds": [
+                "assessment-w3-d1"
+              ],
+              "reflectionIds": [
+                "reflection-w3-d1"
+              ],
+              "surveyIds": [
+                "survey-w3-d1"
+              ]
+            }
+          ],
+          "evaluations": []
         },
         {
           "dayNumber": 2,

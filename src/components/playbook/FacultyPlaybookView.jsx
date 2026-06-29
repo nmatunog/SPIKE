@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { GraduationCap } from 'lucide-react';
 import { Day4VentureDesignHero } from './ventureDesign/Day4VentureDesignHero.jsx';
 import { Week2ActivateHero } from './week2/Week2ActivateHero.jsx';
+import { Week3Day1PlaybookHero } from './week3/Week3Day1PlaybookHero.jsx';
 import { Week2StudioLaunchCard } from './week2/Week2StudioLaunchCard.jsx';
 import { EvaluationTemplatesPanel } from './EvaluationTemplatesPanel.jsx';
 import { FacilitatorGuidePanel } from './FacilitatorGuidePanel.jsx';
@@ -24,12 +25,14 @@ export function FacultyPlaybookView({ bundle }) {
   const activeSession = sessions[sessionIndex];
   const isDay4 = bundle.day.id === 'day-segment-1-week-1-day-4';
   const isWeek2Day1 = bundle.day.id === 'day-segment-1-week-2-day-1';
+  const isWeek3Day1 = bundle.day.id === 'day-segment-1-week-3-day-1';
   const week2DayMatch = bundle.day.id.match(/day-segment-1-week-2-day-(\d+)/);
   const week2Day = week2DayMatch ? Number(week2DayMatch[1]) : 0;
 
   return (
     <div className="space-y-6">
       {isWeek2Day1 ? <Week2ActivateHero variant="faculty" /> : null}
+      {isWeek3Day1 ? <Week3Day1PlaybookHero /> : null}
       {week2Day > 0 ? (
         <Week2StudioLaunchCard facultyMode day={week2Day} mission="mission" />
       ) : null}

@@ -78,9 +78,11 @@ function mapListItems(json, key, field = 'title') {
   return rows.map((r) => r[field] ?? r.id ?? '').filter(Boolean);
 }
 
-function extractWeek1Day(dayNum) {
-  const base = `content/segment-1/week-1/day-${dayNum}`;
+function extractPublishedDay(weekNum, dayNum) {
+  const base = `content/segment-1/week-${weekNum}/day-${dayNum}`;
   const day = loadJson(`${base}/day.json`);
+  if (!day) return null;
+
   const deck01 = loadJson(`${base}/presentation.json`);
   const deck02 = loadJson(`${base}/presentation-deck-02.json`);
   const facilitator = loadJson(`${base}/facilitator-guide.json`);
@@ -88,23 +90,24 @@ function extractWeek1Day(dayNum) {
   const activities = loadJson(`${base}/activities.json`);
   const sessions = loadJson(`${base}/sessions.json`);
   const worksheets = loadJson(`${base}/worksheets.json`);
-  const assessments = loadJson(`${base}/assessments.json`);
+  const assessments = loadJson(`${base}/assessment.json`);
   const reflections = loadJson(`${base}/reflections.json`);
-  const surveys = loadJson(`${base}/surveys.json`);
+  const surveys = loadJson(`${base}/survey.json`);
   const evaluations = loadJson(`${base}/evaluations.json`);
 
   const decks = [mapDeck(deck01), mapDeck(deck02)].filter(Boolean);
+  const hasPublishedDeck = decks.some((d) => d.pdfUrl || d.pptxUrl || d.slides?.some((s) => s.imageUrl));
 
   return {
     dayNumber: dayNum,
-    programDay: dayNum,
-    dayId: day?.id ?? `day-segment-1-week-1-day-${dayNum}`,
-    title: day?.title ?? `Week 1 Day ${dayNum}`,
+    programDay: weekNum === 1 ? dayNum : (weekNum - 1) * 5 + dayNum,
+    dayId: day?.id ?? `day-segment-1-week-${weekNum}-day-${dayNum}`,
+    title: day?.title ?? `Week ${weekNum} Day ${dayNum}`,
     theme: day?.theme ?? facilitator?.title?.split('—')[1]?.trim() ?? '',
     durationHours: facilitator?.durationHours ?? day?.durationHours ?? 4,
-    status: 'published',
-    contentPath: `/content/segment-1/week-1/day-${dayNum}`,
-    playbookPath: `/playbook?segment=1&week=1&day=${dayNum}`,
+    status: hasPublishedDeck ? 'published' : 'draft',
+    contentPath: `/content/segment-1/week-${weekNum}/day-${dayNum}`,
+    playbookPath: `/playbook?segment=1&week=${weekNum}&day=${dayNum}`,
     learningObjectives: day?.learningObjectives ?? [],
     decks,
     sessions: mapSessions(sessions),
@@ -131,6 +134,31 @@ function extractWeek1Day(dayNum) {
       : null,
     expectedOutputs: day?.expectedOutputs ?? activities?.activities?.flatMap((a) => a.outputs ?? []) ?? [],
   };
+}
+
+function extractWeek1Day(dayNum) {
+  return extractPublishedDay(1, dayNum);
+}
+
+/** Merge published Playbook days into draft facilitator reference weeks. */
+function mergePublishedDaysIntoDraftWeeks(draftWeeks) {
+  return draftWeeks.map((week) => {
+    const days = week.days.map((draftDay) => {
+      const published = extractPublishedDay(week.weekNumber, draftDay.dayNumber);
+      if (!published || published.status !== 'published') return draftDay;
+      return {
+        ...draftDay,
+        ...published,
+        programDay: published.programDay ?? draftDay.programDay,
+      };
+    });
+    const publishedCount = days.filter((d) => d.status === 'published').length;
+    return {
+      ...week,
+      status: publishedCount === days.length ? 'published' : publishedCount > 0 ? 'partial' : week.status,
+      days,
+    };
+  });
 }
 
 const week1Meta = loadJson('content/segment-1/week-1/week.json') ?? {
@@ -171,7 +199,7 @@ const document = {
       { hours: 160, week: 4, label: 'Professional Readiness Gate' },
     ],
   },
-  weeks: [week1, ...DRAFT_WEEKS],
+  weeks: [week1, ...mergePublishedDaysIntoDraftWeeks(DRAFT_WEEKS)],
 };
 
 writeFileSync(OUT, `${JSON.stringify(document, null, 2)}\n`, 'utf8');

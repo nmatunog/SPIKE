@@ -107,6 +107,30 @@ function DayPanel({ day, week }) {
                       <span className="text-xs text-slate-500">({deck.slideCount} slides)</span>
                     </div>
                     {deck.purpose ? <p className="mt-2 text-sm text-slate-600">{deck.purpose}</p> : null}
+                    {deck.pdfUrl || deck.pptxUrl ? (
+                      <p className="mt-2 flex flex-wrap gap-3 text-sm">
+                        {deck.pdfUrl ? (
+                          <a
+                            href={deck.pdfUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-semibold text-spike hover:underline"
+                          >
+                            Open deck PDF
+                          </a>
+                        ) : null}
+                        {deck.pptxUrl ? (
+                          <a
+                            href={deck.pptxUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-semibold text-spike hover:underline"
+                          >
+                            Download PPTX
+                          </a>
+                        ) : null}
+                      </p>
+                    ) : null}
                     {deck.slides?.length ? (
                       <ol className="mt-3 space-y-2 text-sm">
                         {deck.slides.map((slide) => (

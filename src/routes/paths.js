@@ -51,6 +51,11 @@ export const ROUTES = {
 export const ONBOARDING_EXIT_HREF = `${ROUTES.ventureBlueprint}/coach/ambition`;
 
 /** @param {string} pathname */
+export function isSpikeLifePath(pathname) {
+  return pathname === ROUTES.life || pathname === ROUTES.lifeWorkshop;
+}
+
+/** @param {string} pathname */
 export function isVentureBlueprintPath(pathname) {
   return (
     pathname === ROUTES.ventureBlueprint
@@ -341,6 +346,13 @@ export const MODULE_NAV = [
     shortLabel: 'Portfolio',
     icon: 'portfolio',
     roles: ['intern'],
+  },
+  {
+    path: ROUTES.life,
+    label: 'SPIKE LIFE',
+    shortLabel: 'Life',
+    icon: 'playbook',
+    roles: ['intern', 'faculty', 'mentor', 'admin', 'superuser'],
   },
   {
     path: ROUTES.programCoachHome,
