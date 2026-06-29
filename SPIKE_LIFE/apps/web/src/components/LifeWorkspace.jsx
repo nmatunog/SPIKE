@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import DreamBoardSetup from './gameboard/DreamBoardSetup.jsx'
 import LifeSummaryScreen from './gameboard/LifeSummaryScreen.jsx'
 import OnboardingRulesCard from './gameboard/OnboardingRulesCard.jsx'
-import GameScreenV2 from './v2/GameScreenV2.jsx'
+import GameScreenV3 from './v3/GameScreenV3.jsx'
 import {
   ensureSessionStarted,
   getDashboard,
@@ -99,5 +99,5 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
     )
   }
 
-  return <GameScreenV2 onOpenWorkshop={onOpenWorkshop} />
+  return <GameScreenV3 onOpenWorkshop={onOpenWorkshop} />
 }

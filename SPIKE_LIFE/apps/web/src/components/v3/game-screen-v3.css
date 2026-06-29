@@ -1,0 +1,98 @@
+/* GameScreenV3 — premium board game shell */
+
+.gsv3-shell {
+  @apply relative flex h-dvh max-h-dvh flex-col overflow-hidden bg-slate-100 text-slate-900;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, #f8fafc 0%, #eef2ff 35%, #f1f5f9 100%);
+}
+
+.gsv3-stage-dim {
+  @apply pointer-events-none absolute inset-0 z-10 bg-slate-900/25 backdrop-blur-[2px] transition-opacity duration-500;
+}
+
+.gsv3-board-zone {
+  @apply relative shrink-0 transition-all duration-500;
+}
+
+.gsv3-board-zone--rolling {
+  @apply z-20;
+}
+
+.gsv3-board-zone--background {
+  @apply scale-[0.92] opacity-40 blur-[1px];
+}
+
+.gsv3-domain-tile {
+  @apply relative flex shrink-0 flex-col overflow-hidden rounded-2xl border-2 shadow-lg transition-all duration-300;
+  width: clamp(9rem, 14vw, 13.75rem);
+  height: clamp(13.5rem, 22vh, 16.25rem);
+}
+
+.gsv3-domain-tile--idle {
+  @apply opacity-90 saturate-[0.85];
+}
+
+.gsv3-domain-tile--scan {
+  @apply z-10 scale-105 opacity-100 saturate-100;
+}
+
+.gsv3-domain-tile--winner {
+  @apply z-20 scale-110 opacity-100;
+  filter: saturate(1.15) brightness(1.05);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.9), 0 20px 48px var(--domain-glow, rgba(99, 102, 241, 0.35));
+}
+
+.gsv3-domain-tile--dimmed {
+  @apply scale-95 opacity-35 saturate-0;
+}
+
+.gsv3-domain-tile__art {
+  @apply flex flex-1 items-end justify-center px-2 pb-1 pt-3;
+}
+
+.gsv3-domain-tile__hero {
+  @apply h-full w-full max-h-[7.5rem] object-contain;
+}
+
+.gsv3-particles {
+  @apply pointer-events-none absolute inset-0 overflow-hidden;
+}
+
+.gsv3-particle {
+  @apply absolute h-1.5 w-1.5 rounded-full bg-white/80;
+  animation: gsv3-float 1.2s ease-out infinite;
+}
+
+@keyframes gsv3-float {
+  0% { transform: translateY(0) scale(1); opacity: 0.9; }
+  100% { transform: translateY(-24px) scale(0.2); opacity: 0; }
+}
+
+.gsv3-situation-stage {
+  @apply relative mx-auto flex w-full max-w-5xl flex-col overflow-hidden rounded-3xl border border-white/80 bg-white shadow-2xl;
+  min-height: min(42vh, 420px);
+  width: min(65vw, 960px);
+}
+
+.gsv3-decision-card {
+  @apply flex min-h-[7.5rem] flex-col rounded-2xl border-2 bg-white p-4 text-left shadow-md transition;
+}
+
+.gsv3-decision-card--selected {
+  @apply ring-2 ring-offset-2;
+}
+
+.gsv3-stepper-dot {
+  @apply flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold;
+}
+
+.gsv3-stepper-dot--active {
+  @apply bg-indigo-600 text-white shadow-md shadow-indigo-300/50;
+}
+
+.gsv3-stepper-dot--done {
+  @apply bg-emerald-500 text-white;
+}
+
+.gsv3-stepper-dot--pending {
+  @apply bg-slate-200 text-slate-500;
+}
