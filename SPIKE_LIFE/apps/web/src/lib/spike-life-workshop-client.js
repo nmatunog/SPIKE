@@ -147,6 +147,10 @@ export async function joinGame(gameCode, displayName) {
     throw new Error('That name is already taken in this game. Try a different name.')
   }
 
+  if (typeof gameRoomRepo.linkNextSlotToAuth === 'function') {
+    gameRoomRepo.linkNextSlotToAuth(playerId)
+  }
+
   setActiveRoom(roomId)
   await roomCommands.joinRoom(roomId, playerId, name)
 

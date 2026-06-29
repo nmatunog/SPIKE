@@ -1,14 +1,39 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { GameRoomRepository, GameRoomState } from '@spike-life/domain'
 
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+
 export class SupabaseGameRoomRepository implements GameRoomRepository {
+  private pendingAuthLinkPlayerId: string | null = null
+
   constructor(private readonly client: SupabaseClient) {}
 
+  /** Link the next saved slot for this player id to the signed-in Supabase user. */
+  linkNextSlotToAuth(playerId: string | null) {
+    this.pendingAuthLinkPlayerId = playerId
+  }
+
+  private async authUserId(): Promise<string | null> {
+    const { data } = await this.client.auth.getUser()
+    return data.user?.id ?? null
+  }
+
+  private resolveFacilitatorId(room: GameRoomState, authUid: string | null): string {
+    if (authUid && (!room.facilitatorId || !UUID_RE.test(room.facilitatorId))) {
+      return authUid
+    }
+    return room.facilitatorId
+  }
+
   async save(room: GameRoomState): Promise<void> {
+    const authUid = await this.authUserId()
+    const facilitatorId = this.resolveFacilitatorId(room, authUid)
+
     const { error } = await this.client.from('spike_life_game_rooms').upsert({
       id: room.id,
       game_code: room.gameCode,
-      facilitator_id: room.facilitatorId,
+      facilitator_id: facilitatorId,
       session_mode: room.sessionMode,
       decision_timer_preset: room.decisionTimerPreset,
       turn_number: room.turnNumber,
@@ -23,21 +48,44 @@ export class SupabaseGameRoomRepository implements GameRoomRepository {
     if (error) throw new Error(error.message)
 
     if (room.slots.length) {
+      const { data: existingSlots } = await this.client
+        .from('spike_life_room_slots')
+        .select('slot_index, user_id')
+        .eq('room_id', room.id)
+
+      const userIdBySlot = new Map(
+        (existingSlots ?? []).map((row) => [row.slot_index as number, row.user_id as string | null]),
+      )
+
       const { error: slotError } = await this.client.from('spike_life_room_slots').upsert(
-        room.slots.map((slot) => ({
-          room_id: room.id,
-          slot_index: slot.slotIndex,
-          player_id: slot.playerId,
-          display_name: slot.displayName,
-          simulation_id: slot.simulationId,
-          archetype_id: slot.archetypeId,
-          token_color: slot.tokenColor,
-          status: slot.status,
-          joined_at: slot.joinedAt,
-        })),
+        room.slots.map((slot) => {
+          let userId = userIdBySlot.get(slot.slotIndex) ?? null
+          if (
+            authUid
+            && this.pendingAuthLinkPlayerId
+            && slot.playerId === this.pendingAuthLinkPlayerId
+          ) {
+            userId = authUid
+          }
+
+          return {
+            room_id: room.id,
+            slot_index: slot.slotIndex,
+            user_id: userId,
+            player_id: slot.playerId,
+            display_name: slot.displayName,
+            simulation_id: slot.simulationId,
+            archetype_id: slot.archetypeId,
+            token_color: slot.tokenColor,
+            status: slot.status,
+            joined_at: slot.joinedAt,
+          }
+        }),
       )
       if (slotError) throw new Error(slotError.message)
     }
+
+    this.pendingAuthLinkPlayerId = null
   }
 
   async findById(id: string): Promise<GameRoomState | null> {
@@ -71,16 +119,17 @@ export class SupabaseGameRoomRepository implements GameRoomRepository {
       cycleDeadlineAt: data.cycle_deadline_at,
       joinOpen: data.join_open,
       maxPlayers: config.maxPlayers ?? 6,
-      slots: slots?.map((s) => ({
-        slotIndex: s.slot_index,
-        playerId: s.player_id,
-        displayName: s.display_name,
-        simulationId: s.simulation_id,
-        archetypeId: s.archetype_id,
-        tokenColor: s.token_color,
-        status: s.status,
-        joinedAt: s.joined_at,
-      })) ?? config.slots ?? [],
+      slots:
+        slots?.map((s) => ({
+          slotIndex: s.slot_index,
+          playerId: s.player_id,
+          displayName: s.display_name,
+          simulationId: s.simulation_id,
+          archetypeId: s.archetype_id,
+          tokenColor: s.token_color,
+          status: s.status,
+          joinedAt: s.joined_at,
+        })) ?? config.slots ?? [],
       createdAt: data.created_at,
       updatedAt: data.updated_at,
     }
