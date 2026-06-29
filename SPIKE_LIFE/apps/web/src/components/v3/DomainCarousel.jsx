@@ -58,9 +58,9 @@ export default function DomainCarousel({
     : 'One planning cycle · one domain · one decision'
 
   return (
-    <section className="flex h-full flex-col" aria-label="Life domain board" aria-busy={rolling}>
+    <section className="flex h-full min-h-0 flex-col" aria-label="Life domain board" aria-busy={rolling}>
       <div className="gsv3-board-head">
-        <p className="gsv3-board-head__title">{title}</p>
+        <p className="gsv3-board-head__title">{title.toUpperCase()}</p>
         <p className="gsv3-board-head__sub">{subtitle}</p>
       </div>
 

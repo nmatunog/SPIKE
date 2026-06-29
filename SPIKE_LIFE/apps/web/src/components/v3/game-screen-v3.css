@@ -1,40 +1,39 @@
-/* GameScreenV3 — mockup proportions: header / board 25% / situation 38% / choices 25% / footer 7% */
+/* GameScreenV3 — mockup: 8% header / 25% board / 32% situation / 25% choices / 10% footer */
 
 .gsv3-shell {
   @apply relative overflow-hidden text-slate-900;
-  --gsv3-header-h: 4.25rem;
-  --gsv3-gutter: clamp(1rem, 5vw, 3.5rem);
-  --gsv3-zone-gap: 1.25rem;
+  --gsv3-gutter: clamp(1.25rem, 6vw, 4.5rem);
+  --gsv3-zone-gap: 1.5rem;
   background: #eef2f7;
   display: grid;
   height: 100dvh;
   max-height: 100dvh;
   min-height: 600px;
   grid-template-rows:
-    var(--gsv3-header-h)
+    minmax(0, 8fr)
     minmax(0, 25fr)
-    minmax(0, 38fr)
+    minmax(0, 32fr)
     minmax(0, 25fr)
-    minmax(0, 7fr);
+    minmax(0, 10fr);
   row-gap: var(--gsv3-zone-gap);
 }
 
 .gsv3-shell--play {
   grid-template-rows:
-    var(--gsv3-header-h)
-    minmax(0, 20fr)
-    minmax(0, 40fr)
+    minmax(0, 8fr)
+    minmax(0, 22fr)
+    minmax(0, 35fr)
     minmax(0, 25fr)
-    minmax(0, 7fr);
+    minmax(0, 10fr);
 }
 
 .gsv3-shell--rolling {
   grid-template-rows:
-    var(--gsv3-header-h)
-    minmax(0, 27fr)
-    minmax(0, 36fr)
+    minmax(0, 8fr)
+    minmax(0, 28fr)
+    minmax(0, 30fr)
     minmax(0, 24fr)
-    minmax(0, 7fr);
+    minmax(0, 10fr);
 }
 
 .gsv3-zone-header {
@@ -42,7 +41,7 @@
 }
 
 .gsv3-zone-board {
-  @apply relative z-20 min-h-0 overflow-hidden transition-all duration-500;
+  @apply relative z-20 flex min-h-0 flex-col overflow-hidden transition-all duration-500;
   padding-left: var(--gsv3-gutter);
   padding-right: var(--gsv3-gutter);
 }
@@ -54,13 +53,13 @@
 }
 
 .gsv3-zone-situation {
-  @apply relative z-10 min-h-0 overflow-hidden;
+  @apply relative z-10 flex min-h-0 flex-col overflow-hidden;
   padding-left: var(--gsv3-gutter);
   padding-right: var(--gsv3-gutter);
 }
 
 .gsv3-zone-choices {
-  @apply relative z-10 min-h-0 overflow-hidden;
+  @apply relative z-10 flex min-h-0 flex-col overflow-hidden;
   padding-left: var(--gsv3-gutter);
   padding-right: var(--gsv3-gutter);
 }
@@ -75,9 +74,9 @@
   @apply pointer-events-none absolute inset-0 z-[15] bg-slate-900/30 backdrop-blur-[2px];
 }
 
-/* Domain ribbon — ~25% viewport, 2:3 tiles, 12px gaps */
+/* Domain ribbon — ~25% viewport, title + 2:3 tiles, 12px gaps */
 .gsv3-board-head {
-  @apply shrink-0 px-0 pb-2 pt-1 text-center;
+  @apply shrink-0 px-0 pb-2 pt-0 text-center;
 }
 
 .gsv3-board-head__title {
@@ -85,7 +84,7 @@
 }
 
 .gsv3-board-head__sub {
-  @apply mt-0.5 text-[10px] leading-tight text-slate-500 md:text-[11px];
+  @apply mt-1 text-[10px] leading-tight text-slate-500 md:text-[11px];
 }
 
 .gsv3-carousel-wrap {
@@ -122,9 +121,9 @@
   @apply w-5 bg-indigo-600;
 }
 
-/* Domain tile — 2:3 aspect, 40% colored cap / 60% flush art */
+/* Domain tile — 2:3 aspect, 40% cap / 60% flush art, 16px radius */
 .gsv3-domain-tile {
-  @apply relative flex shrink-0 snap-center flex-col overflow-hidden rounded-[14px] border-2 bg-white shadow-md transition-all duration-300;
+  @apply relative flex shrink-0 snap-center flex-col overflow-hidden rounded-2xl border-2 bg-white shadow-md transition-all duration-300;
   aspect-ratio: 2 / 3;
   height: 100%;
   max-height: 100%;
@@ -135,8 +134,8 @@
   @apply flex shrink-0 flex-col items-center justify-center gap-1 px-2 text-center;
   flex-basis: 40%;
   min-height: 0;
-  padding-top: 0.625rem;
-  padding-bottom: 0.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.375rem;
 }
 
 .gsv3-domain-tile__cap-icon {
@@ -168,14 +167,20 @@
 .gsv3-domain-tile__art {
   @apply relative min-h-0 flex-1 overflow-hidden;
   flex-basis: 60%;
+  margin: 0;
+  padding: 0;
 }
 
 .gsv3-domain-tile__hero {
   display: block;
-  width: 100%;
+  width: 110%;
+  max-width: none;
   height: 100%;
+  margin-left: -5%;
   object-fit: cover;
   object-position: center bottom;
+  transform: scale(1.05);
+  transform-origin: center bottom;
 }
 
 .gsv3-domain-tile__caret {
@@ -199,7 +204,7 @@
   100% { transform: translateY(-20px) scale(0.2); opacity: 0; }
 }
 
-/* Situation stage — ~38% viewport, 32px padding, illustration center */
+/* Situation stage — ~32% viewport, 32px padding, illustration right */
 .gsv3-situation-stage {
   @apply relative mx-auto h-full w-full overflow-hidden rounded-2xl border border-slate-200/80 bg-white;
   box-shadow: 0 12px 40px rgba(15, 23, 42, 0.1);
@@ -207,13 +212,14 @@
 }
 
 .gsv3-situation-stage__inner {
-  @apply grid h-full min-h-0 gap-5;
+  @apply grid h-full min-h-0;
   grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-  padding: 2rem 5.5rem 2rem 2rem;
+  gap: 1.25rem;
+  padding: 2rem;
 }
 
 .gsv3-situation-timer {
-  @apply absolute right-5 top-5 z-10 text-center;
+  @apply absolute right-8 top-8 z-10 text-center;
 }
 
 .gsv3-situation-timer__label {
@@ -221,13 +227,12 @@
 }
 
 .gsv3-situation-stage__copy {
-  @apply flex min-w-0 flex-col justify-center gap-2 pr-2;
-  padding-right: 0.5rem;
+  @apply flex min-w-0 flex-col justify-center gap-2.5;
 }
 
 .gsv3-situation-stage__art {
   @apply flex min-h-0 items-center justify-center overflow-hidden;
-  padding: 0.25rem 0;
+  padding: 0;
 }
 
 .gsv3-situation-badge {
@@ -248,20 +253,20 @@
 }
 
 .gsv3-situation-detail-grid {
-  @apply mt-1 grid grid-cols-1 gap-2.5 sm:grid-cols-2;
+  @apply mt-0.5 grid grid-cols-1 gap-2 sm:grid-cols-2;
 }
 
 .gsv3-situation-hero {
   display: block;
   width: 100%;
   height: 100%;
-  max-height: min(36vh, 280px);
+  max-height: 100%;
   object-fit: contain;
   object-position: center center;
 }
 
 .gsv3-detail-box {
-  @apply rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5;
+  @apply rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5;
 }
 
 .gsv3-detail-box__label {
@@ -280,19 +285,19 @@
   @apply text-base text-slate-600;
 }
 
-/* Choice row — ~25% viewport, 18px gaps, 20px card padding */
+/* Choice row — ~25% viewport, 16px gaps + 16px card padding */
 .gsv3-choice-heading {
-  @apply mb-2 shrink-0 text-center text-[11px] font-extrabold uppercase tracking-[0.28em] text-slate-500;
+  @apply mb-3 shrink-0 text-center text-[11px] font-extrabold uppercase tracking-[0.28em] text-slate-500;
 }
 
 .gsv3-choice-row {
   @apply flex min-h-0 flex-1;
-  gap: 1.125rem;
+  gap: 1rem;
 }
 
 .gsv3-choice-btn {
   @apply flex min-w-0 flex-1 flex-col items-start gap-2 rounded-2xl border-2 bg-white text-left shadow-sm transition;
-  padding: 1.25rem 1.125rem;
+  padding: 1rem;
 }
 
 .gsv3-choice-btn--selected {
@@ -377,8 +382,8 @@
 
 .gsv3-header-dreams {
   @apply flex items-center gap-2 rounded-2xl border border-slate-200/90 bg-white px-2.5 py-1.5 shadow-sm transition hover:border-slate-300;
-  height: calc(var(--gsv3-header-h) * 0.78);
-  min-height: 2.75rem;
+  height: 78%;
+  min-height: 2.5rem;
   max-height: 3.25rem;
 }
 
@@ -411,8 +416,8 @@
 
 .gsv3-header-advisor {
   @apply flex items-center gap-2 rounded-2xl border border-slate-200/90 bg-white px-2.5 shadow-sm transition hover:border-slate-300;
-  height: calc(var(--gsv3-header-h) * 0.78);
-  min-height: 2.75rem;
+  height: 78%;
+  min-height: 2.5rem;
   max-height: 3.25rem;
 }
 
@@ -442,11 +447,11 @@
   @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[#1a2b48] transition hover:bg-slate-200/60;
 }
 
-/* Footer — ~7% viewport */
+/* Footer — ~10% viewport */
 .gsv3-footer {
   @apply flex h-full min-h-0 items-center justify-between border-t border-slate-200 bg-white;
-  padding-top: 0.375rem;
-  padding-bottom: 0.375rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
 }
 
 .gsv3-stepper {
