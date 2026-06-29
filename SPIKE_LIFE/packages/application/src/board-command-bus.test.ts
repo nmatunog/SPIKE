@@ -2,15 +2,21 @@ import { describe, expect, it } from 'vitest'
 import { InMemoryBoardRepository, InMemorySimulationRepository } from '@spike-life/infrastructure'
 import { BoardCommandBus } from './board-command-bus.js'
 import { BoardQueryBus } from './board-query-bus.js'
+import { FinancialDecisionCommandBus } from './command-bus.js'
 
 describe('BoardCommandBus', () => {
   it('rolls dice, triggers a situation, and exposes spatial board view', async () => {
     const boardRepo = new InMemoryBoardRepository()
     const simulationRepo = new InMemorySimulationRepository()
     const commands = new BoardCommandBus(boardRepo, simulationRepo)
+    const financialCommands = new FinancialDecisionCommandBus(simulationRepo)
     const queries = new BoardQueryBus(boardRepo)
 
     await commands.ensureSoloBoard('board-test', 'sim-test', 'Alex')
+    const session = await financialCommands.createWorkshopSession('sim-test')
+    if (session.dreamBoard?.goals) {
+      await financialCommands.setDreamBoard('sim-test', session.dreamBoard.goals)
+    }
     const roll = await commands.rollDice('board-test')
 
     expect(roll.encounterTitle).toBeTruthy()

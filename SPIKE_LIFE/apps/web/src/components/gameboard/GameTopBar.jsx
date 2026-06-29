@@ -26,8 +26,8 @@ export default function GameTopBar({
           </p>
           <h1 className="truncate text-sm font-semibold md:text-base">{dashboard.characterName}</h1>
           <p className="text-[11px] text-slate-400">
-            Year {board?.boardYear ?? dashboard.simulationYear} · Age {dashboard.age} · Turn{' '}
-            {board?.roundNumber ?? dashboard.turnNumber} of {board?.maxRounds ?? dashboard.maxTurns}
+            {dashboard.cycleLabel ?? `Year ${dashboard.simulationYear}`} · Age {dashboard.age} ·
+            Chapter {dashboard.turnNumber} of {dashboard.maxTurns}
           </p>
         </div>
 

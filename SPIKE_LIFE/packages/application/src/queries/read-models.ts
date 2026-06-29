@@ -51,10 +51,21 @@ export interface DashboardView {
   lifeStage: LifeStage
   lifeStageLabel: string
   simulationYear: number
+  cycleIndex: number
+  halfYear: 'H1' | 'H2'
+  cycleLabel: string
+  maxCycles: number
   turnNumber: number
   maxTurns: number
   canAdvanceTurn: boolean
   workshopComplete: boolean
+  dreamBoardComplete: boolean
+  dreamBoard: DreamBoardView | null
+  decisionTimerSeconds: number
+  cycleDeadlineAt: string | null
+  pendingCalendarEvent: 'thirteenth_month' | 'annual_checkpoint' | null
+  thirteenthMonthAllocations: ThirteenthMonthAllocationView[]
+  lastAnnualCheckpoint: AnnualCheckpointView | null
   canStartScenario: boolean
   boardStages: BoardStageView[]
   turnHistory: TurnHistoryView[]
@@ -73,6 +84,59 @@ export interface DashboardView {
   canDecide: boolean
   canReflect: boolean
   cycleComplete: boolean
+}
+
+export interface DreamBoardGoalView {
+  goalId: string
+  goalName: string
+  enabled: boolean
+  presentValue: MoneyDisplay
+  futureValue: MoneyDisplay
+  targetAge: number
+  icon?: string
+}
+
+export interface DreamBoardView {
+  completed: boolean
+  goals: DreamBoardGoalView[]
+  emergencyFundTarget: MoneyDisplay
+}
+
+export interface ThirteenthMonthAllocationView {
+  id: string
+  label: string
+  description: string
+}
+
+export interface AnnualCheckpointView {
+  simulationYear: number
+  netWorth: MoneyDisplay
+  monthlySurplus: MoneyDisplay
+  emergencyFundProgress: number
+  protectionScore: number
+  goalProgress: number
+  lifeScoreOverall: number
+  advisorInsight: string
+}
+
+export interface LifeSummaryPlayerView {
+  sessionId: string
+  characterName: string
+  archetypeLabel: string
+  age: number
+  overall: number
+  rating: string
+  dimensions: { key: string; label: string; score: number }[]
+  goalsCompleted: number
+  goalsTotal: number
+  advisorClosing: string
+  rank: number
+}
+
+export interface LifeSummaryView {
+  complete: boolean
+  winnerSessionId: string | null
+  players: LifeSummaryPlayerView[]
 }
 
 export interface FnaGapView {
@@ -129,6 +193,9 @@ export interface DecisionOptionView {
 export interface PlanLensView {
   sessionId: string
   phase: CyclePhase
+  cycleLabel: string
+  cycleDeadlineAt: string | null
+  decisionTimerSeconds: number
   fna: FnaSummaryView | null
   recommendations: RecommendationView[]
   goals: GoalView[]

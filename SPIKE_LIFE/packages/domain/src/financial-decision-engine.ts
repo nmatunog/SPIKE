@@ -5,6 +5,8 @@ import { Simulation } from './aggregates/simulation.js'
 import type { ReflectionAnswer } from './services/reflection-engine.js'
 import { revealDueHiddenConsequences } from './services/long-term-consequence-engine.js'
 
+import type { DreamBoardGoalChoice } from './services/dream-board.js'
+
 export type { SimulationState, SimulationSession } from './aggregates/simulation-session.js'
 
 function loadSimulation(state: SimulationState): Simulation {
@@ -104,6 +106,32 @@ export function pullEventsFromState(session: SimulationState): {
   return { state: sim.toState(), events }
 }
 
+export function setDreamBoard(
+  session: SimulationState,
+  choices: DreamBoardGoalChoice[],
+): SimulationState {
+  const sim = loadSimulation(session).setDreamBoard(choices)
+  return saveSimulation(sim)
+}
+
+export function resolveThirteenthMonthPay(
+  session: SimulationState,
+  allocationId: string,
+): SimulationState {
+  const sim = loadSimulation(session).resolveThirteenthMonth(allocationId)
+  return saveSimulation(sim)
+}
+
+export function dismissCalendarEvent(session: SimulationState): SimulationState {
+  const sim = loadSimulation(session).dismissCalendarEvent()
+  return saveSimulation(sim)
+}
+
+export function applyAutoAdvisorDecision(session: SimulationState): SimulationState {
+  const sim = loadSimulation(session).applyAutoAdvisorDecision()
+  return saveSimulation(sim)
+}
+
 export function startPlanningCycle(
   sessionId: string,
   scenarioId: ScenarioId,
@@ -117,6 +145,12 @@ export function startPlanningCycle(
 
   if (existing?.phase === 'cycle_complete') {
     throw new Error('Advance to the next turn before starting a new scenario.')
+  }
+  if (existing && !existing.dreamBoard?.completedAt) {
+    throw new Error('Complete your Life Blueprint before starting a planning cycle.')
+  }
+  if (existing && existing.pendingCalendarEvent) {
+    throw new Error('Resolve the pending calendar event before starting a new cycle.')
   }
   if (existing && existing.phase !== 'created') {
     throw new Error('Finish the current planning cycle before starting a new scenario.')

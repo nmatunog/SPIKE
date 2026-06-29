@@ -63,75 +63,45 @@ flowchart LR
 
 ---
 
-## Phase 1 — Time Model & Campaign Length
+## Phase 1 — Time Model & Campaign Length ✅ Shipped
 
 **Goal:** Replace “one decision = one calendar year” workshop compression with the GDS **semi-annual planning cycle** model, while keeping workshop mode configurable.
 
 | GDS | §3 game length, §4 time progression |
 |-----|--------------------------------------|
 
-### Deliverables
+### Delivered
 
-| Layer | Work |
-|-------|------|
-| **Domain** | `PlanningCycle` type: `half` (H1/H2), `calendarMonth`, `cycleIndex` (1–20), `simulationYear` (1–10). Refactor `SimulationState` turn fields to `cycleNumber` + `halfYear`. |
-| **Domain** | `advanceCycle()` — H1→H2→year-end; age +1 only after cycle 2. Preserve `advanceTurn()` as macro wrapper for workshop compression. |
-| **Content** | `campaign.json` in PH pack: `{ totalYears: 10, cyclesPerYear: 2, workshopMacroTurns: 5 }` — facilitators tune without code changes. |
-| **Application** | Projections expose `cycleLabel` (“Jan–Jun · Year 3”) on dashboard and game board. |
-| **UI** | Top bar / stepper shows half-year label instead of only “Year N”. |
+- `campaign.json` — 10 years · 20 cycles · 5 workshop macro turns
+- `cycleIndex`, `halfYear`, `cycleLabel` on dashboard (`Jan–Jun · Year N`)
+- `planning-cycle.ts` + `campaign-context.ts` bootstrap from content pack
 
 ### Acceptance
 
-- [ ] Full campaign config defines 20 planning cycles over 10 years
-- [ ] Workshop mode still completes in ~5 macro turns when `workshopMacroTurns` is set
-- [ ] Age increments once per simulation year (after H2), not every half-year
-- [ ] Unit tests cover H1→H2→year boundary and workshop compression mapping
-
-### Depends on
-
-Phase 0.
-
-### Estimated scope
-
-Domain + application + UI — **medium** (1 sprint).
+- [x] Full campaign config defines 20 planning cycles over 10 years
+- [x] Workshop mode completes in 5 macro turns
+- [x] Age increments with simulation year at macro boundaries
+- [x] Unit tests: `planning-cycle.test.ts`, updated `workshop-turn.test.ts`
 
 ---
 
-## Phase 2 — Life Blueprint (Dream Board)
+## Phase 2 — Life Blueprint (Dream Board) ✅ Shipped
 
-**Goal:** Every player defines life goals **before** simulation starts; emergency fund target is automatic.
+### Delivered
 
-| GDS | §6 Life Blueprint, §9 Emergency Fund, §7 inflation assumptions (player-facing targets only) |
-|-----|-----------------------------------------------------------------------------------------------|
-
-### Deliverables
-
-| Layer | Work |
-|-------|------|
-| **Content** | `dream-board-defaults.json` — home ₱5M PV, travel ₱300k, business ₱500k, education ₱500k, retirement monthly income default |
-| **Domain** | `DreamBoard` value object on `SimulationState`: goals + optional custom amounts/ages. `computeGoalFutureValues(inflationRate)` — engine-only math. |
-| **Domain** | Emergency fund target = `6 × monthlyIncome` at board creation; auto-added goal |
-| **Application** | `SetDreamBoard` command; `GetDreamBoard` query; block `startCycle` until board complete |
-| **UI** | Pre-game `DreamBoardSetup` step (solo + workshop player onboarding). Visual progress rings on `LifeLens` / `GrowLens`. |
+- `DreamBoardSetup` UI — toggle goals, inflation-adjusted future values, auto emergency fund
+- `setDreamBoard` command; blocks planning until complete (workshop auto-applies defaults on join)
+- Goals flow into `goalPortfolio` for FNA and Life Score
 
 ### Acceptance
 
-- [ ] Player cannot enter first planning cycle without completing dream board (or accepting defaults)
-- [ ] Emergency fund target displays as “₱X of ₱Y” with % progress
-- [ ] Goal future values update from pack inflation rate; player never enters inflation manually
-- [ ] Workshop: each player completes dream board in lobby or first turn wait state
-
-### Depends on
-
-Phase 1 (goal target ages align with simulation years).
-
-### Estimated scope
-
-**Medium–large** (1–2 sprints).
+- [x] Solo players complete dream board before first cycle
+- [x] Emergency fund target = 6× monthly income
+- [x] Workshop join auto-completes blueprint with defaults
 
 ---
 
-## Phase 3 — Planning Cycle UX (Timer & Auto-Advisor)
+## Phase 3 — Planning Cycle UX (Timer & Auto-Advisor) ✅ Shipped
 
 **Goal:** Each cycle feels fast and exciting; indecision has a teaching consequence.
 

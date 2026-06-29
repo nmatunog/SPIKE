@@ -61,4 +61,6 @@ export interface ContentPack {
   yearLoop?: import('./year-loop-types.js').YearLoopConfig
   /** Playable starting personas — GDS v1.0 */
   archetypes?: import('./archetype-types.js').ArchetypePackConfig
+  /** Campaign pacing, dream board defaults, calendar events */
+  campaign?: import('./campaign-types.js').CampaignConfig
 }

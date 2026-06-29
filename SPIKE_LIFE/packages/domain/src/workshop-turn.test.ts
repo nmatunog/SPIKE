@@ -6,9 +6,14 @@ import {
   startPlanningCycle,
   submitDecision,
   submitReflection,
+  setDreamBoard,
+  configureCampaign,
+  dismissCalendarEvent,
+  resolveThirteenthMonthPay,
   WORKSHOP_MAX_TURNS,
   WORKSHOP_STAGE_ORDER,
 } from './index.js'
+import { PHILIPPINES_CAMPAIGN } from '@spike-life/content-philippines'
 import { TEST_CURRENCY } from './test/currency-fixture.js'
 
 const SAMPLE_REFLECTION = [
@@ -19,9 +24,29 @@ const SAMPLE_REFLECTION = [
   { promptId: 'advise_other', response: 'Run FNA first — a raise is not free money.' },
 ]
 
+function clearCalendarEvents(session: ReturnType<typeof createWorkshopSession>) {
+  let next = session
+  if (next.pendingCalendarEvent === 'thirteenth_month') {
+    next = resolveThirteenthMonthPay(next, 'emergency_fund')
+  }
+  if (next.pendingCalendarEvent) {
+    next = dismissCalendarEvent(next)
+  }
+  return next
+}
+
+function readyWorkshopSession(id: string) {
+  configureCampaign(PHILIPPINES_CAMPAIGN)
+  let session = createWorkshopSession(id, TEST_CURRENCY)
+  if (session.dreamBoard?.goals) {
+    session = setDreamBoard(session, session.dreamBoard.goals)
+  }
+  return session
+}
+
 describe('Workshop macro turns', () => {
   it('creates workshop session at turn 1 / Launch', () => {
-    const session = createWorkshopSession('workshop-1', TEST_CURRENCY)
+    const session = readyWorkshopSession('workshop-1')
 
     expect(session.turnNumber).toBe(1)
     expect(session.simulationYear).toBe(1)
@@ -34,7 +59,7 @@ describe('Workshop macro turns', () => {
   })
 
   it('advances turn after cycle_complete and preserves financial progress', () => {
-    let session = createWorkshopSession('workshop-2', TEST_CURRENCY)
+    let session = readyWorkshopSession('workshop-2')
     session = startPlanningCycle('workshop-2', 'promotion', session)
     session = submitDecision(session, 'maintain_lifestyle_discipline')
     session = submitReflection(session, SAMPLE_REFLECTION)
@@ -47,9 +72,9 @@ describe('Workshop macro turns', () => {
 
     expect(session.phase).toBe('created')
     expect(session.turnNumber).toBe(2)
-    expect(session.simulationYear).toBe(2)
+    expect(session.simulationYear).toBe(3)
     expect(session.character.lifeStage).toBe('build')
-    expect(session.character.age).toBe(23)
+    expect(session.character.age).toBe(24)
     expect(session.financialProfile.cash).toBe(cashAfterCycle)
     expect(session.situation).toBeNull()
     expect(session.turnHistory).toHaveLength(1)
@@ -58,23 +83,24 @@ describe('Workshop macro turns', () => {
   })
 
   it('starts a new scenario on an advanced turn without resetting finances', () => {
-    let session = createWorkshopSession('workshop-3', TEST_CURRENCY)
+    let session = readyWorkshopSession('workshop-3')
     session = startPlanningCycle('workshop-3', 'promotion', session)
     session = submitDecision(session, 'maintain_lifestyle_discipline')
     session = submitReflection(session, SAMPLE_REFLECTION)
     const cashAfterTurn1 = session.financialProfile.cash
     session = advanceTurn(session)
+    session = clearCalendarEvents(session)
 
     session = startPlanningCycle('workshop-3', 'promotion', session)
 
     expect(session.turnNumber).toBe(2)
     expect(session.phase).toBe('decision_pending')
-    expect(session.financialProfile.cash).toBe(cashAfterTurn1)
+    expect(session.financialProfile.cash).toBeGreaterThanOrEqual(cashAfterTurn1)
     expect(session.situation?.eventId).toBe('C001_promotion')
   })
 
   it('walks through all five workshop stages', () => {
-    let session = createWorkshopSession('workshop-4', TEST_CURRENCY)
+    let session = readyWorkshopSession('workshop-4')
 
     for (let turn = 1; turn <= WORKSHOP_MAX_TURNS; turn += 1) {
       expect(session.turnNumber).toBe(turn)
@@ -86,6 +112,7 @@ describe('Workshop macro turns', () => {
 
       if (turn < WORKSHOP_MAX_TURNS) {
         session = advanceTurn(session)
+        session = clearCalendarEvents(session)
       }
     }
 
@@ -95,20 +122,21 @@ describe('Workshop macro turns', () => {
   })
 
   it('rejects advanceTurn before cycle is complete', () => {
-    let session = createWorkshopSession('workshop-5', TEST_CURRENCY)
+    let session = readyWorkshopSession('workshop-5')
     session = startPlanningCycle('workshop-5', 'promotion', session)
 
     expect(() => advanceTurn(session)).toThrow(/Complete reflection/)
   })
 
   it('rejects advanceTurn after workshop is finished', () => {
-    let session = createWorkshopSession('workshop-6', TEST_CURRENCY)
+    let session = readyWorkshopSession('workshop-6')
 
     for (let turn = 1; turn < WORKSHOP_MAX_TURNS; turn += 1) {
       session = startPlanningCycle('workshop-6', 'promotion', session)
       session = submitDecision(session, 'maintain_lifestyle_discipline')
       session = submitReflection(session, SAMPLE_REFLECTION)
       session = advanceTurn(session)
+      session = clearCalendarEvents(session)
     }
 
     session = startPlanningCycle('workshop-6', 'promotion', session)
@@ -119,7 +147,7 @@ describe('Workshop macro turns', () => {
   })
 
   it('emits YearAdvanced and LifeStageChanged domain events', () => {
-    let session = createWorkshopSession('workshop-7', TEST_CURRENCY)
+    let session = readyWorkshopSession('workshop-7')
     session = startPlanningCycle('workshop-7', 'promotion', session)
     session = submitDecision(session, 'maintain_lifestyle_discipline')
     session = submitReflection(session, SAMPLE_REFLECTION)

@@ -2,6 +2,7 @@ import type { ContentPack, ContentPackManifest, CurrencyConfig } from './types.j
 import { isKnownFinancialWorldId } from './financial-worlds.js'
 import { validateYearLoopConfig } from './year-loop-validation.js'
 import { validateArchetypePackConfig } from './archetype-validation.js'
+import { validateCampaignConfig } from './campaign-validation.js'
 
 export function validateContentPack(pack: ContentPack): void {
   if (!pack.manifest?.id) throw new Error('Content pack missing manifest.id')
@@ -16,6 +17,9 @@ export function validateContentPack(pack: ContentPack): void {
   }
   if (pack.archetypes) {
     validateArchetypePackConfig(pack.archetypes)
+  }
+  if (pack.campaign) {
+    validateCampaignConfig(pack.campaign)
   }
 }
 

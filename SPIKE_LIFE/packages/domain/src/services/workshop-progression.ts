@@ -1,7 +1,12 @@
 import type { LifeStage } from '../types.js'
+import { getWorkshopMacroTurns } from './campaign-context.js'
 
-/** Workshop mode — 5 compressed turns (PRD v1.1). */
+/** Workshop mode — default macro turns; overridden by campaign pack. */
 export const WORKSHOP_MAX_TURNS = 5
+
+export function resolveWorkshopMaxTurns(): number {
+  return getWorkshopMacroTurns()
+}
 
 export const WORKSHOP_STAGE_ORDER: readonly LifeStage[] = [
   'launch',

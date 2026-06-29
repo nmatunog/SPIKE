@@ -9,6 +9,7 @@ import {
   WORKSHOP_MAX_TURNS,
   lifeStageForTurn,
   workshopStageLabel,
+  resolveWorkshopMaxTurns,
 } from '../services/workshop-progression.js'
 
 export const PLAYER_TOKEN_COLORS = [
@@ -66,7 +67,7 @@ export class GameRoom {
       facilitatorId,
       maxPlayers: capped,
       turnNumber: 1,
-      maxTurns: WORKSHOP_MAX_TURNS,
+      maxTurns: resolveWorkshopMaxTurns(),
       lifeStage: lifeStageForTurn(1),
       roomPhase: 'lobby',
       sharedScenarioId: null,

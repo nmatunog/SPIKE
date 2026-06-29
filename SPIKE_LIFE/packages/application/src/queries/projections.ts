@@ -14,6 +14,11 @@ import {
   workshopStageLabel,
   getArchetypeLabel,
   getArchetypeTagline,
+  formatCycleLabel,
+  cycleIndexForMacroTurn,
+  getCampaignConfig,
+  getCalendarEvents,
+  computePlayerLifeSummary,
 } from '@spike-life/domain'
 import type {
   DashboardView,
@@ -30,6 +35,10 @@ import type {
   RecommendationView,
   BoardStageView,
   TurnHistoryView,
+  DreamBoardView,
+  ThirteenthMonthAllocationView,
+  AnnualCheckpointView,
+  LifeSummaryView,
 } from './read-models.js'
 import { DEFAULT_CURRENCY } from '../content/bootstrap.js'
 
@@ -136,11 +145,52 @@ function projectTurnHistory(session: SimulationSession): TurnHistoryView[] {
   }))
 }
 
+function resolveCycleIndex(session: SimulationSession): number {
+  return session.cycleIndex
+    ?? cycleIndexForMacroTurn(session.turnNumber ?? 1, getCampaignConfig())
+}
+
+function projectDreamBoard(session: SimulationSession): DreamBoardView | null {
+  const board = session.dreamBoard
+  if (!board) return null
+  const currency = resolveCurrency(session)
+  return {
+    completed: Boolean(board.completedAt),
+    emergencyFundTarget: formatMoney(board.emergencyFundTarget, currency),
+    goals: board.goals.map((g) => ({
+      goalId: g.goalId,
+      goalName: g.goalName,
+      enabled: g.enabled,
+      presentValue: formatMoney(g.presentValue, currency),
+      futureValue: formatMoney(g.futureValue, currency),
+      targetAge: g.targetAge,
+      icon: g.icon,
+    })),
+  }
+}
+
+export function projectLifeSummary(session: SimulationSession): LifeSummaryView {
+  const player = computePlayerLifeSummary(
+    session,
+    getArchetypeLabel(session.character.archetypeId),
+  )
+  const maxTurns = session.maxTurns ?? WORKSHOP_MAX_TURNS
+  const complete = session.phase === 'cycle_complete' && (session.turnNumber ?? 1) >= maxTurns
+  return {
+    complete,
+    winnerSessionId: complete ? player.sessionId : null,
+    players: [{ ...player, rank: 1 }],
+  }
+}
+
 export function projectDashboard(session: SimulationSession): DashboardView {
   const fna = activeFna(session)
   const profile = session.financialProfile
   const currency = resolveCurrency(session)
   const decisionQuality = session.consequence?.decisionQuality ?? null
+  const cycleIndex = resolveCycleIndex(session)
+  const maxTurns = session.maxTurns ?? WORKSHOP_MAX_TURNS
+  const maxCycles = session.maxCycles ?? getCampaignConfig().totalYears * getCampaignConfig().cyclesPerYear
   const lifeScore = fna
     ? calculateLifeScore(fna, profile, decisionQuality)
     : {
@@ -167,15 +217,47 @@ export function projectDashboard(session: SimulationSession): DashboardView {
     lifeStage: session.character.lifeStage,
     lifeStageLabel: LIFE_STAGE_LABELS[session.character.lifeStage] ?? session.character.lifeStage,
     simulationYear: session.simulationYear ?? 1,
+    cycleIndex,
+    halfYear: session.halfYear ?? 'H1',
+    cycleLabel: formatCycleLabel(cycleIndex),
+    maxCycles,
     turnNumber: session.turnNumber ?? 1,
-    maxTurns: session.maxTurns ?? WORKSHOP_MAX_TURNS,
+    maxTurns,
     canAdvanceTurn:
       session.phase === 'cycle_complete'
-      && (session.turnNumber ?? 1) < (session.maxTurns ?? WORKSHOP_MAX_TURNS),
+      && (session.turnNumber ?? 1) < maxTurns
+      && !session.pendingCalendarEvent,
     workshopComplete:
       session.phase === 'cycle_complete'
-      && (session.turnNumber ?? 1) >= (session.maxTurns ?? WORKSHOP_MAX_TURNS),
-    canStartScenario: session.phase === 'created',
+      && (session.turnNumber ?? 1) >= maxTurns,
+    dreamBoardComplete: Boolean(session.dreamBoard?.completedAt),
+    dreamBoard: projectDreamBoard(session),
+    decisionTimerSeconds: session.decisionTimerSeconds ?? 0,
+    cycleDeadlineAt: session.cycleDeadlineAt ?? null,
+    pendingCalendarEvent: session.pendingCalendarEvent ?? null,
+    thirteenthMonthAllocations: getCalendarEvents().thirteenthMonthAllocations.map(
+      (a): ThirteenthMonthAllocationView => ({
+        id: a.id,
+        label: a.label,
+        description: a.description,
+      }),
+    ),
+    lastAnnualCheckpoint: session.lastAnnualCheckpoint
+      ? {
+          simulationYear: session.lastAnnualCheckpoint.simulationYear,
+          netWorth: formatMoney(session.lastAnnualCheckpoint.netWorth, currency),
+          monthlySurplus: formatMoney(session.lastAnnualCheckpoint.monthlySurplus, currency),
+          emergencyFundProgress: session.lastAnnualCheckpoint.emergencyFundProgress,
+          protectionScore: session.lastAnnualCheckpoint.protectionScore,
+          goalProgress: session.lastAnnualCheckpoint.goalProgress,
+          lifeScoreOverall: session.lastAnnualCheckpoint.lifeScoreOverall,
+          advisorInsight: session.lastAnnualCheckpoint.advisorInsight,
+        }
+      : null,
+    canStartScenario:
+      session.phase === 'created'
+      && Boolean(session.dreamBoard?.completedAt)
+      && !session.pendingCalendarEvent,
     boardStages: projectBoardStages(session.turnNumber ?? 1),
     turnHistory: projectTurnHistory({
       ...session,
@@ -226,6 +308,9 @@ export function projectPlanLens(session: SimulationSession): PlanLensView {
   return {
     sessionId: session.id,
     phase: session.phase,
+    cycleLabel: formatCycleLabel(resolveCycleIndex(session)),
+    cycleDeadlineAt: session.cycleDeadlineAt ?? null,
+    decisionTimerSeconds: session.decisionTimerSeconds ?? 0,
     fna: projectFnaSummary(session),
     recommendations,
     goals,

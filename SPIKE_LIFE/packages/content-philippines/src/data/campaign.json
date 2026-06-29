@@ -1,0 +1,62 @@
+{
+  "totalYears": 10,
+  "cyclesPerYear": 2,
+  "workshopMacroTurns": 5,
+  "decisionTimerSeconds": "15",
+  "inflationRateAnnual": 0.04,
+  "dreamBoard": {
+    "inflationRateAnnual": 0.04,
+    "emergencyFundMonths": 6,
+    "goals": [
+      {
+        "goalId": "home",
+        "goalName": "Dream Home",
+        "presentValue": 5000000,
+        "defaultTargetAge": 35,
+        "icon": "home"
+      },
+      {
+        "goalId": "travel",
+        "goalName": "Travel Fund",
+        "presentValue": 300000,
+        "defaultTargetAge": 28,
+        "icon": "plane"
+      },
+      {
+        "goalId": "business",
+        "goalName": "Business Startup",
+        "presentValue": 500000,
+        "defaultTargetAge": 32,
+        "icon": "briefcase"
+      },
+      {
+        "goalId": "retirement",
+        "goalName": "Retirement Income",
+        "presentValue": 40000,
+        "defaultTargetAge": 60,
+        "icon": "sunset"
+      },
+      {
+        "goalId": "education",
+        "goalName": "Child Education",
+        "presentValue": 500000,
+        "defaultTargetAge": 45,
+        "optional": true,
+        "icon": "graduation"
+      }
+    ]
+  },
+  "calendarEvents": {
+    "thirteenthMonthAllocations": [
+      { "id": "celebrate", "label": "Celebrate", "description": "Holiday joy with family", "strategy": "increase_lifestyle" },
+      { "id": "travel", "label": "Travel", "description": "Fund a meaningful trip", "strategy": "fund_goals" },
+      { "id": "emergency_fund", "label": "Emergency Fund", "description": "Strengthen your safety net", "strategy": "increase_savings" },
+      { "id": "business", "label": "Business", "description": "Seed a side venture", "strategy": "fund_goals" },
+      { "id": "retirement", "label": "Retirement", "description": "Boost long-term security", "strategy": "fund_goals" },
+      { "id": "education", "label": "Education", "description": "Advance learning goals", "strategy": "fund_goals" },
+      { "id": "house", "label": "Dream Home", "description": "Move closer to ownership", "strategy": "fund_goals" },
+      { "id": "protection", "label": "Protection", "description": "Close coverage gaps", "strategy": "improve_protection" },
+      { "id": "debt", "label": "Debt Reduction", "description": "Pay down high-interest debt", "strategy": "reduce_debt" }
+    ]
+  }
+}

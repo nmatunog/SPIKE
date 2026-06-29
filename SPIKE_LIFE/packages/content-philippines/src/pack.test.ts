@@ -32,4 +32,11 @@ describe('PHILIPPINES_CONTENT_PACK', () => {
     expect(PHILIPPINES_CONTENT_PACK.archetypes?.assignment.maxPlayers).toBe(6)
     expect(PHILIPPINES_CONTENT_PACK.archetypes?.assignment.minPlayers).toBe(2)
   })
+
+  it('includes campaign pacing config', () => {
+    expect(PHILIPPINES_CONTENT_PACK.campaign?.totalYears).toBe(10)
+    expect(PHILIPPINES_CONTENT_PACK.campaign?.cyclesPerYear).toBe(2)
+    expect(PHILIPPINES_CONTENT_PACK.campaign?.workshopMacroTurns).toBe(5)
+    expect(PHILIPPINES_CONTENT_PACK.campaign?.dreamBoard.goals.length).toBeGreaterThan(0)
+  })
 })

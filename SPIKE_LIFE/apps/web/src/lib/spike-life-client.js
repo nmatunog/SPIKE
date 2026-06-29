@@ -1,4 +1,4 @@
-import { InMemoryBoardRepository, InMemorySimulationRepository } from '@spike-life/infrastructure'
+import { LocalStorageSimulationRepository, InMemoryBoardRepository } from '@spike-life/infrastructure'
 import {
   BoardCommandBus,
   BoardQueryBus,
@@ -9,7 +9,7 @@ import {
 const SESSION_ID = 'browser-demo'
 const BOARD_ID = SESSION_ID
 
-let simulationRepo = new InMemorySimulationRepository()
+let simulationRepo = new LocalStorageSimulationRepository()
 let boardRepo = new InMemoryBoardRepository()
 let financialCommands = new FinancialDecisionCommandBus(simulationRepo)
 let financialQueries = new FinancialDecisionQueryBus(simulationRepo)
@@ -55,6 +55,31 @@ export async function getLensView(lens) {
   return financialQueries.getLensView(SESSION_ID, lens)
 }
 
+export async function getLifeSummary() {
+  await ensureSessionStarted()
+  return financialQueries.getLifeSummary(SESSION_ID)
+}
+
+export async function setDreamBoard(choices) {
+  await ensureSessionStarted()
+  await financialCommands.setDreamBoard(SESSION_ID, choices)
+}
+
+export async function resolveThirteenthMonth(allocationId) {
+  await ensureSessionStarted()
+  await financialCommands.resolveThirteenthMonth(SESSION_ID, allocationId)
+}
+
+export async function dismissCalendarEvent() {
+  await ensureSessionStarted()
+  await financialCommands.dismissCalendarEvent(SESSION_ID)
+}
+
+export async function applyAutoAdvisor() {
+  await ensureSessionStarted()
+  await financialCommands.applyAutoAdvisor(SESSION_ID)
+}
+
 export async function submitDecision(strategy, rationale) {
   await ensureSessionStarted()
   await boardCommands.submitDecision(BOARD_ID, strategy, rationale)
@@ -92,7 +117,7 @@ export async function advanceTurn() {
 }
 
 export function resetSession() {
-  simulationRepo = new InMemorySimulationRepository()
+  simulationRepo = new LocalStorageSimulationRepository()
   boardRepo = new InMemoryBoardRepository()
   financialCommands = new FinancialDecisionCommandBus(simulationRepo)
   financialQueries = new FinancialDecisionQueryBus(simulationRepo)

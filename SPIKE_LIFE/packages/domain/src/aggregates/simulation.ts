@@ -36,9 +36,36 @@ import {
 import { calculateLifeScore } from '../services/life-score-engine.js'
 import {
   WORKSHOP_MAX_TURNS,
-  ageForSimulationYear,
   lifeStageForTurn,
+  resolveWorkshopMaxTurns,
 } from '../services/workshop-progression.js'
+import {
+  getDefaultDecisionTimerSeconds,
+  getMaxCampaignCycles,
+  getCampaignConfig,
+} from '../services/campaign-context.js'
+import {
+  ageForCampaignYear,
+  cycleIndexForMacroTurn,
+  cyclesPerMacroTurn,
+  formatCycleLabel,
+  halfYearFromCycle,
+  isYearEndCycle,
+  simulationYearFromCycle,
+} from '../services/planning-cycle.js'
+import {
+  buildDefaultDreamBoard,
+  completeDreamBoard,
+  dreamBoardToFinancialGoals,
+  type DreamBoardGoalChoice,
+} from '../services/dream-board.js'
+import { autoAdvisorSelectStrategy } from '../services/auto-advisor.js'
+import {
+  buildAnnualCheckpoint,
+  shouldTriggerThirteenthMonth,
+  thirteenthMonthBonus,
+} from '../services/calendar-events.js'
+import { netWorth, monthlySurplus } from '../entities/financial-state.js'
 import type { FinancialGoal } from '../entities/financial-state.js'
 
 /** Core aggregate root — all simulation state changes pass through this class. */
@@ -139,6 +166,9 @@ export class Simulation {
       fnaBeforeDecision: fna,
       recommendations,
       phase: 'decision_pending',
+      cycleDeadlineAt: this.state.decisionTimerSeconds > 0
+        ? new Date(Date.now() + this.state.decisionTimerSeconds * 1000).toISOString()
+        : null,
       updatedAt: new Date().toISOString(),
     }
 
@@ -191,6 +221,7 @@ export class Simulation {
       recordedAt: new Date().toISOString(),
       monthlyCapacityApplied: this.state.decisionMonthlyCapacity,
       rationale,
+      source: rationale === 'auto_advisor' ? 'auto_advisor' : 'player',
     }
 
     this.state = {
@@ -315,6 +346,8 @@ export class Simulation {
     const completedTurn: TurnRecord = {
       turnNumber: this.state.turnNumber,
       simulationYear: this.state.simulationYear,
+      cycleIndex: this.state.cycleIndex,
+      halfYear: this.state.halfYear,
       lifeStage: this.state.character.lifeStage,
       scenarioId: this.state.scenarioId,
       completedAt: new Date().toISOString(),
@@ -322,16 +355,45 @@ export class Simulation {
     }
 
     const nextTurn = this.state.turnNumber + 1
+    const config = getCampaignConfig()
+    const perMacro = cyclesPerMacroTurn(config)
+    const endCycleIndex = this.state.turnNumber * perMacro
+    const completedYear = simulationYearFromCycle(endCycleIndex)
+    const cycleIndex = cycleIndexForMacroTurn(nextTurn, config)
+    const halfYear = halfYearFromCycle(cycleIndex)
+    const simulationYear = simulationYearFromCycle(cycleIndex)
     const nextStage = lifeStageForTurn(nextTurn)
-    const nextAge = ageForSimulationYear(
+    const nextAge = ageForCampaignYear(
       this.state.startingAge ?? this.state.character.age,
-      nextTurn,
+      simulationYear,
     )
+
+    const fnaSnap = this.state.fnaAfterDecision
+    const checkpoint = fnaSnap
+      ? buildAnnualCheckpoint(
+          completedYear,
+          netWorth(this.state.financialProfile),
+          monthlySurplus(this.state.financialProfile),
+          fnaSnap.emergencyFundProgress,
+          fnaSnap.protectionScore,
+          fnaSnap.goalScore,
+          lifeScore?.overall ?? 0,
+        )
+      : null
+
+    const pendingCalendarEvent = shouldTriggerThirteenthMonth(
+      completedYear,
+      isYearEndCycle(endCycleIndex),
+    )
+      ? 'thirteenth_month'
+      : null
 
     this.state = {
       ...this.state,
       turnNumber: nextTurn,
-      simulationYear: nextTurn,
+      cycleIndex,
+      halfYear,
+      simulationYear,
       character: {
         ...this.state.character,
         age: nextAge,
@@ -347,13 +409,23 @@ export class Simulation {
       consequence: null,
       reflection: null,
       decisionMonthlyCapacity: 0,
+      cycleDeadlineAt: null,
+      pendingCalendarEvent,
+      thirteenthMonthChoice: null,
+      lastAnnualCheckpoint: checkpoint ?? this.state.lastAnnualCheckpoint,
+      annualCheckpoints: checkpoint
+        ? [...(this.state.annualCheckpoints ?? []), checkpoint]
+        : (this.state.annualCheckpoints ?? []),
       turnHistory: [...this.state.turnHistory, completedTurn],
       updatedAt: new Date().toISOString(),
     }
 
     this.record(createDomainEvent(DomainEventType.YEAR_ADVANCED, this.state.id, {
       turnNumber: nextTurn,
-      simulationYear: nextTurn,
+      simulationYear,
+      cycleIndex,
+      halfYear,
+      cycleLabel: formatCycleLabel(cycleIndex),
       age: nextAge,
     }))
     this.record(createDomainEvent(DomainEventType.LIFE_STAGE_CHANGED, this.state.id, {
@@ -415,6 +487,75 @@ export class Simulation {
     return this
   }
 
+  /** Apply Life Blueprint choices before the first planning cycle. */
+  setDreamBoard(choices: DreamBoardGoalChoice[]): Simulation {
+    if (!this.state.dreamBoard) {
+      throw new Error('Dream board not initialized.')
+    }
+    if (this.state.dreamBoard.completedAt) {
+      throw new Error('Dream board is already complete.')
+    }
+
+    const board = completeDreamBoard({
+      ...this.state.dreamBoard,
+      goals: choices,
+    })
+
+    const funding = Object.fromEntries(
+      this.state.goalPortfolio.goals.map((g) => [g.goalId, g.currentFunding]),
+    )
+
+    this.state = {
+      ...this.state,
+      dreamBoard: board,
+      goalPortfolio: {
+        goals: dreamBoardToFinancialGoals(board, funding),
+      },
+      updatedAt: new Date().toISOString(),
+    }
+
+    return this
+  }
+
+  /** Resolve 13th month pay allocation — applies bonus to cash. */
+  resolveThirteenthMonth(allocationId: string): Simulation {
+    if (this.state.pendingCalendarEvent !== 'thirteenth_month') {
+      throw new Error('No pending 13th month pay event.')
+    }
+
+    const bonus = thirteenthMonthBonus(this.state.financialProfile)
+
+    this.state = {
+      ...this.state,
+      financialProfile: {
+        ...this.state.financialProfile,
+        cash: this.state.financialProfile.cash + bonus,
+      },
+      pendingCalendarEvent: 'annual_checkpoint',
+      thirteenthMonthChoice: allocationId,
+      updatedAt: new Date().toISOString(),
+    }
+
+    return this
+  }
+
+  dismissCalendarEvent(): Simulation {
+    this.state = {
+      ...this.state,
+      pendingCalendarEvent: null,
+      updatedAt: new Date().toISOString(),
+    }
+    return this
+  }
+
+  applyAutoAdvisorDecision(): Simulation {
+    if (this.state.phase !== 'decision_pending') {
+      throw new Error('No pending decision for auto-advisor.')
+    }
+    const strategy = autoAdvisorSelectStrategy(this.state.recommendations)
+    return this.recordDecision(strategy, 'auto_advisor')
+  }
+
   private record(event: DomainEvent): void {
     this.uncommittedEvents.push(event)
   }
@@ -426,6 +567,13 @@ export class Simulation {
     currency: CurrencyConfig,
   ): SimulationState {
     const now = new Date().toISOString()
+    const maxTurns = resolveWorkshopMaxTurns()
+    const maxCycles = getMaxCampaignCycles()
+    const dreamBoard = buildDefaultDreamBoard(
+      bundle.character.age,
+      bundle.financialProfile.monthlyIncome,
+    )
+
     return {
       id,
       scenarioId,
@@ -448,8 +596,18 @@ export class Simulation {
       reflection: null,
       decisionMonthlyCapacity: 0,
       turnNumber: 1,
+      cycleIndex: 1,
+      halfYear: 'H1',
       simulationYear: 1,
-      maxTurns: WORKSHOP_MAX_TURNS,
+      maxTurns,
+      maxCycles,
+      dreamBoard,
+      decisionTimerSeconds: getDefaultDecisionTimerSeconds(),
+      cycleDeadlineAt: null,
+      pendingCalendarEvent: null,
+      thirteenthMonthChoice: null,
+      lastAnnualCheckpoint: null,
+      annualCheckpoints: [],
       turnHistory: [],
       hiddenLongTermConsequences: [],
       createdAt: now,

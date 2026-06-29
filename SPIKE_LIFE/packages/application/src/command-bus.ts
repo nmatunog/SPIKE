@@ -12,7 +12,12 @@ import {
   advanceTurn as advanceTurnState,
   createWorkshopSession as createWorkshopSessionState,
   pickSoloArchetypeId,
+  setDreamBoard as setDreamBoardState,
+  resolveThirteenthMonthPay,
+  dismissCalendarEvent as dismissCalendarEventState,
+  applyAutoAdvisorDecision,
 } from '@spike-life/domain'
+import type { DreamBoardGoalChoice } from '@spike-life/domain'
 import { DEFAULT_CURRENCY } from './content/bootstrap.js'
 
 export interface StartCycleResult {
@@ -92,6 +97,48 @@ export class FinancialDecisionCommandBus {
     if (!session) throw new Error(`Session not found: ${sessionId}`)
 
     const updated = submitReflection(session, answers)
+    await this.repository.save(updated)
+    return updated
+  }
+
+  async setDreamBoard(
+    sessionId: string,
+    choices: DreamBoardGoalChoice[],
+  ): Promise<SimulationState> {
+    const session = await this.repository.findById(sessionId)
+    if (!session) throw new Error(`Session not found: ${sessionId}`)
+
+    const updated = setDreamBoardState(session, choices)
+    await this.repository.save(updated)
+    return updated
+  }
+
+  async resolveThirteenthMonth(
+    sessionId: string,
+    allocationId: string,
+  ): Promise<SimulationState> {
+    const session = await this.repository.findById(sessionId)
+    if (!session) throw new Error(`Session not found: ${sessionId}`)
+
+    const updated = resolveThirteenthMonthPay(session, allocationId)
+    await this.repository.save(updated)
+    return updated
+  }
+
+  async dismissCalendarEvent(sessionId: string): Promise<SimulationState> {
+    const session = await this.repository.findById(sessionId)
+    if (!session) throw new Error(`Session not found: ${sessionId}`)
+
+    const updated = dismissCalendarEventState(session)
+    await this.repository.save(updated)
+    return updated
+  }
+
+  async applyAutoAdvisor(sessionId: string): Promise<SimulationState> {
+    const session = await this.repository.findById(sessionId)
+    if (!session) throw new Error(`Session not found: ${sessionId}`)
+
+    const updated = applyAutoAdvisorDecision(session)
     await this.repository.save(updated)
     return updated
   }

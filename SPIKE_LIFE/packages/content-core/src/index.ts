@@ -48,3 +48,12 @@ export type {
   ArchetypeProtectionConfig,
 } from './archetype-types.js'
 export { validateArchetypePackConfig } from './archetype-validation.js'
+export type {
+  CampaignConfig,
+  CalendarEventsConfig,
+  DreamBoardDefaults,
+  DreamBoardGoalDefault,
+  DecisionTimerPreset,
+  ThirteenthMonthAllocation,
+} from './campaign-types.js'
+export { validateCampaignConfig } from './campaign-validation.js'

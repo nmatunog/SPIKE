@@ -9,6 +9,7 @@ import type { SimulationRepository } from './ports/simulation-repository.js'
 import {
   advanceTurn,
   createWorkshopSession,
+  setDreamBoard,
   startPlanningCycle,
   submitDecision,
   submitReflection,
@@ -43,7 +44,10 @@ export async function joinGameRoom(
   const archetypeId = pickRandomArchetypeId(usedArchetypeIds)
 
   const simulationId = simulationIdForPlayer(roomId, playerId)
-  const workshop = createWorkshopSession(simulationId, currency, archetypeId)
+  let workshop = createWorkshopSession(simulationId, currency, archetypeId)
+  if (workshop.dreamBoard?.goals?.length) {
+    workshop = setDreamBoard(workshop, workshop.dreamBoard.goals)
+  }
   await deps.simulationRepo.save(workshop)
 
   const room = GameRoom.fromState(existing).join(

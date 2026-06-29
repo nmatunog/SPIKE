@@ -12,8 +12,9 @@ import {
   submitPlayerReflection,
 } from './game-room-orchestrator.js'
 import { GAME_ROOM_MAX_PLAYERS } from './types.js'
-import { PHILIPPINES_ARCHETYPES } from '@spike-life/content-philippines'
+import { PHILIPPINES_ARCHETYPES, PHILIPPINES_CAMPAIGN } from '@spike-life/content-philippines'
 import { configureArchetypes, resetArchetypeConfig } from './services/archetype-context.js'
+import { configureCampaign, resetCampaignConfig } from './services/campaign-context.js'
 import { TEST_CURRENCY } from './test/currency-fixture.js'
 
 const REFLECTION = [
@@ -58,6 +59,7 @@ function makeDeps() {
 describe('GameRoom orchestrator — 6 players', () => {
   it('6 players complete one shared macro turn in parallel', async () => {
     configureArchetypes(PHILIPPINES_ARCHETYPES)
+    configureCampaign(PHILIPPINES_CAMPAIGN)
     const deps = makeDeps()
     const roomId = 'workshop-6'
 
@@ -97,5 +99,6 @@ describe('GameRoom orchestrator — 6 players', () => {
     }
 
     resetArchetypeConfig()
+    resetCampaignConfig()
   })
 })

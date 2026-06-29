@@ -19,15 +19,25 @@ import SituationSideCard from './gameboard/SituationSideCard.jsx'
 import TurnFlowStepper from './gameboard/TurnFlowStepper.jsx'
 import { impactTagsForSpaceType } from './gameboard/encounter-impact.js'
 import { useGameKeyboard } from '../hooks/useGameKeyboard.js'
+import DreamBoardSetup from './gameboard/DreamBoardSetup.jsx'
+import ThirteenthMonthModal from './gameboard/ThirteenthMonthModal.jsx'
+import AnnualCheckpointCard from './gameboard/AnnualCheckpointCard.jsx'
+import LifeSummaryScreen from './gameboard/LifeSummaryScreen.jsx'
+import OnboardingRulesCard from './gameboard/OnboardingRulesCard.jsx'
 import {
   ensureSessionStarted,
   endBoardTurn,
   getDashboard,
   getLensView,
   getSpatialBoard,
+  getLifeSummary,
   rollDice,
   submitDecision,
   submitReflection,
+  setDreamBoard,
+  resolveThirteenthMonth,
+  dismissCalendarEvent,
+  applyAutoAdvisor,
 } from '../lib/spike-life-client.js'
 import {
   toBoardViewModel,
@@ -52,6 +62,10 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
   const [showAdvisorPrompt, setShowAdvisorPrompt] = useState(false)
   const [pendingAdvisorInsight, setPendingAdvisorInsight] = useState(false)
   const [error, setError] = useState(null)
+  const [lifeSummary, setLifeSummary] = useState(null)
+  const [showRules, setShowRules] = useState(
+    () => !localStorage.getItem('spike-life-rules-seen'),
+  )
 
   const {
     expandedPanel,
@@ -120,6 +134,65 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
       setPlanView(await getLensView('plan'))
     }
   }
+
+  async function handleDreamBoardSubmit(choices) {
+    setBusy(true)
+    setError(null)
+    try {
+      await setDreamBoard(choices)
+      await refresh()
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function handleTimerExpire() {
+    if (!dashboard?.canDecide || busy) return
+    setBusy(true)
+    try {
+      await applyAutoAdvisor()
+      setExpandedPanel('reflect')
+      await refresh()
+      setJourneyView(await getLensView('journey'))
+      setPlanView(await getLensView('plan'))
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function handleThirteenthMonth(allocationId) {
+    setBusy(true)
+    try {
+      await resolveThirteenthMonth(allocationId)
+      await refresh()
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function handleDismissCalendar() {
+    setBusy(true)
+    try {
+      await dismissCalendarEvent()
+      await refresh()
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  useEffect(() => {
+    if (dashboard?.workshopComplete) {
+      getLifeSummary().then(setLifeSummary).catch(() => {})
+    }
+  }, [dashboard?.workshopComplete])
 
   async function handleRollDice() {
     setYearRevealActive(true)
@@ -231,17 +304,64 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
   const gridStatusLabel = (() => {
     if (yearRevealActive) return 'Let\'s see what life brings you this year…'
     if (showEncounterModal || inDecisionPhase) {
-      return board?.selectedDomainLabel
-        ? `${board.selectedDomainLabel} — situation ready`
-        : 'Situation ready'
+      return dashboard?.cycleLabel
+        ? `${dashboard.cycleLabel} — situation ready`
+        : board?.selectedDomainLabel
+          ? `${board.selectedDomainLabel} — situation ready`
+          : 'Situation ready'
     }
     if (canRoll) {
-      return board?.roundNumber > 1
-        ? `Year ${board.roundNumber} — tap Next Year`
-        : 'Tap Next Year to begin'
+      return dashboard?.cycleLabel
+        ? `${dashboard.cycleLabel} — tap Next Year`
+        : board?.roundNumber > 1
+          ? `Year ${board.roundNumber} — tap Next Year`
+          : 'Tap Next Year to begin'
     }
     return 'Life domains'
   })()
+
+  if (loading) {
+    return (
+      <div className="flex min-h-dvh items-center justify-center bg-slate-50">
+        <p className="text-slate-500">Loading SPIKE LIFE…</p>
+      </div>
+    )
+  }
+
+  if (showRules) {
+    return (
+      <div className="flex min-h-dvh items-center justify-center bg-gradient-to-b from-slate-50 to-rose-50/30 p-4">
+        <OnboardingRulesCard
+          onDismiss={() => {
+            localStorage.setItem('spike-life-rules-seen', '1')
+            setShowRules(false)
+          }}
+        />
+      </div>
+    )
+  }
+
+  if (dashboard && !dashboard.dreamBoardComplete && dashboard.dreamBoard) {
+    return (
+      <div className="min-h-dvh bg-gradient-to-b from-slate-50 to-sky-50/40">
+        <DreamBoardSetup
+          dreamBoard={dashboard.dreamBoard}
+          onSubmit={handleDreamBoardSubmit}
+          busy={busy}
+        />
+        {error && <p className="mt-4 text-center text-sm text-red-600">{error}</p>}
+      </div>
+    )
+  }
+
+  if (lifeSummary?.complete) {
+    return (
+      <LifeSummaryScreen
+        summary={lifeSummary}
+        onPlayAgain={() => window.location.reload()}
+      />
+    )
+  }
 
   return (
     <div className="game-shell">
@@ -446,6 +566,7 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
             growView={growView}
             protectView={protectView}
             onDecide={handleDecide}
+            onTimerExpire={handleTimerExpire}
             onSubmitReflection={handleReflection}
             busy={busy}
             error={error}
@@ -467,6 +588,26 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
           handleExpandPanel('protect')
         }}
       />
+
+      {dashboard?.pendingCalendarEvent === 'thirteenth_month' && (
+        <ThirteenthMonthModal
+          allocations={dashboard.thirteenthMonthAllocations}
+          onSelect={handleThirteenthMonth}
+          onDismiss={handleDismissCalendar}
+          busy={busy}
+        />
+      )}
+
+      {dashboard?.pendingCalendarEvent === 'annual_checkpoint' && dashboard.lastAnnualCheckpoint && (
+        <div className="fixed inset-x-0 bottom-24 z-40 flex justify-center px-4 sm:bottom-8">
+          <div className="w-full max-w-md">
+            <AnnualCheckpointCard
+              checkpoint={dashboard.lastAnnualCheckpoint}
+              onContinue={handleDismissCalendar}
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

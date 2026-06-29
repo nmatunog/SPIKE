@@ -1,5 +1,6 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import FnaExplainer from '../gameboard/FnaExplainer.jsx'
+import DecisionTimerRing from '../gameboard/DecisionTimerRing.jsx'
 
 function PriorityBadge({ priority }) {
   const colors = {
@@ -58,6 +59,7 @@ export default function PlanLens({
   onDecide,
   deciding,
   error,
+  onTimerExpire,
   animated = false,
   sections = ['header', 'fna', 'recommendations', 'goals', 'decisions', 'recorded'],
 }) {
@@ -66,8 +68,18 @@ export default function PlanLens({
 
   return (
     <div className="space-y-5">
+      {data.canDecide && data.decisionTimerSeconds > 0 && (
+        <DecisionTimerRing
+          deadlineAt={data.cycleDeadlineAt}
+          totalSeconds={data.decisionTimerSeconds}
+          active={data.canDecide}
+          onExpire={onTimerExpire}
+        />
+      )}
+
       {show('header') && (
         <section>
+          <p className="text-label uppercase tracking-wide text-sky-700">{data.cycleLabel}</p>
           <h2 className="text-title font-semibold text-spike-ink">What are you trying to achieve?</h2>
           <p className="mt-2 text-body text-slate-600">
             Every recommendation below comes from your Financial Needs Analysis—not guesswork.

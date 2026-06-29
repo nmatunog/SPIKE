@@ -76,6 +76,7 @@ export default function ActionDock({
   growView,
   protectView,
   onDecide,
+  onTimerExpire,
   onSubmitReflection,
   busy,
   error,
@@ -103,6 +104,7 @@ export default function ActionDock({
           data={planView.data}
           sections={['decisions']}
           onDecide={canDecide ? onDecide : undefined}
+          onTimerExpire={canDecide ? onTimerExpire : undefined}
           deciding={busy}
           error={error}
           animated

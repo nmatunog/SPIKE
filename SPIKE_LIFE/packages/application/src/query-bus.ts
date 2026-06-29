@@ -4,11 +4,13 @@ import type {
   FnaSummaryView,
   LensId,
   LensView,
+  LifeSummaryView,
 } from './queries/read-models.js'
 import {
   projectDashboard,
   projectFnaSummary,
   projectLensView,
+  projectLifeSummary,
 } from './queries/projections.js'
 
 export class FinancialDecisionQueryBus {
@@ -35,5 +37,11 @@ export class FinancialDecisionQueryBus {
     const session = await this.repository.findById(sessionId)
     if (!session) return null
     return projectLensView(session, lens)
+  }
+
+  async getLifeSummary(sessionId: string): Promise<LifeSummaryView | null> {
+    const session = await this.repository.findById(sessionId)
+    if (!session) return null
+    return projectLifeSummary(session)
   }
 }
