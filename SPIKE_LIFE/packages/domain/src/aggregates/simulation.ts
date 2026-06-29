@@ -1,5 +1,5 @@
 import type { SimulationState, DecisionRecord, TurnRecord } from './simulation-session.js'
-import type { ScenarioId, CyclePhase, DecisionStrategy } from '../types.js'
+import type { ScenarioId, CyclePhase, DecisionStrategy, SessionMode } from '../types.js'
 import type { CurrencyConfig } from '@spike-life/content-core'
 import type { DomainEvent } from '../events/domain-events.js'
 import { DomainEventType, createDomainEvent } from '../events/domain-events.js'
@@ -54,6 +54,12 @@ import {
   simulationYearFromCycle,
 } from '../services/planning-cycle.js'
 import {
+  advanceCyclePosition,
+  completedCycleIndexForTurn,
+  resolveMaxTurns,
+} from '../services/session-mode.js'
+import { allocationToStrategy, getAllocationById } from '../services/calendar-events.js'
+import {
   buildDefaultDreamBoard,
   completeDreamBoard,
   dreamBoardToFinancialGoals,
@@ -79,21 +85,31 @@ export class Simulation {
 
   static createPromotion(id: string, currency: CurrencyConfig): Simulation {
     const bundle = createFreshGraduateBundle()
-    return new Simulation(Simulation.emptyState(id, 'promotion', bundle, currency))
+    return new Simulation(Simulation.emptyState(id, 'promotion', bundle, currency, 'campaign'))
+  }
+
+  static createCampaign(
+    id: string,
+    currency: CurrencyConfig,
+    archetypeId?: string,
+  ): Simulation {
+    const bundle = createArchetypeBundle(archetypeId)
+    return new Simulation(Simulation.emptyState(id, 'promotion', bundle, currency, 'campaign'))
   }
 
   static createWorkshop(
     id: string,
     currency: CurrencyConfig,
     archetypeId?: string,
+    sessionMode: SessionMode = 'workshop_compressed',
   ): Simulation {
     const bundle = createArchetypeBundle(archetypeId)
-    return new Simulation(Simulation.emptyState(id, 'promotion', bundle, currency))
+    return new Simulation(Simulation.emptyState(id, 'promotion', bundle, currency, sessionMode))
   }
 
   static createProtectionStress(id: string, currency: CurrencyConfig): Simulation {
     const bundle = createProtectionStressBundle()
-    return new Simulation(Simulation.emptyState(id, 'protection_stress', bundle, currency))
+    return new Simulation(Simulation.emptyState(id, 'protection_stress', bundle, currency, 'campaign'))
   }
 
   static fromState(state: SimulationState): Simulation {
@@ -331,8 +347,23 @@ export class Simulation {
       )
     }
     if (this.state.turnNumber >= this.state.maxTurns) {
-      throw new Error('Workshop simulation is already complete.')
+      throw new Error('Simulation is already complete.')
     }
+
+    const config = getCampaignConfig()
+    const advanced = advanceCyclePosition(
+      this.state.sessionMode,
+      this.state.turnNumber,
+      this.state.cycleIndex,
+      config,
+    )
+    const endCycleIndex = completedCycleIndexForTurn(
+      this.state.sessionMode,
+      this.state.turnNumber,
+      this.state.cycleIndex,
+      config,
+    )
+    const completedYear = simulationYearFromCycle(endCycleIndex)
 
     const fna = this.state.fnaAfterDecision
     const lifeScore = fna
@@ -354,15 +385,8 @@ export class Simulation {
       lifeScoreOverall: lifeScore?.overall ?? null,
     }
 
-    const nextTurn = this.state.turnNumber + 1
-    const config = getCampaignConfig()
-    const perMacro = cyclesPerMacroTurn(config)
-    const endCycleIndex = this.state.turnNumber * perMacro
-    const completedYear = simulationYearFromCycle(endCycleIndex)
-    const cycleIndex = cycleIndexForMacroTurn(nextTurn, config)
+    const { turnNumber: nextTurn, cycleIndex, simulationYear, lifeStage: nextStage } = advanced
     const halfYear = halfYearFromCycle(cycleIndex)
-    const simulationYear = simulationYearFromCycle(cycleIndex)
-    const nextStage = lifeStageForTurn(nextTurn)
     const nextAge = ageForCampaignYear(
       this.state.startingAge ?? this.state.character.age,
       simulationYear,
@@ -523,17 +547,44 @@ export class Simulation {
       throw new Error('No pending 13th month pay event.')
     }
 
+    const allocation = getAllocationById(allocationId)
+    const strategy = allocationToStrategy(allocation)
     const bonus = thirteenthMonthBonus(this.state.financialProfile)
 
-    this.state = {
-      ...this.state,
-      financialProfile: {
-        ...this.state.financialProfile,
-        cash: this.state.financialProfile.cash + bonus,
-      },
-      pendingCalendarEvent: 'annual_checkpoint',
-      thirteenthMonthChoice: allocationId,
-      updatedAt: new Date().toISOString(),
+    let profile = {
+      ...this.state.financialProfile,
+      cash: this.state.financialProfile.cash + bonus,
+    }
+
+    if (this.state.fnaBeforeDecision) {
+      const consequence = runConsequenceEngine(
+        profile,
+        this.state.protectionPortfolio,
+        this.state.goalPortfolio,
+        strategy,
+        bonus,
+        this.state.fnaBeforeDecision,
+        this.state.recommendations,
+        this.state.scenarioId,
+      )
+      profile = consequence.financialProfile
+      this.state = {
+        ...this.state,
+        financialProfile: profile,
+        protectionPortfolio: consequence.protectionPortfolio,
+        goalPortfolio: consequence.goalPortfolio,
+        pendingCalendarEvent: 'annual_checkpoint',
+        thirteenthMonthChoice: allocationId,
+        updatedAt: new Date().toISOString(),
+      }
+    } else {
+      this.state = {
+        ...this.state,
+        financialProfile: profile,
+        pendingCalendarEvent: 'annual_checkpoint',
+        thirteenthMonthChoice: allocationId,
+        updatedAt: new Date().toISOString(),
+      }
     }
 
     return this
@@ -565,9 +616,10 @@ export class Simulation {
     scenarioId: ScenarioId,
     bundle: ReturnType<typeof createArchetypeBundle>,
     currency: CurrencyConfig,
+    sessionMode: SessionMode = 'campaign',
   ): SimulationState {
     const now = new Date().toISOString()
-    const maxTurns = resolveWorkshopMaxTurns()
+    const maxTurns = resolveMaxTurns(sessionMode)
     const maxCycles = getMaxCampaignCycles()
     const dreamBoard = buildDefaultDreamBoard(
       bundle.character.age,
@@ -577,6 +629,7 @@ export class Simulation {
     return {
       id,
       scenarioId,
+      sessionMode,
       currency,
       startingAge: bundle.character.age,
       character: bundle.character,
@@ -587,6 +640,11 @@ export class Simulation {
       },
       phase: 'created',
       situation: null,
+      selectedDomainId: null,
+      encounterId: null,
+      eventClass: null,
+      domainHistory: [],
+      advisorPausedUntil: null,
       discovery: null,
       fnaBeforeDecision: null,
       fnaAfterDecision: null,

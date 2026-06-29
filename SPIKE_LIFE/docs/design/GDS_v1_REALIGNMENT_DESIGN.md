@@ -1,7 +1,6 @@
 # SPIKE LIFE™ — GDS v1.0 Realignment Technical Design
 
-**Status:** Design (pre-implementation)  
-**Date:** 2026-06-29  
+**Status:** Implemented (2026-06-29)  
 **Authority:** [GDS v1.0](../gdd/GDS_v1.0/SPIKE_LIFE_GDS_v1.0.pdf) · [Gap Analysis](../gdd/GDS_v1_GAP_ANALYSIS.md)  
 **Delivery plan:** [Realignment Phases](../gdd/GDS_v1_REALIGNMENT_PHASES.md)
 
@@ -120,22 +119,22 @@ flowchart TB
 
 Both profiles share the **same Planning Cycle FSM** (§4). They differ only in **how many cycles execute** and **lobby configuration**.
 
-| Field | `campaign` | `workshop` |
-|-------|------------|------------|
-| `sessionMode` | `'campaign'` | `'workshop'` |
+| Field | `campaign` | `workshop_compressed` |
+|-------|------------|----------------------|
+| `sessionMode` | `'campaign'` | `'workshop_compressed'` |
 | Planning cycles played | 20 (`maxCycles`) | 20 logical cycles compressed into 5 macro turns |
 | `turnNumber` range | 1–20 (1:1 with `cycleIndex`) | 1–5 |
 | `cycleIndex` advance | +1 per completed cycle | +4 per macro turn (20 ÷ 5) |
-| Target duration | ~90–120 min (full) | 45–60 min (GDS MVP) |
+| Target duration | ~60–90 min (full GDS) | 45–60 min (classroom) |
 | Dream board | Interactive (solo) / auto-default (workshop) | Auto-default on join |
-| Facilitator | N/A | Required; starts cycles, advances when all done |
-| End condition | `cycleIndex >= maxCycles` | `turnNumber >= maxTurns` |
+| Facilitator | N/A (solo) | Required; selects mode in lobby; default **campaign** |
+| End condition | `cycleIndex >= maxCycles` | `turnNumber >= maxTurns` (compressed) or `cycleIndex >= 20` (campaign) |
 
 ### 3.2 New state fields (SimulationState)
 
 ```typescript
 // Proposed additions to simulation-session.ts
-sessionMode: 'campaign' | 'workshop'
+sessionMode: 'campaign' | 'workshop_compressed'
 selectedDomainId: string | null      // from year-loop this cycle
 encounterId: string | null           // content pack encounter
 eventClass: 'positive' | 'negative' | 'opportunity' | 'crisis' | 'milestone' | null
@@ -542,14 +541,16 @@ Pure function in domain: `computeFinancialHealthBand(fna, profile)` — consumed
 
 ## 11. Multiplayer infrastructure (R7 design only)
 
-### 11.1 Deployment topology
+### 11.1 Deployment topology (Portal embed — locked)
 
 ```text
-portal.1cma.online          → SPIKE Portal (auth, facilitator issuance)
-spike-life.1cma.online      → SPIKE LIFE web (apps/web static)
-api.spike-life.1cma.online  → Hono Worker
-Neon Postgres               → game_rooms, simulations, room_events
+portal.1cma.online/life              → SPIKE LIFE solo campaign
+portal.1cma.online/life/workshop     → Join by game code
+portal.1cma.online/program-coach/life → Facilitator lobby
+Supabase PostgreSQL                  → spike_life_* tables + Realtime
 ```
+
+**Persistence:** Supabase (not Neon or D1) — same Postgres as Portal auth + RLS.
 
 ### 11.2 API surface (draft)
 
@@ -658,15 +659,15 @@ Execute phases **R1 → R2 → R3 → R4 → R5 → R6** before **R7** (infra). 
 
 ---
 
-## 16. Open questions (resolve before R4)
+## 16. Resolved decisions (2026-06-29)
 
-| # | Question | Default if no answer |
-|---|----------|---------------------|
-| Q1 | Full 20-cycle campaign in MVP classroom, or solo-only? | Solo campaign + workshop compressed |
-| Q2 | Facilitator picks scenario during migration, or immediate domain-only? | Domain-only after R3; facilitator starts cycle without scenario picker |
-| Q3 | SPIKE LIFE standalone subdomain vs embedded in Portal? | Standalone `spike-life.1cma.online` |
-| Q4 | Neon vs D1 for game state? | Neon (relational queries for analytics later) |
-| Q5 | Illustrations on encounter cards for MVP? | Text-only cards; illustration URLs in pack post-MVP |
+| # | Question | Decision |
+|---|----------|----------|
+| Q1 | Full 20-cycle campaign in classroom? | **Yes** — default `campaign` mode; facilitator may choose `workshop_compressed` (5 chapters) |
+| Q2 | Facilitator scenario picker? | **Remove after R3** — domain-only `startRoomCycle()` |
+| Q3 | Standalone vs Portal? | **Embed in Portal** (`/life` routes) |
+| Q4 | Neon vs D1? | **Supabase PostgreSQL** — Portal auth, RLS, Realtime, single migration pipeline |
+| Q5 | Illustrations on encounter cards? | Text-only MVP; illustration URLs in pack post-MVP |
 
 ---
 
@@ -680,4 +681,4 @@ Execute phases **R1 → R2 → R3 → R4 → R5 → R6** before **R7** (infra). 
 
 ---
 
-*End of design document. No implementation code should merge until stakeholders confirm §3 session modes, §4 FSM, and §6 encounter schema.*
+*End of design document. Decisions locked 2026-06-29 — implementation in progress per [Realignment Phases](../gdd/GDS_v1_REALIGNMENT_PHASES.md).*

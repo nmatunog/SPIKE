@@ -17,6 +17,8 @@ const SCENARIO_LABELS: Record<string, string> = {
   protection_stress: 'Family Health Concern',
 }
 
+const ACTIVE_PHASES = new Set(['turn_active', 'cycle_active', 'awaiting_calendar', 'processing'])
+
 const STATUS_LABELS: Record<string, string> = {
   joined: 'Ready',
   planning: 'Planning',
@@ -97,28 +99,29 @@ export function projectGameBoard(
     room.slots.length > 0 && room.slots.every((s) => s.status === 'done')
 
   const canAdvanceTurn =
-    room.roomPhase === 'turn_active'
+    ACTIVE_PHASES.has(room.roomPhase)
     && allPlayersDone
     && room.turnNumber < room.maxTurns
 
   const workshopComplete =
-    room.roomPhase === 'workshop_complete'
-    || (room.roomPhase === 'turn_active'
+    room.roomPhase === 'session_complete'
+    || room.roomPhase === 'workshop_complete'
+    || (ACTIVE_PHASES.has(room.roomPhase)
       && allPlayersDone
       && room.turnNumber >= room.maxTurns)
 
   return {
     roomId: room.id,
+    gameCode: room.gameCode,
     facilitatorId: room.facilitatorId,
     roomPhase: room.roomPhase,
+    sessionMode: room.sessionMode,
+    decisionTimerPreset: room.decisionTimerPreset,
+    cycleDeadlineAt: room.cycleDeadlineAt,
     turnNumber: room.turnNumber,
     maxTurns: room.maxTurns,
     lifeStage: room.lifeStage,
     lifeStageLabel: workshopStageLabel(room.lifeStage),
-    sharedScenarioId: room.sharedScenarioId,
-    sharedScenarioLabel: room.sharedScenarioId
-      ? SCENARIO_LABELS[room.sharedScenarioId] ?? room.sharedScenarioId
-      : null,
     joinOpen: room.joinOpen,
     playerCount: room.slots.length,
     maxPlayers: room.maxPlayers,

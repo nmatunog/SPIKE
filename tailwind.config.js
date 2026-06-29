@@ -1,6 +1,11 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  content: [
+    './index.html',
+    './src/**/*.{js,ts,jsx,tsx}',
+    './SPIKE_LIFE/apps/web/src/**/*.{js,jsx,ts,tsx}',
+    './SPIKE_LIFE/packages/ui/src/**/*.{js,jsx,ts,tsx}',
+  ],
   theme: {
     screens: {
       sm: '640px',

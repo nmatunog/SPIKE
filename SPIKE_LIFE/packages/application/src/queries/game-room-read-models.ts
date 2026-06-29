@@ -1,4 +1,4 @@
-import type { LifeStage, PlayerSlotStatus, RoomPhase, ScenarioId } from '@spike-life/domain'
+import type { LifeStage, PlayerSlotStatus, RoomPhase, SessionMode } from '@spike-life/domain'
 import type { BoardStageView } from './read-models.js'
 
 export interface PlayerTokenView {
@@ -19,14 +19,16 @@ export interface PlayerTokenView {
 
 export interface GameBoardView {
   roomId: string
+  gameCode: string
   facilitatorId: string
   roomPhase: RoomPhase
+  sessionMode: SessionMode
+  decisionTimerPreset: string
+  cycleDeadlineAt: string | null
   turnNumber: number
   maxTurns: number
   lifeStage: LifeStage
   lifeStageLabel: string
-  sharedScenarioId: ScenarioId | null
-  sharedScenarioLabel: string | null
   joinOpen: boolean
   playerCount: number
   maxPlayers: number

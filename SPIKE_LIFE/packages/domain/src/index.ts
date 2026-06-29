@@ -6,11 +6,27 @@ export * from './aggregates/simulation-session.js'
 export * from './aggregates/simulation.js'
 export * from './aggregates/game-room.js'
 export * from './ports/game-room-repository.js'
-export * from './game-room-orchestrator.js'
+export {
+  createGameRoom,
+  configureGameRoomLobby,
+  joinGameRoom,
+  startRoomCycle as startRoomPlanningCycle,
+  startRoomTurn,
+  submitPlayerAutoAdvisor,
+  submitPlayerCalendarChoice,
+  submitPlayerDecision,
+  submitPlayerReflection,
+  advanceRoomTurn,
+  getGameRoom,
+  generateGameCode,
+} from './game-room-orchestrator.js'
+export type { GameRoomOrchestratorDeps, CreateRoomOptions } from './game-room-orchestrator.js'
 export * from './gameboard/types.js'
 export * from './gameboard/events/gameboard-events.js'
 export * from './gameboard/aggregates/board.js'
+export * from './ports/encounter-repository.js'
 export * from './gameboard/services/encounter-deck.js'
+export * from './services/game-room-utils.js'
 export {
   DEFAULT_BOARD_SPACES,
   advancePosition,
@@ -18,6 +34,7 @@ export {
   boardSpacesFromConfig,
 } from './gameboard/services/default-board-layout.js'
 export * from './gameboard/ports/board-repository.js'
+export * from './services/situation-resolver.js'
 export * from './board-orchestrator.js'
 export * from './value-objects/money.js'
 export * from './specifications/fresh-graduate.js'
@@ -50,3 +67,6 @@ export * from './services/auto-advisor.js'
 export * from './services/calendar-events.js'
 export * from './services/campaign-life-score.js'
 export * from './financial-decision-engine.js'
+export * from './services/session-mode.js'
+export * from './services/financial-health-band.js'
+export * from './services/planning-cycle-fsm.js'

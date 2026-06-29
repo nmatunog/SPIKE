@@ -28,7 +28,9 @@ flowchart TB
   R3 --> R4[R4 Situation Depth]
   R4 --> R5[R5 Calendar & Year-End]
   R5 --> R6[R6 End Game Ceremony]
-  R6 --> R7[R7 Multiplayer Infra]
+  R6 --> R6[R6 End Game Ceremony]
+  R6 --> P1[P1 Portal Embed]
+  P1 --> R7[R7 Supabase Sync]
   R7 --> R8[R8 UX & Animation]
   R8 --> R9[R9 MVP Gate]
 ```
@@ -42,7 +44,8 @@ flowchart TB
 | **R4** | Situation depth | Vol I Ch 4–5 | 2 sprints | ≥5 playable situations per domain; year-loop drives `presentSituation()` |
 | **R5** | Calendar & year-end | Vol I Ch 3 §23–25 | 0.5 sprint | 13th month allocation applies; H2 seasonal weights |
 | **R6** | End game ceremony | Vol I Ch 2 §23–25; Vol III Ch 13 | 1 sprint | Multi-player Life Score podium, dimension radar, advisor closing |
-| **R7** | Multiplayer infra | Vol III Ch 12; Vol V Ch 20 | 2 sprints | Two browsers, same game code, timer sync, room persistence |
+| **R7** | Multiplayer infra | Vol III Ch 12; Vol V Ch 20 | 1.5 sprints | Supabase persistence + Realtime; cross-device workshop |
+| **P1** | Portal embed | — | 1 sprint | `/life` routes in Portal; Vite aliases; faculty nav |
 | **R8** | UX & animation polish | Vol IV Ch 16–18 | 1 sprint | Domain board in workshop, financial health meter, lobby rules |
 | **R9** | MVP gate | GDS Ch 1 §15, Ch 2 §27 | Ongoing | 45–60 min playtest pass with 4 players |
 

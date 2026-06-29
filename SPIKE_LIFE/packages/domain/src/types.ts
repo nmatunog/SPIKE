@@ -46,6 +46,16 @@ export type CyclePhase =
   | 'reflection_complete'
   | 'cycle_complete'
 
+/** Campaign = 20 cycles; workshop_compressed = 5 macro chapters (4 cycles each). */
+export type SessionMode = 'campaign' | 'workshop_compressed'
+
+export type EventClass =
+  | 'positive'
+  | 'negative'
+  | 'opportunity'
+  | 'crisis'
+  | 'milestone'
+
 export type LifeStage = 'launch' | 'build' | 'grow' | 'lead' | 'legacy'
 
 export type CareerType =
@@ -65,7 +75,14 @@ export type SituationKind = 'income_opportunity' | 'protection_stress'
 export const GAME_ROOM_MIN_PLAYERS = 2
 export const GAME_ROOM_MAX_PLAYERS = 6
 
-export type RoomPhase = 'lobby' | 'turn_active' | 'workshop_complete'
+export type RoomPhase =
+  | 'lobby'
+  | 'turn_active'
+  | 'cycle_active'
+  | 'awaiting_calendar'
+  | 'processing'
+  | 'session_complete'
+  | 'workshop_complete'
 
 export type PlayerSlotStatus =
   | 'joined'

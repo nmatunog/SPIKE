@@ -1,5 +1,6 @@
 import type { CurrencyConfig } from '@spike-life/content-core'
-import type { DecisionStrategy, ScenarioId } from './types.js'
+import type { DecisionStrategy, SessionMode } from './types.js'
+import type { DecisionTimerPreset } from '@spike-life/content-core'
 import type { ReflectionAnswer } from './services/reflection-engine.js'
 import type { SimulationState } from './aggregates/simulation-session.js'
 import type { GameRoomState } from './aggregates/game-room.js'
@@ -8,26 +9,60 @@ import type { GameRoomRepository } from './ports/game-room-repository.js'
 import type { SimulationRepository } from './ports/simulation-repository.js'
 import {
   advanceTurn,
+  applyAutoAdvisorDecision,
   createWorkshopSession,
+  dismissCalendarEvent,
+  resolveThirteenthMonthPay,
   setDreamBoard,
   startPlanningCycle,
+  startRoomCycle as startPlayerCycle,
   submitDecision,
   submitReflection,
 } from './financial-decision-engine.js'
 import { pickRandomArchetypeId } from './services/archetype-selection.js'
+import { generateGameCode } from './services/game-room-utils.js'
+import { timerSecondsFromPreset } from './services/planning-cycle.js'
 
 export interface GameRoomOrchestratorDeps {
   gameRoomRepo: GameRoomRepository
   simulationRepo: SimulationRepository
 }
 
+export interface CreateRoomOptions {
+  maxPlayers?: number
+  sessionMode?: SessionMode
+  decisionTimerPreset?: DecisionTimerPreset
+  gameCode?: string
+}
+
 export function createGameRoom(
   deps: GameRoomOrchestratorDeps,
   roomId: string,
   facilitatorId: string,
+  options?: CreateRoomOptions,
 ): Promise<GameRoomState> {
-  const room = GameRoom.create(roomId, facilitatorId)
+  const room = GameRoom.create(roomId, facilitatorId, options?.gameCode ?? generateGameCode(), {
+    maxPlayers: options?.maxPlayers,
+    sessionMode: options?.sessionMode,
+    decisionTimerPreset: options?.decisionTimerPreset,
+  })
   return deps.gameRoomRepo.save(room.toState()).then(() => room.toState())
+}
+
+export async function configureGameRoomLobby(
+  deps: GameRoomOrchestratorDeps,
+  roomId: string,
+  options: {
+    sessionMode?: SessionMode
+    decisionTimerPreset?: DecisionTimerPreset
+  },
+): Promise<GameRoomState> {
+  const existing = await deps.gameRoomRepo.findById(roomId)
+  if (!existing) throw new Error(`Room not found: ${roomId}`)
+
+  const room = GameRoom.fromState(existing).configureLobby(options)
+  await deps.gameRoomRepo.save(room.toState())
+  return room.toState()
 }
 
 export async function joinGameRoom(
@@ -44,7 +79,16 @@ export async function joinGameRoom(
   const archetypeId = pickRandomArchetypeId(usedArchetypeIds)
 
   const simulationId = simulationIdForPlayer(roomId, playerId)
-  let workshop = createWorkshopSession(simulationId, currency, archetypeId)
+  let workshop = createWorkshopSession(
+    simulationId,
+    currency,
+    archetypeId,
+    existing.sessionMode,
+  )
+  workshop = {
+    ...workshop,
+    decisionTimerSeconds: timerSecondsFromPreset(existing.decisionTimerPreset),
+  }
   if (workshop.dreamBoard?.goals?.length) {
     workshop = setDreamBoard(workshop, workshop.dreamBoard.goals)
   }
@@ -60,25 +104,95 @@ export async function joinGameRoom(
   return room.toState()
 }
 
-export async function startRoomTurn(
+export async function startRoomCycle(
   deps: GameRoomOrchestratorDeps,
   roomId: string,
-  scenarioId: ScenarioId,
 ): Promise<GameRoomState> {
   const existing = await deps.gameRoomRepo.findById(roomId)
   if (!existing) throw new Error(`Room not found: ${roomId}`)
 
-  let room = GameRoom.fromState(existing).startTurn(scenarioId)
+  let room = GameRoom.fromState(existing).startCycle()
 
   for (const slot of room.activeSlots) {
     const sim = await deps.simulationRepo.findById(slot.simulationId)
-    const started = startPlanningCycle(slot.simulationId, scenarioId, sim)
+    const started = startPlayerCycle(slot.simulationId, sim, existing.cycleDeadlineAt)
     await deps.simulationRepo.save(started)
     room = room.syncSlotFromSimulationPhase(slot.playerId, started.phase)
   }
 
   await deps.gameRoomRepo.save(room.toState())
   return room.toState()
+}
+
+/** @deprecated Use startRoomCycle — scenario is domain-driven. */
+export async function startRoomTurn(
+  deps: GameRoomOrchestratorDeps,
+  roomId: string,
+  _scenarioId?: string,
+): Promise<GameRoomState> {
+  return startRoomCycle(deps, roomId)
+}
+
+export async function submitPlayerAutoAdvisor(
+  deps: GameRoomOrchestratorDeps,
+  roomId: string,
+  playerId: string,
+): Promise<SimulationState> {
+  const roomState = await deps.gameRoomRepo.findById(roomId)
+  if (!roomState) throw new Error(`Room not found: ${roomId}`)
+
+  const slot = roomState.slots.find((s) => s.playerId === playerId)
+  if (!slot) throw new Error(`Player not in room: ${playerId}`)
+
+  const sim = await deps.simulationRepo.findById(slot.simulationId)
+  if (!sim) throw new Error(`Simulation not found: ${slot.simulationId}`)
+
+  const updated = applyAutoAdvisorDecision(sim)
+  await deps.simulationRepo.save(updated)
+
+  const room = GameRoom.fromState(roomState)
+    .syncSlotFromSimulationPhase(playerId, updated.phase)
+  await deps.gameRoomRepo.save(room.toState())
+
+  return updated
+}
+
+export async function submitPlayerCalendarChoice(
+  deps: GameRoomOrchestratorDeps,
+  roomId: string,
+  playerId: string,
+  allocationId: string,
+): Promise<SimulationState> {
+  const roomState = await deps.gameRoomRepo.findById(roomId)
+  if (!roomState) throw new Error(`Room not found: ${roomId}`)
+
+  const slot = roomState.slots.find((s) => s.playerId === playerId)
+  if (!slot) throw new Error(`Player not in room: ${playerId}`)
+
+  const sim = await deps.simulationRepo.findById(slot.simulationId)
+  if (!sim) throw new Error(`Simulation not found: ${slot.simulationId}`)
+
+  let updated = resolveThirteenthMonthPay(sim, allocationId)
+  if (updated.pendingCalendarEvent === 'annual_checkpoint') {
+    updated = dismissCalendarEvent(updated)
+  }
+  await deps.simulationRepo.save(updated)
+
+  const anyPending = await Promise.all(
+    roomState.slots.map(async (s) => {
+      const state = s.playerId === playerId
+        ? updated
+        : await deps.simulationRepo.findById(s.simulationId)
+      return state?.pendingCalendarEvent ?? null
+    }),
+  )
+  let room = GameRoom.fromState(roomState)
+  if (anyPending.some(Boolean)) {
+    room = GameRoom.fromState({ ...room.toState(), roomPhase: 'awaiting_calendar' })
+  }
+  await deps.gameRoomRepo.save(room.toState())
+
+  return updated
 }
 
 export async function submitPlayerDecision(
@@ -147,6 +261,9 @@ export async function advanceRoomTurn(
   for (const slot of roomBefore.activeSlots) {
     const sim = await deps.simulationRepo.findById(slot.simulationId)
     if (!sim) throw new Error(`Simulation not found: ${slot.simulationId}`)
+    if (sim.pendingCalendarEvent) {
+      throw new Error('All players must resolve calendar events before advancing.')
+    }
     const advanced = advanceTurn(sim)
     await deps.simulationRepo.save(advanced)
   }
@@ -162,3 +279,5 @@ export async function getGameRoom(
 ): Promise<GameRoomState | null> {
   return deps.gameRoomRepo.findById(roomId)
 }
+
+export { generateGameCode } from './services/game-room-utils.js'

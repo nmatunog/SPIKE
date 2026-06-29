@@ -78,6 +78,9 @@ import {
   MyVenturePortfolioRoute,
   PublicPortfolioPage,
   PortfolioSettingsPage,
+  SpikeLifeSoloPage,
+  SpikeLifeWorkshopPage,
+  SpikeLifeFacilitatorPage,
 } from './routes/lazyPages.js';
 import { InternWorkStatusBanner } from './components/intern/InternWorkStatusBanner.jsx';
 import { InternPendingReflectionBanner } from './components/intern/InternPendingReflectionBanner.jsx';
@@ -1523,6 +1526,28 @@ const SpikeMasterPortal = () => {
       return (
         <LazyRoute label="Loading portfolio…">
           <PublicPortfolioPage />
+        </LazyRoute>
+      );
+    }
+
+    if (path === ROUTES.life) {
+      return (
+        <LazyRoute label="Loading SPIKE LIFE…">
+          <SpikeLifeSoloPage />
+        </LazyRoute>
+      );
+    }
+    if (path === ROUTES.lifeWorkshop) {
+      return (
+        <LazyRoute label="Loading SPIKE LIFE workshop…">
+          <SpikeLifeWorkshopPage />
+        </LazyRoute>
+      );
+    }
+    if (path === ROUTES.programCoachLife) {
+      return (
+        <LazyRoute label="Loading SPIKE LIFE facilitator…">
+          <SpikeLifeFacilitatorPage />
         </LazyRoute>
       );
     }

@@ -57,3 +57,12 @@ export type {
   ThirteenthMonthAllocation,
 } from './campaign-types.js'
 export { validateCampaignConfig } from './campaign-validation.js'
+export type {
+  EncounterEventClass,
+  EncounterPack,
+  EncounterRecord,
+  EncounterScenarioTemplate,
+  EncounterSituationKind,
+  EncounterWeightBands,
+} from './encounter-types.js'
+export { validateEncounterPack } from './encounter-types.js'

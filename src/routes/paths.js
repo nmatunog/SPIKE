@@ -42,6 +42,9 @@ export const ROUTES = {
   adminPortfolioSettings: '/admin/portfolio-settings',
   brandLexicon: '/brand-lexicon',
   facilitatorsReference: '/facilitators-content-reference',
+  life: '/life',
+  lifeWorkshop: '/life/workshop',
+  programCoachLife: '/program-coach/life',
 };
 
 /** Redirect target after onboarding completes — Build Challenge 1 (Ambition). */
@@ -531,6 +534,15 @@ export function matchModulePath(pathname) {
   if (pathname === ROUTES.facilitatorsReference) {
     return ROUTES.facilitatorsReference;
   }
+  if (pathname === ROUTES.lifeWorkshop) {
+    return ROUTES.lifeWorkshop;
+  }
+  if (pathname === ROUTES.programCoachLife) {
+    return ROUTES.programCoachLife;
+  }
+  if (pathname === ROUTES.life) {
+    return ROUTES.life;
+  }
   if (pathname === ROUTES.programCoachSquads || pathname.startsWith(`${ROUTES.programCoachSquads}/`)) {
     return ROUTES.programCoachSquads;
   }
@@ -605,6 +617,12 @@ export function rolesForRoute(pathname) {
     return ['admin', 'superuser', 'faculty'];
   }
   if (pathname === ROUTES.adminPortfolioSettings) return ['admin', 'superuser', 'faculty'];
+  if (pathname === ROUTES.life || pathname === ROUTES.lifeWorkshop) {
+    return ['intern', 'faculty', 'mentor', 'admin', 'superuser'];
+  }
+  if (pathname === ROUTES.programCoachLife) {
+    return ['faculty', 'mentor', 'admin', 'superuser'];
+  }
   if (pathname === ROUTES.playbookWeek2Studio) return ['faculty', 'mentor', 'admin', 'superuser'];
   if (pathname === ROUTES.adminProgramCoachPlaybook) return ['admin', 'superuser', 'faculty'];
   if (pathname === ROUTES.adminMentorPlaybook) return ['admin', 'superuser', 'mentor'];

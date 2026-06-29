@@ -2,15 +2,17 @@ import type {
   LifeStage,
   PlayerSlotStatus,
   RoomPhase,
-  ScenarioId,
+  SessionMode,
 } from '../types.js'
+import type { DecisionTimerPreset } from '@spike-life/content-core'
 import { GAME_ROOM_MAX_PLAYERS, GAME_ROOM_MIN_PLAYERS } from '../types.js'
 import {
-  WORKSHOP_MAX_TURNS,
   lifeStageForTurn,
   workshopStageLabel,
-  resolveWorkshopMaxTurns,
 } from '../services/workshop-progression.js'
+import { resolveMaxTurns } from '../services/session-mode.js'
+import { timerSecondsFromPreset } from '../services/planning-cycle.js'
+import { getCampaignConfig } from '../services/campaign-context.js'
 
 export const PLAYER_TOKEN_COLORS = [
   '#8B0000',
@@ -34,13 +36,16 @@ export interface PlayerSlot {
 
 export interface GameRoomState {
   id: string
+  gameCode: string
   facilitatorId: string
   maxPlayers: number
+  sessionMode: SessionMode
+  decisionTimerPreset: DecisionTimerPreset
   turnNumber: number
   maxTurns: number
   lifeStage: LifeStage
   roomPhase: RoomPhase
-  sharedScenarioId: ScenarioId | null
+  cycleDeadlineAt: string | null
   joinOpen: boolean
   slots: PlayerSlot[]
   createdAt: string
@@ -57,25 +62,57 @@ export class GameRoom {
   static create(
     id: string,
     facilitatorId: string,
-    maxPlayers: number = GAME_ROOM_MAX_PLAYERS,
+    gameCode: string,
+    options?: {
+      maxPlayers?: number
+      sessionMode?: SessionMode
+      decisionTimerPreset?: DecisionTimerPreset
+    },
   ): GameRoom {
     const now = new Date().toISOString()
-    const capped = Math.min(Math.max(1, maxPlayers), GAME_ROOM_MAX_PLAYERS)
+    const capped = Math.min(
+      Math.max(1, options?.maxPlayers ?? GAME_ROOM_MAX_PLAYERS),
+      GAME_ROOM_MAX_PLAYERS,
+    )
+    const sessionMode = options?.sessionMode ?? 'campaign'
+    const config = getCampaignConfig()
+    const timerPreset = options?.decisionTimerPreset ?? config.decisionTimerSeconds
 
     return new GameRoom({
       id,
+      gameCode,
       facilitatorId,
       maxPlayers: capped,
+      sessionMode,
+      decisionTimerPreset: timerPreset,
       turnNumber: 1,
-      maxTurns: resolveWorkshopMaxTurns(),
+      maxTurns: resolveMaxTurns(sessionMode),
       lifeStage: lifeStageForTurn(1),
       roomPhase: 'lobby',
-      sharedScenarioId: null,
+      cycleDeadlineAt: null,
       joinOpen: true,
       slots: [],
       createdAt: now,
       updatedAt: now,
     })
+  }
+
+  configureLobby(options: {
+    sessionMode?: SessionMode
+    decisionTimerPreset?: DecisionTimerPreset
+  }): GameRoom {
+    if (this.state.roomPhase !== 'lobby') {
+      throw new Error('Lobby settings can only change before the session starts.')
+    }
+    const sessionMode = options.sessionMode ?? this.state.sessionMode
+    this.state = {
+      ...this.state,
+      sessionMode,
+      decisionTimerPreset: options.decisionTimerPreset ?? this.state.decisionTimerPreset,
+      maxTurns: resolveMaxTurns(sessionMode),
+      updatedAt: new Date().toISOString(),
+    }
+    return this
   }
 
   static fromState(state: GameRoomState): GameRoom {
@@ -138,15 +175,15 @@ export class GameRoom {
     return this
   }
 
-  startTurn(scenarioId: ScenarioId): GameRoom {
+  startCycle(): GameRoom {
     if (this.state.roomPhase !== 'lobby') {
-      throw new Error('A turn is already in progress.')
+      throw new Error('A cycle is already in progress.')
     }
     if (this.state.turnNumber > this.state.maxTurns) {
-      throw new Error('Workshop is already complete.')
+      throw new Error('Session is already complete.')
     }
     if (this.state.slots.length === 0) {
-      throw new Error('At least one player must join before starting a turn.')
+      throw new Error('At least one player must join before starting a cycle.')
     }
     if (this.state.slots.length < GAME_ROOM_MIN_PLAYERS) {
       throw new Error(
@@ -154,10 +191,15 @@ export class GameRoom {
       )
     }
 
+    const timerSec = timerSecondsFromPreset(this.state.decisionTimerPreset)
+    const deadline = timerSec > 0
+      ? new Date(Date.now() + timerSec * 1000).toISOString()
+      : null
+
     this.state = {
       ...this.state,
-      roomPhase: 'turn_active',
-      sharedScenarioId: scenarioId,
+      roomPhase: 'cycle_active',
+      cycleDeadlineAt: deadline,
       joinOpen: false,
       slots: this.state.slots.map((slot) => ({
         ...slot,
@@ -169,12 +211,17 @@ export class GameRoom {
     return this
   }
 
+  /** @deprecated Use startCycle() — scenario is domain-driven after R3/R4. */
+  startTurn(_scenarioId?: string): GameRoom {
+    return this.startCycle()
+  }
+
   syncSlotFromSimulationPhase(
     playerId: string,
     simulationPhase: string,
   ): GameRoom {
     const slot = this.getSlot(playerId)
-    if (!slot || this.state.roomPhase !== 'turn_active') {
+    if (!slot || (this.state.roomPhase !== 'cycle_active' && this.state.roomPhase !== 'turn_active')) {
       return this
     }
 
@@ -205,33 +252,38 @@ export class GameRoom {
 
   canAdvanceTurn(): boolean {
     return (
-      this.state.roomPhase === 'turn_active'
+      (this.state.roomPhase === 'cycle_active' || this.state.roomPhase === 'turn_active')
       && this.allPlayersDone()
       && this.state.turnNumber < this.state.maxTurns
     )
   }
 
-  isWorkshopComplete(): boolean {
+  isSessionComplete(): boolean {
     return (
-      this.state.roomPhase === 'turn_active'
+      (this.state.roomPhase === 'cycle_active' || this.state.roomPhase === 'turn_active')
       && this.allPlayersDone()
       && this.state.turnNumber >= this.state.maxTurns
     )
+  }
+
+  /** @deprecated Use isSessionComplete() */
+  isWorkshopComplete(): boolean {
+    return this.isSessionComplete()
   }
 
   advanceTurn(): GameRoom {
     if (!this.allPlayersDone()) {
       throw new Error('All players must finish reflection before advancing.')
     }
-    if (this.state.roomPhase !== 'turn_active') {
-      throw new Error('No active turn to advance.')
+    if (this.state.roomPhase !== 'cycle_active' && this.state.roomPhase !== 'turn_active') {
+      throw new Error('No active cycle to advance.')
     }
 
     if (this.state.turnNumber >= this.state.maxTurns) {
       this.state = {
         ...this.state,
-        roomPhase: 'workshop_complete',
-        sharedScenarioId: null,
+        roomPhase: 'session_complete',
+        cycleDeadlineAt: null,
         updatedAt: new Date().toISOString(),
       }
       return this
@@ -242,9 +294,11 @@ export class GameRoom {
     this.state = {
       ...this.state,
       turnNumber: nextTurn,
-      lifeStage: lifeStageForTurn(nextTurn),
+      lifeStage: lifeStageForTurn(
+        Math.min(nextTurn, this.state.sessionMode === 'campaign' ? 5 : nextTurn),
+      ),
       roomPhase: 'lobby',
-      sharedScenarioId: null,
+      cycleDeadlineAt: null,
       slots: this.state.slots.map((slot) => ({
         ...slot,
         status: 'joined',

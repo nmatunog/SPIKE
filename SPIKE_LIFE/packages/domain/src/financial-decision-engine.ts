@@ -4,6 +4,7 @@ import type { DecisionStrategy, ScenarioId } from './types.js'
 import { Simulation } from './aggregates/simulation.js'
 import type { ReflectionAnswer } from './services/reflection-engine.js'
 import { revealDueHiddenConsequences } from './services/long-term-consequence-engine.js'
+import { selectCycleEncounter } from './services/situation-resolver.js'
 
 import type { DreamBoardGoalChoice } from './services/dream-board.js'
 
@@ -24,12 +25,21 @@ export function createPromotionSession(
   return Simulation.createPromotion(sessionId, currency).toState()
 }
 
-export function createWorkshopSession(
+export function createCampaignSession(
   sessionId: string,
   currency: CurrencyConfig,
   archetypeId?: string,
 ): SimulationState {
-  return Simulation.createWorkshop(sessionId, currency, archetypeId).toState()
+  return Simulation.createCampaign(sessionId, currency, archetypeId).toState()
+}
+
+export function createWorkshopSession(
+  sessionId: string,
+  currency: CurrencyConfig,
+  archetypeId?: string,
+  sessionMode: import('./types.js').SessionMode = 'workshop_compressed',
+): SimulationState {
+  return Simulation.createWorkshop(sessionId, currency, archetypeId, sessionMode).toState()
 }
 
 export function createProtectionStressSession(
@@ -138,6 +148,16 @@ export function startPlanningCycle(
   existing?: SimulationState | null,
   currency?: CurrencyConfig,
 ): SimulationState {
+  return startRoomCycle(sessionId, existing, null, scenarioId, currency)
+}
+
+export function startRoomCycle(
+  sessionId: string,
+  existing?: SimulationState | null,
+  cycleDeadlineAt?: string | null,
+  forcedScenarioId?: ScenarioId,
+  currency?: CurrencyConfig,
+): SimulationState {
   const resolvedCurrency = existing?.currency ?? currency
   if (!resolvedCurrency) {
     throw new Error('Currency is required when creating a new simulation session.')
@@ -156,16 +176,45 @@ export function startPlanningCycle(
     throw new Error('Finish the current planning cycle before starting a new scenario.')
   }
 
+  let selectionScenario: ScenarioId = forcedScenarioId ?? 'promotion'
+  let domainId: string | null = null
+  let encounterId: string | null = null
+
+  if (existing) {
+    try {
+      const picked = selectCycleEncounter(existing)
+      selectionScenario = forcedScenarioId ?? picked.scenarioId
+      domainId = picked.domainId
+      encounterId = picked.encounterId
+    } catch {
+      selectionScenario = forcedScenarioId ?? existing.scenarioId
+    }
+  }
+
   let sim: Simulation
   if (!existing) {
-    sim = scenarioId === 'protection_stress'
+    sim = selectionScenario === 'protection_stress'
       ? Simulation.createProtectionStress(sessionId, resolvedCurrency)
       : Simulation.createPromotion(sessionId, resolvedCurrency)
   } else {
-    sim = loadSimulation(existing).assignScenario(scenarioId)
+    sim = loadSimulation(existing).assignScenario(selectionScenario)
+    if (domainId && encounterId) {
+      const state = sim.toState()
+      sim = Simulation.fromState({
+        ...state,
+        selectedDomainId: domainId,
+        encounterId,
+        domainHistory: [...(state.domainHistory ?? []), domainId].slice(-6),
+      })
+    }
   }
 
-  return saveSimulation(sim.presentSituation().completeDiscovery())
+  const withSituation = sim.presentSituation().completeDiscovery()
+  const state = withSituation.toState()
+  return {
+    ...state,
+    cycleDeadlineAt: cycleDeadlineAt ?? state.cycleDeadlineAt,
+  }
 }
 
 export function runPromotionPlanningCycle(

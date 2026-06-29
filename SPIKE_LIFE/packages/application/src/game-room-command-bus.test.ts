@@ -23,15 +23,17 @@ describe('GameRoom CQRS — 6 player workshop', () => {
     const roomId = 'cqrs-room-6'
     await commands.createRoom(roomId, 'facilitator-1')
 
+    await commands.configureLobby(roomId, { sessionMode: 'workshop_compressed' })
+
     for (let i = 1; i <= GAME_ROOM_MAX_PLAYERS; i += 1) {
       await commands.joinRoom(roomId, `player-${i}`, `Player ${i}`)
     }
 
-    await commands.startTurn(roomId, 'promotion')
+    await commands.startCycle(roomId)
 
     let board = await queries.getGameBoard(roomId)
     expect(board?.playerCount).toBe(GAME_ROOM_MAX_PLAYERS)
-    expect(board?.roomPhase).toBe('turn_active')
+    expect(board?.roomPhase).toBe('cycle_active')
     expect(board?.players.every((p) => p.status === 'planning')).toBe(true)
 
     for (let i = 1; i <= GAME_ROOM_MAX_PLAYERS; i += 1) {

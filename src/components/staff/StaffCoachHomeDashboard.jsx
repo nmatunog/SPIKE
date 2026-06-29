@@ -117,6 +117,14 @@ export function StaffCoachHomeDashboard({
                 Preview SPIKE Studio
               </Link>
             ) : null}
+            {role === 'faculty' ? (
+              <Link
+                to={ROUTES.programCoachLife}
+                className="inline-flex min-h-[48px] items-center gap-2 rounded-xl border border-white/25 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+              >
+                SPIKE LIFE workshop
+              </Link>
+            ) : null}
           </div>
           <p className="mt-4 text-xs text-slate-400">
             Estimated program time · {hero.estimatedMinutes} min

@@ -1,6 +1,7 @@
 import type { DecisionStrategy } from '../types.js'
 import type { FinancialProfile } from '../entities/financial-state.js'
 import type { ThirteenthMonthAllocation } from '@spike-life/content-core'
+import { getCalendarEvents } from './campaign-context.js'
 
 export interface AnnualCheckpointSnapshot {
   simulationYear: number
@@ -26,6 +27,16 @@ const CHECKPOINT_INSIGHTS = [
 
 export function thirteenthMonthBonus(profile: FinancialProfile): number {
   return profile.monthlyIncome
+}
+
+export function getAllocationById(allocationId: string): ThirteenthMonthAllocation {
+  const found = getCalendarEvents().thirteenthMonthAllocations.find(
+    (a) => a.id === allocationId,
+  )
+  if (!found) {
+    throw new Error(`Unknown 13th month allocation: ${allocationId}`)
+  }
+  return found
 }
 
 export function allocationToStrategy(

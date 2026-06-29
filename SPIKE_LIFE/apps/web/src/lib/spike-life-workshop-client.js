@@ -9,6 +9,12 @@ import {
   GAME_ROOM_MAX_PLAYERS,
   GAME_ROOM_MIN_PLAYERS,
 } from '@spike-life/application'
+import {
+  computeCampaignLifeSummary,
+  dismissCalendarEvent,
+  GameRoom,
+  getArchetypeLabel,
+} from '@spike-life/domain'
 
 export { GAME_ROOM_MAX_PLAYERS, GAME_ROOM_MIN_PLAYERS }
 
@@ -25,6 +31,25 @@ function requireRoomId() {
     throw new Error('No active game. Create or join a game first.')
   }
   return activeRoomId
+}
+
+async function syncRoomCalendarPhase(roomState, playerId, updatedSim) {
+  const anyPending = await Promise.all(
+    roomState.slots.map(async (slot) => {
+      const state = slot.playerId === playerId
+        ? updatedSim
+        : await simulationRepo.findById(slot.simulationId)
+      return state?.pendingCalendarEvent ?? null
+    }),
+  )
+
+  let room = GameRoom.fromState(roomState)
+  if (anyPending.some(Boolean)) {
+    room = GameRoom.fromState({ ...room.toState(), roomPhase: 'awaiting_calendar' })
+  } else if (roomState.roomPhase === 'awaiting_calendar') {
+    room = GameRoom.fromState({ ...room.toState(), roomPhase: 'cycle_active' })
+  }
+  await gameRoomRepo.save(room.toState())
 }
 
 export function setActiveRoom(roomId) {
@@ -57,8 +82,14 @@ export function slugifyPlayerId(name) {
   return slug || `player-${Date.now()}`
 }
 
-export async function createGame(facilitatorName = 'Facilitator') {
-  let gameCode = generateGameCode()
+export async function createGame(facilitatorName = 'Facilitator', options = {}) {
+  const {
+    sessionMode = 'workshop_compressed',
+    decisionTimerPreset = '10',
+    gameCode: preferredCode,
+  } = options
+
+  let gameCode = preferredCode ? normalizeGameCode(preferredCode) : generateGameCode()
   let roomId = roomIdFromGameCode(gameCode)
 
   for (let attempt = 0; attempt < 8; attempt += 1) {
@@ -69,7 +100,11 @@ export async function createGame(facilitatorName = 'Facilitator') {
   }
 
   const facilitatorId = `fac-${slugifyPlayerId(facilitatorName)}`
-  await roomCommands.createRoom(roomId, facilitatorId)
+  await roomCommands.createRoom(roomId, facilitatorId, {
+    gameCode,
+    sessionMode,
+    decisionTimerPreset,
+  })
   setActiveRoom(roomId)
 
   return {
@@ -77,7 +112,14 @@ export async function createGame(facilitatorName = 'Facilitator') {
     roomId,
     facilitatorId,
     facilitatorName: facilitatorName.trim() || 'Facilitator',
+    sessionMode,
+    decisionTimerPreset,
   }
+}
+
+export async function configureLobby(options) {
+  const roomId = requireRoomId()
+  return roomCommands.configureLobby(roomId, options)
 }
 
 export async function joinGame(gameCode, displayName) {
@@ -129,9 +171,14 @@ export async function getGameBoard() {
   return roomQueries.getGameBoard(roomId)
 }
 
-export async function startRoomTurn(scenarioId) {
+export async function startRoomCycle() {
   const roomId = requireRoomId()
-  return roomCommands.startTurn(roomId, scenarioId)
+  return roomCommands.startCycle(roomId)
+}
+
+/** @deprecated Use startRoomCycle() — scenario is domain-driven. */
+export async function startRoomTurn(_scenarioId) {
+  return startRoomCycle()
 }
 
 export async function advanceRoomTurn() {
@@ -153,14 +200,76 @@ export async function getPlayerLensView(playerId, lens) {
   return playerQueries.getLensView(player.simulationId, lens)
 }
 
+export async function getRoomLifeSummary() {
+  const roomId = requireRoomId()
+  const room = await gameRoomRepo.findById(roomId)
+  if (!room) return null
+
+  const sessions = []
+  for (const slot of room.slots) {
+    const sim = await simulationRepo.findById(slot.simulationId)
+    if (sim) sessions.push(sim)
+  }
+
+  const archetypeLabels = Object.fromEntries(
+    sessions.map((session) => [
+      session.character.archetypeId,
+      getArchetypeLabel(session.character.archetypeId),
+    ]),
+  )
+  const summary = computeCampaignLifeSummary(sessions, archetypeLabels)
+  return {
+    ...summary,
+    players: summary.players.map((player, index) => ({
+      ...player,
+      rank: index + 1,
+    })),
+  }
+}
+
 export async function submitPlayerDecision(playerId, strategy, rationale) {
   const roomId = requireRoomId()
   return roomCommands.submitDecision(roomId, playerId, strategy, rationale)
 }
 
+export async function submitPlayerAutoAdvisor(playerId) {
+  const roomId = requireRoomId()
+  return roomCommands.submitAutoAdvisor(roomId, playerId)
+}
+
+export async function submitPlayerCalendarChoice(playerId, allocationId) {
+  const roomId = requireRoomId()
+  return roomCommands.submitCalendarChoice(roomId, playerId, allocationId)
+}
+
+export async function dismissPlayerCalendarEvent(playerId) {
+  const roomId = requireRoomId()
+  const roomState = await gameRoomRepo.findById(roomId)
+  if (!roomState) throw new Error('Room not found')
+
+  const slot = roomState.slots.find((s) => s.playerId === playerId)
+  if (!slot) throw new Error('Player not in room')
+
+  const sim = await simulationRepo.findById(slot.simulationId)
+  if (!sim) throw new Error('Simulation not found')
+
+  const updated = dismissCalendarEvent(sim)
+  await simulationRepo.save(updated)
+  await syncRoomCalendarPhase(roomState, playerId, updated)
+  return updated
+}
+
 export async function submitPlayerReflection(playerId, answers) {
   const roomId = requireRoomId()
   return roomCommands.submitReflection(roomId, playerId, answers)
+}
+
+export function configureWorkshopPersistence(repos) {
+  if (repos.gameRoomRepo) gameRoomRepo = repos.gameRoomRepo
+  if (repos.simulationRepo) simulationRepo = repos.simulationRepo
+  roomCommands = new GameRoomCommandBus(gameRoomRepo, simulationRepo)
+  roomQueries = new GameRoomQueryBus(gameRoomRepo, simulationRepo)
+  playerQueries = new FinancialDecisionQueryBus(simulationRepo)
 }
 
 export function leaveActiveRoom() {

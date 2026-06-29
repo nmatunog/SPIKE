@@ -7,7 +7,7 @@ import {
   advanceRoomTurn,
   createGameRoom,
   joinGameRoom,
-  startRoomTurn,
+  startRoomCycle,
   submitPlayerDecision,
   submitPlayerReflection,
 } from './game-room-orchestrator.js'
@@ -15,7 +15,10 @@ import { GAME_ROOM_MAX_PLAYERS } from './types.js'
 import { PHILIPPINES_ARCHETYPES, PHILIPPINES_CAMPAIGN } from '@spike-life/content-philippines'
 import { configureArchetypes, resetArchetypeConfig } from './services/archetype-context.js'
 import { configureCampaign, resetCampaignConfig } from './services/campaign-context.js'
+import { configureYearLoop, resetYearLoopConfig } from './gameboard/services/year-loop/year-loop-context.js'
+import { PHILIPPINES_YEAR_LOOP } from '@spike-life/content-philippines'
 import { TEST_CURRENCY } from './test/currency-fixture.js'
+import { bootstrapTestEncounters } from './test/encounter-fixture.js'
 
 const REFLECTION = [
   { promptId: 'a', response: 'Learned to prioritize FNA.' },
@@ -60,18 +63,22 @@ describe('GameRoom orchestrator — 6 players', () => {
   it('6 players complete one shared macro turn in parallel', async () => {
     configureArchetypes(PHILIPPINES_ARCHETYPES)
     configureCampaign(PHILIPPINES_CAMPAIGN)
+    configureYearLoop(PHILIPPINES_YEAR_LOOP)
+    bootstrapTestEncounters()
     const deps = makeDeps()
     const roomId = 'workshop-6'
 
-    await createGameRoom(deps, roomId, 'coach-1')
+    await createGameRoom(deps, roomId, 'coach-1', {
+      sessionMode: 'workshop_compressed',
+    })
 
     for (let i = 1; i <= GAME_ROOM_MAX_PLAYERS; i += 1) {
       await joinGameRoom(deps, roomId, `player-${i}`, `Player ${i}`, TEST_CURRENCY)
     }
 
-    const started = await startRoomTurn(deps, roomId, 'promotion')
+    const started = await startRoomCycle(deps, roomId)
     expect(started.slots).toHaveLength(GAME_ROOM_MAX_PLAYERS)
-    expect(started.roomPhase).toBe('turn_active')
+    expect(started.roomPhase).toBe('cycle_active')
 
     const archetypeIds = started.slots.map((s) => s.archetypeId)
     expect(new Set(archetypeIds).size).toBe(GAME_ROOM_MAX_PLAYERS)
@@ -100,5 +107,6 @@ describe('GameRoom orchestrator — 6 players', () => {
 
     resetArchetypeConfig()
     resetCampaignConfig()
+    resetYearLoopConfig()
   })
 })

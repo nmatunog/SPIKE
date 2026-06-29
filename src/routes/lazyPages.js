@@ -148,3 +148,15 @@ export const PortfolioSettingsPage = lazyNamed(
   () => import('../pages/admin/PortfolioSettingsPage.jsx'),
   'PortfolioSettingsPage',
 );
+export const SpikeLifeSoloPage = lazyNamed(
+  () => import('../pages/life/SpikeLifeSoloPage.jsx'),
+  'SpikeLifeSoloPage',
+);
+export const SpikeLifeWorkshopPage = lazyNamed(
+  () => import('../pages/life/SpikeLifeWorkshopPage.jsx'),
+  'SpikeLifeWorkshopPage',
+);
+export const SpikeLifeFacilitatorPage = lazyNamed(
+  () => import('../pages/life/SpikeLifeFacilitatorPage.jsx'),
+  'SpikeLifeFacilitatorPage',
+);

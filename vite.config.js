@@ -1,5 +1,10 @@
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const lifeRoot = path.resolve(__dirname, 'SPIKE_LIFE')
 
 // https://vite.dev/config/
 const capacitorBuild = process.env.CAPACITOR === 'true'
@@ -8,6 +13,46 @@ export default defineConfig({
   // Relative paths for native WebView; absolute `/` for Cloudflare Pages SPA routing.
   base: capacitorBuild ? './' : '/',
   plugins: [react()],
+  resolve: {
+    alias: [
+      {
+        find: '@spike-life/ui/layout',
+        replacement: path.join(lifeRoot, 'packages/ui/dist/layout/index.js'),
+      },
+      {
+        find: '@spike-life/ui',
+        replacement: path.join(lifeRoot, 'packages/ui/dist/index.js'),
+      },
+      {
+        find: '@spike-life/domain',
+        replacement: path.join(lifeRoot, 'packages/domain/dist/index.js'),
+      },
+      {
+        find: '@spike-life/application',
+        replacement: path.join(lifeRoot, 'packages/application/dist/index.js'),
+      },
+      {
+        find: '@spike-life/content-philippines',
+        replacement: path.join(lifeRoot, 'packages/content-philippines/dist/index.js'),
+      },
+      {
+        find: '@spike-life/infrastructure',
+        replacement: path.join(lifeRoot, 'packages/infrastructure/dist/index.js'),
+      },
+      {
+        find: '@spike-life/content-core',
+        replacement: path.join(lifeRoot, 'packages/content-core/dist/index.js'),
+      },
+      {
+        find: '@spike-life/board-config/board.json',
+        replacement: path.join(lifeRoot, 'packages/board-config/src/board.json'),
+      },
+      {
+        find: '@spike-life/board-config',
+        replacement: path.join(lifeRoot, 'packages/board-config/dist/index.js'),
+      },
+    ],
+  },
   build: {
     chunkSizeWarningLimit: 1200,
     rollupOptions: {

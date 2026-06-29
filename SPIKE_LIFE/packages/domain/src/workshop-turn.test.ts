@@ -8,6 +8,7 @@ import {
   submitReflection,
   setDreamBoard,
   configureCampaign,
+  configureCalendarEvents,
   dismissCalendarEvent,
   resolveThirteenthMonthPay,
   WORKSHOP_MAX_TURNS,
@@ -15,6 +16,7 @@ import {
 } from './index.js'
 import { PHILIPPINES_CAMPAIGN } from '@spike-life/content-philippines'
 import { TEST_CURRENCY } from './test/currency-fixture.js'
+import { bootstrapTestEncounters } from './test/encounter-fixture.js'
 
 const SAMPLE_REFLECTION = [
   { promptId: 'what_happened', response: 'My savings grew and protection improved slightly.' },
@@ -37,6 +39,10 @@ function clearCalendarEvents(session: ReturnType<typeof createWorkshopSession>) 
 
 function readyWorkshopSession(id: string) {
   configureCampaign(PHILIPPINES_CAMPAIGN)
+  if (PHILIPPINES_CAMPAIGN.calendarEvents) {
+    configureCalendarEvents(PHILIPPINES_CAMPAIGN.calendarEvents)
+  }
+  bootstrapTestEncounters()
   let session = createWorkshopSession(id, TEST_CURRENCY)
   if (session.dreamBoard?.goals) {
     session = setDreamBoard(session, session.dreamBoard.goals)
@@ -51,6 +57,7 @@ describe('Workshop macro turns', () => {
     expect(session.turnNumber).toBe(1)
     expect(session.simulationYear).toBe(1)
     expect(session.maxTurns).toBe(WORKSHOP_MAX_TURNS)
+    expect(session.sessionMode).toBe('workshop_compressed')
     expect(session.character.lifeStage).toBe('launch')
     expect(session.character.age).toBe(22)
     expect(session.startingAge).toBe(22)

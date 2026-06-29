@@ -15,7 +15,8 @@
     "build": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@spike-life/domain": "*"
+    "@spike-life/domain": "*",
+    "@supabase/supabase-js": "^2.49.1"
   },
   "devDependencies": {
     "typescript": "^5.8.3"

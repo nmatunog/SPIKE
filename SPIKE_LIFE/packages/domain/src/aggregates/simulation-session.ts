@@ -1,6 +1,6 @@
 import type { CurrencyConfig } from '@spike-life/content-core'
 import type { HiddenLongTermConsequence } from '../services/long-term-consequence-engine.js'
-import type { CyclePhase, DecisionStrategy, LifeStage, ScenarioId } from '../types.js'
+import type { CyclePhase, DecisionStrategy, LifeStage, ScenarioId, SessionMode, EventClass } from '../types.js'
 import type { ConsequenceOutcome } from '../services/consequence-engine.js'
 import type { DiscoverySnapshot } from '../services/discovery-engine.js'
 import type { FnaSnapshot } from '../services/fna-engine.js'
@@ -36,6 +36,7 @@ export interface TurnRecord {
 export interface SimulationState {
   id: string
   scenarioId: ScenarioId
+  sessionMode: SessionMode
   /** Active content-pack currency — drives display formatting in narratives and projections. */
   currency: CurrencyConfig
   /** Age at turn 1 — increments +1 each year (Amendment A5 v1.1). */
@@ -46,6 +47,11 @@ export interface SimulationState {
   goalPortfolio: GoalPortfolio
   phase: CyclePhase
   situation: SituationSnapshot | null
+  selectedDomainId: string | null
+  encounterId: string | null
+  eventClass: EventClass | null
+  domainHistory: string[]
+  advisorPausedUntil: string | null
   discovery: DiscoverySnapshot | null
   fnaBeforeDecision: FnaSnapshot | null
   fnaAfterDecision: FnaSnapshot | null

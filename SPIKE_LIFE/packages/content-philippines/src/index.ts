@@ -16,6 +16,7 @@ import institutionsJson from './data/institutions.json' with { type: 'json' }
 import lifeSituations from './data/life-situations.json' with { type: 'json' }
 import manifest from './data/manifest.json' with { type: 'json' }
 import strings from './data/strings.en-PH.json' with { type: 'json' }
+import encountersJson from './data/encounters/all.json' with { type: 'json' }
 
 const institutions = institutionsJson as InstitutionConfig[]
 const financialTopics = financialTopicsJson as FinancialTopicConfig[]
@@ -46,6 +47,7 @@ export { strings as PHILIPPINES_STRINGS_EN_PH }
 export { yearLoop as PHILIPPINES_YEAR_LOOP }
 export { archetypes as PHILIPPINES_ARCHETYPES }
 export { campaign as PHILIPPINES_CAMPAIGN }
+export { encountersJson as PHILIPPINES_ENCOUNTERS }
 
 /** Default currency/locale for MVP bootstrap */
 export const DEFAULT_CURRENCY = PHILIPPINES_CONTENT_PACK.manifest.currency

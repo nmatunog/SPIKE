@@ -1,0 +1,1192 @@
+[
+  {
+    "id": "career_first_job_1",
+    "domainId": "career",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "First Job",
+    "teaser": "Your first real paycheck — habits formed now compound for decades.",
+    "narrative": "Your first real paycheck — habits formed now compound for decades.",
+    "learningObjective": "First income allocation",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 10,
+      "bands": {
+        "launch": 35,
+        "mid": 2,
+        "late": 0
+      }
+    }
+  },
+  {
+    "id": "career_internship_2",
+    "domainId": "career",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Internship (2)",
+    "teaser": "Short-term income and experience — balance transport, tools, and savings.",
+    "narrative": "Short-term income and experience — balance transport, tools, and savings.",
+    "learningObjective": "Early career cash flow",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 9,
+      "bands": {
+        "launch": 25,
+        "mid": 3,
+        "late": 0
+      }
+    }
+  },
+  {
+    "id": "career_job_offer_3",
+    "domainId": "career",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Job Offer (3)",
+    "teaser": "A new employer — compare pay, benefits, and commute before you leap.",
+    "narrative": "A new employer — compare pay, benefits, and commute before you leap.",
+    "learningObjective": "Opportunity cost of job changes",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 8,
+      "bands": {
+        "launch": 20,
+        "mid": 15,
+        "late": 5
+      }
+    }
+  },
+  {
+    "id": "career_promotion_4",
+    "domainId": "career",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Promotion (4)",
+    "teaser": "A career lift changes your income — how will you allocate it?",
+    "narrative": "A career lift changes your income — how will you allocate it?",
+    "learningObjective": "Income allocation after a raise",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 7,
+      "bands": {
+        "launch": 15,
+        "mid": 25,
+        "late": 5
+      }
+    }
+  },
+  {
+    "id": "career_executive_promotion_5",
+    "domainId": "career",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Executive Promotion (5)",
+    "teaser": "Leadership role, higher pay — and higher stakes for protection and tax planning.",
+    "narrative": "Leadership role, higher pay — and higher stakes for protection and tax planning.",
+    "learningObjective": "High-income planning",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 6,
+      "bands": {
+        "launch": 0,
+        "mid": 10,
+        "late": 25
+      }
+    }
+  },
+  {
+    "id": "business_business_opportunity_1",
+    "domainId": "business",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Business Opportunity",
+    "teaser": "A side venture opens — capital, risk, and cash flow trade-offs.",
+    "narrative": "A side venture opens — capital, risk, and cash flow trade-offs.",
+    "learningObjective": "Entrepreneurial cash flow",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 10,
+      "bands": {
+        "launch": 15,
+        "mid": 20,
+        "late": 12
+      }
+    }
+  },
+  {
+    "id": "business_business_opportunity_2",
+    "domainId": "business",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Business Opportunity (2)",
+    "teaser": "A side venture opens — capital, risk, and cash flow trade-offs.",
+    "narrative": "A side venture opens — capital, risk, and cash flow trade-offs.",
+    "learningObjective": "Entrepreneurial cash flow",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 9,
+      "bands": {
+        "launch": 15,
+        "mid": 20,
+        "late": 12
+      }
+    }
+  },
+  {
+    "id": "business_business_opportunity_3",
+    "domainId": "business",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Business Opportunity (3)",
+    "teaser": "A side venture opens — capital, risk, and cash flow trade-offs.",
+    "narrative": "A side venture opens — capital, risk, and cash flow trade-offs.",
+    "learningObjective": "Entrepreneurial cash flow",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 8,
+      "bands": {
+        "launch": 15,
+        "mid": 20,
+        "late": 12
+      }
+    }
+  },
+  {
+    "id": "business_business_opportunity_4",
+    "domainId": "business",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Business Opportunity (4)",
+    "teaser": "A side venture opens — capital, risk, and cash flow trade-offs.",
+    "narrative": "A side venture opens — capital, risk, and cash flow trade-offs.",
+    "learningObjective": "Entrepreneurial cash flow",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 7,
+      "bands": {
+        "launch": 15,
+        "mid": 20,
+        "late": 12
+      }
+    }
+  },
+  {
+    "id": "business_business_opportunity_5",
+    "domainId": "business",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Business Opportunity (5)",
+    "teaser": "A side venture opens — capital, risk, and cash flow trade-offs.",
+    "narrative": "A side venture opens — capital, risk, and cash flow trade-offs.",
+    "learningObjective": "Entrepreneurial cash flow",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 6,
+      "bands": {
+        "launch": 15,
+        "mid": 20,
+        "late": 12
+      }
+    }
+  },
+  {
+    "id": "income_finance_salary_increase_1",
+    "domainId": "income_finance",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Salary Increase",
+    "teaser": "Your paycheck grows. Lifestyle creep or intentional planning?",
+    "narrative": "Your paycheck grows. Lifestyle creep or intentional planning?",
+    "learningObjective": "Lifestyle discipline vs savings",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 10,
+      "bands": {
+        "launch": 15,
+        "mid": 20,
+        "late": 8
+      }
+    }
+  },
+  {
+    "id": "income_finance_emergency_fund_2",
+    "domainId": "income_finance",
+    "eventClass": "crisis",
+    "intensity": 2,
+    "title": "Emergency Fund Gap (2)",
+    "teaser": "Unexpected expenses expose how many months you can survive without income.",
+    "narrative": "Unexpected expenses expose how many months you can survive without income.",
+    "learningObjective": "Liquidity and emergency reserves",
+    "scenarioTemplate": "protection_stress",
+    "situationKind": "protection_stress",
+    "weights": {
+      "base": 9,
+      "bands": {
+        "launch": 25,
+        "mid": 15,
+        "late": 10
+      }
+    }
+  },
+  {
+    "id": "income_finance_credit_decision_3",
+    "domainId": "income_finance",
+    "eventClass": "crisis",
+    "intensity": 2,
+    "title": "Credit Decision (3)",
+    "teaser": "A bank offer arrives — understand interest, fees, and your capacity to repay.",
+    "narrative": "A bank offer arrives — understand interest, fees, and your capacity to repay.",
+    "learningObjective": "Responsible borrowing",
+    "scenarioTemplate": "protection_stress",
+    "situationKind": "protection_stress",
+    "weights": {
+      "base": 8,
+      "bands": {
+        "launch": 20,
+        "mid": 15,
+        "late": 8
+      }
+    }
+  },
+  {
+    "id": "income_finance_inflation_4",
+    "domainId": "income_finance",
+    "eventClass": "crisis",
+    "intensity": 2,
+    "title": "Inflation (4)",
+    "teaser": "Purchasing power erodes — adjust spending and protection.",
+    "narrative": "Purchasing power erodes — adjust spending and protection.",
+    "learningObjective": "Real vs nominal planning",
+    "scenarioTemplate": "protection_stress",
+    "situationKind": "protection_stress",
+    "weights": {
+      "base": 7,
+      "bands": {
+        "launch": 10,
+        "mid": 15,
+        "late": 12
+      }
+    }
+  },
+  {
+    "id": "income_finance_bonus_5",
+    "domainId": "income_finance",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Bonus Windfall (5)",
+    "teaser": "Unexpected cash — debt, goals, or lifestyle?",
+    "narrative": "Unexpected cash — debt, goals, or lifestyle?",
+    "learningObjective": "Windfall allocation",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 6,
+      "bands": {
+        "launch": 12,
+        "mid": 15,
+        "late": 10
+      }
+    }
+  },
+  {
+    "id": "family_marriage_1",
+    "domainId": "family",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Marriage",
+    "teaser": "Shared goals and protection needs enter the picture.",
+    "narrative": "Shared goals and protection needs enter the picture.",
+    "learningObjective": "Family financial planning",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 10,
+      "bands": {
+        "launch": 8,
+        "mid": 25,
+        "late": 10
+      }
+    }
+  },
+  {
+    "id": "family_relationship_finances_2",
+    "domainId": "family",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Relationship Finances (2)",
+    "teaser": "Money conversations with a partner or family — align values and accounts.",
+    "narrative": "Money conversations with a partner or family — align values and accounts.",
+    "learningObjective": "Shared financial goals",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 9,
+      "bands": {
+        "launch": 12,
+        "mid": 20,
+        "late": 10
+      }
+    }
+  },
+  {
+    "id": "family_marriage_3",
+    "domainId": "family",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Marriage (3)",
+    "teaser": "Shared goals and protection needs enter the picture.",
+    "narrative": "Shared goals and protection needs enter the picture.",
+    "learningObjective": "Family financial planning",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 8,
+      "bands": {
+        "launch": 8,
+        "mid": 25,
+        "late": 10
+      }
+    }
+  },
+  {
+    "id": "family_relationship_finances_4",
+    "domainId": "family",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Relationship Finances (4)",
+    "teaser": "Money conversations with a partner or family — align values and accounts.",
+    "narrative": "Money conversations with a partner or family — align values and accounts.",
+    "learningObjective": "Shared financial goals",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 7,
+      "bands": {
+        "launch": 12,
+        "mid": 20,
+        "late": 10
+      }
+    }
+  },
+  {
+    "id": "family_marriage_5",
+    "domainId": "family",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Marriage (5)",
+    "teaser": "Shared goals and protection needs enter the picture.",
+    "narrative": "Shared goals and protection needs enter the picture.",
+    "learningObjective": "Family financial planning",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 6,
+      "bands": {
+        "launch": 8,
+        "mid": 25,
+        "late": 10
+      }
+    }
+  },
+  {
+    "id": "health_medical_expense_1",
+    "domainId": "health",
+    "eventClass": "crisis",
+    "intensity": 2,
+    "title": "Medical Expense",
+    "teaser": "Health costs surface — protection gaps matter.",
+    "narrative": "Health costs surface — protection gaps matter.",
+    "learningObjective": "Health protection planning",
+    "scenarioTemplate": "protection_stress",
+    "situationKind": "protection_stress",
+    "weights": {
+      "base": 10
+    }
+  },
+  {
+    "id": "health_annual_checkup_2",
+    "domainId": "health",
+    "eventClass": "crisis",
+    "intensity": 2,
+    "title": "Annual Checkup (2)",
+    "teaser": "Routine care reveals small gaps in your health budget and coverage.",
+    "narrative": "Routine care reveals small gaps in your health budget and coverage.",
+    "learningObjective": "Preventive care vs cash flow",
+    "scenarioTemplate": "protection_stress",
+    "situationKind": "protection_stress",
+    "weights": {
+      "base": 9,
+      "bands": {
+        "launch": 15,
+        "mid": 20,
+        "late": 18
+      }
+    }
+  },
+  {
+    "id": "health_minor_injury_3",
+    "domainId": "health",
+    "eventClass": "crisis",
+    "intensity": 2,
+    "title": "Minor Injury (3)",
+    "teaser": "An accident this year — out-of-pocket costs and time off work add up.",
+    "narrative": "An accident this year — out-of-pocket costs and time off work add up.",
+    "learningObjective": "Health emergency readiness",
+    "scenarioTemplate": "protection_stress",
+    "situationKind": "protection_stress",
+    "weights": {
+      "base": 8,
+      "bands": {
+        "launch": 20,
+        "mid": 18,
+        "late": 15
+      }
+    }
+  },
+  {
+    "id": "health_hospitalization_4",
+    "domainId": "health",
+    "eventClass": "crisis",
+    "intensity": 2,
+    "title": "Hospitalization (4)",
+    "teaser": "A serious health event tests your savings, HMO, and family plan.",
+    "narrative": "A serious health event tests your savings, HMO, and family plan.",
+    "learningObjective": "Major medical protection",
+    "scenarioTemplate": "protection_stress",
+    "situationKind": "protection_stress",
+    "weights": {
+      "base": 7,
+      "bands": {
+        "launch": 8,
+        "mid": 15,
+        "late": 25
+      }
+    }
+  },
+  {
+    "id": "health_medical_expense_5",
+    "domainId": "health",
+    "eventClass": "crisis",
+    "intensity": 2,
+    "title": "Medical Expense (5)",
+    "teaser": "Health costs surface — protection gaps matter.",
+    "narrative": "Health costs surface — protection gaps matter.",
+    "learningObjective": "Health protection planning",
+    "scenarioTemplate": "protection_stress",
+    "situationKind": "protection_stress",
+    "weights": {
+      "base": 6
+    }
+  },
+  {
+    "id": "housing_first_home_1",
+    "domainId": "housing",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "First Home",
+    "teaser": "Down payment, loan terms, and monthly housing cost enter the picture.",
+    "narrative": "Down payment, loan terms, and monthly housing cost enter the picture.",
+    "learningObjective": "Housing affordability",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 10,
+      "bands": {
+        "launch": 20,
+        "mid": 15,
+        "late": 5
+      }
+    }
+  },
+  {
+    "id": "housing_rent_increase_2",
+    "domainId": "housing",
+    "eventClass": "crisis",
+    "intensity": 2,
+    "title": "Rent Increase (2)",
+    "teaser": "Landlord raises rent — rebalance cash flow or rethink location.",
+    "narrative": "Landlord raises rent — rebalance cash flow or rethink location.",
+    "learningObjective": "Housing cost shocks",
+    "scenarioTemplate": "protection_stress",
+    "situationKind": "protection_stress",
+    "weights": {
+      "base": 9,
+      "bands": {
+        "launch": 25,
+        "mid": 20,
+        "late": 10
+      }
+    }
+  },
+  {
+    "id": "housing_pagibig_loan_3",
+    "domainId": "housing",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Pag-IBIG Housing Loan (3)",
+    "teaser": "Government-backed housing finance — amortization vs other goals.",
+    "narrative": "Government-backed housing finance — amortization vs other goals.",
+    "learningObjective": "Long-term housing debt",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 8,
+      "bands": {
+        "launch": 10,
+        "mid": 25,
+        "late": 12
+      }
+    }
+  },
+  {
+    "id": "housing_first_home_4",
+    "domainId": "housing",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "First Home (4)",
+    "teaser": "Down payment, loan terms, and monthly housing cost enter the picture.",
+    "narrative": "Down payment, loan terms, and monthly housing cost enter the picture.",
+    "learningObjective": "Housing affordability",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 7,
+      "bands": {
+        "launch": 20,
+        "mid": 15,
+        "late": 5
+      }
+    }
+  },
+  {
+    "id": "housing_rent_increase_5",
+    "domainId": "housing",
+    "eventClass": "crisis",
+    "intensity": 2,
+    "title": "Rent Increase (5)",
+    "teaser": "Landlord raises rent — rebalance cash flow or rethink location.",
+    "narrative": "Landlord raises rent — rebalance cash flow or rethink location.",
+    "learningObjective": "Housing cost shocks",
+    "scenarioTemplate": "protection_stress",
+    "situationKind": "protection_stress",
+    "weights": {
+      "base": 6,
+      "bands": {
+        "launch": 25,
+        "mid": 20,
+        "late": 10
+      }
+    }
+  },
+  {
+    "id": "education_education_1",
+    "domainId": "education",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Education Investment",
+    "teaser": "Upskilling costs compete with other goals.",
+    "narrative": "Upskilling costs compete with other goals.",
+    "learningObjective": "Education goal funding",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 10,
+      "bands": {
+        "launch": 30,
+        "mid": 10,
+        "late": 3
+      }
+    }
+  },
+  {
+    "id": "education_education_2",
+    "domainId": "education",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Education Investment (2)",
+    "teaser": "Upskilling costs compete with other goals.",
+    "narrative": "Upskilling costs compete with other goals.",
+    "learningObjective": "Education goal funding",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 9,
+      "bands": {
+        "launch": 30,
+        "mid": 10,
+        "late": 3
+      }
+    }
+  },
+  {
+    "id": "education_education_3",
+    "domainId": "education",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Education Investment (3)",
+    "teaser": "Upskilling costs compete with other goals.",
+    "narrative": "Upskilling costs compete with other goals.",
+    "learningObjective": "Education goal funding",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 8,
+      "bands": {
+        "launch": 30,
+        "mid": 10,
+        "late": 3
+      }
+    }
+  },
+  {
+    "id": "education_education_4",
+    "domainId": "education",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Education Investment (4)",
+    "teaser": "Upskilling costs compete with other goals.",
+    "narrative": "Upskilling costs compete with other goals.",
+    "learningObjective": "Education goal funding",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 7,
+      "bands": {
+        "launch": 30,
+        "mid": 10,
+        "late": 3
+      }
+    }
+  },
+  {
+    "id": "education_education_5",
+    "domainId": "education",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Education Investment (5)",
+    "teaser": "Upskilling costs compete with other goals.",
+    "narrative": "Upskilling costs compete with other goals.",
+    "learningObjective": "Education goal funding",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 6,
+      "bands": {
+        "launch": 30,
+        "mid": 10,
+        "late": 3
+      }
+    }
+  },
+  {
+    "id": "lifestyle_vehicle_breakdown_1",
+    "domainId": "lifestyle",
+    "eventClass": "crisis",
+    "intensity": 2,
+    "title": "Vehicle Breakdown",
+    "teaser": "An unexpected repair strains this month’s budget.",
+    "narrative": "An unexpected repair strains this month’s budget.",
+    "learningObjective": "Emergency fund readiness",
+    "scenarioTemplate": "protection_stress",
+    "situationKind": "protection_stress",
+    "weights": {
+      "base": 10,
+      "bands": {
+        "launch": 10,
+        "mid": 12,
+        "late": 8
+      }
+    }
+  },
+  {
+    "id": "lifestyle_rest_2",
+    "domainId": "lifestyle",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Rest & Recharge (2)",
+    "teaser": "A quieter season — maintain discipline without new income.",
+    "narrative": "A quieter season — maintain discipline without new income.",
+    "learningObjective": "Maintaining financial habits",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 9,
+      "bands": {
+        "launch": 10,
+        "mid": 8,
+        "late": 10
+      }
+    }
+  },
+  {
+    "id": "lifestyle_vehicle_breakdown_3",
+    "domainId": "lifestyle",
+    "eventClass": "crisis",
+    "intensity": 2,
+    "title": "Vehicle Breakdown (3)",
+    "teaser": "An unexpected repair strains this month’s budget.",
+    "narrative": "An unexpected repair strains this month’s budget.",
+    "learningObjective": "Emergency fund readiness",
+    "scenarioTemplate": "protection_stress",
+    "situationKind": "protection_stress",
+    "weights": {
+      "base": 8,
+      "bands": {
+        "launch": 10,
+        "mid": 12,
+        "late": 8
+      }
+    }
+  },
+  {
+    "id": "lifestyle_rest_4",
+    "domainId": "lifestyle",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Rest & Recharge (4)",
+    "teaser": "A quieter season — maintain discipline without new income.",
+    "narrative": "A quieter season — maintain discipline without new income.",
+    "learningObjective": "Maintaining financial habits",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 7,
+      "bands": {
+        "launch": 10,
+        "mid": 8,
+        "late": 10
+      }
+    }
+  },
+  {
+    "id": "lifestyle_vehicle_breakdown_5",
+    "domainId": "lifestyle",
+    "eventClass": "crisis",
+    "intensity": 2,
+    "title": "Vehicle Breakdown (5)",
+    "teaser": "An unexpected repair strains this month’s budget.",
+    "narrative": "An unexpected repair strains this month’s budget.",
+    "learningObjective": "Emergency fund readiness",
+    "scenarioTemplate": "protection_stress",
+    "situationKind": "protection_stress",
+    "weights": {
+      "base": 6,
+      "bands": {
+        "launch": 10,
+        "mid": 12,
+        "late": 8
+      }
+    }
+  },
+  {
+    "id": "community_community_1",
+    "domainId": "community",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Community Giving",
+    "teaser": "Generosity meets budget — plan giving intentionally.",
+    "narrative": "Generosity meets budget — plan giving intentionally.",
+    "learningObjective": "Values-based budgeting",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 10,
+      "bands": {
+        "launch": 10,
+        "mid": 12,
+        "late": 15
+      }
+    }
+  },
+  {
+    "id": "community_community_2",
+    "domainId": "community",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Community Giving (2)",
+    "teaser": "Generosity meets budget — plan giving intentionally.",
+    "narrative": "Generosity meets budget — plan giving intentionally.",
+    "learningObjective": "Values-based budgeting",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 9,
+      "bands": {
+        "launch": 10,
+        "mid": 12,
+        "late": 15
+      }
+    }
+  },
+  {
+    "id": "community_community_3",
+    "domainId": "community",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Community Giving (3)",
+    "teaser": "Generosity meets budget — plan giving intentionally.",
+    "narrative": "Generosity meets budget — plan giving intentionally.",
+    "learningObjective": "Values-based budgeting",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 8,
+      "bands": {
+        "launch": 10,
+        "mid": 12,
+        "late": 15
+      }
+    }
+  },
+  {
+    "id": "community_community_4",
+    "domainId": "community",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Community Giving (4)",
+    "teaser": "Generosity meets budget — plan giving intentionally.",
+    "narrative": "Generosity meets budget — plan giving intentionally.",
+    "learningObjective": "Values-based budgeting",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 7,
+      "bands": {
+        "launch": 10,
+        "mid": 12,
+        "late": 15
+      }
+    }
+  },
+  {
+    "id": "community_community_5",
+    "domainId": "community",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Community Giving (5)",
+    "teaser": "Generosity meets budget — plan giving intentionally.",
+    "narrative": "Generosity meets budget — plan giving intentionally.",
+    "learningObjective": "Values-based budgeting",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 6,
+      "bands": {
+        "launch": 10,
+        "mid": 12,
+        "late": 15
+      }
+    }
+  },
+  {
+    "id": "government_tax_season_1",
+    "domainId": "government",
+    "eventClass": "crisis",
+    "intensity": 2,
+    "title": "Taxes & BIR Filing",
+    "teaser": "Annual tax compliance — deductions, refunds, and cash timing.",
+    "narrative": "Annual tax compliance — deductions, refunds, and cash timing.",
+    "learningObjective": "Tax planning basics",
+    "scenarioTemplate": "protection_stress",
+    "situationKind": "protection_stress",
+    "weights": {
+      "base": 10,
+      "bands": {
+        "launch": 8,
+        "mid": 15,
+        "late": 12
+      }
+    }
+  },
+  {
+    "id": "government_tax_season_2",
+    "domainId": "government",
+    "eventClass": "crisis",
+    "intensity": 2,
+    "title": "Taxes & BIR Filing (2)",
+    "teaser": "Annual tax compliance — deductions, refunds, and cash timing.",
+    "narrative": "Annual tax compliance — deductions, refunds, and cash timing.",
+    "learningObjective": "Tax planning basics",
+    "scenarioTemplate": "protection_stress",
+    "situationKind": "protection_stress",
+    "weights": {
+      "base": 9,
+      "bands": {
+        "launch": 8,
+        "mid": 15,
+        "late": 12
+      }
+    }
+  },
+  {
+    "id": "government_tax_season_3",
+    "domainId": "government",
+    "eventClass": "crisis",
+    "intensity": 2,
+    "title": "Taxes & BIR Filing (3)",
+    "teaser": "Annual tax compliance — deductions, refunds, and cash timing.",
+    "narrative": "Annual tax compliance — deductions, refunds, and cash timing.",
+    "learningObjective": "Tax planning basics",
+    "scenarioTemplate": "protection_stress",
+    "situationKind": "protection_stress",
+    "weights": {
+      "base": 8,
+      "bands": {
+        "launch": 8,
+        "mid": 15,
+        "late": 12
+      }
+    }
+  },
+  {
+    "id": "government_tax_season_4",
+    "domainId": "government",
+    "eventClass": "crisis",
+    "intensity": 2,
+    "title": "Taxes & BIR Filing (4)",
+    "teaser": "Annual tax compliance — deductions, refunds, and cash timing.",
+    "narrative": "Annual tax compliance — deductions, refunds, and cash timing.",
+    "learningObjective": "Tax planning basics",
+    "scenarioTemplate": "protection_stress",
+    "situationKind": "protection_stress",
+    "weights": {
+      "base": 7,
+      "bands": {
+        "launch": 8,
+        "mid": 15,
+        "late": 12
+      }
+    }
+  },
+  {
+    "id": "government_tax_season_5",
+    "domainId": "government",
+    "eventClass": "crisis",
+    "intensity": 2,
+    "title": "Taxes & BIR Filing (5)",
+    "teaser": "Annual tax compliance — deductions, refunds, and cash timing.",
+    "narrative": "Annual tax compliance — deductions, refunds, and cash timing.",
+    "learningObjective": "Tax planning basics",
+    "scenarioTemplate": "protection_stress",
+    "situationKind": "protection_stress",
+    "weights": {
+      "base": 6,
+      "bands": {
+        "launch": 8,
+        "mid": 15,
+        "late": 12
+      }
+    }
+  },
+  {
+    "id": "investment_economic_boom_1",
+    "domainId": "investment",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Economic Boom",
+    "teaser": "Markets rise — opportunity with discipline.",
+    "narrative": "Markets rise — opportunity with discipline.",
+    "learningObjective": "Goal acceleration",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 10,
+      "bands": {
+        "launch": 8,
+        "mid": 15,
+        "late": 12
+      }
+    }
+  },
+  {
+    "id": "investment_investment_2",
+    "domainId": "investment",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Investment Review (2)",
+    "teaser": "Portfolio check-in — growth vs protection balance.",
+    "narrative": "Portfolio check-in — growth vs protection balance.",
+    "learningObjective": "Wealth building discipline",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 9,
+      "bands": {
+        "launch": 5,
+        "mid": 15,
+        "late": 28
+      }
+    }
+  },
+  {
+    "id": "investment_economic_boom_3",
+    "domainId": "investment",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Economic Boom (3)",
+    "teaser": "Markets rise — opportunity with discipline.",
+    "narrative": "Markets rise — opportunity with discipline.",
+    "learningObjective": "Goal acceleration",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 8,
+      "bands": {
+        "launch": 8,
+        "mid": 15,
+        "late": 12
+      }
+    }
+  },
+  {
+    "id": "investment_investment_4",
+    "domainId": "investment",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Investment Review (4)",
+    "teaser": "Portfolio check-in — growth vs protection balance.",
+    "narrative": "Portfolio check-in — growth vs protection balance.",
+    "learningObjective": "Wealth building discipline",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 7,
+      "bands": {
+        "launch": 5,
+        "mid": 15,
+        "late": 28
+      }
+    }
+  },
+  {
+    "id": "investment_economic_boom_5",
+    "domainId": "investment",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Economic Boom (5)",
+    "teaser": "Markets rise — opportunity with discipline.",
+    "narrative": "Markets rise — opportunity with discipline.",
+    "learningObjective": "Goal acceleration",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 6,
+      "bands": {
+        "launch": 8,
+        "mid": 15,
+        "late": 12
+      }
+    }
+  },
+  {
+    "id": "milestone_milestone_1",
+    "domainId": "milestone",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Life Milestone",
+    "teaser": "A major life marker — revisit goals and protection.",
+    "narrative": "A major life marker — revisit goals and protection.",
+    "learningObjective": "Goal portfolio review",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 10,
+      "bands": {
+        "launch": 8,
+        "mid": 12,
+        "late": 22
+      }
+    }
+  },
+  {
+    "id": "milestone_legacy_planning_2",
+    "domainId": "milestone",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Legacy Planning (2)",
+    "teaser": "Estate, dependents, and what you leave behind — plan with intention.",
+    "narrative": "Estate, dependents, and what you leave behind — plan with intention.",
+    "learningObjective": "Wealth transfer and legacy",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 9,
+      "bands": {
+        "launch": 0,
+        "mid": 5,
+        "late": 30
+      }
+    }
+  },
+  {
+    "id": "milestone_milestone_3",
+    "domainId": "milestone",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Life Milestone (3)",
+    "teaser": "A major life marker — revisit goals and protection.",
+    "narrative": "A major life marker — revisit goals and protection.",
+    "learningObjective": "Goal portfolio review",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 8,
+      "bands": {
+        "launch": 8,
+        "mid": 12,
+        "late": 22
+      }
+    }
+  },
+  {
+    "id": "milestone_legacy_planning_4",
+    "domainId": "milestone",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Legacy Planning (4)",
+    "teaser": "Estate, dependents, and what you leave behind — plan with intention.",
+    "narrative": "Estate, dependents, and what you leave behind — plan with intention.",
+    "learningObjective": "Wealth transfer and legacy",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 7,
+      "bands": {
+        "launch": 0,
+        "mid": 5,
+        "late": 30
+      }
+    }
+  },
+  {
+    "id": "milestone_milestone_5",
+    "domainId": "milestone",
+    "eventClass": "opportunity",
+    "intensity": 2,
+    "title": "Life Milestone (5)",
+    "teaser": "A major life marker — revisit goals and protection.",
+    "narrative": "A major life marker — revisit goals and protection.",
+    "learningObjective": "Goal portfolio review",
+    "scenarioTemplate": "promotion",
+    "situationKind": "income_opportunity",
+    "weights": {
+      "base": 6,
+      "bands": {
+        "launch": 8,
+        "mid": 12,
+        "late": 22
+      }
+    }
+  }
+]

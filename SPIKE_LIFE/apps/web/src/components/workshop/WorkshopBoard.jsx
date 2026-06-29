@@ -12,6 +12,7 @@ export default function WorkshopBoard({
 
   const { boardStages, turnNumber, maxTurns, canAdvanceTurn, workshopComplete } = board
   const { done, total } = board.completionSummary
+  const cycleActive = ['turn_active', 'cycle_active', 'awaiting_calendar'].includes(board.roomPhase)
 
   return (
     <section className="rounded-xl border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-5 shadow-sm">
@@ -28,7 +29,7 @@ export default function WorkshopBoard({
           </h2>
           <p className="mt-1 text-sm text-slate-600">
             {board.playerCount} players
-            {board.roomPhase === 'turn_active' && total > 0 && (
+            {cycleActive && total > 0 && (
               <span className="ml-2 font-medium text-[#8B0000]">
                 · {done}/{total} finished this turn
               </span>
@@ -51,15 +52,6 @@ export default function WorkshopBoard({
           </p>
         )}
       </div>
-
-      {board.sharedScenarioLabel && board.roomPhase === 'turn_active' && (
-        <div className="mt-4 rounded-lg border border-[#8B0000]/20 bg-red-50/50 px-4 py-3">
-          <p className="text-xs font-semibold uppercase tracking-wide text-[#8B0000]">
-            Shared mission
-          </p>
-          <p className="mt-1 font-medium text-slate-900">{board.sharedScenarioLabel}</p>
-        </div>
-      )}
 
       <div className="mt-6">
         <StageTrack
@@ -86,9 +78,9 @@ export default function WorkshopBoard({
         </p>
       )}
 
-      {board.roomPhase === 'lobby' && board.playerCount > 0 && !board.sharedScenarioId && (
+      {board.roomPhase === 'lobby' && board.playerCount > 0 && (
         <p className="mt-4 text-sm text-slate-600">
-          Facilitator: start a shared mission when everyone has joined.
+          Facilitator: start the planning cycle when everyone has joined.
         </p>
       )}
     </section>
