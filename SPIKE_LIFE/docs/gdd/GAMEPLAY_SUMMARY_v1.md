@@ -1,6 +1,8 @@
 # Gameplay Summary v1.0
 
-**Status:** Approved for MVP Foundation
+**Status:** Executive summary — see canonical [GDS v1.0](./GDS_v1.0/SPIKE_LIFE_GDS_v1.0.pdf) (499 pp, 28 chapters)
+
+**Engineering:** [Gap analysis](./GDS_v1_GAP_ANALYSIS.md) · [Realignment phases](./GDS_v1_REALIGNMENT_PHASES.md)
 
 ---
 
@@ -66,16 +68,20 @@ See approved GDS sections: Philippine economic assumptions, financial planning f
 
 ## MVP Implementation Notes (engineering)
 
+> **As of 2026-06-29** — full audit in [GDS v1 Gap Analysis](./GDS_v1_GAP_ANALYSIS.md).
+
 | GDS element | MVP status |
 |-------------|------------|
-| 2–6 workshop players | **Shipped** (`GAME_ROOM_MIN_PLAYERS` / `GAME_ROOM_MAX_PLAYERS`) |
-| Random unique persona at join | **Shipped** (6 PH archetypes in content pack) |
-| Year loop / life domains | **Partial** (annual cycle + domain reveal UI) |
-| 20 semi-annual planning cycles | Planned |
-| Dream board | Planned |
-| Decision timer + auto-advisor | Planned |
-| 13th month pay event | Planned |
-| Life Score end-game UI | Partial (scoring exists; full summary UI planned) |
+| 2–6 workshop players | **Shipped** |
+| Random unique persona at join | **Shipped** (6 PH archetypes) |
+| Year loop / 12 life domains | **Partial** (solo domain grid; workshop uses stage track) |
+| 20 semi-annual planning cycles | **Partial** (config exists; playable default = 5 workshop turns) |
+| Dream board | **Shipped** (solo interactive; workshop auto-defaults) |
+| Decision timer + auto-advisor | **Partial** (solo only; workshop timer not wired) |
+| 13th month pay + allocation | **Partial** (solo modal; allocation strategy not applied in domain) |
+| Life Score end-game UI | **Partial** (solo summary; no workshop winner ceremony) |
+| Situation depth (≥5 per domain) | **Missing** (2 runtime scenarios + hardcoded deck) |
+| Cross-device multiplayer | **Missing** (in-memory demo) |
 
 Personas are assigned automatically at join (workshop) or session create (solo) so players cannot all pick the same starting profile.
 

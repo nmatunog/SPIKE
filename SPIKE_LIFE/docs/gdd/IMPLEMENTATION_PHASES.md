@@ -1,8 +1,11 @@
 # SPIKE LIFE™ — GDS Implementation Phases
 
+> **Superseded for new work** by [GDS v1 Realignment Phases](./GDS_v1_REALIGNMENT_PHASES.md) (2026-06-29).  
+> **Canonical design:** [GDS v1.0 PDF](./GDS_v1.0/SPIKE_LIFE_GDS_v1.0.pdf) · [Gap analysis](./GDS_v1_GAP_ANALYSIS.md)
+
 **Authority:** [Gameplay Summary v1.0](./GAMEPLAY_SUMMARY_v1.md)  
 **Engineering map:** [Volume I README](./VOLUME_I/README.md) · [Amendment A5 Year Loop](../architecture/AMENDMENT_A5_YEAR_LOOP.md)  
-**Last updated:** 2026-06-26
+**Last updated:** 2026-06-26 (historical); see realignment doc for current plan
 
 This document turns the approved GDS into **sequenced delivery phases**. Each phase has a player-visible outcome, engineering deliverables, and acceptance criteria. Phases are ordered by dependency; later phases assume earlier ones are stable.
 

@@ -2,6 +2,10 @@
 
 **Financial Decision Simulator** — major initiative under SPIKE ASC.
 
+**Design authority:** [GDS v1.0](docs/gdd/GDS_v1.0/SPIKE_LIFE_GDS_v1.0.pdf) (499 pp)  
+**Technical design:** [Realignment Design](docs/design/GDS_v1_REALIGNMENT_DESIGN.md) (read before coding)  
+**Build vs spec:** [Gap analysis](docs/gdd/GDS_v1_GAP_ANALYSIS.md) · [Realignment phases](docs/gdd/GDS_v1_REALIGNMENT_PHASES.md)
+
 ## Phase 1 status
 
 **Financial Decision Engine validated** — Promotion scenario completes full planning cycle in domain tests.

@@ -2,7 +2,9 @@
 
 ## Volume I — Core Systems
 
-**Status:** Canonical (game design)  
+**Status:** Engineering GDD subset (Volume I gameplay topics only)  
+**Canonical design authority:** [GDS v1.0](../GDS_v1.0/SPIKE_LIFE_GDS_v1.0.pdf) (28 chapters, 7 volumes)  
+**Build vs spec:** [Gap analysis](../GDS_v1_GAP_ANALYSIS.md) · [Realignment phases](../GDS_v1_REALIGNMENT_PHASES.md)  
 **Audience:** Design, engineering, content, balancing  
 **Related:** Architecture Amendments A3–A5, Simulation Blueprints, `@spike-life/domain`
 
