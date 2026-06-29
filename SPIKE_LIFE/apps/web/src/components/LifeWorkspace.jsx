@@ -79,14 +79,13 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
 
   if (dashboard && !dashboard.dreamBoardComplete && dashboard.dreamBoard) {
     return (
-      <div className="h-dvh overflow-y-auto bg-gradient-to-b from-white to-sky-50/40">
-        <DreamBoardSetup
-          dreamBoard={dashboard.dreamBoard}
-          onSubmit={handleDreamBoardSubmit}
-          busy={busy}
-        />
-        {error && <p className="mt-4 text-center text-sm text-red-600">{error}</p>}
-      </div>
+      <DreamBoardSetup
+        dreamBoard={dashboard.dreamBoard}
+        dashboard={dashboard}
+        onSubmit={handleDreamBoardSubmit}
+        busy={busy}
+        error={error}
+      />
     )
   }
 
