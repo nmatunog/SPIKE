@@ -1,58 +1,115 @@
-import { Heart } from 'lucide-react'
+import { Heart, Menu, Mountain, UserRound } from 'lucide-react'
 
 export default function StatusBarV3({
   dashboard,
   dreamProgressPercent = 0,
   onOpenDrawer,
 }) {
+  const progress = Math.min(100, Math.max(0, dreamProgressPercent))
+
   return (
     <header className="gsv3-header gsv3-zone-header">
-      <div className="min-w-0 shrink-0">
-        <p className="gsv3-header-brand">SPIKE LIFE</p>
-        <p className="gsv3-header-cycle">{dashboard?.cycleLabel ?? 'Planning cycle'}</p>
+      <div className="gsv3-header-brand">
+        <img
+          src="/spike-logo.png"
+          alt=""
+          className="gsv3-header-logo"
+          aria-hidden
+        />
+        <span className="gsv3-header-brand__text">SPIKE LIFE™</span>
       </div>
 
-      <div className="gsv3-header-stats">
-        {dashboard?.age != null && <HeaderStat label="Age" value={dashboard.age} />}
+      <div className="gsv3-header-stats" role="group" aria-label="Player stats">
+        {dashboard?.age != null && (
+          <HeaderStat label="Age" value={dashboard.age} accent="navy" />
+        )}
         {dashboard?.lifeScore?.overall != null && (
           <HeaderStat
             label="Life Score"
             value={dashboard.lifeScore.overall}
-            accent="text-rose-600"
-            icon={<Heart className="h-3.5 w-3.5 fill-rose-500 text-rose-500" aria-hidden />}
+            accent="navy"
+            icon={<Heart className="gsv3-header-heart" aria-hidden strokeWidth={0} />}
           />
         )}
         {dashboard?.monthlySurplus?.formatted && (
-          <HeaderStat label="Cash Flow" value={dashboard.monthlySurplus.formatted} accent="text-emerald-600" />
+          <HeaderStat
+            label="Cash Flow"
+            value={dashboard.monthlySurplus.formatted}
+            accent="teal"
+          />
         )}
         {dashboard?.liquidCash?.formatted && (
-          <HeaderStat label="Liquid Cash" value={dashboard.liquidCash.formatted} accent="text-amber-600" />
+          <HeaderStat
+            label="Liquid Cash"
+            value={dashboard.liquidCash.formatted}
+            accent="amber"
+          />
         )}
         {dashboard?.netWorth?.formatted && (
-          <HeaderStat label="Net Worth" value={dashboard.netWorth.formatted} accent="text-slate-900" />
+          <HeaderStat
+            label="Net Worth"
+            value={dashboard.netWorth.formatted}
+            accent="navy"
+          />
         )}
       </div>
 
       <div className="gsv3-header-actions">
-        <button type="button" className="gsv3-header-pill hidden sm:inline-flex" onClick={() => onOpenDrawer?.('stats')}>
-          Stats
+        <button
+          type="button"
+          className="gsv3-header-dreams"
+          onClick={() => onOpenDrawer?.('dreams')}
+        >
+          <Mountain className="gsv3-header-dreams__icon" aria-hidden strokeWidth={2.25} />
+          <div className="gsv3-header-dreams__copy">
+            <span className="gsv3-header-dreams__label">Dreams</span>
+            <div className="gsv3-header-dreams__track" aria-hidden>
+              <div
+                className="gsv3-header-dreams__fill"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <span className="gsv3-header-dreams__pct">{progress}%</span>
+          </div>
         </button>
-        <button type="button" className="gsv3-header-pill" onClick={() => onOpenDrawer?.('dreams')}>
-          Dreams{dreamProgressPercent > 0 ? ` ${dreamProgressPercent}%` : ''}
+
+        <button
+          type="button"
+          className="gsv3-header-advisor"
+          onClick={() => onOpenDrawer?.('advisor')}
+        >
+          <UserRound className="gsv3-header-advisor__glyph" aria-hidden strokeWidth={2} />
+          <span className="gsv3-header-advisor__label">Advisor</span>
+          <span className="gsv3-header-advisor__avatar" aria-hidden>
+            <span className="gsv3-header-advisor__initial">A</span>
+            <span className="gsv3-header-advisor__online" />
+          </span>
         </button>
-        <button type="button" className="gsv3-header-pill" onClick={() => onOpenDrawer?.('advisor')}>
-          Advisor
+
+        <button
+          type="button"
+          className="gsv3-header-menu"
+          onClick={() => onOpenDrawer?.('stats')}
+          aria-label="Menu"
+        >
+          <Menu className="h-5 w-5" strokeWidth={2.25} />
         </button>
       </div>
     </header>
   )
 }
 
-function HeaderStat({ label, value, accent = 'text-slate-900', icon, className = '' }) {
+const ACCENT_CLASS = {
+  navy: 'gsv3-header-stat__value--navy',
+  teal: 'gsv3-header-stat__value--teal',
+  amber: 'gsv3-header-stat__value--amber',
+}
+
+function HeaderStat({ label, value, accent = 'navy', icon }) {
   return (
-    <div className={`gsv3-header-stat ${className}`}>
+    <div className="gsv3-header-stat">
       <span className="gsv3-header-stat__label">{label}</span>
-      <span className={`gsv3-header-stat__value flex items-center gap-0.5 ${accent}`}>
+      <span className={`gsv3-header-stat__value ${ACCENT_CLASS[accent] ?? ACCENT_CLASS.navy}`}>
         {icon}
         {value}
       </span>
