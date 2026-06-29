@@ -1,33 +1,23 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import {
-  BoardHUD,
-  BoardLegend,
-  BoardOverlay,
-  EncounterModal,
-  FinancialHUD,
-  GameBoard,
-  SPACE_CATEGORY_LEGEND,
-} from '@spike-life/ui'
-import ActionDock from './gameboard/ActionDock.jsx'
+import { computeFinancialHealth } from '@spike-life/domain'
 import BoardWelcome from './gameboard/BoardWelcome.jsx'
-import DomainGridBoard from './gameboard/DomainGridBoard.jsx'
-import AdvisorInsightPrompt from './gameboard/AdvisorInsightPrompt.jsx'
 import YearRevealSequence from './gameboard/YearRevealSequence.jsx'
-import FinancialWorldsPanel from './gameboard/FinancialWorldsPanel.jsx'
-import LearningBeat from './gameboard/LearningBeat.jsx'
-import SituationSideCard from './gameboard/SituationSideCard.jsx'
-import TurnFlowStepper from './gameboard/TurnFlowStepper.jsx'
-import { impactTagsForSpaceType } from './gameboard/encounter-impact.js'
-import { useGameKeyboard } from '../hooks/useGameKeyboard.js'
+import AdvisorInsightPrompt from './gameboard/AdvisorInsightPrompt.jsx'
 import DreamBoardSetup from './gameboard/DreamBoardSetup.jsx'
 import ThirteenthMonthModal from './gameboard/ThirteenthMonthModal.jsx'
 import AnnualCheckpointCard from './gameboard/AnnualCheckpointCard.jsx'
 import LifeSummaryScreen from './gameboard/LifeSummaryScreen.jsx'
 import OnboardingRulesCard from './gameboard/OnboardingRulesCard.jsx'
-import TurnBoardPopout from './gameboard/TurnBoardPopout.jsx'
-import LifeDecisionStage from './gameboard/LifeDecisionStage.jsx'
 import ConsequenceReveal from './gameboard/ConsequenceReveal.jsx'
-import { computeFinancialHealth } from '@spike-life/domain'
+import PremiumHeaderStats from './gameboard/premium/PremiumHeaderStats.jsx'
+import PremiumNavRail from './gameboard/premium/PremiumNavRail.jsx'
+import PremiumCycleRail from './gameboard/premium/PremiumCycleRail.jsx'
+import PremiumDomainRibbon from './gameboard/premium/PremiumDomainRibbon.jsx'
+import PremiumDiceBar from './gameboard/premium/PremiumDiceBar.jsx'
+import PremiumSituationStage from './gameboard/premium/PremiumSituationStage.jsx'
+import PremiumLensDrawer from './gameboard/premium/PremiumLensDrawer.jsx'
+import { impactTagsForSpaceType } from './gameboard/encounter-impact.js'
+import { useGameKeyboard } from '../hooks/useGameKeyboard.js'
 import {
   ensureSessionStarted,
   endBoardTurn,
@@ -43,13 +33,17 @@ import {
   dismissCalendarEvent,
   applyAutoAdvisor,
 } from '../lib/spike-life-client.js'
-import {
-  toBoardViewModel,
-  toFinancialHUD,
-  toTurnHUD,
-} from '../lib/board-view-adapter.js'
 import { useBoardUIStore } from '../store/board-ui-store.js'
 import { GAME_ROOM_MAX_PLAYERS } from '../lib/spike-life-workshop-client.js'
+
+const NAV_PANEL_MAP = {
+  life: 'life',
+  plan: 'plan',
+  journey: 'journey',
+  fna: 'fna',
+  reflect: 'reflect',
+  settings: 'settings',
+}
 
 export default function LifeWorkspace({ onOpenWorkshop }) {
   const [dashboard, setDashboard] = useState(null)
@@ -70,19 +64,11 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
   const [showRules, setShowRules] = useState(
     () => !localStorage.getItem('spike-life-rules-seen'),
   )
-  const [showTurnPopout, setShowTurnPopout] = useState(false)
-  const [showLifeDecision, setShowLifeDecision] = useState(false)
   const [consequenceReveal, setConsequenceReveal] = useState(null)
+  const [selectedChoiceIndex, setSelectedChoiceIndex] = useState(0)
+  const [navPanel, setNavPanel] = useState(null)
 
-  const {
-    expandedPanel,
-    showEncounterModal,
-    highlightSpaceIndex,
-    setExpandedPanel,
-    setShowEncounterModal,
-    setHighlightSpaceIndex,
-    resetPanels,
-  } = useBoardUIStore()
+  const { expandedPanel, setExpandedPanel, resetPanels } = useBoardUIStore()
 
   const refresh = useCallback(async () => {
     await ensureSessionStarted()
@@ -109,36 +95,19 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
     })
   }, [refresh])
 
-  const boardView = useMemo(() => toBoardViewModel(board), [board])
-  const turnHUD = useMemo(() => toTurnHUD(dashboard, board), [dashboard, board])
-  const financialHUD = useMemo(
-    () => toFinancialHUD(dashboard, growView, planView),
-    [dashboard, growView, planView],
-  )
-
-  async function ensureLens(lens) {
-    if (lens === 'grow' && !growView) {
-      const view = await getLensView('grow')
-      setGrowView(view)
-      return view
-    }
-    if (lens === 'protect' && !protectView) {
-      const view = await getLensView('protect')
-      setProtectView(view)
-      return view
-    }
-    return null
-  }
-
-  async function handleExpandPanel(panel) {
-    setExpandedPanel(panel)
-    if (panel === 'grow') await ensureLens('grow')
-    if (panel === 'protect') await ensureLens('protect')
-    if (panel === 'journey' || panel === 'reflect') {
+  async function handleNavSelect(panelId) {
+    const mapped = NAV_PANEL_MAP[panelId] ?? panelId
+    if (mapped === 'settings') return
+    const next = navPanel === mapped ? null : mapped
+    setNavPanel(next)
+    if (next === 'journey' || next === 'reflect') {
       setJourneyView(await getLensView('journey'))
     }
-    if (panel === 'fna' || panel === 'decision') {
+    if (next === 'plan' || next === 'fna') {
       setPlanView(await getLensView('plan'))
+    }
+    if (next === 'life') {
+      await refresh()
     }
   }
 
@@ -160,7 +129,7 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
     setBusy(true)
     try {
       await applyAutoAdvisor()
-      setExpandedPanel('reflect')
+      setNavPanel('reflect')
       await refresh()
       setJourneyView(await getLensView('journey'))
       setPlanView(await getLensView('plan'))
@@ -208,8 +177,9 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
     setBusy(true)
     setError(null)
     setExpandedPanel(null)
-    setShowEncounterModal(false)
+    setNavPanel(null)
     setShowAdvisorPrompt(false)
+    setSelectedChoiceIndex(0)
     try {
       const findingMinMs = 900
       const started = Date.now()
@@ -246,8 +216,6 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
     if (pendingAdvisorInsight) {
       setShowAdvisorPrompt(true)
       setPendingAdvisorInsight(false)
-    } else {
-      setShowTurnPopout(true)
     }
   }, [pendingAdvisorInsight])
 
@@ -256,8 +224,6 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
   async function handleDecide(strategy) {
     setBusy(true)
     setError(null)
-    setShowEncounterModal(false)
-    setShowLifeDecision(false)
     try {
       await submitDecision(strategy)
       const plan = await getLensView('plan')
@@ -267,19 +233,24 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
       if (plan?.lens === 'plan' && plan.data.consequenceReveal) {
         setConsequenceReveal(plan.data.consequenceReveal)
       } else {
-        setExpandedPanel('reflect')
+        setNavPanel('reflect')
       }
     } catch (err) {
       setError(err.message)
-      setShowLifeDecision(true)
     } finally {
       setBusy(false)
     }
   }
 
+  function handleConfirmChoice() {
+    const options = planView?.lens === 'plan' ? planView.data.decisionOptions : []
+    const opt = options[selectedChoiceIndex]
+    if (opt) handleDecide(opt.strategy)
+  }
+
   function handleConsequenceContinue() {
     setConsequenceReveal(null)
-    setExpandedPanel('reflect')
+    setNavPanel('reflect')
   }
 
   async function handleReflection(answers) {
@@ -289,6 +260,8 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
       await submitReflection(answers)
       await endBoardTurn()
       resetPanels()
+      setNavPanel(null)
+      setSelectedChoiceIndex(0)
       await refresh()
     } catch (err) {
       setError(err.message)
@@ -299,45 +272,73 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
 
   const inDecisionPhase = board?.phase === 'decision_phase'
   const canDecide = inDecisionPhase && dashboard?.canDecide
-  const canReflect = inDecisionPhase && dashboard?.canReflect
   const canRoll = board?.canRoll && !rolling
   const showBoardWelcome =
     !loading && canRoll && !board?.activeEncounter && !rolling && board?.roundNumber <= 1
-  const recommendations = planView?.lens === 'plan' ? planView.data.recommendations : []
-  const landedSpace = board?.spaces.find((s) => s.index === board.landedSpaceIndex)
-  const priorityLabels = recommendations.slice(0, 3).map((r) => r.title)
-  const impactTags = landedSpace ? impactTagsForSpaceType(landedSpace.type) : []
+
+  const planData = planView?.lens === 'plan' ? planView.data : null
+  const decisionOptions = planData?.decisionOptions ?? []
+  const situation = planData?.situation ?? null
+
+  const landedSpace = board?.spaces?.find((s) => s.index === board.landedSpaceIndex)
+  const impactTags = useMemo(() => {
+    const tags = impactTagsForSpaceType(landedSpace?.type ?? board?.selectedDomainId)
+    return tags.slice(0, 3).map((t) => ({ label: t, value: 'Varies' }))
+  }, [landedSpace?.type, board?.selectedDomainId])
+
+  const financialHealth = useMemo(
+    () =>
+      computeFinancialHealth(
+        planData?.fna
+          ? {
+              cashFlowScore: planData.fna.cashFlowScore,
+              protectionScore: planData.fna.protectionScore,
+              debtScore: planData.fna.debtScore,
+              goalScore: planData.fna.goalScore,
+              retirementScore: planData.fna.retirementScore,
+            }
+          : null,
+      ),
+    [planData?.fna],
+  )
+
+  const liquidCash =
+    growView?.lens === 'grow' ? growView.data.assets.cash.formatted : dashboard?.netWorth?.formatted
+
+  const statusLine = useMemo(() => {
+    if (yearRevealActive) return "Let's see what life brings you this year…"
+    if (inDecisionPhase && situation) {
+      return `${board?.selectedDomainLabel ?? 'Life'} · ${situation.title}`
+    }
+    if (canRoll) {
+      return dashboard?.cycleLabel
+        ? `${dashboard.cycleLabel} — roll to begin`
+        : 'Roll the dice to trigger a real Philippine life event!'
+    }
+    return 'Life domains'
+  }, [yearRevealActive, inDecisionPhase, situation, canRoll, dashboard?.cycleLabel, board?.selectedDomainLabel])
+
+  const timerLabel = useMemo(() => {
+    if (!canDecide || !planData?.decisionTimerSeconds) return null
+    if (!planData.cycleDeadlineAt) return `${planData.decisionTimerSeconds}s`
+    const secs = Math.max(
+      0,
+      Math.ceil((new Date(planData.cycleDeadlineAt).getTime() - Date.now()) / 1000),
+    )
+    return `${secs}s`
+  }, [canDecide, planData?.decisionTimerSeconds, planData?.cycleDeadlineAt])
 
   useGameKeyboard({
     canRoll,
     rolling,
     onRoll: handleRollDice,
-    onDismiss: () => setShowEncounterModal(false),
-    onClosePanel: () => setExpandedPanel(null),
+    onDismiss: () => setNavPanel(null),
+    onClosePanel: () => setNavPanel(null),
   })
 
-  const domainProps = {
-    selectedDomainLabel: board?.selectedDomainLabel ?? null,
-  }
-
-  const gridStatusLabel = (() => {
-    if (yearRevealActive) return 'Let\'s see what life brings you this year…'
-    if (showEncounterModal || inDecisionPhase) {
-      return dashboard?.cycleLabel
-        ? `${dashboard.cycleLabel} — situation ready`
-        : board?.selectedDomainLabel
-          ? `${board.selectedDomainLabel} — situation ready`
-          : 'Situation ready'
-    }
-    if (canRoll) {
-      return dashboard?.cycleLabel
-        ? `${dashboard.cycleLabel} — tap Next Year`
-        : board?.roundNumber > 1
-          ? `Year ${board.roundNumber} — tap Next Year`
-          : 'Tap Next Year to begin'
-    }
-    return 'Life domains'
-  })()
+  const scanHighlightId = yearRevealActive
+    ? (yearRevealData?.domainId ?? board?.selectedDomainId)
+    : null
 
   if (loading) {
     return (
@@ -382,284 +383,176 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
     )
   }
 
+  const showSituation = inDecisionPhase && (situation || decisionOptions.length > 0)
+
   return (
     <div className="game-shell">
       <a href="#game-board" className="skip-link">
         Skip to game
       </a>
 
-      <BoardHUD
-        hud={turnHUD}
-        onRoll={handleRollDice}
-        rolling={rolling}
-        rollLabel="Next year"
-        rollingLabel="Let's see what life brings you this year…"
+      <PremiumHeaderStats
+        characterName={dashboard?.characterName}
+        age={dashboard?.age}
+        turnNumber={board?.roundNumber ?? dashboard?.turnNumber}
+        maxTurns={board?.maxRounds ?? dashboard?.maxTurns}
+        lifeScore={dashboard?.lifeScore?.overall}
+        netWorth={dashboard?.netWorth?.formatted}
+        monthlyCashFlow={dashboard?.monthlySurplus?.formatted}
+        liquidCash={liquidCash}
+        financialHealth={financialHealth}
+        onOpenSummary={() => handleNavSelect('life')}
       />
 
       {onOpenWorkshop && (
-        <div className="shrink-0 border-b border-slate-200/70 bg-white/70 px-4 py-2 backdrop-blur-sm">
-          <div className="mx-auto flex max-w-[120rem] justify-end">
-            <button
-              type="button"
-              onClick={onOpenWorkshop}
-              className="focus-game rounded-lg px-3 py-2 text-caption font-semibold text-spike-brand hover:underline"
-            >
-              Workshop ({GAME_ROOM_MAX_PLAYERS} players) →
-            </button>
-          </div>
+        <div className="mx-4 flex justify-end py-1">
+          <button
+            type="button"
+            onClick={onOpenWorkshop}
+            className="focus-game text-caption font-semibold text-indigo-600 hover:underline"
+          >
+            Workshop ({GAME_ROOM_MAX_PLAYERS} players) →
+          </button>
         </div>
       )}
 
-      <div className="shrink-0 border-b border-slate-200/60 bg-white/60 px-4 py-3 backdrop-blur-sm xl:hidden">
-        <FinancialWorldsPanel compact />
-      </div>
+      <PremiumDomainRibbon
+        domains={board?.lifeDomains ?? []}
+        selectedDomainId={board?.selectedDomainId}
+        scanning={yearRevealActive}
+        scanHighlightId={scanHighlightId}
+      />
 
-      <div className="shrink-0 border-b border-slate-200/60 bg-white/60 px-4 py-3 backdrop-blur-sm xl:hidden">
-        <TurnFlowStepper
-          layout="horizontal"
-          phase={board?.phase ?? 'ready_to_roll'}
-          rolling={rolling}
-          expandedPanel={expandedPanel}
-          showEncounterModal={showEncounterModal}
+      <PremiumDiceBar
+        canRoll={canRoll}
+        rolling={rolling}
+        onRoll={handleRollDice}
+        categoryDie={board?.lastCategoryDieRoll}
+        situationDie={board?.lastSituationDieRoll}
+        timerLabel={timerLabel}
+        statusLine={statusLine}
+      />
+
+      <div className="mx-2 mb-2 flex min-h-0 flex-1 gap-2 overflow-hidden md:mx-4 md:gap-3">
+        <PremiumNavRail
+          activePanel={navPanel}
+          onSelect={handleNavSelect}
+          onHowToPlay={() => setShowRules(true)}
         />
-      </div>
-
-      <div className="mx-auto grid min-h-0 w-full max-w-[120rem] flex-1 grid-cols-1 grid-rows-[minmax(0,1fr)_auto] gap-0 overflow-hidden xl:grid-cols-[12.5rem_minmax(0,1fr)_20rem] xl:grid-rows-1 xl:gap-5 xl:px-6 xl:py-5">
-        <aside className="hidden min-h-0 flex-col gap-4 overflow-hidden xl:flex">
-          <FinancialWorldsPanel />
-          <LearningBeat
-            phase={board?.phase ?? 'ready_to_roll'}
-            rolling={rolling}
-            expandedPanel={expandedPanel}
-            showEncounterModal={showEncounterModal}
-            roundNumber={board?.roundNumber ?? 1}
-            hasEncounter={Boolean(board?.activeEncounter)}
-            {...domainProps}
-          />
-          <TurnFlowStepper
-            phase={board?.phase ?? 'ready_to_roll'}
-            rolling={rolling}
-            expandedPanel={expandedPanel}
-            showEncounterModal={showEncounterModal}
-          />
-          <BoardLegend compact items={SPACE_CATEGORY_LEGEND} title="Board" className="mt-auto" />
-        </aside>
 
         <main
           id="game-board"
-          className="relative flex min-h-0 min-w-0 flex-col px-3 py-3 sm:px-4 xl:px-0 xl:py-0"
+          className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden"
           tabIndex={-1}
         >
-          {board?.gameComplete && (
-            <p
-              className="absolute left-4 right-4 top-3 z-10 rounded-2xl bg-emerald-500 px-5 py-3 text-center text-body font-semibold text-white shadow-lg"
-              role="status"
-            >
-              Journey complete — all {board.maxRounds} years played.
-            </p>
+          {navPanel && (
+            <PremiumLensDrawer
+              panel={navPanel}
+              onClose={() => setNavPanel(null)}
+              planView={planView}
+              journeyView={journeyView}
+              growView={growView}
+              protectView={protectView}
+              dashboard={dashboard}
+              onDecide={handleDecide}
+              onTimerExpire={handleTimerExpire}
+              onSubmitReflection={handleReflection}
+              busy={busy}
+            />
           )}
 
-          <div className="relative flex min-h-0 flex-1 items-center justify-center rounded-3xl bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 p-4 sm:p-6 xl:rounded-4xl xl:p-8">
-            {loading ? (
-              <p className="text-body-lg text-slate-400" role="status">
-                Loading…
+          <div className="relative flex min-h-0 flex-1 flex-col overflow-y-auto rounded-2xl">
+            {board?.gameComplete && (
+              <p
+                className="mb-3 rounded-2xl bg-emerald-500 px-5 py-3 text-center text-sm font-semibold text-white shadow-lg"
+                role="status"
+              >
+                Journey complete — all {board.maxRounds} years played.
               </p>
-            ) : board?.lifeDomains?.length ? (
-              <div className="flex w-full max-w-lg flex-col items-center">
-                {yearRevealActive ? (
-                  <YearRevealSequence
-                    active={yearRevealActive}
-                    pending={yearRevealPending}
-                    domains={board.lifeDomains}
-                    animationCycle={board.domainAnimationCycle}
-                    reveal={yearRevealData}
-                    onComplete={handleYearRevealComplete}
-                  />
-                ) : (
-                  <>
-                    <p className="mb-4 text-center text-label uppercase tracking-wider text-amber-300/90">
-                      {gridStatusLabel}
-                    </p>
-                    <DomainGridBoard
-                      domains={board.lifeDomains}
-                      selectedDomainId={board?.selectedDomainId}
-                      animationCycle={board.domainAnimationCycle}
-                      mode="idle"
-                      className="w-full"
-                    />
-                    <BoardWelcome
-                      visible={showBoardWelcome}
-                      characterName={dashboard?.characterName}
-                      archetypeLabel={dashboard?.archetypeLabel}
-                      archetypeTagline={dashboard?.archetypeTagline}
-                      age={dashboard?.age}
-                      canRoll={canRoll}
-                      onRoll={handleRollDice}
-                    />
-                  </>
+            )}
+
+            {yearRevealActive && board?.lifeDomains?.length ? (
+              <div className="flex flex-1 items-center justify-center p-4">
+                <YearRevealSequence
+                  active={yearRevealActive}
+                  pending={yearRevealPending}
+                  domains={board.lifeDomains}
+                  animationCycle={board.domainAnimationCycle}
+                  reveal={yearRevealData}
+                  onComplete={handleYearRevealComplete}
+                />
+              </div>
+            ) : showSituation ? (
+              <PremiumSituationStage
+                situation={situation}
+                options={decisionOptions}
+                selectedIndex={selectedChoiceIndex}
+                onSelect={setSelectedChoiceIndex}
+                onConfirm={handleConfirmChoice}
+                canDecide={canDecide}
+                deciding={busy}
+                error={error}
+                domainLabel={board?.selectedDomainLabel}
+                impactTags={impactTags}
+              />
+            ) : (
+              <div className="flex flex-1 flex-col items-center justify-center p-6">
+                <BoardWelcome
+                  visible={showBoardWelcome}
+                  characterName={dashboard?.characterName}
+                  archetypeLabel={dashboard?.archetypeLabel}
+                  archetypeTagline={dashboard?.archetypeTagline}
+                  age={dashboard?.age}
+                  canRoll={canRoll}
+                  onRoll={handleRollDice}
+                />
+                {!showBoardWelcome && (
+                  <p className="text-center text-sm text-slate-500">
+                    {canRoll
+                      ? 'Tap Roll life dice to begin your next planning year.'
+                      : 'Waiting for the next phase…'}
+                  </p>
                 )}
               </div>
-            ) : (
-              <GameBoard
-                board={boardView}
-                rolling={rolling}
-                highlightSpaceIndex={highlightSpaceIndex}
-                onSpaceSelect={(space) => setHighlightSpaceIndex(space.boardIndex)}
-                className="min-h-0 w-full flex-1"
-              />
+            )}
+
+            <AdvisorInsightPrompt
+              visible={showAdvisorPrompt && inDecisionPhase && !yearRevealActive}
+              onViewAdvice={() => {
+                setShowAdvisorPrompt(false)
+                handleNavSelect('fna')
+              }}
+              onDecideMyself={() => setShowAdvisorPrompt(false)}
+            />
+
+            {error && !showSituation && (
+              <p
+                className="mt-3 rounded-2xl bg-red-50 px-4 py-3 text-center text-sm text-red-700"
+                role="alert"
+              >
+                {error}
+              </p>
             )}
           </div>
-
-          <AdvisorInsightPrompt
-            visible={showAdvisorPrompt && inDecisionPhase && !yearRevealActive}
-            onViewAdvice={() => {
-              setShowAdvisorPrompt(false)
-              handleExpandPanel('fna')
-            }}
-            onDecideMyself={() => {
-              setShowAdvisorPrompt(false)
-              setShowLifeDecision(true)
-            }}
-          />
-
-          <BoardOverlay
-            visible={showEncounterModal && inDecisionPhase && !rolling}
-            onDismiss={() => setShowEncounterModal(false)}
-          >
-            <EncounterModal
-              encounter={board?.activeEncounter ?? null}
-              spaceCategory={landedSpace?.category}
-              impactTags={impactTags}
-              priorityLabels={priorityLabels}
-              onViewAnalysis={() => {
-                setShowEncounterModal(false)
-                handleExpandPanel('fna')
-              }}
-              onMakeDecision={() => {
-                setShowEncounterModal(false)
-                handleExpandPanel('decision')
-              }}
-              onDismiss={() => setShowEncounterModal(false)}
-            />
-          </BoardOverlay>
-
-          <div aria-live="assertive" aria-atomic="true" className="sr-only">
-            {error}
-          </div>
-          {error && (
-            <p
-              className="absolute bottom-3 left-3 right-3 rounded-2xl bg-red-600 px-5 py-3 text-center text-body font-medium text-white shadow-lg sm:left-auto sm:right-4 sm:max-w-md"
-              role="alert"
-            >
-              {error}
-            </p>
-          )}
         </main>
 
-        <aside className="flex min-h-0 shrink-0 flex-col gap-4 overflow-y-auto border-t border-slate-200/70 bg-white/85 px-4 py-4 backdrop-blur-md xl:max-h-none xl:shrink xl:overflow-hidden xl:border-0 xl:bg-transparent xl:px-0 xl:py-0 xl:backdrop-blur-none">
-          <div className="xl:hidden">
-            <LearningBeat
-              phase={board?.phase ?? 'ready_to_roll'}
-              rolling={rolling}
-              expandedPanel={expandedPanel}
-              showEncounterModal={showEncounterModal}
-              roundNumber={board?.roundNumber ?? 1}
-              hasEncounter={Boolean(board?.activeEncounter)}
-              {...domainProps}
-            />
-          </div>
-
-          <SituationSideCard encounter={board?.activeEncounter} forceOpen />
-
-          <ActionDock
-            board={board}
-            expandedPanel={expandedPanel}
-            onExpandPanel={handleExpandPanel}
-            onRoll={handleRollDice}
+        <div className="hidden shrink-0 md:block">
+          <PremiumCycleRail
+            turnNumber={board?.roundNumber ?? dashboard?.turnNumber ?? 1}
+            maxTurns={board?.maxRounds ?? dashboard?.maxTurns ?? 20}
+            phase={board?.phase ?? 'ready_to_roll'}
             rolling={rolling}
-            canDecide={canDecide}
-            canReflect={canReflect}
+            expandedPanel={navPanel ?? expandedPanel}
             inDecisionPhase={inDecisionPhase}
-            planView={planView}
-            journeyView={journeyView}
-            growView={growView}
-            protectView={protectView}
-            onDecide={handleDecide}
+            canDecide={canDecide}
+            decisionTimerSeconds={planData?.decisionTimerSeconds ?? 0}
+            cycleDeadlineAt={planData?.cycleDeadlineAt}
             onTimerExpire={handleTimerExpire}
-            onSubmitReflection={handleReflection}
-            busy={busy}
-            error={error}
-            onViewJourney={async () => {
-              setJourneyView(await getLensView('journey'))
-            }}
           />
-        </aside>
+        </div>
       </div>
 
-      <TurnBoardPopout
-        visible={showTurnPopout && inDecisionPhase}
-        domains={board?.lifeDomains ?? []}
-        selectedDomainId={board?.selectedDomainId}
-        domainLabel={board?.selectedDomainLabel ?? yearRevealData?.domainLabel}
-        encounter={board?.activeEncounter ?? yearRevealData?.encounter}
-        categoryDie={board?.lastCategoryDieRoll}
-        situationDie={board?.lastSituationDieRoll}
-        stats={dashboard ? {
-          age: dashboard.age,
-          cashFlow: dashboard.monthlySurplus?.formatted,
-          cash: dashboard.netWorth?.formatted,
-          netWorth: dashboard.netWorth?.formatted,
-          lifeScore: dashboard.lifeScore?.overall,
-          year: dashboard.simulationYear,
-          financialHealth: computeFinancialHealth(
-            planView?.lens === 'plan' && planView.data.fna
-              ? {
-                  cashFlowScore: planView.data.fna.cashFlowScore,
-                  protectionScore: planView.data.fna.protectionScore,
-                  debtScore: planView.data.fna.debtScore,
-                  goalScore: planView.data.fna.goalScore,
-                  retirementScore: planView.data.fna.retirementScore,
-                }
-              : null,
-          ),
-        } : null}
-        onContinue={() => {
-          setShowTurnPopout(false)
-          setShowLifeDecision(true)
-        }}
-      />
-
-      {showLifeDecision && inDecisionPhase && !showTurnPopout && (
-        <LifeDecisionStage
-          situation={planView?.lens === 'plan' ? planView.data.situation : null}
-          options={planView?.lens === 'plan' ? planView.data.decisionOptions : []}
-          canDecide={canDecide}
-          deciding={busy}
-          error={error}
-          decisionTimerSeconds={planView?.lens === 'plan' ? planView.data.decisionTimerSeconds : 0}
-          cycleDeadlineAt={planView?.lens === 'plan' ? planView.data.cycleDeadlineAt : null}
-          onDecide={handleDecide}
-          onTimerExpire={handleTimerExpire}
-          onDismiss={() => setShowLifeDecision(false)}
-        />
-      )}
-
-      <ConsequenceReveal
-        reveal={consequenceReveal}
-        onContinue={handleConsequenceContinue}
-      />
-
-      <FinancialHUD
-        data={financialHUD}
-        onOpenGrow={async () => {
-          await ensureLens('grow')
-          handleExpandPanel('grow')
-        }}
-        onOpenProtect={async () => {
-          await ensureLens('protect')
-          handleExpandPanel('protect')
-        }}
-      />
+      <ConsequenceReveal reveal={consequenceReveal} onContinue={handleConsequenceContinue} />
 
       {dashboard?.pendingCalendarEvent === 'thirteenth_month' && (
         <ThirteenthMonthModal
@@ -670,16 +563,17 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
         />
       )}
 
-      {dashboard?.pendingCalendarEvent === 'annual_checkpoint' && dashboard.lastAnnualCheckpoint && (
-        <div className="fixed inset-x-0 bottom-24 z-40 flex justify-center px-4 sm:bottom-8">
-          <div className="w-full max-w-md">
-            <AnnualCheckpointCard
-              checkpoint={dashboard.lastAnnualCheckpoint}
-              onContinue={handleDismissCalendar}
-            />
+      {dashboard?.pendingCalendarEvent === 'annual_checkpoint' &&
+        dashboard.lastAnnualCheckpoint && (
+          <div className="fixed inset-x-0 bottom-8 z-40 flex justify-center px-4">
+            <div className="w-full max-w-md">
+              <AnnualCheckpointCard
+                checkpoint={dashboard.lastAnnualCheckpoint}
+                onContinue={handleDismissCalendar}
+              />
+            </div>
           </div>
-        </div>
-      )}
+        )}
     </div>
   )
 }

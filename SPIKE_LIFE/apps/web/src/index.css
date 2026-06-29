@@ -54,7 +54,55 @@
   }
 
   .game-shell {
-    @apply flex h-dvh max-h-dvh flex-col overflow-hidden bg-gradient-to-b from-spike-arena via-spike-surface to-white;
+    @apply flex h-dvh max-h-dvh flex-col overflow-hidden;
+    background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 100%);
+  }
+
+  .life-glass-panel {
+    @apply border border-slate-200/80 bg-white/95 shadow-sm backdrop-blur-md;
+  }
+
+  .life-nav-rail {
+    @apply rounded-2xl bg-gradient-to-b from-slate-800 to-slate-900 shadow-lg;
+  }
+
+  .life-domain-chip {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .life-domain-chip-active {
+    transform: scale(1.08) translateY(-2px);
+    box-shadow: 0 10px 20px -3px rgba(99, 102, 241, 0.4);
+    filter: brightness(1.1);
+    z-index: 20;
+  }
+
+  .life-domain-chip-blink {
+    transform: scale(1.04);
+    filter: brightness(1.15);
+    box-shadow: 0 0 15px currentColor;
+  }
+
+  @keyframes life-stat-flash-green {
+    0% { background-color: rgba(16, 185, 129, 0); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    15% { background-color: rgba(16, 185, 129, 0.2); box-shadow: 0 0 15px 4px rgba(16, 185, 129, 0.3); }
+    100% { background-color: rgba(16, 185, 129, 0); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+  }
+
+  @keyframes life-stat-flash-red {
+    0% { background-color: rgba(239, 68, 68, 0); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    15% { background-color: rgba(239, 68, 68, 0.2); box-shadow: 0 0 15px 4px rgba(239, 68, 68, 0.3); }
+    100% { background-color: rgba(239, 68, 68, 0); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+  }
+
+  .life-flash-stat-green {
+    animation: life-stat-flash-green 2s ease-in-out;
+    border-radius: 0.75rem;
+  }
+
+  .life-flash-stat-red {
+    animation: life-stat-flash-red 2s ease-in-out;
+    border-radius: 0.75rem;
   }
 
   .game-card {

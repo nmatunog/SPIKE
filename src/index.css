@@ -182,6 +182,45 @@
   .animate-spike-fade-in {
     animation: spike-fade-in 0.35s ease-out;
   }
+
+  /* SPIKE LIFE™ premium glass shell */
+  .game-shell {
+    @apply flex h-dvh max-h-dvh flex-col overflow-hidden;
+    background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 100%);
+  }
+
+  .life-glass-panel {
+    @apply border border-slate-200/80 bg-white/95 shadow-sm backdrop-blur-md;
+  }
+
+  .life-nav-rail {
+    @apply rounded-2xl bg-gradient-to-b from-slate-800 to-slate-900 shadow-lg;
+  }
+
+  .life-domain-chip {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .life-domain-chip-active {
+    transform: scale(1.08) translateY(-2px);
+    box-shadow: 0 10px 20px -3px rgba(99, 102, 241, 0.4);
+    filter: brightness(1.1);
+    z-index: 20;
+  }
+
+  .life-domain-chip-blink {
+    transform: scale(1.04);
+    filter: brightness(1.15);
+    box-shadow: 0 0 15px currentColor;
+  }
+
+  .focus-game {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2;
+  }
+
+  .focus-game-dark {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900;
+  }
 }
 
 @layer utilities {
