@@ -197,6 +197,7 @@ export interface DecisionOptionView {
 export interface SituationContextView {
   title: string
   narrative: string
+  domainId: string
   domainLabel: string
   learningObjective: string
 }

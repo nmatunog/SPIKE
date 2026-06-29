@@ -1,7 +1,7 @@
 import { Lightbulb, Sparkles } from 'lucide-react'
 import DecisionTimerRing from '../gameboard/DecisionTimerRing.jsx'
 import DomainHeroSvg from '../../illustrations/DomainHeroSvg.jsx'
-import { resolveDomainIdentity } from '../../illustrations/domain-identity.js'
+import { resolveDomainIdentity, resolveDomainIdFromLabel } from '../../illustrations/domain-identity.js'
 
 function DetailBox({ label, text, icon: Icon, accent }) {
   if (!text) return null
@@ -34,7 +34,13 @@ export default function SituationStageV3({
   timerActive,
   onTimerExpire,
 }) {
-  const identity = resolveDomainIdentity(domainId, domainLabel)
+  const heroDomainId =
+    situation?.domainId
+    ?? resolveDomainIdFromLabel(situation?.domainLabel)
+    ?? domainId
+    ?? resolveDomainIdFromLabel(domainLabel)
+    ?? 'career'
+  const identity = resolveDomainIdentity(heroDomainId, situation?.domainLabel ?? domainLabel)
   const opportunity = recommendations[0]?.label ?? situation?.learningObjective
   const consideration = recommendations[1]?.label
     ?? (situation?.narrative?.includes('—')
@@ -81,7 +87,7 @@ export default function SituationStageV3({
         </div>
 
         <div className="gsv3-situation-stage__art">
-          <DomainHeroSvg domainId={domainId} className="gsv3-situation-hero" />
+          <DomainHeroSvg domainId={heroDomainId} className="gsv3-situation-hero" />
         </div>
       </div>
     </article>

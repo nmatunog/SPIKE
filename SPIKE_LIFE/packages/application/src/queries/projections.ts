@@ -60,6 +60,12 @@ const GAP_DIMENSION_LABELS: Record<string, string> = {
   retirement: 'Retirement',
 }
 
+function domainLabelFromId(domainId: string): string {
+  return domainId
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (char) => char.toUpperCase())
+}
+
 function resolveCurrency(session: SimulationSession): CurrencyConfig {
   return session.currency ?? DEFAULT_CURRENCY
 }
@@ -442,7 +448,8 @@ export function projectPlanLens(session: SimulationSession): PlanLensView {
         situation = {
           title: enc.title,
           narrative: enc.narrative || enc.teaser,
-          domainLabel: enc.domainId.replace(/_/g, ' '),
+          domainId: enc.domainId,
+          domainLabel: domainLabelFromId(enc.domainId),
           learningObjective: enc.learningObjective,
         }
       }
@@ -451,7 +458,8 @@ export function projectPlanLens(session: SimulationSession): PlanLensView {
         ? {
             title: session.situation.title,
             narrative: session.situation.narrative,
-            domainLabel: session.selectedDomainId?.replace(/_/g, ' ') ?? 'Life',
+            domainId: session.selectedDomainId ?? 'career',
+            domainLabel: domainLabelFromId(session.selectedDomainId ?? 'career'),
             learningObjective: session.situation.learningObjective,
           }
         : null
@@ -460,7 +468,8 @@ export function projectPlanLens(session: SimulationSession): PlanLensView {
     situation = {
       title: session.situation.title,
       narrative: session.situation.narrative,
-      domainLabel: session.selectedDomainId?.replace(/_/g, ' ') ?? 'Life',
+      domainId: session.selectedDomainId ?? 'career',
+      domainLabel: domainLabelFromId(session.selectedDomainId ?? 'career'),
       learningObjective: session.situation.learningObjective,
     }
   }

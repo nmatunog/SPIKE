@@ -96,6 +96,9 @@ export default function GameScreenV3({ onOpenWorkshop }) {
   const canStartCycle = board?.canRoll && phase === PHASE.IDLE && !busy
   const rolling = phase === PHASE.DOMAIN
   const showSituation = phase === PHASE.SITUATION && inDecisionPhase
+  const activeDomainId = showSituation
+    ? (situation?.domainId ?? board?.selectedDomainId)
+    : board?.selectedDomainId
 
   const domainIds = useMemo(
     () => (board?.lifeDomains ?? []).map((d) => d.id),
@@ -239,7 +242,7 @@ export default function GameScreenV3({ onOpenWorkshop }) {
           domains={board?.lifeDomains ?? []}
           rolling={rolling}
           scanHighlightId={scanHighlightId}
-          selectedDomainId={board?.selectedDomainId}
+          selectedDomainId={activeDomainId}
           winnerLocked={showSituation}
         />
         {onOpenWorkshop && (
@@ -265,8 +268,8 @@ export default function GameScreenV3({ onOpenWorkshop }) {
             >
               <SituationStageV3
                 situation={situation}
-                domainId={board?.selectedDomainId}
-                domainLabel={board?.selectedDomainLabel}
+                domainId={situation?.domainId ?? board?.selectedDomainId}
+                domainLabel={situation?.domainLabel ?? board?.selectedDomainLabel}
                 cycleLabel={dashboard?.cycleLabel}
                 recommendations={recommendations}
                 decisionTimerSeconds={planData?.decisionTimerSeconds ?? 0}

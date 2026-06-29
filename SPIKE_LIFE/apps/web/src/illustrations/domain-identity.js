@@ -95,6 +95,18 @@ export function resolveDomainIdentity(domainId, fallbackLabel = 'Life') {
   )
 }
 
+/** Map situation domain label or id to a hero illustration key. */
+export function resolveDomainIdFromLabel(labelOrId) {
+  if (!labelOrId) return null
+  const raw = String(labelOrId).trim()
+  const slug = raw.toLowerCase().replace(/&/g, 'and').replace(/\s+/g, '_')
+  if (DOMAIN_IDENTITY[slug]) return slug
+  const match = Object.entries(DOMAIN_IDENTITY).find(
+    ([, meta]) => meta.label.toLowerCase() === raw.toLowerCase(),
+  )
+  return match?.[0] ?? slug
+}
+
 /** Dream board goal illustration keys */
 export const DREAM_GOAL_ILLUSTRATIONS = {
   home: 'house',

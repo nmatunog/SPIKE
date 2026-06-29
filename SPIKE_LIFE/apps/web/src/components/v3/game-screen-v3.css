@@ -1,20 +1,22 @@
-/* GameScreenV3 — mockup: 8% header / 25% board / 32% situation / 25% choices / 10% footer */
+/* GameScreenV3 — mockup: 8% header / 25% board / 32% situation / 22% choices / 8% footer */
 
 .gsv3-shell {
   @apply relative overflow-hidden text-slate-900;
   --gsv3-gutter: clamp(1.25rem, 6vw, 4.5rem);
-  --gsv3-zone-gap: 1.5rem;
+  --gsv3-zone-gap: 1.25rem;
+  --gsv3-footer-lift: max(0.875rem, env(safe-area-inset-bottom, 0px));
   background: #eef2f7;
   display: grid;
-  height: 100dvh;
-  max-height: 100dvh;
+  height: calc(100dvh - var(--gsv3-footer-lift));
+  max-height: calc(100dvh - var(--gsv3-footer-lift));
   min-height: 600px;
+  margin-bottom: var(--gsv3-footer-lift);
   grid-template-rows:
     minmax(0, 8fr)
     minmax(0, 25fr)
     minmax(0, 32fr)
-    minmax(0, 25fr)
-    minmax(0, 10fr);
+    minmax(0, 22fr)
+    minmax(0, 8fr);
   row-gap: var(--gsv3-zone-gap);
 }
 
@@ -23,8 +25,8 @@
     minmax(0, 8fr)
     minmax(0, 22fr)
     minmax(0, 35fr)
-    minmax(0, 25fr)
-    minmax(0, 10fr);
+    minmax(0, 22fr)
+    minmax(0, 8fr);
 }
 
 .gsv3-shell--rolling {
@@ -32,8 +34,8 @@
     minmax(0, 8fr)
     minmax(0, 28fr)
     minmax(0, 30fr)
-    minmax(0, 24fr)
-    minmax(0, 10fr);
+    minmax(0, 22fr)
+    minmax(0, 8fr);
 }
 
 .gsv3-zone-header {
@@ -68,6 +70,7 @@
   @apply z-30 h-full min-h-0;
   padding-left: var(--gsv3-gutter);
   padding-right: var(--gsv3-gutter);
+  padding-bottom: 0.25rem;
 }
 
 .gsv3-stage-dim {
@@ -447,11 +450,11 @@
   @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[#1a2b48] transition hover:bg-slate-200/60;
 }
 
-/* Footer — ~10% viewport */
+/* Footer — lifted from viewport bottom for readability */
 .gsv3-footer {
-  @apply flex h-full min-h-0 items-center justify-between border-t border-slate-200 bg-white;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
+  @apply flex h-full min-h-0 items-center justify-between rounded-t-xl border border-b-0 border-slate-200 bg-white shadow-[0_-4px_16px_rgba(15,23,42,0.06)];
+  padding-top: 0.625rem;
+  padding-bottom: 0.625rem;
 }
 
 .gsv3-stepper {
