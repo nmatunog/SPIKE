@@ -85,7 +85,18 @@ export async function rollBoardAndTriggerSituation(
   if (!encounterId) throw new Error('Board did not produce an encounter.')
 
   const encounter = getEncounterCard(encounterId)
-  const started = startPlanningCycle(existing.simulationId, encounter.scenarioId, sim)
+  const boardState = board.toState()
+  const started = startPlanningCycle(
+    existing.simulationId,
+    encounter.scenarioId,
+    sim,
+    undefined,
+    {
+      domainId: boardState.selectedDomainId ?? 'career',
+      encounterCardId: encounterId,
+      completedEncounterCardIds: boardState.completedEncounterIds ?? [],
+    },
+  )
   await deps.simulationRepo.save(started)
 
   const events = board.pullGameboardEvents()

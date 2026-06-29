@@ -1,14 +1,23 @@
 import type { CurrencyConfig } from '@spike-life/content-core'
 import type { SimulationState } from './aggregates/simulation-session.js'
+import type { EncounterCardId } from './gameboard/types.js'
 import type { DecisionStrategy, ScenarioId } from './types.js'
 import { Simulation } from './aggregates/simulation.js'
 import type { ReflectionAnswer } from './services/reflection-engine.js'
 import { revealDueHiddenConsequences } from './services/long-term-consequence-engine.js'
 import { selectCycleEncounter } from './services/situation-resolver.js'
+import { packEncounterRecord } from './services/pack-encounter-bridge.js'
 
 import type { DreamBoardGoalChoice } from './services/dream-board.js'
 
 export type { SimulationState, SimulationSession } from './aggregates/simulation-session.js'
+
+/** Board-selected domain + encounter — keeps simulation aligned with year-loop engine. */
+export interface BoardCycleBinding {
+  domainId: string
+  encounterCardId: EncounterCardId
+  completedEncounterCardIds?: EncounterCardId[]
+}
 
 function loadSimulation(state: SimulationState): Simulation {
   return Simulation.fromState(state)
@@ -152,8 +161,9 @@ export function startPlanningCycle(
   scenarioId: ScenarioId,
   existing?: SimulationState | null,
   currency?: CurrencyConfig,
+  boardBinding?: BoardCycleBinding,
 ): SimulationState {
-  return startRoomCycle(sessionId, existing, null, scenarioId, currency)
+  return startRoomCycle(sessionId, existing, null, scenarioId, currency, boardBinding)
 }
 
 export function startRoomCycle(
@@ -162,6 +172,7 @@ export function startRoomCycle(
   cycleDeadlineAt?: string | null,
   forcedScenarioId?: ScenarioId,
   currency?: CurrencyConfig,
+  boardBinding?: BoardCycleBinding,
 ): SimulationState {
   const resolvedCurrency = existing?.currency ?? currency
   if (!resolvedCurrency) {
@@ -185,7 +196,18 @@ export function startRoomCycle(
   let domainId: string | null = null
   let encounterId: string | null = null
 
-  if (existing) {
+  if (boardBinding) {
+    const packEncounter = packEncounterRecord(
+      boardBinding.domainId,
+      boardBinding.encounterCardId,
+    )
+    domainId = boardBinding.domainId
+    encounterId = packEncounter?.id ?? null
+    selectionScenario = forcedScenarioId
+      ?? (packEncounter?.scenarioTemplate === 'protection_stress'
+        ? 'protection_stress'
+        : 'promotion')
+  } else if (existing) {
     try {
       const picked = selectCycleEncounter(existing)
       selectionScenario = forcedScenarioId ?? picked.scenarioId
