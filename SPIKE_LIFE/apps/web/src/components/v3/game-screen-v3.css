@@ -22,23 +22,32 @@
 }
 
 .gsv3-domain-tile {
-  @apply relative flex shrink-0 flex-col overflow-hidden rounded-2xl border-2 shadow-lg transition-all duration-300;
+  @apply relative flex shrink-0 flex-col overflow-hidden rounded-2xl border-2 bg-slate-50 shadow-md transition-all duration-300;
   width: clamp(9rem, 14vw, 13.75rem);
   height: clamp(13.5rem, 22vh, 16.25rem);
 }
 
+.gsv3-domain-tile__header {
+  @apply flex items-start gap-2 px-3 pt-3 text-left;
+}
+
+.gsv3-domain-tile__badge {
+  @apply flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-white shadow-sm;
+}
+
 .gsv3-domain-tile--idle {
-  @apply opacity-90 saturate-[0.85];
+  @apply opacity-95;
 }
 
 .gsv3-domain-tile--scan {
-  @apply z-10 scale-105 opacity-100 saturate-100;
+  @apply z-10 scale-105 opacity-100;
+  box-shadow: 0 12px 32px var(--domain-glow, rgba(99, 102, 241, 0.25));
 }
 
 .gsv3-domain-tile--winner {
-  @apply z-20 scale-110 opacity-100;
-  filter: saturate(1.15) brightness(1.05);
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.9), 0 20px 48px var(--domain-glow, rgba(99, 102, 241, 0.35));
+  @apply z-20 scale-110 bg-white opacity-100;
+  filter: brightness(1.02);
+  box-shadow: 0 0 0 3px var(--domain-color, #6366f1), 0 20px 48px var(--domain-glow, rgba(99, 102, 241, 0.35));
 }
 
 .gsv3-domain-tile--dimmed {
@@ -46,11 +55,13 @@
 }
 
 .gsv3-domain-tile__art {
-  @apply flex flex-1 items-end justify-center px-2 pb-1 pt-3;
+  @apply flex flex-1 items-end justify-center overflow-hidden px-1 pb-0 pt-1;
 }
 
 .gsv3-domain-tile__hero {
-  @apply h-full w-full max-h-[7.5rem] object-contain;
+  @apply h-full w-full object-contain object-bottom;
+  max-height: none;
+  min-height: 6.5rem;
 }
 
 .gsv3-particles {

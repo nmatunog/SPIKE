@@ -1,5 +1,6 @@
 import { resolveDomainIdentity } from '../../illustrations/domain-identity.js'
 import DomainHeroSvg from '../../illustrations/DomainHeroSvg.jsx'
+import DomainIcon from '../../illustrations/DomainIcon.jsx'
 
 function WinnerParticles({ color }) {
   return (
@@ -46,21 +47,29 @@ export default function DomainTile({
       }`}
       style={{
         '--domain-glow': identity.glow,
-        borderColor: isWinner ? '#ffffff' : `${identity.color}88`,
-        background: `linear-gradient(180deg, ${identity.color} 0%, ${identity.color}cc 55%, ${identity.color}99 100%)`,
+        '--domain-color': identity.color,
+        borderColor: isWinner ? identity.color : `${identity.color}55`,
       }}
     >
       {isWinner && <WinnerParticles color={identity.color} />}
-      <div className="px-3 pt-3 text-left">
-        <span className="text-lg" aria-hidden>
-          {domain.icon === 'briefcase' ? '💼' : '✨'}
+      <div className="gsv3-domain-tile__header">
+        <span
+          className="gsv3-domain-tile__badge"
+          style={{ backgroundColor: identity.color }}
+        >
+          <DomainIcon name={domain.icon} className="h-4 w-4 text-white" />
         </span>
-        <p className="mt-1 text-sm font-extrabold uppercase tracking-wide text-white drop-shadow-sm">
-          {domain.label}
-        </p>
-        {identity.subtitle && (
-          <p className="text-[10px] font-medium text-white/80">{identity.subtitle}</p>
-        )}
+        <div className="min-w-0 flex-1">
+          <p
+            className="truncate text-sm font-extrabold uppercase tracking-wide"
+            style={{ color: identity.color }}
+          >
+            {domain.label}
+          </p>
+          {identity.subtitle && (
+            <p className="truncate text-[10px] font-medium text-slate-500">{identity.subtitle}</p>
+          )}
+        </div>
       </div>
       <div className="gsv3-domain-tile__art">
         <DomainHeroSvg domainId={domain.id} className="gsv3-domain-tile__hero" />

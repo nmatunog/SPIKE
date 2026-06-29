@@ -1,6 +1,6 @@
 /**
  * Domain hero illustrations — cropped from SPIKE LIFE domain board mockup.
- * SVG wrappers reference PNG rasters in /public/illustrations/domains/.
+ * Served as PNG from /public/illustrations/domains/ (SVG wrappers omit external refs in <img>).
  */
 
 const DOMAIN_HERO_IDS = new Set([
@@ -20,7 +20,7 @@ const DOMAIN_HERO_IDS = new Set([
 
 function heroSrc(domainId) {
   const id = DOMAIN_HERO_IDS.has(domainId) ? domainId : 'career'
-  return `/illustrations/domains/${id}.svg`
+  return `/illustrations/domains/${id}.png`
 }
 
 export default function DomainHeroSvg({ domainId = 'career', className = '' }) {
@@ -30,8 +30,9 @@ export default function DomainHeroSvg({ domainId = 'career', className = '' }) {
       alt=""
       aria-hidden
       className={className}
-      loading="lazy"
+      loading="eager"
       decoding="async"
+      draggable={false}
     />
   )
 }
