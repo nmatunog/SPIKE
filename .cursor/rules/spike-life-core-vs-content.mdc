@@ -1,0 +1,30 @@
+---
+description: SPIKE LIFE A4 — core engine vs content pack boundary
+globs: SPIKE_LIFE/**/*
+alwaysApply: false
+---
+
+# Core Engine vs Content Pack (Amendment A4)
+
+Before adding code, ask: **Core capability or country content?**
+
+## Core (`@spike-life/domain`, `@spike-life/application`)
+
+- FNA calculation, recommendations, decisions, consequences, life score
+- Board movement, turns, dice, phases (no financial math on board)
+- `Money` amounts in numeric form; currency code as data
+
+## Content (`@spike-life/content-philippines`, future packs)
+
+- Encounters, life situations, career paths, institutions (SSS, PhilHealth, Pag-IBIG, BIR)
+- Currency/locale config, UI strings, archetype starting profiles
+- Board JSON for a regional edition
+
+## Never
+
+- Hardcode `₱`, Philippine institutions, or Filipino-only events in domain services
+- Put FNA formulas in content JSON
+
+## Default MVP pack
+
+Import from `@spike-life/content-philippines` in application/bootstrap — not from domain.
