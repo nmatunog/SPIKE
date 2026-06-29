@@ -9,8 +9,7 @@
 }
 
 .dream-setup-title {
-  font-family: 'Playfair Display', Georgia, serif;
-  @apply text-center text-3xl font-bold tracking-tight text-slate-900 md:text-4xl;
+  @apply text-center font-sans text-display font-semibold tracking-tight text-slate-900 md:text-display-lg;
 }
 
 .dream-setup-subtitle {

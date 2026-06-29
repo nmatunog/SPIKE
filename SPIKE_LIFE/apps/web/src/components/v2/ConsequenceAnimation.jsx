@@ -81,7 +81,7 @@ export default function ConsequenceAnimation({ reveal, onComplete }) {
           <span className="gsv2-consequence-badge inline-block rounded-full px-4 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.22em] text-indigo-800">
             Decision consequence
           </span>
-          <h2 className="mt-5 font-serif text-2xl font-bold uppercase leading-tight tracking-wide text-slate-900 sm:text-[1.75rem]">
+          <h2 className="mt-5 font-sans text-display-sm font-semibold uppercase leading-tight tracking-tight text-slate-900 sm:text-display">
             {title}
           </h2>
           {subtitle && (
