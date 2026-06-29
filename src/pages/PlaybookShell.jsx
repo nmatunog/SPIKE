@@ -16,7 +16,7 @@ import {
   listSegments,
   listWeeks,
 } from '../lib/curriculumService.js';
-import { resolveInternPlaybookDay, resolveInternProgramWeek, UNLOCK_WEEK2 } from '../lib/programUnlocks.js';
+import { resolveInternPlaybookDay, resolveInternProgramWeek, UNLOCK_WEEK2, UNLOCK_WEEK3 } from '../lib/programUnlocks.js';
 import { getParticipantSquad } from '../lib/cohortFormationService.js';
 import {
   getActiveWeek2Task,
@@ -91,6 +91,7 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
     if (Number.isFinite(fromQuery) && fromQuery >= 1) return fromQuery;
     if (userRole === 'intern' && calendarReady) return programDay.week;
     if (userRole === 'intern') return resolveInternProgramWeek(internProgress);
+    if (UNLOCK_WEEK3) return 3;
     if (UNLOCK_WEEK2) return 2;
     return internProgress?.current_week ?? 1;
   }, [searchParams, userRole, internProgress, calendarReady, programDay.week]);
