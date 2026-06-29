@@ -14,6 +14,9 @@ export const UNLOCK_WEEK1_DAY2_PLUS = true;
 /** When true, Segment 1 interns enter Week 2 (Activate) on login — stage gate Week 1 treated complete. */
 export const UNLOCK_WEEK2 = true;
 
+/** When true, Segment 1 interns may access Week 3 (Business Operations / Advise). */
+export const UNLOCK_WEEK3 = true;
+
 /**
  * Effective program week for interns (cohort pilot may advance ahead of stored progress).
  * @param {object | null | undefined} internProgress
@@ -21,6 +24,9 @@ export const UNLOCK_WEEK2 = true;
 export function resolveInternProgramWeek(internProgress) {
   const segment = internProgress?.segment ?? 1;
   const stored = internProgress?.current_week ?? 1;
+  if (UNLOCK_WEEK3 && segment === 1) {
+    return Math.max(stored, 3);
+  }
   if (UNLOCK_WEEK2 && segment === 1) {
     return Math.max(stored, 2);
   }
@@ -41,6 +47,11 @@ export function resolveInternPlaybookDay(internProgress) {
 
   // Week 2 pilot unlock — stored progress may still reflect Week 1 calendar; playbook starts Day 1.
   if (UNLOCK_WEEK2 && segment === 1 && week >= 2 && storedWeek < 2) {
+    return 1;
+  }
+
+  // Week 3 — playbook starts at Day 1 when cohort advances ahead of stored progress.
+  if (UNLOCK_WEEK3 && segment === 1 && week >= 3 && storedWeek < 3) {
     return 1;
   }
 

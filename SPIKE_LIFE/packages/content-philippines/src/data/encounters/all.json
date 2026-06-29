@@ -404,12 +404,50 @@
     "domainId": "health",
     "eventClass": "crisis",
     "intensity": 2,
-    "title": "Medical Expense",
-    "teaser": "Health costs surface — protection gaps matter.",
-    "narrative": "Health costs surface — protection gaps matter.",
+    "title": "Your child was admitted for dengue",
+    "teaser": "The hospital requires a deposit before treatment can continue.",
+    "narrative": "Your child was admitted for dengue. The hospital bill is ₱95,000 and they need a deposit today. What will you do?",
     "learningObjective": "Health protection planning",
     "scenarioTemplate": "protection_stress",
     "situationKind": "protection_stress",
+    "lifeChoices": [
+      {
+        "id": "hmo",
+        "label": "Use your health insurance",
+        "description": "File a claim through your HMO or medical plan.",
+        "costLabel": "₱5,000 deductible",
+        "outcomePreview": "Very low financial damage",
+        "strategy": "improve_protection",
+        "tone": "positive"
+      },
+      {
+        "id": "cash",
+        "label": "Pay cash from savings",
+        "description": "Cover the full bill from your emergency fund.",
+        "costLabel": "₱95,000",
+        "outcomePreview": "Emergency fund drops sharply",
+        "strategy": "maintain_lifestyle_discipline",
+        "tone": "warning"
+      },
+      {
+        "id": "credit",
+        "label": "Swipe credit card",
+        "description": "Charge the bill and pay it down over time.",
+        "costLabel": "₱95,000 + interest",
+        "outcomePreview": "Debt may grow next cycles",
+        "strategy": "reduce_debt",
+        "tone": "warning"
+      },
+      {
+        "id": "delay",
+        "label": "Delay treatment",
+        "description": "Try to negotiate or transfer to a cheaper facility later.",
+        "costLabel": "No immediate payment",
+        "outcomePreview": "Health risk and Life Score may fall",
+        "strategy": "increase_lifestyle",
+        "tone": "critical"
+      }
+    ],
     "weights": {
       "base": 10
     }

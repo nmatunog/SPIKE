@@ -59,6 +59,8 @@ export type {
 export { validateCampaignConfig } from './campaign-validation.js'
 export type {
   EncounterEventClass,
+  EncounterLifeChoice,
+  EncounterLifeChoiceTone,
   EncounterPack,
   EncounterRecord,
   EncounterScenarioTemplate,

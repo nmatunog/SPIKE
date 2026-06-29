@@ -5,6 +5,7 @@ import {
   buildReflectionPrompts,
   decisionQualityLabel,
   getDecisionOptions,
+  getEncounterRepository,
   monthlySurplus,
   netWorth,
   totalAssets,
@@ -31,6 +32,7 @@ import type {
   LensView,
   MoneyDisplay,
   PlanLensView,
+  ConsequenceRevealView,
   ProtectLensView,
   RecommendationView,
   BoardStageView,
@@ -283,6 +285,68 @@ export function projectDashboard(session: SimulationSession): DashboardView {
   }
 }
 
+export function projectConsequenceReveal(session: SimulationSession): ConsequenceRevealView | null {
+  if (!session.consequence || !session.fnaBeforeDecision || !session.fnaAfterDecision) {
+    return null
+  }
+  const beforeFna = session.fnaBeforeDecision
+  const afterFna = session.fnaAfterDecision
+  const beforeScore = calculateLifeScore(
+    beforeFna,
+    session.financialProfile,
+    null,
+  )
+  const afterProfile = session.financialProfile
+  const afterScore = calculateLifeScore(
+    afterFna,
+    afterProfile,
+    session.consequence.decisionQuality,
+  )
+
+  const houseGoal = session.goalPortfolio.goals.find((g) =>
+    /home|house/i.test(g.goalName),
+  )
+
+  const deltas = [
+    {
+      label: 'Savings readiness',
+      before: Math.round(beforeFna.emergencyFundProgress * 100),
+      after: Math.round(afterFna.emergencyFundProgress * 100),
+      unit: '%',
+      higherIsBetter: true,
+    },
+    {
+      label: 'Protection',
+      before: beforeFna.protectionScore,
+      after: afterFna.protectionScore,
+      higherIsBetter: true,
+    },
+    {
+      label: 'Life Score',
+      before: beforeScore.overall,
+      after: afterScore.overall,
+      higherIsBetter: true,
+    },
+  ]
+
+  if (houseGoal) {
+    deltas.push({
+      label: `${houseGoal.goalName} target age`,
+      before: houseGoal.targetAge,
+      after: houseGoal.targetAge + (afterScore.overall < beforeScore.overall ? 2 : 0),
+      higherIsBetter: false,
+    })
+  }
+
+  return {
+    narrative: session.consequence.narrative,
+    qualityLabel: decisionQualityLabel(session.consequence.decisionQuality),
+    deltas,
+    lifeScoreBefore: beforeScore.overall,
+    lifeScoreAfter: afterScore.overall,
+  }
+}
+
 export function projectPlanLens(session: SimulationSession): PlanLensView {
   const currency = resolveCurrency(session)
   const recommendations: RecommendationView[] = session.recommendations.map((rec) => ({
@@ -305,26 +369,63 @@ export function projectPlanLens(session: SimulationSession): PlanLensView {
     status: goal.status,
   }))
 
+  const encounterId = session.encounterId ?? null
+  let situation: PlanLensView['situation'] = null
+  if (encounterId) {
+    try {
+      const enc = getEncounterRepository().getById(encounterId)
+      if (enc) {
+        situation = {
+          title: enc.title,
+          narrative: enc.narrative || enc.teaser,
+          domainLabel: enc.domainId.replace(/_/g, ' '),
+          learningObjective: enc.learningObjective,
+        }
+      }
+    } catch {
+      situation = session.situation
+        ? {
+            title: session.situation.title,
+            narrative: session.situation.narrative,
+            domainLabel: session.selectedDomainId?.replace(/_/g, ' ') ?? 'Life',
+            learningObjective: session.situation.learningObjective,
+          }
+        : null
+    }
+  } else if (session.situation) {
+    situation = {
+      title: session.situation.title,
+      narrative: session.situation.narrative,
+      domainLabel: session.selectedDomainId?.replace(/_/g, ' ') ?? 'Life',
+      learningObjective: session.situation.learningObjective,
+    }
+  }
+
   return {
     sessionId: session.id,
     phase: session.phase,
     cycleLabel: formatCycleLabel(resolveCycleIndex(session)),
     cycleDeadlineAt: session.cycleDeadlineAt ?? null,
     decisionTimerSeconds: session.decisionTimerSeconds ?? 0,
+    situation,
     fna: projectFnaSummary(session),
     recommendations,
     goals,
-    decisionOptions: getDecisionOptions(session.scenarioId).map((opt) => ({
+    decisionOptions: getDecisionOptions(session.scenarioId, encounterId).map((opt) => ({
       strategy: opt.strategy,
       label: opt.label,
       description: opt.description,
       alignsWithSolutions: opt.alignsWithSolutions,
+      costLabel: opt.costLabel,
+      outcomePreview: opt.outcomePreview,
+      tone: opt.tone,
     })),
     canDecide: session.phase === 'decision_pending',
     selectedStrategy: session.decision?.strategy ?? null,
     decisionQuality: session.consequence
       ? decisionQualityLabel(session.consequence.decisionQuality)
       : null,
+    consequenceReveal: projectConsequenceReveal(session),
   }
 }
 

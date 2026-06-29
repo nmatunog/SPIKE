@@ -18,6 +18,7 @@ import {
 } from '../../lib/ventureDesignStudioService.js';
 import { Day4VentureDesignHero, WORKSHOP_HREF } from './ventureDesign/Day4VentureDesignHero.jsx';
 import { Week2ActivateHero } from './week2/Week2ActivateHero.jsx';
+import { Week3Day1PlaybookHero } from './week3/Week3Day1PlaybookHero.jsx';
 import { Week2StudioLaunchCard } from './week2/Week2StudioLaunchCard.jsx';
 import { PlaybookReflectionNudge } from './PlaybookReflectionNudge.jsx';
 import { BLUEPRINT_LINKS, playbookHref, playbookWeek2StudioHref, ROUTES } from '../../routes/paths.js';
@@ -79,6 +80,7 @@ export function ParticipantDayView({
   const isDay3 = bundle.day.id === 'day-segment-1-week-1-day-3';
   const isDay4 = bundle.day.id === 'day-segment-1-week-1-day-4';
   const isWeek2Day1 = bundle.day.id === 'day-segment-1-week-2-day-1';
+  const isWeek3Day1 = bundle.day.id === 'day-segment-1-week-3-day-1';
   const weekDayMatch = bundle.day.id.match(/day-segment-1-week-(\d+)-day-(\d+)/);
   const week2Day = weekDayMatch && Number(weekDayMatch[1]) === 2 ? Number(weekDayMatch[2]) : 0;
   const resolvedProgramWeek = programWeek ?? (weekDayMatch ? Number(weekDayMatch[1]) : 1);
@@ -113,6 +115,8 @@ export function ParticipantDayView({
       {isWeek2Day1 && !skipWeek2Hero ? (
         <Week2ActivateHero variant={staffPreview ? 'mentor' : 'intern'} />
       ) : null}
+
+      {isWeek3Day1 ? <Week3Day1PlaybookHero /> : null}
 
       {isDay4 ? (
         <Day4VentureDesignHero

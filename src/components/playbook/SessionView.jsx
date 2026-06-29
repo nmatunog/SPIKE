@@ -11,6 +11,10 @@ import { Rocket } from 'lucide-react';
 import { resolvePresentations } from '../../lib/contentLoader.js';
 import { BLUEPRINT_LINKS, ROUTES } from '../../routes/paths.js';
 import { isDayClosingReflection } from '../../lib/dayClosingReflection.js';
+import {
+  WEEK3_DAY1_HERO_IMAGE,
+  WEEK3_DAY1_ID,
+} from './week3/Week3Day1PlaybookHero.jsx';
 
 const DAY3_ID = 'day-segment-1-week-1-day-3';
 const DAY4_ID = 'day-segment-1-week-1-day-4';
@@ -114,15 +118,25 @@ export function SessionView({
         <p className="mt-1 text-sm text-gray-600">{session.durationMinutes} minutes</p>
       </header>
 
-      {sessionPresentations.map((pres, idx) => (
+      {sessionPresentations.map((pres, idx) => {
+        const slides =
+          bundle.day.id === WEEK3_DAY1_ID
+            ? (pres.slides ?? []).filter(
+                (slide, slideIdx) =>
+                  !(slideIdx === 0 && slide.imageUrl === WEEK3_DAY1_HERO_IMAGE),
+              )
+            : pres.slides ?? [];
+
+        return (
         <section key={`pres-${idx}`}>
           <PresentationViewer
             presentation={pres.presentation}
-            slides={pres.slides}
+            slides={slides}
             facultyMode={showSpeakerNotes}
           />
         </section>
-      ))}
+        );
+      })}
 
       {showVentureStudio ? (
         <section aria-label="Venture Studio interactive module">

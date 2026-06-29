@@ -14,6 +14,19 @@ export interface EncounterWeightBands {
   late?: number
 }
 
+export type EncounterLifeChoiceTone = 'positive' | 'neutral' | 'warning' | 'critical'
+
+export interface EncounterLifeChoice {
+  id: string
+  label: string
+  description?: string
+  costLabel?: string
+  outcomePreview?: string
+  /** Maps to engine DecisionStrategy — hidden from player */
+  strategy: string
+  tone?: EncounterLifeChoiceTone
+}
+
 export interface EncounterRecord {
   id: string
   domainId: string
@@ -25,6 +38,8 @@ export interface EncounterRecord {
   learningObjective: string
   scenarioTemplate: EncounterScenarioTemplate
   situationKind: EncounterSituationKind
+  /** Contextual life-language choices; generated at runtime if omitted */
+  lifeChoices?: EncounterLifeChoice[]
   weights: {
     base: number
     bands?: EncounterWeightBands

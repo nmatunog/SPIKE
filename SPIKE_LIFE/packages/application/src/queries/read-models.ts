@@ -188,6 +188,32 @@ export interface DecisionOptionView {
   label: string
   description: string
   alignsWithSolutions: string[]
+  costLabel?: string
+  outcomePreview?: string
+  tone?: 'positive' | 'neutral' | 'warning' | 'critical'
+}
+
+export interface SituationContextView {
+  title: string
+  narrative: string
+  domainLabel: string
+  learningObjective: string
+}
+
+export interface ConsequenceDeltaView {
+  label: string
+  before: number
+  after: number
+  unit?: string
+  higherIsBetter?: boolean
+}
+
+export interface ConsequenceRevealView {
+  narrative: string
+  qualityLabel: string | null
+  deltas: ConsequenceDeltaView[]
+  lifeScoreBefore: number
+  lifeScoreAfter: number
 }
 
 export interface PlanLensView {
@@ -196,6 +222,7 @@ export interface PlanLensView {
   cycleLabel: string
   cycleDeadlineAt: string | null
   decisionTimerSeconds: number
+  situation: SituationContextView | null
   fna: FnaSummaryView | null
   recommendations: RecommendationView[]
   goals: GoalView[]
@@ -203,6 +230,7 @@ export interface PlanLensView {
   canDecide: boolean
   selectedStrategy: DecisionStrategy | null
   decisionQuality: string | null
+  consequenceReveal: ConsequenceRevealView | null
 }
 
 export interface ProtectionPlanView {

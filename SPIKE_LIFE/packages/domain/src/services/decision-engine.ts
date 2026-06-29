@@ -1,10 +1,15 @@
 import type { DecisionStrategy, ScenarioId } from '../types.js'
+import { getEncounterRepository } from '../ports/encounter-repository.js'
+import { resolveLifeChoices } from './encounter-life-choices.js'
 
 export interface DecisionOption {
   strategy: DecisionStrategy
   label: string
   description: string
   alignsWithSolutions: string[]
+  costLabel?: string
+  outcomePreview?: string
+  tone?: 'positive' | 'neutral' | 'warning' | 'critical'
 }
 
 export const PROMOTION_DECISION_OPTIONS: DecisionOption[] = [
@@ -103,13 +108,45 @@ const OPTIONS_BY_SCENARIO: Record<ScenarioId, DecisionOption[]> = {
   protection_stress: PROTECTION_STRESS_DECISION_OPTIONS,
 }
 
-export function getDecisionOptions(scenarioId: ScenarioId = 'promotion'): DecisionOption[] {
+export function getDecisionOptions(
+  scenarioId: ScenarioId = 'promotion',
+  encounterId?: string | null,
+): DecisionOption[] {
+  if (encounterId) {
+    try {
+      const enc = getEncounterRepository().getById(encounterId)
+      if (enc) {
+        return resolveLifeChoices(enc).map((choice) => ({
+          strategy: choice.strategy as DecisionStrategy,
+          label: choice.label,
+          description: choice.description ?? choice.outcomePreview ?? '',
+          alignsWithSolutions: [],
+          costLabel: choice.costLabel,
+          outcomePreview: choice.outcomePreview,
+          tone: choice.tone,
+        }))
+      }
+    } catch {
+      // fall through to scenario options
+    }
+  }
   return [...OPTIONS_BY_SCENARIO[scenarioId]]
 }
 
 export function isValidDecisionStrategy(
   value: string,
   scenarioId: ScenarioId = 'promotion',
+  encounterId?: string | null,
 ): value is DecisionStrategy {
+  if (encounterId) {
+    try {
+      const enc = getEncounterRepository().getById(encounterId)
+      if (enc) {
+        return resolveLifeChoices(enc).some((c) => c.strategy === value)
+      }
+    } catch {
+      // fall through
+    }
+  }
   return OPTIONS_BY_SCENARIO[scenarioId].some((o) => o.strategy === value)
 }

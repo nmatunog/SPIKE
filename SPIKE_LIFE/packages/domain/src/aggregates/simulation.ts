@@ -201,7 +201,7 @@ export class Simulation {
     if (this.state.phase !== 'decision_pending') {
       throw new Error(`Cannot submit decision in phase "${this.state.phase}".`)
     }
-    if (!isValidDecisionStrategy(strategy, this.state.scenarioId)) {
+    if (!isValidDecisionStrategy(strategy, this.state.scenarioId, this.state.encounterId)) {
       throw new Error(`Invalid decision strategy: ${strategy}`)
     }
     if (!this.state.fnaBeforeDecision) {

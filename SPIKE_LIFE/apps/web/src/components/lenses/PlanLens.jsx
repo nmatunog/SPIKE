@@ -170,18 +170,25 @@ export default function PlanLens({
       )}
 
       {show('decisions') && data.canDecide && onDecide && (
-        <section className="rounded-2xl border-2 border-spike-brand/25 bg-white p-5 shadow-sm">
-          <h3 className="text-title font-semibold text-spike-ink">Your move this turn</h3>
-          <p className="mt-2 text-body text-slate-600">
-            Choose the strategy that best closes your top gap. The Financial Decision Engine calculates
-            real outcomes—no random luck.
+        <section className="space-y-3">
+          {data.situation && (
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <p className="text-caption font-semibold uppercase text-[#8B0000]">
+                {data.situation.domainLabel}
+              </p>
+              <h3 className="mt-1 text-title font-semibold text-spike-ink">{data.situation.title}</h3>
+              <p className="mt-2 text-body text-slate-600">{data.situation.narrative}</p>
+            </div>
+          )}
+          <p className="text-body text-slate-600">
+            Choose what you would actually do in real life — the engine handles the money behind the scenes.
           </p>
           {error && (
-            <p className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-body text-red-700" role="alert">
+            <p className="rounded-xl bg-red-50 px-4 py-3 text-body text-red-700" role="alert">
               {error}
             </p>
           )}
-          <div className="mt-4 grid gap-3">
+          <div className="grid gap-3 sm:grid-cols-2">
             {data.decisionOptions.map((opt) => (
               <button
                 key={opt.strategy}
@@ -191,7 +198,16 @@ export default function PlanLens({
                 className="focus-game w-full rounded-xl border border-slate-200 bg-white p-4 text-left transition hover:border-spike-brand/35 hover:bg-red-50/40 disabled:opacity-50"
               >
                 <p className="text-body font-semibold text-spike-ink">{opt.label}</p>
-                <p className="mt-1 text-caption leading-relaxed text-slate-600">{opt.description}</p>
+                {opt.description && (
+                  <p className="mt-1 text-caption leading-relaxed text-slate-600">{opt.description}</p>
+                )}
+                {(opt.costLabel || opt.outcomePreview) && (
+                  <p className="mt-2 text-caption text-slate-500">
+                    {opt.costLabel && <span>Cost: {opt.costLabel}</span>}
+                    {opt.costLabel && opt.outcomePreview && ' · '}
+                    {opt.outcomePreview && <span>{opt.outcomePreview}</span>}
+                  </p>
+                )}
               </button>
             ))}
           </div>

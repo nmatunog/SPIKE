@@ -24,6 +24,10 @@ import ThirteenthMonthModal from './gameboard/ThirteenthMonthModal.jsx'
 import AnnualCheckpointCard from './gameboard/AnnualCheckpointCard.jsx'
 import LifeSummaryScreen from './gameboard/LifeSummaryScreen.jsx'
 import OnboardingRulesCard from './gameboard/OnboardingRulesCard.jsx'
+import TurnBoardPopout from './gameboard/TurnBoardPopout.jsx'
+import LifeDecisionStage from './gameboard/LifeDecisionStage.jsx'
+import ConsequenceReveal from './gameboard/ConsequenceReveal.jsx'
+import { computeFinancialHealth } from '@spike-life/domain'
 import {
   ensureSessionStarted,
   endBoardTurn,
@@ -66,6 +70,9 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
   const [showRules, setShowRules] = useState(
     () => !localStorage.getItem('spike-life-rules-seen'),
   )
+  const [showTurnPopout, setShowTurnPopout] = useState(false)
+  const [showLifeDecision, setShowLifeDecision] = useState(false)
+  const [consequenceReveal, setConsequenceReveal] = useState(null)
 
   const {
     expandedPanel,
@@ -240,9 +247,9 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
       setShowAdvisorPrompt(true)
       setPendingAdvisorInsight(false)
     } else {
-      setShowEncounterModal(true)
+      setShowTurnPopout(true)
     }
-  }, [pendingAdvisorInsight, setShowEncounterModal])
+  }, [pendingAdvisorInsight])
 
   const rolling = yearRevealActive
 
@@ -250,17 +257,29 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
     setBusy(true)
     setError(null)
     setShowEncounterModal(false)
+    setShowLifeDecision(false)
     try {
       await submitDecision(strategy)
-      setExpandedPanel('reflect')
+      const plan = await getLensView('plan')
+      setPlanView(plan)
       await refresh()
       setJourneyView(await getLensView('journey'))
-      setPlanView(await getLensView('plan'))
+      if (plan?.lens === 'plan' && plan.data.consequenceReveal) {
+        setConsequenceReveal(plan.data.consequenceReveal)
+      } else {
+        setExpandedPanel('reflect')
+      }
     } catch (err) {
       setError(err.message)
+      setShowLifeDecision(true)
     } finally {
       setBusy(false)
     }
+  }
+
+  function handleConsequenceContinue() {
+    setConsequenceReveal(null)
+    setExpandedPanel('reflect')
   }
 
   async function handleReflection(answers) {
@@ -499,7 +518,7 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
             }}
             onDecideMyself={() => {
               setShowAdvisorPrompt(false)
-              setShowEncounterModal(true)
+              setShowLifeDecision(true)
             }}
           />
 
@@ -576,6 +595,59 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
           />
         </aside>
       </div>
+
+      <TurnBoardPopout
+        visible={showTurnPopout && inDecisionPhase}
+        domains={board?.lifeDomains ?? []}
+        selectedDomainId={board?.selectedDomainId}
+        domainLabel={board?.selectedDomainLabel ?? yearRevealData?.domainLabel}
+        encounter={board?.activeEncounter ?? yearRevealData?.encounter}
+        categoryDie={board?.lastCategoryDieRoll}
+        situationDie={board?.lastSituationDieRoll}
+        stats={dashboard ? {
+          age: dashboard.age,
+          cashFlow: dashboard.monthlySurplus?.formatted,
+          cash: dashboard.netWorth?.formatted,
+          netWorth: dashboard.netWorth?.formatted,
+          lifeScore: dashboard.lifeScore?.overall,
+          year: dashboard.simulationYear,
+          financialHealth: computeFinancialHealth(
+            planView?.lens === 'plan' && planView.data.fna
+              ? {
+                  cashFlowScore: planView.data.fna.cashFlowScore,
+                  protectionScore: planView.data.fna.protectionScore,
+                  debtScore: planView.data.fna.debtScore,
+                  goalScore: planView.data.fna.goalScore,
+                  retirementScore: planView.data.fna.retirementScore,
+                }
+              : null,
+          ),
+        } : null}
+        onContinue={() => {
+          setShowTurnPopout(false)
+          setShowLifeDecision(true)
+        }}
+      />
+
+      {showLifeDecision && inDecisionPhase && !showTurnPopout && (
+        <LifeDecisionStage
+          situation={planView?.lens === 'plan' ? planView.data.situation : null}
+          options={planView?.lens === 'plan' ? planView.data.decisionOptions : []}
+          canDecide={canDecide}
+          deciding={busy}
+          error={error}
+          decisionTimerSeconds={planView?.lens === 'plan' ? planView.data.decisionTimerSeconds : 0}
+          cycleDeadlineAt={planView?.lens === 'plan' ? planView.data.cycleDeadlineAt : null}
+          onDecide={handleDecide}
+          onTimerExpire={handleTimerExpire}
+          onDismiss={() => setShowLifeDecision(false)}
+        />
+      )}
+
+      <ConsequenceReveal
+        reveal={consequenceReveal}
+        onContinue={handleConsequenceContinue}
+      />
 
       <FinancialHUD
         data={financialHUD}
