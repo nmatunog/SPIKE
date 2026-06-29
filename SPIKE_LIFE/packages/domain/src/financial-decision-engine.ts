@@ -86,6 +86,11 @@ export function submitReflection(
   return saveSimulation(sim)
 }
 
+export function finalizeCycleAfterDecision(session: SimulationState): SimulationState {
+  const sim = loadSimulation(session).finalizeCycleAfterDecision()
+  return saveSimulation(sim)
+}
+
 export function advanceTurn(session: SimulationState): SimulationState {
   const sim = loadSimulation(session).advanceTurn()
   return saveSimulation(sim)

@@ -85,6 +85,11 @@ export async function submitDecision(strategy, rationale) {
   await boardCommands.submitDecision(BOARD_ID, strategy, rationale)
 }
 
+export async function finalizeCycle() {
+  await ensureSessionStarted()
+  await boardCommands.finalizeCycle(BOARD_ID)
+}
+
 export async function submitReflection(answers) {
   await ensureSessionStarted()
   await boardCommands.submitReflection(BOARD_ID, answers)

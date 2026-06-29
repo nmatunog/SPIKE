@@ -1,0 +1,66 @@
+/* GameScreenV2 — GDS v1.0 single-focus board game shell */
+
+.gsv2-shell {
+  @apply relative flex h-dvh max-h-dvh flex-col overflow-hidden;
+  background: radial-gradient(ellipse at 50% 20%, #1e293b 0%, #0f172a 55%, #020617 100%);
+}
+
+.gsv2-domain-tile {
+  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.22s ease, filter 0.22s ease;
+}
+
+.gsv2-domain-tile--scan {
+  transform: scale(1.06);
+  filter: brightness(1.25);
+  z-index: 5;
+}
+
+.gsv2-domain-tile--selected {
+  transform: scale(1.12) translateY(-4px);
+  filter: brightness(1.15);
+  z-index: 10;
+  box-shadow: 0 0 32px var(--domain-glow, rgba(99, 102, 241, 0.55));
+}
+
+.gsv2-situation-card {
+  @apply relative overflow-hidden rounded-3xl border border-white/15 shadow-2xl;
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.12) 0%, rgba(15, 23, 42, 0.92) 45%);
+  backdrop-filter: blur(16px);
+  min-height: min(68vh, 640px);
+}
+
+.gsv2-choice-card {
+  @apply rounded-2xl border border-white/10 bg-slate-900/70 p-4 text-left backdrop-blur-sm transition;
+}
+
+.gsv2-choice-card:hover:not(:disabled) {
+  @apply border-white/25 bg-slate-800/80;
+}
+
+.gsv2-choice-card--selected {
+  @apply border-indigo-400/60 bg-indigo-950/50 ring-2 ring-indigo-400/40;
+}
+
+.gsv2-drawer {
+  @apply fixed inset-y-0 right-0 z-50 w-full max-w-md border-l border-white/10 bg-slate-950/95 p-6 shadow-2xl backdrop-blur-xl;
+}
+
+.gsv2-stat-flash-up {
+  animation: gsv2-flash-up 1.4s ease-out;
+}
+
+.gsv2-stat-flash-down {
+  animation: gsv2-flash-down 1.4s ease-out;
+}
+
+@keyframes gsv2-flash-up {
+  0% { background-color: rgba(16, 185, 129, 0); }
+  20% { background-color: rgba(16, 185, 129, 0.25); }
+  100% { background-color: rgba(16, 185, 129, 0); }
+}
+
+@keyframes gsv2-flash-down {
+  0% { background-color: rgba(239, 68, 68, 0); }
+  20% { background-color: rgba(239, 68, 68, 0.22); }
+  100% { background-color: rgba(239, 68, 68, 0); }
+}

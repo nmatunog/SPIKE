@@ -14,6 +14,7 @@ import {
   startPlanningCycle,
   submitDecision,
   submitReflection,
+  finalizeCycleAfterDecision,
 } from './financial-decision-engine.js'
 
 export interface BoardOrchestratorDeps {
@@ -141,6 +142,27 @@ export async function submitBoardReflection(
   await deps.boardRepo.save(afterReflection)
 
   return { board: afterReflection, simulation: updated }
+}
+
+export async function finalizeBoardCycle(
+  deps: BoardOrchestratorDeps,
+  boardId: string,
+): Promise<{ board: BoardState; simulation: SimulationState }> {
+  const boardState = await deps.boardRepo.findById(boardId)
+  if (!boardState) throw new Error(`Board not found: ${boardId}`)
+
+  const sim = await deps.simulationRepo.findById(boardState.simulationId)
+  if (!sim) throw new Error(`Simulation not found: ${boardState.simulationId}`)
+
+  const updated = finalizeCycleAfterDecision(sim)
+  await deps.simulationRepo.save(updated)
+
+  let board = Board.fromState(boardState).markReflectionCompleted()
+  board.pullGameboardEvents()
+  const afterCycle = board.toState()
+  await deps.boardRepo.save(afterCycle)
+
+  return { board: afterCycle, simulation: updated }
 }
 
 export async function endBoardTurn(

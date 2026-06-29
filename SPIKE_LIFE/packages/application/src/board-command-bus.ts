@@ -12,6 +12,7 @@ import type {
 import {
   createSoloBoard,
   endBoardTurn,
+  finalizeBoardCycle,
   rollBoardAndTriggerSituation,
   submitBoardDecision,
   submitBoardReflection,
@@ -72,6 +73,11 @@ export class BoardCommandBus {
     answers: ReflectionAnswer[],
   ): Promise<SimulationState> {
     const { simulation } = await submitBoardReflection(this.deps(), boardId, answers)
+    return simulation
+  }
+
+  async finalizeCycle(boardId: string): Promise<SimulationState> {
+    const { simulation } = await finalizeBoardCycle(this.deps(), boardId)
     return simulation
   }
 

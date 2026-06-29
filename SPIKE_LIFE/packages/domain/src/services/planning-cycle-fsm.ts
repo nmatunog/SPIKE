@@ -19,7 +19,7 @@ const ALLOWED_TRANSITIONS: Record<CyclePhase, readonly CyclePhase[]> = {
   situation_presented: ['discovery_complete', 'decision_pending'],
   discovery_complete: ['decision_pending'],
   decision_pending: ['consequences_applied'],
-  consequences_applied: ['reflection_complete'],
+  consequences_applied: ['reflection_complete', 'cycle_complete'],
   reflection_complete: ['cycle_complete'],
   cycle_complete: ['created'],
 }

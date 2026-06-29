@@ -281,6 +281,29 @@ export class Simulation {
     return this
   }
 
+  /** GDS v1.0 — consequences → cycle complete without reflection prompts. */
+  finalizeCycleAfterDecision(): Simulation {
+    if (this.state.phase !== 'consequences_applied') {
+      throw new Error(`Cannot finalize cycle in phase "${this.state.phase}".`)
+    }
+    if (!this.state.decision || !this.state.consequence) {
+      throw new Error('Decision and consequences required before finalizing cycle.')
+    }
+
+    this.state = {
+      ...this.state,
+      reflection: null,
+      phase: 'cycle_complete',
+      updatedAt: new Date().toISOString(),
+    }
+
+    this.record(createDomainEvent(DomainEventType.SIMULATION_COMPLETED, this.state.id, {
+      scenarioId: this.state.scenarioId,
+    }))
+
+    return this
+  }
+
   completeReflection(answers: ReflectionAnswer[]): Simulation {
     if (this.state.phase !== 'consequences_applied') {
       throw new Error(`Cannot submit reflection in phase "${this.state.phase}".`)
