@@ -39,6 +39,12 @@ function scanDelay(step) {
   return Math.round(45 + t * t * 220)
 }
 
+function averageDreamProgress(goals = []) {
+  if (!goals.length) return 0
+  const sum = goals.reduce((acc, g) => acc + (g.progressPercent ?? 0), 0)
+  return Math.round(sum / goals.length)
+}
+
 export default function GameScreenV3({ onOpenWorkshop }) {
   const [phase, setPhase] = useState(PHASE.IDLE)
   const [dashboard, setDashboard] = useState(null)
@@ -51,6 +57,7 @@ export default function GameScreenV3({ onOpenWorkshop }) {
   const [consequenceReveal, setConsequenceReveal] = useState(null)
   const [drawer, setDrawer] = useState(null)
   const [scanHighlightId, setScanHighlightId] = useState(null)
+  const [autoDecide, setAutoDecide] = useState(false)
   const scanTimerRef = useRef(null)
 
   const refresh = useCallback(async () => {
@@ -81,7 +88,9 @@ export default function GameScreenV3({ onOpenWorkshop }) {
   const planData = planView?.lens === 'plan' ? planView.data : null
   const situation = planData?.situation ?? null
   const decisionOptions = planData?.decisionOptions ?? []
+  const recommendations = planData?.recommendations ?? []
   const goals = planData?.goals ?? []
+  const dreamProgressPercent = averageDreamProgress(goals)
   const inDecisionPhase = board?.phase === 'decision_phase'
   const canDecide = inDecisionPhase && dashboard?.canDecide && phase === PHASE.SITUATION
   const canStartCycle = board?.canRoll && phase === PHASE.IDLE && !busy
@@ -142,7 +151,7 @@ export default function GameScreenV3({ onOpenWorkshop }) {
   }
 
   async function handleTimerExpire() {
-    if (!canDecide || busy) return
+    if (!canDecide || busy || !autoDecide) return
     setBusy(true)
     setError(null)
     try {
@@ -163,9 +172,10 @@ export default function GameScreenV3({ onOpenWorkshop }) {
     }
   }
 
-  async function handleConfirmDecision() {
-    const opt = decisionOptions[selectedChoiceIndex]
+  async function handleConfirmDecision(choiceIndex = selectedChoiceIndex) {
+    const opt = decisionOptions[choiceIndex]
     if (!opt) return
+    setSelectedChoiceIndex(choiceIndex)
     setBusy(true)
     setError(null)
     try {
@@ -204,110 +214,135 @@ export default function GameScreenV3({ onOpenWorkshop }) {
     await refresh()
   }
 
-  const boardBackground = rolling || showSituation
-
   return (
     <div className="gsv3-shell">
-      <StatusBarV3 dashboard={dashboard} onOpenDrawer={setDrawer} />
+      <StatusBarV3
+        dashboard={dashboard}
+        dreamProgressPercent={dreamProgressPercent}
+        onOpenDrawer={setDrawer}
+      />
 
-      {onOpenWorkshop && (
-        <div className="px-4 py-0.5 text-right">
+      {(rolling || showSituation) && (
+        <div className="gsv3-stage-dim" style={{ opacity: rolling ? 0.35 : 0.12 }} />
+      )}
+
+      <div className={`gsv3-zone-board ${rolling ? 'gsv3-board-zone--rolling' : ''}`}>
+        <DomainCarousel
+          domains={board?.lifeDomains ?? []}
+          rolling={rolling}
+          scanHighlightId={scanHighlightId}
+          selectedDomainId={board?.selectedDomainId}
+          winnerLocked={showSituation}
+        />
+        {onOpenWorkshop && (
           <button
             type="button"
             onClick={onOpenWorkshop}
-            className="text-[10px] font-semibold uppercase tracking-wider text-indigo-600 hover:text-indigo-900"
+            className="absolute right-3 top-1 text-[9px] font-semibold uppercase tracking-wider text-indigo-600 hover:text-indigo-900"
           >
             Workshop →
           </button>
-        </div>
-      )}
+        )}
+      </div>
 
-      {(rolling || showSituation) && <div className="gsv3-stage-dim" style={{ opacity: rolling ? 0.55 : 0.25 }} />}
+      <div className="gsv3-zone-situation">
+        <AnimatePresence mode="wait">
+          {showSituation && (
+            <motion.div
+              key="situation"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="h-full"
+            >
+              <SituationStageV3
+                situation={situation}
+                domainId={board?.selectedDomainId}
+                domainLabel={board?.selectedDomainLabel}
+                recommendations={recommendations}
+                decisionTimerSeconds={planData?.decisionTimerSeconds ?? 0}
+                cycleDeadlineAt={planData?.cycleDeadlineAt}
+                timerActive={canDecide}
+                onTimerExpire={handleTimerExpire}
+              />
+            </motion.div>
+          )}
 
-      <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
-        <div
-          className={`gsv3-board-zone py-3 transition-all ${
-            rolling ? 'gsv3-board-zone--rolling' : boardBackground ? 'gsv3-board-zone--background' : ''
-          }`}
-        >
-          <DomainCarousel
-            domains={board?.lifeDomains ?? []}
-            rolling={rolling}
-            scanHighlightId={scanHighlightId}
-            selectedDomainId={board?.selectedDomainId}
-            winnerLocked={showSituation}
-          />
-        </div>
-
-        <div className="relative flex min-h-0 flex-1 flex-col items-center justify-start overflow-hidden px-2">
-          <AnimatePresence mode="wait">
-            {phase === PHASE.IDLE && (
-              <motion.div
-                key="idle"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="flex flex-1 flex-col items-center justify-center gap-4 py-6"
-              >
-                <p className="max-w-md text-center text-sm text-slate-600">
+          {phase === PHASE.IDLE && !showSituation && (
+            <motion.div
+              key="idle"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="h-full"
+            >
+              <div className="gsv3-idle-panel">
+                <p className="text-sm text-slate-600">
                   One planning cycle. One domain. One decision.
                 </p>
                 <button
                   type="button"
                   disabled={!canStartCycle}
                   onClick={handleStartCycle}
-                  className="rounded-2xl bg-indigo-600 px-10 py-4 text-sm font-extrabold uppercase tracking-widest text-white shadow-lg shadow-indigo-300/40 disabled:opacity-40"
+                  className="rounded-2xl bg-indigo-600 px-8 py-3 text-xs font-extrabold uppercase tracking-widest text-white shadow-lg shadow-indigo-300/40 disabled:opacity-40"
                 >
                   {busy ? 'Rolling…' : 'Begin planning cycle'}
                 </button>
-              </motion.div>
-            )}
+              </div>
+            </motion.div>
+          )}
 
-            {showSituation && (
-              <motion.div
-                key="play"
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex w-full max-w-5xl flex-col items-center gap-4 overflow-y-auto pb-2"
-              >
-                <SituationStageV3
-                  situation={situation}
-                  domainId={board?.selectedDomainId}
-                  domainLabel={board?.selectedDomainLabel}
-                  cycleLabel={dashboard?.cycleLabel}
-                  decisionTimerSeconds={planData?.decisionTimerSeconds ?? 0}
-                  cycleDeadlineAt={planData?.cycleDeadlineAt}
-                  timerActive={canDecide}
-                  onTimerExpire={handleTimerExpire}
-                />
-                <DecisionActionCards
-                  options={decisionOptions}
-                  selectedIndex={selectedChoiceIndex}
-                  onSelect={setSelectedChoiceIndex}
-                  onConfirm={handleConfirmDecision}
-                  canDecide={canDecide}
-                  deciding={busy}
-                  error={error}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {rolling && (
+            <motion.div key="rolling" className="h-full">
+              <div className="gsv3-idle-panel border-indigo-200 bg-indigo-50/40">
+                <p className="text-sm font-semibold text-indigo-800">Life is choosing your next chapter…</p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-          {phase === PHASE.CONSEQUENCES && (
+        {phase === PHASE.CONSEQUENCES && (
+          <div className="absolute inset-0 z-50 flex items-center justify-center px-4">
             <ConsequenceAnimation reveal={consequenceReveal} onComplete={handleConsequenceComplete} />
-          )}
+          </div>
+        )}
 
-          {phase === PHASE.DREAM && goals.length > 0 && (
+        {phase === PHASE.DREAM && goals.length > 0 && (
+          <div className="absolute inset-0 z-50 flex items-center justify-center px-4">
             <DreamProgressPulse goals={goals} onComplete={handleDreamComplete} />
-          )}
+          </div>
+        )}
 
-          {phase === PHASE.DREAM && goals.length === 0 && (
-            <DreamProgressSkip onComplete={handleDreamComplete} />
-          )}
-        </div>
+        {phase === PHASE.DREAM && goals.length === 0 && (
+          <DreamProgressSkip onComplete={handleDreamComplete} />
+        )}
       </div>
 
-      <CycleStepperV3 phase={phase} />
+      <div className="gsv3-zone-choices">
+        {showSituation ? (
+          <DecisionActionCards
+            options={decisionOptions}
+            selectedIndex={selectedChoiceIndex}
+            onSelect={setSelectedChoiceIndex}
+            onConfirm={handleConfirmDecision}
+            canDecide={canDecide}
+            deciding={busy}
+            error={error}
+          />
+        ) : (
+          <div className="flex h-full items-center justify-center">
+            <p className="text-[10px] uppercase tracking-[0.25em] text-slate-400">
+              {phase === PHASE.IDLE ? 'Awaiting roll' : 'Responses appear after situation'}
+            </p>
+          </div>
+        )}
+      </div>
+
+      <CycleStepperV3
+        phase={phase}
+        autoDecide={autoDecide}
+        onAutoDecideChange={setAutoDecide}
+      />
 
       <GameScreenDrawers
         drawer={drawer}
@@ -344,7 +379,7 @@ export default function GameScreenV3({ onOpenWorkshop }) {
 
       {dashboard?.pendingCalendarEvent === 'annual_checkpoint' &&
         dashboard.lastAnnualCheckpoint && (
-          <div className="fixed inset-x-0 bottom-14 z-50 flex justify-center px-4">
+          <div className="fixed inset-x-0 bottom-[7vh] z-50 flex justify-center px-4">
             <div className="w-full max-w-md">
               <AnnualCheckpointCard
                 checkpoint={dashboard.lastAnnualCheckpoint}

@@ -268,6 +268,7 @@ export function projectDashboard(session: SimulationSession): DashboardView {
     lifeScore,
     monthlyIncome: formatMoney(profile.monthlyIncome, currency),
     monthlySurplus: formatMoney(monthlySurplus(profile), currency),
+    liquidCash: formatMoney(profile.cash, currency),
     netWorth: formatMoney(netWorth(profile), currency),
     topPriority: fna?.topPriority ?? null,
     fnaRating: fna?.rating ?? null,

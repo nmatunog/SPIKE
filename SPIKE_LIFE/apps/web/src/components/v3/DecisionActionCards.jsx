@@ -1,11 +1,20 @@
 const MARKERS = ['A', 'B', 'C', 'D']
-const RINGS = [
-  'border-emerald-400 ring-emerald-400',
-  'border-blue-400 ring-blue-400',
-  'border-violet-400 ring-violet-400',
-  'border-amber-400 ring-amber-400',
+const THEMES = [
+  { ring: 'border-emerald-400 ring-emerald-400', marker: 'bg-emerald-500', impact: 'bg-emerald-50 text-emerald-700' },
+  { ring: 'border-blue-400 ring-blue-400', marker: 'bg-blue-500', impact: 'bg-blue-50 text-blue-700' },
+  { ring: 'border-violet-400 ring-violet-400', marker: 'bg-violet-500', impact: 'bg-violet-50 text-violet-700' },
+  { ring: 'border-amber-400 ring-amber-400', marker: 'bg-amber-500', impact: 'bg-amber-50 text-amber-700' },
 ]
-const MARKER_BG = ['bg-emerald-500', 'bg-blue-500', 'bg-violet-500', 'bg-amber-500']
+
+function formatImpact(opt) {
+  if (opt.outcomePreview) {
+    return `Impact: ${opt.outcomePreview}`
+  }
+  if (opt.costLabel) {
+    return `Impact: ${opt.costLabel}`
+  }
+  return null
+}
 
 export default function DecisionActionCards({
   options = [],
@@ -17,68 +26,60 @@ export default function DecisionActionCards({
   error,
 }) {
   return (
-    <section className="mx-auto w-full max-w-5xl px-4 pb-2" aria-label="Choose one response">
-      <h2 className="mb-3 text-center text-[11px] font-extrabold uppercase tracking-[0.3em] text-slate-500">
+    <section className="flex h-full flex-col" aria-label="Choose one response">
+      <h2 className="mb-1 shrink-0 text-center text-[10px] font-extrabold uppercase tracking-[0.28em] text-slate-500">
         Choose one response
       </h2>
 
       {error && (
-        <p className="mb-3 rounded-xl bg-red-50 px-4 py-2 text-center text-sm text-red-700 ring-1 ring-red-200">
+        <p className="mb-1 shrink-0 rounded-lg bg-red-50 px-3 py-1 text-center text-xs text-red-700">
           {error}
         </p>
       )}
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="gsv3-choice-grid min-h-0 flex-1">
         {options.map((opt, index) => {
           const selected = selectedIndex === index
+          const theme = THEMES[index % THEMES.length]
+          const impact = formatImpact(opt)
+
           return (
             <button
               key={opt.strategy}
               type="button"
               disabled={!canDecide || deciding}
-              onClick={() => onSelect?.(index)}
+              onClick={() => {
+                onSelect?.(index)
+                if (canDecide && !deciding) onConfirm?.(index)
+              }}
               className={`gsv3-decision-card border-slate-200 ${
-                selected ? `gsv3-decision-card--selected ${RINGS[index % RINGS.length]}` : ''
+                selected ? `gsv3-decision-card--selected ${theme.ring}` : ''
               } disabled:opacity-45`}
             >
-              <div className="flex items-start gap-3">
+              <div className="flex items-start gap-2">
                 <span
-                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-black text-white ${MARKER_BG[index % MARKER_BG.length]}`}
+                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-black text-white ${theme.marker}`}
                 >
                   {MARKERS[index]}
                 </span>
                 <div className="min-w-0 text-left">
-                  <p className="text-sm font-bold leading-snug text-slate-900">{opt.label}</p>
+                  <p className="text-[11px] font-bold leading-snug text-slate-900 md:text-xs">
+                    {opt.label}
+                  </p>
                   {opt.description && (
-                    <p className="mt-1 text-xs leading-relaxed text-slate-500">{opt.description}</p>
-                  )}
-                  {opt.outcomePreview && (
-                    <p className="mt-2 text-[10px] font-semibold uppercase tracking-wide text-indigo-600">
-                      {opt.outcomePreview}
+                    <p className="mt-0.5 line-clamp-2 text-[10px] leading-snug text-slate-500">
+                      {opt.description}
                     </p>
-                  )}
-                  {opt.costLabel && (
-                    <p className="mt-1 font-mono text-[10px] text-slate-400">{opt.costLabel}</p>
                   )}
                 </div>
               </div>
+              {impact && (
+                <p className={`gsv3-decision-card__impact ${theme.impact}`}>{impact}</p>
+              )}
             </button>
           )
         })}
       </div>
-
-      {options.length > 0 && (
-        <div className="mt-4 flex justify-center">
-          <button
-            type="button"
-            disabled={!canDecide || deciding}
-            onClick={onConfirm}
-            className="rounded-2xl bg-slate-900 px-12 py-3.5 text-sm font-extrabold uppercase tracking-widest text-white shadow-lg transition hover:bg-slate-800 disabled:opacity-45"
-          >
-            {deciding ? 'Locking in…' : 'Lock decision'}
-          </button>
-        </div>
-      )}
     </section>
   )
 }

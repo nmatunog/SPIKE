@@ -60,15 +60,12 @@ export default function DomainTile({
           <DomainIcon name={domain.icon} className="h-4 w-4 text-white" />
         </span>
         <div className="min-w-0 flex-1">
-          <p
-            className="truncate text-sm font-extrabold uppercase tracking-wide"
-            style={{ color: identity.color }}
-          >
-            {domain.label}
-          </p>
-          {identity.subtitle && (
-            <p className="truncate text-[10px] font-medium text-slate-500">{identity.subtitle}</p>
-          )}
+          <p className="truncate text-xs font-extrabold uppercase tracking-wide" style={{ color: identity.color }}>
+          {domain.label}
+        </p>
+        {identity.subtitle && (
+          <p className="truncate text-[9px] font-medium text-slate-500">{identity.subtitle}</p>
+        )}
         </div>
       </div>
       <div className="gsv3-domain-tile__art">

@@ -72,6 +72,7 @@ export interface DashboardView {
   lifeScore: LifeScoreView
   monthlyIncome: MoneyDisplay
   monthlySurplus: MoneyDisplay
+  liquidCash: MoneyDisplay
   netWorth: MoneyDisplay
   topPriority: string | null
   fnaRating: string | null
