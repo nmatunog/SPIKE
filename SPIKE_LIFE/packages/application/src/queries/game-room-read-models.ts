@@ -11,6 +11,10 @@ export interface PlayerTokenView {
   simulationId: string
   lifeScoreOverall: number | null
   characterName: string | null
+  archetypeId: string | null
+  archetypeLabel: string | null
+  archetypeTagline: string | null
+  age: number | null
 }
 
 export interface GameBoardView {

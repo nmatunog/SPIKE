@@ -26,4 +26,10 @@ describe('PHILIPPINES_CONTENT_PACK', () => {
     expect(PHILIPPINES_CONTENT_PACK.yearLoop?.advisorInsightProbability).toBe(0.27)
     expect(PHILIPPINES_CONTENT_PACK.yearLoop?.encounterWeightOverrides?.length).toBeGreaterThan(0)
   })
+
+  it('includes six random-assignable personas', () => {
+    expect(PHILIPPINES_CONTENT_PACK.archetypes?.archetypes).toHaveLength(6)
+    expect(PHILIPPINES_CONTENT_PACK.archetypes?.assignment.maxPlayers).toBe(6)
+    expect(PHILIPPINES_CONTENT_PACK.archetypes?.assignment.minPlayers).toBe(2)
+  })
 })

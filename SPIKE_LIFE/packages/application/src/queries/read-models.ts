@@ -44,6 +44,9 @@ export interface DashboardView {
   scenarioLabel: string
   phase: CyclePhase
   characterName: string
+  archetypeId: string
+  archetypeLabel: string
+  archetypeTagline: string
   age: number
   lifeStage: LifeStage
   lifeStageLabel: string

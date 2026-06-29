@@ -12,3 +12,4 @@ export {
   PHILIPPINES_CONTENT_PACK,
 } from './bootstrap.js'
 export { bootstrapYearLoopFromPack } from './year-loop-bootstrap.js'
+export { bootstrapArchetypesFromPack } from './archetype-bootstrap.js'

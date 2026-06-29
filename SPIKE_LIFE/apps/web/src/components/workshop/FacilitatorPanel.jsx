@@ -1,5 +1,8 @@
 import { SCENARIOS } from '../../lib/scenarios.js'
-import { GAME_ROOM_MAX_PLAYERS } from '../../lib/spike-life-workshop-client.js'
+import {
+  GAME_ROOM_MAX_PLAYERS,
+  GAME_ROOM_MIN_PLAYERS,
+} from '../../lib/spike-life-workshop-client.js'
 import GameCodeBadge from './GameCodeBadge.jsx'
 
 export default function FacilitatorPanel({
@@ -11,7 +14,11 @@ export default function FacilitatorPanel({
 }) {
   if (!board || !isFacilitator) return null
 
-  const canStart = board.roomPhase === 'lobby' && board.playerCount > 0
+  const canStart = board.roomPhase === 'lobby' && board.playerCount >= GAME_ROOM_MIN_PLAYERS
+  const waitingForMore =
+    board.roomPhase === 'lobby'
+    && board.playerCount > 0
+    && board.playerCount < GAME_ROOM_MIN_PLAYERS
 
   return (
     <aside className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -30,7 +37,7 @@ export default function FacilitatorPanel({
       )}
 
       <p className="mt-4 text-xs text-slate-500">
-        {board.playerCount}/{GAME_ROOM_MAX_PLAYERS} players registered
+        {board.playerCount}/{GAME_ROOM_MAX_PLAYERS} players registered (min {GAME_ROOM_MIN_PLAYERS})
         {board.joinOpen && board.slotsOpen > 0 && (
           <span> · {board.slotsOpen} slot{board.slotsOpen !== 1 ? 's' : ''} open</span>
         )}
@@ -41,7 +48,7 @@ export default function FacilitatorPanel({
           {board.players.length === 0 ? (
             <p className="text-sm text-slate-600">Waiting for players to join…</p>
           ) : (
-            <ul className="space-y-1 text-sm text-slate-700">
+            <ul className="space-y-2 text-sm text-slate-700">
               {board.players.map((p) => (
                 <li key={p.playerId} className="truncate">
                   <span
@@ -49,10 +56,21 @@ export default function FacilitatorPanel({
                     style={{ backgroundColor: p.tokenColor }}
                     aria-hidden
                   />
-                  {p.displayName}
+                  <span className="font-medium">{p.displayName}</span>
+                  {p.archetypeLabel && (
+                    <span className="block pl-4 text-xs text-slate-500">
+                      {p.archetypeLabel}
+                      {p.age ? ` · age ${p.age}` : ''}
+                    </span>
+                  )}
                 </li>
               ))}
             </ul>
+          )}
+          {waitingForMore && (
+            <p className="mt-2 text-xs text-amber-700">
+              Need at least {GAME_ROOM_MIN_PLAYERS} players before starting.
+            </p>
           )}
         </div>
       )}

@@ -12,6 +12,8 @@ import {
   WORKSHOP_MAX_TURNS,
   WORKSHOP_STAGE_ORDER,
   workshopStageLabel,
+  getArchetypeLabel,
+  getArchetypeTagline,
 } from '@spike-life/domain'
 import type {
   DashboardView,
@@ -158,6 +160,9 @@ export function projectDashboard(session: SimulationSession): DashboardView {
     scenarioLabel: SCENARIO_LABELS[session.scenarioId] ?? session.scenarioId,
     phase: session.phase,
     characterName: session.character.name,
+    archetypeId: session.character.archetypeId,
+    archetypeLabel: getArchetypeLabel(session.character.archetypeId),
+    archetypeTagline: getArchetypeTagline(session.character.archetypeId),
     age: session.character.age,
     lifeStage: session.character.lifeStage,
     lifeStageLabel: LIFE_STAGE_LABELS[session.character.lifeStage] ?? session.character.lifeStage,

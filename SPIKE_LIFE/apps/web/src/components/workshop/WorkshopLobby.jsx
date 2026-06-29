@@ -3,6 +3,7 @@ import {
   createGame,
   joinGame,
   GAME_ROOM_MAX_PLAYERS,
+  GAME_ROOM_MIN_PLAYERS,
 } from '../../lib/spike-life-workshop-client.js'
 
 export default function WorkshopLobby({ onBack, onEnter }) {
@@ -44,6 +45,11 @@ export default function WorkshopLobby({ onBack, onEnter }) {
         displayName: joined.displayName,
         roomId: joined.roomId,
         gameCode: joined.gameCode,
+        archetypeId: joined.archetypeId,
+        archetypeLabel: joined.archetypeLabel,
+        archetypeTagline: joined.archetypeTagline,
+        characterName: joined.characterName,
+        age: joined.age,
       })
     } catch (err) {
       setError(err.message)
@@ -69,8 +75,9 @@ export default function WorkshopLobby({ onBack, onEnter }) {
         Multiplayer financial planning
       </h1>
       <p className="mt-2 text-slate-600">
-        Facilitators create a game and share a code. Up to {GAME_ROOM_MAX_PLAYERS} players
-        register their name and join the same life journey board.
+        Facilitators create a game and share a code. {GAME_ROOM_MIN_PLAYERS}–{GAME_ROOM_MAX_PLAYERS}{' '}
+        players register their name — each receives a <strong>random life persona</strong> (no picking
+        all fresh grads).
       </p>
 
       {error && (

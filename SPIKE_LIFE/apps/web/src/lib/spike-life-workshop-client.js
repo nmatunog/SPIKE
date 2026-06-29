@@ -7,9 +7,10 @@ import {
   GameRoomCommandBus,
   GameRoomQueryBus,
   GAME_ROOM_MAX_PLAYERS,
+  GAME_ROOM_MIN_PLAYERS,
 } from '@spike-life/application'
 
-export { GAME_ROOM_MAX_PLAYERS }
+export { GAME_ROOM_MAX_PLAYERS, GAME_ROOM_MIN_PLAYERS }
 
 let gameRoomRepo = new InMemoryGameRoomRepository()
 let simulationRepo = new InMemorySimulationRepository()
@@ -107,11 +108,19 @@ export async function joinGame(gameCode, displayName) {
   setActiveRoom(roomId)
   await roomCommands.joinRoom(roomId, playerId, name)
 
+  const board = await roomQueries.getGameBoard(roomId)
+  const slot = board?.players.find((p) => p.playerId === playerId)
+
   return {
     gameCode: normalized,
     roomId,
     playerId,
     displayName: name,
+    archetypeId: slot?.archetypeId ?? null,
+    archetypeLabel: slot?.archetypeLabel ?? null,
+    archetypeTagline: slot?.archetypeTagline ?? null,
+    characterName: slot?.characterName ?? null,
+    age: slot?.age ?? null,
   }
 }
 

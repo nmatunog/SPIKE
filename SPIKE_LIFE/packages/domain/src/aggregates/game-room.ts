@@ -4,7 +4,7 @@ import type {
   RoomPhase,
   ScenarioId,
 } from '../types.js'
-import { GAME_ROOM_MAX_PLAYERS } from '../types.js'
+import { GAME_ROOM_MAX_PLAYERS, GAME_ROOM_MIN_PLAYERS } from '../types.js'
 import {
   WORKSHOP_MAX_TURNS,
   lifeStageForTurn,
@@ -25,6 +25,7 @@ export interface PlayerSlot {
   playerId: string
   displayName: string
   simulationId: string
+  archetypeId: string
   tokenColor: string
   status: PlayerSlotStatus
   joinedAt: string
@@ -96,7 +97,12 @@ export class GameRoom {
     return this.state.slots
   }
 
-  join(playerId: string, displayName: string, simulationId: string): GameRoom {
+  join(
+    playerId: string,
+    displayName: string,
+    simulationId: string,
+    archetypeId: string,
+  ): GameRoom {
     if (!this.state.joinOpen) {
       throw new Error('This room is closed to new players.')
     }
@@ -116,6 +122,7 @@ export class GameRoom {
       playerId,
       displayName: displayName.trim() || `Player ${slotIndex + 1}`,
       simulationId,
+      archetypeId,
       tokenColor: PLAYER_TOKEN_COLORS[slotIndex % PLAYER_TOKEN_COLORS.length] ?? '#8B0000',
       status: 'joined',
       joinedAt: new Date().toISOString(),
@@ -139,6 +146,11 @@ export class GameRoom {
     }
     if (this.state.slots.length === 0) {
       throw new Error('At least one player must join before starting a turn.')
+    }
+    if (this.state.slots.length < GAME_ROOM_MIN_PLAYERS) {
+      throw new Error(
+        `At least ${GAME_ROOM_MIN_PLAYERS} players are required to start (currently ${this.state.slots.length}).`,
+      )
     }
 
     this.state = {

@@ -25,8 +25,9 @@ export function createPromotionSession(
 export function createWorkshopSession(
   sessionId: string,
   currency: CurrencyConfig,
+  archetypeId?: string,
 ): SimulationState {
-  return Simulation.createWorkshop(sessionId, currency).toState()
+  return Simulation.createWorkshop(sessionId, currency, archetypeId).toState()
 }
 
 export function createProtectionStressSession(

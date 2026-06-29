@@ -11,6 +11,7 @@ import {
   submitReflection,
   advanceTurn as advanceTurnState,
   createWorkshopSession as createWorkshopSessionState,
+  pickSoloArchetypeId,
 } from '@spike-life/domain'
 import { DEFAULT_CURRENCY } from './content/bootstrap.js'
 
@@ -37,7 +38,8 @@ export class FinancialDecisionCommandBus {
     const existing = await this.repository.findById(sessionId)
     if (existing) return existing
 
-    const session = createWorkshopSessionState(sessionId, DEFAULT_CURRENCY)
+    const archetypeId = pickSoloArchetypeId(sessionId)
+    const session = createWorkshopSessionState(sessionId, DEFAULT_CURRENCY, archetypeId)
     await this.repository.save(session)
     return session
   }

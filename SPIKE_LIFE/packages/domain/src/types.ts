@@ -61,7 +61,8 @@ export type ScenarioId = 'promotion' | 'protection_stress'
 
 export type SituationKind = 'income_opportunity' | 'protection_stress'
 
-/** Workshop room — up to 6 parallel players on one board. */
+/** Workshop room — 2–6 parallel players (GDS v1.0). */
+export const GAME_ROOM_MIN_PLAYERS = 2
 export const GAME_ROOM_MAX_PLAYERS = 6
 
 export type RoomPhase = 'lobby' | 'turn_active' | 'workshop_complete'

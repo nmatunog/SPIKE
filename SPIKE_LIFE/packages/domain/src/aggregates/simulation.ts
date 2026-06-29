@@ -5,6 +5,7 @@ import type { DomainEvent } from '../events/domain-events.js'
 import { DomainEventType, createDomainEvent } from '../events/domain-events.js'
 import type { ReflectionAnswer } from '../services/reflection-engine.js'
 import { createFreshGraduateBundle, FRESH_GRADUATE_FINANCIAL_PROFILE } from '../specifications/fresh-graduate.js'
+import { createArchetypeBundle } from '../services/archetype-context.js'
 import {
   createProtectionStressBundle,
   PROTECTION_STRESS_FINANCIAL_PROFILE,
@@ -54,8 +55,12 @@ export class Simulation {
     return new Simulation(Simulation.emptyState(id, 'promotion', bundle, currency))
   }
 
-  static createWorkshop(id: string, currency: CurrencyConfig): Simulation {
-    const bundle = createFreshGraduateBundle()
+  static createWorkshop(
+    id: string,
+    currency: CurrencyConfig,
+    archetypeId?: string,
+  ): Simulation {
+    const bundle = createArchetypeBundle(archetypeId)
     return new Simulation(Simulation.emptyState(id, 'promotion', bundle, currency))
   }
 
@@ -417,7 +422,7 @@ export class Simulation {
   private static emptyState(
     id: string,
     scenarioId: ScenarioId,
-    bundle: ReturnType<typeof createFreshGraduateBundle>,
+    bundle: ReturnType<typeof createArchetypeBundle>,
     currency: CurrencyConfig,
   ): SimulationState {
     const now = new Date().toISOString()

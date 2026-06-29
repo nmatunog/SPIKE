@@ -13,6 +13,7 @@ import {
   submitDecision,
   submitReflection,
 } from './financial-decision-engine.js'
+import { pickRandomArchetypeId } from './services/archetype-selection.js'
 
 export interface GameRoomOrchestratorDeps {
   gameRoomRepo: GameRoomRepository
@@ -38,11 +39,19 @@ export async function joinGameRoom(
   const existing = await deps.gameRoomRepo.findById(roomId)
   if (!existing) throw new Error(`Room not found: ${roomId}`)
 
+  const usedArchetypeIds = existing.slots.map((slot) => slot.archetypeId)
+  const archetypeId = pickRandomArchetypeId(usedArchetypeIds)
+
   const simulationId = simulationIdForPlayer(roomId, playerId)
-  const workshop = createWorkshopSession(simulationId, currency)
+  const workshop = createWorkshopSession(simulationId, currency, archetypeId)
   await deps.simulationRepo.save(workshop)
 
-  const room = GameRoom.fromState(existing).join(playerId, displayName, simulationId)
+  const room = GameRoom.fromState(existing).join(
+    playerId,
+    displayName,
+    simulationId,
+    archetypeId,
+  )
   await deps.gameRoomRepo.save(room.toState())
   return room.toState()
 }

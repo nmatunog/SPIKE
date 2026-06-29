@@ -38,3 +38,13 @@ export {
   validateContentPack,
 } from './loader.js'
 export { validateYearLoopConfig } from './year-loop-validation.js'
+export type {
+  ArchetypeAssignmentConfig,
+  ArchetypeCharacterConfig,
+  ArchetypeConfig,
+  ArchetypeFinancialConfig,
+  ArchetypeGoalConfig,
+  ArchetypePackConfig,
+  ArchetypeProtectionConfig,
+} from './archetype-types.js'
+export { validateArchetypePackConfig } from './archetype-validation.js'

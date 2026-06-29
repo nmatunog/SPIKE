@@ -9,6 +9,7 @@ import WorkshopBoard from './WorkshopBoard.jsx'
 import FacilitatorPanel from './FacilitatorPanel.jsx'
 import WorkshopScoreHud from './WorkshopScoreHud.jsx'
 import GameCodeBadge from './GameCodeBadge.jsx'
+import PersonaAssignedCard from '../gameboard/PersonaAssignedCard.jsx'
 import {
   advanceRoomTurn,
   getGameBoard,
@@ -21,7 +22,17 @@ import {
 } from '../../lib/spike-life-workshop-client.js'
 
 export default function WorkshopWorkspace({ session, onExit }) {
-  const { role, playerId, displayName, roomId, gameCode } = session
+  const {
+    role,
+    playerId,
+    displayName,
+    roomId,
+    gameCode,
+    archetypeLabel,
+    archetypeTagline,
+    characterName,
+    age,
+  } = session
   const isFacilitator = role === 'facilitator'
 
   const [board, setBoard] = useState(null)
@@ -180,6 +191,16 @@ export default function WorkshopWorkspace({ session, onExit }) {
             {gameCode && (
               <div className="mt-2">
                 <GameCodeBadge code={gameCode} compact />
+              </div>
+            )}
+            {!isFacilitator && archetypeLabel && (
+              <div className="mt-3 max-w-md">
+                <PersonaAssignedCard
+                  archetypeLabel={archetypeLabel}
+                  archetypeTagline={archetypeTagline}
+                  characterName={characterName}
+                  age={age}
+                />
               </div>
             )}
           </div>

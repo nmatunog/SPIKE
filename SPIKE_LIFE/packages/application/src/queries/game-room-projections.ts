@@ -3,6 +3,8 @@ import {
   WORKSHOP_STAGE_ORDER,
   calculateLifeScore,
   workshopStageLabel,
+  getArchetypeLabel,
+  getArchetypeTagline,
 } from '@spike-life/domain'
 import type {
   GameBoardView,
@@ -66,6 +68,14 @@ function projectPlayerToken(
     simulationId: slot.simulationId,
     lifeScoreOverall: lifeScoreForSimulation(simulation),
     characterName: simulation?.character.name ?? null,
+    archetypeId: slot.archetypeId ?? simulation?.character.archetypeId ?? null,
+    archetypeLabel: getArchetypeLabel(
+      slot.archetypeId ?? simulation?.character.archetypeId ?? '',
+    ) || null,
+    archetypeTagline: getArchetypeTagline(
+      slot.archetypeId ?? simulation?.character.archetypeId ?? '',
+    ) || null,
+    age: simulation?.character.age ?? null,
   }
 }
 

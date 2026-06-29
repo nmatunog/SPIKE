@@ -3,9 +3,11 @@ import type {
   FinancialTopicConfig,
   InstitutionConfig,
   YearLoopConfig,
+  ArchetypePackConfig,
 } from '@spike-life/content-core'
 import { validateContentPack } from '@spike-life/content-core'
 
+import archetypesJson from './data/archetypes.json' with { type: 'json' }
 import yearLoopJson from './data/year-loop.json' with { type: 'json' }
 import financialTopicsJson from './data/financial-topics.json' with { type: 'json' }
 import institutionsJson from './data/institutions.json' with { type: 'json' }
@@ -17,6 +19,7 @@ const institutions = institutionsJson as InstitutionConfig[]
 const financialTopics = financialTopicsJson as FinancialTopicConfig[]
 
 const yearLoop = yearLoopJson as YearLoopConfig
+const archetypes = archetypesJson as ArchetypePackConfig
 
 /** MVP Philippines content pack — Amendment A4 */
 export const PHILIPPINES_CONTENT_PACK: ContentPack = {
@@ -26,6 +29,7 @@ export const PHILIPPINES_CONTENT_PACK: ContentPack = {
   lifeSituations,
   strings,
   yearLoop,
+  archetypes,
 }
 
 validateContentPack(PHILIPPINES_CONTENT_PACK)
@@ -36,6 +40,7 @@ export { financialTopics as PHILIPPINES_FINANCIAL_TOPICS }
 export { lifeSituations as PHILIPPINES_LIFE_SITUATIONS }
 export { strings as PHILIPPINES_STRINGS_EN_PH }
 export { yearLoop as PHILIPPINES_YEAR_LOOP }
+export { archetypes as PHILIPPINES_ARCHETYPES }
 
 /** Default currency/locale for MVP bootstrap */
 export const DEFAULT_CURRENCY = PHILIPPINES_CONTENT_PACK.manifest.currency

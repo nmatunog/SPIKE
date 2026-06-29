@@ -5,6 +5,30 @@ import {
   simulationIdForPlayer,
 } from './index.js'
 
+const ARCHETYPE_IDS = [
+  'fresh_graduate',
+  'bpo_professional',
+  'young_professional',
+  'freelancer',
+  'young_entrepreneur',
+  'ofw_breadwinner',
+] as const
+
+function joinSlot(
+  room: GameRoom,
+  playerId: string,
+  displayName: string,
+  roomId: string,
+  slotIndex: number,
+): GameRoom {
+  return room.join(
+    playerId,
+    displayName,
+    simulationIdForPlayer(roomId, playerId),
+    ARCHETYPE_IDS[slotIndex % ARCHETYPE_IDS.length]!,
+  )
+}
+
 describe('GameRoom aggregate', () => {
   it('creates a lobby room for up to 6 players', () => {
     const room = GameRoom.create('room-1', 'facilitator-1')
@@ -19,8 +43,7 @@ describe('GameRoom aggregate', () => {
     let room = GameRoom.create('room-2', 'fac-1')
 
     for (let i = 1; i <= GAME_ROOM_MAX_PLAYERS; i += 1) {
-      const simId = simulationIdForPlayer('room-2', `player-${i}`)
-      room = room.join(`player-${i}`, `Player ${i}`, simId)
+      room = joinSlot(room, `player-${i}`, `Player ${i}`, 'room-2', i - 1)
     }
 
     const state = room.toState()
@@ -32,18 +55,25 @@ describe('GameRoom aggregate', () => {
   it('rejects join when room is full', () => {
     let room = GameRoom.create('room-3', 'fac-1')
     for (let i = 1; i <= GAME_ROOM_MAX_PLAYERS; i += 1) {
-      room = room.join(`p${i}`, `P${i}`, simulationIdForPlayer('room-3', `p${i}`))
+      room = joinSlot(room, `p${i}`, `P${i}`, 'room-3', i - 1)
     }
 
     expect(() =>
-      room.join('p7', 'P7', simulationIdForPlayer('room-3', 'p7')),
+      joinSlot(room, 'p7', 'P7', 'room-3', 0),
     ).toThrow(/full/)
+  })
+
+  it('requires at least two players to start a turn', () => {
+    let room = GameRoom.create('room-min', 'fac-1')
+    room = joinSlot(room, 'a', 'Alex', 'room-min', 0)
+
+    expect(() => room.startTurn('promotion')).toThrow(/At least 2 players/)
   })
 
   it('starts a shared turn for all joined players', () => {
     let room = GameRoom.create('room-4', 'fac-1')
-    room = room.join('a', 'Alex', simulationIdForPlayer('room-4', 'a'))
-    room = room.join('b', 'Maria', simulationIdForPlayer('room-4', 'b'))
+    room = joinSlot(room, 'a', 'Alex', 'room-4', 0)
+    room = joinSlot(room, 'b', 'Maria', 'room-4', 1)
 
     room = room.startTurn('promotion')
 
@@ -56,7 +86,8 @@ describe('GameRoom aggregate', () => {
 
   it('tracks slot status from simulation phases', () => {
     let room = GameRoom.create('room-5', 'fac-1')
-    room = room.join('a', 'Alex', simulationIdForPlayer('room-5', 'a'))
+    room = joinSlot(room, 'a', 'Alex', 'room-5', 0)
+    room = joinSlot(room, 'b', 'Maria', 'room-5', 1)
     room = room.startTurn('promotion')
 
     room = room.syncSlotFromSimulationPhase('a', 'decision_pending')
@@ -67,14 +98,16 @@ describe('GameRoom aggregate', () => {
 
     room = room.syncSlotFromSimulationPhase('a', 'cycle_complete')
     expect(room.getSlot('a')?.status).toBe('done')
-    expect(room.canAdvanceTurn()).toBe(true)
+    expect(room.canAdvanceTurn()).toBe(false)
   })
 
   it('advances room turn when all players are done', () => {
     let room = GameRoom.create('room-6', 'fac-1')
-    room = room.join('a', 'Alex', simulationIdForPlayer('room-6', 'a'))
+    room = joinSlot(room, 'a', 'Alex', 'room-6', 0)
+    room = joinSlot(room, 'b', 'Maria', 'room-6', 1)
     room = room.startTurn('promotion')
     room = room.syncSlotFromSimulationPhase('a', 'cycle_complete')
+    room = room.syncSlotFromSimulationPhase('b', 'cycle_complete')
 
     room = room.advanceTurn()
 
@@ -88,7 +121,7 @@ describe('GameRoom aggregate', () => {
 
   it('marks workshop complete after final turn', () => {
     let room = GameRoom.create('room-7', 'fac-1')
-    room = room.join('a', 'Alex', simulationIdForPlayer('room-7', 'a'))
+    room = joinSlot(room, 'a', 'Alex', 'room-7', 0)
 
     const atFinal = {
       ...room.toState(),

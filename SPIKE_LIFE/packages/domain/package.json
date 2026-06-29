@@ -21,6 +21,7 @@
     "@spike-life/content-core": "*"
   },
   "devDependencies": {
+    "@spike-life/content-philippines": "*",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"
   }

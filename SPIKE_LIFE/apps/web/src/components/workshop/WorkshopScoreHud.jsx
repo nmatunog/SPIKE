@@ -36,9 +36,18 @@ export default function WorkshopScoreHud({ board, selectedPlayer }) {
               Life Score™ {selectedPlayer.lifeScoreOverall}
             </p>
           )}
+          {selectedPlayer.archetypeLabel && (
+            <p className="mt-1 text-sm text-sky-200">
+              {selectedPlayer.archetypeLabel}
+              {selectedPlayer.age ? ` · age ${selectedPlayer.age}` : ''}
+            </p>
+          )}
+          {selectedPlayer.archetypeTagline && (
+            <p className="mt-1 text-xs text-slate-400">{selectedPlayer.archetypeTagline}</p>
+          )}
           {selectedPlayer.characterName && (
             <p className="mt-1 text-xs text-slate-400">
-              Sim: {selectedPlayer.characterName}
+              Character: {selectedPlayer.characterName}
             </p>
           )}
         </div>

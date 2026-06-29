@@ -11,8 +11,10 @@ import {
   submitPlayerDecision,
   submitPlayerReflection,
 } from './game-room-orchestrator.js'
-import { TEST_CURRENCY } from './test/currency-fixture.js'
 import { GAME_ROOM_MAX_PLAYERS } from './types.js'
+import { PHILIPPINES_ARCHETYPES } from '@spike-life/content-philippines'
+import { configureArchetypes, resetArchetypeConfig } from './services/archetype-context.js'
+import { TEST_CURRENCY } from './test/currency-fixture.js'
 
 const REFLECTION = [
   { promptId: 'a', response: 'Learned to prioritize FNA.' },
@@ -55,6 +57,7 @@ function makeDeps() {
 
 describe('GameRoom orchestrator — 6 players', () => {
   it('6 players complete one shared macro turn in parallel', async () => {
+    configureArchetypes(PHILIPPINES_ARCHETYPES)
     const deps = makeDeps()
     const roomId = 'workshop-6'
 
@@ -67,6 +70,9 @@ describe('GameRoom orchestrator — 6 players', () => {
     const started = await startRoomTurn(deps, roomId, 'promotion')
     expect(started.slots).toHaveLength(GAME_ROOM_MAX_PLAYERS)
     expect(started.roomPhase).toBe('turn_active')
+
+    const archetypeIds = started.slots.map((s) => s.archetypeId)
+    expect(new Set(archetypeIds).size).toBe(GAME_ROOM_MAX_PLAYERS)
 
     for (let i = 1; i <= GAME_ROOM_MAX_PLAYERS; i += 1) {
       await submitPlayerDecision(
@@ -89,5 +95,7 @@ describe('GameRoom orchestrator — 6 players', () => {
       expect(sim?.turnNumber).toBe(2)
       expect(sim?.phase).toBe('created')
     }
+
+    resetArchetypeConfig()
   })
 })

@@ -59,4 +59,6 @@ export interface ContentPack {
   strings: Record<string, string>
   /** Age-weighted domain grid + situation tuning (Amendment A5) */
   yearLoop?: import('./year-loop-types.js').YearLoopConfig
+  /** Playable starting personas — GDS v1.0 */
+  archetypes?: import('./archetype-types.js').ArchetypePackConfig
 }

@@ -1,6 +1,7 @@
 import type { ContentPack, ContentPackManifest, CurrencyConfig } from './types.js'
 import { isKnownFinancialWorldId } from './financial-worlds.js'
 import { validateYearLoopConfig } from './year-loop-validation.js'
+import { validateArchetypePackConfig } from './archetype-validation.js'
 
 export function validateContentPack(pack: ContentPack): void {
   if (!pack.manifest?.id) throw new Error('Content pack missing manifest.id')
@@ -12,6 +13,9 @@ export function validateContentPack(pack: ContentPack): void {
   if (!pack.manifest.defaultLocale) throw new Error('Content pack missing defaultLocale')
   if (pack.yearLoop) {
     validateYearLoopConfig(pack.yearLoop)
+  }
+  if (pack.archetypes) {
+    validateArchetypePackConfig(pack.archetypes)
   }
 }
 

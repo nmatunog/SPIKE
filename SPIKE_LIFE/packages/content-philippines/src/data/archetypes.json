@@ -1,0 +1,319 @@
+{
+  "assignment": {
+    "mode": "random_unique",
+    "minPlayers": 2,
+    "maxPlayers": 6
+  },
+  "archetypes": [
+    {
+      "id": "fresh_graduate",
+      "label": "Fresh Graduate",
+      "tagline": "First job, first budget — build habits before wealth.",
+      "fnaPriority": "Cash Flow Foundation",
+      "character": {
+        "name": "Alex",
+        "age": 22,
+        "careerType": "employee",
+        "lifeStage": "launch",
+        "maritalStatus": "single",
+        "dependents": 0
+      },
+      "financialProfile": {
+        "cash": 10000,
+        "investments": 0,
+        "propertyValue": 0,
+        "businessValue": 0,
+        "creditCardDebt": 0,
+        "personalLoan": 0,
+        "housingLoan": 0,
+        "businessLoan": 0,
+        "monthlyIncome": 25000,
+        "monthlyExpenses": 15000,
+        "monthlyDebtPayments": 0,
+        "monthlyProtectionCost": 0
+      },
+      "protectionPortfolio": {
+        "lifeCover": 0,
+        "criticalIllnessCover": 0,
+        "medicalCover": 0,
+        "accidentCover": 0,
+        "incomeProtectionCover": 0
+      },
+      "goals": [
+        {
+          "goalId": "emergency_fund",
+          "goalName": "Emergency Fund",
+          "targetAmount": 90000,
+          "targetAge": 24,
+          "currentFunding": 10000,
+          "status": "active"
+        },
+        {
+          "goalId": "travel",
+          "goalName": "Travel Goal",
+          "targetAmount": 50000,
+          "targetAge": 25,
+          "currentFunding": 0,
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "id": "bpo_professional",
+      "label": "BPO Professional",
+      "tagline": "Strong paycheck, lifestyle inflation risk.",
+      "fnaPriority": "Cash Flow Discipline",
+      "character": {
+        "name": "Jamie",
+        "age": 24,
+        "careerType": "employee",
+        "lifeStage": "launch",
+        "maritalStatus": "single",
+        "dependents": 0
+      },
+      "financialProfile": {
+        "cash": 20000,
+        "investments": 5000,
+        "propertyValue": 0,
+        "businessValue": 0,
+        "creditCardDebt": 15000,
+        "personalLoan": 35000,
+        "housingLoan": 0,
+        "businessLoan": 0,
+        "monthlyIncome": 35000,
+        "monthlyExpenses": 24000,
+        "monthlyDebtPayments": 4500,
+        "monthlyProtectionCost": 0
+      },
+      "protectionPortfolio": {
+        "lifeCover": 0,
+        "criticalIllnessCover": 0,
+        "medicalCover": 0,
+        "accidentCover": 0,
+        "incomeProtectionCover": 0
+      },
+      "goals": [
+        {
+          "goalId": "emergency_fund",
+          "goalName": "Emergency Fund",
+          "targetAmount": 150000,
+          "targetAge": 26,
+          "currentFunding": 20000,
+          "status": "active"
+        },
+        {
+          "goalId": "first_home",
+          "goalName": "First Home",
+          "targetAmount": 3000000,
+          "targetAge": 32,
+          "currentFunding": 5000,
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "id": "young_professional",
+      "label": "Young Professional",
+      "tagline": "Corporate career — protect future earning power.",
+      "fnaPriority": "Protection Planning",
+      "character": {
+        "name": "Morgan",
+        "age": 28,
+        "careerType": "professional",
+        "lifeStage": "build",
+        "maritalStatus": "single",
+        "dependents": 0
+      },
+      "financialProfile": {
+        "cash": 30000,
+        "investments": 40000,
+        "propertyValue": 0,
+        "businessValue": 0,
+        "creditCardDebt": 0,
+        "personalLoan": 0,
+        "housingLoan": 0,
+        "businessLoan": 0,
+        "monthlyIncome": 40000,
+        "monthlyExpenses": 25000,
+        "monthlyDebtPayments": 0,
+        "monthlyProtectionCost": 1200
+      },
+      "protectionPortfolio": {
+        "lifeCover": 500000,
+        "criticalIllnessCover": 0,
+        "medicalCover": 0,
+        "accidentCover": 0,
+        "incomeProtectionCover": 0
+      },
+      "goals": [
+        {
+          "goalId": "emergency_fund",
+          "goalName": "Emergency Fund",
+          "targetAmount": 180000,
+          "targetAge": 30,
+          "currentFunding": 30000,
+          "status": "active"
+        },
+        {
+          "goalId": "retirement",
+          "goalName": "Retirement Nest Egg",
+          "targetAmount": 5000000,
+          "targetAge": 60,
+          "currentFunding": 40000,
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "id": "freelancer",
+      "label": "Freelancer",
+      "tagline": "Variable income — no employer safety net.",
+      "fnaPriority": "Income Protection",
+      "character": {
+        "name": "Riley",
+        "age": 29,
+        "careerType": "freelancer",
+        "lifeStage": "build",
+        "maritalStatus": "single",
+        "dependents": 0
+      },
+      "financialProfile": {
+        "cash": 40000,
+        "investments": 25000,
+        "propertyValue": 0,
+        "businessValue": 0,
+        "creditCardDebt": 0,
+        "personalLoan": 0,
+        "housingLoan": 0,
+        "businessLoan": 0,
+        "monthlyIncome": 50000,
+        "monthlyExpenses": 25000,
+        "monthlyDebtPayments": 0,
+        "monthlyProtectionCost": 800
+      },
+      "protectionPortfolio": {
+        "lifeCover": 0,
+        "criticalIllnessCover": 250000,
+        "medicalCover": 0,
+        "accidentCover": 0,
+        "incomeProtectionCover": 0
+      },
+      "goals": [
+        {
+          "goalId": "emergency_fund",
+          "goalName": "Emergency Fund",
+          "targetAmount": 300000,
+          "targetAge": 31,
+          "currentFunding": 40000,
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "id": "young_entrepreneur",
+      "label": "Young Entrepreneur",
+      "tagline": "Revenue is not profit — business risk is real.",
+      "fnaPriority": "Cash Flow Management",
+      "character": {
+        "name": "Casey",
+        "age": 32,
+        "careerType": "entrepreneur",
+        "lifeStage": "build",
+        "maritalStatus": "single",
+        "dependents": 0
+      },
+      "financialProfile": {
+        "cash": 25000,
+        "investments": 10000,
+        "propertyValue": 0,
+        "businessValue": 100000,
+        "creditCardDebt": 20000,
+        "personalLoan": 0,
+        "housingLoan": 0,
+        "businessLoan": 80000,
+        "monthlyIncome": 60000,
+        "monthlyExpenses": 35000,
+        "monthlyDebtPayments": 8000,
+        "monthlyProtectionCost": 0
+      },
+      "protectionPortfolio": {
+        "lifeCover": 0,
+        "criticalIllnessCover": 0,
+        "medicalCover": 0,
+        "accidentCover": 0,
+        "incomeProtectionCover": 0
+      },
+      "goals": [
+        {
+          "goalId": "business_growth",
+          "goalName": "Business Expansion",
+          "targetAmount": 500000,
+          "targetAge": 35,
+          "currentFunding": 100000,
+          "status": "active"
+        },
+        {
+          "goalId": "emergency_fund",
+          "goalName": "Emergency Fund",
+          "targetAmount": 210000,
+          "targetAge": 33,
+          "currentFunding": 25000,
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "id": "ofw_breadwinner",
+      "label": "OFW Breadwinner",
+      "tagline": "Supporting family abroad — protection and education first.",
+      "fnaPriority": "Family Protection",
+      "character": {
+        "name": "Jordan",
+        "age": 35,
+        "careerType": "hybrid",
+        "lifeStage": "grow",
+        "maritalStatus": "married",
+        "dependents": 3
+      },
+      "financialProfile": {
+        "cash": 50000,
+        "investments": 80000,
+        "propertyValue": 0,
+        "businessValue": 0,
+        "creditCardDebt": 0,
+        "personalLoan": 50000,
+        "housingLoan": 100000,
+        "businessLoan": 0,
+        "monthlyIncome": 70000,
+        "monthlyExpenses": 35000,
+        "monthlyDebtPayments": 12000,
+        "monthlyProtectionCost": 2500
+      },
+      "protectionPortfolio": {
+        "lifeCover": 1000000,
+        "criticalIllnessCover": 500000,
+        "medicalCover": 0,
+        "accidentCover": 0,
+        "incomeProtectionCover": 0
+      },
+      "goals": [
+        {
+          "goalId": "child_education",
+          "goalName": "Child Education",
+          "targetAmount": 1500000,
+          "targetAge": 45,
+          "currentFunding": 80000,
+          "status": "active"
+        },
+        {
+          "goalId": "emergency_fund",
+          "goalName": "Emergency Fund",
+          "targetAmount": 420000,
+          "targetAge": 37,
+          "currentFunding": 50000,
+          "status": "active"
+        }
+      ]
+    }
+  ]
+}

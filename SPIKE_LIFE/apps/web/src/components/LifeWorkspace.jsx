@@ -351,6 +351,9 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
                     <BoardWelcome
                       visible={showBoardWelcome}
                       characterName={dashboard?.characterName}
+                      archetypeLabel={dashboard?.archetypeLabel}
+                      archetypeTagline={dashboard?.archetypeTagline}
+                      age={dashboard?.age}
                       canRoll={canRoll}
                       onRoll={handleRollDice}
                     />
