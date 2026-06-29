@@ -52,7 +52,16 @@ export const ONBOARDING_EXIT_HREF = `${ROUTES.ventureBlueprint}/coach/ambition`;
 
 /** @param {string} pathname */
 export function isSpikeLifePath(pathname) {
-  return pathname === ROUTES.life || pathname === ROUTES.lifeWorkshop;
+  return (
+    pathname === ROUTES.life
+    || pathname === ROUTES.lifeWorkshop
+    || pathname === ROUTES.programCoachLife
+  );
+}
+
+/** Full-screen SPIKE LIFE — hide portal header/nav chrome. */
+export function isSpikeLifeImmersivePath(pathname) {
+  return isSpikeLifePath(pathname);
 }
 
 /** @param {string} pathname */

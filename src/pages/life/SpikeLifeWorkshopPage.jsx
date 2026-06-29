@@ -14,20 +14,24 @@ export function SpikeLifeWorkshopPage() {
 
   if (session) {
     return (
-      <WorkshopWorkspace
-        session={session}
-        onExit={() => {
-          leaveActiveRoom();
-          setSession(null);
-        }}
-      />
+      <div className="h-full min-h-0">
+        <WorkshopWorkspace
+          session={session}
+          onExit={() => {
+            leaveActiveRoom();
+            setSession(null);
+          }}
+        />
+      </div>
     );
   }
 
   return (
-    <WorkshopLobby
-      onBack={() => navigate(ROUTES.life)}
-      onEnter={setSession}
-    />
+    <div className="h-full min-h-0 overflow-y-auto">
+      <WorkshopLobby
+        onBack={() => navigate(ROUTES.life)}
+        onEnter={setSession}
+      />
+    </div>
   );
 }

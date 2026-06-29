@@ -6,6 +6,8 @@ export function SpikeLifeSoloPage() {
   const navigate = useNavigate();
 
   return (
-    <LifeWorkspace onOpenWorkshop={() => navigate(ROUTES.lifeWorkshop)} />
+    <div className="h-full min-h-0">
+      <LifeWorkspace onOpenWorkshop={() => navigate(ROUTES.lifeWorkshop)} />
+    </div>
   );
 }

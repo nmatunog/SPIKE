@@ -33,7 +33,7 @@ import { PageLoader } from './components/ui/PageLoader.jsx';
 import { RoleRouteGuard } from './components/routing/RoleRouteGuard.jsx';
 import { playbookWeek2MissionHref } from './lib/customerDiscovery/week2MissionService.js';
 import { buildSuperuserMentorPreviewInterns } from './lib/superuserMentorPreview.js';
-import { ROUTES, brandLexiconBackHrefForRole, facilitatorsReferenceBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath, isPlaybookPath, isSpikeLifePath, parseStaffSquadHubPath, parseStaffStageGatePath } from './routes/paths.js';
+import { ROUTES, brandLexiconBackHrefForRole, facilitatorsReferenceBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath, isPlaybookPath, isSpikeLifePath, isSpikeLifeImmersivePath, parseStaffSquadHubPath, parseStaffStageGatePath } from './routes/paths.js';
 import { StaffSquadHubPage, StaffSquadsListPage } from './components/staff/StaffSquadHubPage.jsx';
 import { Week2LoginWelcomeFlow } from './components/week2/Week2LoginWelcomeFlow.jsx';
 import { shouldShowWeek2LoginWelcome } from './lib/week2LoginWelcome.js';
@@ -2081,28 +2081,40 @@ const SpikeMasterPortal = () => {
     return <StageGatePresentationPage closingWeek={closingWeek} />;
   }
 
+  const immersiveLife =
+    isSpikeLifeImmersivePath(location.pathname)
+    && userRole !== 'guest'
+    && userRole !== 'profile_error'
+    && !authLoading;
+
   return (
     <div
       className={`spike-app-shell ${
-        compactNav ? 'spike-app-shell--compact-nav' : 'spike-app-shell--desktop-nav'
-      }${isSuperuserSession && compactNav ? ' spike-app-shell--superuser-preview' : ''}${
-        internCloudSyncing || internWorkStatus?.showBanner ? ' spike-app-shell--cloud-syncing' : ''
-      }${hasPendingReflection ? ' spike-app-shell--pending-reflection' : ''}`}
+        immersiveLife
+          ? 'spike-app-shell--immersive-life'
+          : `${compactNav ? 'spike-app-shell--compact-nav' : 'spike-app-shell--desktop-nav'}${
+              isSuperuserSession && compactNav ? ' spike-app-shell--superuser-preview' : ''
+            }${
+              internCloudSyncing || internWorkStatus?.showBanner ? ' spike-app-shell--cloud-syncing' : ''
+            }${hasPendingReflection ? ' spike-app-shell--pending-reflection' : ''}`
+      }`}
     >
-      <InternWorkStatusBanner />
-      <InternPendingReflectionBanner />
-      <PortalHeader
-        userRole={userRole}
-        viewAsRole={viewAsRole}
-        user={user}
-        setupMeta={setupMeta}
-        onLogout={handleLogout}
-        readOnlyViewer={readOnlyViewer}
-      />
+      {!immersiveLife ? <InternWorkStatusBanner /> : null}
+      {!immersiveLife ? <InternPendingReflectionBanner /> : null}
+      {!immersiveLife ? (
+        <PortalHeader
+          userRole={userRole}
+          viewAsRole={viewAsRole}
+          user={user}
+          setupMeta={setupMeta}
+          onLogout={handleLogout}
+          readOnlyViewer={readOnlyViewer}
+        />
+      ) : null}
 
-      {readOnlyViewer ? <ReadOnlyViewerBar /> : null}
+      {!immersiveLife && readOnlyViewer ? <ReadOnlyViewerBar /> : null}
 
-      {userRole !== 'guest' && userRole !== 'profile_error' && !authLoading && (
+      {!immersiveLife && userRole !== 'guest' && userRole !== 'profile_error' && !authLoading && (
         <ModuleNav
           userRole={moduleNavRole}
           superuserPreview={
@@ -2111,14 +2123,16 @@ const SpikeMasterPortal = () => {
         />
       )}
 
-      {(effectiveUserRole === 'intern' || (isSuperuserSession && viewAsRole === 'intern')) && !authLoading ? (
-        <ProgramWeekRibbon
-          internProgress={(internModuleUser ?? user)?.internProgress}
-          participantId={(internModuleUser ?? user)?.id ?? ''}
-        />
-      ) : null}
+      {!immersiveLife
+        && (effectiveUserRole === 'intern' || (isSuperuserSession && viewAsRole === 'intern'))
+        && !authLoading ? (
+          <ProgramWeekRibbon
+            internProgress={(internModuleUser ?? user)?.internProgress}
+            participantId={(internModuleUser ?? user)?.id ?? ''}
+          />
+        ) : null}
 
-      <main>
+      <main className={immersiveLife ? 'spike-life-immersive-main' : undefined}>
         {userRole === 'guest' && isPublicPortfolioPath(location.pathname) ? (
           <LazyRoute label="Loading portfolio…">
             <PublicPortfolioPage />
@@ -2239,9 +2253,11 @@ const SpikeMasterPortal = () => {
       {toast.show && (
         <div
           className={`animate-in slide-in-from-bottom-5 fade-in fixed left-4 right-4 z-[60] duration-300 sm:max-w-sm ${
-            compactNav
-              ? 'bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))]'
-              : 'bottom-6 sm:left-auto sm:right-6'
+            immersiveLife
+              ? 'bottom-[calc(1rem+env(safe-area-inset-bottom,0px))]'
+              : compactNav
+                ? 'bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))]'
+                : 'bottom-6 sm:left-auto sm:right-6'
           }`}
         >
           <div

@@ -58,7 +58,7 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
 
   if (loading) {
     return (
-      <div className="flex min-h-dvh items-center justify-center bg-slate-50">
+      <div className="flex h-dvh items-center justify-center bg-slate-50">
         <p className="text-slate-500">Loading SPIKE LIFE…</p>
       </div>
     )
@@ -66,7 +66,7 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
 
   if (showRules) {
     return (
-      <div className="flex min-h-dvh items-center justify-center bg-gradient-to-b from-slate-950 to-indigo-950/40 p-4">
+      <div className="flex h-dvh items-center justify-center bg-gradient-to-b from-slate-50 to-indigo-50/40 p-4">
         <OnboardingRulesCard
           onDismiss={() => {
             localStorage.setItem('spike-life-rules-seen', '1')
@@ -79,7 +79,7 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
 
   if (dashboard && !dashboard.dreamBoardComplete && dashboard.dreamBoard) {
     return (
-      <div className="min-h-dvh bg-gradient-to-b from-slate-50 to-sky-50/40">
+      <div className="h-dvh overflow-y-auto bg-gradient-to-b from-slate-50 to-sky-50/40">
         <DreamBoardSetup
           dreamBoard={dashboard.dreamBoard}
           onSubmit={handleDreamBoardSubmit}
