@@ -214,19 +214,27 @@ export default function GameScreenV3({ onOpenWorkshop }) {
     await refresh()
   }
 
+  const shellClass = rolling
+    ? 'gsv3-shell--rolling'
+    : showSituation
+      ? 'gsv3-shell--play'
+      : ''
+
   return (
-    <div className="gsv3-shell">
+    <div className={`gsv3-shell ${shellClass}`}>
       <StatusBarV3
         dashboard={dashboard}
         dreamProgressPercent={dreamProgressPercent}
         onOpenDrawer={setDrawer}
       />
 
-      {(rolling || showSituation) && (
-        <div className="gsv3-stage-dim" style={{ opacity: rolling ? 0.35 : 0.12 }} />
-      )}
+      {rolling && <div className="gsv3-stage-dim" />}
 
-      <div className={`gsv3-zone-board ${rolling ? 'gsv3-board-zone--rolling' : ''}`}>
+      <div
+        className={`gsv3-zone-board ${rolling ? 'gsv3-board-zone--rolling' : ''} ${
+          showSituation ? 'gsv3-zone-board--muted' : ''
+        }`}
+      >
         <DomainCarousel
           domains={board?.lifeDomains ?? []}
           rolling={rolling}
@@ -238,7 +246,7 @@ export default function GameScreenV3({ onOpenWorkshop }) {
           <button
             type="button"
             onClick={onOpenWorkshop}
-            className="absolute right-3 top-1 text-[9px] font-semibold uppercase tracking-wider text-indigo-600 hover:text-indigo-900"
+            className="absolute right-2 top-0 z-10 text-[8px] font-semibold uppercase tracking-wider text-indigo-600 hover:text-indigo-900"
           >
             Workshop →
           </button>
@@ -259,6 +267,7 @@ export default function GameScreenV3({ onOpenWorkshop }) {
                 situation={situation}
                 domainId={board?.selectedDomainId}
                 domainLabel={board?.selectedDomainLabel}
+                cycleLabel={dashboard?.cycleLabel}
                 recommendations={recommendations}
                 decisionTimerSeconds={planData?.decisionTimerSeconds ?? 0}
                 cycleDeadlineAt={planData?.cycleDeadlineAt}
