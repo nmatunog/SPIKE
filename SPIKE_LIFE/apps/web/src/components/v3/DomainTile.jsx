@@ -48,26 +48,25 @@ export default function DomainTile({
       style={{
         '--domain-glow': identity.glow,
         '--domain-color': identity.color,
-        borderColor: isWinner ? identity.color : `${identity.color}55`,
+        borderColor: isWinner ? identity.color : `${identity.color}44`,
       }}
     >
       {isWinner && <WinnerParticles color={identity.color} />}
-      <div className="gsv3-domain-tile__header">
-        <span
-          className="gsv3-domain-tile__badge"
-          style={{ backgroundColor: identity.color }}
-        >
-          <DomainIcon name={domain.icon} className="h-3.5 w-3.5 text-white" />
+      {isWinner && <span className="gsv3-domain-tile__caret" aria-hidden />}
+
+      <div
+        className="gsv3-domain-tile__cap"
+        style={{ backgroundColor: identity.color }}
+      >
+        <span className="gsv3-domain-tile__cap-icon">
+          <DomainIcon name={domain.icon} className="h-5 w-5 text-white" />
         </span>
-        <div className="min-w-0 flex-1">
-          <p className="gsv3-domain-tile__label" style={{ color: identity.color }}>
-            {domain.label}
-          </p>
-          {identity.subtitle && (
-            <p className="gsv3-domain-tile__subtitle">{identity.subtitle}</p>
-          )}
-        </div>
+        <p className="gsv3-domain-tile__cap-label">{domain.label}</p>
+        {identity.subtitle && (
+          <p className="gsv3-domain-tile__cap-sub">{identity.subtitle}</p>
+        )}
       </div>
+
       <div className="gsv3-domain-tile__art">
         <DomainHeroSvg domainId={domain.id} className="gsv3-domain-tile__hero" />
       </div>

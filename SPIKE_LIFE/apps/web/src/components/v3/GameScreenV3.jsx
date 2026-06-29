@@ -388,7 +388,7 @@ export default function GameScreenV3({ onOpenWorkshop }) {
 
       {dashboard?.pendingCalendarEvent === 'annual_checkpoint' &&
         dashboard.lastAnnualCheckpoint && (
-          <div className="fixed inset-x-0 bottom-[7vh] z-50 flex justify-center px-4">
+          <div className="fixed inset-x-0 bottom-[calc(var(--gsv3-header-h,4.25rem)+1.5rem)] z-50 flex justify-center px-4">
             <div className="w-full max-w-md">
               <AnnualCheckpointCard
                 checkpoint={dashboard.lastAnnualCheckpoint}

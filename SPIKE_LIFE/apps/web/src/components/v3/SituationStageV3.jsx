@@ -43,46 +43,45 @@ export default function SituationStageV3({
 
   return (
     <article className="gsv3-situation-stage">
+      {timerActive && decisionTimerSeconds > 0 && (
+        <div className="gsv3-situation-timer">
+          <p className="gsv3-situation-timer__label">Time to decide</p>
+          <DecisionTimerRing
+            deadlineAt={cycleDeadlineAt}
+            totalSeconds={decisionTimerSeconds}
+            active={timerActive}
+            onExpire={onTimerExpire}
+            variant="light"
+          />
+        </div>
+      )}
+
       <div className="gsv3-situation-stage__inner">
         <div className="gsv3-situation-stage__copy">
-          <span className="gsv3-situation-badge" style={{ background: identity.color }}>
+          <span className="gsv3-situation-badge" style={{ background: `${identity.color}22`, color: identity.color }}>
             {(situation?.domainLabel ?? domainLabel ?? 'Life').toUpperCase()} situation
           </span>
 
-          <h1 className="gsv3-situation-title mt-1.5">
+          <h1 className="gsv3-situation-title">
             {situation?.title ?? 'Life presents a moment…'}
           </h1>
 
           {situation?.narrative && (
-            <p className="gsv3-situation-narrative mt-1.5">{situation.narrative}</p>
+            <p className="gsv3-situation-narrative">{situation.narrative}</p>
           )}
 
           {cycleLabel && (
-            <p className="gsv3-situation-cycle mt-1.5">{cycleLabel}</p>
+            <p className="gsv3-situation-cycle">{cycleLabel}</p>
           )}
 
-          <div className="mt-2.5 grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <div className="gsv3-situation-detail-grid">
             <DetailBox label="Opportunity" text={opportunity} icon={Lightbulb} accent={identity.color} />
             <DetailBox label="Consideration" text={consideration} icon={Sparkles} accent="#8B5CF6" />
           </div>
         </div>
 
-        <div className="gsv3-situation-stage__right">
+        <div className="gsv3-situation-stage__art">
           <DomainHeroSvg domainId={domainId} className="gsv3-situation-hero" />
-          {timerActive && decisionTimerSeconds > 0 && (
-            <div className="shrink-0 text-center">
-              <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                Time to decide
-              </p>
-              <DecisionTimerRing
-                deadlineAt={cycleDeadlineAt}
-                totalSeconds={decisionTimerSeconds}
-                active={timerActive}
-                onExpire={onTimerExpire}
-                variant="light"
-              />
-            </div>
-          )}
         </div>
       </div>
     </article>

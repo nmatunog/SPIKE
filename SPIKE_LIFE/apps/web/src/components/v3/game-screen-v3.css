@@ -1,21 +1,40 @@
-/* GameScreenV3 — readable typography + tight space use */
+/* GameScreenV3 — mockup proportions: header / board 25% / situation 38% / choices 25% / footer 7% */
 
 .gsv3-shell {
-  @apply relative overflow-hidden bg-[#eef2f7] text-slate-900;
+  @apply relative overflow-hidden text-slate-900;
+  --gsv3-header-h: 4.25rem;
+  --gsv3-gutter: clamp(1rem, 5vw, 3.5rem);
+  --gsv3-zone-gap: 1.25rem;
+  background: #eef2f7;
   display: grid;
   height: 100dvh;
   max-height: 100dvh;
   min-height: 600px;
-  --gsv3-header-h: 4.25rem;
-  grid-template-rows: var(--gsv3-header-h) 25vh 43vh 21vh 5.5vh;
+  grid-template-rows:
+    var(--gsv3-header-h)
+    minmax(0, 25fr)
+    minmax(0, 38fr)
+    minmax(0, 25fr)
+    minmax(0, 7fr);
+  row-gap: var(--gsv3-zone-gap);
 }
 
 .gsv3-shell--play {
-  grid-template-rows: var(--gsv3-header-h) 20vh 50vh 18vh 5.5vh;
+  grid-template-rows:
+    var(--gsv3-header-h)
+    minmax(0, 20fr)
+    minmax(0, 40fr)
+    minmax(0, 25fr)
+    minmax(0, 7fr);
 }
 
 .gsv3-shell--rolling {
-  grid-template-rows: var(--gsv3-header-h) 28vh 42vh 19vh 5.5vh;
+  grid-template-rows:
+    var(--gsv3-header-h)
+    minmax(0, 27fr)
+    minmax(0, 36fr)
+    minmax(0, 24fr)
+    minmax(0, 7fr);
 }
 
 .gsv3-zone-header {
@@ -24,6 +43,8 @@
 
 .gsv3-zone-board {
   @apply relative z-20 min-h-0 overflow-hidden transition-all duration-500;
+  padding-left: var(--gsv3-gutter);
+  padding-right: var(--gsv3-gutter);
 }
 
 .gsv3-zone-board--muted {
@@ -33,49 +54,54 @@
 }
 
 .gsv3-zone-situation {
-  @apply relative z-10 min-h-0 overflow-hidden px-3 md:px-5;
+  @apply relative z-10 min-h-0 overflow-hidden;
+  padding-left: var(--gsv3-gutter);
+  padding-right: var(--gsv3-gutter);
 }
 
 .gsv3-zone-choices {
-  @apply relative z-10 min-h-0 overflow-hidden px-3 md:px-5;
+  @apply relative z-10 min-h-0 overflow-hidden;
+  padding-left: var(--gsv3-gutter);
+  padding-right: var(--gsv3-gutter);
 }
 
 .gsv3-zone-footer {
-  @apply z-30;
-  min-height: 3rem;
+  @apply z-30 h-full min-h-0;
+  padding-left: var(--gsv3-gutter);
+  padding-right: var(--gsv3-gutter);
 }
 
 .gsv3-stage-dim {
   @apply pointer-events-none absolute inset-0 z-[15] bg-slate-900/30 backdrop-blur-[2px];
 }
 
-/* Domain ribbon */
+/* Domain ribbon — ~25% viewport, 2:3 tiles, 12px gaps */
 .gsv3-board-head {
-  @apply px-2 pb-0 pt-0.5 text-center;
+  @apply shrink-0 px-0 pb-2 pt-1 text-center;
 }
 
 .gsv3-board-head__title {
-  @apply text-xs font-extrabold uppercase tracking-[0.28em] text-indigo-700;
+  @apply text-[11px] font-extrabold uppercase tracking-[0.22em] text-[#1a2b48] md:text-xs;
 }
 
 .gsv3-board-head__sub {
-  @apply text-[11px] leading-tight text-slate-500;
+  @apply mt-0.5 text-[10px] leading-tight text-slate-500 md:text-[11px];
 }
 
 .gsv3-carousel-wrap {
-  @apply relative flex items-stretch;
-  height: calc(100% - 2rem);
+  @apply relative flex min-h-0 flex-1 items-stretch;
 }
 
 .gsv3-carousel-nav {
-  @apply absolute top-1/2 z-10 flex h-9 w-9 shrink-0 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-md transition hover:bg-slate-50 disabled:opacity-25;
+  @apply absolute top-1/2 z-10 flex h-10 w-10 shrink-0 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-md transition hover:bg-slate-50 disabled:opacity-25;
 }
 
-.gsv3-carousel-nav--left { @apply left-1; }
-.gsv3-carousel-nav--right { @apply right-1; }
+.gsv3-carousel-nav--left { @apply left-0; }
+.gsv3-carousel-nav--right { @apply right-0; }
 
 .gsv3-carousel-track {
-  @apply flex h-full w-full items-stretch gap-2.5 overflow-x-auto scroll-smooth py-1;
+  @apply flex h-full w-full items-stretch overflow-x-auto scroll-smooth;
+  gap: 0.75rem;
   padding-left: 2.75rem;
   padding-right: 2.75rem;
   scroll-snap-type: x mandatory;
@@ -85,7 +111,7 @@
 .gsv3-carousel-track::-webkit-scrollbar { display: none; }
 
 .gsv3-carousel-dots {
-  @apply flex items-center justify-center gap-1.5 pt-0.5;
+  @apply flex shrink-0 items-center justify-center gap-1.5 pb-0.5 pt-1.5;
 }
 
 .gsv3-carousel-dot {
@@ -93,41 +119,45 @@
 }
 
 .gsv3-carousel-dot--active {
-  @apply w-4 bg-indigo-600;
+  @apply w-5 bg-indigo-600;
 }
 
-/* Domain tile — wide art area for landscape hero PNGs (230×123) */
+/* Domain tile — 2:3 aspect, 40% colored cap / 60% flush art */
 .gsv3-domain-tile {
-  @apply relative flex shrink-0 snap-center flex-col overflow-hidden rounded-2xl border-2 bg-white shadow-md transition-all duration-300;
-  width: clamp(7.25rem, 11.5vw, 10.25rem);
+  @apply relative flex shrink-0 snap-center flex-col overflow-hidden rounded-[14px] border-2 bg-white shadow-md transition-all duration-300;
+  aspect-ratio: 2 / 3;
   height: 100%;
   max-height: 100%;
-  min-height: 10.5rem;
+  width: auto;
 }
 
-.gsv3-domain-tile__header {
-  @apply flex items-center gap-1.5 px-2 pb-0 pt-2 text-left;
+.gsv3-domain-tile__cap {
+  @apply flex shrink-0 flex-col items-center justify-center gap-1 px-2 text-center;
+  flex-basis: 40%;
+  min-height: 0;
+  padding-top: 0.625rem;
+  padding-bottom: 0.5rem;
 }
 
-.gsv3-domain-tile__badge {
-  @apply flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-white shadow-sm;
+.gsv3-domain-tile__cap-icon {
+  @apply flex h-9 w-9 items-center justify-center rounded-lg bg-white/20;
 }
 
-.gsv3-domain-tile__label {
-  @apply truncate text-[13px] font-extrabold uppercase leading-tight tracking-wide;
+.gsv3-domain-tile__cap-label {
+  @apply line-clamp-2 text-[11px] font-extrabold uppercase leading-tight tracking-wide text-white md:text-xs;
 }
 
-.gsv3-domain-tile__subtitle {
-  @apply truncate text-[10px] font-medium leading-tight text-slate-500;
+.gsv3-domain-tile__cap-sub {
+  @apply line-clamp-1 text-[9px] font-medium leading-tight text-white/85;
 }
 
 .gsv3-domain-tile--scan {
-  @apply z-10 scale-[1.04];
+  @apply z-10 scale-[1.03];
   box-shadow: 0 8px 24px var(--domain-glow, rgba(99, 102, 241, 0.3));
 }
 
 .gsv3-domain-tile--winner {
-  @apply z-20 scale-[1.06] bg-white;
+  @apply z-20 scale-[1.05];
   box-shadow: 0 0 0 3px var(--domain-color, #6366f1), 0 12px 32px var(--domain-glow, rgba(99, 102, 241, 0.35));
 }
 
@@ -136,22 +166,23 @@
 }
 
 .gsv3-domain-tile__art {
-  @apply relative flex min-h-0 flex-1 items-end justify-center overflow-hidden;
-  padding: 0 0.125rem;
-  margin-top: -0.125rem;
+  @apply relative min-h-0 flex-1 overflow-hidden;
+  flex-basis: 60%;
 }
 
 .gsv3-domain-tile__hero {
   display: block;
-  width: 112%;
-  max-width: none;
-  height: auto;
-  max-height: 100%;
-  margin-bottom: -0.125rem;
-  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   object-position: center bottom;
-  transform: scale(1.06);
-  transform-origin: center bottom;
+}
+
+.gsv3-domain-tile__caret {
+  @apply pointer-events-none absolute -bottom-2 left-1/2 z-30 h-0 w-0 -translate-x-1/2;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 8px solid var(--domain-color, #6366f1);
 }
 
 .gsv3-particles {
@@ -168,63 +199,69 @@
   100% { transform: translateY(-20px) scale(0.2); opacity: 0; }
 }
 
-/* Situation stage */
+/* Situation stage — ~38% viewport, 32px padding, illustration center */
 .gsv3-situation-stage {
-  @apply relative mx-auto h-full w-full overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-white;
+  @apply relative mx-auto h-full w-full overflow-hidden rounded-2xl border border-slate-200/80 bg-white;
   box-shadow: 0 12px 40px rgba(15, 23, 42, 0.1);
-  max-width: min(100%, 1140px);
+  max-width: min(100%, 72rem);
 }
 
 .gsv3-situation-stage__inner {
-  @apply grid h-full gap-4;
-  grid-template-columns: minmax(0, 1fr) minmax(160px, 36%);
-  padding: 1rem 1rem 1rem 1.25rem;
+  @apply grid h-full min-h-0 gap-5;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  padding: 2rem 5.5rem 2rem 2rem;
 }
 
-@media (min-width: 768px) {
-  .gsv3-situation-stage__inner {
-    padding: 1.25rem 1.25rem 1.25rem 1.5rem;
-  }
+.gsv3-situation-timer {
+  @apply absolute right-5 top-5 z-10 text-center;
+}
+
+.gsv3-situation-timer__label {
+  @apply mb-1 text-[10px] font-bold uppercase tracking-widest text-slate-400;
 }
 
 .gsv3-situation-stage__copy {
-  @apply flex min-w-0 flex-col justify-center gap-1;
+  @apply flex min-w-0 flex-col justify-center gap-2 pr-2;
+  padding-right: 0.5rem;
 }
 
-.gsv3-situation-stage__right {
-  @apply flex min-h-0 flex-col items-center justify-center gap-2 border-l border-slate-100 pl-4;
+.gsv3-situation-stage__art {
+  @apply flex min-h-0 items-center justify-center overflow-hidden;
+  padding: 0.25rem 0;
 }
 
 .gsv3-situation-badge {
-  @apply inline-flex w-fit rounded-full px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.18em] text-white;
+  @apply inline-flex w-fit rounded-full px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.16em];
 }
 
 .gsv3-situation-title {
   font-family: 'Playfair Display', Georgia, serif;
-  @apply text-[1.65rem] font-bold leading-tight text-slate-900 md:text-3xl;
+  @apply text-[1.65rem] font-bold leading-tight text-slate-900 md:text-[2rem];
 }
 
 .gsv3-situation-narrative {
-  @apply text-sm leading-relaxed text-slate-600 md:text-base;
+  @apply text-sm leading-relaxed text-slate-600 md:text-[15px];
 }
 
 .gsv3-situation-cycle {
   @apply text-[10px] font-bold uppercase tracking-widest text-slate-400;
 }
 
+.gsv3-situation-detail-grid {
+  @apply mt-1 grid grid-cols-1 gap-2.5 sm:grid-cols-2;
+}
+
 .gsv3-situation-hero {
   display: block;
-  width: 108%;
-  max-width: none;
-  max-height: min(32vh, 260px);
+  width: 100%;
+  height: 100%;
+  max-height: min(36vh, 280px);
   object-fit: contain;
-  object-position: center bottom;
-  transform: scale(1.04);
-  transform-origin: center bottom;
+  object-position: center center;
 }
 
 .gsv3-detail-box {
-  @apply rounded-xl border border-slate-200 bg-slate-50 px-3 py-2;
+  @apply rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5;
 }
 
 .gsv3-detail-box__label {
@@ -236,25 +273,26 @@
 }
 
 .gsv3-idle-panel {
-  @apply flex h-full flex-col items-center justify-center gap-4 rounded-[1.5rem] border border-dashed border-slate-300 bg-white px-6 text-center shadow-sm;
+  @apply flex h-full flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-slate-300 bg-white px-8 py-6 text-center shadow-sm;
 }
 
 .gsv3-idle-panel p {
   @apply text-base text-slate-600;
 }
 
-/* Choice row */
+/* Choice row — ~25% viewport, 18px gaps, 20px card padding */
 .gsv3-choice-heading {
-  @apply mb-1.5 shrink-0 text-center text-[11px] font-extrabold uppercase tracking-[0.28em] text-slate-500;
+  @apply mb-2 shrink-0 text-center text-[11px] font-extrabold uppercase tracking-[0.28em] text-slate-500;
 }
 
 .gsv3-choice-row {
-  @apply flex min-h-0 flex-1 gap-2.5;
-  height: calc(100% - 1.5rem);
+  @apply flex min-h-0 flex-1;
+  gap: 1.125rem;
 }
 
 .gsv3-choice-btn {
-  @apply flex min-w-0 flex-1 items-center gap-2.5 rounded-2xl border-2 bg-white px-3 py-2.5 text-left shadow-sm transition;
+  @apply flex min-w-0 flex-1 flex-col items-start gap-2 rounded-2xl border-2 bg-white text-left shadow-sm transition;
+  padding: 1.25rem 1.125rem;
 }
 
 .gsv3-choice-btn--selected {
@@ -266,7 +304,7 @@
 }
 
 .gsv3-choice-label {
-  @apply line-clamp-2 text-[13px] font-bold leading-snug text-slate-800 md:text-sm;
+  @apply line-clamp-3 text-[13px] font-bold leading-snug text-slate-800 md:text-sm;
 }
 
 /* Header ribbon — mockup: #F8F9FC, ~68px, stats + dream/advisor pills */
@@ -338,7 +376,7 @@
 }
 
 .gsv3-header-dreams {
-  @apply hidden items-center gap-2 rounded-2xl border border-slate-200/90 bg-white px-2.5 py-1.5 shadow-sm transition hover:border-slate-300 md:flex;
+  @apply flex items-center gap-2 rounded-2xl border border-slate-200/90 bg-white px-2.5 py-1.5 shadow-sm transition hover:border-slate-300;
   height: calc(var(--gsv3-header-h) * 0.78);
   min-height: 2.75rem;
   max-height: 3.25rem;
@@ -404,9 +442,11 @@
   @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[#1a2b48] transition hover:bg-slate-200/60;
 }
 
-/* Footer */
+/* Footer — ~7% viewport */
 .gsv3-footer {
-  @apply flex h-full items-center justify-between border-t border-slate-200 bg-white px-4;
+  @apply flex h-full min-h-0 items-center justify-between border-t border-slate-200 bg-white;
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
 }
 
 .gsv3-stepper {

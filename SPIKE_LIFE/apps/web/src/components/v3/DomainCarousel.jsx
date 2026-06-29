@@ -77,7 +77,7 @@ export default function DomainCarousel({
 
         <div ref={trackRef} className="gsv3-carousel-track">
           {domains.map((domain) => (
-            <div key={domain.id} data-domain-id={domain.id}>
+            <div key={domain.id} data-domain-id={domain.id} className="h-full shrink-0">
               <DomainTile domain={domain} state={tileState(domain.id)} />
             </div>
           ))}
