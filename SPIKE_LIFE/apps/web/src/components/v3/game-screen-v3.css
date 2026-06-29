@@ -322,15 +322,11 @@
 }
 
 .gsv3-header-brand {
-  @apply flex shrink-0 items-center gap-2.5 pr-2 md:pr-4;
+  @apply flex shrink-0 items-center pr-2 md:pr-4;
 }
 
 .gsv3-header-logo {
-  @apply h-8 w-8 shrink-0 object-contain md:h-9 md:w-9;
-}
-
-.gsv3-header-brand__text {
-  @apply whitespace-nowrap font-sans text-sm font-bold tracking-tight text-[#1a2b48] md:text-base;
+  @apply h-8 w-auto max-w-[9.5rem] shrink-0 md:h-9 md:max-w-[11rem];
 }
 
 .gsv3-header-stats {

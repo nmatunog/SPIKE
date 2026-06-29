@@ -1,4 +1,6 @@
-/** Official SPIKE Venture Studio logo — served from /public/spike-logo.png */
+import { SpikeVentureLogo } from './SpikeVentureLogo.jsx';
+
+/** Raster fallbacks — prefer SpikeVentureLogo SVG for theme-aware rendering */
 export const SPIKE_LOGO_SRC = '/spike-logo.png';
 export const SPIKE_LOGO_ON_DARK_SRC = '/spike-logo-on-dark.png';
 
@@ -23,15 +25,14 @@ export function SpikeLogo({
   className = '',
   alt = 'SPIKE Venture Studio',
 }) {
-  const src = variant === 'onDark' ? SPIKE_LOGO_ON_DARK_SRC : SPIKE_LOGO_SRC;
+  const logoVariant = variant === 'onDark' ? 'onDark' : 'onLight';
+  const sizeClass = SIZE_CLASS[size] ?? SIZE_CLASS.md;
 
   return (
-    <img
-      src={src}
+    <SpikeVentureLogo
+      variant={logoVariant}
       alt={alt}
-      width={320}
-      height={80}
-      className={`w-auto shrink-0 object-contain object-left ${variant === 'onDark' ? 'drop-shadow-md' : ''} ${SIZE_CLASS[size]} ${className}`}
+      className={`${sizeClass} ${variant === 'onDark' ? 'drop-shadow-md' : ''} ${className}`}
     />
   );
 }

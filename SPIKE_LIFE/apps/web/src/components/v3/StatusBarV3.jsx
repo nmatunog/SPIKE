@@ -1,4 +1,5 @@
 import { Heart, Menu, Mountain, UserRound } from 'lucide-react'
+import { SpikeVentureLogo } from '../../../../../../src/components/brand/SpikeVentureLogo.jsx'
 
 export default function StatusBarV3({
   dashboard,
@@ -19,8 +20,7 @@ export default function StatusBarV3({
       </svg>
 
       <div className="gsv3-header-brand">
-        <SpikeMark className="gsv3-header-logo" />
-        <span className="gsv3-header-brand__text">SPIKE LIFE™</span>
+        <SpikeVentureLogo variant="onLight" className="gsv3-header-logo" />
       </div>
 
       <div className="gsv3-header-stats" role="group" aria-label="Player stats">
@@ -121,17 +121,3 @@ function HeaderStat({ label, value, accent = 'navy', icon }) {
   )
 }
 
-function SpikeMark({ className = '' }) {
-  return (
-    <svg viewBox="0 0 32 32" className={className} aria-hidden>
-      <path
-        fill="#dc2626"
-        d="M16 1.5 18.2 12.8 29.5 15 18.2 17.2 16 28.5 13.8 17.2 2.5 15 13.8 12.8Z"
-      />
-      <path
-        fill="#dc2626"
-        d="M15 2.5h2v11h11v2H17v11h-2V15.5H4v-2h11V2.5z"
-      />
-    </svg>
-  )
-}
