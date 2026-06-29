@@ -11,7 +11,7 @@ export default function CycleHudStrip({
   onOpenDrawer,
 }) {
   return (
-    <header className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-200/80 bg-white/70 px-4 py-2.5 backdrop-blur-sm">
+    <header className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-200 bg-white/90 px-4 py-2.5 backdrop-blur-sm">
       <div className="min-w-0">
         <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">
           Planning cycle

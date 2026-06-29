@@ -1,8 +1,8 @@
 /* GameScreenV2 — GDS v1.0 single-focus board game shell (light) */
 
 .gsv2-shell {
-  @apply relative flex h-dvh max-h-dvh flex-col overflow-hidden bg-slate-50 text-slate-900;
-  background: radial-gradient(ellipse at 50% 0%, #f8fafc 0%, #f1f5f9 45%, #e2e8f0 100%);
+  @apply relative flex h-dvh max-h-dvh flex-col overflow-hidden bg-white text-slate-900;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 42%, #f1f5f9 100%);
 }
 
 .gsv2-domain-tile {

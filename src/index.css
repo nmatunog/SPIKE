@@ -75,7 +75,8 @@
 
   /* SPIKE LIFE — full viewport, no portal header/nav */
   .spike-app-shell--immersive-life {
-    @apply min-h-dvh p-0;
+    @apply min-h-dvh bg-white p-0;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
     padding-bottom: 0 !important;
     padding-top: 0 !important;
   }
