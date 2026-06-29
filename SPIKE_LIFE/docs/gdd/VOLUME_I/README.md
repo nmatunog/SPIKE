@@ -21,6 +21,8 @@ Volume I describes **how the game plays** — loops, dice, domains, engines, adv
 | 9 | Replayability | [`CHAPTER_09_REPLAYABILITY.md`](./CHAPTER_09_REPLAYABILITY.md) |
 | 10 | Balancing | [`CHAPTER_10_BALANCING.md`](./CHAPTER_10_BALANCING.md) |
 
+**Implementation phases (GDS → engineering):** [`IMPLEMENTATION_PHASES.md`](./IMPLEMENTATION_PHASES.md)
+
 ---
 
 ## Design pillars

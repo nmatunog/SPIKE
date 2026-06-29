@@ -78,3 +78,9 @@ See approved GDS sections: Philippine economic assumptions, financial planning f
 | Life Score end-game UI | Partial (scoring exists; full summary UI planned) |
 
 Personas are assigned automatically at join (workshop) or session create (solo) so players cannot all pick the same starting profile.
+
+---
+
+## Implementation roadmap
+
+Phased engineering plan: **[IMPLEMENTATION_PHASES.md](./IMPLEMENTATION_PHASES.md)** — sequenced deliverables from Phase 0 (shipped) through MVP gate.
