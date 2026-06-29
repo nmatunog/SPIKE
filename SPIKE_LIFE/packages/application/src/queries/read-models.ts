@@ -208,9 +208,18 @@ export interface ConsequenceDeltaView {
   higherIsBetter?: boolean
 }
 
+export interface ConsequenceMetricRowView {
+  label: string
+  displayValue: string
+  improved: boolean
+}
+
 export interface ConsequenceRevealView {
   narrative: string
   qualityLabel: string | null
+  headlineTitle: string
+  decisionSubtitle: string
+  rows: ConsequenceMetricRowView[]
   deltas: ConsequenceDeltaView[]
   lifeScoreBefore: number
   lifeScoreAfter: number

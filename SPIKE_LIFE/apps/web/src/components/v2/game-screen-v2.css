@@ -62,3 +62,33 @@
   20% { background-color: rgba(239, 68, 68, 0.14); }
   100% { background-color: rgba(239, 68, 68, 0); }
 }
+
+.gsv2-consequence-modal {
+  @apply rounded-[2rem] border border-violet-200/80 bg-white shadow-2xl;
+  box-shadow:
+    0 0 0 1px rgba(167, 139, 250, 0.15),
+    0 24px 60px rgba(139, 92, 246, 0.12),
+    0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.gsv2-consequence-badge {
+  background: linear-gradient(180deg, #ede9fe 0%, #e0e7ff 100%);
+}
+
+.gsv2-consequence-row--up {
+  background: rgba(236, 253, 245, 0.85);
+  border: 1px solid rgba(167, 243, 208, 0.55);
+}
+
+.gsv2-consequence-row--down {
+  background: rgba(254, 242, 242, 0.9);
+  border: 1px solid rgba(254, 202, 202, 0.55);
+}
+
+.gsv2-consequence-spinner {
+  animation: gsv2-spin 0.9s linear infinite;
+}
+
+@keyframes gsv2-spin {
+  to { transform: rotate(360deg); }
+}

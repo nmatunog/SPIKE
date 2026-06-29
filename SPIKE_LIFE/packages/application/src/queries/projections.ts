@@ -289,8 +289,10 @@ export function projectConsequenceReveal(session: SimulationSession): Consequenc
   if (!session.consequence || !session.fnaBeforeDecision || !session.fnaAfterDecision) {
     return null
   }
+  const currency = resolveCurrency(session)
   const beforeFna = session.fnaBeforeDecision
   const afterFna = session.fnaAfterDecision
+  const consequence = session.consequence
   const beforeScore = calculateLifeScore(
     beforeFna,
     session.financialProfile,
@@ -338,9 +340,70 @@ export function projectConsequenceReveal(session: SimulationSession): Consequenc
     })
   }
 
+  const domainLabel = session.selectedDomainId?.replace(/_/g, ' ') ?? 'Life'
+  const headlineTitle = `${domainLabel} cycle adjustment`
+  const encounterId = session.encounterId ?? null
+  const decisionOption = getDecisionOptions(session.scenarioId, encounterId).find(
+    (opt) => opt.strategy === session.decision?.strategy,
+  )
+  const decisionSubtitle = decisionOption?.label ?? consequence.narrative
+
+  const cashFlowDelta = -consequence.expensesDelta
+  const protectionDelta = afterFna.protectionScore - beforeFna.protectionScore
+  const riskBefore = Math.max(0, 100 - beforeFna.protectionScore)
+  const riskAfter = Math.max(0, 100 - afterFna.protectionScore)
+  const riskDelta = riskAfter - riskBefore
+  const lifeDelta = afterScore.overall - beforeScore.overall
+
+  const signedMoney = (amount: number, suffix = '') => {
+    const sign = amount > 0 ? '+' : amount < 0 ? '-' : ''
+    return `${sign}${formatMoney(Math.abs(amount), currency).formatted}${suffix}`
+  }
+
+  const signedPercent = (amount: number) => {
+    const sign = amount > 0 ? '+' : amount < 0 ? '-' : ''
+    return `${sign}${Math.abs(amount)}%`
+  }
+
+  const signedPoints = (amount: number) => {
+    const sign = amount > 0 ? '+' : amount < 0 ? '-' : ''
+    return `${sign}${Math.abs(amount)}`
+  }
+
+  const rows = [
+    {
+      label: 'Cash flow',
+      displayValue: signedMoney(cashFlowDelta, ' /mo'),
+      improved: cashFlowDelta >= 0,
+    },
+    {
+      label: 'Cash buffer',
+      displayValue: signedMoney(consequence.cashDelta),
+      improved: consequence.cashDelta >= 0,
+    },
+    {
+      label: 'Protection',
+      displayValue: signedPercent(protectionDelta),
+      improved: protectionDelta >= 0,
+    },
+    {
+      label: 'Risk exposure',
+      displayValue: signedPercent(riskDelta),
+      improved: riskDelta <= 0,
+    },
+    {
+      label: 'Life score',
+      displayValue: signedPoints(lifeDelta),
+      improved: lifeDelta >= 0,
+    },
+  ]
+
   return {
     narrative: session.consequence.narrative,
     qualityLabel: decisionQualityLabel(session.consequence.decisionQuality),
+    headlineTitle,
+    decisionSubtitle,
+    rows,
     deltas,
     lifeScoreBefore: beforeScore.overall,
     lifeScoreAfter: afterScore.overall,

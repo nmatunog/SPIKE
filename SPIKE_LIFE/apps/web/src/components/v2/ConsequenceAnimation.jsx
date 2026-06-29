@@ -1,30 +1,50 @@
 import { useEffect } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 
-function StatDelta({ label, before, after, unit = '', flash }) {
-  const delta = after - before
-  const improved = delta >= 0
+function MetricIcon({ improved }) {
+  return (
+    <span
+      className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${
+        improved ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'
+      }`}
+      aria-hidden
+    >
+      {improved ? (
+        <svg viewBox="0 0 20 20" className="h-4 w-4 fill-current">
+          <path d="M10 4l6 8H4l6-8z" />
+        </svg>
+      ) : (
+        <svg viewBox="0 0 20 20" className="h-4 w-4 fill-current">
+          <path d="M10 16l-6-8h12l-6 8z" />
+        </svg>
+      )}
+    </span>
+  )
+}
+
+function ConsequenceRow({ row, index }) {
   return (
     <motion.div
-      initial={{ opacity: 0, x: -12 }}
-      animate={{ opacity: 1, x: 0 }}
-      className={`rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 ${
-        flash ? (improved ? 'gsv2-stat-flash-up' : 'gsv2-stat-flash-down') : ''
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.08 * index, duration: 0.28 }}
+      className={`gsv2-consequence-row flex items-center justify-between gap-4 rounded-2xl px-4 py-3.5 ${
+        row.improved ? 'gsv2-consequence-row--up' : 'gsv2-consequence-row--down'
       }`}
     >
-      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{label}</p>
-      <p className={`mt-1 text-lg font-black tabular-nums ${improved ? 'text-emerald-700' : 'text-amber-700'}`}>
-        {before}
-        {unit} → {after}
-        {unit}
-        {delta !== 0 && (
-          <span className="ml-2 text-sm">
-            ({delta > 0 ? '+' : ''}
-            {delta}
-            {unit})
-          </span>
-        )}
-      </p>
+      <div className="flex min-w-0 items-center gap-3">
+        <MetricIcon improved={row.improved} />
+        <span className="text-sm font-bold uppercase tracking-wide text-slate-800">
+          {row.label}
+        </span>
+      </div>
+      <span
+        className={`shrink-0 text-sm font-bold tabular-nums ${
+          row.improved ? 'text-emerald-700' : 'text-red-600'
+        }`}
+      >
+        {row.displayValue}
+      </span>
     </motion.div>
   )
 }
@@ -34,50 +54,56 @@ export default function ConsequenceAnimation({ reveal, onComplete }) {
 
   useEffect(() => {
     if (!reveal) return undefined
-    const ms = reduceMotion ? 1800 : 3200
+    const ms = reduceMotion ? 2200 : 3600
     const id = setTimeout(() => onComplete?.(), ms)
     return () => clearTimeout(id)
   }, [reveal, onComplete, reduceMotion])
 
   if (!reveal) return null
 
-  const scoreDelta = reveal.lifeScoreAfter - reveal.lifeScoreBefore
+  const title = (reveal.headlineTitle ?? 'Life cycle adjustment').toUpperCase()
+  const subtitle = reveal.decisionSubtitle ?? reveal.qualityLabel ?? ''
+  const rows = reveal.rows?.length ? reveal.rows : []
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="absolute inset-0 z-30 flex items-center justify-center bg-white/80 p-4 backdrop-blur-md"
+      className="absolute inset-0 z-30 flex items-center justify-center bg-white/70 p-4 backdrop-blur-md"
     >
       <motion.div
-        initial={reduceMotion ? false : { scale: 0.92, y: 20 }}
+        initial={reduceMotion ? false : { scale: 0.94, y: 16 }}
         animate={{ scale: 1, y: 0 }}
-        className="w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl shadow-slate-200/80"
+        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        className="gsv2-consequence-modal w-full max-w-md px-6 py-8 sm:max-w-lg sm:px-8"
       >
-        <p className="text-center text-xs font-black uppercase tracking-[0.25em] text-emerald-600">
-          {scoreDelta >= 0 ? 'Consequences revealed' : 'Tough trade-off'}
-        </p>
-        <h2 className="mt-2 text-center text-3xl font-black text-slate-900">
-          Life Score {reveal.lifeScoreBefore} → {reveal.lifeScoreAfter}
-        </h2>
-        {reveal.qualityLabel && (
-          <p className="mt-1 text-center text-sm text-slate-500">{reveal.qualityLabel}</p>
-        )}
-        <p className="mt-4 text-center text-sm leading-relaxed text-slate-600">{reveal.narrative}</p>
+        <div className="text-center">
+          <span className="gsv2-consequence-badge inline-block rounded-full px-4 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.22em] text-indigo-800">
+            Decision consequence
+          </span>
+          <h2 className="mt-5 font-serif text-2xl font-bold uppercase leading-tight tracking-wide text-slate-900 sm:text-[1.75rem]">
+            {title}
+          </h2>
+          {subtitle && (
+            <p className="mt-2 text-sm italic text-slate-500">{subtitle}</p>
+          )}
+        </div>
 
-        <div className="mt-6 space-y-2">
-          {reveal.deltas?.map((d, i) => (
-            <StatDelta key={d.label} {...d} flash={i === 0} />
+        <div className="mt-7 space-y-2.5">
+          {rows.map((row, index) => (
+            <ConsequenceRow key={row.label} row={row} index={index} />
           ))}
         </div>
 
-        <button
-          type="button"
-          onClick={onComplete}
-          className="mt-6 w-full rounded-xl bg-indigo-600 py-3 text-sm font-bold text-white hover:bg-indigo-700"
-        >
-          See dream progress →
-        </button>
+        <div className="mt-8 flex flex-col items-center gap-2">
+          <span
+            className="gsv2-consequence-spinner h-5 w-5 rounded-full border-2 border-violet-300 border-t-violet-600"
+            aria-hidden
+          />
+          <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-violet-400">
+            Evaluating planning results…
+          </p>
+        </div>
       </motion.div>
     </motion.div>
   )
