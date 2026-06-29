@@ -11,8 +11,9 @@ export function buildSituationShuffleIds(
   category: import('../../types.js').SpaceType,
   age: number,
   selectedId: EncounterCardId,
+  completedEncounters: EncounterCardId[] = [],
 ): EncounterCardId[] {
-  const pool = encountersForDomain(domainId, category, age)
+  const pool = encountersForDomain(domainId, category, age, completedEncounters)
   const ids = pool.map((card) => card.id)
   const selected = ids.includes(selectedId) ? selectedId : ids[0]!
   const others = ids.filter((id) => id !== selected)
@@ -30,8 +31,9 @@ export function buildSituationShuffleCards(
   category: import('../../types.js').SpaceType,
   age: number,
   selectedId: EncounterCardId,
+  completedEncounters: EncounterCardId[] = [],
 ): EncounterCard[] {
-  return buildSituationShuffleIds(domainId, category, age, selectedId).map((id) =>
+  return buildSituationShuffleIds(domainId, category, age, selectedId, completedEncounters).map((id) =>
     getEncounterCard(id),
   )
 }

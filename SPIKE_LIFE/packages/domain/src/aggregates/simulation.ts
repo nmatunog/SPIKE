@@ -429,8 +429,8 @@ export class Simulation {
       : null
 
     const pendingCalendarEvent = shouldTriggerThirteenthMonth(
-      completedYear,
-      isYearEndCycle(endCycleIndex),
+      advanced.simulationYear,
+      halfYearFromCycle(advanced.cycleIndex) === 'H2',
     )
       ? 'thirteenth_month'
       : null

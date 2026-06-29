@@ -9,7 +9,9 @@ export const ENCOUNTER_DECK: Record<EncounterCardId, EncounterCard> = {
     domainIds: ['career'],
     scenarioId: 'promotion',
     learningConcept: 'First income allocation',
-    weightsByBand: { launch: 35, mid: 2, late: 0 },
+    ageMin: 22,
+    ageMax: 24,
+    weightsByBand: { launch: 35, mid: 0, late: 0 },
   },
   internship: {
     id: 'internship',
@@ -19,7 +21,9 @@ export const ENCOUNTER_DECK: Record<EncounterCardId, EncounterCard> = {
     domainIds: ['career', 'education'],
     scenarioId: 'promotion',
     learningConcept: 'Early career cash flow',
-    weightsByBand: { launch: 25, mid: 3, late: 0 },
+    ageMin: 20,
+    ageMax: 26,
+    weightsByBand: { launch: 25, mid: 0, late: 0 },
   },
   job_offer: {
     id: 'job_offer',
@@ -39,6 +43,7 @@ export const ENCOUNTER_DECK: Record<EncounterCardId, EncounterCard> = {
     domainIds: ['career'],
     scenarioId: 'promotion',
     learningConcept: 'Income allocation after a raise',
+    ageMin: 25,
     weightsByBand: { launch: 15, mid: 25, late: 5 },
   },
   executive_promotion: {
@@ -89,6 +94,7 @@ export const ENCOUNTER_DECK: Record<EncounterCardId, EncounterCard> = {
     domainIds: ['income_finance', 'career'],
     scenarioId: 'promotion',
     learningConcept: 'Lifestyle discipline vs savings',
+    ageMin: 25,
     weightsByBand: { launch: 15, mid: 20, late: 8 },
   },
   emergency_fund: {

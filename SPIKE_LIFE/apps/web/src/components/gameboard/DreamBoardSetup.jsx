@@ -14,7 +14,7 @@ const ICONS = {
 const GOAL_COPY = {
   home: { title: 'House & Lot Goal', desc: 'Primary home purchase target' },
   travel: { title: 'Travel & Lifestyle', desc: 'Dream vacations & experiences' },
-  business: { title: 'Business Expansion', desc: 'Seed capital for growth' },
+  business: { title: 'Business Startup or Expansion', desc: 'Seed capital for growth' },
   retirement: { title: 'Retirement Income', desc: 'Long-term financial security' },
   education: { title: 'Education Fund', desc: 'Child education & learning' },
   emergency: { title: 'Emergency Safety Net', desc: '6× monthly income buffer' },

@@ -70,6 +70,7 @@ export class Board {
       advisorInsightOffered: false,
       playerAgeSnapshot: null,
       landedSpaceIndex: null,
+      completedEncounterIds: [],
       createdAt: now,
       updatedAt: now,
     })
@@ -156,7 +157,13 @@ export class Board {
     const situationRoll = rollSituationDie(rng)
     const category = this.state.rolledCategory
     const domainId = this.state.selectedDomainId ?? 'career'
-    const encounterId = pickWeightedEncounter(domainId, category, playerAge, rng)
+    const encounterId = pickWeightedEncounter(
+      domainId,
+      category,
+      playerAge,
+      rng,
+      this.state.completedEncounterIds ?? [],
+    )
     const playerId = this.currentPlayerId
     const token = this.getToken(playerId)
     if (!token) throw new Error(`Token not found for player: ${playerId}`)
@@ -403,6 +410,9 @@ export class Board {
       rolledCategoryLabel: null,
       selectedDomainId: null,
       pendingEncounterId: null,
+      completedEncounterIds: this.state.pendingEncounterId
+        ? [...(this.state.completedEncounterIds ?? []), this.state.pendingEncounterId]
+        : (this.state.completedEncounterIds ?? []),
       advisorInsightOffered: false,
       playerAgeSnapshot: null,
       landedSpaceIndex: null,

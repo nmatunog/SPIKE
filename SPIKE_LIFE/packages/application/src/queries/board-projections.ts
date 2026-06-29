@@ -71,6 +71,7 @@ export function projectSpatialBoard(board: BoardState): SpatialBoardView {
             board.rolledCategory,
             board.playerAgeSnapshot ?? 22,
             board.pendingEncounterId,
+            board.completedEncounterIds ?? [],
           ).map((card) => ({
             id: card.id,
             title: card.title,

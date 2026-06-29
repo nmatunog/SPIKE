@@ -246,7 +246,7 @@
       "goals": [
         {
           "goalId": "business_growth",
-          "goalName": "Business Expansion",
+          "goalName": "Business Startup or Expansion",
           "targetAmount": 500000,
           "targetAge": 35,
           "currentFunding": 100000,

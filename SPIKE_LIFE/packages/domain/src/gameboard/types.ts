@@ -114,6 +114,8 @@ export interface BoardState {
   /** Character age when the current year began — drives situation shuffle UI. */
   playerAgeSnapshot: number | null
   landedSpaceIndex: number | null
+  /** Encounters already played — drives career progression gates. */
+  completedEncounterIds: EncounterCardId[]
   createdAt: string
   updatedAt: string
 }

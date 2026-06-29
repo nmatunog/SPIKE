@@ -80,7 +80,7 @@ export function buildAnnualCheckpoint(
 
 export function shouldTriggerThirteenthMonth(
   simulationYear: number,
-  isYearEnd: boolean,
+  enteringJulDecPeriod: boolean,
 ): boolean {
-  return isYearEnd && simulationYear > 0
+  return simulationYear > 0 && enteringJulDecPeriod
 }

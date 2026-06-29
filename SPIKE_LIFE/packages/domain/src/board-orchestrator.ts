@@ -10,12 +10,13 @@ import { getEncounterCard } from './gameboard/services/encounter-deck.js'
 import {
   advanceTurn,
   applyYearEndHiddenReveal,
-  createWorkshopSession,
+  createCampaignSession,
   startPlanningCycle,
   submitDecision,
   submitReflection,
   finalizeCycleAfterDecision,
 } from './financial-decision-engine.js'
+import { getMaxCampaignCycles } from './services/campaign-context.js'
 
 export interface BoardOrchestratorDeps {
   boardRepo: BoardRepository
@@ -53,12 +54,15 @@ export async function createSoloBoard(
     return existing
   }
 
-  const workshop = createWorkshopSession(simulationId, currency)
+  const workshop = createCampaignSession(simulationId, currency)
   await deps.simulationRepo.save(workshop)
 
-  const board = Board.create(boardId, simulationId, [
-    { playerId: 'solo', displayName },
-  ])
+  const board = Board.create(
+    boardId,
+    simulationId,
+    [{ playerId: 'solo', displayName }],
+    getMaxCampaignCycles(),
+  )
   await deps.boardRepo.save(board.toState())
   return board.toState()
 }
