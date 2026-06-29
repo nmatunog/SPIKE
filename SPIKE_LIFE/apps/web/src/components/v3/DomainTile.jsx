@@ -57,15 +57,15 @@ export default function DomainTile({
           className="gsv3-domain-tile__badge"
           style={{ backgroundColor: identity.color }}
         >
-          <DomainIcon name={domain.icon} className="h-4 w-4 text-white" />
+          <DomainIcon name={domain.icon} className="h-3.5 w-3.5 text-white" />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-xs font-extrabold uppercase tracking-wide" style={{ color: identity.color }}>
-          {domain.label}
-        </p>
-        {identity.subtitle && (
-          <p className="truncate text-[9px] font-medium text-slate-500">{identity.subtitle}</p>
-        )}
+          <p className="gsv3-domain-tile__label" style={{ color: identity.color }}>
+            {domain.label}
+          </p>
+          {identity.subtitle && (
+            <p className="gsv3-domain-tile__subtitle">{identity.subtitle}</p>
+          )}
         </div>
       </div>
       <div className="gsv3-domain-tile__art">

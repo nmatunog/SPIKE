@@ -39,7 +39,7 @@ export default function CycleStepperV3({
                 {done ? '✓' : index + 1}
               </div>
               <span
-                className={`hidden text-[9px] font-bold uppercase tracking-wide sm:inline ${
+                className={`gsv3-stepper-label ${
                   active ? 'text-indigo-700' : 'text-slate-400'
                 }`}
               >

@@ -17,15 +17,13 @@ export default function DecisionActionCards({
 }) {
   return (
     <section className="flex h-full flex-col" aria-label="Choose one response">
-      <h2 className="mb-1 shrink-0 text-center text-[9px] font-extrabold uppercase tracking-[0.3em] text-slate-500">
-        Choose one response
-      </h2>
+      <h2 className="gsv3-choice-heading">Choose one response</h2>
 
       {error && (
-        <p className="mb-1 shrink-0 text-center text-xs text-red-600">{error}</p>
+        <p className="mb-1.5 shrink-0 text-center text-sm text-red-600">{error}</p>
       )}
 
-      <div className="gsv3-choice-row min-h-0 flex-1">
+      <div className="gsv3-choice-row">
         {options.map((opt, index) => {
           const selected = selectedIndex === index
           const theme = THEMES[index % THEMES.length]

@@ -19,14 +19,14 @@ export default function StatusBarV3({
             label="Life Score"
             value={dashboard.lifeScore.overall}
             accent="text-rose-600"
-            icon={<Heart className="h-3 w-3 fill-rose-500 text-rose-500" aria-hidden />}
+            icon={<Heart className="h-3.5 w-3.5 fill-rose-500 text-rose-500" aria-hidden />}
           />
         )}
         {dashboard?.monthlySurplus?.formatted && (
           <HeaderStat label="Cash Flow" value={dashboard.monthlySurplus.formatted} accent="text-emerald-600" />
         )}
         {dashboard?.liquidCash?.formatted && (
-          <HeaderStat label="Liquid Cash" value={dashboard.liquidCash.formatted} accent="text-amber-600" className="hidden sm:flex" />
+          <HeaderStat label="Liquid Cash" value={dashboard.liquidCash.formatted} accent="text-amber-600" />
         )}
         {dashboard?.netWorth?.formatted && (
           <HeaderStat label="Net Worth" value={dashboard.netWorth.formatted} accent="text-slate-900" />

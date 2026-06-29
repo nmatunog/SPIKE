@@ -293,7 +293,7 @@ export default function GameScreenV3({ onOpenWorkshop }) {
                   type="button"
                   disabled={!canStartCycle}
                   onClick={handleStartCycle}
-                  className="rounded-2xl bg-indigo-600 px-8 py-3 text-xs font-extrabold uppercase tracking-widest text-white shadow-lg shadow-indigo-300/40 disabled:opacity-40"
+                  className="rounded-2xl bg-indigo-600 px-10 py-3.5 text-sm font-extrabold uppercase tracking-widest text-white shadow-lg shadow-indigo-300/40 disabled:opacity-40"
                 >
                   {busy ? 'Rolling…' : 'Begin planning cycle'}
                 </button>
