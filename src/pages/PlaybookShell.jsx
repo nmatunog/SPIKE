@@ -8,6 +8,7 @@ import { ParticipantDayView } from '../components/playbook/ParticipantDayView.js
 import { FacultyPlaybookView } from '../components/playbook/FacultyPlaybookView.jsx';
 import { Week2ActivateHero } from '../components/playbook/week2/Week2ActivateHero.jsx';
 import { Week2MissionPlaybookView } from '../components/playbook/week2/Week2MissionPlaybookView.jsx';
+import { Week3Day3MissionPlaybookView } from '../components/playbook/week3/Week3Day3MissionPlaybookView.jsx';
 import {
   getCurriculumDataSource,
   getDayContentBundle,
@@ -167,6 +168,13 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
     && entrySegment === 1
     && (weekSlug === 'week-2' || selectedWeek?.week?.weekNumber === 2);
 
+  const isInternWeek3Day3 =
+    userRole === 'intern'
+    && entryWeek >= 3
+    && entrySegment === 1
+    && (weekSlug === 'week-3' || selectedWeek?.week?.weekNumber === 3)
+    && playbookDayNumber === 3;
+
   const urlPlaybookDay = useMemo(
     () => parsePlaybookDayParam(searchParams.get('day')),
     [searchParams],
@@ -177,11 +185,19 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
       ? urlPlaybookDay
       : (selectedDay?.day?.dayNumber ?? entryDay);
 
-  const showMissionFirst =
+  const showWeek2MissionFirst =
     isInternWeek2
     && !showCurriculum
     && !browseAllDays
     && Boolean(participantId);
+
+  const showWeek3Day3MissionFirst =
+    isInternWeek3Day3
+    && !showCurriculum
+    && !browseAllDays
+    && Boolean(participantId);
+
+  const showMissionFirst = showWeek2MissionFirst || showWeek3Day3MissionFirst;
 
   const resolvedPlaybookDay = participantId
     ? resolveWeek2PlaybookDay(participantId, playbookDayNumber)
@@ -270,7 +286,11 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
   function backToMissionView() {
     const params = new URLSearchParams(searchParams);
     params.delete('view');
-    if (participantId) {
+    if (isInternWeek3Day3) {
+      params.delete('mission');
+      params.set('week', '3');
+      params.set('day', '3');
+    } else if (participantId) {
       const day = resolveWeek2PlaybookDay(participantId, playbookDayNumber);
       params.set('mission', getActiveWeek2Task(participantId, day).slug);
       params.set('day', String(day));
@@ -357,7 +377,30 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
 
   let dayContent;
 
-  if (showMissionFirst && participantId) {
+  if (showWeek3Day3MissionFirst && participantId && bundle) {
+    dayContent = (
+      <Week3Day3MissionPlaybookView
+        participantId={participantId}
+        squadName={internSquadName}
+        missionSlug={missionSlug}
+        programWeek={entryWeek}
+        focusReflection={focusReflection}
+        pendingReflection={pendingTodayReflection}
+        bundle={bundle}
+        onOpenCurriculum={openCurriculumView}
+        onProgress={() => setRefreshKey((k) => k + 1)}
+        onMissionNavigate={(slug) => {
+          const next = new URLSearchParams(searchParams);
+          if (slug) next.set('mission', slug);
+          else next.delete('mission');
+          next.set('day', '3');
+          next.set('week', '3');
+          setSearchParams(next, { replace: true });
+        }}
+        interns={interns}
+      />
+    );
+  } else if (showWeek2MissionFirst && participantId) {
     dayContent = (
       <Week2MissionPlaybookView
         participantId={participantId}
@@ -392,7 +435,7 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
         />
       ) : (
         <>
-          {isInternWeek2 && showCurriculum ? (
+          {(isInternWeek2 || isInternWeek3Day3) && showCurriculum ? (
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-spike/15 bg-spike/5 px-4 py-3">
               <p className="text-sm text-slate-700">
                 Coach session notes — slides and activities for today&apos;s facilitation.

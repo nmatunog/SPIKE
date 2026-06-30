@@ -3,18 +3,19 @@
   "segmentId": "segment-1",
   "weekId": "week-segment-1-3",
   "dayNumber": 3,
-  "title": "Day 13 — Why This Business Scales",
-  "theme": "Scalable Venture Model",
+  "title": "Day 13 — The Business Engine",
+  "theme": "Client Experience at the Core",
   "durationHours": 4,
   "learningObjectives": [
-    "Explain why a financial advisory practice is a scalable venture",
-    "Map the client growth flywheel: one client → referrals → recurring relationships → growing practice",
-    "Draft FEC Box 6 — Growth Engines for your advisory venture",
-    "Connect growth engines to Client, Talent, and Leadership engines in the Venture Blueprint"
+    "Experience FNA discovery from both the advisor and client perspective",
+    "Identify what builds trust and what feels awkward in advisory conversations",
+    "Improve FEC Box 4 — Client Experience using role-play insights",
+    "Improve FEC Box 5 — Winning Strategy based on experience, understanding, and trust"
   ],
   "expectedOutputs": [
-    "Client growth flywheel map",
-    "FEC Growth Engines draft"
+    "FNA role-play reflection notes",
+    "Improved FEC Box 4 — Client Experience",
+    "Improved FEC Box 5 — Winning Strategy"
   ],
   "portfolioDeliverables": [
     "portfolio-advisor-startup"

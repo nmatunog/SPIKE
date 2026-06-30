@@ -3,47 +3,53 @@
     {
       "id": "activity-w3-d3-01",
       "dayId": "day-segment-1-week-3-day-3",
-      "title": "Client Growth Flywheel Map",
-      "durationMinutes": 45,
+      "title": "FNA Role Play — Agent & Client",
+      "durationMinutes": 60,
       "materials": [],
       "instructions": [
-        "Map: one client → referral → five clients → twenty clients → recurring relationships → growing practice",
-        "Name first-client sources from Week 2 network",
-        "Identify referral trigger moments"
+        "Pair with a squad mate and swap roles as advisor and client",
+        "8 min discovery / 4 min feedback / swap roles",
+        "Use Week 1 persona or Week 2 validated segment — no product pitch",
+        "Capture what worked, what felt awkward, and what builds trust"
       ],
       "outputs": [
-        "Client growth flywheel map"
+        "FNA role-play reflection notes"
       ],
-      "debriefQuestions": []
+      "debriefQuestions": [
+        "What worked in your FNA conversation?",
+        "What felt awkward?",
+        "What builds trust?"
+      ]
     },
     {
       "id": "activity-w3-d3-02",
       "dayId": "day-segment-1-week-3-day-3",
-      "title": "FEC Box 6 — Growth Engines Draft",
-      "durationMinutes": 40,
+      "title": "Improve FEC Box 4 — Client Experience",
+      "durationMinutes": 45,
       "materials": [],
       "instructions": [
-        "Open Financial Entrepreneurship Canvas Box 6",
-        "Draft Advisor Excellence, Team & Leadership, Systems & Scale activation",
-        "Sync to Venture Blueprint growth engines"
+        "Open your Week 3 Day 3 Portfolio in the Playbook",
+        "Answer reflection prompts from the morning role play",
+        "Edit FEC Box 4 — describe what your client experience should look like"
       ],
       "outputs": [
-        "FEC Growth Engines draft"
+        "Updated FEC Box 4 — Client Experience"
       ],
       "debriefQuestions": []
     },
     {
       "id": "activity-w3-d3-03",
       "dayId": "day-segment-1-week-3-day-3",
-      "title": "Growth Engine Squad Share",
-      "durationMinutes": 25,
+      "title": "Improve FEC Box 5 — Winning Strategy",
+      "durationMinutes": 40,
       "materials": [],
       "instructions": [
-        "Each squad shares primary growth engine and first 30-day action",
-        "Room Q&A — one question per squad"
+        "Answer: Why will clients choose your advisory practice instead of another?",
+        "Base your answer on experience, understanding, and trust from role play",
+        "Edit FEC Box 5 in the Financial Entrepreneurship Canvas"
       ],
       "outputs": [
-        "Squad growth engine notes"
+        "Updated FEC Box 5 — Winning Strategy"
       ],
       "debriefQuestions": []
     }
