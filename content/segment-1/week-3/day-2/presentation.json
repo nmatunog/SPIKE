@@ -8,58 +8,122 @@
       "slide-w3-d2-dk1-02",
       "slide-w3-d2-dk1-03",
       "slide-w3-d2-dk1-04",
-      "slide-w3-d2-dk1-05"
-    ]
+      "slide-w3-d2-dk1-05",
+      "slide-d2-01-06",
+      "slide-d2-01-07",
+      "slide-d2-01-08",
+      "slide-d2-01-09",
+      "slide-d2-01-10"
+    ],
+    "sourceFile": "faculty-deck-01.pdf",
+    "sourcePath": "content/segment-1/week-3/day-2/source/faculty-deck-01.pdf",
+    "importedAt": "2026-06-30T07:14:04.766Z",
+    "pdfUrl": "/content/segment-1/week-3/day-2/faculty-deck-01.pdf"
   },
   "slides": [
     {
       "id": "slide-w3-d2-dk1-01",
       "presentationId": "presentation-w3-d2-deck-01",
+      "sortOrder": 1,
       "title": "Day 12 — Your First Business Tool",
       "body": "Every entrepreneur needs a way to diagnose customer problems.",
       "speakerNotes": "Open: Yesterday you saw the opportunity. Today you get your first business tool.\nNot paperwork. A diagnostic instrument.",
       "discussionQuestions": [
         "What tools do other businesses use to understand customers?"
       ],
-      "sortOrder": 1
+      "imageUrl": "/content/segment-1/week-3/day-2/deck-01/slide-01.png"
     },
     {
       "id": "slide-w3-d2-dk1-02",
       "presentationId": "presentation-w3-d2-deck-01",
+      "sortOrder": 2,
       "title": "How Businesses Diagnose Problems",
       "body": "Restaurants taste food.\nDoctors diagnose patients.\nMechanics inspect vehicles.\nFinancial Advisors conduct an FNA.",
       "speakerNotes": "Walk through each example.\nEmphasize: professionals diagnose before they prescribe.\nFNA is the advisor's diagnostic — a business tool.",
       "discussionQuestions": [
         "What happens when a business skips diagnosis?"
       ],
-      "sortOrder": 2
+      "imageUrl": "/content/segment-1/week-3/day-2/deck-01/slide-02.png"
     },
     {
       "id": "slide-w3-d2-dk1-03",
       "presentationId": "presentation-w3-d2-deck-01",
+      "sortOrder": 3,
       "title": "FNA — Business Tool, Not Paperwork",
       "body": "Discover → Quantify → Prioritize → Plan",
       "speakerNotes": "Reframe FNA entirely.\nNo product language.\nThis is how your venture understands client needs before creating value.",
       "discussionQuestions": [],
-      "sortOrder": 3
+      "imageUrl": "/content/segment-1/week-3/day-2/deck-01/slide-03.png"
     },
     {
       "id": "slide-w3-d2-dk1-04",
       "presentationId": "presentation-w3-d2-deck-01",
+      "sortOrder": 4,
       "title": "Ethical Boundaries",
       "body": "No product talk until needs are documented.",
       "speakerNotes": "Entrepreneurs who rush to sell lose trust.\nAdvisors who rush to products lose clients.",
       "discussionQuestions": [],
-      "sortOrder": 4
+      "imageUrl": "/content/segment-1/week-3/day-2/deck-01/slide-04.png"
     },
     {
       "id": "slide-w3-d2-dk1-05",
       "presentationId": "presentation-w3-d2-deck-01",
+      "sortOrder": 5,
       "title": "Deck 01 Close — FNA Workshop",
       "body": "Afternoon: practice diagnosis with real discovery discipline.",
       "speakerNotes": "Transition to Deck 02 dyad lab.",
       "discussionQuestions": [],
-      "sortOrder": 5
+      "imageUrl": "/content/segment-1/week-3/day-2/deck-01/slide-05.png"
+    },
+    {
+      "id": "slide-d2-01-06",
+      "presentationId": "presentation-w3-d2-deck-01",
+      "sortOrder": 6,
+      "title": "Slide 6",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-3/day-2/deck-01/slide-06.png"
+    },
+    {
+      "id": "slide-d2-01-07",
+      "presentationId": "presentation-w3-d2-deck-01",
+      "sortOrder": 7,
+      "title": "Slide 7",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-3/day-2/deck-01/slide-07.png"
+    },
+    {
+      "id": "slide-d2-01-08",
+      "presentationId": "presentation-w3-d2-deck-01",
+      "sortOrder": 8,
+      "title": "Slide 8",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-3/day-2/deck-01/slide-08.png"
+    },
+    {
+      "id": "slide-d2-01-09",
+      "presentationId": "presentation-w3-d2-deck-01",
+      "sortOrder": 9,
+      "title": "Slide 9",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-3/day-2/deck-01/slide-09.png"
+    },
+    {
+      "id": "slide-d2-01-10",
+      "presentationId": "presentation-w3-d2-deck-01",
+      "sortOrder": 10,
+      "title": "Slide 10",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-3/day-2/deck-01/slide-10.png"
     }
   ]
 }

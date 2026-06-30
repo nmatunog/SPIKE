@@ -4653,139 +4653,241 @@
         {
           "dayNumber": 2,
           "programDay": 12,
-          "title": "Day 12 — Policy Servicing & AIA Digital Portals",
-          "theme": "Policy Servicing",
+          "title": "Day 12 — Your First Business Tool",
+          "theme": "FNA as Business Tool",
           "durationHours": 4,
-          "status": "draft",
+          "status": "published",
           "learningObjectives": [
-            "Navigate AIA digital portals for common servicing tasks",
-            "Explain policy lifecycle events to a mock client",
-            "Complete hands-on portal simulations with audit trail",
-            "Document advisor startup systems checklist"
+            "Reframe Financial Needs Analysis as an entrepreneur's diagnostic tool",
+            "Compare how different businesses diagnose customer problems before prescribing solutions",
+            "Conduct structured FNA discovery without product pitching",
+            "Document client needs findings as venture intelligence — not paperwork"
           ],
           "decks": [
             {
-              "title": "Program Coach Deck 01 — Policy Lifecycle",
-              "purpose": "Servicing story arc.",
-              "slideCount": 5,
+              "id": "presentation-w3-d2-deck-01",
+              "title": "Program Coach Deck 01 — Your First Business Tool",
+              "purpose": "",
+              "slideCount": 10,
+              "status": "published",
+              "pptxUrl": null,
+              "pdfUrl": "/content/segment-1/week-3/day-2/faculty-deck-01.pdf",
               "slides": [
                 {
-                  "title": "Day 12 — After the Sale",
-                  "purpose": "Service builds persistency."
+                  "number": 1,
+                  "title": "Day 12 — Your First Business Tool",
+                  "summary": "Every entrepreneur needs a way to diagnose customer problems.",
+                  "facilitatorNotes": "Open: Yesterday you saw the opportunity. Today you get your first business tool. Not paperwork. A diagnostic instrument.",
+                  "discussionQuestions": [
+                    "What tools do other businesses use to understand customers?"
+                  ],
+                  "imageUrl": "/content/segment-1/week-3/day-2/deck-01/slide-01.png"
                 },
                 {
-                  "title": "Policy Lifecycle Map",
-                  "purpose": "Issue, pay, change, claim touchpoints."
+                  "number": 2,
+                  "title": "How Businesses Diagnose Problems",
+                  "summary": "Restaurants taste food. Doctors diagnose patients. Mechanics inspect vehicles. Financial Advisors conduct an FNA.",
+                  "facilitatorNotes": "Walk through each example. Emphasize: professionals diagnose before they prescribe. FNA is the advisor's diagnostic — a business tool.",
+                  "discussionQuestions": [
+                    "What happens when a business skips diagnosis?"
+                  ],
+                  "imageUrl": "/content/segment-1/week-3/day-2/deck-01/slide-02.png"
                 },
                 {
-                  "title": "Digital Portal Landscape",
-                  "purpose": "Advisor vs client vs operations views."
+                  "number": 3,
+                  "title": "FNA — Business Tool, Not Paperwork",
+                  "summary": "Discover → Quantify → Prioritize → Plan",
+                  "facilitatorNotes": "Reframe FNA entirely. No product language. This is how your venture understands client needs before creating value.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-3/day-2/deck-01/slide-03.png"
                 },
                 {
-                  "title": "Data Privacy in Servicing",
-                  "purpose": "Authentication and consent."
+                  "number": 4,
+                  "title": "Ethical Boundaries",
+                  "summary": "No product talk until needs are documented.",
+                  "facilitatorNotes": "Entrepreneurs who rush to sell lose trust. Advisors who rush to products lose clients.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-3/day-2/deck-01/slide-04.png"
                 },
                 {
-                  "title": "Deck 01 Close — Lab Setup",
-                  "purpose": "Login sandboxes or screenshots workflow."
+                  "number": 5,
+                  "title": "Deck 01 Close — FNA Workshop",
+                  "summary": "Afternoon: practice diagnosis with real discovery discipline.",
+                  "facilitatorNotes": "Transition to Deck 02 dyad lab.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-3/day-2/deck-01/slide-05.png"
+                },
+                {
+                  "number": 6,
+                  "title": "Slide 6",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-3/day-2/deck-01/slide-06.png"
+                },
+                {
+                  "number": 7,
+                  "title": "Slide 7",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-3/day-2/deck-01/slide-07.png"
+                },
+                {
+                  "number": 8,
+                  "title": "Slide 8",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-3/day-2/deck-01/slide-08.png"
+                },
+                {
+                  "number": 9,
+                  "title": "Slide 9",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-3/day-2/deck-01/slide-09.png"
+                },
+                {
+                  "number": 10,
+                  "title": "Slide 10",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-3/day-2/deck-01/slide-10.png"
                 }
-              ],
-              "status": "draft"
+              ]
             },
             {
-              "title": "Program Coach Deck 02 — Portal Hands-On Lab",
-              "purpose": "Simulated tasks.",
+              "id": "presentation-w3-d2-deck-02",
+              "title": "Program Coach Deck 02 — FNA Diagnostic Workshop",
+              "purpose": "",
               "slideCount": 5,
+              "status": "published",
+              "pptxUrl": null,
+              "pdfUrl": null,
               "slides": [
                 {
-                  "title": "Task Menu",
-                  "purpose": "Status check, beneficiary update, premium inquiry."
+                  "number": 1,
+                  "title": "Business Tool Comparison Map",
+                  "summary": "Map how different ventures diagnose before they deliver.",
+                  "facilitatorNotes": "Squads add their own examples beyond restaurant/doctor/mechanic.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 },
                 {
-                  "title": "Troubleshooting Scenarios",
-                  "purpose": "Locked account, mismatch data."
+                  "number": 2,
+                  "title": "FNA Dyad Protocol",
+                  "summary": "8 min discovery / 4 min feedback / swap roles.",
+                  "facilitatorNotes": "Strict timer. No product mentions.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 },
                 {
-                  "title": "Client Communication Scripts",
-                  "purpose": "Professional email / call templates."
+                  "number": 3,
+                  "title": "Client Persona Cards",
+                  "summary": "Use Week 1 persona or validated segment from Week 2.",
+                  "facilitatorNotes": "Client stays in character. Advisor practices diagnosis only.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 },
                 {
-                  "title": "Advisor Startup Checklist",
-                  "purpose": "Systems an advisor must have on Day 1."
+                  "number": 4,
+                  "title": "Needs Documentation",
+                  "summary": "Document findings as venture intelligence.",
+                  "facilitatorNotes": "FNA notes feed Client Growth Engine later — preview only.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 },
                 {
+                  "number": 5,
                   "title": "Day 12 Deliverables",
-                  "purpose": "Portal lab completion log."
+                  "summary": "FNA discovery notes + business tool comparison map uploaded.",
+                  "facilitatorNotes": "Preview Day 13: Why this business scales.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 }
-              ],
-              "status": "draft"
+              ]
             }
           ],
           "sessionFlow": [
             {
               "time": "0:00–0:25",
-              "activity": "Deck 01 — Lifecycle + portals overview",
-              "notes": ""
+              "activity": "Deck 01 — FNA as business diagnostic",
+              "notes": "Restaurant / doctor / mechanic / advisor comparison. No products."
             },
             {
-              "time": "0:25–1:25",
-              "activity": "Portal hands-on lab (rotating stations)",
-              "notes": "Pairs complete task checklist."
+              "time": "0:25–0:40",
+              "activity": "Business tool comparison map",
+              "notes": "Squads map how ventures diagnose before delivering."
             },
             {
-              "time": "1:25–1:35",
+              "time": "0:40–1:30",
+              "activity": "FNA dyad rounds (2 cycles)",
+              "notes": "Strict discovery discipline. Mentors score listening."
+            },
+            {
+              "time": "1:30–1:40",
               "activity": "Break",
               "notes": ""
             },
             {
-              "time": "1:35–2:10",
-              "activity": "Client servicing roleplays",
-              "notes": "Explain portal outcome to mock client."
+              "time": "1:40–2:15",
+              "activity": "Squad synthesis — top needs themes",
+              "notes": "Connect needs to Week 2 validated problems."
             },
             {
-              "time": "2:10–2:40",
-              "activity": "Advisor startup systems workshop",
-              "notes": "Personal ops checklist in Blueprint."
+              "time": "2:15–2:45",
+              "activity": "Portfolio sync + assessment",
+              "notes": ""
             },
             {
-              "time": "2:40–3:00",
-              "activity": "Assessment + reflection",
+              "time": "2:45–3:00",
+              "activity": "Reflection + Day 13 preview (scalability)",
               "notes": ""
             }
           ],
           "activities": [
             {
-              "title": "Portal Hands-On Lab",
-              "durationMinutes": 60,
+              "title": "Business Tool Comparison Map",
+              "durationMinutes": 20,
               "instructions": [
-                "Complete 5 servicing tasks in sandbox",
-                "Screenshot or log proof"
+                "Map how restaurants, doctors, mechanics, and advisors diagnose problems",
+                "Add one venture from your squad's experience",
+                "Post comparison on squad board"
               ],
+              "materials": [],
               "outputs": [
-                "Portal lab log"
+                "Business tool comparison map"
               ],
               "debriefQuestions": []
             },
             {
-              "title": "Client Servicing Roleplay",
-              "durationMinutes": 35,
+              "title": "FNA Diagnostic Dyads",
+              "durationMinutes": 50,
               "instructions": [
-                "Explain lifecycle event to client",
-                "Handle confusion with empathy"
+                "8 min discovery / 4 min feedback / swap roles",
+                "Use Week 1 persona or Week 2 validated segment",
+                "No product mentions — diagnosis only"
               ],
+              "materials": [],
               "outputs": [
-                "Roleplay feedback notes"
+                "FNA discovery notes"
               ],
               "debriefQuestions": []
             },
             {
-              "title": "Advisor Startup Checklist Builder",
-              "durationMinutes": 25,
+              "title": "Needs Theme Synthesis",
+              "durationMinutes": 30,
               "instructions": [
-                "Draft personal CRM, calendar, compliance folders"
+                "Squads cluster discovered needs into themes",
+                "Link each theme to opportunity from Day 11",
+                "Prepare one-sentence venture insight"
               ],
+              "materials": [],
               "outputs": [
-                "Startup checklist v1"
+                "Squad needs summary"
               ],
               "debriefQuestions": []
             }
@@ -4794,44 +4896,85 @@
             "Portal lab task sheet",
             "Advisor startup checklist template"
           ],
-          "assessments": [
-            "Portal lab completion check"
-          ],
+          "assessments": [],
           "reflections": [
-            "Day 12 systems reflection"
+            "Day 12 FNA as business tool reflection"
           ],
-          "surveys": [
-            "Day 12 digital confidence survey"
-          ],
+          "surveys": [],
           "prepChecklist": [
-            "Confirm portal sandbox access with IT",
-            "Prepare backup screenshots if live portal unavailable"
+            "Print persona cards and FNA dyad observation forms",
+            "Brief mentors: FNA is a business tool, not compliance paperwork",
+            "Load timers for dyad rounds"
           ],
           "debriefQuestions": [
-            "What task caused most friction?",
-            "Who can explain lifecycle to a client clearly?",
-            "What systems are still missing for startup readiness?"
+            "Who treated FNA as paperwork vs a business tool?",
+            "What needs appeared across multiple squads?",
+            "How does diagnosis connect to trust?"
           ],
           "commonPitfalls": [
-            "Clicking without understanding lifecycle",
-            "Sharing credentials against policy"
+            "Advisors pitching products during discovery",
+            "Teaching FNA as insurance process instead of entrepreneur diagnostic"
           ],
           "coachingTips": [
-            "Pair tech-confident with tech-anxious interns"
+            "Celebrate clarifying questions",
+            "Link every insight to client value, not form completion"
           ],
           "mentorGuide": {
-            "theme": "Systems",
-            "coachingObjective": "Coach operational habits.",
+            "theme": "Diagnostic",
+            "title": "Mentor Guide — Day 12 — Your First Business Tool",
+            "coachingObjective": "Develop FNA as a business diagnostic habit — not paperwork.",
+            "timing": {
+              "preSession": "Review facilitator guide and dyad rubric",
+              "duringSession": "Score listening during FNA dyads",
+              "postSession": "Complete squad weekly review snapshot"
+            },
+            "discussionQuestions": [
+              "Who treated FNA as a business tool vs a form?",
+              "What needs appeared across squads?"
+            ],
             "observationAreas": [
-              "Portal accuracy",
-              "Client explanation clarity",
-              "Organization"
+              "Active listening",
+              "Discovery discipline",
+              "Absence of product pitch"
             ]
           },
           "expectedOutputs": [
-            "Portal lab log",
-            "Advisor startup checklist"
-          ]
+            "FNA discovery notes",
+            "Business tool comparison map"
+          ],
+          "dayId": "day-segment-1-week-3-day-2",
+          "contentPath": "/content/segment-1/week-3/day-2",
+          "playbookPath": "/playbook?segment=1&week=3&day=2",
+          "sessions": [
+            {
+              "sessionNumber": 1,
+              "title": "Day 12 — Your First Business Tool",
+              "durationMinutes": 240,
+              "presentationIds": [
+                "presentation-w3-d2-deck-01",
+                "presentation-w3-d2-deck-02"
+              ],
+              "activityIds": [
+                "activity-w3-d2-01",
+                "activity-w3-d2-02",
+                "activity-w3-d2-03"
+              ],
+              "worksheetIds": [
+                "worksheet-w3-d2-01",
+                "worksheet-w3-d2-02"
+              ],
+              "assessmentIds": [
+                "assessment-w3-d2"
+              ],
+              "reflectionIds": [
+                "reflection-w3-d2"
+              ],
+              "surveyIds": [
+                "survey-w3-d2"
+              ]
+            }
+          ],
+          "evaluations": []
         },
         {
           "dayNumber": 3,
