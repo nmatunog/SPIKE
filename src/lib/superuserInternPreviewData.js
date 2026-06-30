@@ -7,6 +7,7 @@ import { createPortfolioArtifactDraft } from './blueprintArtifacts.js';
 import { setSectionField } from './blueprintSectionStore.js';
 import { ensureFormationStore, writeFormationStore } from './cohortFormationStorage.js';
 import { saveCanvasField } from './canvasService.js';
+import { saveFecField } from './fecCanvasService.js';
 import { saveCanvasSummary } from './canvasSummaryService.js';
 import { clearBuilderEntry, writeBuilderEntry } from './day1BuilderStorage.js';
 import { savePortfolioSettings } from './portfolioStorage.js';
@@ -23,7 +24,7 @@ import { saveWeek2Discovery } from './customerDiscovery/week2DiscoveryStorage.js
 export const SUPERUSER_MENTOR_PREVIEW_PEER_IDS = ['mock-peer-1', 'mock-peer-2'];
 
 export const SUPERUSER_INTERN_PREVIEW_PARTICIPANT_ID = 'mock-superuser-intern-preview';
-export const SUPERUSER_INTERN_PREVIEW_SEED_VERSION = 'v4';
+export const SUPERUSER_INTERN_PREVIEW_SEED_VERSION = 'v5';
 const SEEDED_MARKER_KEY = 'spike_superuser_intern_preview_seed';
 const PROGRESS_PATCH_KEY = 'spike_superuser_intern_preview_progress';
 
@@ -321,6 +322,19 @@ function seedCanvas(participantId) {
     year2_goal: 'Unit manager promotion · satellite team of 6 advisors',
     year3_goal: 'District agency recognition · 400+ families served',
   });
+
+  saveFecField(
+    participantId,
+    'create_value',
+    'value_offering',
+    CANVAS_SAMPLE.client_growth.value_proposition,
+  );
+  saveFecField(
+    participantId,
+    'agency_leadership',
+    'growth_multipliers',
+    CANVAS_SAMPLE.leadership_growth.growth_multipliers,
+  );
 }
 
 /** @param {string} participantId */

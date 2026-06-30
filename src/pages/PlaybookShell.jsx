@@ -381,7 +381,6 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
     dayContent = (
       <Week3Day3MissionPlaybookView
         participantId={participantId}
-        squadName={internSquadName}
         missionSlug={missionSlug}
         programWeek={entryWeek}
         focusReflection={focusReflection}
@@ -395,9 +394,9 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
           else next.delete('mission');
           next.set('day', '3');
           next.set('week', '3');
+          next.delete('view');
           setSearchParams(next, { replace: true });
         }}
-        interns={interns}
       />
     );
   } else if (showWeek2MissionFirst && participantId) {

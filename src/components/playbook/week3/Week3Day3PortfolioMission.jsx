@@ -6,7 +6,7 @@ import {
   isWeek3Day3PortfolioComplete,
   WEEK3_DAY3_FEC_EDIT_SLUGS,
 } from '../../../lib/week3Day3PortfolioService.js';
-import { buildFecLayoutParticipantContent } from '../../../lib/fecCanvasLayoutContent.js';
+import { getWeek3Day3FecBoxDisplayText } from '../../../lib/week3Day3FecBoxContent.js';
 
 const REFLECTION_FIELDS = [
   {
@@ -38,6 +38,7 @@ const REFLECTION_FIELDS = [
  *   onSaved?: () => void,
  *   onEditFecBox?: (slug: string) => void,
  *   staffPreview?: boolean,
+ *   fecRefreshKey?: number,
  * }} props
  */
 export function Week3Day3PortfolioMission({
@@ -45,6 +46,7 @@ export function Week3Day3PortfolioMission({
   onSaved,
   onEditFecBox,
   staffPreview = false,
+  fecRefreshKey = 0,
 }) {
   const [draft, setDraft] = useState(() => loadWeek3Day3Portfolio(participantId));
   const [saveState, setSaveState] = useState('idle');
@@ -58,13 +60,15 @@ export function Week3Day3PortfolioMission({
     setDraft(loadWeek3Day3Portfolio(participantId));
   }, [participantId]);
 
-  const fecContent = useMemo(
-    () => buildFecLayoutParticipantContent(participantId),
-    [participantId, draft.updatedAt],
-  );
+  const box4Text = useMemo(() => {
+    const text = getWeek3Day3FecBoxDisplayText(participantId, 'client_experience');
+    return text || 'Not drafted yet — tap Edit FEC Box 4 to add your client experience.';
+  }, [participantId, fecRefreshKey]);
 
-  const box4Text = fecContent.boxContents?.client_experience ?? 'Not drafted yet — edit FEC Box 4.';
-  const box5Text = fecContent.boxContents?.winning_strategy ?? 'Not drafted yet — edit FEC Box 5.';
+  const box5Text = useMemo(() => {
+    const text = getWeek3Day3FecBoxDisplayText(participantId, 'winning_strategy');
+    return text || 'Not drafted yet — tap Edit FEC Box 5 to add your winning strategy.';
+  }, [participantId, fecRefreshKey]);
 
   function persist(patch) {
     const next = { ...draftRef.current, ...patch };

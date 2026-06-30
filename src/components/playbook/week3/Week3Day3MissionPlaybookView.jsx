@@ -1,20 +1,17 @@
-import { useMemo } from 'react';
+import { useState } from 'react';
 import { ArrowLeft, BookOpen } from 'lucide-react';
 import { Week3Day3PlaybookHero } from './Week3Day3PlaybookHero.jsx';
 import { Week3Day3PortfolioMission } from './Week3Day3PortfolioMission.jsx';
-import { FecValidationStudio } from '../../customerDiscovery/fecValidation/FecValidationStudio.jsx';
+import { Week3Day3FecBoxEditor } from './Week3Day3FecBoxEditor.jsx';
 import { PlaybookDayClosingReflectionBlock } from '../PlaybookDayClosingReflectionBlock.jsx';
 import { PlaybookReflectionNudge } from '../PlaybookReflectionNudge.jsx';
 import { ParticipantSquadXpCard } from '../../staff/SquadXpDashboard.jsx';
-import { getParticipantSquad } from '../../../lib/cohortFormationService.js';
 import { isWeek3Day3FecEditSlug } from '../../../lib/week3Day3PortfolioService.js';
-import { FEC_VALIDATION_STEPS } from '../../../lib/customerDiscovery/week2FecValidationConstants.js';
 
 /**
  * Week 3 Day 3 mission-first Playbook — Business Engine hero, FNA role play, FEC Box 4/5 portfolio.
  * @param {{
  *   participantId: string,
- *   squadName?: string,
  *   missionSlug?: string,
  *   programWeek?: number,
  *   focusReflection?: boolean,
@@ -23,13 +20,11 @@ import { FEC_VALIDATION_STEPS } from '../../../lib/customerDiscovery/week2FecVal
  *   onOpenCurriculum?: () => void,
  *   onProgress?: () => void,
  *   onMissionNavigate?: (slug: string) => void,
- *   interns?: Array<{ id: string, name: string }>,
  *   staffPreview?: boolean,
  * }} props
  */
 export function Week3Day3MissionPlaybookView({
   participantId,
-  squadName = '',
   missionSlug = '',
   programWeek = 3,
   focusReflection = false,
@@ -38,21 +33,18 @@ export function Week3Day3MissionPlaybookView({
   onOpenCurriculum,
   onProgress,
   onMissionNavigate,
-  interns = [],
   staffPreview = false,
 }) {
+  const [fecRefreshKey, setFecRefreshKey] = useState(0);
   const editingFec = isWeek3Day3FecEditSlug(missionSlug);
-  const fecStep = FEC_VALIDATION_STEPS.find((step) => step.slug === missionSlug);
-
-  const memberNames = useMemo(() => {
-    const squad = getParticipantSquad(participantId);
-    const ids = (squad?.members ?? []).map((m) => m.participantId).filter(Boolean);
-    const nameById = Object.fromEntries(interns.map((i) => [i.id, i.name]));
-    return Object.fromEntries(ids.map((id) => [id, nameById[id] || `Member ${String(id).slice(0, 6)}`]));
-  }, [participantId, interns]);
 
   function goToMission(slug = '') {
     onMissionNavigate?.(slug);
+  }
+
+  function handleFecSaved() {
+    setFecRefreshKey((n) => n + 1);
+    onProgress?.();
   }
 
   return (
@@ -72,7 +64,7 @@ export function Week3Day3MissionPlaybookView({
 
       <Week3Day3PlaybookHero />
 
-      {editingFec && fecStep ? (
+      {editingFec ? (
         <div className="space-y-4">
           <button
             type="button"
@@ -82,13 +74,10 @@ export function Week3Day3MissionPlaybookView({
             <ArrowLeft size={16} aria-hidden />
             Back to Day 3 portfolio mission
           </button>
-          <FecValidationStudio
+          <Week3Day3FecBoxEditor
             participantId={participantId}
-            squadName={squadName}
             stepSlug={missionSlug}
-            onSaved={onProgress}
-            memberNames={memberNames}
-            onNavigate={(nextSlug) => goToMission(nextSlug)}
+            onSaved={handleFecSaved}
           />
         </div>
       ) : (
@@ -97,6 +86,7 @@ export function Week3Day3MissionPlaybookView({
           onSaved={onProgress}
           onEditFecBox={(slug) => goToMission(slug)}
           staffPreview={staffPreview}
+          fecRefreshKey={fecRefreshKey}
         />
       )}
 
