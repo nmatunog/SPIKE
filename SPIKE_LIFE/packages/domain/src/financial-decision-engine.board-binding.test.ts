@@ -19,11 +19,13 @@ describe('startPlanningCycle board binding', () => {
 
     const started = startPlanningCycle('bind-1', 'promotion', session, TEST_CURRENCY, {
       domainId: 'career',
-      encounterCardId: 'job_offer',
-      completedEncounterCardIds: ['first_job'],
+      encounterCardId: 'first_job',
+      completedEncounterCardIds: [],
     })
 
-    expect(started.encounterId).toBe('career_job_offer_3')
+    expect(started.encounterId).toBe('career_first_job_1')
     expect(started.selectedDomainId).toBe('career')
+    expect(started.situation?.title).toBe('First Job')
+    expect(started.scenarioId).toBe('promotion')
   })
 })

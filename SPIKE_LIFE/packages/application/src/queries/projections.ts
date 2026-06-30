@@ -445,11 +445,12 @@ export function projectPlanLens(session: SimulationSession): PlanLensView {
     try {
       const enc = getEncounterRepository().getById(encounterId)
       if (enc) {
+        const displayDomainId = session.selectedDomainId ?? enc.domainId
         situation = {
           title: enc.title,
           narrative: enc.narrative || enc.teaser,
-          domainId: enc.domainId,
-          domainLabel: domainLabelFromId(enc.domainId),
+          domainId: displayDomainId,
+          domainLabel: domainLabelFromId(displayDomainId),
           learningObjective: enc.learningObjective,
         }
       }

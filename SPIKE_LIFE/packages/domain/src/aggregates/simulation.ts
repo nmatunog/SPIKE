@@ -1,6 +1,7 @@
 import type { SimulationState, DecisionRecord, TurnRecord } from './simulation-session.js'
 import type { ScenarioId, CyclePhase, DecisionStrategy, SessionMode } from '../types.js'
 import type { CurrencyConfig } from '@spike-life/content-core'
+import type { EncounterRecord } from '@spike-life/content-core'
 import type { DomainEvent } from '../events/domain-events.js'
 import { DomainEventType, createDomainEvent } from '../events/domain-events.js'
 import type { ReflectionAnswer } from '../services/reflection-engine.js'
@@ -13,11 +14,14 @@ import {
 import {
   applyProtectionStressToProfile,
   applySituationToIncome,
+  createSituationFromEncounter,
   createPromotionSituation,
   createProtectionStressSituation,
   monthlyRaiseFromSituation,
   protectionDecisionCapacity,
+  type SituationSnapshot,
 } from '../services/situation-engine.js'
+import { getEncounterRepository } from '../ports/encounter-repository.js'
 import { runDiscovery } from '../services/discovery-engine.js'
 import { runFnaAnalysis } from '../services/fna-engine.js'
 import { runRecommendationEngine } from '../services/recommendation-engine.js'
@@ -143,6 +147,16 @@ export class Simulation {
   }
 
   presentSituation(): Simulation {
+    if (this.state.encounterId) {
+      try {
+        const enc = getEncounterRepository().getById(this.state.encounterId)
+        if (enc) {
+          return this.applyEncounterSituation(enc)
+        }
+      } catch {
+        // fall through to legacy scenario templates
+      }
+    }
     if (this.state.scenarioId === 'promotion') {
       return this.applyPromotionSituation()
     }
@@ -483,13 +497,23 @@ export class Simulation {
     return this
   }
 
-  private applyPromotionSituation(): Simulation {
-    const situation = createPromotionSituation(
-      FRESH_GRADUATE_FINANCIAL_PROFILE,
+  private applyEncounterSituation(enc: EncounterRecord): Simulation {
+    const situation = createSituationFromEncounter(
+      enc,
+      this.state.financialProfile,
       this.state.currency,
     )
-    const profileAfter = applySituationToIncome(this.state.financialProfile, situation)
-    const monthlyCapacity = monthlyRaiseFromSituation(this.state.financialProfile, situation)
+    return this.commitSituation(situation)
+  }
+
+  private commitSituation(situation: SituationSnapshot): Simulation {
+    const isProtection = situation.situationKind === 'protection_stress'
+    const profileAfter = isProtection
+      ? applyProtectionStressToProfile(this.state.financialProfile, situation)
+      : applySituationToIncome(this.state.financialProfile, situation)
+    const monthlyCapacity = isProtection
+      ? protectionDecisionCapacity(profileAfter)
+      : monthlyRaiseFromSituation(this.state.financialProfile, situation)
 
     this.state = {
       ...this.state,
@@ -504,7 +528,21 @@ export class Simulation {
       eventId: situation.eventId,
     }))
 
+    if (isProtection) {
+      this.record(createDomainEvent(DomainEventType.LIFE_EVENT_OCCURRED, this.state.id, {
+        title: situation.title,
+      }))
+    }
+
     return this
+  }
+
+  private applyPromotionSituation(): Simulation {
+    const situation = createPromotionSituation(
+      FRESH_GRADUATE_FINANCIAL_PROFILE,
+      this.state.currency,
+    )
+    return this.commitSituation(situation)
   }
 
   private applyProtectionStressSituation(): Simulation {
@@ -512,26 +550,7 @@ export class Simulation {
       PROTECTION_STRESS_FINANCIAL_PROFILE,
       this.state.currency,
     )
-    const profileAfter = applyProtectionStressToProfile(this.state.financialProfile, situation)
-    const monthlyCapacity = protectionDecisionCapacity(profileAfter)
-
-    this.state = {
-      ...this.state,
-      financialProfile: profileAfter,
-      situation,
-      decisionMonthlyCapacity: monthlyCapacity,
-      phase: 'situation_presented',
-      updatedAt: new Date().toISOString(),
-    }
-
-    this.record(createDomainEvent(DomainEventType.LIFE_EVENT_APPLIED, this.state.id, {
-      eventId: situation.eventId,
-    }))
-    this.record(createDomainEvent(DomainEventType.LIFE_EVENT_OCCURRED, this.state.id, {
-      title: situation.title,
-    }))
-
-    return this
+    return this.commitSituation(situation)
   }
 
   /** Apply Life Blueprint choices before the first planning cycle. */

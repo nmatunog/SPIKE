@@ -1,4 +1,4 @@
-import type { CurrencyConfig } from '@spike-life/content-core'
+import type { CurrencyConfig, EncounterRecord } from '@spike-life/content-core'
 import type { FinancialProfile } from '../entities/financial-state.js'
 import type { SituationKind } from '../types.js'
 import { Money } from '../value-objects/money.js'
@@ -125,4 +125,34 @@ export function protectionDecisionCapacity(profile: FinancialProfile): number {
     - profile.monthlyDebtPayments
     - profile.monthlyProtectionCost
   return Math.max(0, Math.round(surplus * 0.6))
+}
+
+/** Build a situation snapshot from a content-pack encounter (board-selected). */
+export function createSituationFromEncounter(
+  enc: EncounterRecord,
+  profile: FinancialProfile,
+  currency: CurrencyConfig,
+): SituationSnapshot {
+  const isProtection = enc.scenarioTemplate === 'protection_stress'
+    || enc.situationKind === 'protection_stress'
+
+  if (isProtection) {
+    const base = createProtectionStressSituation(profile, currency)
+    return {
+      ...base,
+      eventId: enc.id,
+      title: enc.title,
+      narrative: enc.narrative || enc.teaser,
+      learningObjective: enc.learningObjective,
+    }
+  }
+
+  const base = createPromotionSituation(profile, currency)
+  return {
+    ...base,
+    eventId: enc.id,
+    title: enc.title,
+    narrative: enc.narrative || enc.teaser,
+    learningObjective: enc.learningObjective,
+  }
 }

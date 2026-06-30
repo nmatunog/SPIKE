@@ -1,4 +1,5 @@
-const MARKERS = ['A', 'B', 'C', 'D']
+const MARKERS = ['A', 'B', 'C', 'D', 'E', 'F']
+
 const THEMES = [
   { ring: 'ring-emerald-500 border-emerald-400', marker: 'bg-emerald-500' },
   { ring: 'ring-blue-500 border-blue-400', marker: 'bg-blue-500' },
@@ -15,18 +16,21 @@ export default function DecisionActionCards({
   deciding,
   error,
 }) {
+  const many = options.length > 4
+
   return (
-    <section className="flex h-full flex-col" aria-label="Choose one response">
+    <section className="flex h-full min-h-0 flex-col" aria-label="Choose one response">
       <h2 className="gsv3-choice-heading">Choose one response</h2>
 
       {error && (
         <p className="mb-1.5 shrink-0 text-center text-sm text-red-600">{error}</p>
       )}
 
-      <div className="gsv3-choice-row">
+      <div className={`gsv3-choice-row ${many ? 'gsv3-choice-row--grid' : ''}`}>
         {options.map((opt, index) => {
           const selected = selectedIndex === index
           const theme = THEMES[index % THEMES.length]
+          const marker = MARKERS[index] ?? String(index + 1)
 
           return (
             <button
@@ -41,7 +45,7 @@ export default function DecisionActionCards({
                 selected ? `gsv3-choice-btn--selected ${theme.ring}` : ''
               } disabled:opacity-40`}
             >
-              <span className={`gsv3-choice-marker ${theme.marker}`}>{MARKERS[index]}</span>
+              <span className={`gsv3-choice-marker ${theme.marker}`}>{marker}</span>
               <span className="gsv3-choice-label">{opt.label}</span>
             </button>
           )

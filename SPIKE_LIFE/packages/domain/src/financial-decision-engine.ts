@@ -6,7 +6,8 @@ import { Simulation } from './aggregates/simulation.js'
 import type { ReflectionAnswer } from './services/reflection-engine.js'
 import { revealDueHiddenConsequences } from './services/long-term-consequence-engine.js'
 import { selectCycleEncounter } from './services/situation-resolver.js'
-import { packEncounterRecord } from './services/pack-encounter-bridge.js'
+import { packEncounterRecord, resolvePackEncounterId } from './services/pack-encounter-bridge.js'
+import { getEncounterCard } from './gameboard/services/encounter-deck.js'
 
 import type { DreamBoardGoalChoice } from './services/dream-board.js'
 
@@ -201,10 +202,13 @@ export function startRoomCycle(
       boardBinding.domainId,
       boardBinding.encounterCardId,
     )
+    const boardCard = getEncounterCard(boardBinding.encounterCardId)
     domainId = boardBinding.domainId
-    encounterId = packEncounter?.id ?? null
+    encounterId = packEncounter?.id
+      ?? resolvePackEncounterId(boardBinding.domainId, boardBinding.encounterCardId)
     selectionScenario = forcedScenarioId
       ?? (packEncounter?.scenarioTemplate === 'protection_stress'
+        || boardCard.scenarioId === 'protection_stress'
         ? 'protection_stress'
         : 'promotion')
   } else if (existing) {
@@ -225,7 +229,7 @@ export function startRoomCycle(
       : Simulation.createPromotion(sessionId, resolvedCurrency)
   } else {
     sim = loadSimulation(existing).assignScenario(selectionScenario)
-    if (domainId && encounterId) {
+    if (domainId) {
       const state = sim.toState()
       sim = Simulation.fromState({
         ...state,
