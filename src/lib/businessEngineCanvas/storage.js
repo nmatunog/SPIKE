@@ -79,6 +79,53 @@ export function defaultBusinessEngineCanvasState() {
   };
 }
 
+/** Blank template for coach/mentor presentation — model defaults in engine, empty participant fields. */
+export function blankBusinessEngineCanvasState() {
+  const base = defaultBusinessEngineCanvasState();
+  /** @type {Record<string, number | string>} */
+  const emptyWeekly = {};
+  for (const key of Object.keys(base.weeklyTargets)) emptyWeekly[key] = '';
+
+  /** @type {Record<string, number | string>} */
+  const emptyMonthly = {};
+  for (const key of Object.keys(base.monthlyTargets)) emptyMonthly[key] = '';
+
+  /** @type {Record<string, boolean>} */
+  const noOverride = {};
+  for (const key of Object.keys(base.monthlyManualOverride)) noOverride[key] = false;
+
+  return {
+    ...base,
+    weeklyTargets: emptyWeekly,
+    monthlyTargets: emptyMonthly,
+    monthlyManualOverride: noOverride,
+    year1Targets: {
+      newClients: '',
+      revenue: '',
+      referrals: '',
+      clientReviews: '',
+    },
+    businessLever: null,
+    growthSimulation: {
+      current: { ...base.growthSimulation.current },
+      new: {
+        prospects: '',
+        discovery: '',
+        presentations: '',
+        clients: '',
+        revenue: '',
+        referrals: '',
+      },
+    },
+    reflections: {
+      engineProducesBusiness: '',
+      biggestWeakness: '',
+      firstImprovement: '',
+      year1RevenueGoal: '',
+    },
+  };
+}
+
 /** @param {string} participantId */
 export function loadBusinessEngineCanvas(participantId) {
   if (!participantId) return defaultBusinessEngineCanvasState();

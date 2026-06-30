@@ -34,6 +34,7 @@ import {
   YEAR1_KPIS,
 } from '../../../../lib/businessEngineCanvas/constants.js';
 import { cascadeFromProspects, syncGrowthFromProspects } from '../../../../lib/businessEngineCanvas/funnel.js';
+import { blankBusinessEngineCanvasState } from '../../../../lib/businessEngineCanvas/storage.js';
 import { exportExecutiveCanvasPng, exportExecutiveCanvasPdf } from '../../../../lib/canvasExportService.js';
 import { ViewMyFecCanvasLink } from '../../../ventureDesign/ViewMyFecCanvasLink.jsx';
 
@@ -65,24 +66,44 @@ const BANNER_ICONS = {
 
 /**
  * SPIKE Business Engine Canvas™ — interactive Week 3 Day 3 workshop.
- * @param {{ participantId: string, readOnly?: boolean, onSaved?: () => void, className?: string }} props
+ * @param {{
+ *   participantId?: string,
+ *   readOnly?: boolean,
+ *   onSaved?: () => void,
+ *   className?: string,
+ *   variant?: 'participant' | 'blankPreview',
+ *   showBothPages?: boolean,
+ * }} props
  */
-export function BusinessEngineCanvas({ participantId, readOnly = false, onSaved, className = '' }) {
+export function BusinessEngineCanvas({
+  participantId = '',
+  readOnly = false,
+  onSaved,
+  className = '',
+  variant = 'participant',
+  showBothPages = false,
+}) {
+  const isBlankPreview = variant === 'blankPreview';
   const canvasRef = useRef(null);
   const [page, setPage] = useState(1);
-  const {
-    state,
-    persist,
-    progressPct,
-    saveStatus,
-    undo,
-    redo,
-    canUndo,
-    canRedo,
-    setWeeklyTarget,
-    setMonthlyTarget,
-    recalcMonthlyFromWeekly,
-  } = useBusinessEngineCanvas(participantId, { readOnly, onSaved });
+  const [blankState] = useState(() => blankBusinessEngineCanvasState());
+  const participant = useBusinessEngineCanvas(participantId, {
+    readOnly: readOnly || isBlankPreview,
+    onSaved,
+  });
+
+  const state = isBlankPreview ? blankState : participant.state;
+  const persist = isBlankPreview ? () => {} : participant.persist;
+  const progressPct = isBlankPreview ? 0 : participant.progressPct;
+  const saveStatus = isBlankPreview ? 'idle' : participant.saveStatus;
+  const undo = participant.undo;
+  const redo = participant.redo;
+  const canUndo = isBlankPreview ? false : participant.canUndo;
+  const canRedo = isBlankPreview ? false : participant.canRedo;
+  const setWeeklyTarget = isBlankPreview ? () => {} : participant.setWeeklyTarget;
+  const setMonthlyTarget = isBlankPreview ? () => {} : participant.setMonthlyTarget;
+  const recalcMonthlyFromWeekly = isBlankPreview ? () => {} : participant.recalcMonthlyFromWeekly;
+  const previewReadOnly = readOnly || isBlankPreview;
 
   function updateEngineStep(stepId, patch) {
     persist((prev) => {
@@ -179,101 +200,159 @@ export function BusinessEngineCanvas({ participantId, readOnly = false, onSaved,
 
   return (
     <div className={`mx-auto w-full max-w-[1200px] font-sans ${className}`}>
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 print:hidden">
-        <div className="min-w-0 flex-1">
-          <div className="h-2 overflow-hidden rounded-full bg-slate-100">
-            <MotionDiv
-              className="h-full rounded-full"
-              style={{ backgroundColor: BEC_BRAND.orange }}
-              animate={{ width: `${progressPct}%` }}
-              transition={{ duration: 0.4 }}
+      {!isBlankPreview ? (
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 print:hidden">
+          <div className="min-w-0 flex-1">
+            <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+              <MotionDiv
+                className="h-full rounded-full"
+                style={{ backgroundColor: BEC_BRAND.orange }}
+                animate={{ width: `${progressPct}%` }}
+                transition={{ duration: 0.4 }}
+              />
+            </div>
+            <p className="mt-1 text-xs font-semibold text-slate-600">
+              {progressPct}% completed
+              {saveStatus === 'saved' ? ' · Saved' : ' · Autosaves every 3s'}
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {!previewReadOnly ? (
+              <>
+                <button type="button" onClick={undo} disabled={!canUndo} className={TOOL_BTN} aria-label="Undo">
+                  <Undo2 size={16} />
+                </button>
+                <button type="button" onClick={redo} disabled={!canRedo} className={TOOL_BTN} aria-label="Redo">
+                  <Redo2 size={16} />
+                </button>
+              </>
+            ) : null}
+            <button type="button" onClick={exportPng} className={TOOL_BTN}>
+              <Download size={16} /> PNG
+            </button>
+            <button type="button" onClick={exportPdf} className={TOOL_BTN}>
+              <Download size={16} /> PDF
+            </button>
+            <button type="button" onClick={printCanvas} className={TOOL_BTN}>
+              Print
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      {showBothPages ? (
+        <>
+          <CanvasPageShell page={1} canvasRef={canvasRef} className="mb-8 print:break-after-page">
+            <PageOne
+              state={state}
+              readOnly={previewReadOnly}
+              blankPreview={isBlankPreview}
+              updateEngineStep={updateEngineStep}
+              setWeeklyTarget={setWeeklyTarget}
+              setMonthlyTarget={setMonthlyTarget}
+              recalcMonthlyFromWeekly={recalcMonthlyFromWeekly}
+              persist={persist}
             />
+          </CanvasPageShell>
+          <CanvasPageShell page={2}>
+            <PageTwo
+              state={state}
+              readOnly={previewReadOnly}
+              blankPreview={isBlankPreview}
+              persist={persist}
+              updateGrowthNew={updateGrowthNew}
+            />
+          </CanvasPageShell>
+        </>
+      ) : (
+        <>
+          <div
+            ref={canvasRef}
+            className="bec-canvas space-y-8 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8 print:border-0 print:shadow-none"
+          >
+            <CanvasHeader page={page} />
+            {page === 1 ? (
+              <PageOne
+                state={state}
+                readOnly={previewReadOnly}
+                blankPreview={isBlankPreview}
+                updateEngineStep={updateEngineStep}
+                setWeeklyTarget={setWeeklyTarget}
+                setMonthlyTarget={setMonthlyTarget}
+                recalcMonthlyFromWeekly={recalcMonthlyFromWeekly}
+                persist={persist}
+              />
+            ) : (
+              <PageTwo
+                state={state}
+                readOnly={previewReadOnly}
+                blankPreview={isBlankPreview}
+                persist={persist}
+                updateGrowthNew={updateGrowthNew}
+              />
+            )}
           </div>
-          <p className="mt-1 text-xs font-semibold text-slate-600">
-            {progressPct}% completed
-            {saveStatus === 'saved' ? ' · Saved' : ' · Autosaves every 3s'}
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          {!readOnly ? (
-            <>
-              <button type="button" onClick={undo} disabled={!canUndo} className={TOOL_BTN} aria-label="Undo">
-                <Undo2 size={16} />
-              </button>
-              <button type="button" onClick={redo} disabled={!canRedo} className={TOOL_BTN} aria-label="Redo">
-                <Redo2 size={16} />
-              </button>
-            </>
+
+          {!isBlankPreview ? (
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-3 print:hidden">
+              <div className="flex gap-2">
+                <button type="button" disabled={page <= 1} onClick={() => setPage(1)} className={NAV_BTN}>
+                  <ChevronLeft size={16} /> Page 1
+                </button>
+                <button type="button" disabled={page >= 2} onClick={() => setPage(2)} className={NAV_BTN}>
+                  Page 2 <ChevronRight size={16} />
+                </button>
+              </div>
+              <ViewMyFecCanvasLink exit="/playbook?segment=1&week=3&day=3" compact label="Open FEC Canvas" />
+            </div>
           ) : null}
-          <button type="button" onClick={exportPng} className={TOOL_BTN}>
-            <Download size={16} /> PNG
-          </button>
-          <button type="button" onClick={exportPdf} className={TOOL_BTN}>
-            <Download size={16} /> PDF
-          </button>
-          <button type="button" onClick={printCanvas} className={TOOL_BTN}>
-            Print
-          </button>
-        </div>
-      </div>
-
-      <div
-        ref={canvasRef}
-        className="bec-canvas space-y-8 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8 print:border-0 print:shadow-none"
-      >
-        <header className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 pb-6">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: BEC_BRAND.orange }}>
-              Week 3 • Day 3 · Workshop
-            </p>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl" style={{ color: BEC_BRAND.navy }}>
-              {page === 1 ? (
-                <>
-                  Build Your <span style={{ color: BEC_BRAND.orange }}>Business Engine</span>
-                </>
-              ) : (
-                <>
-                  Build Your <span style={{ color: BEC_BRAND.orange }}>Business Dashboard</span>
-                </>
-              )}
-            </h1>
-            <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-slate-400">
-              SPIKE Business Engine Canvas™ · Page {page} of 2
-            </p>
-          </div>
-          <div className="text-right">
-            <p className="text-xl font-black tracking-tight text-slate-900">SPIKE</p>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Financial Entrepreneurship</p>
-          </div>
-        </header>
-
-        {page === 1 ? (
-          <PageOne
-            state={state}
-            readOnly={readOnly}
-            updateEngineStep={updateEngineStep}
-            setWeeklyTarget={setWeeklyTarget}
-            setMonthlyTarget={setMonthlyTarget}
-            recalcMonthlyFromWeekly={recalcMonthlyFromWeekly}
-            persist={persist}
-          />
-        ) : (
-          <PageTwo state={state} readOnly={readOnly} persist={persist} updateGrowthNew={updateGrowthNew} />
-        )}
-      </div>
-
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 print:hidden">
-        <div className="flex gap-2">
-          <button type="button" disabled={page <= 1} onClick={() => setPage(1)} className={NAV_BTN}>
-            <ChevronLeft size={16} /> Page 1
-          </button>
-          <button type="button" disabled={page >= 2} onClick={() => setPage(2)} className={NAV_BTN}>
-            Page 2 <ChevronRight size={16} />
-          </button>
-        </div>
-        <ViewMyFecCanvasLink exit="/playbook?segment=1&week=3&day=3" compact label="Open FEC Canvas" />
-      </div>
+        </>
+      )}
     </div>
+  );
+}
+
+/** @param {{ page: number, children: import('react').ReactNode, canvasRef?: import('react').RefObject<HTMLDivElement | null>, className?: string }} props */
+function CanvasPageShell({ page, children, canvasRef, className = '' }) {
+  return (
+    <div
+      ref={canvasRef}
+      className={`bec-canvas space-y-8 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8 print:border-0 print:shadow-none ${className}`}
+    >
+      <CanvasHeader page={page} />
+      {children}
+    </div>
+  );
+}
+
+/** @param {{ page: number }} props */
+function CanvasHeader({ page }) {
+  return (
+    <header className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 pb-6">
+      <div>
+        <p className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: BEC_BRAND.orange }}>
+          Week 3 • Day 3 · Workshop
+        </p>
+        <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl" style={{ color: BEC_BRAND.navy }}>
+          {page === 1 ? (
+            <>
+              Build Your <span style={{ color: BEC_BRAND.orange }}>Business Engine</span>
+            </>
+          ) : (
+            <>
+              Build Your <span style={{ color: BEC_BRAND.orange }}>Business Dashboard</span>
+            </>
+          )}
+        </h1>
+        <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-slate-400">
+          SPIKE Business Engine Canvas™ · Page {page} of 2
+        </p>
+      </div>
+      <div className="text-right">
+        <p className="text-xl font-black tracking-tight text-slate-900">SPIKE</p>
+        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Financial Entrepreneurship</p>
+      </div>
+    </header>
   );
 }
 
@@ -281,6 +360,7 @@ export function BusinessEngineCanvas({ participantId, readOnly = false, onSaved,
 function PageOne({
   state,
   readOnly,
+  blankPreview = false,
   updateEngineStep,
   setWeeklyTarget,
   setMonthlyTarget,
@@ -308,7 +388,7 @@ function PageOne({
                   >
                     <input
                       type="number"
-                      readOnly={readOnly}
+                      readOnly={readOnly || blankPreview}
                       value={data?.value ?? step.defaultValue}
                       onChange={(e) => updateEngineStep(step.id, { value: Number(e.target.value) })}
                       className="w-full rounded-lg bg-transparent text-center text-3xl font-black text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400/50"
@@ -316,7 +396,7 @@ function PageOne({
                     />
                     <Icon size={22} className="mt-2 text-orange-500" aria-hidden />
                     <input
-                      readOnly={readOnly}
+                      readOnly={readOnly || blankPreview}
                       value={data?.label ?? step.defaultLabel}
                       onChange={(e) => updateEngineStep(step.id, { label: e.target.value })}
                       className="mt-2 w-full bg-transparent text-center text-[9px] font-bold uppercase leading-tight tracking-wide text-slate-600 focus:outline-none"
@@ -353,6 +433,7 @@ function PageOne({
                   <td className="px-4 py-2">
                     <InlineNumberInput
                       readOnly={readOnly}
+                      blankPreview={blankPreview}
                       currency={row.currency}
                       value={state.weeklyTargets[row.id]}
                       onChange={(v) => setWeeklyTarget(row.id, v)}
@@ -394,6 +475,7 @@ function PageOne({
                   <td className="px-4 py-2">
                     <InlineNumberInput
                       readOnly={readOnly}
+                      blankPreview={blankPreview}
                       currency={row.currency}
                       value={state.monthlyTargets[row.id]}
                       onChange={(v) => setMonthlyTarget(row.id, v, true)}
@@ -416,19 +498,28 @@ function PageOne({
             <h3 className="text-lg font-bold text-slate-900 sm:text-xl">
               Can this engine produce the business you want?
             </h3>
-            <textarea
-              readOnly={readOnly}
-              rows={3}
-              value={state.reflections.engineProducesBusiness ?? ''}
-              onChange={(e) =>
-                persist((p) => ({
-                  ...p,
-                  reflections: { ...p.reflections, engineProducesBusiness: e.target.value },
-                }))
-              }
-              placeholder="Short reflection…"
-              className="mt-3 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20"
-            />
+            {blankPreview ? (
+              <div
+                className="mt-3 min-h-[88px] rounded-xl border border-dashed border-slate-300 bg-white px-4 py-3 text-sm text-slate-400"
+                aria-hidden
+              >
+                Short reflection…
+              </div>
+            ) : (
+              <textarea
+                readOnly={readOnly}
+                rows={3}
+                value={state.reflections.engineProducesBusiness ?? ''}
+                onChange={(e) =>
+                  persist((p) => ({
+                    ...p,
+                    reflections: { ...p.reflections, engineProducesBusiness: e.target.value },
+                  }))
+                }
+                placeholder="Short reflection…"
+                className="mt-3 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-400/20"
+              />
+            )}
           </div>
         </div>
       </section>
@@ -437,10 +528,11 @@ function PageOne({
 }
 
 /** @param {any} props */
-function PageTwo({ state, readOnly, persist, updateGrowthNew }) {
+function PageTwo({ state, readOnly, blankPreview = false, persist, updateGrowthNew }) {
   const projectedRevenue = Number(state.growthSimulation.new.revenue) || 0;
   const currentRevenue = Number(state.growthSimulation.current.revenue) || 0;
   const revenueDelta = projectedRevenue - currentRevenue;
+  const hasNewRevenue = state.growthSimulation.new.revenue !== '' && state.growthSimulation.new.revenue != null;
 
   return (
     <>
@@ -453,6 +545,7 @@ function PageTwo({ state, readOnly, persist, updateGrowthNew }) {
               <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{kpi.label}</p>
               <InlineNumberInput
                 readOnly={readOnly}
+                blankPreview={blankPreview}
                 currency={kpi.currency}
                 value={state.year1Targets[kpi.id]}
                 onChange={(v) => persist((p) => ({ ...p, year1Targets: { ...p.year1Targets, [kpi.id]: v } }))}
@@ -475,16 +568,15 @@ function PageTwo({ state, readOnly, persist, updateGrowthNew }) {
               <button
                 key={lever.id}
                 type="button"
-                disabled={readOnly}
+                disabled={readOnly || blankPreview}
                 onClick={() => persist((p) => ({ ...p, businessLever: lever.id }))}
                 className={`min-h-[48px] rounded-full px-4 py-2 text-sm font-semibold transition ${
-                  active
+                  active && !blankPreview
                     ? 'bg-orange-500 text-white shadow-md'
                     : 'border border-slate-200 bg-white text-slate-700 hover:border-orange-300'
                 }`}
               >
-                {active ? '● ' : '○ '}
-                {lever.label}
+                ○ {lever.label}
               </button>
             );
           })}
@@ -520,6 +612,7 @@ function PageTwo({ state, readOnly, persist, updateGrowthNew }) {
                     <td className="px-4 py-2">
                       <InlineNumberInput
                         readOnly={readOnly}
+                        blankPreview={blankPreview}
                         currency={row.currency}
                         value={state.growthSimulation.new[row.id]}
                         onChange={(v) => updateGrowthNew(row.id, v)}
@@ -528,8 +621,9 @@ function PageTwo({ state, readOnly, persist, updateGrowthNew }) {
                     <td
                       className={`px-4 py-2 tabular-nums font-semibold ${diff >= 0 ? 'text-emerald-700' : 'text-red-600'}`}
                     >
-                      {diff >= 0 ? '+' : ''}
-                      {row.currency ? `₱${diff.toLocaleString()}` : diff}
+                      {blankPreview && (state.growthSimulation.new[row.id] === '' || state.growthSimulation.new[row.id] == null)
+                        ? '—'
+                        : `${diff >= 0 ? '+' : ''}${row.currency ? `₱${diff.toLocaleString()}` : diff}`}
                     </td>
                   </tr>
                 );
@@ -541,12 +635,14 @@ function PageTwo({ state, readOnly, persist, updateGrowthNew }) {
                   Projected Revenue
                 </td>
                 <td className="px-4 py-3 text-lg font-black tabular-nums text-slate-900">
-                  ₱{projectedRevenue.toLocaleString()}
+                  {blankPreview && !hasNewRevenue ? '₱ ______' : `₱${projectedRevenue.toLocaleString()}`}
                 </td>
                 <td
                   className={`px-4 py-3 font-bold tabular-nums ${revenueDelta >= 0 ? 'text-emerald-700' : 'text-red-600'}`}
                 >
-                  {revenueDelta >= 0 ? '+' : ''}₱{revenueDelta.toLocaleString()}
+                  {blankPreview && !hasNewRevenue
+                    ? '—'
+                    : `${revenueDelta >= 0 ? '+' : ''}₱${revenueDelta.toLocaleString()}`}
                 </td>
               </tr>
             </tfoot>
@@ -562,15 +658,22 @@ function PageTwo({ state, readOnly, persist, updateGrowthNew }) {
         ].map((q) => (
           <label key={q.key} className="block">
             <span className="text-sm font-semibold text-slate-800">{q.label}</span>
-            <textarea
-              readOnly={readOnly}
-              rows={2}
-              value={state.reflections[q.key] ?? ''}
-              onChange={(e) =>
-                persist((p) => ({ ...p, reflections: { ...p.reflections, [q.key]: e.target.value } }))
-              }
-              className="mt-1.5 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-orange-400 focus:outline-none"
-            />
+            {blankPreview ? (
+              <div
+                className="mt-1.5 min-h-[64px] rounded-xl border border-dashed border-slate-300 bg-white px-4 py-3"
+                aria-hidden
+              />
+            ) : (
+              <textarea
+                readOnly={readOnly}
+                rows={2}
+                value={state.reflections[q.key] ?? ''}
+                onChange={(e) =>
+                  persist((p) => ({ ...p, reflections: { ...p.reflections, [q.key]: e.target.value } }))
+                }
+                className="mt-1.5 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-orange-400 focus:outline-none"
+              />
+            )}
           </label>
         ))}
         <label className="block">
@@ -580,23 +683,29 @@ function PageTwo({ state, readOnly, persist, updateGrowthNew }) {
           <div className="mt-3 rounded-2xl border-2 border-orange-400 bg-orange-50/50 px-6 py-5">
             <div className="flex items-center gap-2">
               <span className="text-4xl font-black text-slate-900">₱</span>
-              <input
-                readOnly={readOnly}
-                type="text"
-                inputMode="numeric"
-                value={state.reflections.year1RevenueGoal ?? ''}
-                onChange={(e) =>
-                  persist((p) => ({
-                    ...p,
-                    reflections: {
-                      ...p.reflections,
-                      year1RevenueGoal: e.target.value.replace(/[^\d]/g, ''),
-                    },
-                  }))
-                }
-                placeholder="0"
-                className="min-w-0 flex-1 bg-transparent text-4xl font-black text-slate-900 focus:outline-none sm:text-5xl"
-              />
+              {blankPreview ? (
+                <span className="min-w-0 flex-1 border-b-2 border-slate-400 pb-1 text-4xl font-black text-slate-300 sm:text-5xl">
+                  &nbsp;
+                </span>
+              ) : (
+                <input
+                  readOnly={readOnly}
+                  type="text"
+                  inputMode="numeric"
+                  value={state.reflections.year1RevenueGoal ?? ''}
+                  onChange={(e) =>
+                    persist((p) => ({
+                      ...p,
+                      reflections: {
+                        ...p.reflections,
+                        year1RevenueGoal: e.target.value.replace(/[^\d]/g, ''),
+                      },
+                    }))
+                  }
+                  placeholder="0"
+                  className="min-w-0 flex-1 bg-transparent text-4xl font-black text-slate-900 focus:outline-none sm:text-5xl"
+                />
+              )}
             </div>
           </div>
         </label>
@@ -628,8 +737,18 @@ function PageTwo({ state, readOnly, persist, updateGrowthNew }) {
   );
 }
 
-/** @param {{ readOnly?: boolean, currency?: boolean, value: unknown, onChange: (v: number | string) => void, className?: string }} props */
-function InlineNumberInput({ readOnly, currency, value, onChange, className = '' }) {
+/** @param {{ readOnly?: boolean, blankPreview?: boolean, currency?: boolean, value: unknown, onChange: (v: number | string) => void, className?: string }} props */
+function InlineNumberInput({ readOnly, blankPreview = false, currency, value, onChange, className = '' }) {
+  const empty = value === '' || value == null;
+  if (blankPreview && empty) {
+    return (
+      <div className={`flex items-center gap-1 ${className}`}>
+        {currency ? <span className="text-sm font-semibold text-slate-400">₱</span> : null}
+        <span className="block min-h-[44px] min-w-[80px] flex-1 border-b-2 border-slate-300 px-2 py-2" aria-hidden />
+      </div>
+    );
+  }
+
   return (
     <div className={`flex items-center gap-1 ${className}`}>
       {currency ? <span className="text-sm font-semibold text-slate-500">₱</span> : null}

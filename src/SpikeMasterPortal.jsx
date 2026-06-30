@@ -33,7 +33,7 @@ import { PageLoader } from './components/ui/PageLoader.jsx';
 import { RoleRouteGuard } from './components/routing/RoleRouteGuard.jsx';
 import { playbookWeek2MissionHref } from './lib/customerDiscovery/week2MissionService.js';
 import { buildSuperuserMentorPreviewInterns } from './lib/superuserMentorPreview.js';
-import { ROUTES, brandLexiconBackHrefForRole, facilitatorsReferenceBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath, isPlaybookPath, isSpikeLifePath, isSpikeLifeImmersivePath, parseStaffSquadHubPath, parseStaffStageGatePath } from './routes/paths.js';
+import { ROUTES, brandLexiconBackHrefForRole, facilitatorsReferenceBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath, isPlaybookPath, isSpikeLifePath, isSpikeLifeImmersivePath, parseStaffSquadHubPath, parseStaffStageGatePath, playbookHref } from './routes/paths.js';
 import { StaffSquadHubPage, StaffSquadsListPage } from './components/staff/StaffSquadHubPage.jsx';
 import { Week2LoginWelcomeFlow } from './components/week2/Week2LoginWelcomeFlow.jsx';
 import { shouldShowWeek2LoginWelcome } from './lib/week2LoginWelcome.js';
@@ -62,6 +62,7 @@ import {
   PlaybookShell,
   VentureStudioDay3Page,
   Week2StudioPreviewPage,
+  BusinessEngineCanvasPreviewPage,
   FecCanvasProjectionPage,
   VentureDesignWorkshopPage,
   PortfolioPage,
@@ -1457,6 +1458,16 @@ const SpikeMasterPortal = () => {
     </LazyRoute>
   );
 
+  const renderBusinessEngineCanvasPreview = (staffRole) => (
+    <LazyRoute label="Loading Business Engine Canvas…">
+      <BusinessEngineCanvasPreviewPage
+        backHref={staffRole === 'mentor' ? ROUTES.mentorHome : ROUTES.programCoachHome}
+        backLabel={staffRole === 'mentor' ? 'Back to mentor home' : 'Back to coach home'}
+        roleLabel={staffRole === 'mentor' ? 'Mentor' : 'Program Coach'}
+      />
+    </LazyRoute>
+  );
+
   const renderVentureDesignWorkshop = (pageUser, { viewerRole = 'intern', readOnly = false } = {}) => (
     <LazyRoute label="Loading Venture Design Studio…">
       <VentureDesignWorkshopPage
@@ -1620,6 +1631,13 @@ const SpikeMasterPortal = () => {
         }
         return renderWeek2StudioPreview(previewRole === 'mentor' ? 'mentor' : 'faculty');
       }
+      if (path === ROUTES.playbookBusinessEngineCanvasPreview) {
+        const previewRole = viewAsRole ?? (userRole === 'superuser' ? 'faculty' : userRole);
+        if (previewRole === 'intern') {
+          return <Navigate to={playbookHref({ segment: 1, week: 3, day: 3 })} replace />;
+        }
+        return renderBusinessEngineCanvasPreview(previewRole === 'mentor' ? 'mentor' : 'faculty');
+      }
       if (path === ROUTES.playbook) return renderPlaybook();
     }
 
@@ -1690,6 +1708,9 @@ const SpikeMasterPortal = () => {
       if (path === ROUTES.playbookWeek2Studio) {
         return <Navigate to={playbookWeek2MissionHref('mission', { day: 1 })} replace />;
       }
+      if (path === ROUTES.playbookBusinessEngineCanvasPreview) {
+        return <Navigate to={playbookHref({ segment: 1, week: 3, day: 3 })} replace />;
+      }
       if (path === ROUTES.playbook) return renderPlaybook();
       if (path === ROUTES.portfolio && !isSuperuserSession) {
         return <Navigate to={ROUTES.myVenturePortfolio} replace />;
@@ -1730,6 +1751,12 @@ const SpikeMasterPortal = () => {
           return <Navigate to={playbookWeek2MissionHref('mission', { day: 1 })} replace />;
         }
         return renderWeek2StudioPreview(effectiveUserRole === 'mentor' ? 'mentor' : 'faculty');
+      }
+      if (path === ROUTES.playbookBusinessEngineCanvasPreview) {
+        if (effectiveUserRole === 'intern') {
+          return <Navigate to={playbookHref({ segment: 1, week: 3, day: 3 })} replace />;
+        }
+        return renderBusinessEngineCanvasPreview(effectiveUserRole === 'mentor' ? 'mentor' : 'faculty');
       }
       if (path === ROUTES.playbook) return renderPlaybook();
       if (path === ROUTES.portfolio) return <PortfolioPage hours={internSummary.avgHours} interns={interns} />;

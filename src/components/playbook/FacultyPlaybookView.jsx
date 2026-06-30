@@ -5,6 +5,7 @@ import { Week2ActivateHero } from './week2/Week2ActivateHero.jsx';
 import { Week3Day1PlaybookHero } from './week3/Week3Day1PlaybookHero.jsx';
 import { Week3Day3PlaybookHero } from './week3/Week3Day3PlaybookHero.jsx';
 import { Week3Day3PortfolioMission } from './week3/Week3Day3PortfolioMission.jsx';
+import { BusinessEngineCanvasBlankPreview } from './week3/businessEngine/BusinessEngineCanvasBlankPreview.jsx';
 import { Week2StudioLaunchCard } from './week2/Week2StudioLaunchCard.jsx';
 import { EvaluationTemplatesPanel } from './EvaluationTemplatesPanel.jsx';
 import { FacilitatorGuidePanel } from './FacilitatorGuidePanel.jsx';
@@ -39,6 +40,7 @@ export function FacultyPlaybookView({ bundle }) {
       {isWeek3Day3 ? (
         <>
           <Week3Day3PlaybookHero />
+          <BusinessEngineCanvasBlankPreview compact roleLabel={`${PROGRAM_COACH_LABEL} delivery`} />
           <Week3Day3PortfolioMission participantId="" staffPreview />
         </>
       ) : null}
