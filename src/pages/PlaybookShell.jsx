@@ -168,13 +168,6 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
     && entrySegment === 1
     && (weekSlug === 'week-2' || selectedWeek?.week?.weekNumber === 2);
 
-  const isInternWeek3Day3 =
-    userRole === 'intern'
-    && entryWeek >= 3
-    && entrySegment === 1
-    && (weekSlug === 'week-3' || selectedWeek?.week?.weekNumber === 3)
-    && playbookDayNumber === 3;
-
   const urlPlaybookDay = useMemo(
     () => parsePlaybookDayParam(searchParams.get('day')),
     [searchParams],
@@ -184,6 +177,13 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
     urlPlaybookDay != null
       ? urlPlaybookDay
       : (selectedDay?.day?.dayNumber ?? entryDay);
+
+  const isInternWeek3Day3 =
+    userRole === 'intern'
+    && entryWeek >= 3
+    && entrySegment === 1
+    && (weekSlug === 'week-3' || selectedWeek?.week?.weekNumber === 3)
+    && playbookDayNumber === 3;
 
   const showWeek2MissionFirst =
     isInternWeek2
@@ -214,7 +214,7 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
   }, [showMissionFirst, searchParams, setSearchParams]);
 
   useEffect(() => {
-    if (!showMissionFirst || !participantId) return;
+    if (!showWeek2MissionFirst || !participantId) return;
 
     const day = urlPlaybookDay ?? resolvedPlaybookDay;
 
@@ -275,7 +275,7 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
     apply((params) => {
       params.set('mission', active.slug);
     });
-  }, [showMissionFirst, participantId, missionSlug, urlPlaybookDay, resolvedPlaybookDay, setSearchParams]);
+  }, [showWeek2MissionFirst, participantId, missionSlug, urlPlaybookDay, resolvedPlaybookDay, setSearchParams]);
 
   function openCurriculumView() {
     const params = new URLSearchParams(searchParams);
