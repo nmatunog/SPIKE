@@ -38,6 +38,95 @@
     minmax(0, 8fr);
 }
 
+.gsv3-shell--results {
+  grid-template-rows:
+    minmax(0, 7fr)
+    minmax(0, 14fr)
+    minmax(0, 52fr)
+    minmax(0, 0fr)
+    minmax(0, 9fr);
+}
+
+.gsv3-shell--results .gsv3-zone-situation,
+.gsv3-shell--results .gsv3-zone-choices {
+  @apply pointer-events-none overflow-hidden opacity-0;
+}
+
+.gsv3-zone-results {
+  grid-row: 3;
+  grid-column: 1;
+  z-index: 25;
+  min-height: 0;
+  padding-left: var(--gsv3-gutter);
+  padding-right: var(--gsv3-gutter);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Results / consequence card — matches situation stage chrome */
+.gsv3-consequence-stage {
+  @apply flex min-h-0 flex-1 flex-col;
+}
+
+.gsv3-consequence-card {
+  @apply mx-auto flex h-full min-h-0 w-full max-w-3xl flex-col rounded-2xl border border-slate-200/80 bg-white;
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.1);
+  padding: 1rem 1.125rem 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .gsv3-consequence-card {
+    padding: 1.25rem 1.5rem 1.5rem;
+  }
+}
+
+.gsv3-consequence-card__head {
+  @apply shrink-0 text-center;
+}
+
+.gsv3-consequence-badge {
+  @apply inline-flex rounded-full px-3 py-1 font-sans text-2xs font-bold uppercase tracking-[0.2em] text-indigo-800;
+  background: linear-gradient(180deg, #ede9fe 0%, #e0e7ff 100%);
+}
+
+.gsv3-consequence-title {
+  @apply mt-3 font-sans text-lg font-semibold uppercase leading-tight tracking-tight text-slate-900 md:text-xl;
+}
+
+.gsv3-consequence-subtitle {
+  @apply mt-1.5 text-xs italic text-slate-500 md:text-sm;
+}
+
+.gsv3-consequence-rows {
+  @apply mt-4 flex min-h-0 flex-1 flex-col justify-center gap-2 overflow-y-auto;
+}
+
+.gsv3-consequence-row--up {
+  background: rgba(236, 253, 245, 0.92);
+  border: 1px solid rgba(167, 243, 208, 0.65);
+}
+
+.gsv3-consequence-row--down {
+  background: rgba(254, 242, 242, 0.92);
+  border: 1px solid rgba(254, 202, 202, 0.65);
+}
+
+.gsv3-consequence-foot {
+  @apply mt-4 flex shrink-0 flex-col items-center gap-2;
+}
+
+.gsv3-consequence-spinner {
+  animation: gsv3-spin 0.9s linear infinite;
+}
+
+.gsv3-dream-card .gsv3-consequence-card__head p {
+  @apply text-center text-xs font-bold uppercase tracking-widest text-indigo-600;
+}
+
+@keyframes gsv3-spin {
+  to { transform: rotate(360deg); }
+}
+
 .gsv3-zone-header {
   @apply z-30 h-full min-h-0;
 }

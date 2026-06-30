@@ -217,11 +217,15 @@ export default function GameScreenV3({ onOpenWorkshop }) {
     await refresh()
   }
 
-  const shellClass = rolling
-    ? 'gsv3-shell--rolling'
-    : showSituation
-      ? 'gsv3-shell--play'
-      : ''
+  const inResultsPhase = phase === PHASE.CONSEQUENCES || phase === PHASE.DREAM
+
+  const shellClass = [
+    rolling ? 'gsv3-shell--rolling' : '',
+    showSituation ? 'gsv3-shell--play' : '',
+    inResultsPhase ? 'gsv3-shell--results' : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
 
   return (
     <div className={`gsv3-shell ${shellClass}`}>
@@ -313,18 +317,6 @@ export default function GameScreenV3({ onOpenWorkshop }) {
           )}
         </AnimatePresence>
 
-        {phase === PHASE.CONSEQUENCES && (
-          <div className="absolute inset-0 z-50 flex items-center justify-center px-4">
-            <ConsequenceAnimation reveal={consequenceReveal} onComplete={handleConsequenceComplete} />
-          </div>
-        )}
-
-        {phase === PHASE.DREAM && goals.length > 0 && (
-          <div className="absolute inset-0 z-50 flex items-center justify-center px-4">
-            <DreamProgressPulse goals={goals} onComplete={handleDreamComplete} />
-          </div>
-        )}
-
         {phase === PHASE.DREAM && goals.length === 0 && (
           <DreamProgressSkip onComplete={handleDreamComplete} />
         )}
@@ -341,14 +333,30 @@ export default function GameScreenV3({ onOpenWorkshop }) {
             deciding={busy}
             error={error}
           />
-        ) : (
+        ) : !inResultsPhase ? (
           <div className="flex h-full items-center justify-center">
             <p className="text-[10px] uppercase tracking-[0.25em] text-slate-400">
               {phase === PHASE.IDLE ? 'Awaiting roll' : 'Responses appear after situation'}
             </p>
           </div>
-        )}
+        ) : null}
       </div>
+
+      {phase === PHASE.CONSEQUENCES && (
+        <div className="gsv3-zone-results">
+          <ConsequenceAnimation
+            variant="v3"
+            reveal={consequenceReveal}
+            onComplete={handleConsequenceComplete}
+          />
+        </div>
+      )}
+
+      {phase === PHASE.DREAM && goals.length > 0 && (
+        <div className="gsv3-zone-results">
+          <DreamProgressPulse variant="v3" goals={goals} onComplete={handleDreamComplete} />
+        </div>
+      )}
 
       <CycleStepperV3
         phase={phase}
