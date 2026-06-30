@@ -118,6 +118,11 @@
       break-inside: avoid;
       box-shadow: none;
     }
+
+    .bec-canvas {
+      break-inside: avoid;
+      box-shadow: none;
+    }
   }
 
   .spike-nav-pill-inactive {
