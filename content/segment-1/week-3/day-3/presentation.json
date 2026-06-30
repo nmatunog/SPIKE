@@ -2,64 +2,166 @@
   "presentation": {
     "id": "presentation-w3-d3-deck-01",
     "dayId": "day-segment-1-week-3-day-3",
-    "title": "Program Coach Deck 01 — Why This Business Scales",
+    "title": "Program Coach Deck 01 — The Business Engine",
     "slideIds": [
       "slide-w3-d3-dk1-01",
       "slide-w3-d3-dk1-02",
       "slide-w3-d3-dk1-03",
       "slide-w3-d3-dk1-04",
-      "slide-w3-d3-dk1-05"
-    ]
+      "slide-w3-d3-dk1-05",
+      "slide-w3-d3-dk1-06",
+      "slide-w3-d3-dk1-07",
+      "slide-w3-d3-dk1-08",
+      "slide-w3-d3-dk1-09",
+      "slide-w3-d3-dk1-10",
+      "slide-w3-d3-dk1-11",
+      "slide-w3-d3-dk1-12"
+    ],
+    "sourceFile": "faculty-deck-01.pdf",
+    "sourcePath": "content/segment-1/week-3/day-3/source/faculty-deck-01.pdf",
+    "importedAt": "2026-06-30T17:22:00.130Z",
+    "pdfUrl": "/content/segment-1/week-3/day-3/faculty-deck-01.pdf"
   },
   "slides": [
     {
       "id": "slide-w3-d3-dk1-01",
       "presentationId": "presentation-w3-d3-deck-01",
-      "title": "Day 13 — Introduce the Business",
-      "body": "Not compensation yet.\nWhy is this business scalable?",
-      "speakerNotes": "Today is about the venture model — not pay plans.\nAsk: Why is a financial advisory practice scalable?",
+      "sortOrder": 1,
+      "title": "What Did You Learn This Morning?",
+      "body": "Let's reflect on your role play experience.\n\n• What surprised you?\n• What was difficult?\n• What made the conversation feel natural?",
+      "speakerNotes": "Open after the morning FNA role play.\nPair-share for 3 minutes, then invite 2–3 volunteers.\nTransition: Great businesses are built from real experiences — not slides.",
       "discussionQuestions": [
-        "What makes a business scalable vs a job?"
+        "What surprised you in the role play?",
+        "What was difficult?",
+        "What made the conversation feel natural?"
       ],
-      "sortOrder": 1
+      "imageUrl": "/content/segment-1/week-3/day-3/deck-01/slide-01.png"
     },
     {
       "id": "slide-w3-d3-dk1-02",
       "presentationId": "presentation-w3-d3-deck-01",
-      "title": "The Client Growth Flywheel",
-      "body": "One client → Referral → Five clients → Twenty clients → Recurring relationships → Growing practice",
-      "speakerNotes": "Draw the flywheel.\nEmphasize recurring relationships — not one-time transactions.\nThis is how ventures compound.",
-      "discussionQuestions": [],
-      "sortOrder": 2
+      "sortOrder": 2,
+      "title": "Great Businesses Are Built From Real Experiences",
+      "body": "This morning you didn't study Client Experience.\nYou experienced Client Experience.\n\nNow let's connect it to our Financial Entrepreneurship Canvas — strengthen Box 4 (Client Experience) and Box 5 (Winning Strategy).",
+      "speakerNotes": "Bridge from role play to FEC.\nEmphasize: BUILD TRUST · LISTEN DEEPLY · ASK BETTER QUESTIONS · CREATE IMPACT.\nPoint interns to the Playbook portfolio mission.",
+      "discussionQuestions": [
+        "How does this morning's experience change how you think about client experience?"
+      ],
+      "imageUrl": "/content/segment-1/week-3/day-3/deck-01/slide-02.png"
     },
     {
       "id": "slide-w3-d3-dk1-03",
       "presentationId": "presentation-w3-d3-deck-01",
-      "title": "Recurring Relationships = Recurring Income",
-      "body": "Service businesses win on retention and referrals.",
-      "speakerNotes": "Connect to Week 2 empathy work.\nTrust drives referrals. Referrals drive scale.",
-      "discussionQuestions": [],
-      "sortOrder": 3
+      "sortOrder": 3,
+      "title": "Revise Your Client Experience — FEC Box 4",
+      "body": "Today's mission: Improve our client experience using what we learned this morning.\n\nReflection prompts:\n• What worked? What created impact?\n• What felt awkward or difficult?\n• What builds trust?\n• What should our ideal client experience look like?",
+      "speakerNotes": "Workshop time — interns open Playbook and Edit FEC Box 4.\nCirculate squads. Probe for specific moments from role play, not generic answers.\nTarget: 40–45 minutes.",
+      "discussionQuestions": [
+        "What should your ideal client journey look like from start to finish?"
+      ],
+      "imageUrl": "/content/segment-1/week-3/day-3/deck-01/slide-03.png"
     },
     {
       "id": "slide-w3-d3-dk1-04",
       "presentationId": "presentation-w3-d3-deck-01",
-      "title": "FEC Box 6 — Growth Engines",
-      "body": "Advisor Excellence · Team & Leadership · Systems & Scale",
-      "speakerNotes": "Open Financial Entrepreneurship Canvas Box 6.\nNow Growth Engines make sense — they are how your venture scales.\nPreview Venture Blueprint Client, Talent, and Leadership engines.",
+      "sortOrder": 4,
+      "title": "Build Your Winning Strategy — FEC Box 5",
+      "body": "Why will clients choose your advisory practice instead of another?\n\nCompete on experience. Win with trust.\nNot products. Not price. But experience, understanding, and trust.",
+      "speakerNotes": "Transition to Box 5 after Box 4 drafts are underway.\nRemind: strategy is why you win — not what you sell.\nInterns Edit FEC Box 5 in Playbook.",
       "discussionQuestions": [
-        "Which growth engine will you activate first?"
+        "Why will clients choose your practice over another advisor?"
       ],
-      "sortOrder": 4
+      "imageUrl": "/content/segment-1/week-3/day-3/deck-01/slide-04.png"
     },
     {
       "id": "slide-w3-d3-dk1-05",
       "presentationId": "presentation-w3-d3-deck-01",
-      "title": "Deck 01 Close — Growth Engines Workshop",
-      "body": "Draft Box 6 in your FEC.",
-      "speakerNotes": "Transition to Deck 02 workshop.",
+      "sortOrder": 5,
+      "title": "Can Your Venture Become a Business?",
+      "body": "A great client experience is the foundation.\nNow let's turn it into a scalable, sustainable, and profitable business.",
+      "speakerNotes": "Pivot from FEC boxes to the Business Engine.\nAsk: Do you have an idea — or the start of a venture?\nPreview the 10–5–3–1–₱10,000–3 model.",
+      "discussionQuestions": [
+        "What makes a venture a business — not just an activity?"
+      ],
+      "imageUrl": "/content/segment-1/week-3/day-3/deck-01/slide-05.png"
+    },
+    {
+      "id": "slide-w3-d3-dk1-06",
+      "presentationId": "presentation-w3-d3-deck-01",
+      "sortOrder": 6,
+      "title": "The Business Engine",
+      "body": "10 Prospects → 5 Discovery Conversations → 3 Solution Presentations → 1 New Client → ₱10,000 Revenue → 3 Referrals → repeat.",
+      "speakerNotes": "Walk the horizontal engine slowly.\nDraw the referral loop back to prospects.\nThis is the operating system — not motivation.",
       "discussionQuestions": [],
-      "sortOrder": 5
+      "imageUrl": "/content/segment-1/week-3/day-3/deck-01/slide-06.png"
+    },
+    {
+      "id": "slide-w3-d3-dk1-07",
+      "presentationId": "presentation-w3-d3-deck-01",
+      "sortOrder": 7,
+      "title": "Business Is Built One Cycle at a Time",
+      "body": "What happens if we repeat this every week?",
+      "speakerNotes": "Use the circular diagram.\nEmphasize weekly cadence — compounding beats intensity.\nConnect referrals back to the top of the funnel.",
+      "discussionQuestions": [
+        "What would change in 4 weeks if you ran this engine every week?"
+      ],
+      "imageUrl": "/content/segment-1/week-3/day-3/deck-01/slide-07.png"
+    },
+    {
+      "id": "slide-w3-d3-dk1-08",
+      "presentationId": "presentation-w3-d3-deck-01",
+      "sortOrder": 8,
+      "title": "Build Your Business Engine — Weekly & Monthly",
+      "body": "Use your numbers. Build your engine. Make it repeatable.\n\nComplete the SPIKE Business Engine Canvas™ in the Playbook — weekly targets and monthly projections.",
+      "speakerNotes": "Launch the interactive Business Engine Canvas.\nMonthly = Weekly × 4 unless they override.\nAllow 30–40 minutes for Page 1.",
+      "discussionQuestions": [
+        "Can this engine produce the business you want?"
+      ],
+      "imageUrl": "/content/segment-1/week-3/day-3/deck-01/slide-08.png"
+    },
+    {
+      "id": "slide-w3-d3-dk1-09",
+      "presentationId": "presentation-w3-d3-deck-01",
+      "sortOrder": 9,
+      "title": "Small Activities → Big Businesses",
+      "body": "Systems → Activities → Clients → Revenue → Freedom",
+      "speakerNotes": "Reframe the engine as a freedom machine.\nSystems create activities; activities create clients; clients create revenue; revenue creates freedom.",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-3/day-3/deck-01/slide-09.png"
+    },
+    {
+      "id": "slide-w3-d3-dk1-10",
+      "presentationId": "presentation-w3-d3-deck-01",
+      "sortOrder": 10,
+      "title": "The Business Engine — One Cycle. Endless Growth.",
+      "body": "Build it. Run it. Repeat it.\n\n10 Prospects · 5 Discovery · 3 Presentations · 1 Client · ₱10,000 · 3 Referrals\nRepeat the cycle every week. Compound the results.",
+      "speakerNotes": "Deep-dive each step with definitions from the slide.\nUse a squad example: if prospects go from 10 to 20, what happens downstream?\nPreview Page 2 Growth Simulation.",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-3/day-3/deck-01/slide-10.png"
+    },
+    {
+      "id": "slide-w3-d3-dk1-11",
+      "presentationId": "presentation-w3-d3-deck-01",
+      "sortOrder": 11,
+      "title": "Refine. Repeat. Grow.",
+      "body": "The best businesses are built through continuous improvement.\n\nRefine your numbers · Repeat the cycle every week · Grow your venture.",
+      "speakerNotes": "Page 2 of Business Engine Canvas — levers, growth simulation, Year 1 commitment.\nEncourage squads to pick ONE lever and model the impact.",
+      "discussionQuestions": [
+        "Which lever will create the biggest improvement for your squad?"
+      ],
+      "imageUrl": "/content/segment-1/week-3/day-3/deck-01/slide-11.png"
+    },
+    {
+      "id": "slide-w3-d3-dk1-12",
+      "presentationId": "presentation-w3-d3-deck-01",
+      "sortOrder": 12,
+      "title": "Your Venture Now Has an Engine",
+      "body": "Client Experience → Winning Strategy → Business Engine → Growth\n\nYesterday: understand clients.\nToday: build a business.\nTomorrow: scale your advisory venture.",
+      "speakerNotes": "Squad share — 3–5 minutes each.\nClose: Do you still have an idea, or do you now have a venture?\nPreview Day 14.",
+      "discussionQuestions": [
+        "Do you still have an idea — or do you now have a venture?"
+      ],
+      "imageUrl": "/content/segment-1/week-3/day-3/deck-01/slide-12.png"
     }
   ]
 }

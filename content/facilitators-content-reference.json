@@ -4979,187 +4979,462 @@
         {
           "dayNumber": 3,
           "programDay": 13,
-          "title": "Day 13 — Claims Processing & Empathy Delivery",
-          "theme": "Claims & Empathy",
+          "title": "Day 13 — The Business Engine",
+          "theme": "Client Experience at the Core",
           "durationHours": 4,
-          "status": "draft",
+          "status": "published",
           "learningObjectives": [
-            "Map claims workflow from intake to payout",
-            "Demonstrate empathetic claim notification and support",
-            "Identify advisor responsibilities during claim events",
-            "Practice difficult conversations with roleplay standards"
+            "Experience FNA discovery from both the advisor and client perspective",
+            "Reflect on role play and connect insights to FEC Box 4 — Client Experience",
+            "Define FEC Box 5 — Winning Strategy based on experience, understanding, and trust",
+            "Design a weekly operating system using the 10–5–3–1–₱10,000–3 Business Engine model",
+            "Complete the SPIKE Business Engine Canvas™ and commit to a Year 1 revenue target"
           ],
           "decks": [
             {
-              "title": "Program Coach Deck 01 — Claims as Promise Keeping",
-              "purpose": "Emotional and process frame.",
-              "slideCount": 5,
+              "id": "presentation-w3-d3-deck-01",
+              "title": "Program Coach Deck 01 — The Business Engine",
+              "purpose": "",
+              "slideCount": 12,
+              "status": "published",
+              "pptxUrl": null,
+              "pdfUrl": "/content/segment-1/week-3/day-3/faculty-deck-01.pdf",
               "slides": [
                 {
-                  "title": "Day 13 — When Protection Is Tested",
-                  "purpose": "Story-first — why claims matter."
+                  "number": 1,
+                  "title": "What Did You Learn This Morning?",
+                  "summary": "Let's reflect on your role play experience. • What surprised you? • What was difficult? • What made the conversation feel natural?",
+                  "facilitatorNotes": "Open after the morning FNA role play. Pair-share for 3 minutes, then invite 2–3 volunteers. Transition: Great businesses are built from real experiences — not slides.",
+                  "discussionQuestions": [
+                    "What surprised you in the role play?",
+                    "What was difficult?",
+                    "What made the conversation feel natural?"
+                  ],
+                  "imageUrl": "/content/segment-1/week-3/day-3/deck-01/slide-01.png"
                 },
                 {
-                  "title": "Claims Workflow Map",
-                  "purpose": "FNOL to decision to payout."
+                  "number": 2,
+                  "title": "Great Businesses Are Built From Real Experiences",
+                  "summary": "This morning you didn't study Client Experience. You experienced Client Experience. Now let's connect it to our Financial Entrepreneurship Canvas — strengthen Box 4 (Client Experience) and Box 5 (Winning Strategy).",
+                  "facilitatorNotes": "Bridge from role play to FEC. Emphasize: BUILD TRUST · LISTEN DEEPLY · ASK BETTER QUESTIONS · CREATE IMPACT. Point interns to the Playbook portfolio mission.",
+                  "discussionQuestions": [
+                    "How does this morning's experience change how you think about client experience?"
+                  ],
+                  "imageUrl": "/content/segment-1/week-3/day-3/deck-01/slide-02.png"
                 },
                 {
-                  "title": "Advisor Role at Claim Time",
-                  "purpose": "Advocate, communicator, documenter."
+                  "number": 3,
+                  "title": "Revise Your Client Experience — FEC Box 4",
+                  "summary": "Today's mission: Improve our client experience using what we learned this morning. Reflection prompts: • What worked? What created impact? • What felt awkward or difficult? • What builds trust? • What should our ideal cl…",
+                  "facilitatorNotes": "Workshop time — interns open Playbook and Edit FEC Box 4. Circulate squads. Probe for specific moments from role play, not generic answers. Target: 40–45 minutes.",
+                  "discussionQuestions": [
+                    "What should your ideal client journey look like from start to finish?"
+                  ],
+                  "imageUrl": "/content/segment-1/week-3/day-3/deck-01/slide-03.png"
                 },
                 {
-                  "title": "Empathy vs Sympathy",
-                  "purpose": "Language that helps."
+                  "number": 4,
+                  "title": "Build Your Winning Strategy — FEC Box 5",
+                  "summary": "Why will clients choose your advisory practice instead of another? Compete on experience. Win with trust. Not products. Not price. But experience, understanding, and trust.",
+                  "facilitatorNotes": "Transition to Box 5 after Box 4 drafts are underway. Remind: strategy is why you win — not what you sell. Interns Edit FEC Box 5 in Playbook.",
+                  "discussionQuestions": [
+                    "Why will clients choose your practice over another advisor?"
+                  ],
+                  "imageUrl": "/content/segment-1/week-3/day-3/deck-01/slide-04.png"
                 },
                 {
-                  "title": "Deck 01 Close — Roleplay Brief",
-                  "purpose": "Assign claim scenarios."
+                  "number": 5,
+                  "title": "Can Your Venture Become a Business?",
+                  "summary": "A great client experience is the foundation. Now let's turn it into a scalable, sustainable, and profitable business.",
+                  "facilitatorNotes": "Pivot from FEC boxes to the Business Engine. Ask: Do you have an idea — or the start of a venture? Preview the 10–5–3–1–₱10,000–3 model.",
+                  "discussionQuestions": [
+                    "What makes a venture a business — not just an activity?"
+                  ],
+                  "imageUrl": "/content/segment-1/week-3/day-3/deck-01/slide-05.png"
+                },
+                {
+                  "number": 6,
+                  "title": "The Business Engine",
+                  "summary": "10 Prospects → 5 Discovery Conversations → 3 Solution Presentations → 1 New Client → ₱10,000 Revenue → 3 Referrals → repeat.",
+                  "facilitatorNotes": "Walk the horizontal engine slowly. Draw the referral loop back to prospects. This is the operating system — not motivation.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-3/day-3/deck-01/slide-06.png"
+                },
+                {
+                  "number": 7,
+                  "title": "Business Is Built One Cycle at a Time",
+                  "summary": "What happens if we repeat this every week?",
+                  "facilitatorNotes": "Use the circular diagram. Emphasize weekly cadence — compounding beats intensity. Connect referrals back to the top of the funnel.",
+                  "discussionQuestions": [
+                    "What would change in 4 weeks if you ran this engine every week?"
+                  ],
+                  "imageUrl": "/content/segment-1/week-3/day-3/deck-01/slide-07.png"
+                },
+                {
+                  "number": 8,
+                  "title": "Build Your Business Engine — Weekly & Monthly",
+                  "summary": "Use your numbers. Build your engine. Make it repeatable. Complete the SPIKE Business Engine Canvas™ in the Playbook — weekly targets and monthly projections.",
+                  "facilitatorNotes": "Launch the interactive Business Engine Canvas. Monthly = Weekly × 4 unless they override. Allow 30–40 minutes for Page 1.",
+                  "discussionQuestions": [
+                    "Can this engine produce the business you want?"
+                  ],
+                  "imageUrl": "/content/segment-1/week-3/day-3/deck-01/slide-08.png"
+                },
+                {
+                  "number": 9,
+                  "title": "Small Activities → Big Businesses",
+                  "summary": "Systems → Activities → Clients → Revenue → Freedom",
+                  "facilitatorNotes": "Reframe the engine as a freedom machine. Systems create activities; activities create clients; clients create revenue; revenue creates freedom.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-3/day-3/deck-01/slide-09.png"
+                },
+                {
+                  "number": 10,
+                  "title": "The Business Engine — One Cycle. Endless Growth.",
+                  "summary": "Build it. Run it. Repeat it. 10 Prospects · 5 Discovery · 3 Presentations · 1 Client · ₱10,000 · 3 Referrals Repeat the cycle every week. Compound the results.",
+                  "facilitatorNotes": "Deep-dive each step with definitions from the slide. Use a squad example: if prospects go from 10 to 20, what happens downstream? Preview Page 2 Growth Simulation.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-3/day-3/deck-01/slide-10.png"
+                },
+                {
+                  "number": 11,
+                  "title": "Refine. Repeat. Grow.",
+                  "summary": "The best businesses are built through continuous improvement. Refine your numbers · Repeat the cycle every week · Grow your venture.",
+                  "facilitatorNotes": "Page 2 of Business Engine Canvas — levers, growth simulation, Year 1 commitment. Encourage squads to pick ONE lever and model the impact.",
+                  "discussionQuestions": [
+                    "Which lever will create the biggest improvement for your squad?"
+                  ],
+                  "imageUrl": "/content/segment-1/week-3/day-3/deck-01/slide-11.png"
+                },
+                {
+                  "number": 12,
+                  "title": "Your Venture Now Has an Engine",
+                  "summary": "Client Experience → Winning Strategy → Business Engine → Growth Yesterday: understand clients. Today: build a business. Tomorrow: scale your advisory venture.",
+                  "facilitatorNotes": "Squad share — 3–5 minutes each. Close: Do you still have an idea, or do you now have a venture? Preview Day 14.",
+                  "discussionQuestions": [
+                    "Do you still have an idea — or do you now have a venture?"
+                  ],
+                  "imageUrl": "/content/segment-1/week-3/day-3/deck-01/slide-12.png"
                 }
-              ],
-              "status": "draft"
+              ]
             },
             {
-              "title": "Program Coach Deck 02 — Claim Delivery Roleplays",
-              "purpose": "Practice difficult conversations.",
+              "id": "presentation-w3-d3-deck-02",
+              "title": "Program Coach Deck 02 — Growth Engines Workshop",
+              "purpose": "",
               "slideCount": 5,
+              "status": "published",
+              "pptxUrl": null,
+              "pdfUrl": null,
               "slides": [
                 {
-                  "title": "Roleplay Protocol",
-                  "purpose": "5 min scene / 5 min feedback."
+                  "number": 1,
+                  "title": "Client Growth Flywheel Map",
+                  "summary": "Map your first client → referral path → 20-client milestone.",
+                  "facilitatorNotes": "Use real names from Week 2 interviews where possible.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 },
                 {
-                  "title": "Scenario Menu",
-                  "purpose": "Death, CI, disability, delay."
+                  "number": 2,
+                  "title": "FEC Box 6 Walkthrough",
+                  "summary": "Advisor Excellence · Team & Leadership · Systems & Scale",
+                  "facilitatorNotes": "Live demo in Venture Design Studio / FEC.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 },
                 {
-                  "title": "Feedback Rubric",
-                  "purpose": "Empathy, clarity, next steps."
+                  "number": 3,
+                  "title": "Squad Growth Engine Draft",
+                  "summary": "Each participant drafts primary growth engine activation plan.",
+                  "facilitatorNotes": "Mentors probe: what will you do in the first 30 days?",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 },
                 {
-                  "title": "Documentation Checklist",
-                  "purpose": "What to capture after call."
+                  "number": 4,
+                  "title": "Blueprint Connection",
+                  "summary": "Growth Engines link to Client, Talent, and Leadership engines in Venture Blueprint.",
+                  "facilitatorNotes": "Show module paths — preview Week 4 build work.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 },
                 {
+                  "number": 5,
                   "title": "Day 13 Deliverables",
-                  "purpose": "Roleplay reflection uploaded."
+                  "summary": "Client growth flywheel map + FEC Box 6 draft uploaded.",
+                  "facilitatorNotes": "Preview Day 14: AIA as your business platform.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 }
-              ],
-              "status": "draft"
+              ]
             }
           ],
           "sessionFlow": [
             {
-              "time": "0:00–0:30",
-              "activity": "Deck 01 — Claims workflow + empathy",
-              "notes": "Use careful tone — room may have personal stories."
+              "time": "0:00–1:00",
+              "activity": "Morning FNA role play — Agent & Client pairs",
+              "notes": "8 min discovery · 4 min feedback · swap. No product pitch."
             },
             {
-              "time": "0:30–1:25",
-              "activity": "Claim delivery roleplays — Round 1",
-              "notes": "Mentors score empathy rubric."
+              "time": "1:00–1:15",
+              "activity": "Deck 01 Slides 1–2 — Role play reflection & FEC connection",
+              "notes": "What surprised you? What was difficult? What felt natural?"
             },
             {
-              "time": "1:25–1:35",
+              "time": "1:15–2:00",
+              "activity": "Deck 01 Slides 3–4 — FEC Box 4 & Box 5 workshop",
+              "notes": "Client Experience Blueprint, then Winning Strategy. Playbook Edit FEC buttons."
+            },
+            {
+              "time": "2:00–2:10",
               "activity": "Break",
               "notes": ""
             },
             {
-              "time": "1:35–2:20",
-              "activity": "Roleplays — Round 2 (harder scenarios)",
-              "notes": ""
+              "time": "2:10–2:25",
+              "activity": "Deck 01 Slides 5–7 — Introduce the Business Engine",
+              "notes": "10–5–3–1–₱10,000–3 model. One cycle at a time."
             },
             {
-              "time": "2:20–2:45",
-              "activity": "Squad debrief — language that worked",
-              "notes": ""
+              "time": "2:25–3:20",
+              "activity": "Deck 01 Slides 8–11 — SPIKE Business Engine Canvas™ workshop",
+              "notes": "Page 1 weekly/monthly tables. Page 2 levers, growth simulation, Year 1 commitment."
             },
             {
-              "time": "2:45–3:00",
-              "activity": "Reflection",
-              "notes": ""
+              "time": "3:20–3:45",
+              "activity": "Deck 01 Slide 12 — Squad Business Engine shares",
+              "notes": "3–5 min per squad. Close: idea vs venture."
+            },
+            {
+              "time": "3:45–4:00",
+              "activity": "Day reflection + Day 14 preview",
+              "notes": "Tomorrow: scale your advisory venture."
             }
           ],
           "activities": [
             {
-              "title": "Claims Workflow Mapping",
-              "durationMinutes": 25,
+              "title": "Morning FNA Role Play — Agent & Client",
+              "durationMinutes": 60,
               "instructions": [
-                "Squads sketch workflow on canvas",
-                "Present one friction point"
+                "Pair with a squad mate and swap roles as advisor and client",
+                "8 min discovery · 4 min feedback · swap roles",
+                "Use Week 1 persona or Week 2 validated segment — listen, don't pitch",
+                "Capture what worked, what felt awkward, and what builds trust"
+              ],
+              "materials": [
+                "Week 1 persona or Week 2 validated segment",
+                "FNA discovery prompts (no product pitch)"
               ],
               "outputs": [
-                "Workflow map"
+                "FNA role-play experience notes"
               ],
-              "debriefQuestions": []
+              "debriefQuestions": [
+                "What surprised you?",
+                "What was difficult?",
+                "What made the conversation feel natural?"
+              ]
             },
             {
-              "title": "Claim Delivery Roleplays",
-              "durationMinutes": 70,
-              "instructions": [
-                "Rotate advisor role through scenarios",
-                "Use empathy rubric feedback"
-              ],
-              "outputs": [
-                "Roleplay reflections"
-              ],
-              "debriefQuestions": []
-            },
-            {
-              "title": "Documentation Drill",
+              "title": "Role Play Reflection — Deck 01 Open",
               "durationMinutes": 15,
               "instructions": [
-                "Complete post-call checklist for scenario"
+                "Coach presents Deck 01 Slide 1 — What did you learn this morning?",
+                "Pair-share: what surprised you, what was difficult, what felt natural",
+                "Connect morning experience to the FEC — you experienced client experience, you didn't just study it"
+              ],
+              "materials": [],
+              "outputs": [
+                "Role play reflection notes in Playbook portfolio mission"
+              ],
+              "debriefQuestions": [
+                "What surprised you in the role play?",
+                "What was difficult?",
+                "What made the conversation feel natural?"
+              ]
+            },
+            {
+              "title": "Revise FEC Box 4 — Client Experience Blueprint",
+              "durationMinutes": 45,
+              "instructions": [
+                "Coach presents Slides 2–3 — Great businesses are built from real experiences",
+                "Answer: What worked? What felt awkward? What builds trust?",
+                "Describe what your ideal client experience should look like from start to finish",
+                "Open Playbook → Edit FEC Box 4 — Client Experience Blueprint"
+              ],
+              "materials": [
+                "Financial Entrepreneurship Canvas",
+                "Playbook Week 3 Day 3 portfolio mission"
               ],
               "outputs": [
-                "Claim documentation sample"
+                "Updated FEC Box 4 — Client Experience"
               ],
-              "debriefQuestions": []
+              "debriefQuestions": [
+                "What should your ideal client journey look like?"
+              ]
+            },
+            {
+              "title": "Build FEC Box 5 — Winning Strategy",
+              "durationMinutes": 40,
+              "instructions": [
+                "Coach presents Slide 4 — Compete on experience. Win with trust.",
+                "Answer: Why will clients choose your advisory practice instead of another?",
+                "Focus on experience, understanding, and trust — not products or price",
+                "Open Playbook → Edit FEC Box 5 — Winning Strategy"
+              ],
+              "materials": [
+                "Financial Entrepreneurship Canvas",
+                "Insights from morning role play"
+              ],
+              "outputs": [
+                "Updated FEC Box 5 — Winning Strategy"
+              ],
+              "debriefQuestions": [
+                "Why will clients choose your practice over another advisor?"
+              ]
+            },
+            {
+              "title": "SPIKE Business Engine Canvas™ — Design Your Engine",
+              "durationMinutes": 55,
+              "instructions": [
+                "Coach presents Slides 5–8 and 10–11 — The Business Engine and weekly operating system",
+                "Complete Page 1: Activity Engine, weekly targets, monthly projections (Weekly × 4)",
+                "Reflect: Can this engine produce the business you want?",
+                "Complete Page 2: Year 1 targets, business lever, growth simulation, revenue commitment"
+              ],
+              "materials": [
+                "SPIKE Business Engine Canvas™ (Playbook)",
+                "10–5–3–1–₱10,000–3 model reference"
+              ],
+              "outputs": [
+                "SPIKE Business Engine Canvas™ Page 1 & 2",
+                "Weekly and monthly operating targets",
+                "Year 1 revenue commitment"
+              ],
+              "debriefQuestions": [
+                "Can this engine produce the business you want?",
+                "Which business lever will you improve first?"
+              ]
+            },
+            {
+              "title": "Squad Business Engine Share",
+              "durationMinutes": 25,
+              "instructions": [
+                "Coach presents Slide 12 — Your venture now has an engine",
+                "Each squad presents its Business Engine in 3–5 minutes",
+                "Share: weekly engine numbers, chosen lever, and Year 1 revenue commitment",
+                "Close: Do you still have an idea — or do you now have a venture?"
+              ],
+              "materials": [],
+              "outputs": [
+                "Squad presentation notes"
+              ],
+              "debriefQuestions": [
+                "Do you still have an idea — or do you now have a venture?",
+                "What will you refine and repeat next week?"
+              ]
             }
           ],
           "worksheets": [
-            "Claim scenario cards",
-            "Empathy rubric"
+            "SPIKE Business Engine Canvas™",
+            "FEC Box 4 & 5 — Client Experience & Winning Strategy"
           ],
-          "assessments": [
-            "Empathy roleplay rubric"
-          ],
+          "assessments": [],
           "reflections": [
-            "Day 13 empathy reflection"
+            "Day 13 — The Business Engine reflection"
           ],
-          "surveys": [
-            "Day 13 claims confidence survey"
-          ],
+          "surveys": [],
           "prepChecklist": [
-            "Brief mentors on trauma-sensitive facilitation",
-            "No graphic content in scenarios"
+            "Upload and test Program Coach Deck 01 PDF in Playbook faculty view",
+            "Open blank Business Engine Canvas preview for projection",
+            "Confirm interns can access Playbook Week 3 Day 3 mission and FEC Box 4/5 editors",
+            "Brief mentors: morning role play, then FEC + Business Engine Canvas — no compensation discussion",
+            "Prepare squad timer for 3–5 minute Business Engine shares"
           ],
           "debriefQuestions": [
-            "What phrases landed vs harmed?",
-            "Who needs more practice before client-facing work?",
-            "How do claims reinforce Week 1 impact statements?"
+            "What surprised you in the morning role play?",
+            "Why will clients choose your practice over another advisor?",
+            "Can this engine produce the business you want?",
+            "Do you still have an idea — or do you now have a venture?"
           ],
           "commonPitfalls": [
-            "Rushing to policy details before acknowledging loss",
-            "Scripted insincerity"
+            "Skipping role play reflection before FEC edits — interns need to connect experience to canvas",
+            "Letting Box 4 and Box 5 stay generic without role-play specifics",
+            "Treating the Business Engine as theory — insist on real weekly numbers",
+            "Jumping to compensation before the operating system is clear"
           ],
           "coachingTips": [
-            "Model pause and reflective listening",
-            "Debrief facilitator emotions too"
+            "Use Discover · Validate · Advise · Build language consistently",
+            "Project the blank Business Engine Canvas during Slides 8–11",
+            "Ask squads: what happens if you run this engine for 4 weeks? 12 weeks?",
+            "Push for ONE lever on Page 2 — not three improvements at once"
           ],
           "mentorGuide": {
-            "theme": "Empathy",
-            "coachingObjective": "Develop humane claim-side presence.",
+            "theme": "The Business Engine",
+            "title": "Mentor Guide — Day 13 — The Business Engine",
+            "coachingObjective": "Help participants connect morning role-play insights to FEC Boxes 4–5 and a realistic weekly Business Engine.",
+            "timing": {
+              "preSession": "Review Deck 01 flow and blank Business Engine Canvas preview",
+              "duringSession": "Probe role-play reflections, FEC edits, and engine numbers for realism",
+              "postSession": "Complete squad weekly review snapshot"
+            },
+            "discussionQuestions": [
+              "What surprised you in the morning role play?",
+              "Why will clients choose this practice over another?",
+              "Can this weekly engine produce the business they want?",
+              "Do they have an idea — or a venture?"
+            ],
             "observationAreas": [
-              "Tone and pace",
-              "Appropriate silence",
-              "Clear next steps"
+              "Role-play reflection depth",
+              "FEC Box 4 specificity (client journey)",
+              "FEC Box 5 differentiation (experience vs products/price)",
+              "Business Engine weekly numbers realism",
+              "Single business lever selection on Canvas Page 2"
             ]
           },
           "expectedOutputs": [
-            "Workflow map",
-            "Roleplay reflection",
-            "Documentation sample"
-          ]
+            "FNA role-play reflection notes",
+            "Updated FEC Box 4 — Client Experience",
+            "Updated FEC Box 5 — Winning Strategy",
+            "SPIKE Business Engine Canvas™ (weekly/monthly targets + growth simulation)",
+            "Year 1 revenue commitment"
+          ],
+          "dayId": "day-segment-1-week-3-day-3",
+          "contentPath": "/content/segment-1/week-3/day-3",
+          "playbookPath": "/playbook?segment=1&week=3&day=3",
+          "sessions": [
+            {
+              "sessionNumber": 1,
+              "title": "Day 13 — The Business Engine",
+              "durationMinutes": 240,
+              "presentationIds": [
+                "presentation-w3-d3-deck-01",
+                "presentation-w3-d3-deck-02"
+              ],
+              "activityIds": [
+                "activity-w3-d3-01",
+                "activity-w3-d3-02",
+                "activity-w3-d3-03",
+                "activity-w3-d3-04",
+                "activity-w3-d3-05",
+                "activity-w3-d3-06"
+              ],
+              "worksheetIds": [
+                "worksheet-w3-d3-01",
+                "worksheet-w3-d3-02"
+              ],
+              "assessmentIds": [
+                "assessment-w3-d3"
+              ],
+              "reflectionIds": [
+                "reflection-w3-d3"
+              ],
+              "surveyIds": [
+                "survey-w3-d3"
+              ]
+            }
+          ],
+          "evaluations": []
         },
         {
           "dayNumber": 4,

@@ -8,14 +8,17 @@
   "durationHours": 4,
   "learningObjectives": [
     "Experience FNA discovery from both the advisor and client perspective",
-    "Identify what builds trust and what feels awkward in advisory conversations",
-    "Improve FEC Box 4 — Client Experience using role-play insights",
-    "Improve FEC Box 5 — Winning Strategy based on experience, understanding, and trust"
+    "Reflect on role play and connect insights to FEC Box 4 — Client Experience",
+    "Define FEC Box 5 — Winning Strategy based on experience, understanding, and trust",
+    "Design a weekly operating system using the 10–5–3–1–₱10,000–3 Business Engine model",
+    "Complete the SPIKE Business Engine Canvas™ and commit to a Year 1 revenue target"
   ],
   "expectedOutputs": [
     "FNA role-play reflection notes",
-    "Improved FEC Box 4 — Client Experience",
-    "Improved FEC Box 5 — Winning Strategy"
+    "Updated FEC Box 4 — Client Experience",
+    "Updated FEC Box 5 — Winning Strategy",
+    "SPIKE Business Engine Canvas™ (weekly/monthly targets + growth simulation)",
+    "Year 1 revenue commitment"
   ],
   "portfolioDeliverables": [
     "portfolio-advisor-startup"
@@ -28,7 +31,10 @@
   "activities": [
     "activity-w3-d3-01",
     "activity-w3-d3-02",
-    "activity-w3-d3-03"
+    "activity-w3-d3-03",
+    "activity-w3-d3-04",
+    "activity-w3-d3-05",
+    "activity-w3-d3-06"
   ],
   "worksheets": [
     "worksheet-w3-d3-01",

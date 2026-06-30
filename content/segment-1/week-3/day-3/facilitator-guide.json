@@ -1,55 +1,72 @@
 {
   "dayId": "day-segment-1-week-3-day-3",
-  "title": "Facilitator Guide — Day 13 — Why This Business Scales",
+  "title": "Facilitator Guide — Day 13 — The Business Engine",
   "durationHours": 4,
   "prepChecklist": [
-    "Open FEC Box 6 reference in Venture Design Studio",
-    "Prepare flywheel template on whiteboard",
-    "Brief mentors: no compensation discussion today"
+    "Upload and test Program Coach Deck 01 PDF in Playbook faculty view",
+    "Open blank Business Engine Canvas preview for projection",
+    "Confirm interns can access Playbook Week 3 Day 3 mission and FEC Box 4/5 editors",
+    "Brief mentors: morning role play, then FEC + Business Engine Canvas — no compensation discussion",
+    "Prepare squad timer for 3–5 minute Business Engine shares"
   ],
   "sessionFlow": [
     {
-      "time": "0:00–0:30",
-      "activity": "Deck 01 — Scalability and client growth flywheel",
-      "notes": "One client → referral → five → twenty → recurring → growing practice."
+      "time": "0:00–1:00",
+      "activity": "Morning FNA role play — Agent & Client pairs",
+      "notes": "8 min discovery · 4 min feedback · swap. No product pitch."
     },
     {
-      "time": "0:30–1:20",
-      "activity": "Client growth flywheel mapping",
-      "notes": "Personalize with Week 2 segment and first-client strategy."
+      "time": "1:00–1:15",
+      "activity": "Deck 01 Slides 1–2 — Role play reflection & FEC connection",
+      "notes": "What surprised you? What was difficult? What felt natural?"
     },
     {
-      "time": "1:20–1:30",
+      "time": "1:15–2:00",
+      "activity": "Deck 01 Slides 3–4 — FEC Box 4 & Box 5 workshop",
+      "notes": "Client Experience Blueprint, then Winning Strategy. Playbook Edit FEC buttons."
+    },
+    {
+      "time": "2:00–2:10",
       "activity": "Break",
       "notes": ""
     },
     {
-      "time": "1:30–2:15",
-      "activity": "FEC Box 6 — Growth Engines workshop",
-      "notes": "Advisor Excellence, Team & Leadership, Systems & Scale."
+      "time": "2:10–2:25",
+      "activity": "Deck 01 Slides 5–7 — Introduce the Business Engine",
+      "notes": "10–5–3–1–₱10,000–3 model. One cycle at a time."
     },
     {
-      "time": "2:15–2:40",
-      "activity": "Squad share — primary growth engine",
-      "notes": "2 min per squad."
+      "time": "2:25–3:20",
+      "activity": "Deck 01 Slides 8–11 — SPIKE Business Engine Canvas™ workshop",
+      "notes": "Page 1 weekly/monthly tables. Page 2 levers, growth simulation, Year 1 commitment."
     },
     {
-      "time": "2:40–3:00",
-      "activity": "Reflection + Day 14 preview (AIA platform)",
-      "notes": ""
+      "time": "3:20–3:45",
+      "activity": "Deck 01 Slide 12 — Squad Business Engine shares",
+      "notes": "3–5 min per squad. Close: idea vs venture."
+    },
+    {
+      "time": "3:45–4:00",
+      "activity": "Day reflection + Day 14 preview",
+      "notes": "Tomorrow: scale your advisory venture."
     }
   ],
   "debriefQuestions": [
-    "What makes this venture scalable vs a salary job?",
-    "Which growth engine did squads prioritize?",
-    "How do referrals connect to Week 2 empathy work?"
+    "What surprised you in the morning role play?",
+    "Why will clients choose your practice over another advisor?",
+    "Can this engine produce the business you want?",
+    "Do you still have an idea — or do you now have a venture?"
   ],
   "commonPitfalls": [
-    "Jumping to compensation before venture model is clear",
-    "Treating Box 6 as abstract — keep it personal"
+    "Skipping role play reflection before FEC edits — interns need to connect experience to canvas",
+    "Letting Box 4 and Box 5 stay generic without role-play specifics",
+    "Treating the Business Engine as theory — insist on real weekly numbers",
+    "Jumping to compensation before the operating system is clear"
   ],
   "coachingTips": [
-    "Use FEC language consistently",
-    "Ask: what happens at client 1, 5, and 20?"
+    "Use Discover · Validate · Advise · Build language consistently",
+    "Project the blank Business Engine Canvas during Slides 8–11",
+    "Ask squads: what happens if you run this engine for 4 weeks? 12 weeks?",
+    "Push for ONE lever on Page 2 — not three improvements at once"
   ]
 }

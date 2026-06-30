@@ -3,55 +3,135 @@
     {
       "id": "activity-w3-d3-01",
       "dayId": "day-segment-1-week-3-day-3",
-      "title": "FNA Role Play — Agent & Client",
+      "title": "Morning FNA Role Play — Agent & Client",
       "durationMinutes": 60,
-      "materials": [],
+      "materials": [
+        "Week 1 persona or Week 2 validated segment",
+        "FNA discovery prompts (no product pitch)"
+      ],
       "instructions": [
         "Pair with a squad mate and swap roles as advisor and client",
-        "8 min discovery / 4 min feedback / swap roles",
-        "Use Week 1 persona or Week 2 validated segment — no product pitch",
+        "8 min discovery · 4 min feedback · swap roles",
+        "Use Week 1 persona or Week 2 validated segment — listen, don't pitch",
         "Capture what worked, what felt awkward, and what builds trust"
       ],
       "outputs": [
-        "FNA role-play reflection notes"
+        "FNA role-play experience notes"
       ],
       "debriefQuestions": [
-        "What worked in your FNA conversation?",
-        "What felt awkward?",
-        "What builds trust?"
+        "What surprised you?",
+        "What was difficult?",
+        "What made the conversation feel natural?"
       ]
     },
     {
       "id": "activity-w3-d3-02",
       "dayId": "day-segment-1-week-3-day-3",
-      "title": "Improve FEC Box 4 — Client Experience",
-      "durationMinutes": 45,
+      "title": "Role Play Reflection — Deck 01 Open",
+      "durationMinutes": 15,
       "materials": [],
       "instructions": [
-        "Open your Week 3 Day 3 Portfolio in the Playbook",
-        "Answer reflection prompts from the morning role play",
-        "Edit FEC Box 4 — describe what your client experience should look like"
+        "Coach presents Deck 01 Slide 1 — What did you learn this morning?",
+        "Pair-share: what surprised you, what was difficult, what felt natural",
+        "Connect morning experience to the FEC — you experienced client experience, you didn't just study it"
       ],
       "outputs": [
-        "Updated FEC Box 4 — Client Experience"
+        "Role play reflection notes in Playbook portfolio mission"
       ],
-      "debriefQuestions": []
+      "debriefQuestions": [
+        "What surprised you in the role play?",
+        "What was difficult?",
+        "What made the conversation feel natural?"
+      ]
     },
     {
       "id": "activity-w3-d3-03",
       "dayId": "day-segment-1-week-3-day-3",
-      "title": "Improve FEC Box 5 — Winning Strategy",
-      "durationMinutes": 40,
-      "materials": [],
+      "title": "Revise FEC Box 4 — Client Experience Blueprint",
+      "durationMinutes": 45,
+      "materials": [
+        "Financial Entrepreneurship Canvas",
+        "Playbook Week 3 Day 3 portfolio mission"
+      ],
       "instructions": [
+        "Coach presents Slides 2–3 — Great businesses are built from real experiences",
+        "Answer: What worked? What felt awkward? What builds trust?",
+        "Describe what your ideal client experience should look like from start to finish",
+        "Open Playbook → Edit FEC Box 4 — Client Experience Blueprint"
+      ],
+      "outputs": [
+        "Updated FEC Box 4 — Client Experience"
+      ],
+      "debriefQuestions": [
+        "What should your ideal client journey look like?"
+      ]
+    },
+    {
+      "id": "activity-w3-d3-04",
+      "dayId": "day-segment-1-week-3-day-3",
+      "title": "Build FEC Box 5 — Winning Strategy",
+      "durationMinutes": 40,
+      "materials": [
+        "Financial Entrepreneurship Canvas",
+        "Insights from morning role play"
+      ],
+      "instructions": [
+        "Coach presents Slide 4 — Compete on experience. Win with trust.",
         "Answer: Why will clients choose your advisory practice instead of another?",
-        "Base your answer on experience, understanding, and trust from role play",
-        "Edit FEC Box 5 in the Financial Entrepreneurship Canvas"
+        "Focus on experience, understanding, and trust — not products or price",
+        "Open Playbook → Edit FEC Box 5 — Winning Strategy"
       ],
       "outputs": [
         "Updated FEC Box 5 — Winning Strategy"
       ],
-      "debriefQuestions": []
+      "debriefQuestions": [
+        "Why will clients choose your practice over another advisor?"
+      ]
+    },
+    {
+      "id": "activity-w3-d3-05",
+      "dayId": "day-segment-1-week-3-day-3",
+      "title": "SPIKE Business Engine Canvas™ — Design Your Engine",
+      "durationMinutes": 55,
+      "materials": [
+        "SPIKE Business Engine Canvas™ (Playbook)",
+        "10–5–3–1–₱10,000–3 model reference"
+      ],
+      "instructions": [
+        "Coach presents Slides 5–8 and 10–11 — The Business Engine and weekly operating system",
+        "Complete Page 1: Activity Engine, weekly targets, monthly projections (Weekly × 4)",
+        "Reflect: Can this engine produce the business you want?",
+        "Complete Page 2: Year 1 targets, business lever, growth simulation, revenue commitment"
+      ],
+      "outputs": [
+        "SPIKE Business Engine Canvas™ Page 1 & 2",
+        "Weekly and monthly operating targets",
+        "Year 1 revenue commitment"
+      ],
+      "debriefQuestions": [
+        "Can this engine produce the business you want?",
+        "Which business lever will you improve first?"
+      ]
+    },
+    {
+      "id": "activity-w3-d3-06",
+      "dayId": "day-segment-1-week-3-day-3",
+      "title": "Squad Business Engine Share",
+      "durationMinutes": 25,
+      "materials": [],
+      "instructions": [
+        "Coach presents Slide 12 — Your venture now has an engine",
+        "Each squad presents its Business Engine in 3–5 minutes",
+        "Share: weekly engine numbers, chosen lever, and Year 1 revenue commitment",
+        "Close: Do you still have an idea — or do you now have a venture?"
+      ],
+      "outputs": [
+        "Squad presentation notes"
+      ],
+      "debriefQuestions": [
+        "Do you still have an idea — or do you now have a venture?",
+        "What will you refine and repeat next week?"
+      ]
     }
   ]
 }
