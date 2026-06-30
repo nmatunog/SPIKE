@@ -78,9 +78,13 @@ export function buildAnnualCheckpoint(
   }
 }
 
+/** Deferred: solo V3 UX — re-enable when tied to year-end (after Jul–Dec cycle). */
+const THIRTEENTH_MONTH_ENABLED = false
+
 export function shouldTriggerThirteenthMonth(
   simulationYear: number,
   enteringJulDecPeriod: boolean,
 ): boolean {
+  if (!THIRTEENTH_MONTH_ENABLED) return false
   return simulationYear > 0 && enteringJulDecPeriod
 }

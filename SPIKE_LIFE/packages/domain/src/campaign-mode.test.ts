@@ -60,7 +60,7 @@ describe('campaign mode (20 cycles)', () => {
     expect(session.turnNumber).toBe(2)
     expect(session.cycleIndex).toBe(2)
     expect(session.halfYear).toBe('H2')
-    expect(session.pendingCalendarEvent).toBe('thirteenth_month')
+    expect(session.pendingCalendarEvent).toBeNull()
     expect(session.selectedDomainId).toBeTruthy()
   })
 })
