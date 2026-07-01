@@ -37,6 +37,7 @@ import { cascadeFromProspects, syncGrowthFromProspects, applyEngineCascadeToTarg
 import { blankBusinessEngineCanvasState } from '../../../../lib/businessEngineCanvas/storage.js';
 import { exportExecutiveCanvasPng, exportExecutiveCanvasPdf } from '../../../../lib/canvasExportService.js';
 import { ViewMyFecCanvasLink } from '../../../ventureDesign/ViewMyFecCanvasLink.jsx';
+import { BusinessEngineFecEngineCard } from './BusinessEngineFecEngineCard.jsx';
 
 const TOOL_BTN =
   'inline-flex min-h-[44px] touch-manipulation items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 disabled:opacity-40 lg:min-h-[48px] lg:px-4 lg:text-sm';
@@ -255,10 +256,12 @@ export function BusinessEngineCanvas({
               state={state}
               readOnly={previewReadOnly}
               blankPreview={isBlankPreview}
+              participantId={participantId}
               persist={persist}
               updateGrowthNew={updateGrowthNew}
               setYear1Target={setYear1Target}
               recalculateAll={recalculateAll}
+              onSubmitted={onSaved}
             />
           </CanvasPageShell>
         </>
@@ -285,10 +288,12 @@ export function BusinessEngineCanvas({
                 state={state}
                 readOnly={previewReadOnly}
                 blankPreview={isBlankPreview}
+                participantId={participantId}
                 persist={persist}
                 updateGrowthNew={updateGrowthNew}
                 setYear1Target={setYear1Target}
                 recalculateAll={recalculateAll}
+                onSubmitted={onSaved}
               />
             )}
           </div>
@@ -546,7 +551,17 @@ function PageOne({
 }
 
 /** @param {any} props */
-function PageTwo({ state, readOnly, blankPreview = false, persist, updateGrowthNew, setYear1Target, recalculateAll }) {
+function PageTwo({
+  state,
+  readOnly,
+  blankPreview = false,
+  participantId = '',
+  persist,
+  updateGrowthNew,
+  setYear1Target,
+  recalculateAll,
+  onSubmitted,
+}) {
   const projectedRevenue = Number(state.growthSimulation.new.revenue) || 0;
   const currentRevenue = Number(state.growthSimulation.current.revenue) || 0;
   const revenueDelta = projectedRevenue - currentRevenue;
@@ -773,6 +788,15 @@ function PageTwo({ state, readOnly, blankPreview = false, persist, updateGrowthN
           })}
         </div>
       </section>
+
+      {!blankPreview && participantId ? (
+        <BusinessEngineFecEngineCard
+          participantId={participantId}
+          canvasState={state}
+          readOnly={readOnly}
+          onSubmitted={onSubmitted}
+        />
+      ) : null}
     </>
   );
 }
