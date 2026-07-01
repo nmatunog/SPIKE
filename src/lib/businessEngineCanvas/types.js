@@ -22,6 +22,7 @@
  * @property {Record<string, number | string>} monthlyTargets
  * @property {Record<string, boolean>} monthlyManualOverride
  * @property {Record<string, number | string>} year1Targets
+ * @property {Record<string, boolean>} year1ManualOverride
  * @property {string | null} businessLever
  * @property {{ current: GrowthSimRow, new: GrowthSimRow }} growthSimulation
  * @property {Record<string, string>} reflections

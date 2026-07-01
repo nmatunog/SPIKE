@@ -82,6 +82,16 @@ export const WEEKLY_TO_MONTHLY_KEY = {
   referrals: 'referrals',
 };
 
+/** Monthly projection row id → Year 1 KPI id (Monthly × 12) */
+export const MONTHLY_TO_YEAR1_KEY = {
+  newClients: 'newClients',
+  revenue: 'revenue',
+  referrals: 'referrals',
+};
+
+export const WEEKS_PER_MONTH = 4;
+export const MONTHS_PER_YEAR = 12;
+
 export const PROCESS_BANNER = [
   { label: 'SYSTEMS CREATE ACTIVITIES', icon: 'gears' },
   { label: 'ACTIVITIES CREATE CLIENTS', icon: 'clipboard' },

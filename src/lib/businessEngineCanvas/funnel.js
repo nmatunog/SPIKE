@@ -1,4 +1,10 @@
-import { FUNNEL_RATIOS, WEEKLY_TO_MONTHLY_KEY } from './constants.js';
+import {
+  FUNNEL_RATIOS,
+  MONTHLY_TO_YEAR1_KEY,
+  MONTHS_PER_YEAR,
+  WEEKLY_TO_MONTHLY_KEY,
+  WEEKS_PER_MONTH,
+} from './constants.js';
 
 /**
  * Cascade funnel from prospects using 10→5→3→1→₱10,000→3 ratios.
@@ -15,6 +21,20 @@ export function cascadeFromProspects(prospects, revenuePerClient = FUNNEL_RATIOS
   return { prospects: p, discovery, presentations, clients, revenue, referrals };
 }
 
+/** @param {number | string} weeklyValue */
+export function weeklyValueToMonthly(weeklyValue) {
+  if (weeklyValue === '' || weeklyValue == null) return '';
+  const n = Number(weeklyValue);
+  return Number.isFinite(n) ? n * WEEKS_PER_MONTH : '';
+}
+
+/** @param {number | string} monthlyValue */
+export function monthlyValueToYear1(monthlyValue) {
+  if (monthlyValue === '' || monthlyValue == null) return '';
+  const n = Number(monthlyValue);
+  return Number.isFinite(n) ? n * MONTHS_PER_YEAR : '';
+}
+
 /**
  * @param {Record<string, number | string>} weekly
  */
@@ -22,14 +42,104 @@ export function weeklyToMonthly(weekly) {
   /** @type {Record<string, number | string>} */
   const out = {};
   for (const [weeklyKey, monthlyKey] of Object.entries(WEEKLY_TO_MONTHLY_KEY)) {
-    const n = Number(weekly[weeklyKey]);
-    out[monthlyKey] = Number.isFinite(n) ? n * 4 : '';
+    out[monthlyKey] = weeklyValueToMonthly(weekly[weeklyKey]);
   }
   return out;
 }
 
 /**
+ * @param {Record<string, number | string>} monthly
+ */
+export function monthlyToYear1(monthly) {
+  /** @type {Record<string, number | string>} */
+  const out = {};
+  for (const [monthlyKey, year1Key] of Object.entries(MONTHLY_TO_YEAR1_KEY)) {
+    out[year1Key] = monthlyValueToYear1(monthly[monthlyKey]);
+  }
+  return out;
+}
+
+/**
+ * Recompute monthly targets from weekly, respecting manual overrides per row.
  * @param {import('./types.js').BusinessEngineCanvasState} state
+ * @param {Record<string, number | string>} [weeklyTargets]
+ */
+export function syncMonthlyFromWeeklyState(state, weeklyTargets = state.weeklyTargets) {
+  const monthlyTargets = { ...state.monthlyTargets };
+  const monthlyManualOverride = state.monthlyManualOverride ?? {};
+
+  for (const [weeklyKey, monthlyKey] of Object.entries(WEEKLY_TO_MONTHLY_KEY)) {
+    if (monthlyManualOverride[monthlyKey]) continue;
+    monthlyTargets[monthlyKey] = weeklyValueToMonthly(weeklyTargets[weeklyKey]);
+  }
+
+  return monthlyTargets;
+}
+
+/**
+ * Recompute Year 1 KPIs from monthly, respecting manual overrides per row.
+ * @param {import('./types.js').BusinessEngineCanvasState} state
+ * @param {Record<string, number | string>} [monthlyTargets]
+ */
+export function syncYear1FromMonthlyState(state, monthlyTargets = state.monthlyTargets) {
+  const year1Targets = { ...state.year1Targets };
+  const year1ManualOverride = state.year1ManualOverride ?? {};
+
+  for (const [monthlyKey, year1Key] of Object.entries(MONTHLY_TO_YEAR1_KEY)) {
+    if (year1ManualOverride[year1Key]) continue;
+    year1Targets[year1Key] = monthlyValueToYear1(monthlyTargets[monthlyKey]);
+  }
+
+  return year1Targets;
+}
+
+/**
+ * Apply a single weekly row edit and cascade to linked monthly/year1 fields.
+ * @param {import('./types.js').BusinessEngineCanvasState} state
+ * @param {string} weeklyId
+ * @param {number | string} value
+ */
+export function applyWeeklyTargetChange(state, weeklyId, value) {
+  const weeklyTargets = { ...state.weeklyTargets, [weeklyId]: value };
+  const monthlyKey = WEEKLY_TO_MONTHLY_KEY[weeklyId] ?? weeklyId;
+  const monthlyTargets = { ...state.monthlyTargets };
+
+  if (!state.monthlyManualOverride?.[monthlyKey]) {
+    monthlyTargets[monthlyKey] = weeklyValueToMonthly(value);
+  }
+
+  const withMonthly = { ...state, weeklyTargets, monthlyTargets };
+  return {
+    ...withMonthly,
+    year1Targets: syncYear1FromMonthlyState(withMonthly),
+  };
+}
+
+/**
+ * Apply activity-engine funnel cascade to weekly/monthly/year1 tables.
+ * @param {import('./types.js').BusinessEngineCanvasState} state
+ * @param {ReturnType<typeof cascadeFromProspects>} cascaded
+ */
+export function applyEngineCascadeToTargets(state, cascaded) {
+  const weeklyTargets = {
+    prospects: cascaded.prospects,
+    discoveryConversations: cascaded.discovery,
+    solutionPresentations: cascaded.presentations,
+    newClients: cascaded.clients,
+    revenue: cascaded.revenue,
+    referrals: cascaded.referrals,
+  };
+  const monthlyTargets = syncMonthlyFromWeeklyState(state, weeklyTargets);
+  const withMonthly = { ...state, weeklyTargets, monthlyTargets };
+  return {
+    ...withMonthly,
+    year1Targets: syncYear1FromMonthlyState(withMonthly),
+  };
+}
+
+/**
+ * @param {import('./types.js').BusinessEngineCanvasState} state
+ * @param {number} prospects
  */
 export function syncGrowthFromProspects(state, prospects) {
   const revenuePerClient = Number(state.activityEngine.revenue?.value) || FUNNEL_RATIOS.revenuePerClient;

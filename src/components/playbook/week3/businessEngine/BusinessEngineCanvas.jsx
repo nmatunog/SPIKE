@@ -33,7 +33,7 @@ import {
   WEEKLY_METRICS,
   YEAR1_KPIS,
 } from '../../../../lib/businessEngineCanvas/constants.js';
-import { cascadeFromProspects, syncGrowthFromProspects } from '../../../../lib/businessEngineCanvas/funnel.js';
+import { cascadeFromProspects, syncGrowthFromProspects, applyEngineCascadeToTargets } from '../../../../lib/businessEngineCanvas/funnel.js';
 import { blankBusinessEngineCanvasState } from '../../../../lib/businessEngineCanvas/storage.js';
 import { exportExecutiveCanvasPng, exportExecutiveCanvasPdf } from '../../../../lib/canvasExportService.js';
 import { ViewMyFecCanvasLink } from '../../../ventureDesign/ViewMyFecCanvasLink.jsx';
@@ -102,6 +102,7 @@ export function BusinessEngineCanvas({
   const canRedo = isBlankPreview ? false : participant.canRedo;
   const setWeeklyTarget = isBlankPreview ? () => {} : participant.setWeeklyTarget;
   const setMonthlyTarget = isBlankPreview ? () => {} : participant.setMonthlyTarget;
+  const setYear1Target = isBlankPreview ? () => {} : participant.setYear1Target;
   const recalcMonthlyFromWeekly = isBlankPreview ? () => {} : participant.recalcMonthlyFromWeekly;
   const previewReadOnly = readOnly || isBlankPreview;
 
@@ -116,16 +117,9 @@ export function BusinessEngineCanvas({
         const prospects = stepId === 'prospects' ? Number(patch.value) : Number(activityEngine.prospects?.value);
         const revPer = Number(activityEngine.revenue?.value) || 10000;
         const c = cascadeFromProspects(prospects, revPer);
+        next = applyEngineCascadeToTargets(next, c);
         next = {
           ...next,
-          weeklyTargets: {
-            prospects: c.prospects,
-            discoveryConversations: c.discovery,
-            solutionPresentations: c.presentations,
-            newClients: c.clients,
-            revenue: c.revenue,
-            referrals: c.referrals,
-          },
           growthSimulation: {
             current: {
               prospects: c.prospects,
@@ -138,16 +132,6 @@ export function BusinessEngineCanvas({
             new: syncGrowthFromProspects(prev, prospects * 2).new,
           },
         };
-        if (!Object.values(next.monthlyManualOverride).some(Boolean)) {
-          next.monthlyTargets = {
-            prospects: c.prospects * 4,
-            discoverySessions: c.discovery * 4,
-            solutionPresentations: c.presentations * 4,
-            newClients: c.clients * 4,
-            revenue: c.revenue * 4,
-            referrals: c.referrals * 4,
-          };
-        }
       }
       return next;
     });
@@ -261,6 +245,7 @@ export function BusinessEngineCanvas({
               blankPreview={isBlankPreview}
               persist={persist}
               updateGrowthNew={updateGrowthNew}
+              setYear1Target={setYear1Target}
             />
           </CanvasPageShell>
         </>
@@ -289,6 +274,7 @@ export function BusinessEngineCanvas({
                 blankPreview={isBlankPreview}
                 persist={persist}
                 updateGrowthNew={updateGrowthNew}
+                setYear1Target={setYear1Target}
               />
             )}
           </div>
@@ -456,6 +442,7 @@ function PageOne({
                 type="button"
                 onClick={recalcMonthlyFromWeekly}
                 className="flex items-center gap-1 text-xs font-semibold text-orange-200 hover:text-white"
+                title="Recalculate Monthly (Weekly × 4) and Year 1 (Monthly × 12)"
               >
                 <Calculator size={14} /> Weekly × 4
               </button>
@@ -528,7 +515,7 @@ function PageOne({
 }
 
 /** @param {any} props */
-function PageTwo({ state, readOnly, blankPreview = false, persist, updateGrowthNew }) {
+function PageTwo({ state, readOnly, blankPreview = false, persist, updateGrowthNew, setYear1Target }) {
   const projectedRevenue = Number(state.growthSimulation.new.revenue) || 0;
   const currentRevenue = Number(state.growthSimulation.current.revenue) || 0;
   const revenueDelta = projectedRevenue - currentRevenue;
@@ -538,7 +525,10 @@ function PageTwo({ state, readOnly, blankPreview = false, persist, updateGrowthN
     <>
       <section>
         <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Year 1 Targets</p>
-        <p className="mb-4 mt-1 text-sm text-slate-600">Set your Year 1 targets for your Business Engine.</p>
+        <p className="mb-4 mt-1 text-sm text-slate-600">
+          Set your Year 1 targets for your Business Engine. Clients, revenue, and referrals auto-fill from{' '}
+          <span className="font-semibold text-slate-800">Monthly × 12</span> unless you edit them directly.
+        </p>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {YEAR1_KPIS.map((kpi) => (
             <div key={kpi.id} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -548,9 +538,18 @@ function PageTwo({ state, readOnly, blankPreview = false, persist, updateGrowthN
                 blankPreview={blankPreview}
                 currency={kpi.currency}
                 value={state.year1Targets[kpi.id]}
-                onChange={(v) => persist((p) => ({ ...p, year1Targets: { ...p.year1Targets, [kpi.id]: v } }))}
+                onChange={(v) => setYear1Target(kpi.id, v, true)}
                 className="mt-2 text-2xl font-black"
               />
+              {state.year1ManualOverride?.[kpi.id] ? (
+                <p className="mt-1 text-[10px] font-semibold uppercase tracking-wide text-orange-600">
+                  Manual override
+                </p>
+              ) : kpi.id !== 'clientReviews' ? (
+                <p className="mt-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                  Monthly × 12
+                </p>
+              ) : null}
             </div>
           ))}
         </div>

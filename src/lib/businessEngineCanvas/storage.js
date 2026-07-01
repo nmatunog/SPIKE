@@ -1,5 +1,5 @@
-import { BEC_STORAGE_KEY, ENGINE_STEPS, WEEKLY_METRICS, MONTHLY_METRICS } from './constants.js';
-import { cascadeFromProspects, weeklyToMonthly } from './funnel.js';
+import { BEC_STORAGE_KEY, ENGINE_STEPS, WEEKLY_METRICS, MONTHLY_METRICS, YEAR1_KPIS } from './constants.js';
+import { cascadeFromProspects, monthlyToYear1, weeklyToMonthly } from './funnel.js';
 
 function readAll() {
   try {
@@ -37,18 +37,22 @@ export function defaultBusinessEngineCanvasState() {
   const monthlyManualOverride = {};
   for (const m of MONTHLY_METRICS) monthlyManualOverride[m.id] = false;
 
+  const year1Targets = {
+    ...monthlyToYear1(monthlyTargets),
+    clientReviews: '',
+  };
+  /** @type {Record<string, boolean>} */
+  const year1ManualOverride = {};
+  for (const k of YEAR1_KPIS) year1ManualOverride[k.id] = false;
+
   return {
     week: 3,
     activityEngine,
     weeklyTargets,
     monthlyTargets,
     monthlyManualOverride,
-    year1Targets: {
-      newClients: '',
-      revenue: '',
-      referrals: '',
-      clientReviews: '',
-    },
+    year1Targets,
+    year1ManualOverride,
     businessLever: null,
     growthSimulation: {
       current: {
@@ -94,6 +98,10 @@ export function blankBusinessEngineCanvasState() {
   const noOverride = {};
   for (const key of Object.keys(base.monthlyManualOverride)) noOverride[key] = false;
 
+  /** @type {Record<string, boolean>} */
+  const noYear1Override = {};
+  for (const key of Object.keys(base.year1ManualOverride)) noYear1Override[key] = false;
+
   return {
     ...base,
     weeklyTargets: emptyWeekly,
@@ -105,6 +113,7 @@ export function blankBusinessEngineCanvasState() {
       referrals: '',
       clientReviews: '',
     },
+    year1ManualOverride: noYear1Override,
     businessLever: null,
     growthSimulation: {
       current: { ...base.growthSimulation.current },
@@ -142,6 +151,10 @@ export function loadBusinessEngineCanvas(participantId) {
       ...(row.monthlyManualOverride ?? {}),
     },
     year1Targets: { ...defaultBusinessEngineCanvasState().year1Targets, ...(row.year1Targets ?? {}) },
+    year1ManualOverride: {
+      ...defaultBusinessEngineCanvasState().year1ManualOverride,
+      ...(row.year1ManualOverride ?? {}),
+    },
     growthSimulation: {
       current: {
         ...defaultBusinessEngineCanvasState().growthSimulation.current,

@@ -1,16 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  BEC_AUTOSAVE_MS,
-  BEC_HISTORY_MAX,
-  WEEKLY_TO_MONTHLY_KEY,
-} from '../lib/businessEngineCanvas/constants.js';
+import { BEC_AUTOSAVE_MS, BEC_HISTORY_MAX } from '../lib/businessEngineCanvas/constants.js';
 import {
   loadBusinessEngineCanvas,
   saveBusinessEngineCanvas,
   computeBusinessEngineProgress,
 } from '../lib/businessEngineCanvas/storage.js';
 import { syncBusinessEngineToFec } from '../lib/businessEngineCanvas/fecSync.js';
-import { weeklyToMonthly } from '../lib/businessEngineCanvas/funnel.js';
+import {
+  applyWeeklyTargetChange,
+  syncMonthlyFromWeeklyState,
+  syncYear1FromMonthlyState,
+  weeklyToMonthly,
+} from '../lib/businessEngineCanvas/funnel.js';
 
 /**
  * @param {string} participantId
@@ -123,40 +124,58 @@ export function useBusinessEngineCanvas(participantId, opts = {}) {
 
   const setWeeklyTarget = useCallback(
     (id, value) => {
-      persist((prev) => {
-        const weeklyTargets = { ...prev.weeklyTargets, [id]: value };
-        const monthlyManualOverride = { ...prev.monthlyManualOverride };
-        const monthlyTargets = { ...prev.monthlyTargets };
-        const monthlyKey = WEEKLY_TO_MONTHLY_KEY[id] ?? id;
-        if (!monthlyManualOverride[monthlyKey]) {
-          const n = Number(value);
-          monthlyTargets[monthlyKey] = Number.isFinite(n) ? n * 4 : '';
-        }
-        return { ...prev, weeklyTargets, monthlyTargets };
-      });
+      persist((prev) => applyWeeklyTargetChange(prev, id, value));
     },
     [persist],
   );
 
   const setMonthlyTarget = useCallback(
     (id, value, manual = true) => {
+      persist((prev) => {
+        const monthlyTargets = { ...prev.monthlyTargets, [id]: value };
+        const monthlyManualOverride = { ...prev.monthlyManualOverride, [id]: manual };
+        const withMonthly = { ...prev, monthlyTargets, monthlyManualOverride };
+        return {
+          ...withMonthly,
+          year1Targets: syncYear1FromMonthlyState(withMonthly),
+        };
+      });
+    },
+    [persist],
+  );
+
+  const setYear1Target = useCallback(
+    (id, value, manual = true) => {
       persist((prev) => ({
         ...prev,
-        monthlyTargets: { ...prev.monthlyTargets, [id]: value },
-        monthlyManualOverride: { ...prev.monthlyManualOverride, [id]: manual },
+        year1Targets: { ...prev.year1Targets, [id]: value },
+        year1ManualOverride: { ...prev.year1ManualOverride, [id]: manual },
       }));
     },
     [persist],
   );
 
   const recalcMonthlyFromWeekly = useCallback(() => {
-    persist((prev) => ({
-      ...prev,
-      monthlyTargets: weeklyToMonthly(prev.weeklyTargets),
-      monthlyManualOverride: Object.fromEntries(
+    persist((prev) => {
+      const monthlyTargets = weeklyToMonthly(prev.weeklyTargets);
+      const monthlyManualOverride = Object.fromEntries(
         Object.keys(prev.monthlyManualOverride).map((k) => [k, false]),
-      ),
-    }));
+      );
+      const year1ManualOverride = { ...prev.year1ManualOverride };
+      for (const year1Key of Object.keys(year1ManualOverride)) {
+        if (year1Key !== 'clientReviews') year1ManualOverride[year1Key] = false;
+      }
+      const withMonthly = {
+        ...prev,
+        monthlyTargets,
+        monthlyManualOverride,
+        year1ManualOverride,
+      };
+      return {
+        ...withMonthly,
+        year1Targets: syncYear1FromMonthlyState(withMonthly),
+      };
+    });
   }, [persist]);
 
   return {
@@ -170,6 +189,9 @@ export function useBusinessEngineCanvas(participantId, opts = {}) {
     canRedo: future.length > 0,
     setWeeklyTarget,
     setMonthlyTarget,
+    setYear1Target,
     recalcMonthlyFromWeekly,
+    syncMonthlyFromWeeklyState,
+    syncYear1FromMonthlyState,
   };
 }
