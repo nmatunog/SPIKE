@@ -63,4 +63,6 @@ export interface ContentPack {
   archetypes?: import('./archetype-types.js').ArchetypePackConfig
   /** Campaign pacing, dream board defaults, calendar events */
   campaign?: import('./campaign-types.js').CampaignConfig
+  /** Life event eligibility, flags, story arcs — GDS Life Event Engine */
+  lifeEvents?: import('./life-event-types.js').LifeEventPack
 }

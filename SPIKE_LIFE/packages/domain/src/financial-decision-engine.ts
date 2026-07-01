@@ -6,6 +6,7 @@ import { Simulation } from './aggregates/simulation.js'
 import type { ReflectionAnswer } from './services/reflection-engine.js'
 import { revealDueHiddenConsequences } from './services/long-term-consequence-engine.js'
 import { selectCycleEncounter } from './services/situation-resolver.js'
+import { resolveLifeEventDefinition } from './services/life-event-context.js'
 import { packEncounterRecord, resolvePackEncounterId } from './services/pack-encounter-bridge.js'
 import { getEncounterCard } from './gameboard/services/encounter-deck.js'
 
@@ -196,6 +197,7 @@ export function startRoomCycle(
   let selectionScenario: ScenarioId = forcedScenarioId ?? 'promotion'
   let domainId: string | null = null
   let encounterId: string | null = null
+  let lifeEventId: string | null = null
 
   if (boardBinding) {
     const packEncounter = packEncounterRecord(
@@ -206,6 +208,9 @@ export function startRoomCycle(
     domainId = boardBinding.domainId
     encounterId = packEncounter?.id
       ?? resolvePackEncounterId(boardBinding.domainId, boardBinding.encounterCardId)
+    lifeEventId = encounterId
+      ? resolveLifeEventDefinition(encounterId, packEncounter)?.id ?? null
+      : null
     selectionScenario = forcedScenarioId
       ?? (packEncounter?.scenarioTemplate === 'protection_stress'
         || boardCard.scenarioId === 'protection_stress'
@@ -217,6 +222,7 @@ export function startRoomCycle(
       selectionScenario = picked.scenarioId
       domainId = picked.domainId
       encounterId = picked.encounterId
+      lifeEventId = picked.lifeEventId
     } catch {
       selectionScenario = existing.scenarioId
     }
@@ -237,6 +243,7 @@ export function startRoomCycle(
         ...state,
         selectedDomainId: domainId,
         encounterId,
+        currentLifeEventId: lifeEventId ?? state.currentLifeEventId,
         domainHistory: [...(state.domainHistory ?? []), domainId].slice(-6),
       })
     }

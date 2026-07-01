@@ -1,10 +1,20 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, beforeAll } from 'vitest'
 import {
   encounterMeetsCareerPrerequisites,
   pickWeightedEncounter,
 } from './situation-weights.js'
+import { configureLifeEventPack } from '../../../services/life-event-context.js'
+import { bootstrapTestEncounters } from '../../../test/encounter-fixture.js'
+import { PHILIPPINES_LIFE_EVENTS } from '@spike-life/content-philippines'
+import { validateLifeEventPack } from '@spike-life/content-core'
 
 describe('situation-weights', () => {
+  beforeAll(() => {
+    bootstrapTestEncounters()
+    validateLifeEventPack(PHILIPPINES_LIFE_EVENTS)
+    configureLifeEventPack(PHILIPPINES_LIFE_EVENTS)
+  })
+
   it('favors first job for career domain at age 22', () => {
     const id = pickWeightedEncounter('career', 'career', 22, () => 0)
     expect(id).toBe('first_job')
@@ -29,7 +39,14 @@ describe('situation-weights', () => {
 
   it('can select late-career situations at age 58', () => {
     const id = pickWeightedEncounter('career', 'career', 58, () => 0.55, ['first_job'])
-    expect(['executive_promotion', 'retirement_offer', 'redundancy', 'consulting_opportunity']).toContain(id)
+    expect([
+      'executive_promotion',
+      'retirement_offer',
+      'redundancy',
+      'consulting_opportunity',
+      'promotion',
+      'job_offer',
+    ]).toContain(id)
   })
 
   it('picks health situations for health domain', () => {

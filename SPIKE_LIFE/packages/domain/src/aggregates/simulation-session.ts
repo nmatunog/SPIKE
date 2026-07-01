@@ -82,6 +82,14 @@ export interface SimulationState {
   turnHistory: TurnRecord[]
   /** Recorded each decision; revealed when simulation year catches up (Amendment A5). */
   hiddenLongTermConsequences: HiddenLongTermConsequence[]
+  /** Persistent life flags — eligibility gates for Life Event Engine. */
+  lifeFlags: Record<string, boolean | string | number>
+  /** Every presented situation with planning cycle — cooldowns & one-time events. */
+  eventHistory: import('../services/event-history.js').EventHistoryEntry[]
+  /** Active narrative arc biasing next 2–5 cycles. */
+  activeStoryArc: import('../services/story-arc-engine.js').ActiveStoryArc | null
+  /** Life event id selected this cycle (content metadata, not encounter id). */
+  currentLifeEventId: string | null
   createdAt: string
   updatedAt: string
 }

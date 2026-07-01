@@ -38,6 +38,7 @@ import {
   validateReflectionAnswers,
 } from '../services/reflection-engine.js'
 import { calculateLifeScore } from '../services/life-score-engine.js'
+import { commitLifeEventOutcome } from '../services/life-event-engine.js'
 import {
   WORKSHOP_MAX_TURNS,
   lifeStageForTurn,
@@ -311,6 +312,8 @@ export class Simulation {
       updatedAt: new Date().toISOString(),
     }
 
+    this.state = commitLifeEventOutcome(this.state)
+
     this.record(createDomainEvent(DomainEventType.SIMULATION_COMPLETED, this.state.id, {
       scenarioId: this.state.scenarioId,
     }))
@@ -349,6 +352,8 @@ export class Simulation {
       phase: 'cycle_complete',
       updatedAt: new Date().toISOString(),
     }
+
+    this.state = commitLifeEventOutcome(this.state)
 
     this.record(createDomainEvent(DomainEventType.REFLECTION_GENERATED, this.state.id, {}))
     this.record(createDomainEvent(DomainEventType.SIMULATION_COMPLETED, this.state.id, {
@@ -470,6 +475,9 @@ export class Simulation {
       consequence: null,
       reflection: null,
       decisionMonthlyCapacity: 0,
+      encounterId: null,
+      currentLifeEventId: null,
+      selectedDomainId: null,
       cycleDeadlineAt: null,
       pendingCalendarEvent,
       thirteenthMonthChoice: null,
@@ -710,6 +718,10 @@ export class Simulation {
       annualCheckpoints: [],
       turnHistory: [],
       hiddenLongTermConsequences: [],
+      lifeFlags: {},
+      eventHistory: [],
+      activeStoryArc: null,
+      currentLifeEventId: null,
       createdAt: now,
       updatedAt: now,
     }

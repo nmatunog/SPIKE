@@ -1,0 +1,389 @@
+{
+  "version": 1,
+  "arcs": [
+    {
+      "id": "early_career",
+      "label": "Early Career Arc",
+      "domain": "career",
+      "durationCycles": { "min": 2, "max": 5 },
+      "sequence": [
+        "career_graduation",
+        "career_apprenticeship",
+        "career_first_job",
+        "career_probation",
+        "career_promotion"
+      ],
+      "biasMultiplier": 3
+    },
+    {
+      "id": "young_family",
+      "label": "Young Family Arc",
+      "domain": "family",
+      "durationCycles": { "min": 2, "max": 5 },
+      "sequence": [
+        "family_marriage",
+        "family_first_child",
+        "family_education_planning"
+      ],
+      "biasMultiplier": 2.5
+    },
+    {
+      "id": "homeownership",
+      "label": "Homeownership Arc",
+      "domain": "housing",
+      "durationCycles": { "min": 2, "max": 4 },
+      "sequence": [
+        "housing_renting",
+        "housing_down_payment",
+        "housing_first_home",
+        "housing_mortgage"
+      ],
+      "biasMultiplier": 2.5
+    },
+    {
+      "id": "entrepreneurship",
+      "label": "Entrepreneurship Arc",
+      "domain": "business",
+      "durationCycles": { "min": 2, "max": 5 },
+      "sequence": [
+        "business_side_hustle",
+        "business_startup",
+        "business_expansion"
+      ],
+      "biasMultiplier": 2
+    }
+  ],
+  "events": [
+    {
+      "id": "career_graduation",
+      "encounterId": "education_education_1",
+      "domain": "education",
+      "title": "Graduation",
+      "weight": 95,
+      "repeatable": false,
+      "requirements": {
+        "flags": { "educationCompleted": false, "employed": false },
+        "minimumAge": 21,
+        "maximumAge": 25,
+        "lifeStages": ["launch"]
+      },
+      "effects": {
+        "setFlags": { "educationCompleted": true, "student": false, "careerLevel": "graduate" }
+      },
+      "followUpEventIds": ["career_apprenticeship", "career_first_job"],
+      "storyArcIds": ["early_career"],
+      "arcStep": 0
+    },
+    {
+      "id": "career_apprenticeship",
+      "encounterId": "career_internship_2",
+      "domain": "career",
+      "title": "Apprenticeship / Internship",
+      "weight": 85,
+      "repeatable": false,
+      "requirements": {
+        "flags": { "employed": false },
+        "completedEvents": ["career_graduation"],
+        "minimumAge": 20,
+        "maximumAge": 26
+      },
+      "effects": {
+        "setFlags": { "careerLevel": "apprentice" }
+      },
+      "followUpEventIds": ["career_first_job"],
+      "storyArcIds": ["early_career"],
+      "arcStep": 1
+    },
+    {
+      "id": "career_first_job",
+      "encounterId": "career_first_job_1",
+      "domain": "career",
+      "title": "First Job Offer",
+      "weight": 95,
+      "repeatable": false,
+      "cooldown": { "cycles": 4 },
+      "requirements": {
+        "flags": { "employed": false, "educationCompleted": true },
+        "minimumAge": 21,
+        "maximumAge": 28
+      },
+      "blockers": {
+        "flags": { "employed": true }
+      },
+      "effects": {
+        "setFlags": { "employed": true, "careerLevel": "junior" }
+      },
+      "followUpEventIds": ["career_probation", "career_promotion"],
+      "storyArcIds": ["early_career"],
+      "arcStep": 2
+    },
+    {
+      "id": "career_probation",
+      "encounterId": "career_job_offer_3",
+      "domain": "career",
+      "title": "Probation / New Role",
+      "weight": 70,
+      "repeatable": false,
+      "requirements": {
+        "flags": { "employed": true },
+        "completedEvents": ["career_first_job"],
+        "minimumTenureCycles": 1,
+        "minimumAge": 22
+      },
+      "effects": {
+        "setFlags": { "careerLevel": "regular" }
+      },
+      "followUpEventIds": ["career_promotion"],
+      "storyArcIds": ["early_career"],
+      "arcStep": 3
+    },
+    {
+      "id": "career_promotion",
+      "encounterId": "career_promotion_4",
+      "domain": "career",
+      "title": "Promotion",
+      "weight": 40,
+      "repeatable": true,
+      "cooldown": { "cycles": 4 },
+      "requirements": {
+        "flags": { "employed": true },
+        "completedEvents": ["career_first_job"],
+        "minimumTenureCycles": 2,
+        "minimumAge": 25
+      },
+      "blockers": {
+        "flags": { "employed": false },
+        "recentEvents": ["career_layoff"],
+        "recentWithinCycles": 2
+      },
+      "effects": {
+        "setFlags": { "careerLevel": "manager" }
+      },
+      "followUpEventIds": ["career_executive"],
+      "storyArcIds": ["early_career"],
+      "arcStep": 4
+    },
+    {
+      "id": "career_executive",
+      "encounterId": "career_executive_promotion_5",
+      "domain": "career",
+      "title": "Executive Promotion",
+      "weight": 25,
+      "repeatable": true,
+      "cooldown": { "cycles": 6 },
+      "requirements": {
+        "flags": { "employed": true },
+        "completedEvents": ["career_promotion"],
+        "minimumAge": 35,
+        "minimumTenureCycles": 4
+      },
+      "effects": {
+        "setFlags": { "careerLevel": "executive" }
+      },
+      "storyArcIds": ["early_career"],
+      "arcStep": 5
+    },
+    {
+      "id": "career_layoff",
+      "encounterId": "career_job_offer_3",
+      "domain": "career",
+      "title": "Layoff / Job Search",
+      "weight": 15,
+      "repeatable": true,
+      "cooldown": { "cycles": 2 },
+      "requirements": {
+        "flags": { "employed": true },
+        "minimumTenureCycles": 2
+      },
+      "effects": {
+        "setFlags": { "employed": false, "careerLevel": "graduate" }
+      }
+    },
+    {
+      "id": "family_marriage",
+      "encounterId": "family_marriage_1",
+      "domain": "family",
+      "title": "Marriage",
+      "weight": 55,
+      "repeatable": false,
+      "requirements": {
+        "flags": { "married": false, "partnered": true },
+        "minimumAge": 24,
+        "numeric": { "lifeScore": { "min": 45 } }
+      },
+      "effects": {
+        "setFlags": { "married": true, "partnered": true }
+      },
+      "storyArcIds": ["young_family"],
+      "arcStep": 0
+    },
+    {
+      "id": "family_first_child",
+      "encounterId": "family_relationship_finances_2",
+      "domain": "family",
+      "title": "First Child",
+      "weight": 50,
+      "repeatable": false,
+      "requirements": {
+        "flags": { "hasChildren": false, "married": true },
+        "minimumAge": 26
+      },
+      "effects": {
+        "setFlags": { "hasChildren": true }
+      },
+      "storyArcIds": ["young_family"],
+      "arcStep": 1
+    },
+    {
+      "id": "family_education_planning",
+      "encounterId": "family_relationship_finances_2",
+      "domain": "family",
+      "title": "Education Planning for Child",
+      "weight": 45,
+      "repeatable": true,
+      "cooldown": { "cycles": 4 },
+      "requirements": {
+        "flags": { "hasChildren": true },
+        "completedEvents": ["family_first_child"],
+        "minimumAge": 28
+      },
+      "storyArcIds": ["young_family"],
+      "arcStep": 2
+    },
+    {
+      "id": "housing_renting",
+      "encounterId": "housing_rent_increase_2",
+      "domain": "housing",
+      "title": "Renting",
+      "weight": 60,
+      "repeatable": true,
+      "requirements": {
+        "flags": { "ownsHouse": false },
+        "minimumAge": 22
+      },
+      "storyArcIds": ["homeownership"],
+      "arcStep": 0
+    },
+    {
+      "id": "housing_down_payment",
+      "encounterId": "housing_first_home_1",
+      "domain": "housing",
+      "title": "Saving for Down Payment",
+      "weight": 50,
+      "repeatable": false,
+      "requirements": {
+        "flags": { "ownsHouse": false, "employed": true },
+        "minimumAge": 25,
+        "numeric": { "cashSavings": { "min": 50000 } },
+        "minimumTenureCycles": 4
+      },
+      "storyArcIds": ["homeownership"],
+      "arcStep": 1
+    },
+    {
+      "id": "housing_first_home",
+      "encounterId": "housing_first_home_1",
+      "domain": "housing",
+      "title": "Buy First Home",
+      "weight": 40,
+      "repeatable": false,
+      "requirements": {
+        "flags": { "ownsHouse": false, "employed": true },
+        "minimumAge": 25,
+        "numeric": { "cashSavings": { "min": 150000 } },
+        "minimumTenureCycles": 4
+      },
+      "effects": {
+        "setFlags": { "ownsHouse": true }
+      },
+      "storyArcIds": ["homeownership"],
+      "arcStep": 2
+    },
+    {
+      "id": "housing_mortgage",
+      "encounterId": "housing_rent_increase_2",
+      "domain": "housing",
+      "title": "Mortgage Management",
+      "weight": 35,
+      "repeatable": true,
+      "cooldown": { "cycles": 3 },
+      "requirements": {
+        "flags": { "ownsHouse": true },
+        "completedEvents": ["housing_first_home"]
+      },
+      "storyArcIds": ["homeownership"],
+      "arcStep": 3
+    },
+    {
+      "id": "business_side_hustle",
+      "encounterId": "business_business_opportunity_1",
+      "domain": "business",
+      "title": "Side Hustle",
+      "weight": 45,
+      "repeatable": false,
+      "requirements": {
+        "flags": { "businessOwner": false, "employed": true },
+        "minimumAge": 25
+      },
+      "storyArcIds": ["entrepreneurship"],
+      "arcStep": 0
+    },
+    {
+      "id": "business_startup",
+      "encounterId": "business_business_opportunity_1",
+      "domain": "business",
+      "title": "Startup Opportunity",
+      "weight": 35,
+      "repeatable": false,
+      "requirements": {
+        "minimumAge": 25,
+        "numeric": { "cashSavings": { "min": 200000 } },
+        "flags": { "businessOwner": false }
+      },
+      "effects": {
+        "setFlags": { "businessOwner": true }
+      },
+      "storyArcIds": ["entrepreneurship"],
+      "arcStep": 1
+    },
+    {
+      "id": "business_expansion",
+      "encounterId": "business_business_opportunity_1",
+      "domain": "business",
+      "title": "Business Expansion",
+      "weight": 30,
+      "repeatable": true,
+      "cooldown": { "cycles": 4 },
+      "requirements": {
+        "flags": { "businessOwner": true },
+        "completedEvents": ["business_startup"],
+        "minimumAge": 30
+      },
+      "storyArcIds": ["entrepreneurship"],
+      "arcStep": 2
+    },
+    {
+      "id": "health_major_illness",
+      "encounterId": "health_hospitalization_4",
+      "domain": "health",
+      "title": "Major Illness",
+      "weight": 8,
+      "repeatable": true,
+      "cooldown": { "cycles": 6 },
+      "requirements": {
+        "minimumAge": 30
+      },
+      "bypassProgression": true
+    },
+    {
+      "id": "chance_emergency",
+      "encounterId": "income_finance_emergency_fund_2",
+      "domain": "income_finance",
+      "title": "Financial Emergency",
+      "weight": 20,
+      "repeatable": true,
+      "cooldown": { "cycles": 3 },
+      "bypassProgression": true
+    }
+  ]
+}

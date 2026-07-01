@@ -1,7 +1,13 @@
+import type { LifeStage } from '../../../types.js'
 import type { EncounterCard, EncounterCardId, SpaceType } from '../../types.js'
 import { ENCOUNTER_DECK } from '../encounter-deck.js'
 import { weightedPickId } from './domain-weights.js'
 import { getYearLoopConfig } from './year-loop-context.js'
+import { FRESH_GRADUATE_FINANCIAL_PROFILE } from '../../../specifications/fresh-graduate.js'
+import { isLifeEventEngineEnabled, getLifeEventByEncounterId } from '../../../services/life-event-context.js'
+import { selectLifeEvent, type LifeEventSelectionInput } from '../../../services/life-event-engine.js'
+import { packIdToCardId, resolvePackEncounterId } from '../../../services/pack-encounter-bridge.js'
+import type { EventHistoryEntry } from '../../../services/event-history.js'
 
 export type LifeStageBand = 'launch' | 'mid' | 'late'
 
@@ -17,6 +23,54 @@ export function lifeStageBandForAge(age: number): LifeStageBand {
   const bands = [...getYearLoopConfig().weightBands].sort((a, b) => a.maxAge - b.maxAge)
   const band = bands.find((b) => age <= b.maxAge) ?? bands[bands.length - 1]
   return band?.label ?? 'launch'
+}
+
+function lifeStageFromAge(age: number): LifeStage {
+  if (age < 28) return 'launch'
+  if (age < 35) return 'build'
+  if (age < 45) return 'grow'
+  if (age < 55) return 'lead'
+  return 'legacy'
+}
+
+function eventHistoryFromCompletedCards(
+  domainId: string,
+  completed: EncounterCardId[],
+): EventHistoryEntry[] {
+  return completed.flatMap((cardId, index) => {
+    const packId = resolvePackEncounterId(domainId, cardId)
+    if (!packId) return []
+    const def = getLifeEventByEncounterId(packId)
+    return [{
+      lifeEventId: def?.id ?? packId,
+      encounterId: packId,
+      cycleIndex: index + 1,
+      turnNumber: index + 1,
+      simulationYear: Math.ceil((index + 1) / 2),
+      recordedAt: new Date(0).toISOString(),
+    }]
+  })
+}
+
+function boardSelectionInput(
+  domainId: string,
+  category: SpaceType,
+  age: number,
+  completedEncounters: EncounterCardId[],
+): LifeEventSelectionInput {
+  const cycleIndex = Math.max(1, completedEncounters.length + 1)
+  return {
+    domainId,
+    age,
+    cycleIndex,
+    turnNumber: cycleIndex,
+    lifeStage: lifeStageFromAge(age),
+    lifeFlags: {},
+    eventHistory: eventHistoryFromCompletedCards(domainId, completedEncounters),
+    activeStoryArc: null,
+    financialProfile: { ...FRESH_GRADUATE_FINANCIAL_PROFILE },
+    halfYear: cycleIndex % 2 === 0 ? 'H2' : 'H1',
+  }
 }
 
 function encounterOverride(id: EncounterCardId) {
@@ -106,6 +160,17 @@ export function pickWeightedEncounter(
   rng: () => number = Math.random,
   completedEncounters: EncounterCardId[] = [],
 ): EncounterCardId {
+  if (isLifeEventEngineEnabled()) {
+    const picked = selectLifeEvent(
+      boardSelectionInput(domainId, category, age, completedEncounters),
+      rng,
+    )
+    if (picked) {
+      const cardId = packIdToCardId(picked.encounterId)
+      if (cardId) return cardId
+    }
+  }
+
   const pool = encountersForDomain(domainId, category, age, completedEncounters)
   if (pool.length === 0) {
     return Object.values(ENCOUNTER_DECK)[0]!.id

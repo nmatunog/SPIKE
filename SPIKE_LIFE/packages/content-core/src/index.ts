@@ -68,3 +68,18 @@ export type {
   EncounterWeightBands,
 } from './encounter-types.js'
 export { validateEncounterPack } from './encounter-types.js'
+export type {
+  CoreLifeFlagId,
+  LifeEventBlockers,
+  LifeEventCooldown,
+  LifeEventDefinition,
+  LifeEventEffects,
+  LifeEventLifeStage,
+  LifeEventNumericRequirements,
+  LifeEventPack,
+  LifeEventRequirements,
+  LifeFlagState,
+  LifeFlagValue,
+  LifeStoryArcDefinition,
+} from './life-event-types.js'
+export { validateLifeEventPack } from './life-event-validation.js'

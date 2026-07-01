@@ -14,6 +14,8 @@ import {
 } from './financial-decision-engine.js'
 import { isSessionComplete } from './services/session-mode.js'
 import { getMaxCampaignCycles } from './services/campaign-context.js'
+import { configureLifeEventPack } from './services/life-event-context.js'
+import { PHILIPPINES_LIFE_EVENTS } from '@spike-life/content-philippines'
 import { configureYearLoop } from './gameboard/services/year-loop/year-loop-context.js'
 import { TEST_CURRENCY } from './test/currency-fixture.js'
 import { bootstrapTestEncounters } from './test/encounter-fixture.js'
@@ -31,6 +33,7 @@ function bootstrapTestPack() {
   configureCampaign(PHILIPPINES_CAMPAIGN)
   configureYearLoop(PHILIPPINES_YEAR_LOOP)
   bootstrapTestEncounters()
+  configureLifeEventPack(PHILIPPINES_LIFE_EVENTS)
 }
 
 function readySession(id: string, mode: SessionMode) {
@@ -71,12 +74,13 @@ describe('campaign mode (20 cycles)', () => {
     session = startRoomCycle('camp-2', session)
     session = submitDecision(session, 'maintain_lifestyle_discipline')
     session = submitReflection(session, SAMPLE_REFLECTION)
+    expect(session.selectedDomainId).toBeTruthy()
     session = advanceTurn(session)
     expect(session.turnNumber).toBe(2)
     expect(session.cycleIndex).toBe(2)
     expect(session.halfYear).toBe('H2')
     expect(session.pendingCalendarEvent).toBeNull()
-    expect(session.selectedDomainId).toBeTruthy()
+    expect(session.phase).toBe('created')
   })
 
   it('completes all 20 campaign cycles before session end', () => {

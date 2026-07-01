@@ -7,11 +7,13 @@ import { bootstrapYearLoopFromPack } from './year-loop-bootstrap.js'
 import { bootstrapArchetypesFromPack } from './archetype-bootstrap.js'
 import { bootstrapCampaignFromPack } from './campaign-bootstrap.js'
 import { bootstrapEncountersFromPack } from './encounter-bootstrap.js'
+import { bootstrapLifeEventsFromPack } from './life-event-bootstrap.js'
 
 bootstrapYearLoopFromPack(PHILIPPINES_CONTENT_PACK)
 bootstrapArchetypesFromPack(PHILIPPINES_CONTENT_PACK)
 bootstrapCampaignFromPack(PHILIPPINES_CONTENT_PACK)
 bootstrapEncountersFromPack(PHILIPPINES_CONTENT_PACK)
+bootstrapLifeEventsFromPack(PHILIPPINES_CONTENT_PACK)
 
 export { DEFAULT_CURRENCY, PHILIPPINES_CONTENT_PACK }
 

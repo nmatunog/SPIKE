@@ -5,6 +5,7 @@ import type {
   YearLoopConfig,
   ArchetypePackConfig,
   CampaignConfig,
+  LifeEventPack,
 } from '@spike-life/content-core'
 import { validateContentPack } from '@spike-life/content-core'
 
@@ -16,6 +17,7 @@ import institutionsJson from './data/institutions.json' with { type: 'json' }
 import lifeSituations from './data/life-situations.json' with { type: 'json' }
 import manifest from './data/manifest.json' with { type: 'json' }
 import strings from './data/strings.en-PH.json' with { type: 'json' }
+import lifeEventsJson from './data/life-events.json' with { type: 'json' }
 import encountersJson from './data/encounters/all.json' with { type: 'json' }
 
 const institutions = institutionsJson as InstitutionConfig[]
@@ -24,6 +26,7 @@ const financialTopics = financialTopicsJson as FinancialTopicConfig[]
 const yearLoop = yearLoopJson as YearLoopConfig
 const archetypes = archetypesJson as ArchetypePackConfig
 const campaign = campaignJson as CampaignConfig
+const lifeEvents = lifeEventsJson as LifeEventPack
 
 /** MVP Philippines content pack — Amendment A4 */
 export const PHILIPPINES_CONTENT_PACK: ContentPack = {
@@ -35,6 +38,7 @@ export const PHILIPPINES_CONTENT_PACK: ContentPack = {
   yearLoop,
   archetypes,
   campaign,
+  lifeEvents,
 }
 
 validateContentPack(PHILIPPINES_CONTENT_PACK)
@@ -47,6 +51,7 @@ export { strings as PHILIPPINES_STRINGS_EN_PH }
 export { yearLoop as PHILIPPINES_YEAR_LOOP }
 export { archetypes as PHILIPPINES_ARCHETYPES }
 export { campaign as PHILIPPINES_CAMPAIGN }
+export { lifeEvents as PHILIPPINES_LIFE_EVENTS }
 export { encountersJson as PHILIPPINES_ENCOUNTERS }
 
 /** Default currency/locale for MVP bootstrap */

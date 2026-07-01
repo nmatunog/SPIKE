@@ -3,20 +3,25 @@ import type { ScenarioId } from '../types.js'
 import type { EncounterRecord } from '@spike-life/content-core'
 import { getEncounterRepository } from '../ports/encounter-repository.js'
 import { selectWeightedLifeDomain } from '../gameboard/services/year-loop/domain-weights.js'
-import {
-  encounterMeetsCareerPrerequisites,
-} from '../gameboard/services/year-loop/situation-weights.js'
 import type { EncounterCardId } from '../gameboard/types.js'
-import { packIdToCardId } from './pack-encounter-bridge.js'
+import {
+  isLifeEventEngineEnabled,
+  resolveLifeEventDefinition,
+} from './life-event-context.js'
+import {
+  selectLifeEvent,
+  selectionInputFromSimulation,
+} from './life-event-engine.js'
 
 export interface CycleStartSelection {
   domainId: string
   encounterId: string
   encounter: EncounterRecord
   scenarioId: ScenarioId
+  lifeEventId: string | null
 }
 
-function weightedPick(encounters: EncounterRecord[], seed: number): EncounterRecord {
+function weightedPickLegacy(encounters: EncounterRecord[], seed: number): EncounterRecord {
   const total = encounters.reduce((sum, e) => sum + (e.weights.base ?? 1), 0)
   let roll = seed % Math.max(total, 1)
   for (const enc of encounters) {
@@ -26,53 +31,44 @@ function weightedPick(encounters: EncounterRecord[], seed: number): EncounterRec
   return encounters[encounters.length - 1]!
 }
 
-function completedCareerCardIds(
-  state: SimulationState,
-  extra: EncounterCardId[] = [],
-): EncounterCardId[] {
-  const completed = new Set<EncounterCardId>(extra)
-  if (state.encounterId) {
-    const cardId = packIdToCardId(state.encounterId)
-    if (cardId) completed.add(cardId)
-  }
-  return [...completed]
-}
-
-function filterCareerPool(
-  pool: EncounterRecord[],
-  age: number,
-  completed: EncounterCardId[],
-): EncounterRecord[] {
-  const filtered = pool.filter((enc) => {
-    const cardId = packIdToCardId(enc.id)
-    if (!cardId) return true
-    return encounterMeetsCareerPrerequisites(cardId, age, completed)
-  })
-  return filtered.length > 0 ? filtered : pool
-}
-
 export function selectCycleEncounter(
   state: SimulationState,
-  completedEncounterCardIds: EncounterCardId[] = [],
+  _completedEncounterCardIds: EncounterCardId[] = [],
 ): CycleStartSelection {
-  const rng = () => {
-    const seed = state.turnNumber * 997 + state.cycleIndex * 131
-    return (seed % 1000) / 1000
-  }
+  const seed = state.turnNumber * 997 + state.cycleIndex * 131
+  const rng = () => (seed % 1000) / 1000
+
   const domain = selectWeightedLifeDomain(state.character.age, rng)
   const domainId = domain.id
+
+  if (isLifeEventEngineEnabled()) {
+    const picked = selectLifeEvent(selectionInputFromSimulation(state, domainId), rng)
+    if (picked) {
+      const scenarioId: ScenarioId = picked.encounter.scenarioTemplate === 'protection_stress'
+        ? 'protection_stress'
+        : 'promotion'
+      return {
+        domainId: picked.lifeEvent.domain,
+        encounterId: picked.encounterId,
+        encounter: picked.encounter,
+        scenarioId,
+        lifeEventId: picked.lifeEvent.id,
+      }
+    }
+  }
+
   const repo = getEncounterRepository()
-  const rawPool = repo.getByDomain(domainId)
-  const pool = filterCareerPool(
-    rawPool.length ? rawPool : repo.getAll(),
-    state.character.age,
-    completedCareerCardIds(state, completedEncounterCardIds),
-  )
-  const seed = state.turnNumber * 997 + state.cycleIndex * 131
-  const encounter = weightedPick(pool.length ? pool : repo.getAll(), seed)
+  const pool = repo.getByDomain(domainId)
+  const encounter = weightedPickLegacy(pool.length ? pool : repo.getAll(), seed)
   const scenarioId: ScenarioId = encounter.scenarioTemplate === 'protection_stress'
     ? 'protection_stress'
     : 'promotion'
 
-  return { domainId, encounterId: encounter.id, encounter, scenarioId }
+  return {
+    domainId,
+    encounterId: encounter.id,
+    encounter,
+    scenarioId,
+    lifeEventId: resolveLifeEventDefinition(encounter.id, encounter)?.id ?? null,
+  }
 }
