@@ -95,11 +95,61 @@ export function syncYear1FromMonthlyState(state, monthlyTargets = state.monthlyT
 
 /**
  * Apply a single weekly row edit and cascade to linked monthly/year1 fields.
+ * Editing Prospects re-runs the full 10→5→3→1 funnel across all weekly rows.
  * @param {import('./types.js').BusinessEngineCanvasState} state
  * @param {string} weeklyId
  * @param {number | string} value
  */
 export function applyWeeklyTargetChange(state, weeklyId, value) {
+  if (weeklyId === 'prospects') {
+    const prospects = value === '' ? 0 : Number(value);
+    if (Number.isFinite(prospects)) {
+      const revenuePerClient = Number(state.activityEngine.revenue?.value) || FUNNEL_RATIOS.revenuePerClient;
+      const cascaded = cascadeFromProspects(prospects, revenuePerClient);
+      const activityEngine = { ...state.activityEngine };
+      for (const [stepId, stepValue] of Object.entries({
+        prospects: cascaded.prospects,
+        discovery: cascaded.discovery,
+        presentations: cascaded.presentations,
+        clients: cascaded.clients,
+        referrals: cascaded.referrals,
+      })) {
+        if (activityEngine[stepId]) {
+          activityEngine[stepId] = { ...activityEngine[stepId], value: stepValue };
+        }
+      }
+
+      const withEngine = applyEngineCascadeToTargets(
+        { ...state, activityEngine },
+        cascaded,
+        { forceMonthly: true },
+      );
+      return {
+        ...withEngine,
+        growthSimulation: {
+          ...withEngine.growthSimulation,
+          current: {
+            prospects: cascaded.prospects,
+            discovery: cascaded.discovery,
+            presentations: cascaded.presentations,
+            clients: cascaded.clients,
+            revenue: cascaded.revenue,
+            referrals: cascaded.referrals,
+          },
+        },
+      };
+    }
+  }
+
+  return applyWeeklyTargetChangeSingle(state, weeklyId, value);
+}
+
+/**
+ * @param {import('./types.js').BusinessEngineCanvasState} state
+ * @param {string} weeklyId
+ * @param {number | string} value
+ */
+function applyWeeklyTargetChangeSingle(state, weeklyId, value) {
   const weeklyTargets = { ...state.weeklyTargets, [weeklyId]: value };
   const monthlyKey = WEEKLY_TO_MONTHLY_KEY[weeklyId] ?? weeklyId;
   const monthlyTargets = { ...state.monthlyTargets };
@@ -119,8 +169,9 @@ export function applyWeeklyTargetChange(state, weeklyId, value) {
  * Apply activity-engine funnel cascade to weekly/monthly/year1 tables.
  * @param {import('./types.js').BusinessEngineCanvasState} state
  * @param {ReturnType<typeof cascadeFromProspects>} cascaded
+ * @param {{ forceMonthly?: boolean }} [opts]
  */
-export function applyEngineCascadeToTargets(state, cascaded) {
+export function applyEngineCascadeToTargets(state, cascaded, opts = {}) {
   const weeklyTargets = {
     prospects: cascaded.prospects,
     discoveryConversations: cascaded.discovery,
@@ -129,7 +180,9 @@ export function applyEngineCascadeToTargets(state, cascaded) {
     revenue: cascaded.revenue,
     referrals: cascaded.referrals,
   };
-  const monthlyTargets = syncMonthlyFromWeeklyState(state, weeklyTargets);
+  const monthlyTargets = opts.forceMonthly
+    ? weeklyToMonthly(weeklyTargets)
+    : syncMonthlyFromWeeklyState(state, weeklyTargets);
   const withMonthly = { ...state, weeklyTargets, monthlyTargets };
   return {
     ...withMonthly,

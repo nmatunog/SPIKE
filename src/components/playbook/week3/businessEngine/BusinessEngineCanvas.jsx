@@ -117,7 +117,7 @@ export function BusinessEngineCanvas({
         const prospects = stepId === 'prospects' ? Number(patch.value) : Number(activityEngine.prospects?.value);
         const revPer = Number(activityEngine.revenue?.value) || 10000;
         const c = cascadeFromProspects(prospects, revPer);
-        next = applyEngineCascadeToTargets(next, c);
+        next = applyEngineCascadeToTargets(next, c, { forceMonthly: true });
         next = {
           ...next,
           growthSimulation: {
