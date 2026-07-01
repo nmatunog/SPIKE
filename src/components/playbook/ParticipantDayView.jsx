@@ -21,6 +21,7 @@ import { Week2ActivateHero } from './week2/Week2ActivateHero.jsx';
 import { Week3Day1PlaybookHero } from './week3/Week3Day1PlaybookHero.jsx';
 import { Week3Day3PlaybookHero } from './week3/Week3Day3PlaybookHero.jsx';
 import { Week3Day3PortfolioMission } from './week3/Week3Day3PortfolioMission.jsx';
+import { BusinessEngineCanvas } from './week3/businessEngine/BusinessEngineCanvas.jsx';
 import { BusinessEngineCanvasBlankPreview } from './week3/businessEngine/BusinessEngineCanvasBlankPreview.jsx';
 import { playbookWeek3Day3Href } from '../../lib/week3Day3PortfolioService.js';
 import { Week2StudioLaunchCard } from './week2/Week2StudioLaunchCard.jsx';
@@ -128,6 +129,19 @@ export function ParticipantDayView({
           <Week3Day3PlaybookHero />
           {staffPreview ? (
             <BusinessEngineCanvasBlankPreview compact roleLabel="Mentor reference" />
+          ) : participantId ? (
+            <section className="rounded-3xl border border-slate-200 bg-gradient-to-b from-white to-slate-50/80 p-4 shadow-card sm:p-6">
+              <div className="mb-4">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-spike">Workshop · Page 1 & 2</p>
+                <h2 className="mt-1 text-xl font-bold text-slate-900 sm:text-2xl">
+                  SPIKE Business Engine Canvas™
+                </h2>
+                <p className="mt-1 text-sm text-slate-600">
+                  Design your weekly operating system, simulate growth, and commit to your Year 1 revenue target.
+                </p>
+              </div>
+              <BusinessEngineCanvas participantId={participantId} onSaved={onProgress} />
+            </section>
           ) : null}
           {participantId ? (
             <Week3Day3PortfolioMission
