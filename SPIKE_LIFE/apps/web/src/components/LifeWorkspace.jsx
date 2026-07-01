@@ -10,7 +10,7 @@ import {
   setDreamBoard,
 } from '../lib/spike-life-client.js'
 
-export default function LifeWorkspace({ onOpenWorkshop }) {
+export default function LifeWorkspace({ onBack, onOpenWorkshop }) {
   const [loading, setLoading] = useState(true)
   const [dashboard, setDashboard] = useState(null)
   const [busy, setBusy] = useState(false)
@@ -64,9 +64,20 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
     )
   }
 
+  const backButton = onBack ? (
+    <button
+      type="button"
+      onClick={onBack}
+      className="fixed left-4 top-4 z-50 text-sm text-slate-500 hover:text-slate-800"
+    >
+      ← Back
+    </button>
+  ) : null
+
   if (showRules) {
     return (
-      <div className="flex h-dvh items-center justify-center bg-gradient-to-b from-white to-indigo-50/30 p-4">
+      <div className="relative flex h-dvh items-center justify-center bg-gradient-to-b from-white to-indigo-50/30 p-4">
+        {backButton}
         <OnboardingRulesCard
           onDismiss={() => {
             localStorage.setItem('spike-life-rules-seen', '1')
@@ -79,24 +90,35 @@ export default function LifeWorkspace({ onOpenWorkshop }) {
 
   if (dashboard && !dashboard.dreamBoardComplete && dashboard.dreamBoard) {
     return (
-      <DreamBoardSetup
+      <>
+        {backButton}
+        <DreamBoardSetup
         dreamBoard={dashboard.dreamBoard}
         dashboard={dashboard}
         onSubmit={handleDreamBoardSubmit}
         busy={busy}
         error={error}
       />
+      </>
     )
   }
 
   if (lifeSummary?.complete) {
     return (
-      <LifeSummaryScreen
+      <>
+        {backButton}
+        <LifeSummaryScreen
         summary={lifeSummary}
         onPlayAgain={() => window.location.reload()}
       />
+      </>
     )
   }
 
-  return <GameScreenV3 onOpenWorkshop={onOpenWorkshop} />
+  return (
+    <>
+      {backButton}
+      <GameScreenV3 onOpenWorkshop={onOpenWorkshop} />
+    </>
+  )
 }

@@ -1,16 +1,30 @@
 import { useState } from 'react'
 import { leaveActiveRoom } from './lib/spike-life-workshop-client.js'
+import PlayModeSelect from './components/PlayModeSelect.jsx'
 import LifeWorkspace from './components/LifeWorkspace.jsx'
 import WorkshopLobby from './components/workshop/WorkshopLobby.jsx'
 import WorkshopWorkspace from './components/workshop/WorkshopWorkspace.jsx'
 
 export default function App() {
-  const [mode, setMode] = useState('solo')
+  const [mode, setMode] = useState('pick')
   const [workshopSession, setWorkshopSession] = useState(null)
+
+  if (mode === 'pick') {
+    return (
+      <PlayModeSelect
+        onSolo={() => setMode('solo')}
+        onMultiplayer={() => {
+          setWorkshopSession(null)
+          setMode('workshop')
+        }}
+      />
+    )
+  }
 
   if (mode === 'solo') {
     return (
       <LifeWorkspace
+        onBack={() => setMode('pick')}
         onOpenWorkshop={() => {
           setWorkshopSession(null)
           setMode('workshop')
@@ -22,7 +36,7 @@ export default function App() {
   if (!workshopSession) {
     return (
       <WorkshopLobby
-        onBack={() => setMode('solo')}
+        onBack={() => setMode('pick')}
         onEnter={(session) => setWorkshopSession(session)}
       />
     )
@@ -34,6 +48,7 @@ export default function App() {
       onExit={() => {
         leaveActiveRoom()
         setWorkshopSession(null)
+        setMode('pick')
       }}
     />
   )

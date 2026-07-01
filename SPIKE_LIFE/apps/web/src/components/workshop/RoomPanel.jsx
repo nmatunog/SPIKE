@@ -11,39 +11,43 @@ function formatTimerPreset(preset) {
   return `${preset}s`
 }
 
-export default function FacilitatorPanel({
+export default function RoomPanel({
   board,
   busy,
   gameCode,
   onStartCycle,
-  isFacilitator,
 }) {
-  if (!board || !isFacilitator) return null
+  if (!board) return null
 
-  const canStart = board.roomPhase === 'lobby' && board.playerCount >= GAME_ROOM_MIN_PLAYERS
+  const setupPhase = board.roomPhase === 'setup' || board.roomPhase === 'lobby'
+  const canStart = board.canStartCycle
   const waitingForMore =
-    board.roomPhase === 'lobby'
+    setupPhase
     && board.playerCount > 0
     && board.playerCount < GAME_ROOM_MIN_PLAYERS
+  const waitingForSetup =
+    setupPhase
+    && board.playerCount >= GAME_ROOM_MIN_PLAYERS
+    && !canStart
   const cycleActive = ACTIVE_ROOM_PHASES.has(board.roomPhase)
 
   return (
     <aside className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <h2 className="text-sm font-semibold text-slate-900">Facilitator</h2>
+      <h2 className="text-sm font-semibold text-slate-900">Room</h2>
       <p className="mt-1 text-xs text-slate-500">
-        Room phase: <span className="font-medium capitalize">{board.roomPhase.replace('_', ' ')}</span>
+        Phase: <span className="font-medium capitalize">{board.roomPhase.replace(/_/g, ' ')}</span>
       </p>
 
       {gameCode && (
         <div className="mt-4">
           <GameCodeBadge code={gameCode} />
           <p className="mt-2 text-xs text-slate-500">
-            Players register at the workshop lobby with this code.
+            Share this code so others can join before the first cycle starts.
           </p>
         </div>
       )}
 
-      {board.roomPhase === 'lobby' && (
+      {setupPhase && (
         <dl className="mt-4 space-y-1 text-xs text-slate-600">
           <div className="flex justify-between gap-2">
             <dt>Session mode</dt>
@@ -61,16 +65,16 @@ export default function FacilitatorPanel({
       )}
 
       <p className="mt-4 text-xs text-slate-500">
-        {board.playerCount}/{GAME_ROOM_MAX_PLAYERS} players registered (min {GAME_ROOM_MIN_PLAYERS})
+        {board.playerCount}/{GAME_ROOM_MAX_PLAYERS} players
         {board.joinOpen && board.slotsOpen > 0 && (
           <span> · {board.slotsOpen} slot{board.slotsOpen !== 1 ? 's' : ''} open</span>
         )}
       </p>
 
-      {board.roomPhase === 'lobby' && (
+      {setupPhase && (
         <div className="mt-3">
           {board.players.length === 0 ? (
-            <p className="text-sm text-slate-600">Waiting for players to join…</p>
+            <p className="text-sm text-slate-600">Waiting for players…</p>
           ) : (
             <ul className="space-y-2 text-sm text-slate-700">
               {board.players.map((p) => (
@@ -81,6 +85,7 @@ export default function FacilitatorPanel({
                     aria-hidden
                   />
                   <span className="font-medium">{p.displayName}</span>
+                  <span className="ml-1 text-xs text-slate-500">· {p.statusLabel}</span>
                   {p.archetypeLabel && (
                     <span className="block pl-4 text-xs text-slate-500">
                       {p.archetypeLabel}
@@ -96,6 +101,13 @@ export default function FacilitatorPanel({
               Need at least {GAME_ROOM_MIN_PLAYERS} players before starting.
             </p>
           )}
+          {waitingForSetup && (
+            <p className="mt-2 text-xs text-amber-700">
+              {board.completionSummary.setupPending} player
+              {board.completionSummary.setupPending !== 1 ? 's' : ''} still setting up Life Blueprint
+              ({board.completionSummary.ready}/{board.completionSummary.total} ready).
+            </p>
+          )}
         </div>
       )}
 
@@ -105,7 +117,7 @@ export default function FacilitatorPanel({
             Start planning cycle
           </p>
           <p className="mt-1 text-xs text-slate-600">
-            Situations are chosen by the domain — no scenario picker needed.
+            Everyone is ready — any player can start the first cycle.
           </p>
           <button
             type="button"

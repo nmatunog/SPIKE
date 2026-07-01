@@ -82,12 +82,17 @@ export function slugifyPlayerId(name) {
   return slug || `player-${Date.now()}`
 }
 
-export async function createGame(facilitatorName = 'Facilitator', options = {}) {
+export async function createGame(displayName, options = {}) {
   const {
     sessionMode = 'workshop_compressed',
     decisionTimerPreset = '10',
     gameCode: preferredCode,
   } = options
+
+  const name = displayName?.trim()
+  if (!name) {
+    throw new Error('Enter your name to create a room.')
+  }
 
   let gameCode = preferredCode ? normalizeGameCode(preferredCode) : generateGameCode()
   let roomId = roomIdFromGameCode(gameCode)
@@ -99,19 +104,28 @@ export async function createGame(facilitatorName = 'Facilitator', options = {}) 
     roomId = roomIdFromGameCode(gameCode)
   }
 
-  const facilitatorId = `fac-${slugifyPlayerId(facilitatorName)}`
-  await roomCommands.createRoom(roomId, facilitatorId, {
+  await roomCommands.createRoom(roomId, {
     gameCode,
     sessionMode,
     decisionTimerPreset,
   })
+
+  const playerId = slugifyPlayerId(name)
+  if (typeof gameRoomRepo.linkNextSlotToAuth === 'function') {
+    gameRoomRepo.linkNextSlotToAuth(playerId)
+  }
+
   setActiveRoom(roomId)
+  const joined = await roomCommands.joinRoom(roomId, playerId, name)
+  const slot = joined.slots.find((s) => s.playerId === playerId)
 
   return {
     gameCode,
     roomId,
-    facilitatorId,
-    facilitatorName: facilitatorName.trim() || 'Facilitator',
+    playerId,
+    displayName: name,
+    archetypeId: slot?.archetypeId ?? null,
+    archetypeLabel: slot ? getArchetypeLabel(slot.archetypeId) : null,
     sessionMode,
     decisionTimerPreset,
   }
@@ -125,7 +139,7 @@ export async function configureLobby(options) {
 export async function joinGame(gameCode, displayName) {
   const normalized = normalizeGameCode(gameCode)
   if (!normalized) {
-    throw new Error('Enter the game code from your facilitator.')
+    throw new Error('Enter the game code shared by the room host.')
   }
 
   const name = displayName.trim()
@@ -136,7 +150,7 @@ export async function joinGame(gameCode, displayName) {
   const roomId = roomIdFromGameCode(normalized)
   const room = await gameRoomRepo.findById(roomId)
   if (!room) {
-    throw new Error('Game not found. Check the code with your facilitator.')
+    throw new Error('Game not found. Check the code with your host.')
   }
   if (!room.joinOpen) {
     throw new Error('This game has already started. Late registration is closed.')
@@ -261,6 +275,11 @@ export async function dismissPlayerCalendarEvent(playerId) {
   await simulationRepo.save(updated)
   await syncRoomCalendarPhase(roomState, playerId, updated)
   return updated
+}
+
+export async function submitPlayerDreamBoardGoals(playerId, goalChoices) {
+  const roomId = requireRoomId()
+  return roomCommands.submitDreamBoard(roomId, playerId, goalChoices)
 }
 
 export async function submitPlayerReflection(playerId, answers) {

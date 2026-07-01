@@ -38,10 +38,9 @@ export interface CreateRoomOptions {
 export function createGameRoom(
   deps: GameRoomOrchestratorDeps,
   roomId: string,
-  facilitatorId: string,
   options?: CreateRoomOptions,
 ): Promise<GameRoomState> {
-  const room = GameRoom.create(roomId, facilitatorId, options?.gameCode ?? generateGameCode(), {
+  const room = GameRoom.create(roomId, options?.gameCode ?? generateGameCode(), {
     maxPlayers: options?.maxPlayers,
     sessionMode: options?.sessionMode,
     decisionTimerPreset: options?.decisionTimerPreset,
@@ -90,7 +89,7 @@ export async function joinGameRoom(
     decisionTimerSeconds: timerSecondsFromPreset(existing.decisionTimerPreset),
   }
   if (workshop.dreamBoard?.goals?.length) {
-    workshop = setDreamBoard(workshop, workshop.dreamBoard.goals)
+    // Players complete Life Blueprint in the setup phase — do not auto-submit.
   }
   await deps.simulationRepo.save(workshop)
 
@@ -104,6 +103,30 @@ export async function joinGameRoom(
   return room.toState()
 }
 
+export async function submitPlayerDreamBoard(
+  deps: GameRoomOrchestratorDeps,
+  roomId: string,
+  playerId: string,
+  goalChoices: import('./services/dream-board.js').DreamBoardGoalChoice[],
+): Promise<SimulationState> {
+  const roomState = await deps.gameRoomRepo.findById(roomId)
+  if (!roomState) throw new Error(`Room not found: ${roomId}`)
+
+  const slot = roomState.slots.find((s) => s.playerId === playerId)
+  if (!slot) throw new Error(`Player not in room: ${playerId}`)
+
+  const sim = await deps.simulationRepo.findById(slot.simulationId)
+  if (!sim) throw new Error(`Simulation not found: ${slot.simulationId}`)
+
+  const updated = setDreamBoard(sim, goalChoices)
+  await deps.simulationRepo.save(updated)
+
+  const room = GameRoom.fromState(roomState).markPlayerReady(playerId)
+  await deps.gameRoomRepo.save(room.toState())
+
+  return updated
+}
+
 export async function startRoomCycle(
   deps: GameRoomOrchestratorDeps,
   roomId: string,
@@ -111,7 +134,14 @@ export async function startRoomCycle(
   const existing = await deps.gameRoomRepo.findById(roomId)
   if (!existing) throw new Error(`Room not found: ${roomId}`)
 
-  let room = GameRoom.fromState(existing).startCycle()
+  let room = GameRoom.fromState(existing)
+  if (!room.canStartCycle()) {
+    if (!room.allPlayersReady()) {
+      throw new Error('Every player must finish Life Blueprint setup before starting.')
+    }
+    throw new Error('Cannot start cycle yet — check player count and room phase.')
+  }
+  room = room.startCycle()
 
   for (const slot of room.activeSlots) {
     const sim = await deps.simulationRepo.findById(slot.simulationId)

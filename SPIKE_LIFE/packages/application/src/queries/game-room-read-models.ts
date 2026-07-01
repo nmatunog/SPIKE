@@ -20,6 +20,8 @@ export interface PlayerTokenView {
 export interface GameBoardView {
   roomId: string
   gameCode: string
+  hostPlayerId: string | null
+  /** @deprecated Use hostPlayerId */
   facilitatorId: string
   roomPhase: RoomPhase
   sessionMode: SessionMode
@@ -47,11 +49,14 @@ export interface GameBoardView {
   players: PlayerTokenView[]
   allPlayersDone: boolean
   canAdvanceTurn: boolean
+  canStartCycle: boolean
   workshopComplete: boolean
   completionSummary: {
     done: number
     planning: number
     decided: number
+    ready: number
+    setupPending: number
     total: number
   }
 }

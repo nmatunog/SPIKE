@@ -19,21 +19,22 @@ export class SupabaseGameRoomRepository implements GameRoomRepository {
     return data.user?.id ?? null
   }
 
-  private resolveFacilitatorId(room: GameRoomState, authUid: string | null): string {
-    if (authUid && (!room.facilitatorId || !UUID_RE.test(room.facilitatorId))) {
+  private resolveHostAuthId(room: GameRoomState, authUid: string | null): string | null {
+    const hostId = room.hostPlayerId ?? room.facilitatorId ?? null
+    if (authUid && hostId && !UUID_RE.test(hostId)) {
       return authUid
     }
-    return room.facilitatorId
+    return hostId
   }
 
   async save(room: GameRoomState): Promise<void> {
     const authUid = await this.authUserId()
-    const facilitatorId = this.resolveFacilitatorId(room, authUid)
+    const hostAuthId = this.resolveHostAuthId(room, authUid)
 
     const { error } = await this.client.from('spike_life_game_rooms').upsert({
       id: room.id,
       game_code: room.gameCode,
-      facilitator_id: facilitatorId,
+      facilitator_id: hostAuthId,
       session_mode: room.sessionMode,
       decision_timer_preset: room.decisionTimerPreset,
       turn_number: room.turnNumber,
@@ -42,7 +43,11 @@ export class SupabaseGameRoomRepository implements GameRoomRepository {
       room_phase: room.roomPhase,
       cycle_deadline_at: room.cycleDeadlineAt,
       join_open: room.joinOpen,
-      config_json: { slots: room.slots, maxPlayers: room.maxPlayers },
+      config_json: {
+        slots: room.slots,
+        maxPlayers: room.maxPlayers,
+        hostPlayerId: room.hostPlayerId,
+      },
       updated_at: room.updatedAt,
     })
     if (error) throw new Error(error.message)
@@ -104,11 +109,16 @@ export class SupabaseGameRoomRepository implements GameRoomRepository {
       .order('slot_index')
     if (slotError) throw new Error(slotError.message)
 
-    const config = (data.config_json as { slots?: GameRoomState['slots']; maxPlayers?: number }) ?? {}
+    const config = (data.config_json as {
+      slots?: GameRoomState['slots']
+      maxPlayers?: number
+      hostPlayerId?: string | null
+    }) ?? {}
 
     return {
       id: data.id,
       gameCode: data.game_code,
+      hostPlayerId: config.hostPlayerId ?? config.slots?.[0]?.playerId ?? null,
       facilitatorId: data.facilitator_id,
       sessionMode: data.session_mode,
       decisionTimerPreset: data.decision_timer_preset,

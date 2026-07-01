@@ -9,6 +9,7 @@ import {
   joinGameRoom,
   startRoomCycle,
   submitPlayerDecision,
+  submitPlayerDreamBoard,
   submitPlayerReflection,
 } from './game-room-orchestrator.js'
 import { GAME_ROOM_MAX_PLAYERS } from './types.js'
@@ -59,6 +60,18 @@ function makeDeps() {
   }
 }
 
+async function completeLifeBlueprint(
+  deps: ReturnType<typeof makeDeps>,
+  roomId: string,
+  playerId: string,
+) {
+  const sim = await deps.simulationRepo.findById(`${roomId}:${playerId}`)
+  if (!sim?.dreamBoard?.goals?.length) {
+    throw new Error(`No dream board for ${playerId}`)
+  }
+  await submitPlayerDreamBoard(deps, roomId, playerId, sim.dreamBoard.goals)
+}
+
 describe('GameRoom orchestrator — 6 players', () => {
   it('6 players complete one shared macro turn in parallel', async () => {
     configureArchetypes(PHILIPPINES_ARCHETYPES)
@@ -68,12 +81,13 @@ describe('GameRoom orchestrator — 6 players', () => {
     const deps = makeDeps()
     const roomId = 'workshop-6'
 
-    await createGameRoom(deps, roomId, 'coach-1', {
+    await createGameRoom(deps, roomId, {
       sessionMode: 'workshop_compressed',
     })
 
     for (let i = 1; i <= GAME_ROOM_MAX_PLAYERS; i += 1) {
       await joinGameRoom(deps, roomId, `player-${i}`, `Player ${i}`, TEST_CURRENCY)
+      await completeLifeBlueprint(deps, roomId, `player-${i}`)
     }
 
     const started = await startRoomCycle(deps, roomId)
@@ -95,7 +109,7 @@ describe('GameRoom orchestrator — 6 players', () => {
 
     const room = await advanceRoomTurn(deps, roomId)
 
-    expect(room.slots.every((s) => s.status === 'joined')).toBe(true)
+    expect(room.slots.every((s) => s.status === 'ready')).toBe(true)
     expect(room.turnNumber).toBe(2)
     expect(room.roomPhase).toBe('lobby')
 

@@ -77,6 +77,7 @@ export const GAME_ROOM_MAX_PLAYERS = 6
 
 export type RoomPhase =
   | 'lobby'
+  | 'setup'
   | 'turn_active'
   | 'cycle_active'
   | 'awaiting_calendar'
@@ -86,6 +87,7 @@ export type RoomPhase =
 
 export type PlayerSlotStatus =
   | 'joined'
+  | 'ready'
   | 'planning'
   | 'decided'
   | 'reflected'

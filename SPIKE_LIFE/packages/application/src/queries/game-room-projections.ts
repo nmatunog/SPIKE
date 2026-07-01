@@ -10,6 +10,7 @@ import {
   formatCycleLabel,
   cycleIndexForMacroTurn,
   getCampaignConfig,
+  GameRoom,
 } from '@spike-life/domain'
 import type {
   GameBoardView,
@@ -22,10 +23,11 @@ const SCENARIO_LABELS: Record<string, string> = {
   protection_stress: 'Family Health Concern',
 }
 
-const ACTIVE_PHASES = new Set(['turn_active', 'cycle_active', 'awaiting_calendar', 'processing'])
+const ACTIVE_PHASES = new Set(['turn_active', 'cycle_active', 'awaiting_calendar', 'processing', 'setup'])
 
 const STATUS_LABELS: Record<string, string> = {
-  joined: 'Ready',
+  joined: 'Setting up',
+  ready: 'Ready',
   planning: 'Planning',
   decided: 'Decided',
   reflected: 'Reflecting',
@@ -120,10 +122,17 @@ export function projectGameBoard(
     ? room.turnNumber
     : cycleIndexForMacroTurn(room.turnNumber, config)
 
+  const ready = room.slots.filter((s) => s.status === 'ready').length
+  const setupPending = room.slots.filter((s) => s.status === 'joined').length
+
+  const roomAggregate = GameRoom.fromState(room)
+  const canStartCycle = roomAggregate.canStartCycle()
+
   return {
     roomId: room.id,
     gameCode: room.gameCode,
-    facilitatorId: room.facilitatorId,
+    hostPlayerId: room.hostPlayerId,
+    facilitatorId: room.hostPlayerId ?? room.facilitatorId ?? '',
     roomPhase: room.roomPhase,
     sessionMode: room.sessionMode,
     decisionTimerPreset: room.decisionTimerPreset,
@@ -150,11 +159,14 @@ export function projectGameBoard(
     players,
     allPlayersDone,
     canAdvanceTurn,
+    canStartCycle,
     workshopComplete,
     completionSummary: {
       done,
       planning,
       decided,
+      ready,
+      setupPending,
       total: room.slots.length,
     },
   }

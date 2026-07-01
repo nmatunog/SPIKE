@@ -15,6 +15,7 @@ export {
   submitPlayerAutoAdvisor,
   submitPlayerCalendarChoice,
   submitPlayerDecision,
+  submitPlayerDreamBoard,
   submitPlayerReflection,
   advanceRoomTurn,
   getGameRoom,

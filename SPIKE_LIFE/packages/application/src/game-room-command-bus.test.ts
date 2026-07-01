@@ -13,25 +13,47 @@ const REFLECTION = [
   { promptId: 'c', response: 'Would protect income earlier.' },
 ]
 
-describe('GameRoom CQRS — 6 player workshop', () => {
-  it('facilitator runs one macro turn with 6 players', async () => {
+async function completeLifeBlueprint(
+  commands: GameRoomCommandBus,
+  queries: GameRoomQueryBus,
+  simulationRepo: InMemorySimulationRepository,
+  roomId: string,
+  playerId: string,
+) {
+  const board = await queries.getGameBoard(roomId)
+  const player = board?.players.find((p) => p.playerId === playerId)
+  if (!player) throw new Error(`Player not found: ${playerId}`)
+  const sim = await simulationRepo.findById(player.simulationId)
+  if (!sim?.dreamBoard?.goals?.length) {
+    throw new Error(`No dream board goals for ${playerId}`)
+  }
+  await commands.submitDreamBoard(roomId, playerId, sim.dreamBoard.goals)
+}
+
+describe('GameRoom CQRS — peer multiplayer', () => {
+  it('any player can run one macro turn with 6 players after setup', async () => {
     const gameRoomRepo = new InMemoryGameRoomRepository()
     const simulationRepo = new InMemorySimulationRepository()
     const commands = new GameRoomCommandBus(gameRoomRepo, simulationRepo)
     const queries = new GameRoomQueryBus(gameRoomRepo, simulationRepo)
 
     const roomId = 'cqrs-room-6'
-    await commands.createRoom(roomId, 'facilitator-1')
+    await commands.createRoom(roomId)
 
     await commands.configureLobby(roomId, { sessionMode: 'workshop_compressed' })
 
     for (let i = 1; i <= GAME_ROOM_MAX_PLAYERS; i += 1) {
       await commands.joinRoom(roomId, `player-${i}`, `Player ${i}`)
+      await completeLifeBlueprint(commands, queries, simulationRepo, roomId, `player-${i}`)
     }
+
+    let board = await queries.getGameBoard(roomId)
+    expect(board?.canStartCycle).toBe(true)
+    expect(board?.roomPhase).toBe('setup')
 
     await commands.startCycle(roomId)
 
-    let board = await queries.getGameBoard(roomId)
+    board = await queries.getGameBoard(roomId)
     expect(board?.playerCount).toBe(GAME_ROOM_MAX_PLAYERS)
     expect(board?.roomPhase).toBe('cycle_active')
     expect(board?.players.every((p) => p.status === 'planning')).toBe(true)
@@ -56,6 +78,6 @@ describe('GameRoom CQRS — 6 player workshop', () => {
     board = await queries.getGameBoard(roomId)
     expect(board?.turnNumber).toBe(2)
     expect(board?.lifeStage).toBe('build')
-    expect(board?.players.every((p) => p.status === 'joined')).toBe(true)
+    expect(board?.players.every((p) => p.status === 'ready')).toBe(true)
   })
 })

@@ -1,5 +1,6 @@
 import type {
   DecisionStrategy,
+  DreamBoardGoalChoice,
   GameRoomRepository,
   ReflectionAnswer,
   SessionMode,
@@ -14,6 +15,7 @@ import {
   submitPlayerAutoAdvisor,
   submitPlayerCalendarChoice,
   submitPlayerDecision,
+  submitPlayerDreamBoard,
   submitPlayerReflection,
   type CreateRoomOptions,
 } from '@spike-life/domain'
@@ -32,8 +34,8 @@ export class GameRoomCommandBus {
     }
   }
 
-  createRoom(roomId: string, facilitatorId: string, options?: CreateRoomOptions) {
-    return createGameRoom(this.deps(), roomId, facilitatorId, options)
+  createRoom(roomId: string, options?: CreateRoomOptions) {
+    return createGameRoom(this.deps(), roomId, options)
   }
 
   configureLobby(
@@ -75,6 +77,14 @@ export class GameRoomCommandBus {
 
   submitReflection(roomId: string, playerId: string, answers: ReflectionAnswer[]) {
     return submitPlayerReflection(this.deps(), roomId, playerId, answers)
+  }
+
+  submitDreamBoard(
+    roomId: string,
+    playerId: string,
+    goalChoices: DreamBoardGoalChoice[],
+  ) {
+    return submitPlayerDreamBoard(this.deps(), roomId, playerId, goalChoices)
   }
 
   advanceTurn(roomId: string) {

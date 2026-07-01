@@ -37,7 +37,10 @@ export interface PlayerSlot {
 export interface GameRoomState {
   id: string
   gameCode: string
-  facilitatorId: string
+  /** First player who created the room — same privileges as everyone else. */
+  hostPlayerId: string | null
+  /** @deprecated Use hostPlayerId — kept for persistence backward compatibility. */
+  facilitatorId?: string
   maxPlayers: number
   sessionMode: SessionMode
   decisionTimerPreset: DecisionTimerPreset
@@ -61,7 +64,6 @@ export class GameRoom {
 
   static create(
     id: string,
-    facilitatorId: string,
     gameCode: string,
     options?: {
       maxPlayers?: number
@@ -81,7 +83,7 @@ export class GameRoom {
     return new GameRoom({
       id,
       gameCode,
-      facilitatorId,
+      hostPlayerId: null,
       maxPlayers: capped,
       sessionMode,
       decisionTimerPreset: timerPreset,
@@ -101,7 +103,7 @@ export class GameRoom {
     sessionMode?: SessionMode
     decisionTimerPreset?: DecisionTimerPreset
   }): GameRoom {
-    if (this.state.roomPhase !== 'lobby') {
+    if (this.state.roomPhase !== 'lobby' && this.state.roomPhase !== 'setup') {
       throw new Error('Lobby settings can only change before the session starts.')
     }
     const sessionMode = options.sessionMode ?? this.state.sessionMode
@@ -144,8 +146,8 @@ export class GameRoom {
     if (!this.state.joinOpen) {
       throw new Error('This room is closed to new players.')
     }
-    if (this.state.roomPhase !== 'lobby') {
-      throw new Error('Players can only join while the room is in lobby.')
+    if (this.state.roomPhase !== 'lobby' && this.state.roomPhase !== 'setup') {
+      throw new Error('Players can only join while the room is open for registration.')
     }
     if (this.state.slots.length >= this.state.maxPlayers) {
       throw new Error(`Room is full (${this.state.maxPlayers} players max).`)
@@ -168,6 +170,8 @@ export class GameRoom {
 
     this.state = {
       ...this.state,
+      hostPlayerId: this.state.hostPlayerId ?? playerId,
+      roomPhase: this.state.roomPhase === 'lobby' ? 'setup' : this.state.roomPhase,
       slots: [...this.state.slots, slot],
       updatedAt: new Date().toISOString(),
     }
@@ -175,8 +179,43 @@ export class GameRoom {
     return this
   }
 
+  markPlayerReady(playerId: string): GameRoom {
+    if (this.state.roomPhase !== 'setup' && this.state.roomPhase !== 'lobby') {
+      throw new Error('Setup can only be completed before the session starts.')
+    }
+    const slot = this.getSlot(playerId)
+    if (!slot) throw new Error(`Player not in room: ${playerId}`)
+    if (slot.status !== 'joined' && slot.status !== 'ready') {
+      return this
+    }
+    this.state = {
+      ...this.state,
+      roomPhase: 'setup',
+      slots: this.state.slots.map((s) =>
+        s.playerId === playerId ? { ...s, status: 'ready' } : s,
+      ),
+      updatedAt: new Date().toISOString(),
+    }
+    return this
+  }
+
+  allPlayersReady(): boolean {
+    return (
+      this.state.slots.length > 0
+      && this.state.slots.every((slot) => slot.status === 'ready')
+    )
+  }
+
+  canStartCycle(): boolean {
+    return (
+      (this.state.roomPhase === 'setup' || this.state.roomPhase === 'lobby')
+      && this.state.slots.length >= GAME_ROOM_MIN_PLAYERS
+      && this.allPlayersReady()
+    )
+  }
+
   startCycle(): GameRoom {
-    if (this.state.roomPhase !== 'lobby') {
+    if (this.state.roomPhase !== 'setup' && this.state.roomPhase !== 'lobby') {
       throw new Error('A cycle is already in progress.')
     }
     if (this.state.turnNumber > this.state.maxTurns) {
@@ -189,6 +228,9 @@ export class GameRoom {
       throw new Error(
         `At least ${GAME_ROOM_MIN_PLAYERS} players are required to start (currently ${this.state.slots.length}).`,
       )
+    }
+    if (!this.allPlayersReady()) {
+      throw new Error('Every player must finish Life Blueprint setup before starting.')
     }
 
     const timerSec = timerSecondsFromPreset(this.state.decisionTimerPreset)
@@ -301,7 +343,7 @@ export class GameRoom {
       cycleDeadlineAt: null,
       slots: this.state.slots.map((slot) => ({
         ...slot,
-        status: 'joined',
+        status: 'ready',
       })),
       updatedAt: new Date().toISOString(),
     }

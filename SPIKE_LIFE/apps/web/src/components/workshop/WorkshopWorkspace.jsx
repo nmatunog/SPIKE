@@ -5,11 +5,12 @@ import PlanLens from '../lenses/PlanLens.jsx'
 import ProtectLens from '../lenses/ProtectLens.jsx'
 import GrowLens from '../lenses/GrowLens.jsx'
 import JourneyLens from '../lenses/JourneyLens.jsx'
+import DreamBoardSetup from '../gameboard/DreamBoardSetup.jsx'
 import { computeFinancialHealth } from '@spike-life/domain'
 import PlanningCycleShell from '../gameboard/PlanningCycleShell.jsx'
 import GameStatusBar from '../gameboard/GameStatusBar.jsx'
 import WorkshopBoard from './WorkshopBoard.jsx'
-import FacilitatorPanel from './FacilitatorPanel.jsx'
+import RoomPanel from './RoomPanel.jsx'
 import WorkshopScoreHud from './WorkshopScoreHud.jsx'
 import GameCodeBadge from './GameCodeBadge.jsx'
 import PersonaAssignedCard from '../gameboard/PersonaAssignedCard.jsx'
@@ -25,6 +26,7 @@ import {
   submitPlayerAutoAdvisor,
   submitPlayerCalendarChoice,
   submitPlayerDecision,
+  submitPlayerDreamBoardGoals,
   submitPlayerReflection,
 } from '../../lib/spike-life-workshop-client.js'
 import { subscribeSpikeLifeRoom } from '../../lib/spike-life-realtime.js'
@@ -33,7 +35,6 @@ const ACTIVE_ROOM_PHASES = new Set(['turn_active', 'cycle_active', 'awaiting_cal
 
 export default function WorkshopWorkspace({ session, onExit }) {
   const {
-    role,
     playerId,
     displayName,
     roomId,
@@ -43,13 +44,10 @@ export default function WorkshopWorkspace({ session, onExit }) {
     characterName,
     age,
   } = session
-  const isFacilitator = role === 'facilitator'
 
   const [board, setBoard] = useState(null)
   const [playerDashboard, setPlayerDashboard] = useState(null)
-  const [activePlayerId, setActivePlayerId] = useState(
-    isFacilitator ? null : playerId,
-  )
+  const [activePlayerId, setActivePlayerId] = useState(playerId)
   const [activeLens, setActiveLens] = useState('life')
   const [lensView, setLensView] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -58,28 +56,23 @@ export default function WorkshopWorkspace({ session, onExit }) {
   const [lifeSummary, setLifeSummary] = useState(null)
   const [autoAdvisorNotice, setAutoAdvisorNotice] = useState(null)
 
+  const mySlot = board?.players.find((p) => p.playerId === playerId)
+  const needsSetup =
+    mySlot?.status === 'joined'
+    || (playerDashboard && !playerDashboard.dreamBoardComplete && playerDashboard.dreamBoard)
+
   const refreshAll = useCallback(async (lens = activeLens) => {
     const nextBoard = await getGameBoard()
     setBoard(nextBoard)
 
-    const targetId = activePlayerId
-      ?? (isFacilitator ? nextBoard?.players[0]?.playerId : playerId)
-      ?? null
+    const viewId = activePlayerId ?? playerId
 
-    if (!activePlayerId && targetId) {
-      setActivePlayerId(targetId)
-    }
-
-    if (targetId) {
-      const [dashboard, view] = await Promise.all([
-        getPlayerDashboard(targetId),
-        getPlayerLensView(targetId, lens),
-      ])
-      setPlayerDashboard(dashboard)
-      setLensView(view)
-    } else {
-      setPlayerDashboard(null)
-    }
+    const [dashboard, view] = await Promise.all([
+      getPlayerDashboard(playerId),
+      viewId ? getPlayerLensView(viewId, lens) : Promise.resolve(null),
+    ])
+    setPlayerDashboard(dashboard)
+    setLensView(view)
 
     if (nextBoard?.workshopComplete) {
       getRoomLifeSummary().then(setLifeSummary).catch(() => {})
@@ -87,7 +80,7 @@ export default function WorkshopWorkspace({ session, onExit }) {
 
     setLoading(false)
     return nextBoard
-  }, [activePlayerId, activeLens, isFacilitator, playerId])
+  }, [activePlayerId, activeLens, playerId])
 
   useEffect(() => {
     setActiveRoom(roomId)
@@ -124,16 +117,20 @@ export default function WorkshopWorkspace({ session, onExit }) {
     setActivePlayerId(id)
     setError(null)
     setActiveLens('life')
-    const [dashboard, view] = await Promise.all([
-      getPlayerDashboard(id),
-      getPlayerLensView(id, 'life'),
-    ])
-    setPlayerDashboard(dashboard)
+    const view = await getPlayerLensView(id, 'life')
     setLensView(view)
+    if (id === playerId) {
+      const dashboard = await getPlayerDashboard(playerId)
+      setPlayerDashboard(dashboard)
+    }
   }
 
   async function changeLens(lens) {
     if (!activePlayerId) return
+    if (activePlayerId !== playerId && lens !== 'life') {
+      setActiveLens('life')
+      return
+    }
     setActiveLens(lens)
     const view = await getPlayerLensView(activePlayerId, lens)
     setLensView(view)
@@ -152,61 +149,62 @@ export default function WorkshopWorkspace({ session, onExit }) {
     }
   }
 
-  const actingPlayerId = activePlayerId ?? playerId
   const selectedPlayer = board?.players.find((p) => p.playerId === activePlayerId) ?? null
-  const canPlayAsSelected =
+  const canPlayAsSelf =
     ACTIVE_ROOM_PHASES.has(board?.roomPhase)
-    && actingPlayerId
-    && (isFacilitator || actingPlayerId === playerId)
-  const calendarPlayerId = isFacilitator ? actingPlayerId : playerId
+    && activePlayerId === playerId
+    && !needsSetup
   const showPlayerCalendar =
     playerDashboard?.pendingCalendarEvent
-    && (!isFacilitator || actingPlayerId === playerId)
+    && activePlayerId === playerId
+
+  async function handleDreamBoardSubmit(choices) {
+    await runAction(() => submitPlayerDreamBoardGoals(playerId, choices))
+  }
 
   async function handleDecide(strategy) {
-    if (!canPlayAsSelected) return
+    if (!canPlayAsSelf) return
     await runAction(async () => {
-      await submitPlayerDecision(actingPlayerId, strategy)
+      await submitPlayerDecision(playerId, strategy)
       setActiveLens('journey')
-      const view = await getPlayerLensView(actingPlayerId, 'journey')
+      const view = await getPlayerLensView(playerId, 'journey')
       setLensView(view)
     })
   }
 
   async function handleReflection(answers) {
-    if (!canPlayAsSelected) return
-    await runAction(() => submitPlayerReflection(actingPlayerId, answers))
+    if (!canPlayAsSelf) return
+    await runAction(() => submitPlayerReflection(playerId, answers))
   }
 
   async function handleTimerExpire() {
-    if (!canPlayAsSelected || !playerDashboard?.canDecide || busy) return
+    if (!canPlayAsSelf || !playerDashboard?.canDecide || busy) return
     await runAction(async () => {
-      await submitPlayerAutoAdvisor(actingPlayerId)
+      await submitPlayerAutoAdvisor(playerId)
       setAutoAdvisorNotice('Auto Advisor decided for you — balanced growth applied.')
       setActiveLens('journey')
-      const view = await getPlayerLensView(actingPlayerId, 'journey')
+      const view = await getPlayerLensView(playerId, 'journey')
       setLensView(view)
     })
   }
 
   async function handleThirteenthMonth(allocationId) {
-    if (!calendarPlayerId) return
-    await runAction(() => submitPlayerCalendarChoice(calendarPlayerId, allocationId))
+    if (activePlayerId !== playerId) return
+    await runAction(() => submitPlayerCalendarChoice(playerId, allocationId))
   }
 
   async function handleDismissCalendar() {
-    if (!calendarPlayerId) return
-    await runAction(() => dismissPlayerCalendarEvent(calendarPlayerId))
+    if (activePlayerId !== playerId) return
+    await runAction(() => dismissPlayerCalendarEvent(playerId))
   }
 
   function renderLens() {
     if (loading) return <p className="text-slate-500">Loading workspace…</p>
-    if (!activePlayerId) {
-      return (
-        <p className="text-slate-600">
-          Select a player token on the board to preview their financial workspace.
-        </p>
-      )
+    if (activePlayerId !== playerId) {
+      if (!lensView) {
+        return <p className="text-red-600">{error ?? 'Unable to load player view.'}</p>
+      }
+      return <LifeLens dashboard={lensView.data} />
     }
     if (!lensView) {
       return <p className="text-red-600">{error ?? 'Unable to load lens view.'}</p>
@@ -219,8 +217,8 @@ export default function WorkshopWorkspace({ session, onExit }) {
         return (
           <PlanLens
             data={lensView.data}
-            onDecide={canPlayAsSelected ? handleDecide : undefined}
-            onTimerExpire={canPlayAsSelected ? handleTimerExpire : undefined}
+            onDecide={canPlayAsSelf ? handleDecide : undefined}
+            onTimerExpire={canPlayAsSelf ? handleTimerExpire : undefined}
             deciding={busy}
             error={error}
           />
@@ -233,7 +231,7 @@ export default function WorkshopWorkspace({ session, onExit }) {
         return (
           <JourneyLens
             data={lensView.data}
-            onSubmitReflection={canPlayAsSelected ? handleReflection : undefined}
+            onSubmitReflection={canPlayAsSelf ? handleReflection : undefined}
             submitting={busy}
             error={error}
           />
@@ -241,6 +239,18 @@ export default function WorkshopWorkspace({ session, onExit }) {
       default:
         return null
     }
+  }
+
+  if (!loading && needsSetup && playerDashboard?.dreamBoard) {
+    return (
+      <DreamBoardSetup
+        dreamBoard={playerDashboard.dreamBoard}
+        dashboard={playerDashboard}
+        onSubmit={handleDreamBoardSubmit}
+        busy={busy}
+        error={error}
+      />
+    )
   }
 
   return (
@@ -257,20 +267,15 @@ export default function WorkshopWorkspace({ session, onExit }) {
           <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-[#8B0000]">
-                SPIKE LIFE™ Workshop
+                SPIKE LIFE™ Multiplayer
               </p>
-              <h1 className="text-lg font-semibold text-slate-900">
-                {displayName}
-                <span className="ml-2 text-sm font-normal capitalize text-slate-500">
-                  ({role})
-                </span>
-              </h1>
+              <h1 className="text-lg font-semibold text-slate-900">{displayName}</h1>
               {gameCode && (
                 <div className="mt-2">
                   <GameCodeBadge code={gameCode} compact />
                 </div>
               )}
-              {!isFacilitator && archetypeLabel && (
+              {archetypeLabel && (
                 <div className="mt-3 max-w-md">
                   <PersonaAssignedCard
                     archetypeLabel={archetypeLabel}
@@ -291,20 +296,13 @@ export default function WorkshopWorkspace({ session, onExit }) {
           </div>
         </header>
 
-        <div
-          className={`mx-auto grid max-w-7xl gap-4 px-4 py-4 ${
-            isFacilitator ? 'lg:grid-cols-[14rem_1fr_12rem]' : 'lg:grid-cols-[1fr_12rem]'
-          }`}
-        >
-          {isFacilitator && (
-            <FacilitatorPanel
-              board={board}
-              busy={busy}
-              gameCode={gameCode}
-              isFacilitator={isFacilitator}
-              onStartCycle={() => runAction(() => startRoomCycle())}
-            />
-          )}
+        <div className="mx-auto grid max-w-7xl gap-4 px-4 py-4 lg:grid-cols-[14rem_1fr_12rem]">
+          <RoomPanel
+            board={board}
+            busy={busy}
+            gameCode={gameCode}
+            onStartCycle={() => runAction(() => startRoomCycle())}
+          />
 
           <div className="min-w-0 space-y-4">
             <WorkshopBoard
@@ -313,12 +311,14 @@ export default function WorkshopWorkspace({ session, onExit }) {
               selectedDomainId={playerDashboard?.selectedDomainId ?? null}
               onSelectPlayer={selectPlayer}
               onAdvanceTurn={
-                isFacilitator ? () => runAction(() => advanceRoomTurn()) : undefined
+                board?.canAdvanceTurn
+                  ? () => runAction(() => advanceRoomTurn())
+                  : undefined
               }
               advancing={busy}
             />
 
-            {playerDashboard && (
+            {playerDashboard && activePlayerId === playerId && (
               <GameStatusBar
                 age={playerDashboard.age}
                 cashFlow={playerDashboard.monthlySurplus?.formatted}
@@ -360,36 +360,25 @@ export default function WorkshopWorkspace({ session, onExit }) {
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <h2 className="text-sm font-semibold text-slate-900">
-                    {activePlayerId
-                      ? `Viewing: ${selectedPlayer?.displayName ?? activePlayerId}`
-                      : 'Player workspace'}
+                    {activePlayerId === playerId
+                      ? 'Your workspace'
+                      : `Viewing: ${selectedPlayer?.displayName ?? activePlayerId}`}
                   </h2>
-                  {!isFacilitator && activePlayerId !== playerId && (
-                    <p className="text-xs text-amber-700">You can only play as yourself.</p>
+                  {activePlayerId !== playerId && (
+                    <p className="text-xs text-slate-500">Life lens only — you play as yourself.</p>
                   )}
-                  {canPlayAsSelected && (
+                  {canPlayAsSelf && (
                     <p className="text-xs text-slate-500">
                       Complete Plan → Journey to finish your turn.
                     </p>
                   )}
                 </div>
-                {isFacilitator && board?.players.length > 1 && (
-                  <select
-                    className="rounded-lg border border-slate-200 px-2 py-1 text-sm"
-                    value={activePlayerId ?? ''}
-                    onChange={(e) => selectPlayer(e.target.value)}
-                  >
-                    {board.players.map((p) => (
-                      <option key={p.playerId} value={p.playerId}>
-                        {p.displayName}
-                      </option>
-                    ))}
-                  </select>
-                )}
               </div>
 
               <div className="mt-4 flex gap-4">
-                <LensNav activeLens={activeLens} onChange={changeLens} />
+                {activePlayerId === playerId && (
+                  <LensNav activeLens={activeLens} onChange={changeLens} />
+                )}
                 <main className="min-w-0 flex-1">{renderLens()}</main>
               </div>
             </section>
@@ -398,7 +387,9 @@ export default function WorkshopWorkspace({ session, onExit }) {
           <WorkshopScoreHud board={board} selectedPlayer={selectedPlayer} />
         </div>
 
-        <LensNav activeLens={activeLens} onChange={changeLens} compact />
+        {activePlayerId === playerId && (
+          <LensNav activeLens={activeLens} onChange={changeLens} compact />
+        )}
       </div>
     </PlanningCycleShell>
   )
