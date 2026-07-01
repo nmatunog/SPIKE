@@ -11,14 +11,16 @@ export function Week3Day3PlaybookHero({ className = '' }) {
       className={`overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-card ${className}`}
       aria-label="Week 3 Day 3 hero"
     >
-      <img
-        src={WEEK3_DAY3_HERO_IMAGE}
-        alt="W3D3 Playbook — The Business Engine. Client experience at the core."
-        className="block h-auto w-full"
-        width={1920}
-        height={1080}
-        decoding="async"
-      />
+      <div className="flex min-h-[160px] items-center justify-center overflow-hidden bg-slate-950 sm:min-h-[180px] lg:min-h-[220px]">
+        <img
+          src={WEEK3_DAY3_HERO_IMAGE}
+          alt="W3D3 Playbook — The Business Engine. Client experience at the core."
+          className="block max-h-[200px] w-full object-contain object-center sm:max-h-[240px] lg:max-h-[300px]"
+          width={1024}
+          height={576}
+          decoding="async"
+        />
+      </div>
       <div className="border-t border-slate-100 bg-gradient-to-r from-slate-900 to-spike-dark px-4 py-3 sm:px-5">
         <p className="text-sm font-semibold text-white">
           The Business Engine — Discover. Validate. Advise. Build.
