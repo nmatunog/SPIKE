@@ -22,6 +22,7 @@ const WEEK2_DAY1_ID = 'day-segment-1-week-2-day-1';
 const VENTURE_STUDIO_ACTIVITY_ID = 'activity-day-3-persona-workshop';
 const VENTURE_DESIGN_ACTIVITY_ID = 'activity-day-4-canvas-workshop';
 const VENTURE_DESIGN_DECK_ID = 'presentation-day-4-deck-02';
+const WEEK3_DAY3_DECK_02_ID = 'presentation-w3-d3-deck-02';
 const WEEK2_ACTIVATE_HERO_IMAGE = '/images/week-2-activate-hero.png';
 
 /**
@@ -78,6 +79,7 @@ export function SessionView({
           return (
             pres.presentation.id !== 'presentation-day-3-deck-02'
             && pres.presentation.id !== VENTURE_DESIGN_DECK_ID
+            && pres.presentation.id !== WEEK3_DAY3_DECK_02_ID
           );
         })
       : [];

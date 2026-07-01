@@ -4,7 +4,7 @@
     "title": "Facilitators Content Reference",
     "subtitle": "Segment 1 — Weeks 1–4: Talks, Decks, Activities & Daily Flow",
     "version": "1.0.0",
-    "updatedAt": "2026-06-30",
+    "updatedAt": "2026-07-01",
     "audience": [
       "Program Coach",
       "Admin",
@@ -3055,57 +3055,6 @@
                   "imageUrl": "/content/segment-1/week-2/day-2/deck-01/slide-05.png"
                 }
               ]
-            },
-            {
-              "id": "presentation-w2-d2-deck-02",
-              "title": "Program Coach Deck 02 — Advisory Dyad Workshop",
-              "purpose": "",
-              "slideCount": 5,
-              "status": "published",
-              "pptxUrl": null,
-              "pdfUrl": null,
-              "slides": [
-                {
-                  "number": 1,
-                  "title": "Dyad Protocol & Timing",
-                  "summary": "8 min discovery / 4 min feedback / swap.",
-                  "facilitatorNotes": "Facilitate practice and feedback.",
-                  "discussionQuestions": [],
-                  "imageUrl": null
-                },
-                {
-                  "number": 2,
-                  "title": "Client Persona Cards",
-                  "summary": "Use Week 1 persona or provided scenarios.",
-                  "facilitatorNotes": "Facilitate practice and feedback.",
-                  "discussionQuestions": [],
-                  "imageUrl": null
-                },
-                {
-                  "number": 3,
-                  "title": "Observation Checklist",
-                  "summary": "Mentors score listening, empathy, note-taking.",
-                  "facilitatorNotes": "Facilitate practice and feedback.",
-                  "discussionQuestions": [],
-                  "imageUrl": null
-                },
-                {
-                  "number": 4,
-                  "title": "Squad Synthesis",
-                  "summary": "Top 3 needs themes per squad.",
-                  "facilitatorNotes": "Facilitate practice and feedback.",
-                  "discussionQuestions": [],
-                  "imageUrl": null
-                },
-                {
-                  "number": 5,
-                  "title": "Day 7 Deliverables",
-                  "summary": "FNA notes uploaded; preview field survey planning.",
-                  "facilitatorNotes": "Facilitate practice and feedback.",
-                  "discussionQuestions": [],
-                  "imageUrl": null
-                }
-              ]
             }
           ],
           "sessionFlow": [
@@ -3372,57 +3321,6 @@
                   "facilitatorNotes": "",
                   "discussionQuestions": [],
                   "imageUrl": "/content/segment-1/week-2/day-3/deck-01/slide-12.png"
-                }
-              ]
-            },
-            {
-              "id": "presentation-w2-d3-deck-02",
-              "title": "Program Coach Deck 02 — Survey Workshop & Pilot",
-              "purpose": "",
-              "slideCount": 5,
-              "status": "published",
-              "pptxUrl": null,
-              "pdfUrl": null,
-              "slides": [
-                {
-                  "number": 1,
-                  "title": "Survey Blueprint Template",
-                  "summary": "Hypothesis, questions, success metrics.",
-                  "facilitatorNotes": "Critique and finalize.",
-                  "discussionQuestions": [],
-                  "imageUrl": null
-                },
-                {
-                  "number": 2,
-                  "title": "Pilot Protocol",
-                  "summary": "3 internal pilots before field day.",
-                  "facilitatorNotes": "Critique and finalize.",
-                  "discussionQuestions": [],
-                  "imageUrl": null
-                },
-                {
-                  "number": 3,
-                  "title": "Peer Review Stations",
-                  "summary": "Rotate squads for critique.",
-                  "facilitatorNotes": "Critique and finalize.",
-                  "discussionQuestions": [],
-                  "imageUrl": null
-                },
-                {
-                  "number": 4,
-                  "title": "Field Plan Logistics",
-                  "summary": "Locations, quotas, timestamps.",
-                  "facilitatorNotes": "Critique and finalize.",
-                  "discussionQuestions": [],
-                  "imageUrl": null
-                },
-                {
-                  "number": 5,
-                  "title": "Day 8 Deliverables",
-                  "summary": "Approved survey ready for Day 9 field execution.",
-                  "facilitatorNotes": "Critique and finalize.",
-                  "discussionQuestions": [],
-                  "imageUrl": null
                 }
               ]
             }
@@ -3717,49 +3615,6 @@
                   "imageUrl": "/content/segment-1/week-2/day-4/deck-01/slide-18.png"
                 }
               ]
-            },
-            {
-              "id": "presentation-w2-d4-deck-02",
-              "title": "Program Coach Deck 02 — Field Return Debrief",
-              "purpose": "",
-              "slideCount": 4,
-              "status": "published",
-              "pptxUrl": null,
-              "pdfUrl": null,
-              "slides": [
-                {
-                  "number": 1,
-                  "title": "Hot Wash Format",
-                  "summary": "What happened / So what / Now what.",
-                  "facilitatorNotes": "Afternoon synthesis.",
-                  "discussionQuestions": [],
-                  "imageUrl": null
-                },
-                {
-                  "number": 2,
-                  "title": "Data Quality Check",
-                  "summary": "Incomplete rows, outliers.",
-                  "facilitatorNotes": "Afternoon synthesis.",
-                  "discussionQuestions": [],
-                  "imageUrl": null
-                },
-                {
-                  "number": 3,
-                  "title": "Surprise Findings Gallery",
-                  "summary": "Post top quotes (anonymized).",
-                  "facilitatorNotes": "Afternoon synthesis.",
-                  "discussionQuestions": [],
-                  "imageUrl": null
-                },
-                {
-                  "number": 4,
-                  "title": "Tomorrow Preview — Market Review presentations",
-                  "summary": "Prep deck for Day 10 gate.",
-                  "facilitatorNotes": "Afternoon synthesis.",
-                  "discussionQuestions": [],
-                  "imageUrl": null
-                }
-              ]
             }
           ],
           "sessionFlow": [
@@ -4008,57 +3863,6 @@
                   "facilitatorNotes": "Close with Stage Gate ceremony if time permits.",
                   "discussionQuestions": [],
                   "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-14.png"
-                }
-              ]
-            },
-            {
-              "id": "presentation-w2-d5-deck-02",
-              "title": "Program Coach Deck 02 — Gate Ceremony & Week 3 Preview",
-              "purpose": "",
-              "slideCount": 5,
-              "status": "published",
-              "pptxUrl": null,
-              "pdfUrl": null,
-              "slides": [
-                {
-                  "number": 1,
-                  "title": "Squad Presentation Format",
-                  "summary": "8 min present / 4 min Q&A.",
-                  "facilitatorNotes": "Close Week 2.",
-                  "discussionQuestions": [],
-                  "imageUrl": null
-                },
-                {
-                  "number": 2,
-                  "title": "Market Gap Declaration",
-                  "summary": "One sentence opportunity thesis.",
-                  "facilitatorNotes": "Close Week 2.",
-                  "discussionQuestions": [],
-                  "imageUrl": null
-                },
-                {
-                  "number": 3,
-                  "title": "80-Hour Gate Checklist",
-                  "summary": "Portfolio + BP Chapter 2 + hours.",
-                  "facilitatorNotes": "Close Week 2.",
-                  "discussionQuestions": [],
-                  "imageUrl": null
-                },
-                {
-                  "number": 4,
-                  "title": "Week 3 — Discover Your Business Model",
-                  "summary": "Financial Entrepreneurship week. Mon — Opportunity Analysis Tue — Your First Business Tool (FNA) Wed — Why This Business Scales Thu — AIA as Platform Fri — My Financial Advisory Venture Pitch",
-                  "facilitatorNotes": "Close Week 2.",
-                  "discussionQuestions": [],
-                  "imageUrl": null
-                },
-                {
-                  "number": 5,
-                  "title": "Week 2 Close",
-                  "summary": "Celebration + commitments.",
-                  "facilitatorNotes": "Close Week 2.",
-                  "discussionQuestions": [],
-                  "imageUrl": null
                 }
               ]
             }
@@ -5117,57 +4921,6 @@
                   "imageUrl": "/content/segment-1/week-3/day-3/deck-01/slide-12.png"
                 }
               ]
-            },
-            {
-              "id": "presentation-w3-d3-deck-02",
-              "title": "Program Coach Deck 02 — Growth Engines Workshop",
-              "purpose": "",
-              "slideCount": 5,
-              "status": "published",
-              "pptxUrl": null,
-              "pdfUrl": null,
-              "slides": [
-                {
-                  "number": 1,
-                  "title": "Client Growth Flywheel Map",
-                  "summary": "Map your first client → referral path → 20-client milestone.",
-                  "facilitatorNotes": "Use real names from Week 2 interviews where possible.",
-                  "discussionQuestions": [],
-                  "imageUrl": null
-                },
-                {
-                  "number": 2,
-                  "title": "FEC Box 6 Walkthrough",
-                  "summary": "Advisor Excellence · Team & Leadership · Systems & Scale",
-                  "facilitatorNotes": "Live demo in Venture Design Studio / FEC.",
-                  "discussionQuestions": [],
-                  "imageUrl": null
-                },
-                {
-                  "number": 3,
-                  "title": "Squad Growth Engine Draft",
-                  "summary": "Each participant drafts primary growth engine activation plan.",
-                  "facilitatorNotes": "Mentors probe: what will you do in the first 30 days?",
-                  "discussionQuestions": [],
-                  "imageUrl": null
-                },
-                {
-                  "number": 4,
-                  "title": "Blueprint Connection",
-                  "summary": "Growth Engines link to Client, Talent, and Leadership engines in Venture Blueprint.",
-                  "facilitatorNotes": "Show module paths — preview Week 4 build work.",
-                  "discussionQuestions": [],
-                  "imageUrl": null
-                },
-                {
-                  "number": 5,
-                  "title": "Day 13 Deliverables",
-                  "summary": "Client growth flywheel map + FEC Box 6 draft uploaded.",
-                  "facilitatorNotes": "Preview Day 14: AIA as your business platform.",
-                  "discussionQuestions": [],
-                  "imageUrl": null
-                }
-              ]
             }
           ],
           "sessionFlow": [
@@ -5408,8 +5161,7 @@
               "title": "Day 13 — The Business Engine",
               "durationMinutes": 240,
               "presentationIds": [
-                "presentation-w3-d3-deck-01",
-                "presentation-w3-d3-deck-02"
+                "presentation-w3-d3-deck-01"
               ],
               "activityIds": [
                 "activity-w3-d3-01",

@@ -32,6 +32,9 @@ export function FacultyPlaybookView({ bundle }) {
   const isWeek3Day3 = bundle.day.id === 'day-segment-1-week-3-day-3';
   const week2DayMatch = bundle.day.id.match(/day-segment-1-week-2-day-(\d+)/);
   const week2Day = week2DayMatch ? Number(week2DayMatch[1]) : 0;
+  const facultyPresentations = resolvePresentations(bundle, bundle.day.presentations ?? []).filter(
+    (pres) => pres.presentation.id !== 'presentation-w3-d3-deck-02',
+  );
 
   return (
     <div className="space-y-6">
@@ -88,8 +91,8 @@ export function FacultyPlaybookView({ bundle }) {
 
       {activeSession ? (
         <SessionView session={activeSession} bundle={bundle} showSpeakerNotes />
-      ) : resolvePresentations(bundle, bundle.day.presentations ?? []).length ? (
-        resolvePresentations(bundle, bundle.day.presentations ?? []).map((pres) => (
+      ) : facultyPresentations.length ? (
+        facultyPresentations.map((pres) => (
           <PresentationViewer
             key={pres.presentation.id}
             presentation={pres.presentation}

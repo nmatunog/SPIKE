@@ -95,7 +95,9 @@ function extractPublishedDay(weekNum, dayNum) {
   const surveys = loadJson(`${base}/survey.json`);
   const evaluations = loadJson(`${base}/evaluations.json`);
 
-  const decks = [mapDeck(deck01), mapDeck(deck02)].filter(Boolean);
+  const decks = [mapDeck(deck01), mapDeck(deck02)]
+    .filter(Boolean)
+    .filter((d) => (day?.presentations ?? []).includes(d.id));
   const hasPublishedDeck = decks.some((d) => d.pdfUrl || d.pptxUrl || d.slides?.some((s) => s.imageUrl));
 
   return {
