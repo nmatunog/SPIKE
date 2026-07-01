@@ -8,9 +8,8 @@ import {
 import { syncBusinessEngineToFec } from '../lib/businessEngineCanvas/fecSync.js';
 import {
   applyWeeklyTargetChange,
-  syncMonthlyFromWeeklyState,
+  recalculateAllTargets,
   syncYear1FromMonthlyState,
-  weeklyToMonthly,
 } from '../lib/businessEngineCanvas/funnel.js';
 
 /**
@@ -155,28 +154,12 @@ export function useBusinessEngineCanvas(participantId, opts = {}) {
     [persist],
   );
 
-  const recalcMonthlyFromWeekly = useCallback(() => {
-    persist((prev) => {
-      const monthlyTargets = weeklyToMonthly(prev.weeklyTargets);
-      const monthlyManualOverride = Object.fromEntries(
-        Object.keys(prev.monthlyManualOverride).map((k) => [k, false]),
-      );
-      const year1ManualOverride = { ...prev.year1ManualOverride };
-      for (const year1Key of Object.keys(year1ManualOverride)) {
-        if (year1Key !== 'clientReviews') year1ManualOverride[year1Key] = false;
-      }
-      const withMonthly = {
-        ...prev,
-        monthlyTargets,
-        monthlyManualOverride,
-        year1ManualOverride,
-      };
-      return {
-        ...withMonthly,
-        year1Targets: syncYear1FromMonthlyState(withMonthly),
-      };
-    });
+  const recalculateAll = useCallback(() => {
+    persist((prev) => recalculateAllTargets(prev));
   }, [persist]);
+
+  /** @deprecated alias — use recalculateAll */
+  const recalcMonthlyFromWeekly = recalculateAll;
 
   return {
     state,
@@ -190,8 +173,7 @@ export function useBusinessEngineCanvas(participantId, opts = {}) {
     setWeeklyTarget,
     setMonthlyTarget,
     setYear1Target,
+    recalculateAll,
     recalcMonthlyFromWeekly,
-    syncMonthlyFromWeeklyState,
-    syncYear1FromMonthlyState,
   };
 }

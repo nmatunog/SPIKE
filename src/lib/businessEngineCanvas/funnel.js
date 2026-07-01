@@ -191,6 +191,60 @@ export function applyEngineCascadeToTargets(state, cascaded, opts = {}) {
 }
 
 /**
+ * Full manual recalc — funnel from weekly Prospects, then Monthly (×4) and Year 1 (×12).
+ * Clears monthly/year1 auto-override flags (except Client Reviews).
+ * @param {import('./types.js').BusinessEngineCanvasState} state
+ */
+export function recalculateAllTargets(state) {
+  const raw = state.weeklyTargets.prospects;
+  const prospects = raw === '' ? 0 : Number(raw);
+  const revenuePerClient = Number(state.activityEngine.revenue?.value) || FUNNEL_RATIOS.revenuePerClient;
+  const cascaded = cascadeFromProspects(Number.isFinite(prospects) ? prospects : 0, revenuePerClient);
+
+  const activityEngine = { ...state.activityEngine };
+  for (const [stepId, stepValue] of Object.entries({
+    prospects: cascaded.prospects,
+    discovery: cascaded.discovery,
+    presentations: cascaded.presentations,
+    clients: cascaded.clients,
+    referrals: cascaded.referrals,
+  })) {
+    if (activityEngine[stepId]) {
+      activityEngine[stepId] = { ...activityEngine[stepId], value: stepValue };
+    }
+  }
+
+  const monthlyManualOverride = Object.fromEntries(
+    Object.keys(state.monthlyManualOverride ?? {}).map((k) => [k, false]),
+  );
+  const year1ManualOverride = { ...(state.year1ManualOverride ?? {}) };
+  for (const key of Object.keys(year1ManualOverride)) {
+    if (key !== 'clientReviews') year1ManualOverride[key] = false;
+  }
+
+  const next = applyEngineCascadeToTargets(
+    { ...state, activityEngine, monthlyManualOverride, year1ManualOverride },
+    cascaded,
+    { forceMonthly: true },
+  );
+
+  return {
+    ...next,
+    growthSimulation: {
+      ...next.growthSimulation,
+      current: {
+        prospects: cascaded.prospects,
+        discovery: cascaded.discovery,
+        presentations: cascaded.presentations,
+        clients: cascaded.clients,
+        revenue: cascaded.revenue,
+        referrals: cascaded.referrals,
+      },
+    },
+  };
+}
+
+/**
  * @param {import('./types.js').BusinessEngineCanvasState} state
  * @param {number} prospects
  */

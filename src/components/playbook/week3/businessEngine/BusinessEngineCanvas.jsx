@@ -44,6 +44,9 @@ const TOOL_BTN =
 const NAV_BTN =
   'inline-flex min-h-[48px] touch-manipulation items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-orange-300 hover:bg-orange-50 disabled:opacity-40';
 
+const RECALC_BTN =
+  'inline-flex min-h-[44px] touch-manipulation items-center gap-2 rounded-xl border border-orange-300 bg-orange-50 px-4 py-2 text-sm font-semibold text-orange-900 transition hover:border-orange-400 hover:bg-orange-100 lg:min-h-[48px]';
+
 const ICONS = {
   users: Users,
   messages: MessageSquare,
@@ -103,7 +106,7 @@ export function BusinessEngineCanvas({
   const setWeeklyTarget = isBlankPreview ? () => {} : participant.setWeeklyTarget;
   const setMonthlyTarget = isBlankPreview ? () => {} : participant.setMonthlyTarget;
   const setYear1Target = isBlankPreview ? () => {} : participant.setYear1Target;
-  const recalcMonthlyFromWeekly = isBlankPreview ? () => {} : participant.recalcMonthlyFromWeekly;
+  const recalculateAll = isBlankPreview ? () => {} : participant.recalculateAll;
   const previewReadOnly = readOnly || isBlankPreview;
 
   function updateEngineStep(stepId, patch) {
@@ -203,6 +206,15 @@ export function BusinessEngineCanvas({
           <div className="flex flex-wrap items-center gap-2">
             {!previewReadOnly ? (
               <>
+                <button
+                  type="button"
+                  onClick={recalculateAll}
+                  className={RECALC_BTN}
+                  title="Re-run funnel from Prospects, then Monthly (Weekly × 4) and Year 1 (Monthly × 12)"
+                >
+                  <Calculator size={16} aria-hidden />
+                  Recalculate
+                </button>
                 <button type="button" onClick={undo} disabled={!canUndo} className={TOOL_BTN} aria-label="Undo">
                   <Undo2 size={16} />
                 </button>
@@ -234,7 +246,7 @@ export function BusinessEngineCanvas({
               updateEngineStep={updateEngineStep}
               setWeeklyTarget={setWeeklyTarget}
               setMonthlyTarget={setMonthlyTarget}
-              recalcMonthlyFromWeekly={recalcMonthlyFromWeekly}
+              recalculateAll={recalculateAll}
               persist={persist}
             />
           </CanvasPageShell>
@@ -246,6 +258,7 @@ export function BusinessEngineCanvas({
               persist={persist}
               updateGrowthNew={updateGrowthNew}
               setYear1Target={setYear1Target}
+              recalculateAll={recalculateAll}
             />
           </CanvasPageShell>
         </>
@@ -264,7 +277,7 @@ export function BusinessEngineCanvas({
                 updateEngineStep={updateEngineStep}
                 setWeeklyTarget={setWeeklyTarget}
                 setMonthlyTarget={setMonthlyTarget}
-                recalcMonthlyFromWeekly={recalcMonthlyFromWeekly}
+                recalculateAll={recalculateAll}
                 persist={persist}
               />
             ) : (
@@ -275,6 +288,7 @@ export function BusinessEngineCanvas({
                 persist={persist}
                 updateGrowthNew={updateGrowthNew}
                 setYear1Target={setYear1Target}
+                recalculateAll={recalculateAll}
               />
             )}
           </div>
@@ -350,7 +364,7 @@ function PageOne({
   updateEngineStep,
   setWeeklyTarget,
   setMonthlyTarget,
-  recalcMonthlyFromWeekly,
+  recalculateAll,
   persist,
 }) {
   return (
@@ -400,6 +414,23 @@ function PageOne({
         </div>
       </section>
 
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-orange-200/80 bg-orange-50/50 px-4 py-3">
+        <p className="text-sm text-slate-700">
+          <span className="font-semibold text-slate-900">Auto-calculate:</span> Monthly = Weekly × 4 · Year 1 = Monthly × 12
+        </p>
+        {!readOnly ? (
+          <button
+            type="button"
+            onClick={recalculateAll}
+            className={RECALC_BTN}
+            title="Re-run funnel from Prospects, then Monthly and Year 1 targets"
+          >
+            <Calculator size={16} aria-hidden />
+            Recalculate
+          </button>
+        ) : null}
+      </div>
+
       <div className="grid gap-6 lg:grid-cols-2">
         <section className="overflow-hidden rounded-xl border border-slate-200">
           <div className="px-4 py-3 text-sm font-bold text-white" style={{ backgroundColor: BEC_BRAND.navy }}>
@@ -440,11 +471,11 @@ function PageOne({
             {!readOnly ? (
               <button
                 type="button"
-                onClick={recalcMonthlyFromWeekly}
+                onClick={recalculateAll}
                 className="flex items-center gap-1 text-xs font-semibold text-orange-200 hover:text-white"
-                title="Recalculate Monthly (Weekly × 4) and Year 1 (Monthly × 12)"
+                title="Re-run full calculation routine"
               >
-                <Calculator size={14} /> Weekly × 4
+                <Calculator size={14} aria-hidden /> Recalculate
               </button>
             ) : null}
           </div>
@@ -515,7 +546,7 @@ function PageOne({
 }
 
 /** @param {any} props */
-function PageTwo({ state, readOnly, blankPreview = false, persist, updateGrowthNew, setYear1Target }) {
+function PageTwo({ state, readOnly, blankPreview = false, persist, updateGrowthNew, setYear1Target, recalculateAll }) {
   const projectedRevenue = Number(state.growthSimulation.new.revenue) || 0;
   const currentRevenue = Number(state.growthSimulation.current.revenue) || 0;
   const revenueDelta = projectedRevenue - currentRevenue;
@@ -524,11 +555,21 @@ function PageTwo({ state, readOnly, blankPreview = false, persist, updateGrowthN
   return (
     <>
       <section>
-        <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Year 1 Targets</p>
-        <p className="mb-4 mt-1 text-sm text-slate-600">
-          Set your Year 1 targets for your Business Engine. Clients, revenue, and referrals auto-fill from{' '}
-          <span className="font-semibold text-slate-800">Monthly × 12</span> unless you edit them directly.
-        </p>
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Year 1 Targets</p>
+            <p className="mt-1 text-sm text-slate-600">
+              Clients, revenue, and referrals auto-fill from{' '}
+              <span className="font-semibold text-slate-800">Monthly × 12</span> unless you edit them directly.
+            </p>
+          </div>
+          {!readOnly ? (
+            <button type="button" onClick={recalculateAll} className={RECALC_BTN}>
+              <Calculator size={16} aria-hidden />
+              Recalculate
+            </button>
+          ) : null}
+        </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {YEAR1_KPIS.map((kpi) => (
             <div key={kpi.id} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
