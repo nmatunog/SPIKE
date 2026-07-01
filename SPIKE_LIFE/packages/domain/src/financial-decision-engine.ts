@@ -211,15 +211,17 @@ export function startRoomCycle(
         || boardCard.scenarioId === 'protection_stress'
         ? 'protection_stress'
         : 'promotion')
-  } else if (existing) {
+  } else if (existing && forcedScenarioId === undefined) {
     try {
       const picked = selectCycleEncounter(existing)
-      selectionScenario = forcedScenarioId ?? picked.scenarioId
+      selectionScenario = picked.scenarioId
       domainId = picked.domainId
       encounterId = picked.encounterId
     } catch {
-      selectionScenario = forcedScenarioId ?? existing.scenarioId
+      selectionScenario = existing.scenarioId
     }
+  } else if (existing) {
+    selectionScenario = forcedScenarioId ?? existing.scenarioId
   }
 
   let sim: Simulation

@@ -29,6 +29,16 @@ export interface GameBoardView {
   maxTurns: number
   lifeStage: LifeStage
   lifeStageLabel: string
+  cycleLabel: string | null
+  lifeDomains: Array<{
+    id: string
+    label: string
+    category: string
+    icon: string
+    color: string
+  }>
+  domainAnimationCycle: readonly string[]
+  selectedDomainId: string | null
   joinOpen: boolean
   playerCount: number
   maxPlayers: number

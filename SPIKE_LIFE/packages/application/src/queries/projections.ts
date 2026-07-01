@@ -231,6 +231,7 @@ export function projectDashboard(session: SimulationSession): DashboardView {
     maxCycles,
     turnNumber: session.turnNumber ?? 1,
     maxTurns,
+    selectedDomainId: session.selectedDomainId ?? null,
     canAdvanceTurn:
       session.phase === 'cycle_complete'
       && (session.turnNumber ?? 1) < maxTurns

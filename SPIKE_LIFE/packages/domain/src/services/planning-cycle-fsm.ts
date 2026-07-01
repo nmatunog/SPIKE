@@ -1,5 +1,7 @@
 import type { CyclePhase } from '../types.js'
 
+export type PlanningCyclePhase = CyclePhase
+
 /**
  * GDS Ch 3 — canonical planning cycle phases.
  * Existing CyclePhase values map into this sequence; calendar gates overlay cycle_complete.

@@ -57,6 +57,7 @@ export interface DashboardView {
   maxCycles: number
   turnNumber: number
   maxTurns: number
+  selectedDomainId: string | null
   canAdvanceTurn: boolean
   workshopComplete: boolean
   dreamBoardComplete: boolean

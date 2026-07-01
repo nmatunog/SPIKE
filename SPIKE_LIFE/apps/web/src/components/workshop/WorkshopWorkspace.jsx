@@ -56,6 +56,7 @@ export default function WorkshopWorkspace({ session, onExit }) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(null)
   const [lifeSummary, setLifeSummary] = useState(null)
+  const [autoAdvisorNotice, setAutoAdvisorNotice] = useState(null)
 
   const refreshAll = useCallback(async (lens = activeLens) => {
     const nextBoard = await getGameBoard()
@@ -181,6 +182,7 @@ export default function WorkshopWorkspace({ session, onExit }) {
     if (!canPlayAsSelected || !playerDashboard?.canDecide || busy) return
     await runAction(async () => {
       await submitPlayerAutoAdvisor(actingPlayerId)
+      setAutoAdvisorNotice('Auto Advisor decided for you — balanced growth applied.')
       setActiveLens('journey')
       const view = await getPlayerLensView(actingPlayerId, 'journey')
       setLensView(view)
@@ -308,6 +310,7 @@ export default function WorkshopWorkspace({ session, onExit }) {
             <WorkshopBoard
               board={board}
               selectedPlayerId={activePlayerId}
+              selectedDomainId={playerDashboard?.selectedDomainId ?? null}
               onSelectPlayer={selectPlayer}
               onAdvanceTurn={
                 isFacilitator ? () => runAction(() => advanceRoomTurn()) : undefined
@@ -323,6 +326,9 @@ export default function WorkshopWorkspace({ session, onExit }) {
                 netWorth={playerDashboard.netWorth?.formatted}
                 lifeScore={playerDashboard.lifeScore?.overall}
                 year={playerDashboard.simulationYear}
+                cycleLabel={playerDashboard.cycleLabel}
+                turnNumber={playerDashboard.turnNumber}
+                maxTurns={playerDashboard.maxTurns}
                 financialHealth={computeFinancialHealth(
                   playerDashboard.fnaRating
                     ? {
@@ -335,6 +341,15 @@ export default function WorkshopWorkspace({ session, onExit }) {
                     : null,
                 )}
               />
+            )}
+
+            {autoAdvisorNotice && (
+              <p
+                className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900"
+                role="status"
+              >
+                {autoAdvisorNotice}
+              </p>
             )}
 
             {error && (

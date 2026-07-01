@@ -5,6 +5,11 @@ import {
   workshopStageLabel,
   getArchetypeLabel,
   getArchetypeTagline,
+  getLifeDomainGrid,
+  getDomainAnimationCycleIds,
+  formatCycleLabel,
+  cycleIndexForMacroTurn,
+  getCampaignConfig,
 } from '@spike-life/domain'
 import type {
   GameBoardView,
@@ -110,6 +115,11 @@ export function projectGameBoard(
       && allPlayersDone
       && room.turnNumber >= room.maxTurns)
 
+  const config = getCampaignConfig()
+  const cycleIndex = room.sessionMode === 'campaign'
+    ? room.turnNumber
+    : cycleIndexForMacroTurn(room.turnNumber, config)
+
   return {
     roomId: room.id,
     gameCode: room.gameCode,
@@ -122,6 +132,16 @@ export function projectGameBoard(
     maxTurns: room.maxTurns,
     lifeStage: room.lifeStage,
     lifeStageLabel: workshopStageLabel(room.lifeStage),
+    cycleLabel: formatCycleLabel(cycleIndex),
+    lifeDomains: getLifeDomainGrid().map((domain) => ({
+      id: domain.id,
+      label: domain.label,
+      category: domain.category,
+      icon: domain.icon,
+      color: domain.color,
+    })),
+    domainAnimationCycle: [...getDomainAnimationCycleIds()],
+    selectedDomainId: null,
     joinOpen: room.joinOpen,
     playerCount: room.slots.length,
     maxPlayers: room.maxPlayers,

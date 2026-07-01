@@ -5,11 +5,15 @@ import {
   advanceTurn,
   createCampaignSession,
   createWorkshopSession,
+  dismissCalendarEvent,
+  resolveThirteenthMonthPay,
   setDreamBoard,
   startRoomCycle,
   submitDecision,
   submitReflection,
 } from './financial-decision-engine.js'
+import { isSessionComplete } from './services/session-mode.js'
+import { getMaxCampaignCycles } from './services/campaign-context.js'
 import { configureYearLoop } from './gameboard/services/year-loop/year-loop-context.js'
 import { TEST_CURRENCY } from './test/currency-fixture.js'
 import { bootstrapTestEncounters } from './test/encounter-fixture.js'
@@ -39,6 +43,17 @@ function readySession(id: string, mode: SessionMode) {
   return session
 }
 
+function clearCalendarEvents(session: ReturnType<typeof readySession>) {
+  let next = session
+  if (next.pendingCalendarEvent === 'thirteenth_month') {
+    next = resolveThirteenthMonthPay(next, 'emergency_fund')
+  }
+  if (next.pendingCalendarEvent) {
+    next = dismissCalendarEvent(next)
+  }
+  return next
+}
+
 describe('campaign mode (20 cycles)', () => {
   beforeAll(() => bootstrapTestPack())
 
@@ -62,6 +77,32 @@ describe('campaign mode (20 cycles)', () => {
     expect(session.halfYear).toBe('H2')
     expect(session.pendingCalendarEvent).toBeNull()
     expect(session.selectedDomainId).toBeTruthy()
+  })
+
+  it('completes all 20 campaign cycles before session end', () => {
+    const maxCycles = getMaxCampaignCycles()
+    let session = readySession('camp-20', 'campaign')
+
+    for (let cycle = 1; cycle <= maxCycles; cycle += 1) {
+      session = startRoomCycle('camp-20', session)
+      session = submitDecision(session, 'maintain_lifestyle_discipline')
+      session = submitReflection(session, SAMPLE_REFLECTION)
+      expect(session.phase).toBe('cycle_complete')
+      expect(session.turnNumber).toBe(cycle)
+      expect(session.cycleIndex).toBe(cycle)
+
+      if (cycle < maxCycles) {
+        session = advanceTurn(session)
+        session = clearCalendarEvents(session)
+      }
+    }
+
+    expect(session.turnNumber).toBe(maxCycles)
+    expect(session.cycleIndex).toBe(maxCycles)
+    expect(
+      isSessionComplete(session.sessionMode, session.turnNumber, session.cycleIndex),
+    ).toBe(true)
+    expect(() => advanceTurn(session)).toThrow(/already complete/)
   })
 })
 

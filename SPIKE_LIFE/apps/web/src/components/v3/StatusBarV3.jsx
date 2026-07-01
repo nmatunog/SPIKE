@@ -1,5 +1,6 @@
 import { Heart, Menu, Mountain, UserRound } from 'lucide-react'
 import { SpikeVentureLogo } from '../../../../../../src/components/brand/SpikeVentureLogo.jsx'
+import CycleBadge from '../gameboard/CycleBadge.jsx'
 
 export default function StatusBarV3({
   dashboard,
@@ -21,6 +22,14 @@ export default function StatusBarV3({
 
       <div className="gsv3-header-brand">
         <SpikeVentureLogo variant="onLight" className="gsv3-header-logo" />
+        {dashboard?.cycleLabel && dashboard.turnNumber != null && dashboard.maxTurns != null && (
+          <CycleBadge
+            className="mt-2 hidden sm:flex"
+            cycleLabel={dashboard.cycleLabel}
+            turnNumber={dashboard.turnNumber}
+            maxTurns={dashboard.maxTurns}
+          />
+        )}
       </div>
 
       <div className="gsv3-header-stats" role="group" aria-label="Player stats">
