@@ -12,6 +12,8 @@ export const MOCK_AUTH_ACCOUNTS = {
       email: 'ra-spike@example.com',
       name: 'Rae Academy',
       role: 'INTERN',
+      mobile: '+63 917 000 0000',
+      avatarUrl: null,
       internProgress: {
         program_slug: 'ra-spike',
         ra_spike_segment: 1,

@@ -41,6 +41,9 @@ import { RaSpikeSquadPage } from './pages/ra-spike/RaSpikeSquadPage.jsx';
 import { RaSpikeProfilePage } from './pages/ra-spike/RaSpikeProfilePage.jsx';
 import { RaSpikeNav } from './components/ra-spike/RaSpikeNav.jsx';
 import { RA_SPIKE_PROGRAM } from './lib/programs/ra-spike.js';
+import { shouldGateRaSpikeOnboarding, isRaSpikeOnboardingPath } from './lib/raSpikeOnboardingService.js';
+import { registerRaSpikeViaApi, isRaSpikeSignupApiUnavailable } from './lib/raSpikeSignupService.js';
+import { RaSpikeOnboardingPage } from './pages/ra-spike/RaSpikeOnboardingPage.jsx';
 import { StaffSquadHubPage, StaffSquadsListPage } from './components/staff/StaffSquadHubPage.jsx';
 import { Week2LoginWelcomeFlow } from './components/week2/Week2LoginWelcomeFlow.jsx';
 import { shouldShowWeek2LoginWelcome } from './lib/week2LoginWelcome.js';
@@ -260,7 +263,16 @@ const SpikeMasterPortal = () => {
     if (authLoading || effectiveUserRole !== 'intern' || !user?.id) return;
     if (userRole === 'superuser') return;
     if (!shouldUseSupabaseForUser(user)) return;
-    if (isRaSpikeProgram(resolveProgramSlug(user?.internProgress))) return;
+    if (isRaSpikeProgram(resolveProgramSlug(user?.internProgress))) {
+      if (shouldGateRaSpikeOnboarding(user.internProgress)) {
+        if (!isRaSpikeOnboardingPath(location.pathname)) {
+          navigate(ROUTES.raSpikeOnboarding, { replace: true });
+        }
+      } else if (isRaSpikeOnboardingPath(location.pathname)) {
+        navigate(ROUTES.raSpikeHome, { replace: true });
+      }
+      return;
+    }
     if (user.internProgress?.onboarding_complete || isInternOnboardingSatisfied(user.internProgress)) {
       setOnboardingCompleteCache(user.id, true);
       return;
@@ -716,6 +728,42 @@ const SpikeMasterPortal = () => {
       showToast('Signed in successfully.');
     },
     [login, navigate, showToast],
+  );
+
+  const handleRaSpikeSignup = useCallback(
+    async ({ name, email, password, mobile, batchInviteCode, cohortId }) => {
+      if (mockAuthEnabled && !usingSupabaseAuth) {
+        throw new Error('RA-SPIKE signup requires Supabase mode.');
+      }
+
+      try {
+        await registerRaSpikeViaApi({
+          name,
+          email,
+          password,
+          mobile,
+          batchInviteCode,
+          cohortId,
+        });
+      } catch (apiErr) {
+        if (!isRaSpikeSignupApiUnavailable(apiErr)) {
+          throw new Error(formatAuthEmailError(apiErr));
+        }
+        if (mockAuthEnabled) {
+          throw new Error('RA-SPIKE signup API unavailable. Use ra-spike@example.com for demo login.');
+        }
+        throw apiErr;
+      }
+
+      const signedIn = await login(email, password);
+      const programSlug = resolveProgramSlug(signedIn?.internProgress);
+      const target = shouldGateRaSpikeOnboarding(signedIn?.internProgress)
+        ? ROUTES.raSpikeOnboarding
+        : defaultRouteForRole('intern', programSlug);
+      navigate(target, { replace: true });
+      showToast('Welcome to RA-SPIKE! Complete your profile to get started.', 'success');
+    },
+    [login, mockAuthEnabled, navigate, showToast, usingSupabaseAuth],
   );
 
   const handleInternSignup = useCallback(
@@ -1682,6 +1730,9 @@ const SpikeMasterPortal = () => {
         if (path === ROUTES.raSpikeProfile) {
           return <RaSpikeProfilePage user={internUser} />;
         }
+        if (path === ROUTES.raSpikeOnboarding) {
+          return <RaSpikeOnboardingPage user={internUser} />;
+        }
         if (internUser?.internProgress) {
           return <Navigate to={defaultRouteForRole('intern', programSlug)} replace />;
         }
@@ -2204,9 +2255,9 @@ const SpikeMasterPortal = () => {
       {!immersiveLife && readOnlyViewer ? <ReadOnlyViewerBar /> : null}
 
       {!immersiveLife && userRole !== 'guest' && userRole !== 'profile_error' && !authLoading && (
-        showRaSpikeChrome ? (
+        showRaSpikeChrome && !isRaSpikeOnboardingPath(location.pathname) ? (
           <RaSpikeNav />
-        ) : (
+        ) : showRaSpikeChrome ? null : (
           <ModuleNav
             userRole={moduleNavRole}
             superuserPreview={
@@ -2272,6 +2323,7 @@ const SpikeMasterPortal = () => {
                   usingSupabaseAuth ? requestPasswordHelpForGuest : undefined
                 }
                 onInternSignup={handleInternSignup}
+                onRaSpikeSignup={handleRaSpikeSignup}
                 onStaffSignup={handleStaffSignup}
                 staffBootstrapMode={staffBootstrapMode}
                 bootstrapSecretRequired={bootstrapSecretRequired}

@@ -19,6 +19,7 @@ import { normalizeLoginIdentifier, isReadOnlyViewerProfile } from './lib/readOnl
 import { setOnboardingCompleteCache, isInternOnboardingSatisfied } from './lib/cohortOnboardingService.js';
 import { ensureInternProgress } from './lib/supabase/cohortOnboarding.js';
 import { fetchInternProgressRow } from './lib/supabase/internProgressFields.js';
+import { fetchProfileRow } from './lib/supabase/profileFields.js';
 import { scheduleInternDelayedUpload, clearInternDelayedUploadSchedule, runInternSignInCloudUpload } from './lib/internSessionSync.js';
 import { runInternLogoutBackup } from './lib/internLogoutBackup.js';
 import { isSupabaseConfigured, supabase } from './supabaseClient';
@@ -116,19 +117,13 @@ export function AuthProvider({ children }) {
   const fetchSupabaseUser = useCallback(async (authUser) => {
     if (!authUser || !supabase) return null;
 
-    const [{ data: profile, error: profileError }, internProgressRaw] =
-      await Promise.all([
-        supabase
-          .from('profiles')
-          .select('id, email, name, role, read_only')
-          .eq('id', authUser.id)
-          .maybeSingle(),
-        fetchInternProgressRow(supabase, authUser.id),
-      ]);
+    const [profile, internProgressRaw] = await Promise.all([
+      fetchProfileRow(supabase, authUser.id),
+      fetchInternProgressRow(supabase, authUser.id),
+    ]);
 
     let internProgress = internProgressRaw;
 
-    if (profileError) throw profileError;
     if (!profile) {
       if (internProgress?.onboarding_complete || isInternOnboardingSatisfied(internProgress)) {
         setOnboardingCompleteCache(authUser.id, true);
@@ -183,6 +178,8 @@ export function AuthProvider({ children }) {
       email: profile.email,
       name: profile.name,
       role: profile.role,
+      mobile: profile.mobile ?? null,
+      avatarUrl: profile.avatar_url ?? null,
       internProgress: internProgress || null,
       mustChangePassword: readMustChangePassword(authUser),
       readOnlyViewer: isReadOnlyViewerProfile(profile),

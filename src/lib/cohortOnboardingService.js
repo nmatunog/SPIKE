@@ -504,6 +504,32 @@ export async function staffUpdateCohortStartDate(cohortId, startDate) {
   return db.updateCohort(cohortId, { start_date: normalized });
 }
 
+/**
+ * @param {number} cohortId
+ * @param {{
+ *   agency?: string,
+ *   unitManager?: string,
+ *   batchLabel?: string,
+ *   batchInviteCode?: string,
+ *   signupOpen?: boolean,
+ * }} fields
+ */
+export async function staffUpdateRaSpikeCohortBatch(cohortId, fields) {
+  await assertPortalCanWrite();
+  /** @type {Record<string, unknown>} */
+  const patch = {};
+  if (fields.agency !== undefined) patch.agency = String(fields.agency).trim() || null;
+  if (fields.unitManager !== undefined) patch.unit_manager = String(fields.unitManager).trim() || null;
+  if (fields.batchLabel !== undefined) patch.batch_label = String(fields.batchLabel).trim() || null;
+  if (fields.batchInviteCode !== undefined) {
+    const code = String(fields.batchInviteCode).trim();
+    patch.batch_invite_code = code ? code.toUpperCase() : null;
+  }
+  if (fields.signupOpen !== undefined) patch.signup_open = Boolean(fields.signupOpen);
+  if (!Object.keys(patch).length) throw new Error('No batch fields to save.');
+  return db.updateCohort(cohortId, patch);
+}
+
 export async function staffLoadDashboard() {
   let cohort = await db.fetchActiveCohort();
   if (!cohort) {

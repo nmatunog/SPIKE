@@ -3,6 +3,7 @@ import { SpikeLogo } from '../components/brand/SpikeLogo.jsx';
 import { GuestBootstrapForm } from '../components/GuestBootstrapForm.jsx';
 import { GuestLoginForm } from '../components/GuestLoginForm.jsx';
 import { InternSignupPanel } from '../components/InternSignupPanel.jsx';
+import { RaSpikeSignupPanel } from '../components/ra-spike/RaSpikeSignupPanel.jsx';
 import { StaffSignupPanel } from '../components/StaffSignupPanel.jsx';
 import { listMockAuthAccountHints } from '../lib/mockAuthUsers.js';
 
@@ -18,6 +19,7 @@ import { listMockAuthAccountHints } from '../lib/mockAuthUsers.js';
  *   onLogin: (email: string, password: string) => Promise<void>,
  *   onRequestPasswordHelp?: (email: string, note: string) => Promise<void>,
  *   onInternSignup: (payload: object) => Promise<void>,
+ *   onRaSpikeSignup?: (payload: object) => Promise<void>,
  *   onStaffSignup: (payload: object) => Promise<void>,
  *   staffBootstrapMode?: boolean,
  *   bootstrapSecretRequired?: boolean,
@@ -36,6 +38,7 @@ export function WelcomePage({
   onLogin,
   onRequestPasswordHelp,
   onInternSignup,
+  onRaSpikeSignup,
   onStaffSignup,
   staffBootstrapMode = false,
   bootstrapSecretRequired = false,
@@ -133,6 +136,9 @@ export function WelcomePage({
                 />
 
                 {usingSupabaseAuth ? <InternSignupPanel onSignup={onInternSignup} /> : null}
+                {usingSupabaseAuth && onRaSpikeSignup ? (
+                  <RaSpikeSignupPanel onSignup={onRaSpikeSignup} />
+                ) : null}
                 {usingSupabaseAuth ? <StaffSignupPanel onSignup={onStaffSignup} /> : null}
 
                 {usingSupabaseAuth &&
@@ -159,8 +165,9 @@ export function WelcomePage({
         ) : null}
 
         {usingSupabaseAuth && setupLoadState !== 'ok' && !staffBootstrapMode ? (
-          <div className="mt-4 w-full">
+          <div className="mt-4 w-full space-y-4">
             <InternSignupPanel onSignup={onInternSignup} />
+            {onRaSpikeSignup ? <RaSpikeSignupPanel onSignup={onRaSpikeSignup} /> : null}
           </div>
         ) : null}
 

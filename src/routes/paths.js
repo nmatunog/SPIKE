@@ -52,6 +52,7 @@ export const ROUTES = {
   raSpikePlaybook: '/ra-spike/playbook',
   raSpikeSquad: '/ra-spike/squad',
   raSpikeProfile: '/ra-spike/profile',
+  raSpikeOnboarding: '/ra-spike/onboarding',
 };
 
 /** Redirect target after onboarding completes — Build Challenge 1 (Ambition). */
@@ -352,6 +353,7 @@ export const RA_SPIKE_ROUTES = [
   ROUTES.raSpikePlaybook,
   ROUTES.raSpikeSquad,
   ROUTES.raSpikeProfile,
+  ROUTES.raSpikeOnboarding,
 ];
 
 /** SPIKE Internship intern modules hidden from RA-SPIKE participants. */
