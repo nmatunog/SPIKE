@@ -19,6 +19,7 @@
     "deploy:prod": "bash ./scripts/deploy-production.sh",
     "push:dev": "bash ./scripts/auto-push-dev-revisions.sh",
     "ship:dirty": "bash scripts/ship-if-dirty.sh",
+    "db:migrate": "bash scripts/run-supabase-migrations.sh",
     "smoke:content": "node scripts/smoke-content-files.mjs",
     "smoke:content:loader": "node scripts/smoke-content-loader.mjs",
     "simulate:day1": "node scripts/simulate-day1.mjs",

@@ -21,6 +21,11 @@ echo "════════════════════════�
 
 cd "$ROOT"
 
+if [[ -f "$ROOT/scripts/run-supabase-migrations.sh" ]]; then
+  echo "→ Checking Supabase migrations..."
+  bash "$ROOT/scripts/run-supabase-migrations.sh" || echo "→ db:migrate failed (see log); continuing ship"
+fi
+
 if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   echo "→ Not a git repository; skipping ship"
   exit 0
