@@ -486,6 +486,14 @@ export async function staffEnsureActiveCohort() {
   return db.ensureActiveCohortForStaff();
 }
 
+/** @param {number} cohortId @param {string} programSlug */
+export async function staffUpdateCohortProgram(cohortId, programSlug) {
+  await assertPortalCanWrite();
+  const slug = String(programSlug ?? '').trim();
+  if (!slug) throw new Error('Select a program.');
+  return db.updateCohort(cohortId, { program_slug: slug });
+}
+
 /** @param {number} cohortId @param {string} startDate YYYY-MM-DD (Week 1 Day 1) */
 export async function staffUpdateCohortStartDate(cohortId, startDate) {
   await assertPortalCanWrite();

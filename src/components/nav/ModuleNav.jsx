@@ -12,7 +12,12 @@ import {
 } from 'lucide-react';
 import { useCompactNav } from '../../hooks/useCompactNav.js';
 import { useInternPlaybookNavHref } from '../../hooks/useInternPlaybookNavHref.js';
-import { internNavActiveModule, moduleNavForRole, ROUTES } from '../../routes/paths.js';
+import { useProgramSlug } from '../../hooks/useProgramSlug.js';
+import {
+  internNavActiveModuleForProgram,
+  moduleNavForProgram,
+  ROUTES,
+} from '../../routes/paths.js';
 import { SuperuserPreviewPills } from './SuperuserPreviewPills.jsx';
 
 const ICONS = {
@@ -40,23 +45,30 @@ function linkClass(isActive, isMobile) {
 }
 
 function NavItems({ userRole, variant }) {
-  const items = moduleNavForRole(userRole);
+  const programSlug = useProgramSlug();
+  const items = moduleNavForProgram(userRole, userRole === 'intern' ? programSlug : null);
   const isMobile = variant === 'mobile';
   const { pathname } = useLocation();
-  const internActive = userRole === 'intern' ? internNavActiveModule(pathname) : null;
+  const internActive = userRole === 'intern'
+    ? internNavActiveModuleForProgram(pathname, programSlug)
+    : null;
   const internPlaybookHref = useInternPlaybookNavHref();
 
   return items.map(({ path, label, shortLabel, icon }) => {
     const Icon = ICONS[icon] || LayoutDashboard;
     const displayLabel = isMobile ? (shortLabel ?? label) : label;
     const isActive = userRole === 'intern' ? internActive === path : undefined;
-    const to = userRole === 'intern' && path === ROUTES.playbook ? internPlaybookHref : path;
+    const to = userRole === 'intern' && path === ROUTES.playbook
+      ? internPlaybookHref
+      : userRole === 'intern' && programSlug === 'ra-spike' && path === ROUTES.raSpikePlaybook
+        ? ROUTES.raSpikePlaybook
+        : path;
 
     return (
       <NavLink
         key={`${variant}-${path}`}
         to={to}
-        end={path === '/venture-blueprint'}
+        end={path === ROUTES.ventureBlueprint || path === ROUTES.raSpikeHome}
         className={({ isActive: linkActive }) =>
           linkClass(userRole === 'intern' ? isActive : linkActive, isMobile)
         }
@@ -80,7 +92,8 @@ function NavItems({ userRole, variant }) {
  */
 export function ModuleNav({ userRole, superuserPreview }) {
   const compact = useCompactNav();
-  const items = moduleNavForRole(userRole);
+  const programSlug = useProgramSlug();
+  const items = moduleNavForProgram(userRole, userRole === 'intern' ? programSlug : null);
   if (items.length === 0) return null;
 
   if (compact) {

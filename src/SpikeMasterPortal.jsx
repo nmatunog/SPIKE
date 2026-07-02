@@ -33,7 +33,12 @@ import { PageLoader } from './components/ui/PageLoader.jsx';
 import { RoleRouteGuard } from './components/routing/RoleRouteGuard.jsx';
 import { playbookWeek2MissionHref } from './lib/customerDiscovery/week2MissionService.js';
 import { buildSuperuserMentorPreviewInterns } from './lib/superuserMentorPreview.js';
-import { ROUTES, brandLexiconBackHrefForRole, facilitatorsReferenceBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath, isPlaybookPath, isSpikeLifePath, isSpikeLifeImmersivePath, parseStaffSquadHubPath, parseStaffStageGatePath, playbookHref } from './routes/paths.js';
+import { ROUTES, brandLexiconBackHrefForRole, facilitatorsReferenceBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath, isPlaybookPath, isSpikeLifePath, isSpikeLifeImmersivePath, isInternshipOnlyInternPath, parseStaffSquadHubPath, parseStaffStageGatePath, playbookHref } from './routes/paths.js';
+import { resolveProgramSlug, isRaSpikeProgram } from './lib/programs/index.js';
+import { RaSpikeHomePage } from './pages/ra-spike/RaSpikeHomePage.jsx';
+import { RaSpikePlaybookPage } from './pages/ra-spike/RaSpikePlaybookPage.jsx';
+import { RaSpikeSquadPage } from './pages/ra-spike/RaSpikeSquadPage.jsx';
+import { RaSpikeProfilePage } from './pages/ra-spike/RaSpikeProfilePage.jsx';
 import { StaffSquadHubPage, StaffSquadsListPage } from './components/staff/StaffSquadHubPage.jsx';
 import { Week2LoginWelcomeFlow } from './components/week2/Week2LoginWelcomeFlow.jsx';
 import { shouldShowWeek2LoginWelcome } from './lib/week2LoginWelcome.js';
@@ -186,11 +191,18 @@ const SpikeMasterPortal = () => {
   const [week2WelcomeDismissed, setWeek2WelcomeDismissed] = useState(false);
 
   const internForWelcome = internModuleUser ?? user;
+  const internProgramSlug = useMemo(() => {
+    if (portalAccessRole !== 'intern' && !(isSuperuserSession && viewAsRole === 'intern')) {
+      return null;
+    }
+    return resolveProgramSlug((internModuleUser ?? user)?.internProgress);
+  }, [portalAccessRole, isSuperuserSession, viewAsRole, internModuleUser, user]);
   const showWeek2Welcome =
     portalAccessRole === 'intern'
     && !authLoading
     && !week2WelcomeDismissed
     && internForWelcome?.id
+    && !isRaSpikeProgram(internProgramSlug)
     && shouldShowWeek2LoginWelcome(internForWelcome.id, internForWelcome.internProgress);
 
   const hasPendingReflection = useInternHasPendingReflection();
@@ -222,15 +234,18 @@ const SpikeMasterPortal = () => {
     if (authLoading) return;
     if (userRole === 'guest' || userRole === 'profile_error') return;
     if (location.pathname === ROUTES.home) {
-      navigate(defaultRouteForRole(effectiveUserRole), { replace: true });
+      const programSlug = effectiveUserRole === 'intern' ? internProgramSlug : null;
+      navigate(defaultRouteForRole(effectiveUserRole, programSlug), { replace: true });
     }
-  }, [authLoading, userRole, effectiveUserRole, location.pathname, navigate]);
+  }, [authLoading, userRole, effectiveUserRole, internProgramSlug, location.pathname, navigate]);
 
   useEffect(() => {
     if (authLoading || portalAccessRole !== 'intern') return;
     const internId = (internModuleUser ?? user)?.id;
-    if (internId && UNLOCK_WEEK2) ensureWeek2OpenForParticipant(internId);
-  }, [authLoading, portalAccessRole, internModuleUser?.id, user?.id]);
+    if (internId && UNLOCK_WEEK2 && !isRaSpikeProgram(internProgramSlug)) {
+      ensureWeek2OpenForParticipant(internId);
+    }
+  }, [authLoading, portalAccessRole, internModuleUser?.id, user?.id, internProgramSlug]);
 
   useEffect(() => {
     if (userRole !== 'superuser' && viewAsRole) {
@@ -243,6 +258,7 @@ const SpikeMasterPortal = () => {
     if (authLoading || effectiveUserRole !== 'intern' || !user?.id) return;
     if (userRole === 'superuser') return;
     if (!shouldUseSupabaseForUser(user)) return;
+    if (isRaSpikeProgram(resolveProgramSlug(user?.internProgress))) return;
     if (user.internProgress?.onboarding_complete || isInternOnboardingSatisfied(user.internProgress)) {
       setOnboardingCompleteCache(user.id, true);
       return;
@@ -676,11 +692,14 @@ const SpikeMasterPortal = () => {
     async (email, password) => {
       const signedIn = await login(email, password);
       const role = resolveUserRole(signedIn);
+      const programSlug = resolveProgramSlug(signedIn?.internProgress);
       let target = defaultRouteForRole(
         role === 'guest' || role === 'profile_error' ? 'intern' : role,
+        programSlug,
       );
       if (
         role === 'intern'
+        && !isRaSpikeProgram(programSlug)
         && signedIn?.id
         && shouldUseSupabaseForUser(signedIn)
         && !signedIn?.internProgress?.onboarding_complete
@@ -688,7 +707,7 @@ const SpikeMasterPortal = () => {
         const done = await hydrateOnboardingStatus(signedIn.id);
         if (!done) target = ROUTES.cohortIdentity;
       }
-      if (role === 'intern' && UNLOCK_WEEK2 && target !== ROUTES.cohortIdentity) {
+      if (role === 'intern' && !isRaSpikeProgram(programSlug) && UNLOCK_WEEK2 && target !== ROUTES.cohortIdentity) {
         target = playbookWeek2MissionHref('mission');
       }
       navigate(target);
@@ -1643,6 +1662,36 @@ const SpikeMasterPortal = () => {
 
     if (effectiveUserRole === 'intern' && !isSuperuserSession) {
       const internUser = internModuleUser ?? user;
+      const programSlug = resolveProgramSlug(internUser?.internProgress);
+
+      if (programSlug === 'ra-spike') {
+        if (isInternshipOnlyInternPath(path)) {
+          return <Navigate to={ROUTES.raSpikeHome} replace />;
+        }
+        if (path === ROUTES.raSpikeHome) {
+          return <RaSpikeHomePage user={internUser} />;
+        }
+        if (path === ROUTES.raSpikePlaybook) {
+          return <RaSpikePlaybookPage />;
+        }
+        if (path === ROUTES.raSpikeSquad) {
+          return <RaSpikeSquadPage />;
+        }
+        if (path === ROUTES.raSpikeProfile) {
+          return <RaSpikeProfilePage user={internUser} />;
+        }
+        if (internUser?.internProgress) {
+          return <Navigate to={defaultRouteForRole('intern', programSlug)} replace />;
+        }
+        return (
+          <div className="container mx-auto px-6 py-12 text-center text-gray-700">
+            <p className="font-medium">
+              Your account has no intern progress record. Contact an administrator.
+            </p>
+          </div>
+        );
+      }
+
       const needsOnboarding =
         userRole !== 'superuser'
         && shouldUseSupabaseForUser(internUser)
@@ -1718,7 +1767,7 @@ const SpikeMasterPortal = () => {
       if (path === ROUTES.research) return <ResearchPage user={internUser} />;
       if (path === ROUTES.dashboard && internUser?.internProgress) return <InternDashboard />;
       if (internUser?.internProgress) {
-        return <Navigate to={defaultRouteForRole('intern')} replace />;
+        return <Navigate to={defaultRouteForRole('intern', programSlug)} replace />;
       }
       return (
         <div className="container mx-auto px-6 py-12 text-center text-gray-700">
@@ -2152,7 +2201,8 @@ const SpikeMasterPortal = () => {
 
       {!immersiveLife
         && (effectiveUserRole === 'intern' || (isSuperuserSession && viewAsRole === 'intern'))
-        && !authLoading ? (
+        && !authLoading
+        && !isRaSpikeProgram(internProgramSlug) ? (
           <ProgramWeekRibbon
             internProgress={(internModuleUser ?? user)?.internProgress}
             participantId={(internModuleUser ?? user)?.id ?? ''}
@@ -2250,7 +2300,11 @@ const SpikeMasterPortal = () => {
           || isStaffUiRole(portalAccessRole)
           || isSuperuserSession) &&
           !authLoading && (
-            <RoleRouteGuard userRole={portalAccessRole} pathname={location.pathname}>
+            <RoleRouteGuard
+              userRole={portalAccessRole}
+              pathname={location.pathname}
+              programSlug={portalAccessRole === 'intern' ? internProgramSlug : null}
+            >
               <LazyRoute label="Loading module…">{renderAuthenticatedModule()}</LazyRoute>
             </RoleRouteGuard>
           )}

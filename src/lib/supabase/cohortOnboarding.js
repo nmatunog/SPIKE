@@ -29,6 +29,7 @@ function isMissingRpcError(error) {
  *   motto: string,
  *   theme_statement: string,
  *   start_date?: string | null,
+ *   program_slug?: string | null,
  * }} CohortRow
  */
 
@@ -95,6 +96,7 @@ async function fetchFirstCohortRow(client, select) {
 export async function fetchActiveCohort() {
   const client = assertClient();
   const selects = [
+    'id, name, code, is_active, onboarding_phase, official_name, photo_url, motto, theme_statement, start_date, starts_on, program_slug',
     'id, name, code, is_active, onboarding_phase, official_name, photo_url, motto, theme_statement, start_date, starts_on',
     'id, name, code, is_active, onboarding_phase, official_name, photo_url, motto, theme_statement, starts_on',
     'id, name, code, is_active, onboarding_phase, official_name, photo_url, motto, theme_statement',

@@ -1,3 +1,5 @@
+import { getProgramDefinition } from '../lib/programs/index.js';
+
 export const ROUTES = {
   home: '/',
   dashboard: '/dashboard',
@@ -46,6 +48,10 @@ export const ROUTES = {
   life: '/life',
   lifeWorkshop: '/life/workshop',
   programCoachLife: '/program-coach/life',
+  raSpikeHome: '/ra-spike/home',
+  raSpikePlaybook: '/ra-spike/playbook',
+  raSpikeSquad: '/ra-spike/squad',
+  raSpikeProfile: '/ra-spike/profile',
 };
 
 /** Redirect target after onboarding completes — Build Challenge 1 (Ambition). */
@@ -340,6 +346,57 @@ const INTERN_FORMATION_ROUTES = [
   ROUTES.squadCharter,
 ];
 
+/** RA-SPIKE participant shell routes. */
+export const RA_SPIKE_ROUTES = [
+  ROUTES.raSpikeHome,
+  ROUTES.raSpikePlaybook,
+  ROUTES.raSpikeSquad,
+  ROUTES.raSpikeProfile,
+];
+
+/** SPIKE Internship intern modules hidden from RA-SPIKE participants. */
+export const INTERNSHIP_ONLY_INTERN_PATHS = [
+  ROUTES.ventureBlueprint,
+  ROUTES.myVenturePortfolio,
+  ROUTES.life,
+  ROUTES.lifeWorkshop,
+  ROUTES.research,
+  ROUTES.dashboard,
+  ROUTES.playbook,
+  ROUTES.playbookVentureStudio,
+  ROUTES.playbookWeek2Studio,
+  ROUTES.playbookBusinessEngineCanvasPreview,
+  ROUTES.playbookFecProjection,
+  ROUTES.playbookVentureDesignWorkshop,
+  ...INTERN_FORMATION_ROUTES,
+  ROUTES.squad,
+];
+
+/** @param {string} pathname */
+export function isRaSpikePath(pathname) {
+  return RA_SPIKE_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`),
+  );
+}
+
+/** @param {string} pathname */
+export function isInternshipOnlyInternPath(pathname) {
+  if (isRaSpikePath(pathname)) return false;
+  if (
+    pathname === ROUTES.ventureBlueprint
+    || pathname.startsWith(`${ROUTES.ventureBlueprint}/`)
+    || Object.values(BLUEPRINT_LINKS).includes(pathname)
+  ) {
+    return true;
+  }
+  if (pathname === ROUTES.myVenturePortfolio || pathname.startsWith(`${ROUTES.myVenturePortfolio}/`)) {
+    return true;
+  }
+  if (isPlaybookPath(pathname)) return true;
+  if (isSpikeLifePath(pathname)) return true;
+  return INTERNSHIP_ONLY_INTERN_PATHS.includes(pathname);
+}
+
 /** Module nav entries — filtered by role in ModuleNav. */
 export const MODULE_NAV = [
   {
@@ -470,6 +527,18 @@ const SUPERUSER_MODULE_NAV = [
 ];
 
 export function moduleNavForRole(userRole) {
+  return moduleNavForProgram(userRole, null);
+}
+
+/**
+ * Top navigation for a role within a program context.
+ * @param {string} userRole
+ * @param {string | null | undefined} programSlug
+ */
+export function moduleNavForProgram(userRole, programSlug) {
+  if (userRole === 'intern' && programSlug === 'ra-spike') {
+    return getProgramDefinition(programSlug).nav;
+  }
   if (userRole === 'superuser') {
     return SUPERUSER_MODULE_NAV;
   }
@@ -484,6 +553,17 @@ export function moduleNavForRole(userRole) {
 
 /** Active top-nav module for interns (Build includes squad + formation routes). */
 export function internNavActiveModule(pathname) {
+  return internNavActiveModuleForProgram(pathname, null);
+}
+
+/** @param {string} pathname @param {string | null | undefined} programSlug */
+export function internNavActiveModuleForProgram(pathname, programSlug) {
+  if (programSlug === 'ra-spike' || isRaSpikePath(pathname)) {
+    const match = RA_SPIKE_ROUTES.find(
+      (route) => pathname === route || pathname.startsWith(`${route}/`),
+    );
+    return match ?? ROUTES.raSpikeHome;
+  }
   if (
     pathname === ROUTES.ventureBlueprint
     || pathname.startsWith(`${ROUTES.ventureBlueprint}/`)
@@ -529,6 +609,13 @@ const BLUEPRINT_ALIAS_PATHS = Object.values(BLUEPRINT_LINKS);
 
 /** Resolve a URL to a canonical module route, or null if unknown. */
 export function matchModulePath(pathname) {
+  if (isRaSpikePath(pathname)) {
+    const match = RA_SPIKE_ROUTES.find(
+      (route) => pathname === route || pathname.startsWith(`${route}/`),
+    );
+    return match ?? ROUTES.raSpikeHome;
+  }
+
   if (
     pathname === ROUTES.ventureBlueprint
     || pathname.startsWith(`${ROUTES.ventureBlueprint}/`)
@@ -637,6 +724,7 @@ const AUTHENTICATED_ROLES = ['intern', 'faculty', 'mentor', 'admin', 'superuser'
 
 /** Roles allowed on a module route (single source of truth with MODULE_NAV). */
 export function rolesForRoute(pathname) {
+  if (isRaSpikePath(pathname)) return ['intern'];
   if (isPublicPortfolioPath(pathname)) return AUTHENTICATED_ROLES;
   if (INTERN_FORMATION_ROUTES.includes(pathname)) return ['intern'];
   if (pathname === ROUTES.adminCohorts || pathname === ROUTES.adminSquadThemes) return ['admin', 'superuser'];
@@ -683,8 +771,29 @@ export function rolesForRoute(pathname) {
 }
 
 export function canAccessRoute(pathname, userRole) {
+  return canAccessRouteForProgram(pathname, userRole, null);
+}
+
+/**
+ * Program-aware route access — RA-SPIKE interns are confined to their shell routes.
+ * @param {string} pathname
+ * @param {string} userRole
+ * @param {string | null | undefined} programSlug
+ */
+export function canAccessRouteForProgram(pathname, userRole, programSlug) {
   if (isPublicPortfolioPath(pathname)) return true;
   if (!AUTHENTICATED_ROLES.includes(userRole)) return false;
+
+  if (userRole === 'intern' && programSlug === 'ra-spike') {
+    if (isInternshipOnlyInternPath(pathname)) return false;
+    if (isRaSpikePath(pathname)) return true;
+    return false;
+  }
+
+  if (userRole === 'intern' && programSlug !== 'ra-spike' && isRaSpikePath(pathname)) {
+    return false;
+  }
+
   if (userRole === 'superuser') {
     if (INTERN_FORMATION_ROUTES.includes(pathname)) return true;
     return Boolean(matchModulePath(pathname));
@@ -703,8 +812,11 @@ export function brandLexiconBackHrefForRole(userRole) {
 export function facilitatorsReferenceBackHrefForRole(userRole) {
   return brandLexiconBackHrefForRole(userRole);
 }
-export function defaultRouteForRole(userRole) {
-  if (userRole === 'intern') return ROUTES.ventureBlueprint;
+export function defaultRouteForRole(userRole, programSlug) {
+  if (userRole === 'intern') {
+    if (programSlug === 'ra-spike') return ROUTES.raSpikeHome;
+    return ROUTES.ventureBlueprint;
+  }
   if (userRole === 'faculty') return ROUTES.programCoachHome;
   if (userRole === 'mentor') return ROUTES.mentorHome;
   return ROUTES.dashboard;

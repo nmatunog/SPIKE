@@ -18,6 +18,7 @@ import {
 import { normalizeLoginIdentifier, isReadOnlyViewerProfile } from './lib/readOnlyViewer.js';
 import { setOnboardingCompleteCache, isInternOnboardingSatisfied } from './lib/cohortOnboardingService.js';
 import { ensureInternProgress } from './lib/supabase/cohortOnboarding.js';
+import { fetchInternProgressRow } from './lib/supabase/internProgressFields.js';
 import { scheduleInternDelayedUpload, clearInternDelayedUploadSchedule, runInternSignInCloudUpload } from './lib/internSessionSync.js';
 import { runInternLogoutBackup } from './lib/internLogoutBackup.js';
 import { isSupabaseConfigured, supabase } from './supabaseClient';
@@ -115,18 +116,14 @@ export function AuthProvider({ children }) {
   const fetchSupabaseUser = useCallback(async (authUser) => {
     if (!authUser || !supabase) return null;
 
-    const [{ data: profile, error: profileError }, { data: internProgressRaw }] =
+    const [{ data: profile, error: profileError }, internProgressRaw] =
       await Promise.all([
         supabase
           .from('profiles')
           .select('id, email, name, role, read_only')
           .eq('id', authUser.id)
           .maybeSingle(),
-        supabase
-          .from('intern_progress')
-          .select('segment, hours, licensed, squad, university, career_track, career_track_selected_at, current_week, current_day, onboarding_complete, onboarding_welcomed_at, cohort_id')
-          .eq('user_id', authUser.id)
-          .maybeSingle(),
+        fetchInternProgressRow(supabase, authUser.id),
       ]);
 
     let internProgress = internProgressRaw;
@@ -155,14 +152,7 @@ export function AuthProvider({ children }) {
       }
       if (!internProgress) {
         try {
-          const { data: fallbackRow } = await supabase
-            .from('intern_progress')
-            .select(
-              'segment, hours, licensed, squad, university, career_track, career_track_selected_at, current_week, current_day, onboarding_complete, onboarding_welcomed_at, cohort_id',
-            )
-            .eq('user_id', authUser.id)
-            .maybeSingle();
-          internProgress = fallbackRow;
+          internProgress = await fetchInternProgressRow(supabase, authUser.id);
         } catch {
           /* read-only fallback failed */
         }
@@ -177,6 +167,9 @@ export function AuthProvider({ children }) {
           onboarding_complete: false,
           onboarding_welcomed_at: null,
           cohort_id: null,
+          program_slug: 'spike-internship',
+          ra_spike_segment: 1,
+          ra_spike_current_week: 1,
         };
       }
     }

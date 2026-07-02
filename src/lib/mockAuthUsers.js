@@ -5,6 +5,32 @@
 
 /** @type {Record<string, { password: string, user: object }>} */
 export const MOCK_AUTH_ACCOUNTS = {
+  'ra-spike@example.com': {
+    password: 'password123',
+    user: {
+      id: 'mock-user-ra-spike',
+      email: 'ra-spike@example.com',
+      name: 'Rae Academy',
+      role: 'INTERN',
+      internProgress: {
+        program_slug: 'ra-spike',
+        ra_spike_segment: 1,
+        ra_spike_current_week: 1,
+        segment: 1,
+        hours: 0,
+        licensed: false,
+        squad: 'Alpha Squad',
+        university: 'Demo Agency',
+        career_track: null,
+        career_track_selected_at: null,
+        current_week: 1,
+        current_day: 1,
+        onboarding_complete: true,
+      },
+      mustChangePassword: false,
+      isMockUser: true,
+    },
+  },
   'john@example.com': {
     password: 'password123',
     user: {
@@ -13,6 +39,7 @@ export const MOCK_AUTH_ACCOUNTS = {
       name: 'John Intern',
       role: 'INTERN',
       internProgress: {
+        program_slug: 'spike-internship',
         segment: 1,
         hours: 12,
         licensed: false,

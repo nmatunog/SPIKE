@@ -1,4 +1,4 @@
-import { createElement } from 'react';
+import { createElement, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight,
@@ -15,6 +15,7 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import { deriveStaffCoachHome } from '../../lib/staffCoachHomeService.js';
+import { getProgramDefinition, resolveProgramSlug } from '../../lib/programs/index.js';
 import { SquadXpInline } from './SquadXpDashboard.jsx';
 import {
   ROUTES,
@@ -46,14 +47,36 @@ export function StaffCoachHomeDashboard({
   const hero = model.todayHero;
   const roleLabel = role === 'faculty' ? 'Program Coach' : 'Mentor';
   const squadsHref = staffSquadsListHref(role);
+  const dominantProgramSlug = useMemo(() => {
+    const counts = new Map();
+    for (const intern of interns) {
+      const slug = resolveProgramSlug(intern.internProgress ?? intern);
+      counts.set(slug, (counts.get(slug) ?? 0) + 1);
+    }
+    let top = 'spike-internship';
+    let max = 0;
+    for (const [slug, count] of counts) {
+      if (count > max) {
+        max = count;
+        top = slug;
+      }
+    }
+    return top;
+  }, [interns]);
+  const cohortProgram = getProgramDefinition(dominantProgramSlug);
 
   return (
     <div className="space-y-8">
       <header>
         <p className="text-sm font-medium text-slate-500">{roleLabel}</p>
-        <h1 className="mt-1 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-          Welcome back, {model.staffName}
-        </h1>
+        <div className="mt-1 flex flex-wrap items-center gap-2">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+            Welcome back, {model.staffName}
+          </h1>
+          <span className="rounded-full bg-spike/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-spike">
+            {cohortProgram.title}
+          </span>
+        </div>
       </header>
 
       {/* Today hero */}

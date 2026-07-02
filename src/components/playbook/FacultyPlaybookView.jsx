@@ -9,6 +9,7 @@ import { Week3Day4PlaybookHero } from './week3/Week3Day4PlaybookHero.jsx';
 import { GrowthEngineWorksheet } from './week3/GrowthEngineWorksheet.jsx';
 import { FinancialEngineWorksheet } from './week3/FinancialEngineWorksheet.jsx';
 import { BusinessEngineCanvasBlankPreview } from './week3/businessEngine/BusinessEngineCanvasBlankPreview.jsx';
+import { Week3Day5FecPitchPanel } from './week3/Week3Day5FecPitchPanel.jsx';
 import { Week2StudioLaunchCard } from './week2/Week2StudioLaunchCard.jsx';
 import { EvaluationTemplatesPanel } from './EvaluationTemplatesPanel.jsx';
 import { FacilitatorGuidePanel } from './FacilitatorGuidePanel.jsx';
@@ -34,6 +35,7 @@ export function FacultyPlaybookView({ bundle }) {
   const isWeek3Day1 = bundle.day.id === 'day-segment-1-week-3-day-1';
   const isWeek3Day3 = bundle.day.id === 'day-segment-1-week-3-day-3';
   const isWeek3Day4 = bundle.day.id === 'day-segment-1-week-3-day-4';
+  const isWeek3Day5 = bundle.day.id === 'day-segment-1-week-3-day-5';
   const week2DayMatch = bundle.day.id.match(/day-segment-1-week-2-day-(\d+)/);
   const week2Day = week2DayMatch ? Number(week2DayMatch[1]) : 0;
   const facultyPresentations = resolvePresentations(bundle, bundle.day.presentations ?? []).filter(
@@ -63,6 +65,11 @@ export function FacultyPlaybookView({ bundle }) {
             <FinancialEngineWorksheet readOnly />
           </section>
         </>
+      ) : null}
+      {isWeek3Day5 ? (
+        <section className="rounded-3xl border border-slate-200 bg-white p-4 shadow-card sm:p-6">
+          <Week3Day5FecPitchPanel participantId="" readOnly />
+        </section>
       ) : null}
       {week2Day > 0 ? (
         <Week2StudioLaunchCard facultyMode day={week2Day} mission="mission" />

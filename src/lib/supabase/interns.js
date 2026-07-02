@@ -24,6 +24,7 @@ function mapInternRow(profile, progress, formationSquad) {
     university: progress?.university ?? null,
     current_week: progress?.current_week ?? null,
     current_day: progress?.current_day ?? null,
+    internProgress: progress ?? null,
   };
 }
 
@@ -41,14 +42,25 @@ export async function fetchInterns() {
   let formationByUser = {};
 
   if (ids.length > 0) {
-    const [{ data: progRows, error: progErr }, formationLabels] = await Promise.all([
-      supabase
-        .from('intern_progress')
-        .select('user_id, segment, hours, licensed, squad, university, current_week, current_day')
-        .in('user_id', ids),
-      fetchFormationSquadLabels(ids).catch(() => ({})),
-    ]);
+    const progSelects = [
+      'user_id, segment, hours, licensed, squad, university, current_week, current_day, program_slug, ra_spike_segment, ra_spike_current_week',
+      'user_id, segment, hours, licensed, squad, university, current_week, current_day',
+    ];
+    let progRows = [];
+    let progErr = null;
+    for (const select of progSelects) {
+      const result = await supabase.from('intern_progress').select(select).in('user_id', ids);
+      progErr = result.error;
+      if (!progErr) {
+        progRows = result.data || [];
+        break;
+      }
+      if (progErr.code !== '42703' && !/column .* does not exist|schema cache/i.test(String(progErr.message ?? ''))) {
+        break;
+      }
+    }
     if (progErr) throw progErr;
+    const formationLabels = await fetchFormationSquadLabels(ids).catch(() => ({}));
     progressByUser = Object.fromEntries((progRows || []).map((r) => [r.user_id, r]));
     formationByUser = formationLabels;
 

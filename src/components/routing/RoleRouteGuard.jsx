@@ -1,7 +1,7 @@
 import { Navigate } from 'react-router-dom';
 import {
   ROUTES,
-  canAccessRoute,
+  canAccessRouteForProgram,
   canonicalizePathname,
   defaultRouteForRole,
   matchModulePath,
@@ -11,19 +11,19 @@ import {
  * Redirects unauthenticated module URLs, unknown paths, and role-forbidden routes
  * to the role default (dashboard).
  */
-export function RoleRouteGuard({ userRole, pathname, children }) {
+export function RoleRouteGuard({ userRole, pathname, programSlug = null, children }) {
   const canonicalPath = canonicalizePathname(pathname);
   if (canonicalPath !== pathname) {
     return <Navigate to={canonicalPath} replace />;
   }
 
   if (canonicalPath === ROUTES.home) {
-    return <Navigate to={defaultRouteForRole(userRole)} replace />;
+    return <Navigate to={defaultRouteForRole(userRole, programSlug)} replace />;
   }
 
   const route = matchModulePath(canonicalPath);
-  if (!route || !canAccessRoute(canonicalPath, userRole)) {
-    return <Navigate to={defaultRouteForRole(userRole)} replace />;
+  if (!route || !canAccessRouteForProgram(canonicalPath, userRole, programSlug)) {
+    return <Navigate to={defaultRouteForRole(userRole, programSlug)} replace />;
   }
 
   return children;

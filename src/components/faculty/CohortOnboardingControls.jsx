@@ -15,8 +15,10 @@ import {
   staffRevealWinner,
   staffSaveFinalists,
   staffUpdateCohortStartDate,
+  staffUpdateCohortProgram,
   staffUploadCohortPhoto,
 } from '../../lib/cohortOnboardingService.js';
+import { listProgramDefinitions } from '../../lib/programs/index.js';
 import { db } from '../../lib/cohortOnboardingService.js';
 import { isMockUserId } from '../../lib/mockAuth.js';
 import { OnboardingPhotoCapture } from '../onboarding/OnboardingPhotoCapture.jsx';
@@ -43,6 +45,8 @@ export function CohortOnboardingControls({ staffId, interns = [], canAssignSquad
   const [addToSquadId, setAddToSquadId] = useState('');
   const [addInternId, setAddInternId] = useState('');
   const [startDateEdit, setStartDateEdit] = useState(DEFAULT_COHORT_START_DATE);
+  const [programSlugEdit, setProgramSlugEdit] = useState('spike-internship');
+  const programOptions = useMemo(() => listProgramDefinitions(), []);
 
   const refresh = useCallback(async () => {
     if (!isSupabaseConfigured) {
@@ -74,6 +78,10 @@ export function CohortOnboardingControls({ staffId, interns = [], canAssignSquad
   useEffect(() => {
     if (cohortStartRaw) setStartDateEdit(cohortStartRaw);
   }, [cohortStartRaw]);
+
+  useEffect(() => {
+    if (data?.cohort?.program_slug) setProgramSlugEdit(data.cohort.program_slug);
+  }, [data?.cohort?.program_slug]);
 
   async function run(label, fn) {
     if (!canWrite) {
@@ -210,6 +218,40 @@ export function CohortOnboardingControls({ staffId, interns = [], canAssignSquad
               Mon 2026-06-15 → Fri 2026-06-19 is Week 1 · Day 5 (Commitment).
             </p>
           </div>
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-slate-200 bg-white p-4">
+        <p className="text-sm font-semibold text-slate-900">Cohort program</p>
+        <p className="mt-1 text-sm text-slate-600">
+          New interns inherit this program when enrolled into the active cohort.
+        </p>
+        <div className="mt-3 flex flex-wrap items-end gap-3">
+          <label className="text-sm text-slate-700">
+            <span className="mb-1 block font-medium">Program</span>
+            <select
+              value={programSlugEdit}
+              onChange={(event) => setProgramSlugEdit(event.target.value)}
+              className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
+              disabled={!canWrite}
+            >
+              {programOptions.map((program) => (
+                <option key={program.slug} value={program.slug}>
+                  {program.title}
+                </option>
+              ))}
+            </select>
+          </label>
+          {canWrite ? (
+            <button
+              type="button"
+              disabled={Boolean(busy) || programSlugEdit === (cohort.program_slug || 'spike-internship')}
+              className="spike-btn-secondary text-sm"
+              onClick={() => run('program', () => staffUpdateCohortProgram(cohort.id, programSlugEdit))}
+            >
+              {busy === 'program' ? 'Saving…' : 'Save program'}
+            </button>
+          ) : null}
         </div>
       </div>
 
