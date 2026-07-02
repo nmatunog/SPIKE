@@ -7,8 +7,10 @@
       "description": "Capacity mindset, Growth Engine Canvas, Business Growth Targets, FEC Box 6 integration, and Venture Pitch readiness.",
       "type": "interactive",
       "moduleId": "growth-engine-worksheet",
+      "questionIds": [],
       "autosave": true,
       "exportFormats": ["pdf", "print"]
     }
-  ]
+  ],
+  "questions": []
 }

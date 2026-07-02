@@ -32,6 +32,18 @@ export function ActivityViewer({
     interactiveModule
     ?? (ventureStudioHref ? { href: ventureStudioHref, name: 'Venture Studio' } : undefined);
   const completed = participantId && isActivityCompleted(participantId, activity.id);
+  const instructions =
+    activity.instructions?.length
+      ? activity.instructions
+      : activity.description
+        ? [activity.description]
+        : [];
+  const outputs =
+    activity.outputs?.length
+      ? activity.outputs
+      : activity.deliverable
+        ? [activity.deliverable]
+        : [];
 
   function handleComplete() {
     if (!participantId) return;
@@ -61,25 +73,29 @@ export function ActivityViewer({
         </div>
       ) : null}
 
-      <div className="mb-4">
-        <h5 className="mb-2 text-xs font-bold uppercase text-gray-500">Instructions</h5>
-        <ol className="list-inside list-decimal space-y-1 text-sm text-gray-700">
-          {activity.instructions.map((step) => (
-            <li key={step}>{step}</li>
-          ))}
-        </ol>
-      </div>
+      {instructions.length > 0 ? (
+        <div className="mb-4">
+          <h5 className="mb-2 text-xs font-bold uppercase text-gray-500">Instructions</h5>
+          <ol className="list-inside list-decimal space-y-1 text-sm text-gray-700">
+            {instructions.map((step) => (
+              <li key={step}>{step}</li>
+            ))}
+          </ol>
+        </div>
+      ) : null}
 
-      <div className="mb-4">
-        <h5 className="mb-2 text-xs font-bold uppercase text-gray-500">Outputs</h5>
-        <ul className="space-y-1 text-sm text-gray-700">
-          {activity.outputs.map((o) => (
-            <li key={o} className="rounded-lg bg-gray-50 px-3 py-2">
-              {o}
-            </li>
-          ))}
-        </ul>
-      </div>
+      {outputs.length > 0 ? (
+        <div className="mb-4">
+          <h5 className="mb-2 text-xs font-bold uppercase text-gray-500">Outputs</h5>
+          <ul className="space-y-1 text-sm text-gray-700">
+            {outputs.map((o) => (
+              <li key={o} className="rounded-lg bg-gray-50 px-3 py-2">
+                {o}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
 
       {activity.debriefQuestions?.length > 0 ? (
         <div className="mb-4">
