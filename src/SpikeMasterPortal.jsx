@@ -1721,7 +1721,7 @@ const SpikeMasterPortal = () => {
         if (path === ROUTES.raSpikeHome) {
           return <RaSpikeHomePage user={internUser} />;
         }
-        if (path === ROUTES.raSpikePlaybook) {
+        if (path === ROUTES.raSpikePlaybook || path.startsWith(`${ROUTES.raSpikePlaybook}/`)) {
           return <RaSpikePlaybookPage user={internUser} />;
         }
         if (path === ROUTES.raSpikeSquad) {

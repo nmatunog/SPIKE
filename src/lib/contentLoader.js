@@ -431,3 +431,6 @@ export function assertSegment1Week1Ready() {
   });
   return bundles;
 }
+
+/** RA-SPIKE curriculum — see {@link ./raSpikeContentLoader.js} */
+export { getRaSpikeWeekContent, getRaSpikeProgramMeta } from './raSpikeContentLoader.js';

@@ -1,0 +1,71 @@
+{
+  "weekNumber": 1,
+  "segment": "discover",
+  "title": "Discover Yourself",
+  "theme": "Start With You",
+  "modules": ["dream-board"],
+  "steps": {
+    "learn": {
+      "label": "Learn",
+      "headline": "Your SPIKE story starts with you",
+      "summary": "Understand why you are here and what you want to build.",
+      "durationMinutes": 20,
+      "bullets": [
+        "AIA, Agency, and SPIKE — the journey from employee to business owner",
+        "Ambition, impact, and values as the foundation of your practice",
+        "How Week 1 connects to your Dream Board and squad workshops"
+      ],
+      "callout": "Read before your classroom session. Your coach will expand on these themes live."
+    },
+    "workshop": {
+      "label": "Workshop",
+      "headline": "In-class: Identity & squad formation",
+      "summary": "Facilitated activities with your cohort and squad.",
+      "durationMinutes": 90,
+      "bullets": [
+        "Share your name, agency, and one personal goal for RA-SPIKE",
+        "Meet your squad and agree on how you will work together",
+        "Facilitator-led reflection on ambition and purpose",
+        "Preview the Dream Board assignment"
+      ],
+      "callout": "Mark complete after your classroom session."
+    },
+    "assignment": {
+      "label": "Assignment",
+      "headline": "Create your Dream Board",
+      "summary": "Visualize the life and business you are building toward.",
+      "durationMinutes": 45,
+      "bullets": [
+        "Add photos across lifestyle, family, career, and financial goals",
+        "Write a short caption for each image",
+        "Include at least the minimum cards required to submit"
+      ],
+      "action": {
+        "type": "dream-board",
+        "label": "Open Dream Board Studio"
+      }
+    },
+    "reflection": {
+      "label": "Reflection",
+      "headline": "What did you discover about yourself?",
+      "summary": "Capture insights before you submit the week.",
+      "durationMinutes": 10,
+      "prompts": [
+        "What surprised you when building your Dream Board?",
+        "What is one strength you will bring to your squad?",
+        "What is one question you still have about your path?"
+      ]
+    },
+    "submit": {
+      "label": "Submit",
+      "headline": "Mark Week 1 complete",
+      "summary": "Confirm you finished Learn, Workshop, Assignment, and Reflection.",
+      "durationMinutes": 2,
+      "bullets": [
+        "Your Dream Board is saved to your profile",
+        "Week 2 unlocks after you submit",
+        "Bring one Dream Board insight to your next squad huddle"
+      ]
+    }
+  }
+}

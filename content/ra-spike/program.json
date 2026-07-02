@@ -1,0 +1,7 @@
+{
+  "id": "ra-spike",
+  "title": "RA-SPIKE™",
+  "tagline": "Rookie Academy – SPIKE Edition",
+  "totalWeeks": 8,
+  "weeklyFlow": ["learn", "workshop", "assignment", "reflection", "submit"]
+}

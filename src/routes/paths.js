@@ -53,6 +53,7 @@ export const ROUTES = {
   raSpikeSquad: '/ra-spike/squad',
   raSpikeProfile: '/ra-spike/profile',
   raSpikeOnboarding: '/ra-spike/onboarding',
+  raSpikePlaybookDreamBoard: '/ra-spike/playbook/dream-board',
 };
 
 /** Redirect target after onboarding completes — Build Challenge 1 (Ambition). */
@@ -379,6 +380,35 @@ export function isRaSpikePath(pathname) {
   return RA_SPIKE_ROUTES.some(
     (route) => pathname === route || pathname.startsWith(`${route}/`),
   );
+}
+
+/**
+ * @param {string} stepId
+ * @param {number} [week]
+ */
+export function raSpikePlaybookStepHref(stepId, week) {
+  const base = `${ROUTES.raSpikePlaybook}/step/${stepId}`;
+  return week ? `${base}?week=${week}` : base;
+}
+
+export function raSpikePlaybookDreamBoardHref() {
+  return ROUTES.raSpikePlaybookDreamBoard;
+}
+
+/**
+ * @param {string} pathname
+ * @returns {{ view: 'overview' } | { view: 'dream-board' } | { view: 'step', stepId: string, week?: number } | null}
+ */
+export function parseRaSpikePlaybookPath(pathname) {
+  if (pathname === ROUTES.raSpikePlaybook) return { view: 'overview' };
+  if (pathname === ROUTES.raSpikePlaybookDreamBoard) return { view: 'dream-board' };
+  const prefix = `${ROUTES.raSpikePlaybook}/step/`;
+  if (pathname.startsWith(prefix)) {
+    const stepId = pathname.slice(prefix.length).split('/')[0];
+    if (!stepId) return null;
+    return { view: 'step', stepId };
+  }
+  return null;
 }
 
 /** @param {string} pathname */
