@@ -2,7 +2,7 @@ import { LogOut } from 'lucide-react';
 import { SpikeLogo } from '../components/brand/SpikeLogo.jsx';
 import { formatUiRoleLabel } from '../lib/terminology.js';
 
-export function PortalHeader({ userRole, user, setupMeta, onLogout, viewAsRole, readOnlyViewer = false }) {
+export function PortalHeader({ userRole, user, setupMeta, onLogout, viewAsRole, readOnlyViewer = false, headerSubtitle }) {
   const badgeRole = viewAsRole ?? userRole;
   const isRolePreview = userRole === 'superuser' && viewAsRole;
   return (
@@ -10,7 +10,9 @@ export function PortalHeader({ userRole, user, setupMeta, onLogout, viewAsRole, 
       <div className="mx-auto flex max-w-projection flex-col gap-2 px-4 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:py-3 2xl:px-10 2xl:py-3.5">
         <div className="flex min-w-0 items-center gap-2.5 lg:gap-3">
           <SpikeLogo variant="onDark" size="md" className="h-9 lg:h-10 2xl:h-11" />
-          <p className="hidden truncate text-2xs text-red-100/90 sm:block lg:text-xs">AIA PH Matunog District</p>
+          <p className="hidden truncate text-2xs text-red-100/90 sm:block lg:text-xs">
+            {headerSubtitle ?? 'AIA PH Matunog District'}
+          </p>
         </div>
 
         {userRole === 'guest' ? (

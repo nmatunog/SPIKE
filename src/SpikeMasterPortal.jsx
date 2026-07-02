@@ -39,6 +39,8 @@ import { RaSpikeHomePage } from './pages/ra-spike/RaSpikeHomePage.jsx';
 import { RaSpikePlaybookPage } from './pages/ra-spike/RaSpikePlaybookPage.jsx';
 import { RaSpikeSquadPage } from './pages/ra-spike/RaSpikeSquadPage.jsx';
 import { RaSpikeProfilePage } from './pages/ra-spike/RaSpikeProfilePage.jsx';
+import { RaSpikeNav } from './components/ra-spike/RaSpikeNav.jsx';
+import { RA_SPIKE_PROGRAM } from './lib/programs/ra-spike.js';
 import { StaffSquadHubPage, StaffSquadsListPage } from './components/staff/StaffSquadHubPage.jsx';
 import { Week2LoginWelcomeFlow } from './components/week2/Week2LoginWelcomeFlow.jsx';
 import { shouldShowWeek2LoginWelcome } from './lib/week2LoginWelcome.js';
@@ -1672,10 +1674,10 @@ const SpikeMasterPortal = () => {
           return <RaSpikeHomePage user={internUser} />;
         }
         if (path === ROUTES.raSpikePlaybook) {
-          return <RaSpikePlaybookPage />;
+          return <RaSpikePlaybookPage user={internUser} />;
         }
         if (path === ROUTES.raSpikeSquad) {
-          return <RaSpikeSquadPage />;
+          return <RaSpikeSquadPage user={internUser} />;
         }
         if (path === ROUTES.raSpikeProfile) {
           return <RaSpikeProfilePage user={internUser} />;
@@ -2163,6 +2165,16 @@ const SpikeMasterPortal = () => {
     && userRole !== 'profile_error'
     && !authLoading;
 
+  const showRaSpikeChrome =
+    !immersiveLife
+    && (effectiveUserRole === 'intern' || (isSuperuserSession && viewAsRole === 'intern'))
+    && isRaSpikeProgram(internProgramSlug)
+    && !authLoading;
+
+  const raSpikeHeaderSubtitle = showRaSpikeChrome
+    ? `RA-SPIKE™ · ${RA_SPIKE_PROGRAM.theme}`
+    : undefined;
+
   return (
     <div
       className={`spike-app-shell ${
@@ -2185,18 +2197,23 @@ const SpikeMasterPortal = () => {
           setupMeta={setupMeta}
           onLogout={handleLogout}
           readOnlyViewer={readOnlyViewer}
+          headerSubtitle={raSpikeHeaderSubtitle}
         />
       ) : null}
 
       {!immersiveLife && readOnlyViewer ? <ReadOnlyViewerBar /> : null}
 
       {!immersiveLife && userRole !== 'guest' && userRole !== 'profile_error' && !authLoading && (
-        <ModuleNav
-          userRole={moduleNavRole}
-          superuserPreview={
-            isSuperuserSession ? { viewAsRole, onViewAs: handleViewAs } : undefined
-          }
-        />
+        showRaSpikeChrome ? (
+          <RaSpikeNav />
+        ) : (
+          <ModuleNav
+            userRole={moduleNavRole}
+            superuserPreview={
+              isSuperuserSession ? { viewAsRole, onViewAs: handleViewAs } : undefined
+            }
+          />
+        )
       )}
 
       {!immersiveLife

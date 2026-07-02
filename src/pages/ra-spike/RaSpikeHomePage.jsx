@@ -1,35 +1,71 @@
+import { Link } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
 import { PageContainer } from '../../components/layout/PageContainer.jsx';
-import { getProgramForIntern } from '../../lib/programs/index.js';
+import { RaSpikeShell } from '../../components/ra-spike/RaSpikeShell.jsx';
+import { getRaSpikeContext } from '../../lib/programs/ra-spike-context.js';
+import { ROUTES } from '../../routes/paths.js';
 
 /**
- * RA-SPIKE home — Phase 0 placeholder (full dashboard in Phase 3).
  * @param {{ user?: { name?: string, internProgress?: object | null } }} props
  */
 export function RaSpikeHomePage({ user }) {
-  const program = getProgramForIntern(user?.internProgress);
+  const ctx = getRaSpikeContext(user?.internProgress);
   const firstName = (user?.name || 'Participant').split(' ')[0];
-  const week = user?.internProgress?.ra_spike_current_week ?? 1;
-  const segment = user?.internProgress?.ra_spike_segment ?? 1;
-  const segmentLabel = segment >= 2 ? 'ADVISE' : 'DISCOVER';
 
   return (
-    <PageContainer>
-      <section className="spike-card mx-auto max-w-2xl space-y-4">
-        <p className="text-sm font-semibold uppercase tracking-wider text-spike">{program.tagline}</p>
-        <h1 className="text-2xl font-bold text-slate-900">Welcome back, {firstName}</h1>
-        <p className="text-slate-600">{program.theme}</p>
-        <div className="flex flex-wrap gap-2">
-          <span className="rounded-full bg-spike/10 px-3 py-1 text-sm font-semibold text-spike">
-            Week {week} of {program.totalWeeks}
-          </span>
-          <span className="rounded-full border border-slate-200 px-3 py-1 text-sm font-medium text-slate-700">
-            {segmentLabel}
-          </span>
+    <RaSpikeShell user={user}>
+      <PageContainer>
+        <div className="mx-auto max-w-2xl space-y-5">
+          <header>
+            <p className="text-sm font-medium text-slate-500">Welcome back, {firstName}</p>
+            <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+              {ctx.weekTheme}
+            </h1>
+            <p className="mt-2 text-slate-600">{ctx.program.theme}</p>
+          </header>
+
+          <section className="spike-card space-y-4 border-spike/20 ring-1 ring-spike/10">
+            <div>
+              <p className="spike-label text-spike">Current lesson</p>
+              <p className="mt-1 text-lg font-semibold text-slate-900">{ctx.weekSubtitle}</p>
+              <p className="mt-2 text-sm text-slate-600">
+                Open Playbook to work through Learn, Workshop, Assignment, Reflection, and Submit for this week.
+              </p>
+            </div>
+            <Link
+              to={ROUTES.raSpikePlaybook}
+              className="inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-spike px-5 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-spike-dark sm:w-auto"
+            >
+              Continue
+              <ArrowRight size={18} aria-hidden />
+            </Link>
+          </section>
+
+          <section className="spike-card space-y-2">
+            <p className="text-sm font-semibold text-slate-900">This week</p>
+            <p className="text-sm text-slate-600">
+              Segment <strong>{ctx.segmentLabel}</strong> · Week <strong>{ctx.week}</strong> of{' '}
+              {ctx.totalWeeks}
+            </p>
+            {ctx.stageGate ? (
+              <p className="text-sm text-amber-800">
+                Milestone week: <strong>{ctx.stageGate.title}</strong>
+              </p>
+            ) : null}
+          </section>
+
+          <section className="spike-card space-y-2">
+            <p className="text-sm font-semibold text-slate-900">Squad</p>
+            <p className="text-sm text-slate-600">
+              Squad activity and weekly objectives appear on the{' '}
+              <Link to={ROUTES.raSpikeSquad} className="font-semibold text-spike hover:underline">
+                Squad
+              </Link>{' '}
+              tab.
+            </p>
+          </section>
         </div>
-        <p className="text-sm text-slate-500">
-          Your task-focused home dashboard arrives in Phase 3. Use Playbook, Squad, and Profile from the navigation above.
-        </p>
-      </section>
-    </PageContainer>
+      </PageContainer>
+    </RaSpikeShell>
   );
 }
