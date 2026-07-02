@@ -23,6 +23,8 @@ import { Week3Day3PlaybookHero } from './week3/Week3Day3PlaybookHero.jsx';
 import { Week3Day3PortfolioMission } from './week3/Week3Day3PortfolioMission.jsx';
 import { BusinessEngineCanvas } from './week3/businessEngine/BusinessEngineCanvas.jsx';
 import { BusinessEngineCanvasBlankPreview } from './week3/businessEngine/BusinessEngineCanvasBlankPreview.jsx';
+import { Week3Day4PlaybookHero } from './week3/Week3Day4PlaybookHero.jsx';
+import { GrowthEngineWorksheet } from './week3/GrowthEngineWorksheet.jsx';
 import { playbookWeek3Day3Href } from '../../lib/week3Day3PortfolioService.js';
 import { Week2StudioLaunchCard } from './week2/Week2StudioLaunchCard.jsx';
 import { PlaybookReflectionNudge } from './PlaybookReflectionNudge.jsx';
@@ -87,6 +89,7 @@ export function ParticipantDayView({
   const isWeek2Day1 = bundle.day.id === 'day-segment-1-week-2-day-1';
   const isWeek3Day1 = bundle.day.id === 'day-segment-1-week-3-day-1';
   const isWeek3Day3 = bundle.day.id === 'day-segment-1-week-3-day-3';
+  const isWeek3Day4 = bundle.day.id === 'day-segment-1-week-3-day-4';
   const weekDayMatch = bundle.day.id.match(/day-segment-1-week-(\d+)-day-(\d+)/);
   const week2Day = weekDayMatch && Number(weekDayMatch[1]) === 2 ? Number(weekDayMatch[2]) : 0;
   const resolvedProgramWeek = programWeek ?? (weekDayMatch ? Number(weekDayMatch[1]) : 1);
@@ -153,6 +156,28 @@ export function ParticipantDayView({
               staffPreview={staffPreview}
             />
           ) : null}
+        </>
+      ) : null}
+
+      {isWeek3Day4 ? (
+        <>
+          <Week3Day4PlaybookHero />
+          <section className="rounded-3xl border border-slate-200 bg-gradient-to-b from-white to-slate-50/80 p-4 shadow-card sm:p-6">
+            <div className="mb-4">
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-spike">Workshop</p>
+              <h2 className="mt-1 text-xl font-bold text-slate-900 sm:text-2xl">
+                SPIKE Growth Engine Worksheet™
+              </h2>
+              <p className="mt-1 text-sm text-slate-600">
+                Build capacity, calculate growth targets, update FEC Box 6, and prepare your Venture Pitch.
+              </p>
+            </div>
+            <GrowthEngineWorksheet
+              participantId={participantId ?? ''}
+              readOnly={staffPreview}
+              onSaved={onProgress}
+            />
+          </section>
         </>
       ) : null}
 

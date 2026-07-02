@@ -1,32 +1,20 @@
 {
   "dayId": "day-segment-1-week-3-day-4",
-  "theme": "Platform",
-  "title": "Mentor Guide — Day 14 — AIA as Your Business Platform",
-  "coachingObjective": "Ensure platform choice precedes compensation — entrepreneur framing throughout.",
-  "timing": {
-    "preSession": "Review platform pillars and economic engine sequence",
-    "duringSession": "Listen for employer vs platform language",
-    "postSession": "Complete squad weekly review snapshot"
-  },
-  "discussionQuestions": [
-    "Can they articulate why they chose AIA without mentioning pay first?",
-    "Which platform pillar matters most to their venture?"
+  "title": "Mentor Guide — Day 14 — Growth Engine",
+  "coachingQuestions": [
+    "What happens to your venture if you get twice as many referrals next month?",
+    "Are your Year 1 numbers ambitious or realistic given your Business Engine?",
+    "What capacity must you build so growth does not depend on you alone?",
+    "Which growth strategy — team, systems, technology, partnerships — fits your venture best?"
   ],
   "observationAreas": [
-    "Platform evaluation quality",
-    "Economic engine framing",
-    "Pitch prep readiness"
+    "Revenue goal vs Business Engine funnel consistency",
+    "Growth Engine Canvas depth (not generic answers)",
+    "FEC Box 6 three-year narrative clarity",
+    "Pitch readiness checklist completion"
   ],
-  "coachingTips": [
-    "Use 'economic engine' not 'commission plan'",
-    "Connect pay to FEC Financial Engine"
-  ],
-  "warningSigns": [],
-  "reflectionPrompts": [],
-  "expectedOutcomes": [
-    "Platform evaluation matrix",
-    "Economic engine reflection"
-  ],
-  "activityCoachingNotes": [],
-  "debriefWithFaculty": []
+  "activityNotes": [
+    "Approve when revenue targets are realistic, Growth Engine Canvas is specific, FEC Box 6 updated, and pitch checklist is complete.",
+    "Flag needs revision when calculations are missing, answers are generic, or numbers don't match the Business Engine from Day 3."
+  ]
 }

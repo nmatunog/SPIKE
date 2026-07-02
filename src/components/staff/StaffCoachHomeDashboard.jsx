@@ -12,6 +12,7 @@ import {
   Trophy,
   Users,
   FlaskConical,
+  TrendingUp,
 } from 'lucide-react';
 import { deriveStaffCoachHome } from '../../lib/staffCoachHomeService.js';
 import { SquadXpInline } from './SquadXpDashboard.jsx';
@@ -19,6 +20,7 @@ import {
   ROUTES,
   playbookWeek2StudioHref,
   playbookBusinessEngineCanvasPreviewHref,
+  playbookHref,
   staffSquadHubHref,
   staffSquadsListHref,
 } from '../../routes/paths.js';
@@ -116,6 +118,15 @@ export function StaffCoachHomeDashboard({
               >
                 <FlaskConical size={18} />
                 Preview SPIKE Studio
+              </Link>
+            ) : null}
+            {model.week >= 3 && model.day >= 4 ? (
+              <Link
+                to={playbookHref({ segment: 1, week: 3, day: 4 })}
+                className="inline-flex min-h-[48px] items-center gap-2 rounded-xl border border-orange-400/40 bg-orange-400/15 px-6 py-3 text-sm font-semibold text-orange-100 transition hover:bg-orange-400/25"
+              >
+                <TrendingUp size={18} />
+                Growth Engine Worksheet
               </Link>
             ) : null}
             {model.week >= 3 && model.day >= 3 ? (

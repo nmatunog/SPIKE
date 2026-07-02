@@ -5,6 +5,8 @@ import { Week2ActivateHero } from './week2/Week2ActivateHero.jsx';
 import { Week3Day1PlaybookHero } from './week3/Week3Day1PlaybookHero.jsx';
 import { Week3Day3PlaybookHero } from './week3/Week3Day3PlaybookHero.jsx';
 import { Week3Day3PortfolioMission } from './week3/Week3Day3PortfolioMission.jsx';
+import { Week3Day4PlaybookHero } from './week3/Week3Day4PlaybookHero.jsx';
+import { GrowthEngineWorksheet } from './week3/GrowthEngineWorksheet.jsx';
 import { BusinessEngineCanvasBlankPreview } from './week3/businessEngine/BusinessEngineCanvasBlankPreview.jsx';
 import { Week2StudioLaunchCard } from './week2/Week2StudioLaunchCard.jsx';
 import { EvaluationTemplatesPanel } from './EvaluationTemplatesPanel.jsx';
@@ -30,6 +32,7 @@ export function FacultyPlaybookView({ bundle }) {
   const isWeek2Day1 = bundle.day.id === 'day-segment-1-week-2-day-1';
   const isWeek3Day1 = bundle.day.id === 'day-segment-1-week-3-day-1';
   const isWeek3Day3 = bundle.day.id === 'day-segment-1-week-3-day-3';
+  const isWeek3Day4 = bundle.day.id === 'day-segment-1-week-3-day-4';
   const week2DayMatch = bundle.day.id.match(/day-segment-1-week-2-day-(\d+)/);
   const week2Day = week2DayMatch ? Number(week2DayMatch[1]) : 0;
   const facultyPresentations = resolvePresentations(bundle, bundle.day.presentations ?? []).filter(
@@ -45,6 +48,14 @@ export function FacultyPlaybookView({ bundle }) {
           <Week3Day3PlaybookHero />
           <BusinessEngineCanvasBlankPreview compact roleLabel={`${PROGRAM_COACH_LABEL} delivery`} />
           <Week3Day3PortfolioMission participantId="" staffPreview />
+        </>
+      ) : null}
+      {isWeek3Day4 ? (
+        <>
+          <Week3Day4PlaybookHero />
+          <section className="rounded-3xl border border-slate-200 bg-white p-4 shadow-card sm:p-6">
+            <GrowthEngineWorksheet readOnly />
+          </section>
         </>
       ) : null}
       {week2Day > 0 ? (

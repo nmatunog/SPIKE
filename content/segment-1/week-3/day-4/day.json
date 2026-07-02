@@ -3,31 +3,37 @@
   "segmentId": "segment-1",
   "weekId": "week-segment-1-3",
   "dayNumber": 4,
-  "title": "Day 14 — AIA as Your Business Platform",
-  "theme": "Platform & Economic Engine",
+  "title": "Day 14 — Growth Engine",
+  "theme": "Build Capacity. Multiply Impact.",
   "durationHours": 4,
   "learningObjectives": [
-    "Evaluate why thousands choose AIA as a business platform — before products or commissions",
-    "Map platform pillars: training, mentoring, technology, products, brand, compliance, marketing, community, licensing, support",
-    "Reframe compensation as the economic engine of the venture — not the reason to join",
-    "Draft why AIA is your chosen platform in the Venture Blueprint"
+    "Understand why every business reaches a capacity limit",
+    "Explain the difference between working harder and building capacity",
+    "Design the Growth Engine of their venture",
+    "Calculate Year 1 activity, client, and revenue targets",
+    "Complete FEC Growth Engine (Box 6)",
+    "Prepare for the Venture Pitch"
   ],
   "expectedOutputs": [
-    "Platform evaluation matrix",
-    "Economic engine reflection"
+    "Opening reflection on Business Engine learnings",
+    "Growth Engine Canvas (leaders, systems, capacity, market, vision)",
+    "Business Growth Targets worksheet (annual, monthly, weekly)",
+    "FEC Box 6 — three-year growth narrative",
+    "Venture Pitch readiness checklist"
   ],
   "portfolioDeliverables": [
     "portfolio-advisor-startup"
   ],
   "businessPlanIntegration": "bp-chapter-3",
   "presentations": [
-    "presentation-w3-d4-deck-01",
-    "presentation-w3-d4-deck-02"
+    "presentation-w3-d4-deck-01"
   ],
   "activities": [
     "activity-w3-d4-01",
     "activity-w3-d4-02",
-    "activity-w3-d4-03"
+    "activity-w3-d4-03",
+    "activity-w3-d4-04",
+    "activity-w3-d4-05"
   ],
   "worksheets": [
     "worksheet-w3-d4-01"

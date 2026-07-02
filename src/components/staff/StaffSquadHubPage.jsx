@@ -8,6 +8,7 @@ import { PitchPanelSquadSummaryPanel } from './PitchPanelSquadSummaryPanel.jsx';
 import { SquadCoachBonusPanel } from './SquadCoachBonusPanel.jsx';
 import { SquadXpInline, SquadXpSummaryCard } from './SquadXpDashboard.jsx';
 import { SquadWeek2MissionProgressPanel } from './SquadWeek2MissionProgressPanel.jsx';
+import { Week3Day4SquadProgressPanel } from '../playbook/week3/Week3Day4SquadProgressPanel.jsx';
 import { getSquadWeeklyXp } from '../../lib/staff/squadXpService.js';
 import { SQUAD_COACH_BONUS_EVENT } from '../../lib/staff/squadCoachBonusService.js';
 import {
@@ -70,6 +71,15 @@ export function StaffSquadHubPage({ role, squadName, interns, homeHref, staffId 
         skipHydration={cohortReady}
         hydrationVersion={cohortVersion}
       />
+
+      {programDay.week >= 3 && programDay.day >= 4 ? (
+        <div className="mb-6">
+          <Week3Day4SquadProgressPanel
+            memberIds={memberIds}
+            memberNames={Object.fromEntries(detail.memberRows.map((m) => [m.id, m.name]))}
+          />
+        </div>
+      ) : null}
 
       {programDay.week >= 2 ? (
         <div className="mb-6 space-y-4">

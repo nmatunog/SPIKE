@@ -2,64 +2,126 @@
   "presentation": {
     "id": "presentation-w3-d4-deck-01",
     "dayId": "day-segment-1-week-3-day-4",
-    "title": "Program Coach Deck 01 — AIA as Your Business Platform",
+    "title": "Program Coach Deck 01 — Growth Engine",
+    "subtitle": "Build Capacity. Multiply Impact.",
     "slideIds": [
       "slide-w3-d4-dk1-01",
       "slide-w3-d4-dk1-02",
       "slide-w3-d4-dk1-03",
       "slide-w3-d4-dk1-04",
-      "slide-w3-d4-dk1-05"
+      "slide-w3-d4-dk1-05",
+      "slide-w3-d4-dk1-06",
+      "slide-w3-d4-dk1-07",
+      "slide-w3-d4-dk1-08",
+      "slide-w3-d4-dk1-09",
+      "slide-w3-d4-dk1-10"
     ]
   },
   "slides": [
     {
       "id": "slide-w3-d4-dk1-01",
       "presentationId": "presentation-w3-d4-deck-01",
-      "title": "Day 14 — Now Introduce AIA",
-      "body": "Not with products.\nNot with commissions.\nWhy do thousands choose AIA as their business platform?",
-      "speakerNotes": "Today AIA enters as a platform choice — not a sales pitch.\nParticipants have already seen the opportunity, the tool, and the scalability.\nNow: why this platform?",
-      "discussionQuestions": [],
-      "sortOrder": 1
+      "sortOrder": 1,
+      "title": "Growth Engine",
+      "body": "Week 3 · Day 4\n\nBuild Capacity.\nMultiply Impact.\n\nFinancial Entrepreneurship",
+      "speakerNotes": "Act 1 open (45 min). Hero slide — venture accelerator tone, not recruitment.\nRecap: Client Experience → Business Engine → today Growth Engine → tomorrow Financial Engine → Friday Venture Pitch.",
+      "discussionQuestions": []
     },
     {
       "id": "slide-w3-d4-dk1-02",
       "presentationId": "presentation-w3-d4-deck-01",
-      "title": "Platform Pillars",
-      "body": "Training · Mentoring · Technology · Products · Brand · Compliance · Marketing · Community · Licensing · Support",
-      "speakerNotes": "Walk each pillar as venture infrastructure — not HR benefits.\nAsk: which pillar would be hardest to build alone?",
+      "sortOrder": 2,
+      "title": "What Did You Learn Yesterday?",
+      "body": "Reflect on your Business Engine.\n\n• Biggest insight\n• Biggest surprise\n• One thing you will improve",
+      "speakerNotes": "Pair-share 3 minutes. Interns capture in Playbook Growth Engine worksheet opening reflection.\nBridge: yesterday you designed how the engine runs — today you design how it scales.",
       "discussionQuestions": [
-        "Which platform pillar matters most to your venture?"
-      ],
-      "sortOrder": 2
+        "What surprised you about your Business Engine numbers?",
+        "What would break first if demand doubled?"
+      ]
     },
     {
       "id": "slide-w3-d4-dk1-03",
       "presentationId": "presentation-w3-d4-deck-01",
-      "title": "Platform vs Build-It-Yourself",
-      "body": "Entrepreneurs leverage platforms to launch faster.",
-      "speakerNotes": "Compare: starting a practice alone vs on AIA platform.\nTime, cost, risk, credibility.",
-      "discussionQuestions": [],
-      "sortOrder": 3
+      "sortOrder": 3,
+      "title": "Why Businesses Stop Growing",
+      "body": "Businesses don't fail because demand disappears.\n\nThey fail because capacity stops growing.",
+      "speakerNotes": "One-page reading in Playbook. Ask: what currently limits YOUR venture?\nOutcome: every successful venture must eventually scale beyond the founder.",
+      "discussionQuestions": [
+        "What currently limits your venture?"
+      ]
     },
     {
       "id": "slide-w3-d4-dk1-04",
       "presentationId": "presentation-w3-d4-deck-01",
-      "title": "THEN — The Economic Engine",
-      "body": "Compensation is the economic engine of your venture.\nNot the reason you joined.",
-      "speakerNotes": "Huge psychological difference.\nFirst: venture model. Then: how the venture earns.\nCompensation follows platform choice — it does not drive it.",
+      "sortOrder": 4,
+      "title": "Capacity vs Activity",
+      "body": "Activity — working harder, working alone, serving more clients yourself.\n\nCapacity — building systems, developing people, serving more families.",
+      "speakerNotes": "Walk comparison table in Playbook. Which side describes their venture today?\nIntroduce leadership, systems, and multiplication as growth strategies.",
       "discussionQuestions": [
-        "How does this reframe how you think about pay?"
-      ],
-      "sortOrder": 4
+        "Which side describes your current venture?"
+      ]
     },
     {
       "id": "slide-w3-d4-dk1-05",
       "presentationId": "presentation-w3-d4-deck-01",
-      "title": "Deck 01 Close — Platform Evaluation",
-      "body": "Afternoon: evaluate AIA as your chosen platform.",
-      "speakerNotes": "Transition to Deck 02 workshop.",
-      "discussionQuestions": [],
-      "sortOrder": 5
+      "sortOrder": 5,
+      "title": "The Growth Engine Canvas",
+      "body": "How will your venture grow beyond yourself?\n\nDevelop Leaders · Build Systems · Increase Capacity · Expand Market · Long-Term Vision",
+      "speakerNotes": "Act 2 workshop (60 min). Squads open Playbook → Growth Engine Canvas.\nUpdate FEC Box 6 as they draft.",
+      "discussionQuestions": [
+        "What must you build so growth does not depend on you alone?"
+      ]
+    },
+    {
+      "id": "slide-w3-d4-dk1-06",
+      "presentationId": "presentation-w3-d4-deck-01",
+      "sortOrder": 6,
+      "title": "The Numbers That Drive Growth",
+      "body": "Year 1 Revenue Goal\n÷ Average Revenue per Client\n= Clients Needed\n\nThen cascade to monthly and weekly activity.",
+      "speakerNotes": "Act 3 (75 min). Walk formula on screen. Interns complete Business Growth Targets in Playbook.\nIntegrate 10→5→3→1→₱10,000→3 Business Engine funnel.",
+      "discussionQuestions": [
+        "Can your Business Engine realistically achieve your target?"
+      ]
+    },
+    {
+      "id": "slide-w3-d4-dk1-07",
+      "presentationId": "presentation-w3-d4-deck-01",
+      "sortOrder": 7,
+      "title": "Growth Strategy",
+      "body": "How will you create more capacity?\n\nProductivity · Technology · Systems · Partnerships · Advisors · Team",
+      "speakerNotes": "If numbers don't work — what must change? Stress-test assumptions in squads.",
+      "discussionQuestions": [
+        "Which growth strategy fits your venture?"
+      ]
+    },
+    {
+      "id": "slide-w3-d4-dk1-08",
+      "presentationId": "presentation-w3-d4-deck-01",
+      "sortOrder": 8,
+      "title": "FEC Growth Engine — Three Years",
+      "body": "Year 1 — Launch\nYear 2 — Expand\nYear 3 — Multiply",
+      "speakerNotes": "FEC Box 6 integration. Describe how the venture grows over three years — not products, but capacity and impact.",
+      "discussionQuestions": []
+    },
+    {
+      "id": "slide-w3-d4-dk1-09",
+      "presentationId": "presentation-w3-d4-deck-01",
+      "sortOrder": 9,
+      "title": "Squad Stress Test",
+      "body": "Each squad reviews each member's calculations.\n\nChallenge assumptions. Stress-test numbers. Suggest improvements.",
+      "speakerNotes": "Group activity before pitch prep. Coach circulates — probe for realism, not optimism.",
+      "discussionQuestions": []
+    },
+    {
+      "id": "slide-w3-d4-dk1-10",
+      "presentationId": "presentation-w3-d4-deck-01",
+      "sortOrder": 10,
+      "title": "Venture Pitch Readiness",
+      "body": "Friday: 5-minute Venture Pitch.\n\nFinalize FEC · Business Engine · Growth Engine.\n\nInvestor Demo Day — a complete Financial Entrepreneurship Venture.",
+      "speakerNotes": "Act 4 (30–45 min). Each participant shares revenue goal, clients, growth strategy, capacity plan.\nClose: I know exactly how my advisory venture will grow.",
+      "discussionQuestions": [
+        "What is the one number you are committing to?"
+      ]
     }
   ]
 }

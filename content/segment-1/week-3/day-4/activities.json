@@ -3,50 +3,52 @@
     {
       "id": "activity-w3-d4-01",
       "dayId": "day-segment-1-week-3-day-4",
-      "title": "Platform Evaluation Matrix",
-      "durationMinutes": 40,
-      "materials": [],
-      "instructions": [
-        "Rate each AIA platform pillar for your venture",
-        "Note build-yourself cost if platform were unavailable",
-        "Identify top 3 pillars for your launch"
-      ],
-      "outputs": [
-        "Platform evaluation matrix"
-      ],
-      "debriefQuestions": []
+      "sortOrder": 1,
+      "title": "Opening Reflection — Business Engine Debrief",
+      "durationMinutes": 20,
+      "type": "reflection",
+      "description": "Capture biggest insight, surprise, and one improvement from yesterday's Business Engine workshop.",
+      "deliverable": "Opening reflection in Growth Engine worksheet"
     },
     {
       "id": "activity-w3-d4-02",
       "dayId": "day-segment-1-week-3-day-4",
-      "title": "Economic Engine Reflection",
-      "durationMinutes": 30,
-      "materials": [],
-      "instructions": [
-        "After platform section, review compensation as venture fuel",
-        "Draft how income supports your growth flywheel",
-        "Avoid 'join for money' framing — write 'engine that powers the venture'"
-      ],
-      "outputs": [
-        "Economic engine reflection"
-      ],
-      "debriefQuestions": []
+      "sortOrder": 2,
+      "title": "Growth Engine Canvas Workshop",
+      "durationMinutes": 60,
+      "type": "workshop",
+      "description": "Complete Growth Engine Canvas — leaders, systems, capacity, market, long-term vision. Update FEC Box 6.",
+      "deliverable": "Growth Engine Canvas + FEC three-year narrative"
     },
     {
       "id": "activity-w3-d4-03",
       "dayId": "day-segment-1-week-3-day-4",
-      "title": "Why I Chose AIA — Platform Rationale",
-      "durationMinutes": 35,
-      "materials": [],
-      "instructions": [
-        "Write platform choice in entrepreneur language",
-        "Include at least three pillars with venture-specific rationale",
-        "Peer review: platform or employer mindset?"
-      ],
-      "outputs": [
-        "Platform rationale draft"
-      ],
-      "debriefQuestions": []
+      "sortOrder": 3,
+      "title": "Business Growth Targets",
+      "durationMinutes": 75,
+      "type": "workshop",
+      "description": "Calculate Year 1 revenue goal, required clients, monthly targets, and weekly 10–5–3–1 activity funnel.",
+      "deliverable": "Business Growth Targets worksheet"
+    },
+    {
+      "id": "activity-w3-d4-04",
+      "dayId": "day-segment-1-week-3-day-4",
+      "sortOrder": 4,
+      "title": "Squad Stress Test",
+      "durationMinutes": 30,
+      "type": "squad_review",
+      "description": "Squads review each member's numbers, challenge assumptions, and suggest improvements.",
+      "deliverable": "Revised growth targets and strategy notes"
+    },
+    {
+      "id": "activity-w3-d4-05",
+      "dayId": "day-segment-1-week-3-day-4",
+      "sortOrder": 5,
+      "title": "Venture Pitch Preparation",
+      "durationMinutes": 45,
+      "type": "presentation_prep",
+      "description": "Pitch readiness checklist and peer feedback on revenue goal, clients, growth strategy, and capacity plan.",
+      "deliverable": "Pitch prep checklist complete"
     }
   ]
 }

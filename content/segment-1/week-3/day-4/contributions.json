@@ -1,12 +1,26 @@
 {
-  "dayId": "day-segment-1-week-3-day-4",
-  "contributesToPortfolio": [
-    "portfolio-advisor-startup"
-  ],
-  "contributesToBusinessPlan": [
-    "bp-chapter-3"
-  ],
-  "contributesToCompetencies": [
-    "competency-week-3"
+  "contributions": [
+    {
+      "id": "contrib-w3-d4-fec",
+      "dayId": "day-segment-1-week-3-day-4",
+      "target": "fec",
+      "engineKey": "agency_leadership",
+      "fieldKey": "growth_multipliers",
+      "label": "FEC Box 6 — Growth Engine"
+    },
+    {
+      "id": "contrib-w3-d4-portfolio",
+      "dayId": "day-segment-1-week-3-day-4",
+      "target": "portfolio",
+      "artifactType": "growth_engine_worksheet",
+      "label": "Growth Engine Worksheet export"
+    },
+    {
+      "id": "contrib-w3-d4-bp",
+      "dayId": "day-segment-1-week-3-day-4",
+      "target": "business_plan",
+      "chapterId": "bp-chapter-3",
+      "label": "Growth Engine chapter integration"
+    }
   ]
 }

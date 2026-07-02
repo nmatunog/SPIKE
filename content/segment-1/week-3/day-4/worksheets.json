@@ -3,9 +3,12 @@
     {
       "id": "worksheet-w3-d4-01",
       "dayId": "day-segment-1-week-3-day-4",
-      "title": "Dyad presentation rubric",
-      "questionIds": []
+      "title": "SPIKE Growth Engine Worksheet™",
+      "description": "Capacity mindset, Growth Engine Canvas, Business Growth Targets, FEC Box 6 integration, and Venture Pitch readiness.",
+      "type": "interactive",
+      "moduleId": "growth-engine-worksheet",
+      "autosave": true,
+      "exportFormats": ["pdf", "print"]
     }
-  ],
-  "questions": []
+  ]
 }

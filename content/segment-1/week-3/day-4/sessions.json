@@ -4,29 +4,20 @@
       "id": "session-w3-d4-full",
       "dayId": "day-segment-1-week-3-day-4",
       "sessionNumber": 1,
-      "title": "Day 14 — AIA as Your Business Platform",
+      "title": "Day 14 — Growth Engine",
       "durationMinutes": 240,
-      "presentationIds": [
-        "presentation-w3-d4-deck-01",
-        "presentation-w3-d4-deck-02"
-      ],
+      "presentationIds": ["presentation-w3-d4-deck-01"],
       "activityIds": [
         "activity-w3-d4-01",
         "activity-w3-d4-02",
-        "activity-w3-d4-03"
+        "activity-w3-d4-03",
+        "activity-w3-d4-04",
+        "activity-w3-d4-05"
       ],
-      "worksheetIds": [
-        "worksheet-w3-d4-01"
-      ],
-      "assessmentIds": [
-        "assessment-w3-d4"
-      ],
-      "reflectionIds": [
-        "reflection-w3-d4"
-      ],
-      "surveyIds": [
-        "survey-w3-d4"
-      ]
+      "worksheetIds": ["worksheet-w3-d4-01"],
+      "assessmentIds": ["assessment-w3-d4"],
+      "reflectionIds": ["reflection-w3-d4"],
+      "surveyIds": ["survey-w3-d4"]
     }
   ]
 }

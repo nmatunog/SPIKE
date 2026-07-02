@@ -2,60 +2,19 @@
   "presentation": {
     "id": "presentation-w3-d4-deck-02",
     "dayId": "day-segment-1-week-3-day-4",
-    "title": "Program Coach Deck 02 — Platform & Economic Engine Workshop",
-    "slideIds": [
-      "slide-w3-d4-dk2-01",
-      "slide-w3-d4-dk2-02",
-      "slide-w3-d4-dk2-03",
-      "slide-w3-d4-dk2-04",
-      "slide-w3-d4-dk2-05"
-    ]
+    "title": "Deck 02 — Growth Engine Workshop (In-App)",
+    "subtitle": "Replaced by Playbook Growth Engine Worksheet",
+    "slideIds": ["slide-w3-d4-dk2-01"]
   },
   "slides": [
     {
       "id": "slide-w3-d4-dk2-01",
       "presentationId": "presentation-w3-d4-deck-02",
-      "title": "Platform Evaluation Matrix",
-      "body": "Rate each pillar: critical / nice-to-have / build-yourself cost.",
-      "speakerNotes": "Personalize to each participant's venture gaps.",
-      "discussionQuestions": [],
-      "sortOrder": 1
-    },
-    {
-      "id": "slide-w3-d4-dk2-02",
-      "presentationId": "presentation-w3-d4-deck-02",
-      "title": "Why I Chose AIA",
-      "body": "Draft your platform rationale — entrepreneur language.",
-      "speakerNotes": "Not 'I want to work at AIA' — 'I chose AIA because…'",
-      "discussionQuestions": [],
-      "sortOrder": 2
-    },
-    {
-      "id": "slide-w3-d4-dk2-03",
-      "presentationId": "presentation-w3-d4-deck-02",
-      "title": "Economic Engine Overview",
-      "body": "How compensation fuels the venture — after the model is clear.",
-      "speakerNotes": "Present compensation structure as FEC Box 8 Financial Engine input.",
-      "discussionQuestions": [],
-      "sortOrder": 3
-    },
-    {
-      "id": "slide-w3-d4-dk2-04",
-      "presentationId": "presentation-w3-d4-deck-02",
-      "title": "Pitch Prep Preview",
-      "body": "Tomorrow: My Financial Advisory Venture — an entrepreneur's pitch.",
-      "speakerNotes": "Outline pitch sections for Day 15.",
-      "discussionQuestions": [],
-      "sortOrder": 4
-    },
-    {
-      "id": "slide-w3-d4-dk2-05",
-      "presentationId": "presentation-w3-d4-deck-02",
-      "title": "Day 14 Deliverables",
-      "body": "Platform evaluation matrix + economic engine reflection uploaded.",
-      "speakerNotes": "Assign pitch rehearsal homework.",
-      "discussionQuestions": [],
-      "sortOrder": 5
+      "sortOrder": 1,
+      "title": "Open Growth Engine Worksheet",
+      "body": "Deck 02 is now an in-app interactive module.\n\nInterns complete the Growth Engine Worksheet in Playbook — canvas, targets, FEC sync, and pitch checklist.\n\nFacilitators: use staff preview to project the worksheet on screen.",
+      "speakerNotes": "Direct squads to Playbook → Week 3 Day 4 mission view. Circulate during Acts 2–3.",
+      "discussionQuestions": []
     }
   ]
 }
