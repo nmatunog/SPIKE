@@ -1,0 +1,44 @@
+{
+  "weekNumber": 5,
+  "segment": "advise",
+  "title": "Prospecting",
+  "theme": "Start Conversations",
+  "modules": ["prospecting"],
+  "steps": {
+    "learn": {
+      "label": "Learn",
+      "headline": "Prospecting fundamentals",
+      "summary": "Ethical outreach that opens doors.",
+      "durationMinutes": 20,
+      "bullets": ["Warm vs. cold outreach", "Scripts that invite conversation", "Tracking your pipeline"]
+    },
+    "workshop": {
+      "label": "Workshop",
+      "headline": "Prospecting role-play",
+      "summary": "Practice openers with squad partners.",
+      "durationMinutes": 90,
+      "bullets": ["Live role-play", "Coach debrief", "Refine your list"]
+    },
+    "assignment": {
+      "label": "Assignment",
+      "headline": "Prospecting list + script",
+      "summary": "10 prospects and your opening script.",
+      "durationMinutes": 60,
+      "action": { "type": "prospecting", "label": "Open prospecting worksheet" }
+    },
+    "reflection": {
+      "label": "Reflection",
+      "headline": "Outreach confidence",
+      "summary": "What felt natural? What needs practice?",
+      "durationMinutes": 10,
+      "prompts": ["Which prospect segment feels right?", "What objection do you expect?", "Next conversation goal?"]
+    },
+    "submit": {
+      "label": "Submit",
+      "headline": "Mark Week 5 complete",
+      "summary": "Unlock Week 6 — Discovery & Approaching.",
+      "durationMinutes": 2,
+      "bullets": ["List and script saved"]
+    }
+  }
+}

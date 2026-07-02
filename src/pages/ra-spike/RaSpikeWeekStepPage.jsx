@@ -13,10 +13,16 @@ import {
   setRaSpikeStepStatus,
   submitRaSpikeWeek,
 } from '../../lib/raSpikeWeekProgress.js';
-import { isRaSpikeModuleAccessible } from '../../lib/programUnlockPolicy.js';
+import { isCanvasWizardComplete } from '../../lib/raSpikeCanvasWizard.js';
+import { isRaSpikePersonaComplete } from '../../lib/raSpikePersonaStorage.js';
+import { isRaSpikeWorksheetComplete } from '../../lib/raSpikeWorksheetStorage.js';
+import { isGatePrepComplete, gateNumberForWeek } from '../../lib/raSpikeGateService.js';
 import {
   ROUTES,
   raSpikePlaybookDreamBoardHref,
+  raSpikePlaybookCanvasWizardHref,
+  raSpikePlaybookPersonaHref,
+  raSpikeStageGateHref,
   raSpikePlaybookStepHref,
 } from '../../routes/paths.js';
 import { useAuth } from '../../AuthContext.jsx';
@@ -62,7 +68,23 @@ export function RaSpikeWeekStepPage({ user, week, stepId }) {
 
   useEffect(() => {
     if (stepId !== 'assignment' || !participantId) return;
-    if (isBuilderCompleted(participantId, 'dream-board')) {
+    if (week === 1 && isBuilderCompleted(participantId, 'dream-board')) {
+      setRaSpikeStepStatus(participantId, week, 'assignment', 'complete').then(setProgress).catch(() => {});
+    }
+    if (week === 2 && isRaSpikePersonaComplete(participantId)) {
+      setRaSpikeStepStatus(participantId, week, 'assignment', 'complete').then(setProgress).catch(() => {});
+    }
+    if (week === 3 && isCanvasWizardComplete(participantId)) {
+      setRaSpikeStepStatus(participantId, week, 'assignment', 'complete').then(setProgress).catch(() => {});
+    }
+    const gateNum = gateNumberForWeek(week);
+    if (gateNum && isGatePrepComplete(participantId, gateNum)) {
+      setRaSpikeStepStatus(participantId, week, 'assignment', 'complete').then(setProgress).catch(() => {});
+    }
+    if (week === 5 && isRaSpikeWorksheetComplete(participantId, 'prospecting')) {
+      setRaSpikeStepStatus(participantId, week, 'assignment', 'complete').then(setProgress).catch(() => {});
+    }
+    if (week === 6 && isRaSpikeWorksheetComplete(participantId, 'discovery-log')) {
       setRaSpikeStepStatus(participantId, week, 'assignment', 'complete').then(setProgress).catch(() => {});
     }
   }, [stepId, participantId, week]);
@@ -83,10 +105,19 @@ export function RaSpikeWeekStepPage({ user, week, stepId }) {
   const stepKey = /** @type {import('../../lib/raSpikeWeekProgress.js').RaSpikeStepId} */ (stepId);
   const unlocked = isRaSpikeStepUnlocked(progress, stepKey);
   const status = getStepStatus(progress, stepKey);
-  const dreamBoardAllowed =
-    stepId === 'assignment'
-    && week === 1
-    && isRaSpikeModuleAccessible('dream-board', user?.internProgress);
+  function assignmentHref() {
+    const action = content.action;
+    if (!action) return null;
+    if (action.type === 'dream-board') return raSpikePlaybookDreamBoardHref();
+    if (action.type === 'canvas-wizard') return raSpikePlaybookCanvasWizardHref();
+    if (action.type === 'persona') return raSpikePlaybookPersonaHref();
+    if (action.type === 'stage-gate') return raSpikeStageGateHref(action.gate ?? 1);
+    if (action.type === 'prospecting') return ROUTES.raSpikePlaybookProspecting;
+    if (action.type === 'discovery-log') return ROUTES.raSpikePlaybookDiscoveryLog;
+    return null;
+  }
+
+  const assignmentLink = stepId === 'assignment' ? assignmentHref() : null;
 
   async function markComplete(nextStatus = 'complete') {
     setBusy(true);
@@ -202,12 +233,18 @@ export function RaSpikeWeekStepPage({ user, week, stepId }) {
             </div>
           ) : null}
 
-          {dreamBoardAllowed && content.action?.type === 'dream-board' ? (
+          {stepId === 'submit' && gateNumberForWeek(week) && status === 'complete' ? (
+            <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+              Submitted — awaiting panel evaluation. Your coach will record pass/fail after Stage Gate {gateNumberForWeek(week)}.
+            </p>
+          ) : null}
+
+          {assignmentLink ? (
             <Link
-              to={raSpikePlaybookDreamBoardHref()}
+              to={assignmentLink}
               className="spike-btn-primary inline-flex min-h-[48px] w-full items-center justify-center sm:w-auto"
             >
-              {content.action.label ?? 'Open Dream Board Studio'}
+              {content.action?.label ?? 'Open assignment'}
             </Link>
           ) : null}
 

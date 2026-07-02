@@ -1,0 +1,56 @@
+{
+  "weekNumber": 4,
+  "segment": "discover",
+  "title": "Stage Gate 1 — Venture Pitch",
+  "theme": "Present Your Business",
+  "modules": ["dream-board", "customer-discovery", "fec-canvas", "business-plan", "venture-pitch"],
+  "steps": {
+    "learn": {
+      "label": "Learn",
+      "headline": "Venture pitch essentials",
+      "summary": "What the panel evaluates and how to prepare.",
+      "durationMinutes": 20,
+      "bullets": [
+        "4 criteria: clarity, market, model, delivery",
+        "5-minute pitch structure",
+        "Q&A readiness"
+      ]
+    },
+    "workshop": {
+      "label": "Workshop",
+      "headline": "Pitch rehearsal",
+      "summary": "Practice with coach and squad feedback.",
+      "durationMinutes": 120,
+      "bullets": [
+        "Timed run-throughs",
+        "Panel question practice",
+        "Final deck / notes check"
+      ]
+    },
+    "assignment": {
+      "label": "Assignment",
+      "headline": "Stage Gate 1 preparation",
+      "summary": "Complete the pitch prep checklist.",
+      "durationMinutes": 90,
+      "action": { "type": "stage-gate", "gate": 1, "label": "Open Stage Gate 1 prep" }
+    },
+    "reflection": {
+      "label": "Reflection",
+      "headline": "Pitch readiness",
+      "summary": "Honest self-assessment before panel day.",
+      "durationMinutes": 10,
+      "prompts": [
+        "What is your strongest pitch moment?",
+        "What question are you least prepared for?",
+        "What support do you need from your squad?"
+      ]
+    },
+    "submit": {
+      "label": "Submit",
+      "headline": "Submit for Stage Gate 1",
+      "summary": "Your coach will evaluate at the panel. Week 5 unlocks after you pass.",
+      "durationMinutes": 2,
+      "bullets": ["Prep checklist complete", "Awaiting panel evaluation"]
+    }
+  }
+}

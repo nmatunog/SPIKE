@@ -1,0 +1,56 @@
+{
+  "weekNumber": 3,
+  "segment": "discover",
+  "title": "Design Your Business",
+  "theme": "Build Your Practice",
+  "modules": ["dream-board", "customer-discovery", "fec-canvas"],
+  "steps": {
+    "learn": {
+      "label": "Learn",
+      "headline": "Business model basics",
+      "summary": "How value creation, capture, and delivery fit together.",
+      "durationMinutes": 25,
+      "bullets": [
+        "FEC pillars: Create, Capture, Enable, Prove",
+        "Unified Venture Proposition — one north star",
+        "From persona to profitable practice"
+      ]
+    },
+    "workshop": {
+      "label": "Workshop",
+      "headline": "Canvas mapping studio",
+      "summary": "Coach-guided walkthrough of each FEC section.",
+      "durationMinutes": 90,
+      "bullets": [
+        "Map Create Value from your persona",
+        "Discuss revenue and cost assumptions",
+        "Peer feedback in squads"
+      ]
+    },
+    "assignment": {
+      "label": "Assignment",
+      "headline": "Complete the FEC Canvas Wizard",
+      "summary": "Guided step-by-step — one section at a time.",
+      "durationMinutes": 75,
+      "action": { "type": "canvas-wizard", "label": "Open Canvas Wizard" }
+    },
+    "reflection": {
+      "label": "Reflection",
+      "headline": "How clear is your business model?",
+      "summary": "Note gaps before Stage Gate prep.",
+      "durationMinutes": 10,
+      "prompts": [
+        "Which canvas box was hardest? Why?",
+        "Is your UVP specific enough?",
+        "What will you refine before your pitch?"
+      ]
+    },
+    "submit": {
+      "label": "Submit",
+      "headline": "Mark Week 3 complete",
+      "summary": "Unlock Week 4 — Stage Gate 1 preparation.",
+      "durationMinutes": 2,
+      "bullets": ["Canvas wizard complete", "Ready for venture pitch prep"]
+    }
+  }
+}

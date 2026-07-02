@@ -1,0 +1,56 @@
+{
+  "weekNumber": 2,
+  "segment": "discover",
+  "title": "Discover Your Market",
+  "theme": "Find the People You Want to Serve",
+  "modules": ["customer-discovery"],
+  "steps": {
+    "learn": {
+      "label": "Learn",
+      "headline": "Know your customer",
+      "summary": "Great businesses start with a clear picture of who you serve.",
+      "durationMinutes": 20,
+      "bullets": [
+        "Customer segments vs. broad markets",
+        "Jobs, pains, and gains your clients experience",
+        "How persona work feeds your FEC canvas in Week 3"
+      ]
+    },
+    "workshop": {
+      "label": "Workshop",
+      "headline": "Persona discovery lab",
+      "summary": "Facilitated interview practice and squad sharing.",
+      "durationMinutes": 90,
+      "bullets": [
+        "Draft interview questions with your squad",
+        "Share early persona hypotheses",
+        "Coach feedback on segment focus"
+      ]
+    },
+    "assignment": {
+      "label": "Assignment",
+      "headline": "Customer persona draft",
+      "summary": "Document who you want to serve and why.",
+      "durationMinutes": 60,
+      "action": { "type": "persona", "label": "Open persona worksheet" }
+    },
+    "reflection": {
+      "label": "Reflection",
+      "headline": "What did you learn about your market?",
+      "summary": "Capture insights before submitting.",
+      "durationMinutes": 10,
+      "prompts": [
+        "Who surprised you as a potential client?",
+        "What problem feels most urgent to solve?",
+        "What will you validate in Week 3?"
+      ]
+    },
+    "submit": {
+      "label": "Submit",
+      "headline": "Mark Week 2 complete",
+      "summary": "Confirm all steps done to unlock Week 3.",
+      "durationMinutes": 2,
+      "bullets": ["Persona draft saved", "Squad objective discussed"]
+    }
+  }
+}

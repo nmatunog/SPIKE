@@ -1,0 +1,42 @@
+{
+  "weekNumber": 7,
+  "segment": "advise",
+  "title": "Presenting Solutions",
+  "theme": "Recommend With Confidence",
+  "modules": ["prospecting", "discovery-approaching", "presenting-solutions"],
+  "steps": {
+    "learn": {
+      "label": "Learn",
+      "headline": "Solution presentation",
+      "summary": "Match recommendations to discovered needs.",
+      "durationMinutes": 20,
+      "bullets": ["Needs-summary bridge", "Recommendation structure", "Handling hesitation"]
+    },
+    "workshop": {
+      "label": "Workshop",
+      "headline": "Solution role-play",
+      "summary": "Present recommendations to squad partners.",
+      "durationMinutes": 90,
+      "bullets": ["Timed presentations", "Feedback cards", "Revalida preview"]
+    },
+    "assignment": {
+      "label": "Assignment",
+      "headline": "Revalida prep checklist",
+      "summary": "Prepare for Stage Gate 2 — Advisor Revalida.",
+      "durationMinutes": 75,
+      "action": { "type": "stage-gate", "gate": 2, "label": "Open Stage Gate 2 prep" }
+    },
+    "reflection": {
+      "label": "Reflection",
+      "headline": "Presentation confidence",
+      "durationMinutes": 10,
+      "prompts": ["Strongest recommendation moment?", "Objection you handled well?", "Revalida focus area?"]
+    },
+    "submit": {
+      "label": "Submit",
+      "headline": "Mark Week 7 complete",
+      "durationMinutes": 2,
+      "bullets": ["Revalida prep underway"]
+    }
+  }
+}

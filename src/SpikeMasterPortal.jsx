@@ -44,6 +44,7 @@ import { RA_SPIKE_PROGRAM } from './lib/programs/ra-spike.js';
 import { shouldGateRaSpikeOnboarding, isRaSpikeOnboardingPath } from './lib/raSpikeOnboardingService.js';
 import { registerRaSpikeViaApi, isRaSpikeSignupApiUnavailable } from './lib/raSpikeSignupService.js';
 import { RaSpikeOnboardingPage } from './pages/ra-spike/RaSpikeOnboardingPage.jsx';
+import { RaSpikeStageGatePrepPage } from './pages/ra-spike/RaSpikeStageGatePrepPage.jsx';
 import { StaffSquadHubPage, StaffSquadsListPage } from './components/staff/StaffSquadHubPage.jsx';
 import { Week2LoginWelcomeFlow } from './components/week2/Week2LoginWelcomeFlow.jsx';
 import { shouldShowWeek2LoginWelcome } from './lib/week2LoginWelcome.js';
@@ -1732,6 +1733,11 @@ const SpikeMasterPortal = () => {
         }
         if (path === ROUTES.raSpikeOnboarding) {
           return <RaSpikeOnboardingPage user={internUser} />;
+        }
+        if (path === ROUTES.raSpikeStageGate) {
+          const gateParam = Number(new URLSearchParams(location.search).get('gate'));
+          const gate = gateParam === 2 ? 2 : 1;
+          return <RaSpikeStageGatePrepPage user={internUser} gate={gate} />;
         }
         if (internUser?.internProgress) {
           return <Navigate to={defaultRouteForRole('intern', programSlug)} replace />;

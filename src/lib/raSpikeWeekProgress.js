@@ -140,10 +140,18 @@ export async function submitRaSpikeWeek(participantId, week) {
       weekSubmittedAt: new Date().toISOString(),
     });
     const current = getRaSpikeWeekProgressLocal(participantId, week);
-    const mockProgress = updateMockInternProgress(participantId, {
-      ra_spike_current_week: week < 8 ? week + 1 : week,
-      ra_spike_segment: week + 1 >= 5 ? 2 : 1,
-    });
+    let patch = {};
+    if (week === 4) {
+      patch = { gate_1_status: 'pending' };
+    } else if (week === 8) {
+      patch = { gate_2_status: 'pending' };
+    } else if (week < 8) {
+      patch = {
+        ra_spike_current_week: week + 1,
+        ra_spike_segment: week + 1 >= 5 ? 2 : 1,
+      };
+    }
+    const mockProgress = updateMockInternProgress(participantId, patch);
     return { progress: current, internProgress: mockProgress };
   }
 

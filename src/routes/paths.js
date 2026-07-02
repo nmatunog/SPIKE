@@ -54,6 +54,11 @@ export const ROUTES = {
   raSpikeProfile: '/ra-spike/profile',
   raSpikeOnboarding: '/ra-spike/onboarding',
   raSpikePlaybookDreamBoard: '/ra-spike/playbook/dream-board',
+  raSpikePlaybookCanvasWizard: '/ra-spike/playbook/canvas-wizard',
+  raSpikePlaybookPersona: '/ra-spike/playbook/persona',
+  raSpikePlaybookProspecting: '/ra-spike/playbook/prospecting',
+  raSpikePlaybookDiscoveryLog: '/ra-spike/playbook/discovery-log',
+  raSpikeStageGate: '/ra-spike/stage-gate',
 };
 
 /** Redirect target after onboarding completes — Build Challenge 1 (Ambition). */
@@ -355,6 +360,7 @@ export const RA_SPIKE_ROUTES = [
   ROUTES.raSpikeSquad,
   ROUTES.raSpikeProfile,
   ROUTES.raSpikeOnboarding,
+  ROUTES.raSpikeStageGate,
 ];
 
 /** SPIKE Internship intern modules hidden from RA-SPIKE participants. */
@@ -395,13 +401,29 @@ export function raSpikePlaybookDreamBoardHref() {
   return ROUTES.raSpikePlaybookDreamBoard;
 }
 
+export function raSpikePlaybookCanvasWizardHref() {
+  return ROUTES.raSpikePlaybookCanvasWizard;
+}
+
+export function raSpikePlaybookPersonaHref() {
+  return ROUTES.raSpikePlaybookPersona;
+}
+
+export function raSpikeStageGateHref(gate = 1) {
+  return `${ROUTES.raSpikeStageGate}?gate=${gate}`;
+}
+
 /**
  * @param {string} pathname
- * @returns {{ view: 'overview' } | { view: 'dream-board' } | { view: 'step', stepId: string, week?: number } | null}
+ * @returns {{ view: 'overview' } | { view: 'dream-board' } | { view: 'canvas-wizard' } | { view: 'persona' } | { view: 'prospecting' } | { view: 'discovery-log' } | { view: 'step', stepId: string } | null}
  */
 export function parseRaSpikePlaybookPath(pathname) {
   if (pathname === ROUTES.raSpikePlaybook) return { view: 'overview' };
   if (pathname === ROUTES.raSpikePlaybookDreamBoard) return { view: 'dream-board' };
+  if (pathname === ROUTES.raSpikePlaybookCanvasWizard) return { view: 'canvas-wizard' };
+  if (pathname === ROUTES.raSpikePlaybookPersona) return { view: 'persona' };
+  if (pathname === ROUTES.raSpikePlaybookProspecting) return { view: 'prospecting' };
+  if (pathname === ROUTES.raSpikePlaybookDiscoveryLog) return { view: 'discovery-log' };
   const prefix = `${ROUTES.raSpikePlaybook}/step/`;
   if (pathname.startsWith(prefix)) {
     const stepId = pathname.slice(prefix.length).split('/')[0];

@@ -1,0 +1,30 @@
+{
+  "title": "FEC Canvas Wizard",
+  "subtitle": "Build your business model one section at a time",
+  "steps": [
+    {
+      "id": "create_value",
+      "pillar": "create_value",
+      "title": "Create Value",
+      "description": "Who you serve, their problem, and your offering."
+    },
+    {
+      "id": "capture_value",
+      "pillar": "capture_value",
+      "title": "Capture Value",
+      "description": "How money flows in and out of your practice."
+    },
+    {
+      "id": "enable_value",
+      "pillar": "enable_value",
+      "title": "Enable Value",
+      "description": "Resources, partners, and funding to deliver."
+    },
+    {
+      "id": "uvp",
+      "pillar": "summary",
+      "title": "Unified Venture Proposition",
+      "description": "One sentence that ties your canvas together."
+    }
+  ]
+}
