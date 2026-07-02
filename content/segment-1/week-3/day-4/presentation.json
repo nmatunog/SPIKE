@@ -14,8 +14,13 @@
       "slide-w3-d4-dk1-07",
       "slide-w3-d4-dk1-08",
       "slide-w3-d4-dk1-09",
-      "slide-w3-d4-dk1-10"
-    ]
+      "slide-w3-d4-dk1-10",
+      "slide-w3-d4-dk1-11"
+    ],
+    "sourceFile": "faculty-deck-01.pdf",
+    "sourcePath": "content/segment-1/week-3/day-4/source/faculty-deck-01.pdf",
+    "importedAt": "2026-07-02T04:35:51.222Z",
+    "pdfUrl": "/content/segment-1/week-3/day-4/faculty-deck-01.pdf"
   },
   "slides": [
     {
@@ -25,7 +30,8 @@
       "title": "Growth Engine",
       "body": "Week 3 · Day 4\n\nBuild Capacity.\nMultiply Impact.\n\nFinancial Entrepreneurship",
       "speakerNotes": "Act 1 open (45 min). Hero slide — venture accelerator tone, not recruitment.\nRecap: Client Experience → Business Engine → today Growth Engine → tomorrow Financial Engine → Friday Venture Pitch.",
-      "discussionQuestions": []
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-3/day-4/deck-01/slide-01.png"
     },
     {
       "id": "slide-w3-d4-dk1-02",
@@ -37,7 +43,8 @@
       "discussionQuestions": [
         "What surprised you about your Business Engine numbers?",
         "What would break first if demand doubled?"
-      ]
+      ],
+      "imageUrl": "/content/segment-1/week-3/day-4/deck-01/slide-02.png"
     },
     {
       "id": "slide-w3-d4-dk1-03",
@@ -48,7 +55,8 @@
       "speakerNotes": "One-page reading in Playbook. Ask: what currently limits YOUR venture?\nOutcome: every successful venture must eventually scale beyond the founder.",
       "discussionQuestions": [
         "What currently limits your venture?"
-      ]
+      ],
+      "imageUrl": "/content/segment-1/week-3/day-4/deck-01/slide-03.png"
     },
     {
       "id": "slide-w3-d4-dk1-04",
@@ -59,7 +67,8 @@
       "speakerNotes": "Walk comparison table in Playbook. Which side describes their venture today?\nIntroduce leadership, systems, and multiplication as growth strategies.",
       "discussionQuestions": [
         "Which side describes your current venture?"
-      ]
+      ],
+      "imageUrl": "/content/segment-1/week-3/day-4/deck-01/slide-04.png"
     },
     {
       "id": "slide-w3-d4-dk1-05",
@@ -70,7 +79,8 @@
       "speakerNotes": "Act 2 workshop (60 min). Squads open Playbook → Growth Engine Canvas.\nUpdate FEC Box 6 as they draft.",
       "discussionQuestions": [
         "What must you build so growth does not depend on you alone?"
-      ]
+      ],
+      "imageUrl": "/content/segment-1/week-3/day-4/deck-01/slide-05.png"
     },
     {
       "id": "slide-w3-d4-dk1-06",
@@ -81,7 +91,8 @@
       "speakerNotes": "Act 3 (75 min). Walk formula on screen. Interns complete Business Growth Targets in Playbook.\nIntegrate 10→5→3→1→₱10,000→3 Business Engine funnel.",
       "discussionQuestions": [
         "Can your Business Engine realistically achieve your target?"
-      ]
+      ],
+      "imageUrl": "/content/segment-1/week-3/day-4/deck-01/slide-06.png"
     },
     {
       "id": "slide-w3-d4-dk1-07",
@@ -92,7 +103,8 @@
       "speakerNotes": "If numbers don't work — what must change? Stress-test assumptions in squads.",
       "discussionQuestions": [
         "Which growth strategy fits your venture?"
-      ]
+      ],
+      "imageUrl": "/content/segment-1/week-3/day-4/deck-01/slide-07.png"
     },
     {
       "id": "slide-w3-d4-dk1-08",
@@ -101,7 +113,8 @@
       "title": "FEC Growth Engine — Three Years",
       "body": "Year 1 — Launch\nYear 2 — Expand\nYear 3 — Multiply",
       "speakerNotes": "FEC Box 6 integration. Describe how the venture grows over three years — not products, but capacity and impact.",
-      "discussionQuestions": []
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-3/day-4/deck-01/slide-08.png"
     },
     {
       "id": "slide-w3-d4-dk1-09",
@@ -110,7 +123,8 @@
       "title": "Squad Stress Test",
       "body": "Each squad reviews each member's calculations.\n\nChallenge assumptions. Stress-test numbers. Suggest improvements.",
       "speakerNotes": "Group activity before pitch prep. Coach circulates — probe for realism, not optimism.",
-      "discussionQuestions": []
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-3/day-4/deck-01/slide-09.png"
     },
     {
       "id": "slide-w3-d4-dk1-10",
@@ -121,7 +135,18 @@
       "speakerNotes": "Act 4 (30–45 min). Each participant shares revenue goal, clients, growth strategy, capacity plan.\nClose: I know exactly how my advisory venture will grow.",
       "discussionQuestions": [
         "What is the one number you are committing to?"
-      ]
+      ],
+      "imageUrl": "/content/segment-1/week-3/day-4/deck-01/slide-10.png"
+    },
+    {
+      "id": "slide-d4-01-11",
+      "presentationId": "presentation-w3-d4-deck-01",
+      "sortOrder": 11,
+      "title": "",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-3/day-4/deck-01/slide-11.png"
     }
   ]
 }

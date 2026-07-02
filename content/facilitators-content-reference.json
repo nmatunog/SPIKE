@@ -5191,180 +5191,267 @@
         {
           "dayNumber": 4,
           "programDay": 14,
-          "title": "Day 14 — Operations Dyad Presentations",
-          "theme": "Operations Integration",
+          "title": "Day 14 — Growth Engine",
+          "theme": "Build Capacity. Multiply Impact.",
           "durationHours": 4,
-          "status": "draft",
+          "status": "published",
           "learningObjectives": [
-            "Integrate underwriting, servicing, and claims into one client journey story",
-            "Present operations dyad roleplay to program coach panel",
-            "Peer review backend efficiency recommendations",
-            "Prepare 120-hour Business Operations gate portfolio"
+            "Understand why every business reaches a capacity limit",
+            "Explain the difference between working harder and building capacity",
+            "Design the Growth Engine of their venture",
+            "Calculate Year 1 activity, client, and revenue targets",
+            "Complete FEC Growth Engine (Box 6)",
+            "Prepare for the Venture Pitch"
           ],
           "decks": [
             {
-              "title": "Program Coach Deck 01 — Client Journey Operations View",
-              "purpose": "Integrate the week.",
-              "slideCount": 5,
+              "id": "presentation-w3-d4-deck-01",
+              "title": "Program Coach Deck 01 — Growth Engine",
+              "purpose": "Build Capacity. Multiply Impact.",
+              "slideCount": 11,
+              "status": "published",
+              "pptxUrl": null,
+              "pdfUrl": "/content/segment-1/week-3/day-4/faculty-deck-01.pdf",
               "slides": [
                 {
-                  "title": "Day 14 — Full Stack Advisor Ops",
-                  "purpose": "Connect front office to back office."
+                  "number": 1,
+                  "title": "Growth Engine",
+                  "summary": "Week 3 · Day 4 Build Capacity. Multiply Impact. Financial Entrepreneurship",
+                  "facilitatorNotes": "Act 1 open (45 min). Hero slide — venture accelerator tone, not recruitment. Recap: Client Experience → Business Engine → today Growth Engine → tomorrow Financial Engine → Friday Venture Pitch.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-3/day-4/deck-01/slide-01.png"
                 },
                 {
-                  "title": "Journey Map Template",
-                  "purpose": "Sale → issue → service → claim."
+                  "number": 2,
+                  "title": "What Did You Learn Yesterday?",
+                  "summary": "Reflect on your Business Engine. • Biggest insight • Biggest surprise • One thing you will improve",
+                  "facilitatorNotes": "Pair-share 3 minutes. Interns capture in Playbook Growth Engine worksheet opening reflection. Bridge: yesterday you designed how the engine runs — today you design how it scales.",
+                  "discussionQuestions": [
+                    "What surprised you about your Business Engine numbers?",
+                    "What would break first if demand doubled?"
+                  ],
+                  "imageUrl": "/content/segment-1/week-3/day-4/deck-01/slide-02.png"
                 },
                 {
-                  "title": "Efficiency & Compliance Tension",
-                  "purpose": "Speed vs accuracy."
+                  "number": 3,
+                  "title": "Why Businesses Stop Growing",
+                  "summary": "Businesses don't fail because demand disappears. They fail because capacity stops growing.",
+                  "facilitatorNotes": "One-page reading in Playbook. Ask: what currently limits YOUR venture? Outcome: every successful venture must eventually scale beyond the founder.",
+                  "discussionQuestions": [
+                    "What currently limits your venture?"
+                  ],
+                  "imageUrl": "/content/segment-1/week-3/day-4/deck-01/slide-03.png"
                 },
                 {
-                  "title": "Dyad Presentation Format",
-                  "purpose": "10-minute integrated scenario."
+                  "number": 4,
+                  "title": "Capacity vs Activity",
+                  "summary": "Activity — working harder, working alone, serving more clients yourself. Capacity — building systems, developing people, serving more families.",
+                  "facilitatorNotes": "Walk comparison table in Playbook. Which side describes their venture today? Introduce leadership, systems, and multiplication as growth strategies.",
+                  "discussionQuestions": [
+                    "Which side describes your current venture?"
+                  ],
+                  "imageUrl": "/content/segment-1/week-3/day-4/deck-01/slide-04.png"
                 },
                 {
-                  "title": "Deck 01 Close — Rehearsal",
-                  "purpose": ""
+                  "number": 5,
+                  "title": "The Growth Engine Canvas",
+                  "summary": "How will your venture grow beyond yourself? Develop Leaders · Build Systems · Increase Capacity · Expand Market · Long-Term Vision",
+                  "facilitatorNotes": "Act 2 workshop (60 min). Squads open Playbook → Growth Engine Canvas. Update FEC Box 6 as they draft.",
+                  "discussionQuestions": [
+                    "What must you build so growth does not depend on you alone?"
+                  ],
+                  "imageUrl": "/content/segment-1/week-3/day-4/deck-01/slide-05.png"
+                },
+                {
+                  "number": 6,
+                  "title": "The Numbers That Drive Growth",
+                  "summary": "Year 1 Revenue Goal ÷ Average Revenue per Client = Clients Needed Then cascade to monthly and weekly activity.",
+                  "facilitatorNotes": "Act 3 (75 min). Walk formula on screen. Interns complete Business Growth Targets in Playbook. Integrate 10→5→3→1→₱10,000→3 Business Engine funnel.",
+                  "discussionQuestions": [
+                    "Can your Business Engine realistically achieve your target?"
+                  ],
+                  "imageUrl": "/content/segment-1/week-3/day-4/deck-01/slide-06.png"
+                },
+                {
+                  "number": 7,
+                  "title": "Growth Strategy",
+                  "summary": "How will you create more capacity? Productivity · Technology · Systems · Partnerships · Advisors · Team",
+                  "facilitatorNotes": "If numbers don't work — what must change? Stress-test assumptions in squads.",
+                  "discussionQuestions": [
+                    "Which growth strategy fits your venture?"
+                  ],
+                  "imageUrl": "/content/segment-1/week-3/day-4/deck-01/slide-07.png"
+                },
+                {
+                  "number": 8,
+                  "title": "FEC Growth Engine — Three Years",
+                  "summary": "Year 1 — Launch Year 2 — Expand Year 3 — Multiply",
+                  "facilitatorNotes": "FEC Box 6 integration. Describe how the venture grows over three years — not products, but capacity and impact.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-3/day-4/deck-01/slide-08.png"
+                },
+                {
+                  "number": 9,
+                  "title": "Squad Stress Test",
+                  "summary": "Each squad reviews each member's calculations. Challenge assumptions. Stress-test numbers. Suggest improvements.",
+                  "facilitatorNotes": "Group activity before pitch prep. Coach circulates — probe for realism, not optimism.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-3/day-4/deck-01/slide-09.png"
+                },
+                {
+                  "number": 10,
+                  "title": "Venture Pitch Readiness",
+                  "summary": "Friday: 5-minute Venture Pitch. Finalize FEC · Business Engine · Growth Engine. Investor Demo Day — a complete Financial Entrepreneurship Venture.",
+                  "facilitatorNotes": "Act 4 (30–45 min). Each participant shares revenue goal, clients, growth strategy, capacity plan. Close: I know exactly how my advisory venture will grow.",
+                  "discussionQuestions": [
+                    "What is the one number you are committing to?"
+                  ],
+                  "imageUrl": "/content/segment-1/week-3/day-4/deck-01/slide-10.png"
+                },
+                {
+                  "number": 11,
+                  "title": "Slide 11",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-3/day-4/deck-01/slide-11.png"
                 }
-              ],
-              "status": "draft"
-            },
-            {
-              "title": "Program Coach Deck 02 — Peer Review & Gate Prep",
-              "purpose": "Finalize artifacts.",
-              "slideCount": 5,
-              "slides": [
-                {
-                  "title": "Peer Review Protocol",
-                  "purpose": "Two stars and a wish."
-                },
-                {
-                  "title": "Operations Debrief Questions",
-                  "purpose": "Where do clients get lost?"
-                },
-                {
-                  "title": "120-Hour Gate Preview",
-                  "purpose": "Checklist for Day 15."
-                },
-                {
-                  "title": "Portfolio Sync Points",
-                  "purpose": "BP Chapter 3 + ops artifacts."
-                },
-                {
-                  "title": "Day 14 Deliverables",
-                  "purpose": ""
-                }
-              ],
-              "status": "draft"
+              ]
             }
           ],
           "sessionFlow": [
             {
-              "time": "0:00–0:20",
-              "activity": "Deck 01 — Journey integration",
-              "notes": ""
+              "time": "Act 1 · 0:00–0:45",
+              "activity": "The Growth Mindset — Slides 1–3",
+              "notes": "Reflect on Business Engine. Introduce capacity limits. Discussion: what happens when demand exceeds capacity?"
             },
             {
-              "time": "0:20–1:00",
-              "activity": "Dyad rehearsal",
-              "notes": "Mentors coach transitions between ops stages."
+              "time": "Act 2 · 0:45–1:45",
+              "activity": "Building the Growth Engine — Slides 4–5",
+              "notes": "Capacity vs activity. Growth Engine Canvas workshop. Update FEC Box 6."
             },
             {
-              "time": "1:00–2:20",
-              "activity": "Operations dyad presentations",
-              "notes": "Panel feedback."
+              "time": "Act 3 · 1:45–3:00",
+              "activity": "The Numbers That Drive Growth — Slides 6–7",
+              "notes": "Revenue goal, clients required, monthly and weekly targets. Squad stress test."
             },
             {
-              "time": "2:20–2:40",
-              "activity": "Peer review + efficiency recommendations",
-              "notes": ""
-            },
-            {
-              "time": "2:40–3:00",
-              "activity": "Gate prep + reflection",
-              "notes": ""
+              "time": "Act 4 · 3:00–3:45",
+              "activity": "Pitch Readiness — Slides 8–10",
+              "notes": "FEC three-year narrative. Peer pitch prep. Close with venture accelerator tone — not recruitment."
             }
           ],
           "activities": [
             {
-              "title": "Client Journey Mapping",
-              "durationMinutes": 30,
-              "instructions": [
-                "Map one persona through full ops lifecycle",
-                "Flag handoff risks"
-              ],
-              "outputs": [
-                "Journey map"
-              ],
-              "debriefQuestions": []
-            },
-            {
-              "title": "Operations Dyad Presentations",
-              "durationMinutes": 80,
-              "instructions": [
-                "10-min integrated roleplay per dyad",
-                "Q&A from coaches"
-              ],
-              "outputs": [
-                "Dyad presentation recording or notes"
-              ],
-              "debriefQuestions": []
-            },
-            {
-              "title": "Efficiency Recommendation Workshop",
+              "title": "Opening Reflection — Business Engine Debrief",
               "durationMinutes": 20,
-              "instructions": [
-                "Each squad proposes one ops improvement"
-              ],
-              "outputs": [
-                "Efficiency memo"
-              ],
+              "instructions": [],
+              "materials": [],
+              "outputs": [],
+              "debriefQuestions": []
+            },
+            {
+              "title": "Growth Engine Canvas Workshop",
+              "durationMinutes": 60,
+              "instructions": [],
+              "materials": [],
+              "outputs": [],
+              "debriefQuestions": []
+            },
+            {
+              "title": "Business Growth Targets",
+              "durationMinutes": 75,
+              "instructions": [],
+              "materials": [],
+              "outputs": [],
+              "debriefQuestions": []
+            },
+            {
+              "title": "Squad Stress Test",
+              "durationMinutes": 30,
+              "instructions": [],
+              "materials": [],
+              "outputs": [],
+              "debriefQuestions": []
+            },
+            {
+              "title": "Venture Pitch Preparation",
+              "durationMinutes": 45,
+              "instructions": [],
+              "materials": [],
+              "outputs": [],
               "debriefQuestions": []
             }
           ],
           "worksheets": [
-            "Dyad presentation rubric"
+            "SPIKE Growth Engine Worksheet™"
           ],
           "assessments": [
-            "Operations dyad rubric"
+            "Growth Engine Delivery Checklist"
           ],
           "reflections": [
-            "Day 14 integration reflection"
+            "Day 14 — Growth Engine reflection"
           ],
-          "surveys": [
-            "Day 14 operations integration survey"
-          ],
+          "surveys": [],
           "prepChecklist": [
-            "Schedule presentation panel",
-            "Load rubrics in Playbook when published"
+            "Review squad Business Engine Canvas completions from Day 3",
+            "Open Growth Engine Worksheet preview in Playbook staff view",
+            "Prepare squad breakout for stress-test activity",
+            "Confirm Friday Venture Pitch schedule and Investor Demo Day framing"
           ],
-          "debriefQuestions": [
-            "Where did handoffs break down in roleplays?",
-            "Who demonstrates startup readiness?",
-            "What remediation before gate?"
-          ],
-          "commonPitfalls": [
-            "Treating presentation as siloed demos",
-            "Ignoring compliance steps"
-          ],
-          "coachingTips": [
-            "Ask dyads to name one system they will use in Week 4"
-          ],
+          "debriefQuestions": [],
+          "commonPitfalls": [],
+          "coachingTips": [],
           "mentorGuide": {
-            "theme": "Integration",
-            "coachingObjective": "See the whole operating system.",
+            "title": "Mentor Guide — Day 14 — Growth Engine",
+            "discussionQuestions": [],
             "observationAreas": [
-              "Handoff clarity",
-              "Compliance mentions",
-              "Presentation poise"
+              "Revenue goal vs Business Engine funnel consistency",
+              "Growth Engine Canvas depth (not generic answers)",
+              "FEC Box 6 three-year narrative clarity",
+              "Pitch readiness checklist completion"
             ]
           },
           "expectedOutputs": [
-            "Journey map",
-            "Dyad presentation",
-            "Efficiency memo"
-          ]
+            "Opening reflection on Business Engine learnings",
+            "Growth Engine Canvas (leaders, systems, capacity, market, vision)",
+            "Business Growth Targets worksheet (annual, monthly, weekly)",
+            "FEC Box 6 — three-year growth narrative",
+            "Venture Pitch readiness checklist"
+          ],
+          "dayId": "day-segment-1-week-3-day-4",
+          "contentPath": "/content/segment-1/week-3/day-4",
+          "playbookPath": "/playbook?segment=1&week=3&day=4",
+          "sessions": [
+            {
+              "sessionNumber": 1,
+              "title": "Day 14 — Growth Engine",
+              "durationMinutes": 240,
+              "presentationIds": [
+                "presentation-w3-d4-deck-01"
+              ],
+              "activityIds": [
+                "activity-w3-d4-01",
+                "activity-w3-d4-02",
+                "activity-w3-d4-03",
+                "activity-w3-d4-04",
+                "activity-w3-d4-05"
+              ],
+              "worksheetIds": [
+                "worksheet-w3-d4-01"
+              ],
+              "assessmentIds": [
+                "assessment-w3-d4"
+              ],
+              "reflectionIds": [
+                "reflection-w3-d4"
+              ],
+              "surveyIds": [
+                "survey-w3-d4"
+              ]
+            }
+          ],
+          "evaluations": []
         },
         {
           "dayNumber": 5,

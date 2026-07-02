@@ -36,7 +36,9 @@ export function FacultyPlaybookView({ bundle }) {
   const week2DayMatch = bundle.day.id.match(/day-segment-1-week-2-day-(\d+)/);
   const week2Day = week2DayMatch ? Number(week2DayMatch[1]) : 0;
   const facultyPresentations = resolvePresentations(bundle, bundle.day.presentations ?? []).filter(
-    (pres) => pres.presentation.id !== 'presentation-w3-d3-deck-02',
+    (pres) =>
+      pres.presentation.id !== 'presentation-w3-d3-deck-02'
+      && pres.presentation.id !== 'presentation-w3-d4-deck-02',
   );
 
   return (
