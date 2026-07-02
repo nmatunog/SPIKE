@@ -1,6 +1,6 @@
 import { GEW_STORAGE_KEY } from './types.js';
 import { loadBusinessEngineCanvas } from '../businessEngineCanvas/storage.js';
-import { recalculateGrowthTargets } from './calculations.js';
+import { FUNNEL_ENGINE_VERSION, recalculateGrowthTargets } from './calculations.js';
 
 /** @returns {import('./types.js').GrowthEngineWorksheetState} */
 export function defaultGrowthEngineWorksheetState(participantId = '') {
@@ -45,6 +45,7 @@ export function defaultGrowthEngineWorksheetState(participantId = '') {
     mentorStatus: null,
     mentorFeedback: '',
     completed: false,
+    funnelEngineVersion: FUNNEL_ENGINE_VERSION,
     updatedAt: null,
     createdAt: null,
   };
@@ -77,9 +78,30 @@ export function loadGrowthEngineWorksheet(participantId) {
       ...(row.targets ?? {}),
     },
   };
-  if (merged.targets.yearRevenueGoal && merged.targets.averageRevenuePerClient && !merged.targets.requiredClients) {
+  if (
+    merged.targets.yearRevenueGoal
+    && merged.targets.averageRevenuePerClient
+    && !merged.targets.requiredClients
+  ) {
     merged.targets = recalculateGrowthTargets(merged.targets);
   }
+
+  const needsFunnelMigration =
+    (merged.funnelEngineVersion ?? 1) < FUNNEL_ENGINE_VERSION
+    && merged.targets.yearRevenueGoal
+    && merged.targets.averageRevenuePerClient;
+
+  if (needsFunnelMigration) {
+    merged.targets = recalculateGrowthTargets(merged.targets);
+    merged.funnelEngineVersion = FUNNEL_ENGINE_VERSION;
+    all[participantId] = {
+      ...merged,
+      updatedAt: new Date().toISOString(),
+      createdAt: merged.createdAt ?? new Date().toISOString(),
+    };
+    writeAll(all);
+  }
+
   return merged;
 }
 
@@ -90,6 +112,7 @@ export function saveGrowthEngineWorksheet(participantId, state) {
   const now = new Date().toISOString();
   const next = {
     ...state,
+    funnelEngineVersion: state.funnelEngineVersion ?? FUNNEL_ENGINE_VERSION,
     updatedAt: now,
     createdAt: state.createdAt ?? now,
   };

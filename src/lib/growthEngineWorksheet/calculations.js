@@ -1,6 +1,9 @@
 import { FUNNEL_RATIOS, WEEKS_PER_MONTH, MONTHS_PER_YEAR } from '../businessEngineCanvas/constants.js';
 import { cascadeFromProspects, weeklyToMonthly } from '../businessEngineCanvas/funnel.js';
 
+/** Bump when funnel ratio logic changes (e.g. 10-5-3-1-3 fix). */
+export const FUNNEL_ENGINE_VERSION = 2;
+
 /**
  * Reverse weekly funnel from target new clients per week.
  * @param {number} weeklyClients

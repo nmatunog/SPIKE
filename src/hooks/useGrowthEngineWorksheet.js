@@ -6,7 +6,7 @@ import {
   computeGrowthEngineProgress,
 } from '../lib/growthEngineWorksheet/storage.js';
 import { syncGrowthEngineToFec } from '../lib/growthEngineWorksheet/fecSync.js';
-import { recalculateGrowthTargets } from '../lib/growthEngineWorksheet/calculations.js';
+import { recalculateGrowthTargets, FUNNEL_ENGINE_VERSION } from '../lib/growthEngineWorksheet/calculations.js';
 
 /**
  * @param {string} participantId
@@ -51,6 +51,7 @@ export function useGrowthEngineWorksheet(participantId, opts = {}) {
       setRecalcHint('');
       return {
         ...prev,
+        funnelEngineVersion: FUNNEL_ENGINE_VERSION,
         targets: recalculateGrowthTargets(prev.targets),
       };
     });
