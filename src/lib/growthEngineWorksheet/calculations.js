@@ -68,20 +68,23 @@ export function buildTargetsFromRequiredClients(requiredClients, averageRevenueP
 }
 
 /**
- * Recalculate when revenue goal or avg revenue changes.
+ * Repopulate required clients and all weekly/monthly funnel targets from
+ * Year 1 revenue goal + average revenue per client (income is the base).
+ * Manual overrides in calculated fields are replaced on each recalculate.
  * @param {import('./types.js').GrowthEngineTargets} targets
  */
 export function recalculateGrowthTargets(targets) {
-  const requiredClients = computeRequiredClients(
-    targets.yearRevenueGoal,
-    targets.averageRevenuePerClient,
-  );
-  const cascaded = buildTargetsFromRequiredClients(requiredClients, targets.averageRevenuePerClient);
+  const yearRevenueGoal = targets.yearRevenueGoal;
+  const averageRevenuePerClient = targets.averageRevenuePerClient;
+  const requiredClients = computeRequiredClients(yearRevenueGoal, averageRevenuePerClient);
+  const cascaded = buildTargetsFromRequiredClients(requiredClients, averageRevenuePerClient);
+
   return {
-    ...targets,
+    yearRevenueGoal,
+    averageRevenuePerClient,
     requiredClients,
-    weeklyTargets: cascaded.weeklyTargets,
-    monthlyTargets: cascaded.monthlyTargets,
+    weeklyTargets: { ...cascaded.weeklyTargets },
+    monthlyTargets: { ...cascaded.monthlyTargets },
   };
 }
 

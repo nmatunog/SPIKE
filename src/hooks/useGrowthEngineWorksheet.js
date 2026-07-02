@@ -16,6 +16,7 @@ export function useGrowthEngineWorksheet(participantId, opts = {}) {
   const { readOnly = false, onSaved } = opts;
   const [state, setState] = useState(() => loadGrowthEngineWorksheet(participantId));
   const [saveStatus, setSaveStatus] = useState('idle');
+  const [recalcHint, setRecalcHint] = useState('');
   const stateRef = useRef(state);
   const dirtyRef = useRef(false);
 
@@ -40,10 +41,19 @@ export function useGrowthEngineWorksheet(participantId, opts = {}) {
   );
 
   const recalcTargets = useCallback(() => {
-    persist((prev) => ({
-      ...prev,
-      targets: recalculateGrowthTargets(prev.targets),
-    }));
+    persist((prev) => {
+      const goal = Number(prev.targets.yearRevenueGoal);
+      const avg = Number(prev.targets.averageRevenuePerClient);
+      if (!Number.isFinite(goal) || goal <= 0 || !Number.isFinite(avg) || avg <= 0) {
+        setRecalcHint('Enter Year 1 revenue goal and average revenue per client first.');
+        return prev;
+      }
+      setRecalcHint('');
+      return {
+        ...prev,
+        targets: recalculateGrowthTargets(prev.targets),
+      };
+    });
   }, [persist]);
 
   const setWeeklyTarget = useCallback(
@@ -106,6 +116,7 @@ export function useGrowthEngineWorksheet(participantId, opts = {}) {
     recalcTargets,
     setWeeklyTarget,
     setMonthlyTarget,
+    recalcHint,
     progressPct,
     saveStatus,
   };

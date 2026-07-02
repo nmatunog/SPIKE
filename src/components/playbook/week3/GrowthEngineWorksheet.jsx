@@ -34,7 +34,7 @@ export function GrowthEngineWorksheet({
   className = '',
 }) {
   const sheetRef = useRef(null);
-  const { state, persist, recalcTargets, setWeeklyTarget, setMonthlyTarget, progressPct, saveStatus } =
+  const { state, persist, recalcTargets, setWeeklyTarget, setMonthlyTarget, recalcHint, progressPct, saveStatus } =
     useGrowthEngineWorksheet(participantId, { readOnly, onSaved });
 
   function setField(key, value) {
@@ -270,7 +270,7 @@ export function GrowthEngineWorksheet({
               <p className="text-sm font-bold text-slate-900">Step 3 — Required clients</p>
               <div className="mt-4 flex flex-wrap items-end gap-3">
                 <p className="text-sm text-slate-600">
-                  Revenue goal ÷ avg revenue, or enter your own target:
+                  Repopulated from income when you recalculate (revenue goal ÷ avg revenue per client):
                 </p>
                 <div className="relative max-w-[200px]">
                   <input
@@ -287,12 +287,18 @@ export function GrowthEngineWorksheet({
               {!readOnly ? (
                 <>
                   <button type="button" onClick={recalcTargets} className={RECALC}>
-                    Recalculate funnel
+                    Recalculate funnel from income
                   </button>
                   <p className="mt-2 text-xs text-slate-600">
-                    Fills required clients and weekly/monthly targets from your revenue inputs. You can
-                    edit any number afterward — changes save until you recalculate again.
+                    Uses <strong>Step 1 + Step 2</strong> as the base and repopulates required clients,
+                    the weekly funnel, and monthly targets. Adjust any field after — edits save until you
+                    recalculate again.
                   </p>
+                  {recalcHint ? (
+                    <p className="mt-2 text-xs font-semibold text-amber-800" role="status">
+                      {recalcHint}
+                    </p>
+                  ) : null}
                 </>
               ) : null}
             </div>
