@@ -13,6 +13,7 @@ import { GROWTH_STRATEGY_OPTIONS } from '../../../lib/growthEngineWorksheet/type
 import { ENGINE_STEPS } from '../../../lib/businessEngineCanvas/constants.js';
 import { exportExecutiveCanvasPdf, exportExecutiveCanvasPng } from '../../../lib/canvasExportService.js';
 import { ViewMyFecCanvasLink } from '../../ventureDesign/ViewMyFecCanvasLink.jsx';
+import { GrowthEngineFunnelMentalModel } from './GrowthEngineFunnelMentalModel.jsx';
 
 const SECTION =
   'rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8';
@@ -97,6 +98,8 @@ export function GrowthEngineWorksheet({
       ) : null}
 
       <div ref={sheetRef} className="space-y-6 bg-white pb-8">
+        <GrowthEngineFunnelMentalModel className="print:break-inside-avoid" />
+
         {/* Opening reflection */}
         <section className={SECTION}>
           <p className={LABEL}>Opening reflection</p>
