@@ -1,46 +1,36 @@
-/** Week 2 Market Validation Pitch — guest panel scoring. */
+/** Week 2 Market Validation Pitch — Venture Capital investment simulation. */
 
 export const PITCH_PANEL_SESSION_ID = 'segment-1-week-2';
 export const PITCH_PANEL_ACCESS_PIN = 'W2PITCH';
 export const PITCH_PANEL_WEEK = 2;
 
-/** @type {Array<{ id: string, label: string, hint: string }>} */
-export const PITCH_PANEL_DIMENSIONS = [
-  { id: 'evidence', label: 'Evidence quality', hint: 'Customer quotes, interview depth, data not opinions' },
-  { id: 'validation', label: 'Problem validation', hint: 'Clear belief shift — what they thought vs learned' },
-  { id: 'presentation', label: 'Venture Clarity', hint: 'Clear problem, UVP, and next step' },
-  { id: 'team', label: 'Team delivery', hint: 'Shared ownership, coherent squad story' },
+/** Each panelist receives ₱1M SPIKE Venture Capital. */
+export const PITCH_PANEL_CAPITAL = 1_000_000;
+
+/** Custom amounts must be in ₱10,000 increments. */
+export const PITCH_PANEL_INVESTMENT_INCREMENT = 10_000;
+
+/** Quick-select investment amounts. */
+export const PITCH_PANEL_INVESTMENT_PRESETS = [0, 50_000, 100_000, 250_000, 500_000, 750_000, 1_000_000];
+
+/** Optional reason for investment (max chars). */
+export const PITCH_PANEL_COMMENT_MAX_CHARS = 100;
+
+/** Investment criteria shown to panelists (not scored). */
+export const PITCH_PANEL_INVESTMENT_CRITERIA = [
+  'Confidence in the team and venture',
+  'Scalability of the business model',
+  'Business viability and market proof',
+  'Growth potential over 3 years',
+  'Presentation quality and clarity',
 ];
-
-/** @type {Array<{ id: 'keep' | 'improve' | 'explore', label: string, placeholder: string }>} */
-export const PITCH_PANEL_FEEDBACK_FIELDS = [
-  { id: 'keep', label: 'Keep', placeholder: 'What should this squad keep doing?' },
-  { id: 'improve', label: 'Improve', placeholder: 'What should they sharpen before building?' },
-  { id: 'explore', label: 'Explore', placeholder: 'What opportunity should they investigate next?' },
-];
-
-/** Minimum trimmed length before a coaching note is stored as written (shorter → fallback). */
-export const PITCH_PANEL_FEEDBACK_MIN_CHARS = 3;
-
-/** Stored when a panelist leaves a coaching note blank or shorter than the minimum. */
-export const PITCH_PANEL_FEEDBACK_FALLBACK = 'none';
-
-/** @param {string} [raw] */
-export function normalizePitchPanelFeedbackField(raw) {
-  const trimmed = String(raw ?? '').trim();
-  return trimmed.length >= PITCH_PANEL_FEEDBACK_MIN_CHARS ? trimmed : PITCH_PANEL_FEEDBACK_FALLBACK;
-}
-
-/** @param {string} [raw] */
-export function pitchPanelFeedbackFieldComplete(raw) {
-  return String(raw ?? '').trim().length >= PITCH_PANEL_FEEDBACK_MIN_CHARS;
-}
 
 export const PITCH_PANEL_LIVE_STORAGE_KEY = 'spike_pitch_panel_live_v1';
 export const PITCH_PANEL_FINAL_STORAGE_KEY = 'spike_pitch_panel_final_v1';
 export const PITCH_PANEL_TOKEN_STORAGE_KEY = 'spike_pitch_panel_token_v1';
+export const PITCH_PANEL_INVESTMENTS_CACHE_KEY = 'spike_pitch_panel_investments_v1';
 
-/** Pitch order for Week 2 panel (Segment 1 cohort). */
+/** Pitch order for Week 2 Demo Day (Segment 1 cohort). */
 export const PITCH_PANEL_SQUAD_ORDER = ['Cassiopeia', 'Pegasus', 'Argo Navis'];
 
 /** @param {string[]} names */
@@ -52,4 +42,62 @@ export function sortPitchPanelSquads(names) {
     if (aRank !== bRank) return aRank - bRank;
     return a.localeCompare(b);
   });
+}
+
+/** @param {number} n */
+export function formatPitchPeso(n) {
+  const v = Number(n);
+  if (!Number.isFinite(v)) return '₱0';
+  return `₱${v.toLocaleString()}`;
+}
+
+/** @param {number} amount */
+export function isValidInvestmentIncrement(amount) {
+  const v = Number(amount);
+  return Number.isFinite(v) && v >= 0 && v <= PITCH_PANEL_CAPITAL && v % PITCH_PANEL_INVESTMENT_INCREMENT === 0;
+}
+
+/**
+ * @param {Record<string, number>} allocations squadName → amount
+ */
+export function computeRemainingCapital(allocations) {
+  const total = Object.values(allocations).reduce((sum, n) => sum + (Number(n) || 0), 0);
+  return Math.max(0, PITCH_PANEL_CAPITAL - total);
+}
+
+/**
+ * @param {Array<{ squadName: string, totalInvestment?: number, finalInvestment?: number }>} rows
+ */
+export function buildInvestmentLeaderboard(rows) {
+  return [...rows]
+    .map((r) => ({
+      squadName: r.squadName,
+      totalInvestment: Number(r.finalInvestment ?? r.totalInvestment ?? 0),
+    }))
+    .sort((a, b) => b.totalInvestment - a.totalInvestment);
+}
+
+/**
+ * Detect tied leaders for tiebreaker.
+ * @param {Array<{ squadName: string, totalInvestment: number }>} leaderboard
+ */
+export function detectInvestmentTie(leaderboard) {
+  if (leaderboard.length < 2) return null;
+  const top = leaderboard[0].totalInvestment;
+  if (top <= 0) return null;
+  const tied = leaderboard.filter((r) => r.totalInvestment === top);
+  return tied.length > 1 ? tied.map((r) => r.squadName) : null;
+}
+
+/** Rank-based Week 2 panel XP (investment winner model). */
+export const PITCH_PANEL_RANK_XP = [20, 13, 7];
+
+/**
+ * @param {number} rank 1-based
+ * @param {number} [squadCount]
+ */
+export function investmentRankToWeek2Xp(rank, squadCount = 3) {
+  if (!rank || rank < 1) return 0;
+  if (rank <= PITCH_PANEL_RANK_XP.length) return PITCH_PANEL_RANK_XP[rank - 1];
+  return Math.max(0, Math.round((squadCount - rank + 1) / squadCount * 7));
 }

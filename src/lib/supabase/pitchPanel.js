@@ -1,6 +1,5 @@
 import { isSupabaseConfigured, supabase } from '../../supabaseClient.js';
 import {
-  normalizePitchPanelFeedbackField,
   PITCH_PANEL_SESSION_ID,
   sortPitchPanelSquads,
 } from '../staff/pitchPanelConstants.js';
@@ -27,40 +26,81 @@ export async function fetchPitchPanelSquads(pin) {
  *   panelistName: string,
  *   panelistOrg?: string,
  *   squadName: string,
- *   ratings: { evidence: number, validation: number, presentation: number, team: number },
- *   feedback: { keep: string, improve: string, explore: string },
+ *   amount: number,
+ *   comment?: string,
  * }} input
  */
-export async function submitPitchPanelScoreRemote(input) {
+export async function submitPitchPanelInvestmentRemote(input) {
   const client = assertClient();
-  const { error } = await client.rpc('submit_pitch_panel_score', {
+  const { error } = await client.rpc('submit_pitch_panel_investment', {
     p_pin: input.pin,
     p_session_id: PITCH_PANEL_SESSION_ID,
     p_panelist_token: input.panelistToken,
     p_panelist_name: input.panelistName,
     p_panelist_org: input.panelistOrg ?? '',
     p_squad_name: input.squadName,
-    p_evidence: input.ratings.evidence,
-    p_validation: input.ratings.validation,
-    p_presentation: input.ratings.presentation,
-    p_team: input.ratings.team,
-    p_keep_feedback: normalizePitchPanelFeedbackField(input.feedback.keep),
-    p_improve_feedback: normalizePitchPanelFeedbackField(input.feedback.improve),
-    p_explore_feedback: normalizePitchPanelFeedbackField(input.feedback.explore),
+    p_amount: input.amount,
+    p_comment: input.comment ?? '',
+  });
+  if (error) throw new Error(error.message);
+}
+
+/**
+ * @param {string} pin
+ * @param {string} panelistToken
+ */
+export async function fetchPitchPanelistPortfolioRemote(pin, panelistToken) {
+  const client = assertClient();
+  const { data, error } = await client.rpc('fetch_pitch_panelist_portfolio', {
+    p_pin: pin,
+    p_session_id: PITCH_PANEL_SESSION_ID,
+    p_panelist_token: panelistToken,
+  });
+  if (error) throw new Error(error.message);
+  return data ?? null;
+}
+
+/** @param {string} pin @param {string} panelistToken */
+export async function finalizePitchPanelistPortfolioRemote(pin, panelistToken) {
+  const client = assertClient();
+  const { error } = await client.rpc('finalize_pitch_panelist_portfolio', {
+    p_pin: pin,
+    p_session_id: PITCH_PANEL_SESSION_ID,
+    p_panelist_token: panelistToken,
+  });
+  if (error) throw new Error(error.message);
+}
+
+/**
+ * @param {string} pin
+ * @param {string} panelistToken
+ * @param {string} squadName
+ */
+export async function submitPitchPanelTieVoteRemote(pin, panelistToken, squadName) {
+  const client = assertClient();
+  const { error } = await client.rpc('submit_pitch_panel_tie_vote', {
+    p_pin: pin,
+    p_session_id: PITCH_PANEL_SESSION_ID,
+    p_panelist_token: panelistToken,
+    p_squad_name: squadName,
   });
   if (error) throw new Error(error.message);
 }
 
 /** @param {string} squadName @param {string} [sessionId] */
-export async function fetchPitchPanelSquadFeedbackRemote(squadName, sessionId = PITCH_PANEL_SESSION_ID) {
+export async function fetchPitchPanelSquadInvestmentsRemote(squadName, sessionId = PITCH_PANEL_SESSION_ID) {
   const client = assertClient();
-  const { data, error } = await client.rpc('fetch_pitch_panel_squad_feedback', {
+  const { data, error } = await client.rpc('fetch_pitch_panel_squad_investments', {
     p_squad_name: squadName,
     p_session_id: sessionId,
   });
   if (error) throw new Error(error.message);
-  const rows = Array.isArray(data) ? data : [];
-  return rows;
+  return Array.isArray(data) ? data : [];
+}
+
+/** @deprecated Use fetchPitchPanelSquadInvestmentsRemote */
+export async function fetchPitchPanelSquadFeedbackRemote(squadName, sessionId = PITCH_PANEL_SESSION_ID) {
+  return fetchPitchPanelSquadInvestmentsRemote(squadName, sessionId);
 }
 
 /** @param {string} [sessionId] */
@@ -74,7 +114,7 @@ export async function fetchPitchPanelStateRemote(sessionId = PITCH_PANEL_SESSION
 }
 
 /**
- * @param {Record<string, { panelAverage: number, week2PanelXp: number, source: string }>} squadResults
+ * @param {Record<string, object>} squadResults
  */
 export async function finalizePitchPanelRemote(squadResults) {
   const client = assertClient();

@@ -1,45 +1,39 @@
 import { useMemo, useState } from 'react';
-import { ClipboardCopy, ExternalLink, Loader2, Lock, RefreshCw, Star } from 'lucide-react';
+import { ClipboardCopy, Download, ExternalLink, Loader2, Lock, RefreshCw, TrendingUp } from 'lucide-react';
 import { groupInternsBySquad } from '../../lib/facultyMentorFrameworkService.js';
 import { usePitchPanelLive } from '../../hooks/usePitchPanelLive.js';
 import {
   PITCH_PANEL_ACCESS_PIN,
-  PITCH_PANEL_DIMENSIONS,
-  PITCH_PANEL_FEEDBACK_FIELDS,
+  PITCH_PANEL_INVESTMENT_CRITERIA,
+  buildInvestmentLeaderboard,
+  formatPitchPeso,
   sortPitchPanelSquads,
 } from '../../lib/staff/pitchPanelConstants.js';
 import {
   buildFinalizePayload,
+  exportPitchPanelResultsCsv,
   finalizePitchPanelScores,
-  panelAverageToWeek2Xp,
   pitchPanelGuestHref,
   readFinalizedPanelCache,
   readLivePanelCache,
 } from '../../lib/staff/pitchPanelService.js';
 import { ROUTES } from '../../routes/paths.js';
 import { PitchPanelGuestPage } from '../../pages/pitchPanel/PitchPanelGuestPage.jsx';
+import { ConfettiCelebration } from '../pitchPanel/PitchPanelCelebration.jsx';
+import { PitchFundingResults } from '../pitchPanel/PitchPanelInvestmentUI.jsx';
 
 const ACTION_BTN =
   'inline-flex min-h-[44px] touch-manipulation items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition active:scale-[0.98] hover:bg-slate-50';
 
 /**
- * Faculty / mentor live dashboard for guest pitch panel scoring.
- * @param {{
- *   interns: Array<{ id: string, name: string, squad?: string }>,
- *   staffId?: string,
- *   showToast?: (msg: string) => void,
- *   embedded?: boolean,
- * }} props
+ * Faculty / mentor live dashboard for VC investment Demo Day.
  */
 export function PitchPanelDashboard({ interns, staffId = '', showToast, embedded = false }) {
   const squads = useMemo(() => {
     const grouped = groupInternsBySquad(interns);
     return sortPitchPanelSquads(grouped.map((s) => s.name)).map((name) => {
       const squad = grouped.find((s) => s.name === name);
-      return {
-        name,
-        memberIds: (squad?.members ?? []).map((m) => m.id),
-      };
+      return { name, memberIds: (squad?.members ?? []).map((m) => m.id) };
     });
   }, [interns]);
 
@@ -49,16 +43,30 @@ export function PitchPanelDashboard({ interns, staffId = '', showToast, embedded
   const live = readLivePanelCache();
   const [busy, setBusy] = useState(false);
   const [showGuestPreview, setShowGuestPreview] = useState(false);
+  const [showResults, setShowResults] = useState(false);
 
   const guestUrl = pitchPanelGuestHref();
   const previewPayload = buildFinalizePayload(squads);
+
+  const leaderboard = useMemo(() => {
+    if (finalized?.leaderboard?.length) return finalized.leaderboard;
+    return buildInvestmentLeaderboard(
+      squads.map((s) => ({
+        squadName: s.name,
+        totalInvestment: live?.liveSquads?.[s.name]?.finalInvestment ?? live?.liveSquads?.[s.name]?.totalInvestment ?? 0,
+      })),
+    );
+  }, [finalized, live, squads]);
+
+  const panelists = live?.panelists ?? [];
 
   async function handleFinalize() {
     setBusy(true);
     try {
       await finalizePitchPanelScores(squads);
       await refresh();
-      showToast?.('Panel scores finalized — Week 2 XP applied to all squads.');
+      setShowResults(true);
+      showToast?.('Demo Day results locked — Week 2 XP applied by funding rank.');
     } catch (err) {
       showToast?.(err instanceof Error ? err.message : 'Finalize failed');
     } finally {
@@ -68,7 +76,19 @@ export function PitchPanelDashboard({ interns, staffId = '', showToast, embedded
 
   function copyGuestLink() {
     void navigator.clipboard.writeText(guestUrl);
-    showToast?.('Guest link copied — share with panelists (PIN: W2PITCH)');
+    showToast?.('Investor link copied — share with panelists (PIN: W2PITCH)');
+  }
+
+  function handleExport() {
+    const csv = exportPitchPanelResultsCsv(squads);
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'spike-demo-day-results.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast?.('Results exported');
   }
 
   if (showGuestPreview) {
@@ -77,12 +97,24 @@ export function PitchPanelDashboard({ interns, staffId = '', showToast, embedded
         <button
           type="button"
           onClick={() => setShowGuestPreview(false)}
-          className="mb-4 min-h-[44px] touch-manipulation text-sm font-semibold text-spike active:opacity-80"
+          className="mb-4 min-h-[44px] text-sm font-semibold text-spike"
         >
-          ← Back to panel dashboard
+          ← Back to Demo Day dashboard
         </button>
         <PitchPanelGuestPage />
       </div>
+    );
+  }
+
+  if (showResults && finalized) {
+    return (
+      <section className="space-y-4">
+        <ConfettiCelebration active />
+        <PitchFundingResults leaderboard={leaderboard} />
+        <button type="button" onClick={() => setShowResults(false)} className={ACTION_BTN}>
+          Back to dashboard
+        </button>
+      </section>
     );
   }
 
@@ -90,87 +122,94 @@ export function PitchPanelDashboard({ interns, staffId = '', showToast, embedded
     <section className={`spike-surface space-y-4 sm:space-y-5 ${embedded ? '' : 'p-4 sm:p-5'}`}>
       <div className="space-y-4">
         <div>
-          <p className="spike-label">Week 2 pitch panel</p>
-          <h2 className="text-lg font-bold text-slate-900 sm:text-xl">Guest scoring dashboard</h2>
+          <p className="spike-label">Week 2 Demo Day</p>
+          <h2 className="text-lg font-bold text-slate-900 sm:text-xl">Venture Capital investment dashboard</h2>
           <p className="mt-2 text-sm leading-relaxed text-slate-600">
-            Share the guest link with panelists — they score on their phones with PIN{' '}
+            Each panelist receives ₱1,000,000 SPIKE Venture Capital. Share the investor link — PIN{' '}
             <strong className="font-mono tracking-wide">{PITCH_PANEL_ACCESS_PIN}</strong>.
           </p>
         </div>
         <div className="grid gap-2 sm:flex sm:flex-wrap">
           <button type="button" onClick={copyGuestLink} className={`${ACTION_BTN} w-full sm:w-auto`}>
-            <ClipboardCopy size={16} /> Copy guest link
+            <ClipboardCopy size={16} /> Copy investor link
           </button>
-          <a
-            href={ROUTES.pitchPanel}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`${ACTION_BTN} w-full sm:w-auto`}
-          >
-            <ExternalLink size={16} /> Open guest page
+          <a href={ROUTES.pitchPanel} target="_blank" rel="noopener noreferrer" className={`${ACTION_BTN} w-full sm:w-auto`}>
+            <ExternalLink size={16} /> Open investor page
           </a>
-          <button
-            type="button"
-            onClick={() => void refresh()}
-            className={`${ACTION_BTN} w-full sm:w-auto`}
-          >
-            <RefreshCw size={16} /> Refresh
+          <button type="button" onClick={() => void refresh()} className={`${ACTION_BTN} w-full sm:w-auto`}>
+            <RefreshCw size={16} /> Refresh live
           </button>
+          {finalized ? (
+            <button type="button" onClick={handleExport} className={`${ACTION_BTN} w-full sm:w-auto`}>
+              <Download size={16} /> Export results
+            </button>
+          ) : null}
         </div>
       </div>
 
-      {error ? (
-        <p className="rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-900">{error}</p>
-      ) : null}
+      {error ? <p className="rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-900">{error}</p> : null}
       {!ready ? (
         <p className="flex items-center gap-2 text-sm text-slate-500">
-          <Loader2 size={16} className="animate-spin" /> Syncing panel scores…
+          <Loader2 size={16} className="animate-spin" /> Syncing investments…
         </p>
       ) : null}
 
       {finalized ? (
-        <div className="flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm leading-relaxed text-emerald-900">
+        <div className="flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
           <Lock size={18} className="mt-0.5 shrink-0" />
           <span>
-            Finalized {finalized.finalizedAt ? new Date(finalized.finalizedAt).toLocaleTimeString() : ''}
-            — Week 2 panel XP locked on Squad XP cards.
+            Results locked {finalized.finalizedAt ? new Date(finalized.finalizedAt).toLocaleTimeString() : ''}
+            — funding totals applied to Squad XP.
           </span>
         </div>
       ) : (
-        <p className="rounded-xl bg-slate-50 px-4 py-3 text-sm leading-relaxed text-slate-600">
-          Live scores show on intern Squad XP cards as pending. Tap finalize after the last pitch to apply XP
-          (missing scores use mentor proxy).
+        <p className="rounded-xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
+          Provisional investments update live. Lock results after all panelists finalize portfolios.
         </p>
       )}
+
+      <div className="rounded-3xl bg-gradient-to-br from-slate-900 to-slate-800 p-5 text-white">
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange-400">Live funding leaderboard</p>
+        <ul className="mt-4 space-y-3">
+          {leaderboard.map((row, idx) => (
+            <li key={row.squadName} className="flex items-center justify-between gap-3">
+              <span className="font-semibold">
+                {idx === 0 ? '🥇 ' : idx === 1 ? '🥈 ' : idx === 2 ? '🥉 ' : `#${idx + 1} `}
+                {row.squadName}
+              </span>
+              <span className="text-lg font-bold tabular-nums text-orange-400">
+                {formatPitchPeso(row.totalInvestment)}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
 
       <ul className="space-y-3">
         {squads.map((squad) => {
           const liveRow = live?.liveSquads?.[squad.name] ?? {};
           const finalRow = finalized?.squads?.[squad.name];
-          const avg = finalRow?.panelAverage ?? liveRow.panelAverage ?? null;
-          const xp = finalRow?.week2PanelXp
-            ?? (avg ? panelAverageToWeek2Xp(avg) : previewPayload[squad.name]?.week2PanelXp ?? 0);
-          const pending = !finalized && avg != null;
-          const source = finalRow?.source ?? liveRow.panelAverage ? 'panel' : previewPayload[squad.name]?.source;
+          const total = finalRow?.totalInvestment ?? liveRow.finalInvestment ?? liveRow.totalInvestment ?? 0;
+          const xp = finalRow?.week2PanelXp ?? previewPayload[squad.name]?.week2PanelXp ?? 0;
+          const pending = !finalized && (liveRow.provisionalInvestment ?? 0) > 0;
 
           return (
             <li key={squad.name} className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="min-w-0">
+                <div>
                   <h3 className="text-base font-bold text-slate-900 sm:text-lg">{squad.name}</h3>
                   <p className="mt-0.5 text-sm text-slate-500">
-                    {liveRow.panelistCount ?? finalRow?.panelistCount ?? 0} panel submission(s)
-                    {source === 'mentor_proxy' ? ' · mentor proxy' : ''}
+                    {liveRow.finalizedInvestorCount ?? liveRow.investorCount ?? 0} investor(s)
+                    {pending ? ' · provisional' : ''}
                   </p>
                 </div>
-                <div className="flex items-center justify-between gap-4 border-t border-slate-100 pt-3 sm:block sm:border-0 sm:pt-0 sm:text-right">
-                  <p className="flex items-center gap-1.5 text-xl font-bold text-amber-600 sm:justify-end">
-                    <Star size={18} fill="currentColor" />
-                    {avg != null ? avg.toFixed(1) : '—'}
-                    <span className="text-sm font-semibold text-slate-400">/ 5</span>
+                <div className="text-right">
+                  <p className="flex items-center justify-end gap-1.5 text-xl font-bold text-orange-600">
+                    <TrendingUp size={18} />
+                    {formatPitchPeso(total)}
                   </p>
-                  <p className={`text-sm font-semibold tabular-nums ${pending ? 'text-slate-400' : 'text-spike'}`}>
-                    {pending ? `~${xp} XP pending` : `${xp} W2 panel XP`}
+                  <p className={`text-sm font-semibold ${pending ? 'text-slate-400' : 'text-spike'}`}>
+                    {pending ? 'Awaiting finalize' : `${xp} W2 XP`}
                   </p>
                 </div>
               </div>
@@ -179,41 +218,62 @@ export function PitchPanelDashboard({ interns, staffId = '', showToast, embedded
         })}
       </ul>
 
+      {panelists.length ? (
+        <details className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
+          <summary className="cursor-pointer font-semibold text-slate-800">Panelist portfolios ({panelists.length})</summary>
+          <ul className="mt-3 space-y-2 text-sm">
+            {panelists.map((p) => (
+              <li key={p.panelistToken} className="flex flex-wrap justify-between gap-2 border-t border-slate-100 pt-2">
+                <span className="font-medium text-slate-800">
+                  {p.panelistName}
+                  {p.isFinalized ? (
+                    <span className="ml-2 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800">
+                      Finalized
+                    </span>
+                  ) : (
+                    <span className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800">
+                      Provisional
+                    </span>
+                  )}
+                </span>
+                <span className="tabular-nums text-slate-600">
+                  {formatPitchPeso(p.allocatedCapital)} · {formatPitchPeso(p.remainingCapital)} left
+                </span>
+              </li>
+            ))}
+          </ul>
+        </details>
+      ) : null}
+
       <details className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm">
-        <summary className="min-h-[44px] cursor-pointer touch-manipulation py-2 font-semibold text-slate-800">
-          Scoring rubric (share with panelists)
-        </summary>
-        <ul className="mt-2 space-y-3 border-t border-slate-200/80 pt-3 text-slate-600">
-          {PITCH_PANEL_DIMENSIONS.map((d) => (
-            <li key={d.id} className="leading-relaxed">
-              <strong className="text-slate-800">{d.label}:</strong> {d.hint}
-            </li>
-          ))}
-          <li className="border-t border-slate-200/80 pt-3 leading-relaxed">
-            <strong className="text-slate-800">Keep / Improve / Explore:</strong> Optional coaching
-            notes on each score card — at least 3 characters to save as written; shorter or blank
-            fields save as &ldquo;none&rdquo; and sync to intern portfolios (Week 2 Day 5).
-          </li>
-          {PITCH_PANEL_FEEDBACK_FIELDS.map((f) => (
-            <li key={f.id} className="pl-3 text-xs leading-relaxed">
-              <strong className="text-slate-800">{f.label}:</strong> {f.placeholder}
-            </li>
+        <summary className="cursor-pointer font-semibold text-slate-800">Investment criteria (share with panelists)</summary>
+        <ul className="mt-2 list-disc space-y-1 pl-5 text-slate-600">
+          {PITCH_PANEL_INVESTMENT_CRITERIA.map((c) => (
+            <li key={c}>{c}</li>
           ))}
         </ul>
       </details>
 
       {!finalized ? (
-        <div className="sticky bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-10 -mx-1 sm:static sm:mx-0">
+        <div className="sticky bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-10">
           <button
             type="button"
             disabled={busy || !staffId}
             onClick={() => void handleFinalize()}
-            className="min-h-[52px] w-full touch-manipulation rounded-xl bg-spike px-4 py-3 text-base font-bold text-white shadow-lg transition active:scale-[0.98] disabled:opacity-50 sm:shadow-none"
+            className="min-h-[52px] w-full rounded-xl bg-spike px-4 py-3 text-base font-bold text-white shadow-lg disabled:opacity-50"
           >
-            {busy ? 'Finalizing…' : 'Finalize panel scores & apply Week 2 XP'}
+            {busy ? 'Locking results…' : 'Lock Demo Day results & apply Week 2 XP'}
           </button>
         </div>
-      ) : null}
+      ) : (
+        <button
+          type="button"
+          onClick={() => setShowResults(true)}
+          className="min-h-[52px] w-full rounded-xl bg-amber-500 px-4 py-3 text-base font-bold text-white"
+        >
+          View funding ceremony
+        </button>
+      )}
     </section>
   );
 }

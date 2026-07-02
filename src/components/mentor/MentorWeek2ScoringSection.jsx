@@ -77,7 +77,7 @@ export function MentorWeek2ScoringSection({
         <ScoringPrinciple
           icon={Trophy}
           title="Guest panel"
-          detail="Evidence · validation · venture clarity · team (1–5 each)"
+          detail="SPIKE Venture Capital — ₱1M per investor"
         />
       </div>
 

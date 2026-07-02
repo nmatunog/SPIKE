@@ -5,10 +5,11 @@ import { getSquadWeeklyXp } from '../../lib/staff/squadXpService.js';
 import {
   MENTOR_REVIEW_DIMENSIONS,
   MENTOR_VS_PANEL_NOTE,
-  PITCH_PANEL_DIMENSIONS,
+  PITCH_PANEL_INVESTMENT_CRITERIA,
   SQUAD_XP_LAYERS,
   SQUAD_XP_TOTAL_LABEL,
 } from '../../lib/staff/squadScoringGuide.js';
+import { formatPitchPeso } from '../../lib/staff/pitchPanelConstants.js';
 import { usePitchPanelLive } from '../../hooks/usePitchPanelLive.js';
 
 /**
@@ -44,9 +45,9 @@ export function SquadScoringExplainer({ variant = 'portfolio', participantId = '
 
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
         <ScoringDimensionList
-          title="Guest panel (pitch day)"
-          subtitle="Quick 1–5 on the presentation"
-          dimensions={PITCH_PANEL_DIMENSIONS}
+          title="SPIKE Venture Capital (Demo Day)"
+          subtitle="₱1M per investor — allocate across squads"
+          dimensions={PITCH_PANEL_INVESTMENT_CRITERIA.map((label) => ({ label }))}
         />
         <ScoringDimensionList
           title="Mentor & coach (whole week)"
@@ -58,10 +59,10 @@ export function SquadScoringExplainer({ variant = 'portfolio', participantId = '
       {xp && variant !== 'task' ? (
         <p className="mt-4 text-xs text-slate-600">
           Current squad total: <strong className="text-spike">{xp.totalXp} XP</strong>
-          {xp.panelFinalized && xp.panelAverage != null
-            ? ` · Guest panel ★ ${xp.panelAverage.toFixed(1)}`
+          {xp.panelFinalized && xp.totalInvestment != null && xp.totalInvestment > 0
+            ? ` · Demo Day ${formatPitchPeso(xp.totalInvestment)}`
             : xp.panelPending
-              ? ' · Guest panel pending finalize'
+              ? ' · Demo Day funding pending finalize'
               : ''}
           {xp.review?.aiSummary ? ' · Mentor summary saved' : ''}
         </p>

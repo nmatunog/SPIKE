@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { Loader2, Sparkles, Trophy } from 'lucide-react';
+import { formatPitchPeso } from '../../lib/staff/pitchPanelConstants.js';
 import { getParticipantSquad } from '../../lib/cohortFormationService.js';
 import { useCohortProgramDay } from '../../hooks/useCohortProgramDay.js';
 import { useSquadXpHydration } from '../../hooks/useParticipantHydration.js';
@@ -111,14 +112,14 @@ export function SquadXpSummaryCard({
           style={{ width: `${progressPct}%` }}
         />
       </div>
-      {xp.panelPending ? (
+      {xp.panelPending && xp.totalInvestment > 0 ? (
         <p className="text-xs font-medium text-amber-700">
-          Panel score ★ {xp.panelAverage?.toFixed(1)} — Week 2 XP pending faculty finalize
+          Demo Day {formatPitchPeso(xp.totalInvestment)} — Week 2 XP pending faculty lock
         </p>
       ) : null}
-      {xp.panelFinalized && xp.panelAverage != null ? (
+      {xp.panelFinalized && xp.totalInvestment > 0 ? (
         <p className="text-xs text-emerald-700">
-          Panel score ★ {xp.panelAverage.toFixed(1)} · +{xp.week2PanelXp} Week 2 XP
+          Demo Day {formatPitchPeso(xp.totalInvestment)} · +{xp.week2PanelXp} Week 2 XP
         </p>
       ) : null}
       <ul className="space-y-1 text-sm text-slate-700">
@@ -254,9 +255,9 @@ export function SquadXpDashboard({
           style={{ width: `${progressPct}%` }}
         />
       </div>
-      {xp.panelPending ? (
+      {xp.panelPending && xp.totalInvestment > 0 ? (
         <p className="text-xs font-medium text-amber-700">
-          Panel score ★ {xp.panelAverage?.toFixed(1)} — Week 2 XP pending faculty finalize
+          Demo Day {formatPitchPeso(xp.totalInvestment)} — Week 2 XP pending faculty lock
         </p>
       ) : null}
 
@@ -335,7 +336,7 @@ export function SquadXpLeaderboard({ interns, week = 2 }) {
                 <span className="font-bold tabular-nums text-spike">{row.totalXp} XP</span>
               </div>
               <p className="mt-1 text-xs text-slate-500">
-                {xp.panelAverage != null ? `Panel ★ ${xp.panelAverage.toFixed(1)}` : 'No panel scores'}
+                {xp.totalInvestment > 0 ? `Demo Day ${formatPitchPeso(xp.totalInvestment)}` : 'No Demo Day funding'}
                 {xp.coachBonusXp > 0 ? ` · Coach +${xp.coachBonusXp}` : ''}
                 {xp.panelPending && xp.provisionalWeek2PanelXp
                   ? ` · ~${xp.provisionalWeek2PanelXp} W2 pending`

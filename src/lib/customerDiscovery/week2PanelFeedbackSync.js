@@ -1,17 +1,17 @@
 /**
- * Sync guest panelist score cards → each intern's Week 2 Day 5 portfolio.
+ * Sync guest panelist investments → each intern's Week 2 Day 5 portfolio.
  */
 import { createPortfolioArtifactDraft } from '../blueprintArtifacts.js';
 import { setSectionField } from '../blueprintSectionStore.js';
 import { getParticipantSquad } from '../cohortFormationService.js';
-import { PITCH_PANEL_DIMENSIONS } from '../staff/pitchPanelConstants.js';
-import { fetchPitchPanelSquadFeedbackRemote } from '../supabase/pitchPanel.js';
+import { formatPitchPeso } from '../staff/pitchPanelConstants.js';
+import { fetchPitchPanelSquadInvestmentsRemote } from '../supabase/pitchPanel.js';
 
-const SOURCE_ID = 'panelist-feedback-week2-day5';
-const CARDS_CACHE_KEY = 'spike_pitch_panel_feedback_cards_v1';
+const SOURCE_ID = 'panelist-investments-week2-day5';
+const CARDS_CACHE_KEY = 'spike_pitch_panel_investments_cards_v1';
 
-/** @param {string} participantId @param {Parameters<typeof buildPanelFeedbackMarkdown>[1]} cards */
-function cachePanelFeedbackCards(participantId, cards) {
+/** @param {string} participantId @param {Array<object>} cards */
+function cacheInvestmentCards(participantId, cards) {
   try {
     const all = JSON.parse(localStorage.getItem(CARDS_CACHE_KEY) || '{}');
     all[participantId] = { cards, updatedAt: new Date().toISOString() };
@@ -22,7 +22,7 @@ function cachePanelFeedbackCards(participantId, cards) {
 }
 
 /** @param {string} participantId */
-export function loadPanelFeedbackCards(participantId) {
+export function loadPanelInvestmentCards(participantId) {
   try {
     return JSON.parse(localStorage.getItem(CARDS_CACHE_KEY) || '{}')[participantId]?.cards ?? [];
   } catch {
@@ -30,90 +30,84 @@ export function loadPanelFeedbackCards(participantId) {
   }
 }
 
+/** @deprecated */
+export function loadPanelFeedbackCards(participantId) {
+  return loadPanelInvestmentCards(participantId);
+}
+
 /**
  * @param {string} squadName
- * @param {Array<{
- *   panelistName: string,
- *   panelistOrg?: string,
- *   evidence: number,
- *   validation: number,
- *   presentation: number,
- *   team: number,
- *   keepFeedback: string,
- *   improveFeedback: string,
- *   exploreFeedback: string,
- *   submittedAt?: string,
- * }>} cards
+ * @param {Array<{ panelistName: string, panelistOrg?: string, amount: number, comment?: string, isFinal?: boolean }>} cards
  */
-export function buildPanelFeedbackMarkdown(squadName, cards) {
+export function buildPanelInvestmentMarkdown(squadName, cards) {
   if (!cards.length) {
-    return `# Panelist feedback — Week 2 · Day 5\n\n**Squad:** ${squadName}\n\n_No panelist score cards submitted yet._`;
+    return `# Demo Day funding — Week 2 · Day 5\n\n**Squad:** ${squadName}\n\n_No panelist investments finalized yet._`;
   }
 
-  const dimLabels = Object.fromEntries(PITCH_PANEL_DIMENSIONS.map((d) => [d.id, d.label]));
-
-  const blocks = cards.map((card) => {
-    const org = card.panelistOrg?.trim() ? ` (${card.panelistOrg.trim()})` : '';
-    const scores = [
-      `${dimLabels.evidence} ${card.evidence}`,
-      `${dimLabels.validation} ${card.validation}`,
-      `${dimLabels.presentation} ${card.presentation}`,
-      `${dimLabels.team} ${card.team}`,
-    ].join(' · ');
-    return [
-      `## ${card.panelistName}${org}`,
-      `**Scores:** ${scores}`,
-      '',
-      `- **Keep:** ${card.keepFeedback}`,
-      `- **Improve:** ${card.improveFeedback}`,
-      `- **Explore:** ${card.exploreFeedback}`,
-    ].join('\n');
-  });
+  const total = cards.reduce((sum, c) => sum + (Number(c.amount) || 0), 0);
+  const rows = cards.map(
+    (c) =>
+      `| ${c.panelistName}${c.panelistOrg?.trim() ? ` (${c.panelistOrg.trim()})` : ''} | ${formatPitchPeso(c.amount)} |`,
+  );
 
   return [
-    '# Panelist feedback — Week 2 · Day 5 Validate',
+    '# Demo Day funding — Week 2 · Day 5',
     '',
     `**Squad:** ${squadName}`,
+    `**Total investment received:** ${formatPitchPeso(total)}`,
     '',
-    ...blocks,
+    '| Panelist | Investment |',
+    '| --- | --- |',
+    ...rows,
+    '',
+    ...cards
+      .filter((c) => c.comment?.trim())
+      .map((c) => `- **${c.panelistName}:** ${c.comment}`),
   ].join('\n');
+}
+
+/** @deprecated */
+export function buildPanelFeedbackMarkdown(squadName, cards) {
+  return buildPanelInvestmentMarkdown(squadName, cards);
 }
 
 /**
  * @param {string} participantId
- * @param {Array<Parameters<typeof buildPanelFeedbackMarkdown>[1][number]>} cards
+ * @param {Array<object>} cards
  * @param {string} squadName
  */
-export function writePanelFeedbackToPortfolio(participantId, squadName, cards) {
-  const content = buildPanelFeedbackMarkdown(squadName, cards);
+export function writePanelInvestmentsToPortfolio(participantId, squadName, cards) {
+  const content = buildPanelInvestmentMarkdown(squadName, cards);
   createPortfolioArtifactDraft({
     participantId,
     sectionId: 'portfolio-market-intelligence',
-    title: 'Panelist feedback · Week 2 Day 5',
+    title: 'Demo Day funding · Week 2 Day 5',
     content,
-    sourceType: 'pitch-panel-feedback',
+    sourceType: 'pitch-panel-investments',
     sourceId: SOURCE_ID,
   });
   setSectionField(participantId, 'market-intelligence', 'panelist_pitch_feedback', content, {
-    sourceType: 'pitch-panel-feedback',
+    sourceType: 'pitch-panel-investments',
     sourceId: SOURCE_ID,
   });
-  return content;
+  cacheInvestmentCards(participantId, cards);
+}
+
+/** @deprecated */
+export function writePanelFeedbackToPortfolio(participantId, squadName, cards) {
+  writePanelInvestmentsToPortfolio(participantId, squadName, cards);
 }
 
 /** @param {string} participantId */
 export async function syncPitchPanelFeedbackToPortfolio(participantId) {
   const squad = getParticipantSquad(participantId);
-  const squadName = squad?.name?.trim();
-  if (!squadName) return { synced: false, reason: 'no_squad' };
-
+  if (!squad?.name) return;
   try {
-    const cards = await fetchPitchPanelSquadFeedbackRemote(squadName);
-    writePanelFeedbackToPortfolio(participantId, squadName, cards);
-    cachePanelFeedbackCards(participantId, cards);
-    return { synced: true, count: cards.length };
-  } catch (err) {
-    console.warn('[week2PanelFeedback] sync failed', err);
-    return { synced: false, reason: err instanceof Error ? err.message : 'error' };
+    const cards = await fetchPitchPanelSquadInvestmentsRemote(squad.name);
+    if (cards.length) {
+      writePanelInvestmentsToPortfolio(participantId, squad.name, cards);
+    }
+  } catch {
+    /* offline */
   }
 }

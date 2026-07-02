@@ -1,7 +1,7 @@
 /**
  * Intern-facing + staff-facing copy for squad XP and pitch scoring.
  */
-import { PITCH_PANEL_DIMENSIONS } from './pitchPanelConstants.js';
+import { PITCH_PANEL_INVESTMENT_CRITERIA } from './pitchPanelConstants.js';
 import {
   MENTOR_REVIEW_DIMENSIONS,
   SQUAD_XP_AUTO_MAX,
@@ -10,7 +10,14 @@ import {
   SQUAD_XP_TOTAL_MAX,
 } from './squadXpConstants.js';
 
-export { PITCH_PANEL_DIMENSIONS, MENTOR_REVIEW_DIMENSIONS };
+/** @deprecated Use PITCH_PANEL_INVESTMENT_CRITERIA */
+export const PITCH_PANEL_DIMENSIONS = PITCH_PANEL_INVESTMENT_CRITERIA.map((label, i) => ({
+  id: `criterion-${i}`,
+  label,
+  hint: '',
+}));
+
+export { PITCH_PANEL_INVESTMENT_CRITERIA, MENTOR_REVIEW_DIMENSIONS };
 
 /** @type {Array<{ id: string, title: string, detail: string }>} */
 export const SQUAD_XP_LAYERS = [
@@ -26,12 +33,12 @@ export const SQUAD_XP_LAYERS = [
   },
   {
     id: 'week2-panel',
-    title: `Guest panel (+${SQUAD_XP_WEEK2_PANEL_MAX})`,
-    detail: 'External panelists score your Friday pitch on four quick dimensions (1–5 each). Faculty finalizes the average into squad XP.',
+    title: `Demo Day funding (+${SQUAD_XP_WEEK2_PANEL_MAX})`,
+    detail: 'Guest investors allocate ₱1,000,000 each across squads. Highest total funding wins — rank maps to squad XP.',
   },
 ];
 
 export const MENTOR_VS_PANEL_NOTE =
-  'Guest panelists judge the pitch moment. Your mentor and coach judge the whole week — learning depth, teamwork, professionalism, and build readiness.';
+  'Guest investors judge the pitch moment. Your mentor and coach judge the whole week — learning depth, teamwork, professionalism, and build readiness.';
 
 export const SQUAD_XP_TOTAL_LABEL = `${SQUAD_XP_TOTAL_MAX} XP max · shared by every squad member`;

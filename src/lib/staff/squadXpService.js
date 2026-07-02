@@ -25,6 +25,7 @@ import {
   STAGE_GATE_DECISIONS,
 } from './squadXpConstants.js';
 import { getSquadPitchPanelSnapshot } from './pitchPanelService.js';
+import { formatPitchPeso } from './pitchPanelConstants.js';
 import { getSquadCoachBonus } from './squadCoachBonusService.js';
 
 const REVIEW_KEY = 'spike_squad_mentor_review_v1';
@@ -241,6 +242,8 @@ export function getSquadWeeklyXp(squadName, memberIds, week = 2) {
     coachBonusXp,
     provisionalWeek2PanelXp: panel.pending ? panel.provisionalWeek2PanelXp : null,
     panelAverage: panel.panelAverage,
+    totalInvestment: panel.totalInvestment ?? 0,
+    panelRank: panel.rank ?? null,
     panelPending: panel.pending,
     panelFinalized: panel.finalized,
     panelSource: panel.source,
@@ -266,10 +269,10 @@ function buildSquadChecklist(squadName, memberIds, week = 2, panel) {
     ? (snapshot.week2PanelXp ?? 0) > 0
     : snapshot.pending || squadWeek2PitchComplete(memberIds);
   const week2Label = snapshot.finalized
-    ? 'Week 2 Pitch (panel)'
+    ? `Week 2 Pitch (Demo Day ${snapshot.totalInvestment ? formatPitchPeso(snapshot.totalInvestment) : 'funding'})`
     : snapshot.pending
-      ? `Week 2 Pitch (panel pending · ★ ${snapshot.panelAverage?.toFixed(1) ?? '—'})`
-      : 'Week 2 Pitch (panel)';
+      ? `Week 2 Pitch (Demo Day ${formatPitchPeso(snapshot.totalInvestment ?? 0)} pending)`
+      : 'Week 2 Pitch (Demo Day)';
   return [
     { id: 'interviews', label: 'Interviews completed', done: breakdown.interviews >= AUTO_XP_WEIGHTS.interviews * 0.8 },
     { id: 'portfolio', label: 'Portfolio updated', done: breakdown.portfolio >= AUTO_XP_WEIGHTS.portfolio * 0.8 },
