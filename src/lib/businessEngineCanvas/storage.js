@@ -1,5 +1,11 @@
 import { BEC_STORAGE_KEY, ENGINE_STEPS, WEEKLY_METRICS, MONTHLY_METRICS, YEAR1_KPIS } from './constants.js';
-import { cascadeFromProspects, monthlyToYear1, weeklyToMonthly } from './funnel.js';
+import {
+  cascadeFromProspects,
+  hasLegacyTwoThirdsClientFunnel,
+  monthlyToYear1,
+  repairWeeklyFunnelFromProspects,
+  weeklyToMonthly,
+} from './funnel.js';
 
 function readAll() {
   try {
@@ -138,9 +144,10 @@ export function blankBusinessEngineCanvasState() {
 /** @param {string} participantId */
 export function loadBusinessEngineCanvas(participantId) {
   if (!participantId) return defaultBusinessEngineCanvasState();
-  const row = readAll()[participantId];
+  const all = readAll();
+  const row = all[participantId];
   if (!row) return defaultBusinessEngineCanvasState();
-  return {
+  let merged = {
     ...defaultBusinessEngineCanvasState(),
     ...row,
     activityEngine: { ...defaultBusinessEngineCanvasState().activityEngine, ...(row.activityEngine ?? {}) },
@@ -167,6 +174,48 @@ export function loadBusinessEngineCanvas(participantId) {
     },
     reflections: { ...defaultBusinessEngineCanvasState().reflections, ...(row.reflections ?? {}) },
   };
+
+  if (hasLegacyTwoThirdsClientFunnel(merged.weeklyTargets)) {
+    const revPer = Number(merged.activityEngine.revenue?.value) || 10_000;
+    const repairedWeekly = repairWeeklyFunnelFromProspects(merged.weeklyTargets, revPer);
+    if (repairedWeekly) {
+      const monthlyTargets = weeklyToMonthly(repairedWeekly);
+      const activityEngine = { ...merged.activityEngine };
+      activityEngine.prospects = { ...activityEngine.prospects, value: repairedWeekly.prospects };
+      activityEngine.discovery = { ...activityEngine.discovery, value: repairedWeekly.discoveryConversations };
+      activityEngine.presentations = {
+        ...activityEngine.presentations,
+        value: repairedWeekly.solutionPresentations,
+      };
+      activityEngine.clients = { ...activityEngine.clients, value: repairedWeekly.newClients };
+      activityEngine.referrals = { ...activityEngine.referrals, value: repairedWeekly.referrals };
+      merged = {
+        ...merged,
+        activityEngine,
+        weeklyTargets: repairedWeekly,
+        monthlyTargets,
+        year1Targets: {
+          ...merged.year1Targets,
+          ...monthlyToYear1(monthlyTargets),
+        },
+        growthSimulation: {
+          ...merged.growthSimulation,
+          current: {
+            prospects: repairedWeekly.prospects,
+            discovery: repairedWeekly.discoveryConversations,
+            presentations: repairedWeekly.solutionPresentations,
+            clients: repairedWeekly.newClients,
+            revenue: repairedWeekly.revenue,
+            referrals: repairedWeekly.referrals,
+          },
+        },
+      };
+      all[participantId] = { ...merged, updatedAt: new Date().toISOString() };
+      writeAll(all);
+    }
+  }
+
+  return merged;
 }
 
 /**

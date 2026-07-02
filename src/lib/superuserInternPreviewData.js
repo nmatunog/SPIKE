@@ -20,11 +20,19 @@ import {
 import { COACH_SECTIONS } from './ventureCoachConstants.js';
 
 import { saveWeek2Discovery } from './customerDiscovery/week2DiscoveryStorage.js';
+import {
+  FUNNEL_ENGINE_VERSION,
+  recalculateGrowthTargets,
+} from './growthEngineWorksheet/calculations.js';
+import {
+  defaultGrowthEngineWorksheetState,
+  saveGrowthEngineWorksheet,
+} from './growthEngineWorksheet/storage.js';
 
 export const SUPERUSER_MENTOR_PREVIEW_PEER_IDS = ['mock-peer-1', 'mock-peer-2'];
 
 export const SUPERUSER_INTERN_PREVIEW_PARTICIPANT_ID = 'mock-superuser-intern-preview';
-export const SUPERUSER_INTERN_PREVIEW_SEED_VERSION = 'v5';
+export const SUPERUSER_INTERN_PREVIEW_SEED_VERSION = 'v6';
 const SEEDED_MARKER_KEY = 'spike_superuser_intern_preview_seed';
 const PROGRESS_PATCH_KEY = 'spike_superuser_intern_preview_progress';
 
@@ -302,6 +310,23 @@ function seedBlueprintSections(participantId) {
 }
 
 /** @param {string} participantId */
+function seedGrowthEngineWorksheet(participantId) {
+  const base = defaultGrowthEngineWorksheetState(participantId);
+  const targets = recalculateGrowthTargets({
+    yearRevenueGoal: 5_000_000,
+    averageRevenuePerClient: 10_000,
+    requiredClients: '',
+    weeklyTargets: {},
+    monthlyTargets: {},
+  });
+  saveGrowthEngineWorksheet(participantId, {
+    ...base,
+    funnelEngineVersion: FUNNEL_ENGINE_VERSION,
+    targets,
+  });
+}
+
+/** @param {string} participantId */
 function seedCanvas(participantId) {
   for (const [engineKey, engine] of Object.entries(CANVAS_ENGINES)) {
     const values = CANVAS_SAMPLE[engineKey] ?? {};
@@ -519,6 +544,7 @@ export function seedSuperuserInternPortfolio(
   seedSquadMembership(participantId);
   seedPortfolioSettings(participantId);
   seedWeek2SquadSampleProgress(participantId);
+  seedGrowthEngineWorksheet(participantId);
 
   localStorage.setItem(SEEDED_MARKER_KEY, SUPERUSER_INTERN_PREVIEW_SEED_VERSION);
   return true;

@@ -1,6 +1,11 @@
 import { GEW_STORAGE_KEY } from './types.js';
 import { loadBusinessEngineCanvas } from '../businessEngineCanvas/storage.js';
-import { FUNNEL_ENGINE_VERSION, recalculateGrowthTargets } from './calculations.js';
+import {
+  FUNNEL_ENGINE_VERSION,
+  hasLegacyTwoThirdsClientFunnel,
+  recalculateGrowthTargets,
+  repairGrowthEngineFunnelTargets,
+} from './calculations.js';
 
 /** @returns {import('./types.js').GrowthEngineWorksheetState} */
 export function defaultGrowthEngineWorksheetState(participantId = '') {
@@ -86,13 +91,12 @@ export function loadGrowthEngineWorksheet(participantId) {
     merged.targets = recalculateGrowthTargets(merged.targets);
   }
 
+  const legacyFunnel = hasLegacyTwoThirdsClientFunnel(merged.targets?.weeklyTargets);
   const needsFunnelMigration =
-    (merged.funnelEngineVersion ?? 1) < FUNNEL_ENGINE_VERSION
-    && merged.targets.yearRevenueGoal
-    && merged.targets.averageRevenuePerClient;
+    legacyFunnel || (merged.funnelEngineVersion ?? 1) < FUNNEL_ENGINE_VERSION;
 
   if (needsFunnelMigration) {
-    merged.targets = recalculateGrowthTargets(merged.targets);
+    merged.targets = repairGrowthEngineFunnelTargets(merged.targets);
     merged.funnelEngineVersion = FUNNEL_ENGINE_VERSION;
     all[participantId] = {
       ...merged,

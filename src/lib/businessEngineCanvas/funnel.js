@@ -21,6 +21,43 @@ export function cascadeFromProspects(prospects, revenuePerClient = FUNNEL_RATIOS
   return { prospects: p, discovery, presentations, clients, revenue, referrals };
 }
 
+const LEGACY_PRESENTATION_TO_CLIENT = 2 / 3;
+
+/**
+ * Detect funnels saved with the old 2/3 presentation→client ratio (10-5-3-2-3).
+ * @param {Record<string, number | string>} [weeklyTargets]
+ */
+export function hasLegacyTwoThirdsClientFunnel(weeklyTargets = {}) {
+  const presentations = Number(
+    weeklyTargets.solutionPresentations ?? weeklyTargets.presentations,
+  );
+  const clients = Number(weeklyTargets.newClients ?? weeklyTargets.clients);
+  if (!Number.isFinite(presentations) || presentations <= 0) return false;
+  if (!Number.isFinite(clients) || clients <= 0) return false;
+  const legacyClients = Math.round(presentations * LEGACY_PRESENTATION_TO_CLIENT);
+  const correctClients = Math.round(presentations * FUNNEL_RATIOS.presentationToClient);
+  return clients === legacyClients && clients !== correctClients;
+}
+
+/**
+ * Re-cascade weekly/monthly targets from prospects using 10-5-3-1-3.
+ * @param {Record<string, number | string>} weeklyTargets
+ * @param {number} [revenuePerClient]
+ */
+export function repairWeeklyFunnelFromProspects(weeklyTargets, revenuePerClient = FUNNEL_RATIOS.revenuePerClient) {
+  const prospects = Number(weeklyTargets.prospects);
+  if (!prospects) return null;
+  const cascaded = cascadeFromProspects(prospects, revenuePerClient);
+  return {
+    prospects: cascaded.prospects,
+    discoveryConversations: cascaded.discovery,
+    solutionPresentations: cascaded.presentations,
+    newClients: cascaded.clients,
+    revenue: cascaded.revenue,
+    referrals: cascaded.referrals,
+  };
+}
+
 /** @param {number | string} weeklyValue */
 export function weeklyValueToMonthly(weeklyValue) {
   if (weeklyValue === '' || weeklyValue == null) return '';

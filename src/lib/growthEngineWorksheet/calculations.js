@@ -1,8 +1,58 @@
 import { FUNNEL_RATIOS, WEEKS_PER_MONTH, MONTHS_PER_YEAR } from '../businessEngineCanvas/constants.js';
-import { cascadeFromProspects, weeklyToMonthly } from '../businessEngineCanvas/funnel.js';
+import { cascadeFromProspects, hasLegacyTwoThirdsClientFunnel, weeklyToMonthly } from '../businessEngineCanvas/funnel.js';
+
+export { hasLegacyTwoThirdsClientFunnel };
 
 /** Bump when funnel ratio logic changes (e.g. 10-5-3-1-3 fix). */
-export const FUNNEL_ENGINE_VERSION = 2;
+export const FUNNEL_ENGINE_VERSION = 3;
+
+function weeklyTargetsFromCascade(cascaded) {
+  return {
+    prospects: cascaded.prospects,
+    discoveryConversations: cascaded.discovery,
+    solutionPresentations: cascaded.presentations,
+    newClients: cascaded.clients,
+    revenue: cascaded.revenue,
+    referrals: cascaded.referrals,
+  };
+}
+
+function monthlyTargetsFromWeekly(weeklyTargets, annualClients = '') {
+  const annual = Number(annualClients);
+  return {
+    ...weeklyToMonthly(weeklyTargets),
+    newClients:
+      Number.isFinite(annual) && annual > 0
+        ? Math.ceil(annual / MONTHS_PER_YEAR)
+        : weeklyToMonthly(weeklyTargets).newClients,
+    revenue: Math.round((Number(weeklyTargets.revenue) || 0) * WEEKS_PER_MONTH),
+  };
+}
+
+/**
+ * Repair stale 10-5-3-2-3 funnel data — prefer income-based recalc when available.
+ * @param {import('./types.js').GrowthEngineTargets} targets
+ */
+export function repairGrowthEngineFunnelTargets(targets) {
+  const yearRevenueGoal = targets.yearRevenueGoal;
+  const averageRevenuePerClient = targets.averageRevenuePerClient;
+  if (yearRevenueGoal && averageRevenuePerClient) {
+    return recalculateGrowthTargets(targets);
+  }
+
+  const prospects = Number(targets.weeklyTargets?.prospects);
+  if (!prospects) return targets;
+
+  const revPer = Number(averageRevenuePerClient) || FUNNEL_RATIOS.revenuePerClient;
+  const cascaded = cascadeFromProspects(prospects, revPer);
+  const weeklyTargets = weeklyTargetsFromCascade(cascaded);
+
+  return {
+    ...targets,
+    weeklyTargets,
+    monthlyTargets: monthlyTargetsFromWeekly(weeklyTargets, targets.requiredClients),
+  };
+}
 
 /**
  * Reverse weekly funnel from target new clients per week.
@@ -52,20 +102,9 @@ export function buildTargetsFromRequiredClients(requiredClients, averageRevenueP
   const weeklyClients = Math.max(1, Math.ceil(annualClients / 52));
   const weeklyCascade = cascadeFromWeeklyClients(weeklyClients, revPer);
 
-  const weeklyTargets = {
-    prospects: weeklyCascade.prospects,
-    discoveryConversations: weeklyCascade.discovery,
-    solutionPresentations: weeklyCascade.presentations,
-    newClients: weeklyCascade.clients,
-    revenue: weeklyCascade.revenue,
-    referrals: weeklyCascade.referrals,
-  };
+  const weeklyTargets = weeklyTargetsFromCascade(weeklyCascade);
 
-  const monthlyTargets = {
-    ...weeklyToMonthly(weeklyTargets),
-    newClients: Math.ceil(annualClients / MONTHS_PER_YEAR),
-    revenue: Math.round((Number(weeklyTargets.revenue) || 0) * WEEKS_PER_MONTH),
-  };
+  const monthlyTargets = monthlyTargetsFromWeekly(weeklyTargets, annualClients);
 
   return { weeklyTargets, monthlyTargets };
 }
