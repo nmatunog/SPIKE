@@ -7,6 +7,7 @@ import { Week3Day3PlaybookHero } from './week3/Week3Day3PlaybookHero.jsx';
 import { Week3Day3PortfolioMission } from './week3/Week3Day3PortfolioMission.jsx';
 import { Week3Day4PlaybookHero } from './week3/Week3Day4PlaybookHero.jsx';
 import { GrowthEngineWorksheet } from './week3/GrowthEngineWorksheet.jsx';
+import { FinancialEngineWorksheet } from './week3/FinancialEngineWorksheet.jsx';
 import { BusinessEngineCanvasBlankPreview } from './week3/businessEngine/BusinessEngineCanvasBlankPreview.jsx';
 import { Week2StudioLaunchCard } from './week2/Week2StudioLaunchCard.jsx';
 import { EvaluationTemplatesPanel } from './EvaluationTemplatesPanel.jsx';
@@ -57,6 +58,9 @@ export function FacultyPlaybookView({ bundle }) {
           <Week3Day4PlaybookHero />
           <section className="rounded-3xl border border-slate-200 bg-white p-4 shadow-card sm:p-6">
             <GrowthEngineWorksheet readOnly />
+          </section>
+          <section className="rounded-3xl border border-emerald-200/80 bg-white p-4 shadow-card sm:p-6">
+            <FinancialEngineWorksheet readOnly />
           </section>
         </>
       ) : null}

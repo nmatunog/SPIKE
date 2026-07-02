@@ -10,6 +10,17 @@
       "questionIds": [],
       "autosave": true,
       "exportFormats": ["pdf", "print"]
+    },
+    {
+      "id": "worksheet-w3-d4-02",
+      "dayId": "day-segment-1-week-3-day-4",
+      "title": "SPIKE Financial Engine Worksheet™",
+      "description": "Revenue model, economics, 3-year scaling from Growth Engine targets — FEC Box 8 (Financial Engine) integration.",
+      "type": "interactive",
+      "moduleId": "financial-engine-worksheet",
+      "questionIds": [],
+      "autosave": true,
+      "exportFormats": ["pdf", "print"]
     }
   ],
   "questions": []

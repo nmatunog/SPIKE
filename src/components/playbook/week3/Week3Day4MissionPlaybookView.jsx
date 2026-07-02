@@ -1,6 +1,7 @@
 import { BookOpen } from 'lucide-react';
 import { Week3Day4PlaybookHero } from './Week3Day4PlaybookHero.jsx';
 import { GrowthEngineWorksheet } from './GrowthEngineWorksheet.jsx';
+import { FinancialEngineWorksheet } from './FinancialEngineWorksheet.jsx';
 import { PlaybookDayClosingReflectionBlock } from '../PlaybookDayClosingReflectionBlock.jsx';
 import { PlaybookReflectionNudge } from '../PlaybookReflectionNudge.jsx';
 import { ParticipantSquadXpCard } from '../../staff/SquadXpDashboard.jsx';
@@ -45,6 +46,23 @@ export function Week3Day4MissionPlaybookView({
           </p>
         </div>
         <GrowthEngineWorksheet
+          participantId={participantId}
+          readOnly={staffPreview}
+          onSaved={onProgress}
+        />
+      </section>
+
+      <section className="rounded-3xl border border-emerald-200/80 bg-gradient-to-b from-white to-emerald-50/40 p-4 shadow-card sm:p-6">
+        <div className="mb-4">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-700">Workshop</p>
+          <h2 className="mt-1 text-xl font-bold text-slate-900 sm:text-2xl">
+            SPIKE Financial Engine Worksheet™
+          </h2>
+          <p className="mt-1 text-sm text-slate-600">
+            Revenue model, economics, and 3-year scaling from your Growth Engine — synced to FEC Box 8.
+          </p>
+        </div>
+        <FinancialEngineWorksheet
           participantId={participantId}
           readOnly={staffPreview}
           onSaved={onProgress}

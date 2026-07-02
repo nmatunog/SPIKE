@@ -1,9 +1,11 @@
 import { loadGrowthEngineWorksheet, computeGrowthEngineProgress, isGrowthEngineWorksheetComplete } from './growthEngineWorksheet/storage.js';
+import { loadFinancialEngineWorksheet, computeFinancialEngineProgress } from './financialEngineWorksheet/storage.js';
 
 /** @param {string} participantId */
 export function deriveMemberWeek3Day4Signals(participantId) {
   const ws = loadGrowthEngineWorksheet(participantId);
-  const progressPct = computeGrowthEngineProgress(ws);
+  const fin = loadFinancialEngineWorksheet(participantId);
+  const progressPct = Math.round((computeGrowthEngineProgress(ws) + computeFinancialEngineProgress(fin)) / 2);
   const reflectionQuality = [
     ws.openingBiggestInsight,
     ws.capacityLimitReflection,
@@ -12,11 +14,17 @@ export function deriveMemberWeek3Day4Signals(participantId) {
 
   return {
     progressPct,
-    complete: isGrowthEngineWorksheetComplete(ws),
+    complete: isGrowthEngineWorksheetComplete(ws) && computeFinancialEngineProgress(fin) >= 70,
     yearRevenueGoal: Number(ws.targets.yearRevenueGoal) || 0,
     requiredClients: Number(ws.targets.requiredClients) || 0,
     growthStrategy: ws.growthStrategy || '',
     fecSynced: Boolean(ws.fecYear1Launch.trim() && ws.fecYear2Expand.trim() && ws.fecYear3Multiply.trim()),
+    financialFecSynced: Boolean(
+      fin.revenueModel.streamsNarrative.trim()
+      && fin.economics.costStructureNarrative.trim()
+      && fin.scaling.scalingNarrative.trim(),
+    ),
+    year3Revenue: Number(fin.scaling.year3Revenue) || 0,
     pitchChecklistDone: [
       ws.pitchClientExperience,
       ws.pitchWinningStrategy,
