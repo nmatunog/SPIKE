@@ -36,7 +36,7 @@ const FLOW_STEPS = [
 const ENGINE_RATIOS = [
   { from: '10', to: '5', label: 'prospects → discovery (50%)' },
   { from: '5', to: '3', label: 'discovery → presentations (60%)' },
-  { from: '3', to: '1', label: 'presentations → new client (⅔)' },
+  { from: '3', to: '1', label: 'presentations → new client (3:1)' },
   { from: '1', to: '₱10k', label: 'revenue per client' },
   { from: '1', to: '3', label: 'referrals per client' },
 ];

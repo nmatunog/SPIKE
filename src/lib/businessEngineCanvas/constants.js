@@ -67,7 +67,8 @@ export const GROWTH_SIM_METRICS = [
 export const FUNNEL_RATIOS = {
   prospectToDiscovery: 0.5,
   discoveryToPresentation: 0.6,
-  presentationToClient: 2 / 3,
+  /** 3 solution presentations → 1 new client (10–5–3–1 engine) */
+  presentationToClient: 1 / 3,
   revenuePerClient: 10000,
   referralsPerClient: 3,
 };
