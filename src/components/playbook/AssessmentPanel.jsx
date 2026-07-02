@@ -7,7 +7,7 @@ export function AssessmentPanel({ assessment, rubric }) {
     <section className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
       <h4 className="mb-2 font-bold text-gray-900">{assessment.title}</h4>
       <p className="mb-4 text-sm text-gray-600">{assessment.description}</p>
-      {rubric ? (
+      {rubric?.criteria?.length ? (
         <div className="rounded-lg border border-dashed border-gray-200 bg-gray-50 p-4">
           <h5 className="mb-2 text-xs font-bold uppercase text-gray-500">{rubric.title}</h5>
           <ul className="space-y-2 text-sm text-gray-700">

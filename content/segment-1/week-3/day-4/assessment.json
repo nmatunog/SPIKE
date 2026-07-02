@@ -1,37 +1,21 @@
 {
-  "assessments": [
-    {
-      "id": "assessment-w3-d4",
-      "dayId": "day-segment-1-week-3-day-4",
-      "title": "Growth Engine Delivery Checklist",
-      "rubric": [
-        {
-          "criterion": "Capacity mindset",
-          "description": "Articulates capacity limits and growth beyond self",
-          "weight": 15
-        },
-        {
-          "criterion": "Growth Engine Canvas",
-          "description": "Leaders, systems, capacity, market, and vision drafted",
-          "weight": 20
-        },
-        {
-          "criterion": "Revenue targets",
-          "description": "Year 1 revenue goal, required clients, and funnel math complete",
-          "weight": 25
-        },
-        {
-          "criterion": "FEC Box 6",
-          "description": "Three-year growth narrative synced to FEC",
-          "weight": 20
-        },
-        {
-          "criterion": "Pitch readiness",
-          "description": "Checklist complete and peer-reviewed",
-          "weight": 20
-        }
-      ],
-      "mentorActions": ["approve", "needs_revision"]
-    }
-  ]
+  "assessment": {
+    "id": "assessment-w3-d4",
+    "dayId": "day-segment-1-week-3-day-4",
+    "title": "Growth Engine Delivery Checklist",
+    "description": "Faculty delivery checklist — Growth Engine Canvas, revenue targets, FEC Box 6, and Venture Pitch readiness.",
+    "rubricId": "rubric-assessment-w3-d4"
+  },
+  "rubric": {
+    "id": "rubric-assessment-w3-d4",
+    "assessmentId": "assessment-w3-d4",
+    "title": "Delivery checklist",
+    "criteria": [
+      "Capacity mindset articulated",
+      "Growth Engine Canvas complete",
+      "Year 1 revenue targets and funnel math",
+      "FEC Box 6 three-year narrative",
+      "Venture Pitch readiness checklist"
+    ]
+  }
 }

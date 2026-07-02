@@ -41,7 +41,7 @@ export function ReflectionViewer({
 
   function handleSubmit(event) {
     event.preventDefault();
-    const missing = reflection.prompts.filter((p) => !String(responses[p] || '').trim());
+    const missing = (reflection.prompts ?? []).filter((p) => !String(responses[p] || '').trim());
     if (missing.length > 0) {
       setError('Please respond to all reflection prompts.');
       return;
@@ -70,7 +70,7 @@ export function ReflectionViewer({
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {reflection.prompts.map((prompt, index) => {
+        {reflection.prompts?.map((prompt, index) => {
           const fieldId = `reflection-${reflection.id}-${index}`;
           return (
           <div key={prompt}>

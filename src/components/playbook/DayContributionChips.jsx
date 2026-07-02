@@ -53,12 +53,16 @@ function safeCompetency(id) {
  * }}} props
  */
 export function DayContributionChips({ contributions }) {
+  const portfolio = contributions?.contributesToPortfolio ?? [];
+  const businessPlan = contributions?.contributesToBusinessPlan ?? [];
+  const competencies = contributions?.contributesToCompetencies ?? [];
+
   return (
     <div className="grid gap-3 sm:grid-cols-1">
       <div>
         <h5 className="mb-1.5 text-[11px] font-bold uppercase text-gray-500">Portfolio</h5>
         <div className="flex flex-wrap gap-1.5">
-          {contributions.contributesToPortfolio.map((id) => {
+          {portfolio.map((id) => {
             const s = safePortfolio(id);
             return <Chip key={id} label={s.title} sub="Portfolio" tone="red" />;
           })}
@@ -67,7 +71,7 @@ export function DayContributionChips({ contributions }) {
       <div>
         <h5 className="mb-1.5 text-[11px] font-bold uppercase text-gray-500">Business plan</h5>
         <div className="flex flex-wrap gap-1.5">
-          {contributions.contributesToBusinessPlan.map((id) => {
+          {businessPlan.map((id) => {
             const c = safeChapter(id);
             return <Chip key={id} label={c.title} sub="Chapter" tone="blue" />;
           })}
@@ -76,7 +80,7 @@ export function DayContributionChips({ contributions }) {
       <div>
         <h5 className="mb-1.5 text-[11px] font-bold uppercase text-gray-500">Competencies</h5>
         <div className="flex flex-wrap gap-1.5">
-          {contributions.contributesToCompetencies.map((id) => {
+          {competencies.map((id) => {
             const comp = safeCompetency(id);
             return <Chip key={id} label={comp.title} sub="Skill" tone="green" />;
           })}
