@@ -1735,9 +1735,14 @@ const SpikeMasterPortal = () => {
           return <RaSpikeOnboardingPage user={internUser} />;
         }
         if (path === ROUTES.raSpikeStageGate) {
-          const gateParam = Number(new URLSearchParams(location.search).get('gate'));
+          const search = new URLSearchParams(location.search);
+          const gateParam = Number(search.get('gate'));
           const gate = gateParam === 2 ? 2 : 1;
-          return <RaSpikeStageGatePrepPage user={internUser} gate={gate} />;
+          const weekParam = Number(search.get('week'));
+          const assignmentWeek = Number.isFinite(weekParam) && weekParam >= 1 && weekParam <= 8
+            ? weekParam
+            : undefined;
+          return <RaSpikeStageGatePrepPage user={internUser} gate={gate} assignmentWeek={assignmentWeek} />;
         }
         if (internUser?.internProgress) {
           return <Navigate to={defaultRouteForRole('intern', programSlug)} replace />;

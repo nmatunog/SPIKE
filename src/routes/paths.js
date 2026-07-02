@@ -409,8 +409,12 @@ export function raSpikePlaybookPersonaHref() {
   return ROUTES.raSpikePlaybookPersona;
 }
 
-export function raSpikeStageGateHref(gate = 1) {
-  return `${ROUTES.raSpikeStageGate}?gate=${gate}`;
+export function raSpikeStageGateHref(gate = 1, assignmentWeek) {
+  const params = new URLSearchParams({ gate: String(gate) });
+  if (assignmentWeek != null && Number.isFinite(Number(assignmentWeek))) {
+    params.set('week', String(assignmentWeek));
+  }
+  return `${ROUTES.raSpikeStageGate}?${params}`;
 }
 
 /**

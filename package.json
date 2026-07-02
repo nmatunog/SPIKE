@@ -42,6 +42,7 @@
     "smoke:spike-life-workshop": "node scripts/smoke-spike-life-workshop.mjs",
     "smoke:stage-gate-ceremony": "node scripts/smoke-stage-gate-ceremony.mjs",
     "smoke:ra-spike-week1": "node scripts/smoke-ra-spike-week1.mjs",
+    "smoke:ra-spike-gates": "node scripts/smoke-ra-spike-gates.mjs",
     "audit:intern-recovery": "node scripts/audit-intern-cloud-recovery.mjs",
     "cap:sync": "CAPACITOR=true npm run build && npx cap sync",
     "cap:ios": "npm run cap:sync && npx cap open ios",

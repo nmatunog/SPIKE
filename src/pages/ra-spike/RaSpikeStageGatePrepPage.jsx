@@ -14,12 +14,12 @@ import { setRaSpikeStepStatus } from '../../lib/raSpikeWeekProgress.js';
 import { ROUTES } from '../../routes/paths.js';
 
 /**
- * @param {{ user?: { id?: string, internProgress?: object | null }, gate?: number }} props
+ * @param {{ user?: { id?: string, internProgress?: object | null }, gate?: number, assignmentWeek?: number }} props
  */
-export function RaSpikeStageGatePrepPage({ user, gate = 1 }) {
+export function RaSpikeStageGatePrepPage({ user, gate = 1, assignmentWeek }) {
   const participantId = user?.id ?? '';
   const gateMeta = RA_SPIKE_PROGRAM.stageGates.find((g) => (gate === 1 ? g.week === 4 : g.week === 8));
-  const week = gate === 1 ? 4 : 8;
+  const week = assignmentWeek ?? (gate === 1 ? 4 : 8);
   const items = getGatePrepChecklist(gate);
   const [state, setState] = useState(() => getGatePrepState(participantId, gate));
   const [saved, setSaved] = useState(false);

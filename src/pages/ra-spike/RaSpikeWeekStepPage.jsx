@@ -77,7 +77,7 @@ export function RaSpikeWeekStepPage({ user, week, stepId }) {
     if (week === 3 && isCanvasWizardComplete(participantId)) {
       setRaSpikeStepStatus(participantId, week, 'assignment', 'complete').then(setProgress).catch(() => {});
     }
-    const gateNum = gateNumberForWeek(week);
+    const gateNum = gateNumberForWeek(week) ?? (content.action?.type === 'stage-gate' ? content.action.gate : null);
     if (gateNum && isGatePrepComplete(participantId, gateNum)) {
       setRaSpikeStepStatus(participantId, week, 'assignment', 'complete').then(setProgress).catch(() => {});
     }
@@ -111,7 +111,7 @@ export function RaSpikeWeekStepPage({ user, week, stepId }) {
     if (action.type === 'dream-board') return raSpikePlaybookDreamBoardHref();
     if (action.type === 'canvas-wizard') return raSpikePlaybookCanvasWizardHref();
     if (action.type === 'persona') return raSpikePlaybookPersonaHref();
-    if (action.type === 'stage-gate') return raSpikeStageGateHref(action.gate ?? 1);
+    if (action.type === 'stage-gate') return raSpikeStageGateHref(action.gate ?? 1, week);
     if (action.type === 'prospecting') return ROUTES.raSpikePlaybookProspecting;
     if (action.type === 'discovery-log') return ROUTES.raSpikePlaybookDiscoveryLog;
     return null;
