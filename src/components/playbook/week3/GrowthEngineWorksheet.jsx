@@ -286,7 +286,12 @@ export function GrowthEngineWorksheet({
               </div>
               {!readOnly ? (
                 <>
-                  <button type="button" onClick={recalcTargets} className={RECALC}>
+                  <button
+                    type="button"
+                    onClick={recalcTargets}
+                    className={RECALC}
+                    title="This will reset all numbers to the set Year 1 revenue goal"
+                  >
                     Recalculate funnel from income
                   </button>
                   <p className="mt-2 text-xs text-slate-600">
