@@ -34,10 +34,8 @@ export function GrowthEngineWorksheet({
   className = '',
 }) {
   const sheetRef = useRef(null);
-  const { state, persist, recalcTargets, progressPct, saveStatus } = useGrowthEngineWorksheet(
-    participantId,
-    { readOnly, onSaved },
-  );
+  const { state, persist, recalcTargets, setWeeklyTarget, setMonthlyTarget, progressPct, saveStatus } =
+    useGrowthEngineWorksheet(participantId, { readOnly, onSaved });
 
   function setField(key, value) {
     persist((prev) => ({ ...prev, [key]: value }));
@@ -249,7 +247,6 @@ export function GrowthEngineWorksheet({
                   className={`${INPUT} pl-10 text-lg font-semibold`}
                   value={state.targets.yearRevenueGoal}
                   onChange={(e) => setTarget('yearRevenueGoal', e.target.value)}
-                  onBlur={recalcTargets}
                   readOnly={readOnly}
                 />
               </div>
@@ -264,7 +261,6 @@ export function GrowthEngineWorksheet({
                   className={`${INPUT} pl-10 text-lg font-semibold`}
                   value={state.targets.averageRevenuePerClient}
                   onChange={(e) => setTarget('averageRevenuePerClient', e.target.value)}
-                  onBlur={recalcTargets}
                   readOnly={readOnly}
                 />
               </div>
@@ -272,19 +268,32 @@ export function GrowthEngineWorksheet({
 
             <div className="rounded-2xl border border-orange-200 bg-orange-50/60 p-6">
               <p className="text-sm font-bold text-slate-900">Step 3 — Required clients</p>
-              <div className="mt-4 flex flex-wrap items-center gap-3 text-lg font-semibold text-slate-800">
-                <span>Revenue goal</span>
-                <span className="text-orange-600">÷</span>
-                <span>Avg revenue</span>
-                <span className="text-orange-600">=</span>
-                <span className="rounded-xl bg-white px-4 py-2 text-2xl font-bold text-orange-600">
-                  {state.targets.requiredClients || '—'} clients
-                </span>
+              <div className="mt-4 flex flex-wrap items-end gap-3">
+                <p className="text-sm text-slate-600">
+                  Revenue goal ÷ avg revenue, or enter your own target:
+                </p>
+                <div className="relative max-w-[200px]">
+                  <input
+                    type="number"
+                    className={`${INPUT} text-lg font-bold text-orange-600`}
+                    value={state.targets.requiredClients}
+                    onChange={(e) => setTarget('requiredClients', e.target.value)}
+                    readOnly={readOnly}
+                    aria-label="Required clients"
+                  />
+                  <span className="mt-1 block text-xs font-medium text-slate-500">clients / year</span>
+                </div>
               </div>
               {!readOnly ? (
-                <button type="button" onClick={recalcTargets} className={RECALC}>
-                  Recalculate funnel
-                </button>
+                <>
+                  <button type="button" onClick={recalcTargets} className={RECALC}>
+                    Recalculate funnel
+                  </button>
+                  <p className="mt-2 text-xs text-slate-600">
+                    Fills required clients and weekly/monthly targets from your revenue inputs. You can
+                    edit any number afterward — changes save until you recalculate again.
+                  </p>
+                </>
               ) : null}
             </div>
 
@@ -294,27 +303,33 @@ export function GrowthEngineWorksheet({
                 Business Engine · Weekly funnel
               </p>
               <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-                {ENGINE_STEPS.map((step, i) => (
+                {ENGINE_STEPS.map((step, i) => {
+                  const weeklyKey =
+                    step.id === 'discovery'
+                      ? 'discoveryConversations'
+                      : step.id === 'presentations'
+                        ? 'solutionPresentations'
+                        : step.id === 'clients'
+                          ? 'newClients'
+                          : step.id;
+                  return (
                   <div key={step.id} className="flex items-center gap-2">
                     <div className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-center">
-                      <p className="text-lg font-bold text-slate-900">
-                        {weekly[
-                          step.id === 'discovery'
-                            ? 'discoveryConversations'
-                            : step.id === 'presentations'
-                              ? 'solutionPresentations'
-                              : step.id === 'clients'
-                                ? 'newClients'
-                                : step.id
-                        ] ?? step.defaultValue}
-                      </p>
+                      <TargetNumberInput
+                        currency={step.id === 'revenue'}
+                        value={weekly[weeklyKey] ?? ''}
+                        onChange={(v) => setWeeklyTarget(weeklyKey, v)}
+                        readOnly={readOnly}
+                        className="text-lg font-bold"
+                      />
                       <p className="text-[10px] font-semibold uppercase text-slate-500">{step.defaultLabel}</p>
                     </div>
                     {i < ENGINE_STEPS.length - 1 ? (
                       <ArrowDown className="rotate-[-90deg] text-slate-300" size={16} aria-hidden />
                     ) : null}
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
@@ -324,17 +339,21 @@ export function GrowthEngineWorksheet({
                 <dl className="mt-3 space-y-2 text-sm">
                   {[
                     ['newClients', 'Clients'],
-                    ['revenue', 'Monthly revenue'],
+                    ['revenue', 'Monthly revenue', true],
                     ['discoverySessions', 'Discovery sessions'],
                     ['solutionPresentations', 'Solution presentations'],
                     ['prospects', 'Prospects'],
-                  ].map(([key, label]) => (
-                    <div key={key} className="flex justify-between gap-2 border-b border-slate-100 py-2">
+                    ['referrals', 'Referrals'],
+                  ].map(([key, label, currency]) => (
+                    <div key={key} className="flex items-center justify-between gap-2 border-b border-slate-100 py-2">
                       <dt className="text-slate-600">{label}</dt>
-                      <dd className="font-semibold text-slate-900">
-                        {key === 'revenue' && monthly[key]
-                          ? `₱${Number(monthly[key]).toLocaleString()}`
-                          : (monthly[key] ?? '—')}
+                      <dd className="min-w-[7rem] text-right">
+                        <TargetNumberInput
+                          currency={Boolean(currency)}
+                          value={monthly[key] ?? ''}
+                          onChange={(v) => setMonthlyTarget(key, v)}
+                          readOnly={readOnly}
+                        />
                       </dd>
                     </div>
                   ))}
@@ -348,15 +367,18 @@ export function GrowthEngineWorksheet({
                     ['discoveryConversations', 'Discovery'],
                     ['solutionPresentations', 'Presentations'],
                     ['newClients', 'Clients'],
-                    ['revenue', 'Revenue'],
+                    ['revenue', 'Revenue', true],
                     ['referrals', 'Referrals'],
-                  ].map(([key, label]) => (
-                    <div key={key} className="flex justify-between gap-2 border-b border-slate-100 py-2">
+                  ].map(([key, label, currency]) => (
+                    <div key={key} className="flex items-center justify-between gap-2 border-b border-slate-100 py-2">
                       <dt className="text-slate-600">{label}</dt>
-                      <dd className="font-semibold text-slate-900">
-                        {key === 'revenue' && weekly[key]
-                          ? `₱${Number(weekly[key]).toLocaleString()}`
-                          : (weekly[key] ?? '—')}
+                      <dd className="min-w-[7rem] text-right">
+                        <TargetNumberInput
+                          currency={Boolean(currency)}
+                          value={weekly[key] ?? ''}
+                          onChange={(v) => setWeeklyTarget(key, v)}
+                          readOnly={readOnly}
+                        />
                       </dd>
                     </div>
                   ))}
@@ -526,3 +548,41 @@ const TOOL =
 
 const RECALC =
   'mt-4 inline-flex items-center gap-2 rounded-xl bg-orange-500 px-4 py-2 text-sm font-bold text-white hover:bg-orange-600';
+
+/**
+ * @param {{
+ *   value?: number | string,
+ *   onChange: (value: string) => void,
+ *   readOnly?: boolean,
+ *   currency?: boolean,
+ *   className?: string,
+ * }} props
+ */
+function TargetNumberInput({ value, onChange, readOnly = false, currency = false, className = '' }) {
+  if (readOnly) {
+    const display =
+      value === '' || value == null
+        ? '—'
+        : currency
+          ? `₱${Number(value).toLocaleString()}`
+          : String(value);
+    return <span className={`font-semibold text-slate-900 tabular-nums ${className}`}>{display}</span>;
+  }
+
+  return (
+    <div className={`relative inline-flex w-full max-w-[8rem] items-center ${className}`}>
+      {currency ? (
+        <span className="pointer-events-none absolute left-2 text-xs font-bold text-slate-400">₱</span>
+      ) : null}
+      <input
+        type="number"
+        inputMode="numeric"
+        className={`w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-right text-sm font-semibold text-slate-900 tabular-nums outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 ${
+          currency ? 'pl-6' : ''
+        }`}
+        value={value ?? ''}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    </div>
+  );
+}

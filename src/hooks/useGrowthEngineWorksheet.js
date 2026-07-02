@@ -46,6 +46,32 @@ export function useGrowthEngineWorksheet(participantId, opts = {}) {
     }));
   }, [persist]);
 
+  const setWeeklyTarget = useCallback(
+    (key, value) => {
+      persist((prev) => ({
+        ...prev,
+        targets: {
+          ...prev.targets,
+          weeklyTargets: { ...(prev.targets.weeklyTargets ?? {}), [key]: value },
+        },
+      }));
+    },
+    [persist],
+  );
+
+  const setMonthlyTarget = useCallback(
+    (key, value) => {
+      persist((prev) => ({
+        ...prev,
+        targets: {
+          ...prev.targets,
+          monthlyTargets: { ...(prev.targets.monthlyTargets ?? {}), [key]: value },
+        },
+      }));
+    },
+    [persist],
+  );
+
   useEffect(() => {
     if (readOnly || !participantId) return undefined;
     const timer = window.setInterval(() => {
@@ -78,6 +104,8 @@ export function useGrowthEngineWorksheet(participantId, opts = {}) {
     state,
     persist,
     recalcTargets,
+    setWeeklyTarget,
+    setMonthlyTarget,
     progressPct,
     saveStatus,
   };
