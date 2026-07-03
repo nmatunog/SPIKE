@@ -37,13 +37,17 @@ export function RaSpikeCoachPage({
         <section className="rounded-2xl border border-spike/20 bg-gradient-to-br from-spike-muted/50 to-white p-5">
           <p className="text-sm font-semibold text-slate-900">Rookie signup</p>
           <p className="mt-1 text-sm text-slate-600">
-            Separate program from SPIKE Internship (Cassiopeia, Argo Navis, Pegasus, etc.).
-            Curriculum, portfolio, and squads do not overlap.
+            Separate program from SPIKE Internship. Batches are mixed-agency — rookies choose home
+            agency and unit at signup (Cebu Matunog and Cebu Ez Premier units welcome in one batch).
           </p>
           <p className="mt-3 text-sm text-slate-600">
             {raInterns.length
               ? `${raInterns.length} RA-SPIKE participant${raInterns.length === 1 ? '' : 's'} in this portal view.`
-              : 'No RA-SPIKE participants enrolled yet — create a batch and share the invite code.'}
+              : 'No RA-SPIKE participants enrolled yet — create a mixed batch and share the invite code.'}
+          </p>
+          <p className="mt-3 rounded-lg bg-white/80 px-3 py-2 text-xs font-medium text-slate-700">
+            Coach URL: <span className="font-mono text-spike">/ra-spike/coach</span>
+            {' '}— do not use <span className="font-mono">/program-coach/ra-spike</span> (internship app).
           </p>
         </section>
 

@@ -1,56 +1,63 @@
 {
   "weekNumber": 4,
   "segment": "discover",
-  "title": "Stage Gate 1 — Venture Pitch",
-  "theme": "Present Your Business",
+  "title": "Business Plan & Pitch",
+  "theme": "FEC block 6 — 3-Year Plan · Stage Gate 1",
   "modules": ["dream-board", "customer-discovery", "fec-canvas", "business-plan", "venture-pitch"],
   "steps": {
     "learn": {
       "label": "Learn",
-      "headline": "Venture pitch essentials",
-      "summary": "What the panel evaluates and how to prepare.",
-      "durationMinutes": 20,
+      "headline": "Present your vision. Earn the opportunity.",
+      "summary": "Synthesize your FEC into a 3-year plan and venture pitch for Stage Gate 1.",
+      "durationMinutes": 25,
       "bullets": [
-        "4 criteria: clarity, market, model, delivery",
-        "5-minute pitch structure",
-        "Q&A readiness"
-      ]
+        "By Week 4 your blueprint becomes your 3-Year Business Plan and Venture Pitch",
+        "Pitch structure: You → Customer → Value → How you operate → How you earn → Where you are headed",
+        "Stage Gate 1 evaluates clarity, feasibility, and readiness to advise"
+      ],
+      "callout": "Bring a complete FEC. Coaches evaluate your Stage Gate 1 panel."
     },
     "workshop": {
       "label": "Workshop",
       "headline": "Pitch rehearsal",
-      "summary": "Practice with coach and squad feedback.",
-      "durationMinutes": 120,
+      "summary": "Practice your venture pitch with squad and coach feedback.",
+      "durationMinutes": 90,
       "bullets": [
-        "Timed run-throughs",
-        "Panel question practice",
-        "Final deck / notes check"
-      ]
+        "Draft your 3-year plan narrative",
+        "Timed pitch practice in squads",
+        "Coach notes on clarity and confidence"
+      ],
+      "callout": "Mark complete after rehearsal."
     },
     "assignment": {
       "label": "Assignment",
-      "headline": "Stage Gate 1 preparation",
-      "summary": "Complete the pitch prep checklist.",
+      "headline": "Stage Gate 1 — Venture Pitch",
+      "summary": "Submit your pitch materials and complete Stage Gate 1 evaluation.",
       "durationMinutes": 90,
-      "action": { "type": "stage-gate", "gate": 1, "label": "Open Stage Gate 1 prep" }
+      "bullets": [
+        "Finalize 3-year plan on the FEC",
+        "Prepare pitch talking points",
+        "Complete Stage Gate 1 when your coach schedules the panel"
+      ],
+      "action": { "type": "stage-gate", "label": "Open Stage Gate 1 prep", "gate": 1 }
     },
     "reflection": {
       "label": "Reflection",
-      "headline": "Pitch readiness",
-      "summary": "Honest self-assessment before panel day.",
+      "headline": "How did your pitch land?",
+      "summary": "Capture feedback before the Advise segment.",
       "durationMinutes": 10,
       "prompts": [
-        "What is your strongest pitch moment?",
-        "What question are you least prepared for?",
-        "What support do you need from your squad?"
+        "What feedback will you act on first?",
+        "What are you most proud of in your blueprint?",
+        "What do you need to practice in Weeks 5–7?"
       ]
     },
     "submit": {
       "label": "Submit",
-      "headline": "Submit for Stage Gate 1",
-      "summary": "Your coach will evaluate at the panel. Week 5 unlocks after you pass.",
+      "headline": "Mark Week 4 complete",
+      "summary": "Unlock the Advise segment — master the sales process.",
       "durationMinutes": 2,
-      "bullets": ["Prep checklist complete", "Awaiting panel evaluation"]
+      "bullets": ["Stage Gate 1 materials submitted", "Ready for prospecting"]
     }
   }
 }

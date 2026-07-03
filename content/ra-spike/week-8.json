@@ -1,47 +1,66 @@
 {
   "weekNumber": 8,
   "segment": "advise",
-  "title": "Stage Gate 2 — Advisor Revalida",
-  "theme": "Demonstrate Professional Readiness",
+  "title": "Advisor Revalida",
+  "theme": "Demonstrate. Deliver. Succeed. — Stage Gate 2",
   "modules": ["prospecting", "discovery-approaching", "presenting-solutions", "advisor-revalida"],
   "steps": {
     "learn": {
       "label": "Learn",
-      "headline": "Advisor Revalida overview",
-      "summary": "What graduation requires and how you are evaluated.",
+      "headline": "Demonstrate professional readiness",
+      "summary": "Stage Gate 2 — Advisor Revalida. Show you can advise with skill and integrity.",
       "durationMinutes": 20,
-      "bullets": ["5 revalida criteria", "Client scenario flow", "Professional standards"]
+      "bullets": [
+        "Revalida expectations and scoring",
+        "Integrate YOU, Customer, and your advise skills",
+        "Build Yourself. Build Your Business. Build Your Legacy."
+      ],
+      "callout": "This is the capstone of your 8-week RA-SPIKE journey."
     },
     "workshop": {
       "label": "Workshop",
-      "headline": "Final rehearsal",
-      "summary": "Full scenario practice with coach panel.",
-      "durationMinutes": 120,
-      "bullets": ["Live revalida simulation", "Panel feedback", "Graduation preview"]
+      "headline": "Revalida rehearsal",
+      "summary": "Final practice before your panel.",
+      "durationMinutes": 90,
+      "bullets": [
+        "Full advise scenario run-through",
+        "Coach and peer feedback",
+        "Mindset reset — you are the CEO of your future"
+      ],
+      "callout": "Mark complete after rehearsal."
     },
     "assignment": {
       "label": "Assignment",
-      "headline": "Stage Gate 2 preparation",
-      "summary": "Complete the revalida checklist.",
+      "headline": "Stage Gate 2 — Advisor Revalida",
+      "summary": "Complete your Advisor Revalida evaluation.",
       "durationMinutes": 90,
-      "action": { "type": "stage-gate", "gate": 2, "label": "Open Stage Gate 2 prep" }
+      "bullets": [
+        "Attend your scheduled Revalida panel",
+        "Demonstrate discovery and recommendation skills",
+        "Receive coach evaluation for Stage Gate 2"
+      ],
+      "action": { "type": "stage-gate", "label": "Open Stage Gate 2", "gate": 2 }
     },
     "reflection": {
       "label": "Reflection",
-      "headline": "Your RA-SPIKE journey",
-      "durationMinutes": 15,
+      "headline": "What kind of advisor will you be?",
+      "summary": "Close the loop on your RA-SPIKE journey.",
+      "durationMinutes": 10,
       "prompts": [
-        "How have you changed as a business owner?",
-        "What will you carry into SPIKE Internship?",
-        "One thank-you for your squad"
+        "How has your vision from Week 1 evolved?",
+        "What will you protect as non-negotiable in your practice?",
+        "What is your first action after RA-SPIKE?"
       ]
     },
     "submit": {
       "label": "Submit",
-      "headline": "Submit for graduation panel",
-      "summary": "After passing Stage Gate 2 you graduate RA-SPIKE™.",
+      "headline": "Complete RA-SPIKE",
+      "summary": "Mark Week 8 complete after Stage Gate 2.",
       "durationMinutes": 2,
-      "bullets": ["Revalida prep complete", "Awaiting panel evaluation"]
+      "bullets": [
+        "Stage Gate 2 complete",
+        "You built yourself, your business blueprint, and your advising craft"
+      ]
     }
   }
 }

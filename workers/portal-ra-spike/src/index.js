@@ -51,12 +51,32 @@ function rewriteHtml(html) {
     .replaceAll('content="/assets/', 'content="/ra-spike/assets/');
 }
 
+/**
+ * Legacy internship-app URLs that must hard-redirect into the RA-SPIKE proxy.
+ * @param {string} pathname
+ * @param {URL} requestUrl
+ * @returns {Response | null}
+ */
+function legacyRaSpikeRedirect(pathname, requestUrl) {
+  if (pathname === '/program-coach/ra-spike' || pathname.startsWith('/program-coach/ra-spike/')) {
+    return Response.redirect(new URL('/ra-spike/coach', requestUrl.origin), 302);
+  }
+  if (pathname === '/mentor/ra-spike' || pathname.startsWith('/mentor/ra-spike/')) {
+    return Response.redirect(new URL('/ra-spike/mentor-coach', requestUrl.origin), 302);
+  }
+  return null;
+}
+
 export default {
   /**
    * @param {Request} request
    */
   async fetch(request) {
     const url = new URL(request.url);
+
+    const legacy = legacyRaSpikeRedirect(url.pathname, url);
+    if (legacy) return legacy;
+
     const upstreamPath = mapToUpstreamPath(url.pathname);
     const upstreamUrl = new URL(upstreamPath + url.search, RA_SPIKE_ORIGIN);
 
