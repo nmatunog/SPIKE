@@ -4,7 +4,7 @@ import { PasswordInput } from '../PasswordInput.jsx';
 import {
   fetchRaSpikeEnrollmentOptions,
 } from '../../lib/raSpikeSignupService.js';
-import { RA_SPIKE_AGENCIES } from '../../../shared/raSpikeAgencies.js';
+import { mergeRaSpikeEnrollmentOptions } from '../../../shared/raSpikeAgencies.js';
 
 const STEPS = ['Account', 'Your batch', 'Done'];
 
@@ -60,11 +60,10 @@ export const RaSpikeSignupPanel = memo(function RaSpikeSignupPanel({ onSignup })
     if (step === 1) void loadOptions();
   }, [step, loadOptions]);
 
-  const agencyOptions = useMemo(() => {
-    const fromApi = options?.agencies ?? [];
-    const byName = new Map(fromApi.map((a) => [a.agency, a]));
-    return RA_SPIKE_AGENCIES.map((name) => byName.get(name) ?? { agency: name, unitManagers: [] });
-  }, [options]);
+  const agencyOptions = useMemo(
+    () => mergeRaSpikeEnrollmentOptions(options?.agencies ?? []),
+    [options],
+  );
 
   const unitManagers = useMemo(() => {
     const entry = agencyOptions.find((a) => a.agency === agency);
@@ -75,13 +74,6 @@ export const RaSpikeSignupPanel = memo(function RaSpikeSignupPanel({ onSignup })
     const entry = unitManagers.find((u) => u.unitManager === unitManager);
     return entry?.batches ?? [];
   }, [unitManagers, unitManager]);
-
-  useEffect(() => {
-    if (!agency || !unitManagers.length) return;
-    if (unitManagers.length === 1 && !unitManager) {
-      setUnitManager(unitManagers[0].unitManager);
-    }
-  }, [agency, unitManagers, unitManager]);
 
   useEffect(() => {
     if (!unitManager || !batches.length) return;
@@ -256,13 +248,9 @@ export const RaSpikeSignupPanel = memo(function RaSpikeSignupPanel({ onSignup })
                       ))}
                     </select>
                   </label>
-                  {agency && !unitManagers.length ? (
-                    <p className="rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-900">
-                      No open batches for this agency yet. Enter your invite code above or ask your coach.
-                    </p>
-                  ) : null}
+
                   <label className="block text-sm">
-                    <span className="mb-1 block font-medium text-slate-700">Unit Manager</span>
+                    <span className="mb-1 block font-medium text-slate-700">Unit</span>
                     <select
                       value={unitManager}
                       onChange={(e) => {
@@ -270,16 +258,21 @@ export const RaSpikeSignupPanel = memo(function RaSpikeSignupPanel({ onSignup })
                         setCohortId('');
                       }}
                       className={fieldClass}
-                      disabled={!agency || !unitManagers.length}
+                      disabled={!agency}
                     >
                       <option value="">
-                        {!agency ? 'Select agency first' : unitManagers.length ? 'Select unit manager' : 'No unit managers yet'}
+                        {!agency ? 'Select agency first' : 'Select unit'}
                       </option>
                       {unitManagers.map((u) => (
                         <option key={u.unitManager} value={u.unitManager}>{u.unitManager}</option>
                       ))}
                     </select>
                   </label>
+                  {unitManager && !batches.length ? (
+                    <p className="rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-900">
+                      No open batch for this unit yet. Enter your invite code above or ask your coach.
+                    </p>
+                  ) : null}
                   <label className="block text-sm">
                     <span className="mb-1 block font-medium text-slate-700">Batch</span>
                     <select
@@ -289,7 +282,7 @@ export const RaSpikeSignupPanel = memo(function RaSpikeSignupPanel({ onSignup })
                       disabled={!unitManager || !batches.length}
                     >
                       <option value="">
-                        {!unitManager ? 'Select unit manager first' : batches.length ? 'Select batch' : 'No batches yet'}
+                        {!unitManager ? 'Select unit first' : batches.length ? 'Select batch' : 'No batches yet'}
                       </option>
                       {batches.map((b) => (
                         <option key={b.cohortId} value={String(b.cohortId)}>{b.batchLabel}</option>

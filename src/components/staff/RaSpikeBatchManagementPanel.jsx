@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Check, Copy, Loader2, Plus, Sparkles } from 'lucide-react';
 import {
   fetchRaSpikeBatchesForStaff,
@@ -7,7 +7,7 @@ import {
   staffSetActiveCohort,
 } from '../../lib/staffRaSpikeBatchService.js';
 import { usePortalWriteAccess } from '../../hooks/usePortalWriteAccess.js';
-import { RA_SPIKE_AGENCIES } from '../../../shared/raSpikeAgencies.js';
+import { RA_SPIKE_AGENCIES, raSpikeUnitsForAgency } from '../../../shared/raSpikeAgencies.js';
 
 const INPUT =
   'w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-spike focus:ring-2 focus:ring-spike/20';
@@ -24,10 +24,15 @@ export function RaSpikeBatchManagementPanel({ showToast, onChanged }) {
   const [showCreate, setShowCreate] = useState(false);
   const [agency, setAgency] = useState('');
   const [unitManager, setUnitManager] = useState('');
+  const [unitManagerOther, setUnitManagerOther] = useState('');
   const [batchLabel, setBatchLabel] = useState('');
   const [inviteCode, setInviteCode] = useState('');
   const [startDate, setStartDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [copiedId, setCopiedId] = useState(null);
+  const unitOptions = useMemo(() => raSpikeUnitsForAgency(agency), [agency]);
+
+  const resolvedUnitManager =
+    unitManager === 'Other' ? unitManagerOther.trim() : unitManager.trim();
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -48,12 +53,16 @@ export function RaSpikeBatchManagementPanel({ showToast, onChanged }) {
   async function handleCreate(e) {
     e.preventDefault();
     if (!canWrite) return;
+    if (!resolvedUnitManager) {
+      setError(unitManager === 'Other' ? 'Enter the unit name for Other.' : 'Select a unit.');
+      return;
+    }
     setBusy('create');
     setError('');
     try {
       const row = await staffCreateRaSpikeBatch({
         agency,
-        unitManager,
+        unitManager: resolvedUnitManager,
         batchLabel,
         inviteCode: inviteCode || undefined,
         startDate,
@@ -63,6 +72,7 @@ export function RaSpikeBatchManagementPanel({ showToast, onChanged }) {
       setShowCreate(false);
       setAgency('');
       setUnitManager('');
+      setUnitManagerOther('');
       setBatchLabel('');
       setInviteCode('');
       await load();
@@ -144,7 +154,16 @@ export function RaSpikeBatchManagementPanel({ showToast, onChanged }) {
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
               <label className="block text-sm">
                 <span className="mb-1 block font-medium text-slate-700">Agency</span>
-                <select required value={agency} onChange={(e) => setAgency(e.target.value)} className={INPUT}>
+                <select
+                  required
+                  value={agency}
+                  onChange={(e) => {
+                    setAgency(e.target.value);
+                    setUnitManager('');
+                    setUnitManagerOther('');
+                  }}
+                  className={INPUT}
+                >
                   <option value="">Select agency</option>
                   {RA_SPIKE_AGENCIES.map((name) => (
                     <option key={name} value={name}>{name}</option>
@@ -152,9 +171,35 @@ export function RaSpikeBatchManagementPanel({ showToast, onChanged }) {
                 </select>
               </label>
               <label className="block text-sm">
-                <span className="mb-1 block font-medium text-slate-700">Unit Manager</span>
-                <input required value={unitManager} onChange={(e) => setUnitManager(e.target.value)} className={INPUT} />
+                <span className="mb-1 block font-medium text-slate-700">Unit</span>
+                <select
+                  required
+                  value={unitManager}
+                  onChange={(e) => {
+                    setUnitManager(e.target.value);
+                    setUnitManagerOther('');
+                  }}
+                  className={INPUT}
+                  disabled={!agency}
+                >
+                  <option value="">{agency ? 'Select unit' : 'Select agency first'}</option>
+                  {unitOptions.map((name) => (
+                    <option key={name} value={name}>{name}</option>
+                  ))}
+                </select>
               </label>
+              {unitManager === 'Other' ? (
+                <label className="block text-sm sm:col-span-2">
+                  <span className="mb-1 block font-medium text-slate-700">Other unit name</span>
+                  <input
+                    required
+                    value={unitManagerOther}
+                    onChange={(e) => setUnitManagerOther(e.target.value)}
+                    className={INPUT}
+                    placeholder="Enter unit name"
+                  />
+                </label>
+              ) : null}
               <label className="block text-sm sm:col-span-2">
                 <span className="mb-1 block font-medium text-slate-700">Batch label</span>
                 <input required value={batchLabel} onChange={(e) => setBatchLabel(e.target.value)} className={INPUT} placeholder="e.g. RA-SPIKE Batch 2 · July 2026" />
