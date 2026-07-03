@@ -71,6 +71,17 @@ export async function finalizePitchPanelistPortfolioRemote(pin, panelistToken) {
   if (error) throw new Error(error.message);
 }
 
+/** @param {string} panelistToken @param {string} [sessionId] */
+export async function reopenPitchPanelistPortfolioRemote(panelistToken, sessionId = PITCH_PANEL_SESSION_ID) {
+  const client = assertClient();
+  const { data, error } = await client.rpc('reopen_pitch_panelist_portfolio', {
+    p_session_id: sessionId,
+    p_panelist_token: panelistToken,
+  });
+  if (error) throw new Error(error.message);
+  return data ?? null;
+}
+
 /**
  * @param {string} pin
  * @param {string} panelistToken

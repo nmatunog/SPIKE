@@ -26,8 +26,10 @@ import {
   readCoachMatrixCache,
   readCoachOverrides,
 } from '../../lib/staff/pitchPanelCoachReview.js';
+import { reopenPitchPanelistPortfolioRemote } from '../../lib/supabase/pitchPanel.js';
 import { ConfettiCelebration } from '../pitchPanel/PitchPanelCelebration.jsx';
 import { PitchFundingResults } from '../pitchPanel/PitchPanelInvestmentUI.jsx';
+import { PanelistCoachSummaryCard } from '../pitchPanel/PitchPanelistCard.jsx';
 
 const ACTION_BTN =
   'inline-flex min-h-[44px] touch-manipulation items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition active:scale-[0.98] hover:bg-slate-50';
@@ -52,6 +54,7 @@ export function PitchPanelDashboard({ interns, staffId = '', showToast, embedded
   const [showGuestPreview, setShowGuestPreview] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [coachRefreshKey, setCoachRefreshKey] = useState(0);
+  const [reopeningToken, setReopeningToken] = useState('');
 
   const guestUrl = pitchPanelGuestHref();
   const previewPayload = buildFinalizePayload(squads);
@@ -100,6 +103,20 @@ export function PitchPanelDashboard({ interns, staffId = '', showToast, embedded
   function copyGuestLink() {
     void navigator.clipboard.writeText(guestUrl);
     showToast?.('Investor link copied — share with panelists (PIN: W2PITCH)');
+  }
+
+  async function handleReopenPanelist(panelistToken, panelistName) {
+    setReopeningToken(panelistToken);
+    try {
+      await reopenPitchPanelistPortfolioRemote(panelistToken);
+      await refresh();
+      setCoachRefreshKey((k) => k + 1);
+      showToast?.(`${panelistName} can invest again — portfolio reopened.`);
+    } catch (err) {
+      showToast?.(err instanceof Error ? err.message : 'Could not reopen portfolio');
+    } finally {
+      setReopeningToken('');
+    }
   }
 
   function handleExport() {
@@ -258,31 +275,35 @@ export function PitchPanelDashboard({ interns, staffId = '', showToast, embedded
         })}
       </ul>
 
-      {panelists.length && finalized ? (
-        <details className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
-          <summary className="cursor-pointer font-semibold text-slate-800">Panelist summary ({panelists.length})</summary>
-          <ul className="mt-3 space-y-2 text-sm">
+      {panelists.length ? (
+        <section className="space-y-3">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-spike">Investors</p>
+            <h3 className="mt-1 text-lg font-bold text-slate-900">
+              Panelist cards ({panelists.length})
+            </h3>
+            <p className="mt-1 text-sm text-slate-600">
+              {finalized
+                ? 'Locked portfolios from each Demo Day investor.'
+                : 'Live status as panelists save and finalize allocations.'}
+            </p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
             {panelists.map((p) => (
-              <li key={p.panelistToken} className="flex flex-wrap justify-between gap-2 border-t border-slate-100 pt-2">
-                <span className="font-medium text-slate-800">
-                  {p.panelistName}
-                  {p.isFinalized ? (
-                    <span className="ml-2 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800">
-                      Finalized
-                    </span>
-                  ) : (
-                    <span className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800">
-                      Provisional
-                    </span>
-                  )}
-                </span>
-                <span className="tabular-nums text-slate-600">
-                  {formatPitchPeso(p.allocatedCapital)} · {formatPitchPeso(p.remainingCapital)} left
-                </span>
-              </li>
+              <PanelistCoachSummaryCard
+                key={p.panelistToken}
+                panelistName={p.panelistName}
+                panelistOrg={p.panelistOrg}
+                allocatedCapital={p.allocatedCapital}
+                remainingCapital={p.remainingCapital}
+                isFinalized={p.isFinalized}
+                canReopen={!finalized}
+                reopenBusy={reopeningToken === p.panelistToken}
+                onReopen={() => void handleReopenPanelist(p.panelistToken, p.panelistName)}
+              />
             ))}
-          </ul>
-        </details>
+          </div>
+        </section>
       ) : null}
 
       <details className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm">

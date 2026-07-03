@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Loader2, TrendingUp } from 'lucide-react';
 import { usePitchPanelLive } from '../../hooks/usePitchPanelLive.js';
 import { formatPitchPeso } from '../../lib/staff/pitchPanelConstants.js';
+import { PanelistInvestmentCard } from '../pitchPanel/PitchPanelistCard.jsx';
 import { loadSquadPitchPanelSummary } from '../../lib/staff/pitchPanelSummaryService.js';
 
 /**
@@ -105,19 +106,18 @@ export function PitchPanelSquadSummaryPanel({
       </div>
 
       {summary.cards.length ? (
-        <ul className="divide-y divide-slate-100 px-5 py-2">
+        <div className="grid gap-3 px-5 py-4 sm:grid-cols-2">
           {summary.cards.map((card) => (
-            <li key={`${card.panelistName}-${card.updatedAt ?? ''}`} className="flex justify-between gap-3 py-3 text-sm">
-              <div>
-                <p className="font-semibold text-slate-900">{card.panelistName}</p>
-                {card.comment?.trim() ? (
-                  <p className="mt-0.5 text-xs italic text-slate-500">&ldquo;{card.comment}&rdquo;</p>
-                ) : null}
-              </div>
-              <span className="font-bold tabular-nums text-orange-600">{formatPitchPeso(card.amount)}</span>
-            </li>
+            <PanelistInvestmentCard
+              key={`${card.panelistName}-${card.updatedAt ?? ''}`}
+              panelistName={card.panelistName}
+              panelistOrg={card.panelistOrg}
+              amount={card.amount}
+              comment={card.comment}
+              isFinalized={card.isFinal}
+            />
           ))}
-        </ul>
+        </div>
       ) : null}
     </section>
   );

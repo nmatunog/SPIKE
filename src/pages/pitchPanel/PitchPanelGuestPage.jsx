@@ -4,6 +4,7 @@ import {
   PITCH_PANEL_ACCESS_PIN,
   PITCH_PANEL_INVESTMENT_CRITERIA,
   PITCH_PANEL_TOKEN_STORAGE_KEY,
+  PITCH_PANEL_CAPITAL,
   computeRemainingCapital,
   buildInvestmentLeaderboard,
   isValidInvestmentIncrement,
@@ -24,6 +25,7 @@ import {
   PitchFundingResults,
   VentureCapitalHeader,
 } from '../../components/pitchPanel/PitchPanelInvestmentUI.jsx';
+import { PanelistIdentityCard } from '../../components/pitchPanel/PitchPanelistCard.jsx';
 
 const INPUT_CLASS =
   'mt-1.5 w-full min-h-[48px] rounded-xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-900 outline-none focus:border-spike focus:ring-2 focus:ring-spike/20';
@@ -320,6 +322,18 @@ export function PitchPanelGuestPage() {
       </header>
 
       <div className="mx-auto max-w-2xl space-y-4 px-4 py-4 pb-28">
+        <PanelistIdentityCard
+          panelistName={name}
+          panelistOrg={org}
+          remainingCapital={remaining}
+          allocatedCapital={PITCH_PANEL_CAPITAL - remaining}
+          isFinalized={panelistFinalized}
+          readOnly={panelistFinalized}
+          showCapitalBar={false}
+          onNameChange={setName}
+          onOrgChange={setOrg}
+        />
+
         <VentureCapitalHeader remaining={remaining} />
 
         {panelistFinalized ? (
@@ -341,20 +355,6 @@ export function PitchPanelGuestPage() {
 
         {!panelistFinalized && view === 'invest' ? (
           <>
-            <section className="rounded-2xl border border-slate-200 bg-white p-4">
-              <h2 className="text-sm font-bold uppercase tracking-wide text-slate-500">Your details</h2>
-              <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                <label className="block text-sm font-semibold text-slate-700">
-                  Your name
-                  <input value={name} onChange={(e) => setName(e.target.value)} className={INPUT_CLASS} required />
-                </label>
-                <label className="block text-sm font-semibold text-slate-700">
-                  Organization
-                  <input value={org} onChange={(e) => setOrg(e.target.value)} className={INPUT_CLASS} />
-                </label>
-              </div>
-            </section>
-
             <section className="rounded-2xl border border-slate-200 bg-white p-4">
               <h2 className="text-sm font-bold uppercase tracking-wide text-slate-500">Squad presenting now</h2>
               <div className="mt-3">

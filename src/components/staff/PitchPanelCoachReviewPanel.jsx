@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Loader2, Pencil, RotateCcw } from 'lucide-react';
+import { PanelistStatusBadge } from '../pitchPanel/PitchPanelistCard.jsx';
 import {
   PITCH_PANEL_INVESTMENT_INCREMENT,
   formatPitchPeso,
@@ -219,15 +220,7 @@ export function PitchPanelCoachReviewPanel({
                       <p className="text-xs text-slate-500">{panelist.panelistOrg}</p>
                     ) : null}
                     <p className="mt-1">
-                      {panelist.isFinalized ? (
-                        <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold uppercase text-emerald-800">
-                          Finalized
-                        </span>
-                      ) : (
-                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold uppercase text-amber-800">
-                          Provisional
-                        </span>
-                      )}
+                      <PanelistStatusBadge isFinalized={panelist.isFinalized} />
                     </p>
                   </td>
                   {squads.map((squad) => {
