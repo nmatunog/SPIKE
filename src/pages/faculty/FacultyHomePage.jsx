@@ -17,6 +17,8 @@ import { FacultySquadReviewPanel } from '../../components/staff/SquadWeeklyRevie
 import { UNLOCK_WEEK2 } from '../../lib/programUnlocks.js';
 import { Week2CoachTimeline } from '../../components/playbook/week2/Week2CoachTimeline.jsx';
 import { PitchPanelDashboard } from '../../components/staff/PitchPanelDashboard.jsx';
+import { RaSpikeGateEvaluationPanel } from '../../components/staff/RaSpikeGateEvaluationPanel.jsx';
+import { hasRaSpikeInterns } from '../../lib/raSpikeStaffGateService.js';
 import { groupInternsBySquad } from '../../lib/mentorFrameworkService.js';
 
 /**
@@ -49,6 +51,16 @@ export function FacultyHomePage({
         homeHref={ROUTES.programCoachHome}
         cohortStartDate={cohortStartDate}
       />
+
+      {hasRaSpikeInterns(interns) ? (
+        <div className="mt-10">
+          <RaSpikeGateEvaluationPanel
+            interns={interns}
+            showToast={(msg) => window.alert(msg)}
+            onEvaluated={onSquadChanged}
+          />
+        </div>
+      ) : null}
 
       {UNLOCK_WEEK2 && programDay.week >= 2 ? (
         <div className="mt-10 space-y-6">

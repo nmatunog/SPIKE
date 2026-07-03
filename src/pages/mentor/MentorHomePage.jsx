@@ -13,6 +13,8 @@ import { DailyActivationCodeCard } from '../../components/dashboard/DailyActivat
 import { MentorWeek2ScoringSection } from '../../components/mentor/MentorWeek2ScoringSection.jsx';
 import { MentorWeek2SquadProgress } from '../../components/mentor/MentorWeek2SquadProgress.jsx';
 import { Week2CoachTimeline } from '../../components/playbook/week2/Week2CoachTimeline.jsx';
+import { RaSpikeGateEvaluationPanel } from '../../components/staff/RaSpikeGateEvaluationPanel.jsx';
+import { hasRaSpikeInterns } from '../../lib/raSpikeStaffGateService.js';
 import { UNLOCK_WEEK2 } from '../../lib/programUnlocks.js';
 
 /**
@@ -22,9 +24,10 @@ import { UNLOCK_WEEK2 } from '../../lib/programUnlocks.js';
  *   internSummary: object,
  *   pendingLogs: Array<object>,
  *   showToast: (message: string, type?: string) => void,
+ *   onInternsRefresh?: () => void,
  * }} props
  */
-export function MentorHomePage({ user, interns, showToast }) {
+export function MentorHomePage({ user, interns, showToast, onInternsRefresh }) {
   const [toolsOpen, setToolsOpen] = useState(false);
   const staffName = user?.name || user?.email || 'Mentor';
   const { cohortStartDate, programDay } = useCohortProgramDay();
@@ -41,6 +44,16 @@ export function MentorHomePage({ user, interns, showToast }) {
         homeHref={ROUTES.mentorHome}
         cohortStartDate={cohortStartDate}
       />
+
+      {hasRaSpikeInterns(interns) ? (
+        <div className="mt-10">
+          <RaSpikeGateEvaluationPanel
+            interns={interns}
+            showToast={showToast}
+            onEvaluated={onInternsRefresh}
+          />
+        </div>
+      ) : null}
 
       {showWeek2Scoring ? (
         <div className="mt-10">

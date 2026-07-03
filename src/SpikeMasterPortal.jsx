@@ -2065,6 +2065,7 @@ const SpikeMasterPortal = () => {
               internSummary={mentorInternSummary}
               pendingLogs={pendingLogs}
               showToast={showToast}
+              onInternsRefresh={loadInterns}
             />
           </LazyRoute>
         );

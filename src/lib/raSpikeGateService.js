@@ -65,6 +65,24 @@ export function isRaSpikeGraduated(progress) {
  * @param {'passed' | 'failed'} result
  */
 export async function staffEvaluateRaSpikeGate(participantId, gateNum, result) {
+  const passed = result === 'passed';
+  if (isMockUserId(participantId)) {
+    const patch =
+      gateNum === 1
+        ? {
+            gate_1_status: passed ? 'passed' : 'failed',
+            gate_1_evaluated_at: new Date().toISOString(),
+            ...(passed
+              ? { ra_spike_segment: 2, ra_spike_current_week: 5 }
+              : {}),
+          }
+        : {
+            gate_2_status: passed ? 'passed' : 'failed',
+            gate_2_evaluated_at: new Date().toISOString(),
+            ...(passed ? { graduated_at: new Date().toISOString() } : {}),
+          };
+    return updateMockInternProgress(participantId, patch);
+  }
   if (!isSupabaseConfigured || !supabase) {
     throw new Error('Supabase required.');
   }
