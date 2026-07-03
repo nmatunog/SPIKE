@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { PageContainer } from '../../components/layout/PageContainer.jsx';
 import { RaSpikeBatchManagementPanel } from '../../components/staff/RaSpikeBatchManagementPanel.jsx';
+import { RaSpikeCoachPresentationPanel } from '../../components/staff/RaSpikeCoachPresentationPanel.jsx';
 import { RaSpikeGateEvaluationPanel } from '../../components/staff/RaSpikeGateEvaluationPanel.jsx';
 import { ROUTES } from '../../routes/paths.js';
 import { RA_SPIKE_PROGRAM } from '../../lib/programs/ra-spike.js';
@@ -48,6 +49,8 @@ export function RaSpikeCoachPage({
         </section>
 
         <RaSpikeBatchManagementPanel showToast={showToast} onChanged={onRefresh} />
+
+        <RaSpikeCoachPresentationPanel />
 
         <RaSpikeGateEvaluationPanel
           interns={interns}

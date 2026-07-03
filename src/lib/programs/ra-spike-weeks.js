@@ -2,7 +2,7 @@
 
 /** @type {Record<number, RaSpikeWeekMeta>} */
 export const RA_SPIKE_WEEKS = {
-  1: { theme: 'Discover Yourself', subtitle: 'Start With You', segment: 'discover' },
+  1: { theme: 'Start With You', subtitle: 'Build yourself before you build your business', segment: 'discover' },
   2: { theme: 'Discover Your Market', subtitle: 'Find the People You Want to Serve', segment: 'discover' },
   3: { theme: 'Design Your Business', subtitle: 'Build Your Practice', segment: 'discover' },
   4: { theme: 'Stage Gate 1 — Venture Pitch', subtitle: 'Present Your Business', segment: 'discover' },

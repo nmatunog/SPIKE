@@ -1,0 +1,32 @@
+{
+  "id": "day-ra-spike-week-1-day-1",
+  "programSlug": "ra-spike",
+  "weekNumber": 1,
+  "dayNumber": 1,
+  "title": "Start With You",
+  "theme": "Build yourself before you build your business",
+  "summary": "Welcome to RA-SPIKE. Discover why the program starts with you, map the 8-week journey, run identity reflection and advisor-motivation poll, introduce the Financial Entrepreneurship Canvas, and launch the Dream Board workshop.",
+  "durationMinutes": 120,
+  "objectives": [
+    "Welcome rookies to a different kind of Rookie Academy",
+    "Explain why RA-SPIKE starts with YOU before business and clients",
+    "Orient the cohort to the 8-week Discover → Advise journey",
+    "Surface personal motivations for becoming a financial advisor",
+    "Introduce the Financial Entrepreneurship Canvas and Week 1 YOU block",
+    "Launch the Dream Board as the first FEC input"
+  ],
+  "agenda": [
+    { "minutes": 10, "item": "Welcome & program pillars" },
+    { "minutes": 10, "item": "Week 1 theme — Start With You" },
+    { "minutes": 10, "item": "Why RA-SPIKE? (You → Purpose → Business → Clients → Impact)" },
+    { "minutes": 10, "item": "8-week journey roadmap" },
+    { "minutes": 10, "item": "Silent reflection — What kind of life do you want to build?" },
+    { "minutes": 15, "item": "Quick poll — Why do people become financial advisors?" },
+    { "minutes": 10, "item": "Entrepreneur mindset (Employee → Self-employed → Financial entrepreneur)" },
+    { "minutes": 10, "item": "Introduce Financial Entrepreneurship Canvas" },
+    { "minutes": 25, "item": "Dream Board workshop (portal studio)" },
+    { "minutes": 10, "item": "Week 1 YOU blueprint + assignment before Week 2" }
+  ],
+  "presentations": ["presentation-ra-spike-week-1-day-1-deck-01"],
+  "coachDeckPath": "week-1/day-1"
+}

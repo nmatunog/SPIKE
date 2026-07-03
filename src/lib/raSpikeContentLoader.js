@@ -21,6 +21,19 @@ const programModule = import.meta.glob('../../content/ra-spike/program.json', {
   import: 'default',
 });
 
+const presentationModules = import.meta.glob(
+  '../../content/ra-spike/week-*/day-*/presentation*.json',
+  {
+    eager: true,
+    import: 'default',
+  },
+);
+
+const dayModules = import.meta.glob('../../content/ra-spike/week-*/day-*/day.json', {
+  eager: true,
+  import: 'default',
+});
+
 /** @returns {Record<string, unknown> | null} */
 export function getRaSpikeProgramMeta() {
   const entry = Object.values(programModule)[0];
@@ -99,4 +112,46 @@ export function getRaSpikeStepContent(week, stepId) {
 export function listRaSpikeWeekStepIds(week) {
   const weekContent = getRaSpikeWeekContent(week);
   return RA_SPIKE_STEP_ORDER.filter((id) => weekContent.steps?.[id]);
+}
+
+/**
+ * @param {number} week
+ * @param {number} [day=1]
+ * @returns {{ id: string, title: string, theme?: string, agenda?: object[], objectives?: string[] } | null}
+ */
+export function getRaSpikeDayContent(week, day = 1) {
+  const key = `../../content/ra-spike/week-${week}/day-${day}/day.json`;
+  return dayModules[key] ?? null;
+}
+
+/**
+ * Coach presentation deck for an RA-SPIKE week/day (if imported).
+ * @param {number} week
+ * @param {number} [day=1]
+ * @returns {{ presentation: object, slides: object[] } | null}
+ */
+export function getRaSpikeCoachPresentation(week, day = 1) {
+  const key = `../../content/ra-spike/week-${week}/day-${day}/presentation.json`;
+  const deck = presentationModules[key];
+  if (!deck?.presentation || !Array.isArray(deck.slides) || deck.slides.length === 0) {
+    return null;
+  }
+  return deck;
+}
+
+/** @returns {Array<{ week: number, day: number, title: string, slideCount: number }>} */
+export function listRaSpikeCoachPresentations() {
+  /** @type {Array<{ week: number, day: number, title: string, slideCount: number }>} */
+  const items = [];
+  for (const [path, deck] of Object.entries(presentationModules)) {
+    const match = path.match(/week-(\d+)\/day-(\d+)\/presentation/);
+    if (!match || !deck?.presentation) continue;
+    items.push({
+      week: Number(match[1]),
+      day: Number(match[2]),
+      title: String(deck.presentation.title ?? `Week ${match[1]} Day ${match[2]}`),
+      slideCount: Array.isArray(deck.slides) ? deck.slides.length : 0,
+    });
+  }
+  return items.sort((a, b) => a.week - b.week || a.day - b.day);
 }

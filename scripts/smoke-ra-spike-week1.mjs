@@ -38,8 +38,18 @@ try {
   const unlocked = progress.isRaSpikeStepUnlocked({ learn: 'complete' }, 'workshop');
   if (!unlocked) throw new Error('sequential unlock failed');
 
+  const deck = mod.getRaSpikeCoachPresentation(1, 1);
+  if (!deck?.presentation?.pdfUrl) {
+    throw new Error('week-1 day-1 coach presentation missing');
+  }
+  if (!Array.isArray(deck.slides) || deck.slides.length < 10) {
+    throw new Error(`week-1 day-1 expected 10+ slides, got ${deck.slides?.length ?? 0}`);
+  }
+  const day1 = mod.getRaSpikeDayContent(1, 1);
+  if (!day1?.title) throw new Error('week-1 day-1 day.json missing');
+
   console.log(
-    `smoke:ra-spike-week1 OK — "${week1.title}" with ${steps.length} steps, dream-board module`,
+    `smoke:ra-spike-week1 OK — "${week1.title}" with ${steps.length} steps, dream-board module, coach deck (${deck.slides.length} slides)`,
   );
 } catch (error) {
   console.error('smoke:ra-spike-week1 FAIL —', error.message);

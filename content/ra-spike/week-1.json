@@ -1,70 +1,80 @@
 {
   "weekNumber": 1,
   "segment": "discover",
-  "title": "Discover Yourself",
-  "theme": "Start With You",
+  "title": "Start With You",
+  "theme": "Build yourself before you build your business",
   "modules": ["dream-board"],
+  "day1": {
+    "id": "day-ra-spike-week-1-day-1",
+    "title": "Start With You",
+    "coachPresentationId": "presentation-ra-spike-week-1-day-1-deck-01"
+  },
   "steps": {
     "learn": {
       "label": "Learn",
-      "headline": "Your SPIKE story starts with you",
-      "summary": "Understand why you are here and what you want to build.",
-      "durationMinutes": 20,
+      "headline": "Build yourself before you build your business",
+      "summary": "RA-SPIKE starts with you — not product, not clients. Everything else follows.",
+      "durationMinutes": 25,
       "bullets": [
-        "AIA, Agency, and SPIKE — the journey from employee to business owner",
-        "Ambition, impact, and values as the foundation of your practice",
-        "How Week 1 connects to your Dream Board and squad workshops"
+        "RA-SPIKE flips traditional training: You → Purpose → Business → Clients → Impact",
+        "Your 8-week journey: Discover (W1–3), Business Plan & Pitch (W4), Advise (W5–7), Advisor Revalida (W8)",
+        "Employee → Self-employed → Financial entrepreneur — you are the CEO of your future",
+        "Week 1 opens the Financial Entrepreneurship Canvas (FEC) on the YOU block only: Vision, Purpose, Values, Strengths, Goals"
       ],
-      "callout": "Read before your classroom session. Your coach will expand on these themes live."
+      "callout": "Read before Day 1 class. Your coach will expand these themes live with the Week 1 deck."
     },
     "workshop": {
       "label": "Workshop",
-      "headline": "In-class: Identity & squad formation",
-      "summary": "Facilitated activities with your cohort and squad.",
-      "durationMinutes": 90,
+      "headline": "Day 1 classroom: Start With You",
+      "summary": "Facilitated welcome, reflection, motivation poll, mindset, FEC intro, and Dream Board launch.",
+      "durationMinutes": 120,
       "bullets": [
-        "Share your name, agency, and one personal goal for RA-SPIKE",
-        "Meet your squad and agree on how you will work together",
-        "Facilitator-led reflection on ambition and purpose",
-        "Preview the Dream Board assignment"
+        "Welcome to a different kind of Rookie Academy — Build Yourself, Build Your Business, Build Your Legacy",
+        "Silent reflection: What kind of life do you want to build? Write it down",
+        "Quick poll: Why do people become financial advisors? (Income, Freedom, Family, Purpose, Career, Entrepreneurship, Helping Others, Legacy)",
+        "Entrepreneur mindset walkthrough and FEC preview — today we only begin with YOU",
+        "Dream Board workshop: choose images and words, create a collage, focus on what matters most to you"
       ],
-      "callout": "Mark complete after your classroom session."
+      "callout": "Mark complete after your Day 1 classroom session. Coaches use the Week 1 Day 1 presentation deck."
     },
     "assignment": {
       "label": "Assignment",
-      "headline": "Create your Dream Board",
-      "summary": "Visualize the life and business you are building toward.",
-      "durationMinutes": 45,
+      "headline": "Your assignment before Week 2",
+      "summary": "Finish your Dream Board and prepare the personal inputs that feed Week 2.",
+      "durationMinutes": 60,
       "bullets": [
-        "Add photos across lifestyle, family, career, and financial goals",
-        "Write a short caption for each image",
-        "Include at least the minimum cards required to submit"
+        "Finish your Dream Board — add final images, words, and notes that capture your ideal life",
+        "Write your future-self letter — from you 3 years from now to you today (specific and inspiring)",
+        "Bring one printed photo (or have it ready digitally) that represents your biggest dream",
+        "Think about one group of people you would genuinely enjoy helping"
       ],
       "action": {
         "type": "dream-board",
         "label": "Open Dream Board Studio"
-      }
+      },
+      "callout": "Your Dream Board is the first input into the Financial Entrepreneurship Canvas. There are no wrong dreams."
     },
     "reflection": {
       "label": "Reflection",
       "headline": "What did you discover about yourself?",
-      "summary": "Capture insights before you submit the week.",
+      "summary": "Capture insights from Day 1 before you submit the week.",
       "durationMinutes": 10,
       "prompts": [
-        "What surprised you when building your Dream Board?",
-        "What is one strength you will bring to your squad?",
-        "What is one question you still have about your path?"
+        "What kind of life do you want to build — in one sentence?",
+        "What is your top reason for becoming a financial advisor?",
+        "Which Dream Board image or word surprised you most?",
+        "Where are you today on the path from employee to financial entrepreneur?"
       ]
     },
     "submit": {
       "label": "Submit",
       "headline": "Mark Week 1 complete",
-      "summary": "Confirm you finished Learn, Workshop, Assignment, and Reflection.",
+      "summary": "Confirm Learn, Workshop, Assignment, and Reflection are done so Week 2 can unlock.",
       "durationMinutes": 2,
       "bullets": [
-        "Your Dream Board is saved to your profile",
-        "Week 2 unlocks after you submit",
-        "Bring one Dream Board insight to your next squad huddle"
+        "Your Dream Board is saved to your profile as FEC input #1 (YOU)",
+        "Bring your future-self letter and one dream photo to Week 2",
+        "Next week we discover your ideal customer"
       ]
     }
   }

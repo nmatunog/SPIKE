@@ -1,0 +1,174 @@
+{
+  "presentation": {
+    "id": "presentation-ra-spike-week-1-day-1-deck-01",
+    "dayId": "day-ra-spike-week-1-day-1",
+    "title": "RA-SPIKE Week 1 Day 1 — Start With You",
+    "slideIds": [
+      "slide-d1-01-01",
+      "slide-d1-01-02",
+      "slide-d1-01-03",
+      "slide-d1-01-04",
+      "slide-d1-01-05",
+      "slide-d1-01-06",
+      "slide-d1-01-07",
+      "slide-d1-01-08",
+      "slide-d1-01-09",
+      "slide-d1-01-10",
+      "slide-d1-01-11",
+      "slide-d1-01-12",
+      "slide-d1-01-13"
+    ],
+    "sourceFile": "faculty-deck-01.pdf",
+    "sourcePath": "content/ra-spike/week-1/day-1/source/faculty-deck-01.pdf",
+    "importedAt": "2026-07-03T16:39:30.000Z",
+    "pdfUrl": "/content/ra-spike/week-1/day-1/faculty-deck-01.pdf"
+  },
+  "slides": [
+    {
+      "id": "slide-d1-01-01",
+      "presentationId": "presentation-ra-spike-week-1-day-1-deck-01",
+      "sortOrder": 1,
+      "title": "Rookie Academy — SPIKE Edition",
+      "body": "An 8-week journey to build your business and master the art of advising. Build Yourself. Build Your Business. Build Your Legacy.",
+      "speakerNotes": "Open with energy. Welcome the cohort to RA-SPIKE. Frame the program as an 8-week journey, not a one-day orientation.",
+      "discussionQuestions": [
+        "What does 'build yourself before you build your business' mean to you?"
+      ],
+      "imageUrl": "/content/ra-spike/week-1/day-1/deck-01/slide-01.jpg"
+    },
+    {
+      "id": "slide-d1-01-02",
+      "presentationId": "presentation-ra-spike-week-1-day-1-deck-01",
+      "sortOrder": 2,
+      "title": "Program pillars",
+      "body": "Discover your purpose. Design your business. Deliver impact.",
+      "speakerNotes": "Walk the three pillars: Build Yourself, Build Your Business, Build Your Legacy. Week 1 is entirely about the first pillar.",
+      "discussionQuestions": [],
+      "imageUrl": "/content/ra-spike/week-1/day-1/deck-01/slide-02.jpg"
+    },
+    {
+      "id": "slide-d1-01-03",
+      "presentationId": "presentation-ra-spike-week-1-day-1-deck-01",
+      "sortOrder": 3,
+      "title": "Welcome to a different kind of Rookie Academy",
+      "body": "This is not traditional product training. RA-SPIKE starts with you as the entrepreneur.",
+      "speakerNotes": "Set expectations: this academy is different because it starts with identity and purpose, not product features.",
+      "discussionQuestions": [
+        "What have other trainings focused on that this one might not?"
+      ],
+      "imageUrl": "/content/ra-spike/week-1/day-1/deck-01/slide-03.jpg"
+    },
+    {
+      "id": "slide-d1-01-04",
+      "presentationId": "presentation-ra-spike-week-1-day-1-deck-01",
+      "sortOrder": 4,
+      "title": "Week 1 — Start With You",
+      "body": "Build yourself before you build your business.",
+      "speakerNotes": "State the Week 1 theme clearly. Everything today feeds the YOU block of the Financial Entrepreneurship Canvas.",
+      "discussionQuestions": [],
+      "imageUrl": "/content/ra-spike/week-1/day-1/deck-01/slide-04.jpg"
+    },
+    {
+      "id": "slide-d1-01-05",
+      "presentationId": "presentation-ra-spike-week-1-day-1-deck-01",
+      "sortOrder": 5,
+      "title": "Why RA-SPIKE?",
+      "body": "We start with you. Everything else follows: You → Purpose → Business → Clients → Impact.",
+      "speakerNotes": "Contrast traditional training (starts at product/clients) with RA-SPIKE (starts at YOU). Emphasize the top-down order.",
+      "discussionQuestions": [
+        "Where have you seen training start at the bottom instead of with the person?"
+      ],
+      "imageUrl": "/content/ra-spike/week-1/day-1/deck-01/slide-05.jpg"
+    },
+    {
+      "id": "slide-d1-01-06",
+      "presentationId": "presentation-ra-spike-week-1-day-1-deck-01",
+      "sortOrder": 6,
+      "title": "Your 8-week journey",
+      "body": "Weeks 1–3 Discover. Week 4 Business Plan & Pitch. Weeks 5–7 Advise. Week 8 Advisor Revalida.",
+      "speakerNotes": "Give a 2-minute roadmap. Today is Discover / Build Yourself only. Do not deep-dive later weeks.",
+      "discussionQuestions": [],
+      "imageUrl": "/content/ra-spike/week-1/day-1/deck-01/slide-06.jpg"
+    },
+    {
+      "id": "slide-d1-01-07",
+      "presentationId": "presentation-ra-spike-week-1-day-1-deck-01",
+      "sortOrder": 7,
+      "title": "Reflection — What kind of life do you want to build?",
+      "body": "Take a few minutes. Write it down.",
+      "speakerNotes": "Silent writing for 3–5 minutes. No sharing required yet. Collect energy for the Dream Board later.",
+      "discussionQuestions": [
+        "What one sentence captures the life you want to build?"
+      ],
+      "imageUrl": "/content/ra-spike/week-1/day-1/deck-01/slide-07.jpg"
+    },
+    {
+      "id": "slide-d1-01-08",
+      "presentationId": "presentation-ra-spike-week-1-day-1-deck-01",
+      "sortOrder": 8,
+      "title": "Why do people become financial advisors?",
+      "body": "Quick poll: Income, Freedom, Family, Purpose, Career, Entrepreneurship, Helping Others, Legacy.",
+      "speakerNotes": "Run a raise-your-hand poll for each reason. Affirm that all reasons are valid. Link answers to Dream Board themes.",
+      "discussionQuestions": [
+        "What is your top reason for becoming a financial advisor?"
+      ],
+      "imageUrl": "/content/ra-spike/week-1/day-1/deck-01/slide-08.jpg"
+    },
+    {
+      "id": "slide-d1-01-09",
+      "presentationId": "presentation-ra-spike-week-1-day-1-deck-01",
+      "sortOrder": 9,
+      "title": "The entrepreneur mindset",
+      "body": "Employee → Self-employed → Financial entrepreneur. We are here to build businesses, not only careers.",
+      "speakerNotes": "Walk the three stages. Position participants as CEOs of their future advisory business.",
+      "discussionQuestions": [
+        "Where are you on this path today — employee, self-employed, or financial entrepreneur?"
+      ],
+      "imageUrl": "/content/ra-spike/week-1/day-1/deck-01/slide-09.jpg"
+    },
+    {
+      "id": "slide-d1-01-10",
+      "presentationId": "presentation-ra-spike-week-1-day-1-deck-01",
+      "sortOrder": 10,
+      "title": "Financial Entrepreneurship Canvas (FEC)",
+      "body": "Your business blueprint over four weeks. Today we only begin with YOU (Entrepreneur).",
+      "speakerNotes": "Preview the six canvas blocks. Lock icons for weeks 2–4. Stress that Week 1 is only the YOU column.",
+      "discussionQuestions": [],
+      "imageUrl": "/content/ra-spike/week-1/day-1/deck-01/slide-10.jpg"
+    },
+    {
+      "id": "slide-d1-01-11",
+      "presentationId": "presentation-ra-spike-week-1-day-1-deck-01",
+      "sortOrder": 11,
+      "title": "Dream Board workshop",
+      "body": "Choose images and words. Create a collage. Focus on what matters most to you. First input into the FEC.",
+      "speakerNotes": "Launch Dream Board Studio in the portal. There are no wrong dreams. Circulate and coach individuals.",
+      "discussionQuestions": [
+        "Which image on your board represents your biggest dream?"
+      ],
+      "imageUrl": "/content/ra-spike/week-1/day-1/deck-01/slide-11.jpg"
+    },
+    {
+      "id": "slide-d1-01-12",
+      "presentationId": "presentation-ra-spike-week-1-day-1-deck-01",
+      "sortOrder": 12,
+      "title": "Your business blueprint — Week 1 YOU",
+      "body": "Week 1 focus: Vision, Purpose, Values, Strengths, Goals. Next week: your ideal customer.",
+      "speakerNotes": "Connect Dream Board outputs to Vision / Purpose / Values / Strengths / Goals. Preview Week 2 customer work.",
+      "discussionQuestions": [
+        "Which of Vision, Purpose, Values, Strengths, or Goals feels clearest for you today?"
+      ],
+      "imageUrl": "/content/ra-spike/week-1/day-1/deck-01/slide-12.jpg"
+    },
+    {
+      "id": "slide-d1-01-13",
+      "presentationId": "presentation-ra-spike-week-1-day-1-deck-01",
+      "sortOrder": 13,
+      "title": "Assignment before Week 2",
+      "body": "1) Finish Dream Board. 2) Write future-self letter (3 years). 3) Bring one printed or digital photo. 4) Think about who you would love to help.",
+      "speakerNotes": "Read all four assignments aloud. Confirm portal Dream Board is the primary deliverable. Future-self letter and photo are for Week 2 kickoff.",
+      "discussionQuestions": [],
+      "imageUrl": "/content/ra-spike/week-1/day-1/deck-01/slide-13.jpg"
+    }
+  ]
+}

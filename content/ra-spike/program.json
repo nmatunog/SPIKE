@@ -1,7 +1,7 @@
 {
   "id": "ra-spike",
   "title": "RA-SPIKE™",
-  "tagline": "Rookie Academy – SPIKE Edition",
+  "tagline": "An 8-week journey to build your business and master the art of advising",
   "totalWeeks": 8,
   "weeklyFlow": ["learn", "workshop", "assignment", "reflection", "submit"]
 }
