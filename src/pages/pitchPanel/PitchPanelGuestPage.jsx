@@ -103,10 +103,10 @@ export function PitchPanelGuestPage() {
   }, [squads, allocations, sessionFinalized]);
 
   const loadPortfolio = useCallback(async () => {
-    if (!isSupabaseConfigured) return;
+    if (!isSupabaseConfigured) return null;
     try {
       const data = await fetchPitchPanelistPortfolioRemote(PITCH_PANEL_ACCESS_PIN, token);
-      if (!data) return;
+      if (!data) return null;
       setSessionFinalized(Boolean(data.sessionFinalized));
       const next = {};
       for (const row of data.allocations ?? []) {
@@ -117,11 +117,16 @@ export function PitchPanelGuestPage() {
         };
       }
       setAllocations(next);
-      setPanelistFinalized(Boolean(data.capital?.isFinalized));
+      const finalized = Boolean(data.capital?.isFinalized);
+      setPanelistFinalized(finalized);
+      if (!finalized) {
+        setView((current) => (current === 'finalized' ? 'invest' : current));
+      }
       if (data.capital?.panelistName) setName(data.capital.panelistName);
       if (data.capital?.panelistOrg) setOrg(data.capital.panelistOrg);
+      return data;
     } catch {
-      /* offline */
+      return null;
     }
   }, [token]);
 
@@ -134,6 +139,15 @@ export function PitchPanelGuestPage() {
   useEffect(() => {
     if (unlocked) void loadPortfolio();
   }, [unlocked, loadPortfolio]);
+
+  // Poll cloud so coach reopen / session changes reach panelists without a full reload.
+  useEffect(() => {
+    if (!unlocked || sessionFinalized || !isSupabaseConfigured) return undefined;
+    const timer = window.setInterval(() => {
+      void loadPortfolio();
+    }, 8000);
+    return () => window.clearInterval(timer);
+  }, [unlocked, sessionFinalized, loadPortfolio]);
 
   useEffect(() => {
     if (squadName && allocations[squadName]) {
@@ -230,10 +244,25 @@ export function PitchPanelGuestPage() {
     try {
       await finalizePitchPanelistPortfolioRemote(PITCH_PANEL_ACCESS_PIN, token);
       setPanelistFinalized(true);
-      setView('finalized');
       await loadPortfolio();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not finalize portfolio.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleResumeInvesting() {
+    setBusy(true);
+    setError('');
+    try {
+      const data = await loadPortfolio();
+      if (data?.capital?.isFinalized) {
+        setError('Portfolio is still locked. Ask the coach to reopen it, then tap Continue again.');
+        return;
+      }
+      setView('invest');
+      setSaved(false);
     } finally {
       setBusy(false);
     }
@@ -339,10 +368,32 @@ export function PitchPanelGuestPage() {
         {panelistFinalized ? (
           <div className="flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-4 text-emerald-900">
             <Lock size={20} className="mt-0.5 shrink-0" />
-            <div>
+            <div className="min-w-0 flex-1">
               <p className="font-semibold">Investment portfolio finalized</p>
               <p className="mt-1 text-sm">Awaiting program coach to lock Demo Day results.</p>
+              <button
+                type="button"
+                onClick={() => void handleResumeInvesting()}
+                disabled={busy}
+                className="mt-3 min-h-[44px] rounded-xl border border-emerald-300 bg-white px-4 py-2 text-sm font-bold text-emerald-900"
+              >
+                {busy ? 'Checking…' : 'Continue allocating'}
+              </button>
             </div>
+          </div>
+        ) : null}
+
+        {!panelistFinalized && view !== 'invest' && view !== 'portfolio' ? (
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-amber-900">
+            <p className="font-semibold">Ready to invest again</p>
+            <p className="mt-1 text-sm">Your portfolio was reopened — continue allocating across squads.</p>
+            <button
+              type="button"
+              onClick={() => setView('invest')}
+              className="mt-3 min-h-[44px] rounded-xl bg-amber-600 px-4 py-2 text-sm font-bold text-white"
+            >
+              Start investing
+            </button>
           </div>
         ) : null}
 
