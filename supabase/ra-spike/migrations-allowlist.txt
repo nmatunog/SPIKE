@@ -1,0 +1,31 @@
+# RA-SPIKE Supabase migrations allowlist (fresh install order).
+# Only auth, cohorts, squads, intern progress, staff signup, and RA-SPIKE features.
+
+20260606_sprint_01_scaffold.sql
+20260615_onboarding_refactor.sql
+20260617_fix_rls_recursion.sql
+20260618_intern_onboarding_rpc.sql
+20260619_onboarding_rpc_auth_fix.sql
+20260620_sprint_02_instructional_architecture.sql
+20260702_ensure_active_cohort_staff.sql
+20260703a_superuser_enum.sql
+20260703_superuser_staff_accounts.sql
+20260704_staff_bootstrap_superuser.sql
+20260707_superuser_cohort_onboarding.sql
+20260708_intern_onboarding_hardening.sql
+20260710_admin_portal_catchup.sql
+20260711_profile_backfill.sql
+20260713_intern_progress_catchup.sql
+20260718_admin_viewer_read_only.sql
+20260720_cohort_start_date.sql
+20260721_fix_cohort_program_start.sql
+20260725_ra_spike_program.sql
+20260726_ra_spike_onboarding.sql
+20260727_ra_spike_week_progress.sql
+20260728_ra_spike_gates_graduation.sql
+20260802_staff_registration_validate_catchup.sql
+20260803_ra_spike_staff_batches.sql
+20260804_ra_spike_agency_names.sql
+20260805_ra_spike_canonical_units.sql
+20260806_ra_spike_mixed_batches.sql
+20260808_ra_spike_program_isolation.sql
