@@ -7,7 +7,7 @@ import { ParticipantSquadXpCard } from '../../staff/SquadXpDashboard.jsx';
 import { ROUTES } from '../../../routes/paths.js';
 
 /**
- * Week 3 Day 5 mission-first Playbook — FEC pitch prep for boxes 4–7.
+ * Week 3 Day 5 mission-first Playbook — FEC pitch prep for boxes 4–8.
  */
 export function Week3Day5MissionPlaybookView({
   participantId,
@@ -37,8 +37,8 @@ export function Week3Day5MissionPlaybookView({
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-spike-light/90">Day 15</p>
         <h1 className="mt-2 text-2xl font-bold sm:text-3xl">My Financial Advisory Venture Pitch</h1>
         <p className="mt-2 max-w-2xl text-sm text-slate-300">
-          Refine FEC boxes 4–7 into short, pitch-ready language. Problem, experience, strategy, growth,
-          and platform — an entrepreneur&apos;s pitch, not a product deck.
+          Refine FEC boxes 4–8 into short, pitch-ready language. Problem, experience, strategy, growth,
+          platform, and financial engine — an entrepreneur&apos;s pitch, not a product deck.
         </p>
       </section>
 
