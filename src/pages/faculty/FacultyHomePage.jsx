@@ -55,9 +55,12 @@ export function FacultyHomePage({
         <p className="mt-1 text-sm text-slate-600">
           Create batches, share invite codes, and evaluate stage gates — separate from SPIKE Internship playbook.
         </p>
-        <Link to={ROUTES.programCoachRaSpike} className="mt-3 inline-flex min-h-[44px] items-center rounded-xl bg-spike px-4 py-2 text-sm font-bold text-white">
+        <a
+          href={ROUTES.programCoachRaSpike}
+          className="mt-3 inline-flex min-h-[44px] items-center rounded-xl bg-spike px-4 py-2 text-sm font-bold text-white"
+        >
           Open RA-SPIKE coach hub
-        </Link>
+        </a>
       </div>
 
       {UNLOCK_WEEK2 && programDay.week >= 2 ? (

@@ -27,14 +27,16 @@ export const ROUTES = {
   mentorParticipant: '/mentor/participant',
   analyticsCohortIdentity: '/analytics/cohort-identity',
   programCoachHome: '/program-coach',
-  programCoachRaSpike: '/program-coach/ra-spike',
+  /** Staff RA-SPIKE hub — must stay under /ra-spike/* for portal.1cma.online proxy isolation. */
+  programCoachRaSpike: '/ra-spike/coach',
   programCoachPlaybook: '/program-coach/playbook',
   programCoachSquads: '/program-coach/squads',
   programCoachStageGate: '/program-coach/stage-gate',
   programCoachGuides: '/admin/content-studio/program-coach-guides',
   adminProgramCoachPlaybook: '/admin/program-coach-playbook',
   mentorHome: '/mentor',
-  mentorRaSpike: '/mentor/ra-spike',
+  /** Mentor RA-SPIKE hub — must stay under /ra-spike/* for portal.1cma.online proxy isolation. */
+  mentorRaSpike: '/ra-spike/mentor-coach',
   mentorPlaybook: '/mentor/playbook',
   mentorSquads: '/mentor/squads',
   mentorStageGate: '/mentor/stage-gate',
@@ -356,6 +358,7 @@ const INTERN_FORMATION_ROUTES = [
 ];
 
 /** RA-SPIKE participant shell routes. */
+/** Participant (intern) RA-SPIKE shell routes. */
 export const RA_SPIKE_ROUTES = [
   ROUTES.raSpikeHome,
   ROUTES.raSpikePlaybook,
@@ -364,6 +367,30 @@ export const RA_SPIKE_ROUTES = [
   ROUTES.raSpikeOnboarding,
   ROUTES.raSpikeStageGate,
 ];
+
+/** True when the URL is inside the RA-SPIKE app tree (portal proxy + pages.dev). */
+export function isRaSpikeAppPath(pathname) {
+  return pathname === '/ra-spike' || pathname === '/ra-spike/' || pathname.startsWith('/ra-spike/');
+}
+
+/** Full-page entry URL for SPIKE Internship (leaves RA-SPIKE Pages/proxy). */
+export function internshipEntryHref(userRole) {
+  const path =
+    userRole === 'mentor'
+      ? ROUTES.mentorHome
+      : userRole === 'faculty'
+        ? ROUTES.programCoachHome
+        : ROUTES.dashboard;
+  if (typeof window !== 'undefined' && window.location.hostname === 'ra-spike.pages.dev') {
+    return `https://portal.1cma.online${path}`;
+  }
+  return path;
+}
+
+/** Full-page entry URL for RA-SPIKE staff hub (enters /ra-spike proxy on portal). */
+export function raSpikeStaffEntryHref(userRole) {
+  return userRole === 'mentor' ? ROUTES.mentorRaSpike : ROUTES.programCoachRaSpike;
+}
 
 /** SPIKE Internship intern modules hidden from RA-SPIKE participants. */
 export const INTERNSHIP_ONLY_INTERN_PATHS = [
@@ -383,10 +410,20 @@ export const INTERNSHIP_ONLY_INTERN_PATHS = [
   ROUTES.squad,
 ];
 
-/** @param {string} pathname */
+/** Participant RA-SPIKE routes (not staff coach hubs). */
 export function isRaSpikePath(pathname) {
   return RA_SPIKE_ROUTES.some(
     (route) => pathname === route || pathname.startsWith(`${route}/`),
+  );
+}
+
+/** Staff coach hubs under /ra-spike/* */
+export function isRaSpikeStaffPath(pathname) {
+  return (
+    pathname === ROUTES.programCoachRaSpike
+    || pathname.startsWith(`${ROUTES.programCoachRaSpike}/`)
+    || pathname === ROUTES.mentorRaSpike
+    || pathname.startsWith(`${ROUTES.mentorRaSpike}/`)
   );
 }
 
@@ -594,11 +631,28 @@ export function moduleNavForRole(userRole) {
  * Top navigation for a role within a program context.
  * @param {string} userRole
  * @param {string | null | undefined} programSlug
+ * @param {{ raSpikeApp?: boolean }} [options]
  */
-export function moduleNavForProgram(userRole, programSlug) {
-  if (userRole === 'intern' && programSlug === 'ra-spike') {
-    return getProgramDefinition(programSlug).nav;
+export function moduleNavForProgram(userRole, programSlug, options = {}) {
+  const raSpikeApp = Boolean(options.raSpikeApp) || programSlug === 'ra-spike';
+
+  if (userRole === 'intern' && (programSlug === 'ra-spike' || raSpikeApp)) {
+    return getProgramDefinition('ra-spike').nav;
   }
+
+  // Staff inside RA-SPIKE must not see internship module links (they leave the proxy).
+  if (raSpikeApp && userRole !== 'intern') {
+    const coachPath = userRole === 'mentor' ? ROUTES.mentorRaSpike : ROUTES.programCoachRaSpike;
+    return [
+      {
+        path: coachPath,
+        label: 'RA-SPIKE Coach',
+        shortLabel: 'Coach',
+        icon: 'dashboard',
+      },
+    ];
+  }
+
   if (userRole === 'superuser') {
     return SUPERUSER_MODULE_NAV;
   }
@@ -884,11 +938,24 @@ export function brandLexiconBackHrefForRole(userRole) {
 export function facilitatorsReferenceBackHrefForRole(userRole) {
   return brandLexiconBackHrefForRole(userRole);
 }
-export function defaultRouteForRole(userRole, programSlug) {
+/**
+ * @param {string} userRole
+ * @param {string | null | undefined} [programSlug]
+ * @param {{ raSpikeApp?: boolean }} [options]
+ */
+export function defaultRouteForRole(userRole, programSlug, options = {}) {
+  const raSpikeApp = Boolean(options.raSpikeApp);
+
   if (userRole === 'intern') {
-    if (programSlug === 'ra-spike') return ROUTES.raSpikeHome;
+    if (programSlug === 'ra-spike' || raSpikeApp) return ROUTES.raSpikeHome;
     return ROUTES.ventureBlueprint;
   }
+
+  if (raSpikeApp) {
+    if (userRole === 'mentor') return ROUTES.mentorRaSpike;
+    return ROUTES.programCoachRaSpike;
+  }
+
   if (userRole === 'faculty') return ROUTES.programCoachHome;
   if (userRole === 'mentor') return ROUTES.mentorHome;
   return ROUTES.dashboard;

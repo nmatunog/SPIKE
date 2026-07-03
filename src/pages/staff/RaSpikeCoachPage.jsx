@@ -1,9 +1,8 @@
-import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { PageContainer } from '../../components/layout/PageContainer.jsx';
 import { RaSpikeBatchManagementPanel } from '../../components/staff/RaSpikeBatchManagementPanel.jsx';
 import { RaSpikeGateEvaluationPanel } from '../../components/staff/RaSpikeGateEvaluationPanel.jsx';
-import { ROUTES } from '../../routes/paths.js';
+import { internshipEntryHref } from '../../routes/paths.js';
 import { RA_SPIKE_PROGRAM } from '../../lib/programs/ra-spike.js';
 import { filterRaSpikeInterns } from '../../lib/raSpikeStaffGateService.js';
 
@@ -22,7 +21,7 @@ export function RaSpikeCoachPage({
   onRefresh,
 }) {
   const raInterns = filterRaSpikeInterns(interns);
-  const homeHref = role === 'mentor' ? ROUTES.mentorHome : ROUTES.programCoachHome;
+  const internshipHref = internshipEntryHref(role === 'mentor' ? 'mentor' : 'faculty');
   const roleLabel = role === 'mentor' ? 'Mentor' : 'Program Coach';
 
   return (
@@ -60,10 +59,13 @@ export function RaSpikeCoachPage({
           <p className="mt-1">
             Playbook, Demo Day, and squad XP for the internship cohort are on the main coach home.
           </p>
-          <Link to={homeHref} className="mt-3 inline-flex items-center gap-1 font-semibold text-spike hover:underline">
+          <a
+            href={internshipHref}
+            className="mt-3 inline-flex items-center gap-1 font-semibold text-spike hover:underline"
+          >
             Open {roleLabel} home (SPIKE Internship)
             <ArrowRight size={16} aria-hidden />
-          </Link>
+          </a>
         </section>
       </div>
     </PageContainer>

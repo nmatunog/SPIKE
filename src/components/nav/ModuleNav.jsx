@@ -15,6 +15,7 @@ import { useInternPlaybookNavHref } from '../../hooks/useInternPlaybookNavHref.j
 import { useProgramSlug } from '../../hooks/useProgramSlug.js';
 import {
   internNavActiveModuleForProgram,
+  isRaSpikeAppPath,
   moduleNavForProgram,
   ROUTES,
 } from '../../routes/paths.js';
@@ -47,9 +48,14 @@ function linkClass(isActive, isMobile) {
 
 function NavItems({ userRole, variant }) {
   const programSlug = useProgramSlug();
-  const items = moduleNavForProgram(userRole, userRole === 'intern' ? programSlug : null);
-  const isMobile = variant === 'mobile';
   const { pathname } = useLocation();
+  const raSpikeApp = isRaSpikeAppPath(pathname) || programSlug === 'ra-spike';
+  const items = moduleNavForProgram(
+    userRole,
+    userRole === 'intern' ? programSlug : null,
+    { raSpikeApp },
+  );
+  const isMobile = variant === 'mobile';
   const internActive = userRole === 'intern'
     ? internNavActiveModuleForProgram(pathname, programSlug)
     : null;
@@ -69,7 +75,12 @@ function NavItems({ userRole, variant }) {
       <NavLink
         key={`${variant}-${path}`}
         to={to}
-        end={path === ROUTES.ventureBlueprint || path === ROUTES.raSpikeHome}
+        end={
+          path === ROUTES.ventureBlueprint
+          || path === ROUTES.raSpikeHome
+          || path === ROUTES.programCoachRaSpike
+          || path === ROUTES.mentorRaSpike
+        }
         className={({ isActive: linkActive }) =>
           linkClass(userRole === 'intern' ? isActive : linkActive, isMobile)
         }
@@ -94,7 +105,13 @@ function NavItems({ userRole, variant }) {
 export function ModuleNav({ userRole, superuserPreview }) {
   const compact = useCompactNav();
   const programSlug = useProgramSlug();
-  const items = moduleNavForProgram(userRole, userRole === 'intern' ? programSlug : null);
+  const { pathname } = useLocation();
+  const raSpikeApp = isRaSpikeAppPath(pathname) || programSlug === 'ra-spike';
+  const items = moduleNavForProgram(
+    userRole,
+    userRole === 'intern' ? programSlug : null,
+    { raSpikeApp },
+  );
   if (items.length === 0) return null;
 
   if (compact) {

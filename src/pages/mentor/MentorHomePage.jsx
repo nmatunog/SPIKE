@@ -46,9 +46,12 @@ export function MentorHomePage({ user, interns, showToast }) {
       <div className="mt-6 rounded-2xl border border-spike/25 bg-gradient-to-r from-spike-muted/40 to-white p-4 sm:p-5">
         <p className="text-sm font-bold text-slate-900">RA-SPIKE™ Rookie Academy</p>
         <p className="mt-1 text-sm text-slate-600">Batches, invite codes, and stage gate evaluation.</p>
-        <Link to={ROUTES.mentorRaSpike} className="mt-3 inline-flex min-h-[44px] items-center rounded-xl bg-spike px-4 py-2 text-sm font-bold text-white">
+        <a
+          href={ROUTES.mentorRaSpike}
+          className="mt-3 inline-flex min-h-[44px] items-center rounded-xl bg-spike px-4 py-2 text-sm font-bold text-white"
+        >
           Open RA-SPIKE coach hub
-        </Link>
+        </a>
       </div>
 
       {showWeek2Scoring ? (
