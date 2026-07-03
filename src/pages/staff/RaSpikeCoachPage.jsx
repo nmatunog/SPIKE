@@ -3,6 +3,7 @@ import { PageContainer } from '../../components/layout/PageContainer.jsx';
 import { RaSpikeBatchManagementPanel } from '../../components/staff/RaSpikeBatchManagementPanel.jsx';
 import { RaSpikeCoachPresentationPanel } from '../../components/staff/RaSpikeCoachPresentationPanel.jsx';
 import { RaSpikeGateEvaluationPanel } from '../../components/staff/RaSpikeGateEvaluationPanel.jsx';
+import { RaSpikeWeek1FacultyPanel } from '../../components/staff/RaSpikeWeek1FacultyPanel.jsx';
 import { internshipEntryHref } from '../../routes/paths.js';
 import { RA_SPIKE_PROGRAM } from '../../lib/programs/ra-spike.js';
 import { filterRaSpikeInterns } from '../../lib/raSpikeStaffGateService.js';
@@ -52,6 +53,12 @@ export function RaSpikeCoachPage({
         </section>
 
         <RaSpikeBatchManagementPanel showToast={showToast} onChanged={onRefresh} />
+
+        <RaSpikeWeek1FacultyPanel
+          interns={interns}
+          showToast={showToast}
+          onChanged={onRefresh}
+        />
 
         <RaSpikeCoachPresentationPanel />
 

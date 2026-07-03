@@ -24,6 +24,7 @@ import { RaSpikeDreamBoardPage } from './RaSpikeDreamBoardPage.jsx';
 import { RaSpikeCanvasWizardPage } from './RaSpikeCanvasWizardPage.jsx';
 import { RaSpikePersonaPage } from './RaSpikePersonaPage.jsx';
 import { RaSpikeWorksheetPage } from './RaSpikeWorksheetPage.jsx';
+import { RaSpikeWeek1Experience } from '../../components/ra-spike/week1/RaSpikeWeek1Experience.jsx';
 import { parseRaSpikePlaybookPath, ROUTES } from '../../routes/paths.js';
 
 /**
@@ -33,6 +34,21 @@ export function RaSpikePlaybookPage({ user }) {
   const location = useLocation();
   const parsed = parseRaSpikePlaybookPath(location.pathname);
   const weekParam = Number(new URLSearchParams(location.search).get('week'));
+  const ctxWeek = getRaSpikeContext(user?.internProgress).week;
+  const week = Number.isFinite(weekParam) && weekParam >= 1 ? weekParam : ctxWeek;
+
+  // Week 1 uses the dedicated experience (lesson cards, Dream Builder, portfolio).
+  if (week === 1) {
+    if (parsed?.view === 'dream-board') {
+      return <RaSpikeWeek1Experience user={user} stepId="learn" />;
+    }
+    if (parsed?.view === 'overview' || !parsed) {
+      return <RaSpikeWeek1Experience user={user} stepId="learn" />;
+    }
+    if (parsed?.view === 'step' && parsed.stepId) {
+      return <RaSpikeWeek1Experience user={user} stepId={parsed.stepId} />;
+    }
+  }
 
   if (parsed?.view === 'dream-board') return <RaSpikeDreamBoardPage user={user} />;
   if (parsed?.view === 'canvas-wizard') return <RaSpikeCanvasWizardPage user={user} />;
@@ -40,9 +56,6 @@ export function RaSpikePlaybookPage({ user }) {
   if (parsed?.view === 'prospecting') return <RaSpikeWorksheetPage user={user} kind="prospecting" />;
   if (parsed?.view === 'discovery-log') return <RaSpikeWorksheetPage user={user} kind="discovery-log" />;
   if (parsed?.view === 'step' && parsed.stepId) {
-    const week = Number.isFinite(weekParam) && weekParam >= 1
-      ? weekParam
-      : getRaSpikeContext(user?.internProgress).week;
     return <RaSpikeWeekStepPage user={user} week={week} stepId={parsed.stepId} />;
   }
 
@@ -103,11 +116,13 @@ function RaSpikePlaybookOverview({ user }) {
                   onChange={(e) => navigate(`${ROUTES.raSpikePlaybook}?week=${e.target.value}`)}
                   className="rounded-lg border border-slate-200 px-2 py-1.5 text-sm"
                 >
-                  {Array.from({ length: RA_SPIKE_PROGRAM.totalWeeks }, (_, i) => i + 1).map((w) => (
-                    <option key={w} value={w} disabled={!isRaSpikeWeekUnlocked(w, user?.internProgress)}>
-                      Week {w}
-                    </option>
-                  ))}
+                  {Array.from({ length: RA_SPIKE_PROGRAM.totalWeeks }, (_, i) => i + 1)
+                    .filter((w) => isRaSpikeWeekUnlocked(w, user?.internProgress))
+                    .map((w) => (
+                      <option key={w} value={w}>
+                        Week {w}
+                      </option>
+                    ))}
                 </select>
               </label>
             </div>

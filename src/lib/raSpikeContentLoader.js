@@ -6,8 +6,9 @@ import { getRaSpikeWeekMeta } from './programs/ra-spike-weeks.js';
 export const RA_SPIKE_STEP_ORDER = /** @type {const} */ ([
   'learn',
   'workshop',
-  'assignment',
   'reflection',
+  'assignment',
+  'portfolio',
   'submit',
 ]);
 

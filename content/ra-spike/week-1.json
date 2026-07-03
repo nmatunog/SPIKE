@@ -2,79 +2,108 @@
   "weekNumber": 1,
   "segment": "discover",
   "title": "Start With You",
-  "theme": "Build yourself before you build your business",
+  "theme": "Discover Your Purpose. Build Your Future.",
+  "durationHours": 3,
   "modules": ["dream-board"],
-  "day1": {
-    "id": "day-ra-spike-week-1-day-1",
-    "title": "Start With You",
-    "coachPresentationId": "presentation-ra-spike-week-1-day-1-deck-01"
-  },
+  "lessonCards": [
+    {
+      "id": "welcome",
+      "title": "Welcome to RA-SPIKE",
+      "minutes": 20,
+      "topics": [
+        "Program overview",
+        "What makes RA-SPIKE different",
+        "Entrepreneur mindset",
+        "Journey from Discover → Advise"
+      ]
+    },
+    {
+      "id": "discover",
+      "title": "Discover Yourself",
+      "minutes": 20,
+      "prompts": [
+        { "id": "why_here", "label": "Why am I here?" },
+        { "id": "future_want", "label": "What kind of future do I want?" },
+        { "id": "advisor_become", "label": "What kind of advisor do I want to become?" }
+      ]
+    },
+    {
+      "id": "dream_builder",
+      "title": "Dream Builder",
+      "minutes": 20
+    },
+    {
+      "id": "squad",
+      "title": "Squad Formation",
+      "minutes": 15
+    },
+    {
+      "id": "reflection",
+      "title": "Reflection",
+      "minutes": 10,
+      "prompts": [
+        { "id": "inspired", "label": "What inspired you today?" },
+        { "id": "fears", "label": "What fears do you need to overcome?" },
+        { "id": "excites", "label": "What excites you most?" }
+      ]
+    }
+  ],
   "steps": {
     "learn": {
       "label": "Learn",
-      "headline": "Build yourself before you build your business",
-      "summary": "RA-SPIKE starts with you — not product, not clients. Everything else follows.",
-      "durationMinutes": 25,
+      "headline": "Start With You",
+      "summary": "Welcome, discover yourself, build your dream, meet your squad, and reflect.",
+      "durationMinutes": 90,
       "bullets": [
-        "RA-SPIKE flips traditional training: You → Purpose → Business → Clients → Impact",
-        "Your 8-week journey: Discover (W1–3), Business Plan & Pitch (W4), Advise (W5–7), Advisor Revalida (W8)",
-        "Employee → Self-employed → Financial entrepreneur — you are the CEO of your future",
-        "Week 1 opens the Financial Entrepreneurship Canvas (FEC) on the YOU block only: Vision, Purpose, Values, Strengths, Goals"
-      ],
-      "callout": "Read before Day 1 class. Your coach will expand these themes live with the Week 1 deck."
+        "Five sequential lesson cards",
+        "Dream Builder: lifestyle, income, travel + 3 images",
+        "Autosave on every answer"
+      ]
     },
     "workshop": {
       "label": "Workshop",
-      "headline": "Day 1 classroom: Start With You",
-      "summary": "Facilitated welcome, reflection, motivation poll, mindset, FEC intro, and Dream Board launch.",
-      "durationMinutes": 120,
+      "headline": "Classroom session",
+      "summary": "Mark complete after your 3-hour classroom and workshop.",
+      "durationMinutes": 180,
       "bullets": [
-        "Welcome to a different kind of Rookie Academy — Build Yourself, Build Your Business, Build Your Legacy",
-        "Silent reflection: What kind of life do you want to build? Write it down",
-        "Quick poll: Why do people become financial advisors? (Income, Freedom, Family, Purpose, Career, Entrepreneurship, Helping Others, Legacy)",
-        "Entrepreneur mindset walkthrough and FEC preview — today we only begin with YOU",
-        "Dream Board workshop: choose images and words, create a collage, focus on what matters most to you"
+        "Coach-led session using the Week 1 deck",
+        "Squad formation in class",
+        "Dream Builder support"
       ],
-      "callout": "Mark complete after your Day 1 classroom session. Coaches use the Week 1 Day 1 presentation deck."
-    },
-    "assignment": {
-      "label": "Assignment",
-      "headline": "Your assignment before Week 2",
-      "summary": "Finish your Dream Board and prepare the personal inputs that feed Week 2.",
-      "durationMinutes": 60,
-      "bullets": [
-        "Finish your Dream Board — add final images, words, and notes that capture your ideal life",
-        "Write your future-self letter — from you 3 years from now to you today (specific and inspiring)",
-        "Bring one printed photo (or have it ready digitally) that represents your biggest dream",
-        "Think about one group of people you would genuinely enjoy helping"
-      ],
-      "action": {
-        "type": "dream-board",
-        "label": "Open Dream Board Studio"
-      },
-      "callout": "Your Dream Board is the first input into the Financial Entrepreneurship Canvas. There are no wrong dreams."
+      "callout": "Mark complete after class."
     },
     "reflection": {
       "label": "Reflection",
-      "headline": "What did you discover about yourself?",
-      "summary": "Capture insights from Day 1 before you submit the week.",
+      "headline": "Reflection journal",
+      "summary": "Capture what inspired you, what you fear, and what excites you.",
       "durationMinutes": 10,
       "prompts": [
-        "What kind of life do you want to build — in one sentence?",
-        "What is your top reason for becoming a financial advisor?",
-        "Which Dream Board image or word surprised you most?",
-        "Where are you today on the path from employee to financial entrepreneur?"
+        "What inspired you today?",
+        "What fears do you need to overcome?",
+        "What excites you most?"
       ]
     },
-    "submit": {
-      "label": "Submit",
-      "headline": "Mark Week 1 complete",
-      "summary": "Confirm Learn, Workshop, Assignment, and Reflection are done so Week 2 can unlock.",
-      "durationMinutes": 2,
+    "assignment": {
+      "label": "Assignment",
+      "headline": "Vision & Success Blueprint",
+      "summary": "Finalize your Dream Board and write your Personal Vision and Success Blueprint.",
+      "durationMinutes": 45,
       "bullets": [
-        "Your Dream Board is saved to your profile as FEC input #1 (YOU)",
-        "Bring your future-self letter and one dream photo to Week 2",
-        "Next week we discover your ideal customer"
+        "Finalize Dream Builder answers and 3 images",
+        "Personal Vision Statement",
+        "Success Blueprint: why, 3 goals, income, people, commitment"
+      ]
+    },
+    "portfolio": {
+      "label": "Portfolio",
+      "headline": "Week 1 portfolio",
+      "summary": "Review Dream Board, Vision & Blueprint, and Reflection — then submit to lock.",
+      "durationMinutes": 10,
+      "bullets": [
+        "Dream Board summary",
+        "Personal Vision & Success Blueprint",
+        "Reflection journal",
+        "Submit locks editing until faculty reopens"
       ]
     }
   }

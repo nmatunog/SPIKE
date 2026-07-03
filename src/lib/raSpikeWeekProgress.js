@@ -7,7 +7,7 @@ import {
 const STORAGE_PREFIX = 'ra_spike_week_progress_v1';
 
 /** @typedef {'not_started' | 'in_progress' | 'complete'} RaSpikeStepStatus */
-/** @typedef {'learn' | 'workshop' | 'assignment' | 'reflection' | 'submit'} RaSpikeStepId */
+/** @typedef {'learn' | 'workshop' | 'assignment' | 'reflection' | 'portfolio' | 'submit'} RaSpikeStepId */
 
 /**
  * @typedef {Object} RaSpikeWeekProgressRow
@@ -28,12 +28,15 @@ function storageKey(participantId, week) {
 /** @param {Record<string, unknown> | null | undefined} row */
 function mapDbRow(row) {
   if (!row) return {};
+  const submit = row.submit_status ?? 'not_started';
   return {
     learn: row.learn_status ?? 'not_started',
     workshop: row.workshop_status ?? 'not_started',
     assignment: row.assignment_status ?? 'not_started',
     reflection: row.reflection_status ?? 'not_started',
-    submit: row.submit_status ?? 'not_started',
+    submit,
+    // Week 1 portfolio step uses submit_status column.
+    portfolio: submit,
     reflectionNotes: row.reflection_notes ?? '',
     weekSubmittedAt: row.week_submitted_at ?? null,
   };
@@ -99,6 +102,8 @@ export async function fetchRaSpikeWeekProgress(participantId, week) {
  */
 export async function setRaSpikeStepStatus(participantId, week, stepId, status, opts = {}) {
   const patch = { [stepId]: status };
+  if (stepId === 'portfolio') patch.submit = status;
+  if (stepId === 'submit') patch.portfolio = status;
   if (opts.reflectionNotes !== undefined) {
     patch.reflectionNotes = opts.reflectionNotes;
   }
@@ -108,7 +113,7 @@ export async function setRaSpikeStepStatus(participantId, week, stepId, status, 
     return getRaSpikeWeekProgressLocal(participantId, week);
   }
 
-  const column = `${stepId}_status`;
+  const column = `${stepId === 'portfolio' ? 'submit' : stepId}_status`;
   const payload = {
     user_id: participantId,
     week,
@@ -137,20 +142,14 @@ export async function submitRaSpikeWeek(participantId, week) {
   if (isMockUserId(participantId)) {
     writeRaSpikeWeekProgressLocal(participantId, week, {
       submit: 'complete',
+      portfolio: 'complete',
       weekSubmittedAt: new Date().toISOString(),
     });
     const current = getRaSpikeWeekProgressLocal(participantId, week);
+    // Faculty publish unlocks the next week — participant submit does not.
     let patch = {};
-    if (week === 4) {
-      patch = { gate_1_status: 'pending' };
-    } else if (week === 8) {
-      patch = { gate_2_status: 'pending' };
-    } else if (week < 8) {
-      patch = {
-        ra_spike_current_week: week + 1,
-        ra_spike_segment: week + 1 >= 5 ? 2 : 1,
-      };
-    }
+    if (week === 4) patch = { gate_1_status: 'pending' };
+    if (week === 8) patch = { gate_2_status: 'pending' };
     const mockProgress = updateMockInternProgress(participantId, patch);
     return { progress: current, internProgress: mockProgress };
   }
@@ -190,10 +189,14 @@ export function isRaSpikeStepUnlocked(progress, stepId) {
   return getStepStatus(progress, prior) === 'complete';
 }
 
-/** @param {RaSpikeWeekProgressRow} progress */
-export function canSubmitRaSpikeWeek(progress) {
-  return RA_SPIKE_STEP_ORDER.slice(0, -1).every((step) => getStepStatus(progress, step) === 'complete')
-    && getStepStatus(progress, 'submit') !== 'complete';
+/** @param {RaSpikeWeekProgressRow} progress @param {number} [week] */
+export function canSubmitRaSpikeWeek(progress, week) {
+  const steps = week === 1
+    ? /** @type {RaSpikeStepId[]} */ (['learn', 'workshop', 'reflection', 'assignment'])
+    : RA_SPIKE_STEP_ORDER.filter((s) => s !== 'portfolio' && s !== 'submit');
+  const terminal = week === 1 ? 'portfolio' : 'submit';
+  return steps.every((step) => getStepStatus(progress, step) === 'complete')
+    && getStepStatus(progress, terminal) !== 'complete';
 }
 
 /** @param {RaSpikeWeekProgressRow} progress */
