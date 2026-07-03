@@ -33,7 +33,7 @@ import { PageLoader } from './components/ui/PageLoader.jsx';
 import { RoleRouteGuard } from './components/routing/RoleRouteGuard.jsx';
 import { playbookWeek2MissionHref } from './lib/customerDiscovery/week2MissionService.js';
 import { buildSuperuserMentorPreviewInterns } from './lib/superuserMentorPreview.js';
-import { ROUTES, brandLexiconBackHrefForRole, facilitatorsReferenceBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath, isPlaybookPath, isSpikeLifePath, isSpikeLifeImmersivePath, isInternshipOnlyInternPath, parseStaffSquadHubPath, parseStaffStageGatePath, playbookHref } from './routes/paths.js';
+import { ROUTES, brandLexiconBackHrefForRole, facilitatorsReferenceBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath, isPlaybookPath, isSpikeLifePath, isSpikeLifeImmersivePath, isInternshipOnlyInternPath, isRaSpikeAppPath, parseStaffSquadHubPath, parseStaffStageGatePath, playbookHref } from './routes/paths.js';
 import { resolveProgramSlug, isRaSpikeProgram } from './lib/programs/index.js';
 import { RaSpikeHomePage } from './pages/ra-spike/RaSpikeHomePage.jsx';
 import { RaSpikePlaybookPage } from './pages/ra-spike/RaSpikePlaybookPage.jsx';
@@ -240,9 +240,26 @@ const SpikeMasterPortal = () => {
   useEffect(() => {
     if (authLoading) return;
     if (userRole === 'guest' || userRole === 'profile_error') return;
-    if (location.pathname === ROUTES.home) {
+    const path = location.pathname;
+    const raSpikeApp = isRaSpikeAppPath(path);
+    const atRaSpikeEntry = path === '/ra-spike' || path === '/ra-spike/';
+    const atHome = path === ROUTES.home;
+
+    // Legacy staff RA-SPIKE URLs (pre portal proxy) → stay under /ra-spike/*
+    if (path === '/program-coach/ra-spike' || path.startsWith('/program-coach/ra-spike/')) {
+      navigate(ROUTES.programCoachRaSpike, { replace: true });
+      return;
+    }
+    if (path === '/mentor/ra-spike' || path.startsWith('/mentor/ra-spike/')) {
+      navigate(ROUTES.mentorRaSpike, { replace: true });
+      return;
+    }
+
+    if (atHome || atRaSpikeEntry) {
       const programSlug = effectiveUserRole === 'intern' ? internProgramSlug : null;
-      navigate(defaultRouteForRole(effectiveUserRole, programSlug), { replace: true });
+      navigate(defaultRouteForRole(effectiveUserRole, programSlug, { raSpikeApp: raSpikeApp || atRaSpikeEntry }), {
+        replace: true,
+      });
     }
   }, [authLoading, userRole, effectiveUserRole, internProgramSlug, location.pathname, navigate]);
 
@@ -297,9 +314,14 @@ const SpikeMasterPortal = () => {
       const next = role === 'superuser' ? null : role;
       setViewAsRole(next);
       writeViewAsRole(next);
-      navigate(defaultRouteForRole(next ?? 'superuser'), { replace: true });
+      navigate(
+        defaultRouteForRole(next ?? 'superuser', null, {
+          raSpikeApp: isRaSpikeAppPath(location.pathname),
+        }),
+        { replace: true },
+      );
     },
-    [navigate],
+    [location.pathname, navigate],
   );
 
   const handleLogout = useCallback(async () => {
@@ -709,9 +731,11 @@ const SpikeMasterPortal = () => {
       const signedIn = await login(email, password);
       const role = resolveUserRole(signedIn);
       const programSlug = resolveProgramSlug(signedIn?.internProgress);
+      const raSpikeApp = isRaSpikeAppPath(location.pathname);
       let target = defaultRouteForRole(
         role === 'guest' || role === 'profile_error' ? 'intern' : role,
         programSlug,
+        { raSpikeApp },
       );
       if (
         role === 'intern'
@@ -729,7 +753,7 @@ const SpikeMasterPortal = () => {
       navigate(target);
       showToast('Signed in successfully.');
     },
-    [login, navigate, showToast],
+    [login, location.pathname, navigate, showToast],
   );
 
   const handleRaSpikeSignup = useCallback(
@@ -835,6 +859,8 @@ const SpikeMasterPortal = () => {
       navigate(
         defaultRouteForRole(
           nextRole === 'guest' || nextRole === 'profile_error' ? 'superuser' : nextRole,
+          null,
+          { raSpikeApp: isRaSpikeAppPath(location.pathname) },
         ),
       );
       showToast(
@@ -844,7 +870,7 @@ const SpikeMasterPortal = () => {
         'success',
       );
     },
-    [usingSupabaseAuth, login, navigate, showToast, loadStaffBootstrapInfo],
+    [usingSupabaseAuth, login, location.pathname, navigate, showToast, loadStaffBootstrapInfo],
   );
 
   const handleStaffSignup = useCallback(

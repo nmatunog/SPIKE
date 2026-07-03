@@ -4,6 +4,7 @@ import {
   canAccessRouteForProgram,
   canonicalizePathname,
   defaultRouteForRole,
+  isRaSpikeAppPath,
   matchModulePath,
 } from '../../routes/paths.js';
 
@@ -17,13 +18,25 @@ export function RoleRouteGuard({ userRole, pathname, programSlug = null, childre
     return <Navigate to={canonicalPath} replace />;
   }
 
-  if (canonicalPath === ROUTES.home) {
-    return <Navigate to={defaultRouteForRole(userRole, programSlug)} replace />;
+  const raSpikeApp = isRaSpikeAppPath(canonicalPath);
+
+  if (canonicalPath === ROUTES.home || canonicalPath === '/ra-spike' || canonicalPath === '/ra-spike/') {
+    return (
+      <Navigate
+        to={defaultRouteForRole(userRole, programSlug, { raSpikeApp: true })}
+        replace
+      />
+    );
   }
 
   const route = matchModulePath(canonicalPath);
   if (!route || !canAccessRouteForProgram(canonicalPath, userRole, programSlug)) {
-    return <Navigate to={defaultRouteForRole(userRole, programSlug)} replace />;
+    return (
+      <Navigate
+        to={defaultRouteForRole(userRole, programSlug, { raSpikeApp })}
+        replace
+      />
+    );
   }
 
   return children;

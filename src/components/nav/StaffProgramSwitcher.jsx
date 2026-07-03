@@ -1,29 +1,24 @@
-import { Link, useLocation } from 'react-router-dom';
-import { ROUTES } from '../../routes/paths.js';
+import { useLocation } from 'react-router-dom';
+import {
+  internshipEntryHref,
+  isRaSpikeAppPath,
+  raSpikeStaffEntryHref,
+} from '../../routes/paths.js';
 import { isStaffUiRole } from '../../lib/roles.js';
 
 /**
  * SPIKE Internship vs RA-SPIKE coach context switcher (top nav).
+ * Uses full-page navigation so portal.1cma.online switches between the
+ * internship Pages project and the RA-SPIKE /ra-spike proxy (separate DBs).
  * @param {{ userRole: string }} props
  */
 export function StaffProgramSwitcher({ userRole }) {
   const { pathname } = useLocation();
   if (!isStaffUiRole(userRole)) return null;
 
-  const onRaSpike =
-    pathname === ROUTES.programCoachRaSpike
-    || pathname === ROUTES.mentorRaSpike
-    || pathname.startsWith(`${ROUTES.programCoachRaSpike}/`)
-    || pathname.startsWith(`${ROUTES.mentorRaSpike}/`);
-
-  const raSpikeHref =
-    userRole === 'mentor' ? ROUTES.mentorRaSpike : ROUTES.programCoachRaSpike;
-  const internshipHref =
-    userRole === 'mentor'
-      ? ROUTES.mentorHome
-      : userRole === 'faculty'
-        ? ROUTES.programCoachHome
-        : ROUTES.dashboard;
+  const onRaSpike = isRaSpikeAppPath(pathname);
+  const raSpikeHref = raSpikeStaffEntryHref(userRole);
+  const internshipHref = internshipEntryHref(userRole);
 
   const pill =
     'inline-flex min-h-[40px] items-center rounded-full px-4 py-2 text-xs font-bold transition sm:text-sm';
@@ -34,18 +29,20 @@ export function StaffProgramSwitcher({ userRole }) {
       role="group"
       aria-label="Program"
     >
-      <Link
-        to={internshipHref}
+      <a
+        href={internshipHref}
         className={`${pill} ${!onRaSpike ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
+        aria-current={!onRaSpike ? 'page' : undefined}
       >
         SPIKE Internship
-      </Link>
-      <Link
-        to={raSpikeHref}
+      </a>
+      <a
+        href={raSpikeHref}
         className={`${pill} ${onRaSpike ? 'bg-spike text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
+        aria-current={onRaSpike ? 'page' : undefined}
       >
         RA-SPIKE™
-      </Link>
+      </a>
     </div>
   );
 }
