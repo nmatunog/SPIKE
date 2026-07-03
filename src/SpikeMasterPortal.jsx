@@ -45,6 +45,7 @@ import { shouldGateRaSpikeOnboarding, isRaSpikeOnboardingPath } from './lib/raSp
 import { registerRaSpikeViaApi, isRaSpikeSignupApiUnavailable } from './lib/raSpikeSignupService.js';
 import { RaSpikeOnboardingPage } from './pages/ra-spike/RaSpikeOnboardingPage.jsx';
 import { RaSpikeStageGatePrepPage } from './pages/ra-spike/RaSpikeStageGatePrepPage.jsx';
+import { RaSpikeCoachPage } from './pages/staff/RaSpikeCoachPage.jsx';
 import { StaffSquadHubPage, StaffSquadsListPage } from './components/staff/StaffSquadHubPage.jsx';
 import { Week2LoginWelcomeFlow } from './components/week2/Week2LoginWelcomeFlow.jsx';
 import { shouldShowWeek2LoginWelcome } from './lib/week2LoginWelcome.js';
@@ -1974,6 +1975,16 @@ const SpikeMasterPortal = () => {
           </PageContainer>
         );
       }
+      if (path === ROUTES.programCoachRaSpike) {
+        return (
+          <RaSpikeCoachPage
+            role="faculty"
+            interns={interns}
+            showToast={showToast}
+            onRefresh={loadInterns}
+          />
+        );
+      }
       if (path === ROUTES.programCoachHome) {
         return (
           <LazyRoute label="Loading program coach…">
@@ -2068,6 +2079,16 @@ const SpikeMasterPortal = () => {
               onInternsRefresh={loadInterns}
             />
           </LazyRoute>
+        );
+      }
+      if (path === ROUTES.mentorRaSpike) {
+        return (
+          <RaSpikeCoachPage
+            role="mentor"
+            interns={mentorInterns}
+            showToast={showToast}
+            onRefresh={loadInterns}
+          />
         );
       }
       if (path === ROUTES.mentorSquads) {

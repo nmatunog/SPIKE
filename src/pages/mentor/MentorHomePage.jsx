@@ -13,8 +13,6 @@ import { DailyActivationCodeCard } from '../../components/dashboard/DailyActivat
 import { MentorWeek2ScoringSection } from '../../components/mentor/MentorWeek2ScoringSection.jsx';
 import { MentorWeek2SquadProgress } from '../../components/mentor/MentorWeek2SquadProgress.jsx';
 import { Week2CoachTimeline } from '../../components/playbook/week2/Week2CoachTimeline.jsx';
-import { RaSpikeGateEvaluationPanel } from '../../components/staff/RaSpikeGateEvaluationPanel.jsx';
-import { hasRaSpikeInterns } from '../../lib/raSpikeStaffGateService.js';
 import { UNLOCK_WEEK2 } from '../../lib/programUnlocks.js';
 
 /**
@@ -27,7 +25,7 @@ import { UNLOCK_WEEK2 } from '../../lib/programUnlocks.js';
  *   onInternsRefresh?: () => void,
  * }} props
  */
-export function MentorHomePage({ user, interns, showToast, onInternsRefresh }) {
+export function MentorHomePage({ user, interns, showToast }) {
   const [toolsOpen, setToolsOpen] = useState(false);
   const staffName = user?.name || user?.email || 'Mentor';
   const { cohortStartDate, programDay } = useCohortProgramDay();
@@ -45,15 +43,13 @@ export function MentorHomePage({ user, interns, showToast, onInternsRefresh }) {
         cohortStartDate={cohortStartDate}
       />
 
-      {hasRaSpikeInterns(interns) ? (
-        <div className="mt-10">
-          <RaSpikeGateEvaluationPanel
-            interns={interns}
-            showToast={showToast}
-            onEvaluated={onInternsRefresh}
-          />
-        </div>
-      ) : null}
+      <div className="mt-6 rounded-2xl border border-spike/25 bg-gradient-to-r from-spike-muted/40 to-white p-4 sm:p-5">
+        <p className="text-sm font-bold text-slate-900">RA-SPIKE™ Rookie Academy</p>
+        <p className="mt-1 text-sm text-slate-600">Batches, invite codes, and stage gate evaluation.</p>
+        <Link to={ROUTES.mentorRaSpike} className="mt-3 inline-flex min-h-[44px] items-center rounded-xl bg-spike px-4 py-2 text-sm font-bold text-white">
+          Open RA-SPIKE coach hub
+        </Link>
+      </div>
 
       {showWeek2Scoring ? (
         <div className="mt-10">

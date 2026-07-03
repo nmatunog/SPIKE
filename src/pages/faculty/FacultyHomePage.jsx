@@ -17,8 +17,6 @@ import { FacultySquadReviewPanel } from '../../components/staff/SquadWeeklyRevie
 import { UNLOCK_WEEK2 } from '../../lib/programUnlocks.js';
 import { Week2CoachTimeline } from '../../components/playbook/week2/Week2CoachTimeline.jsx';
 import { PitchPanelDashboard } from '../../components/staff/PitchPanelDashboard.jsx';
-import { RaSpikeGateEvaluationPanel } from '../../components/staff/RaSpikeGateEvaluationPanel.jsx';
-import { hasRaSpikeInterns } from '../../lib/raSpikeStaffGateService.js';
 import { groupInternsBySquad } from '../../lib/mentorFrameworkService.js';
 
 /**
@@ -52,15 +50,15 @@ export function FacultyHomePage({
         cohortStartDate={cohortStartDate}
       />
 
-      {hasRaSpikeInterns(interns) ? (
-        <div className="mt-10">
-          <RaSpikeGateEvaluationPanel
-            interns={interns}
-            showToast={(msg) => window.alert(msg)}
-            onEvaluated={onSquadChanged}
-          />
-        </div>
-      ) : null}
+      <div className="mt-6 rounded-2xl border border-spike/25 bg-gradient-to-r from-spike-muted/40 to-white p-4 sm:p-5">
+        <p className="text-sm font-bold text-slate-900">RA-SPIKE™ Rookie Academy</p>
+        <p className="mt-1 text-sm text-slate-600">
+          Create batches, share invite codes, and evaluate stage gates — separate from SPIKE Internship playbook.
+        </p>
+        <Link to={ROUTES.programCoachRaSpike} className="mt-3 inline-flex min-h-[44px] items-center rounded-xl bg-spike px-4 py-2 text-sm font-bold text-white">
+          Open RA-SPIKE coach hub
+        </Link>
+      </div>
 
       {UNLOCK_WEEK2 && programDay.week >= 2 ? (
         <div className="mt-10 space-y-6">

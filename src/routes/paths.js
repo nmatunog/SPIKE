@@ -27,12 +27,14 @@ export const ROUTES = {
   mentorParticipant: '/mentor/participant',
   analyticsCohortIdentity: '/analytics/cohort-identity',
   programCoachHome: '/program-coach',
+  programCoachRaSpike: '/program-coach/ra-spike',
   programCoachPlaybook: '/program-coach/playbook',
   programCoachSquads: '/program-coach/squads',
   programCoachStageGate: '/program-coach/stage-gate',
   programCoachGuides: '/admin/content-studio/program-coach-guides',
   adminProgramCoachPlaybook: '/admin/program-coach-playbook',
   mentorHome: '/mentor',
+  mentorRaSpike: '/mentor/ra-spike',
   mentorPlaybook: '/mentor/playbook',
   mentorSquads: '/mentor/squads',
   mentorStageGate: '/mentor/stage-gate',
@@ -728,6 +730,9 @@ export function matchModulePath(pathname) {
   if (pathname === ROUTES.mentorSquads || pathname.startsWith(`${ROUTES.mentorSquads}/`)) {
     return ROUTES.mentorSquads;
   }
+  if (pathname === ROUTES.programCoachRaSpike || pathname.startsWith(`${ROUTES.programCoachRaSpike}/`)) {
+    return ROUTES.programCoachRaSpike;
+  }
   if (pathname === ROUTES.programCoachHome || pathname.startsWith(`${ROUTES.programCoachHome}/`)) {
     return ROUTES.programCoachHome;
   }
@@ -737,6 +742,9 @@ export function matchModulePath(pathname) {
     || pathname.startsWith(`${ROUTES.mentorParticipant}/`)
   ) {
     return ROUTES.mentorVentureCoach;
+  }
+  if (pathname === ROUTES.mentorRaSpike || pathname.startsWith(`${ROUTES.mentorRaSpike}/`)) {
+    return ROUTES.mentorRaSpike;
   }
   if (pathname === ROUTES.mentorHome || pathname.startsWith(`${ROUTES.mentorHome}/`)) {
     return ROUTES.mentorHome;
@@ -801,6 +809,9 @@ export function rolesForRoute(pathname) {
   if (pathname === ROUTES.playbookBusinessEngineCanvasPreview) return ['faculty', 'mentor', 'admin', 'superuser'];
   if (pathname === ROUTES.adminProgramCoachPlaybook) return ['admin', 'superuser', 'faculty'];
   if (pathname === ROUTES.adminMentorPlaybook) return ['admin', 'superuser', 'mentor'];
+  if (pathname === ROUTES.programCoachRaSpike || pathname.startsWith(`${ROUTES.programCoachRaSpike}/`)) {
+    return ['faculty', 'mentor', 'admin', 'superuser'];
+  }
   if (pathname === ROUTES.programCoachHome || pathname.startsWith(`${ROUTES.programCoachHome}/`)) {
     return ['faculty', 'admin', 'superuser'];
   }
@@ -810,6 +821,9 @@ export function rolesForRoute(pathname) {
     || pathname.startsWith(`${ROUTES.mentorParticipant}/`)
   ) {
     return ['mentor', 'faculty', 'admin', 'superuser'];
+  }
+  if (pathname === ROUTES.mentorRaSpike || pathname.startsWith(`${ROUTES.mentorRaSpike}/`)) {
+    return ['faculty', 'mentor', 'admin', 'superuser'];
   }
   if (pathname === ROUTES.mentorHome || pathname.startsWith(`${ROUTES.mentorHome}/`)) {
     return ['mentor', 'admin', 'superuser'];
