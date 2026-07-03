@@ -29,7 +29,7 @@ export const RA_SPIKE_PROGRAM = {
       label: 'Stage Gate 2',
     },
   ],
-  graduationTarget: PROGRAM_SLUGS.SPIKE_INTERNSHIP,
+  graduationTarget: null,
   nav: [
     { path: '/ra-spike/home', label: 'Home', shortLabel: 'Home', icon: 'dashboard' },
     { path: '/ra-spike/playbook', label: 'Playbook', shortLabel: 'Playbook', icon: 'playbook' },

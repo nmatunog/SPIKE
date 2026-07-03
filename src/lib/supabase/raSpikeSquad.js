@@ -1,5 +1,6 @@
 import { isSupabaseConfigured, supabase } from '../../supabaseClient.js';
 import { isMockUserId } from '../mockAuth.js';
+import { PROGRAM_SLUGS } from '../programs/constants.js';
 
 /**
  * @param {string} participantId
@@ -19,8 +20,9 @@ export async function fetchRaSpikeSquadSummary(participantId) {
 
   const { data: squad, error: squadErr } = await supabase
     .from('formation_squads')
-    .select('id, name, motto')
+    .select('id, name, motto, cohort_id, cohorts!inner(program_slug)')
     .eq('id', membership.squad_id)
+    .eq('cohorts.program_slug', PROGRAM_SLUGS.RA_SPIKE)
     .maybeSingle();
   if (squadErr || !squad) return null;
 
@@ -50,8 +52,9 @@ export async function fetchCohortStartDate(cohortId) {
   if (!cohortId || !isSupabaseConfigured || !supabase) return null;
   const { data, error } = await supabase
     .from('cohorts')
-    .select('start_date, starts_on')
+    .select('start_date, starts_on, program_slug')
     .eq('id', cohortId)
+    .eq('program_slug', PROGRAM_SLUGS.RA_SPIKE)
     .maybeSingle();
   if (error || !data) return null;
   return data.start_date?.slice?.(0, 10) ?? data.starts_on?.slice?.(0, 10) ?? null;

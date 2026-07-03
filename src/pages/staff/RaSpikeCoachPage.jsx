@@ -37,8 +37,8 @@ export function RaSpikeCoachPage({
         <section className="rounded-2xl border border-spike/20 bg-gradient-to-br from-spike-muted/50 to-white p-5">
           <p className="text-sm font-semibold text-slate-900">Rookie signup</p>
           <p className="mt-1 text-sm text-slate-600">
-            New participants use <strong>Join RA-SPIKE™</strong> on the welcome page with your batch invite code.
-            Each rookie selects their home agency and unit — batches can mix advisors from many organizations.
+            Separate program from SPIKE Internship (Cassiopeia, Argo Navis, Pegasus, etc.).
+            Curriculum, portfolio, and squads do not overlap.
           </p>
           <p className="mt-3 text-sm text-slate-600">
             {raInterns.length

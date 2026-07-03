@@ -3,7 +3,6 @@ import { deriveRaSpikeHomeModel } from '../lib/programs/ra-spike-home.js';
 import { resolveRaSpikeNextSession } from '../lib/programs/ra-spike-session.js';
 import { fetchActiveCohort } from '../lib/supabase/cohortOnboarding.js';
 import { fetchCohortStartDate, fetchRaSpikeSquadSummary } from '../lib/supabase/raSpikeSquad.js';
-import { isMockUserId } from '../lib/mockAuth.js';
 import { DEFAULT_COHORT_START_DATE } from '../lib/programCalendar.js';
 
 /**
@@ -26,7 +25,7 @@ export function useRaSpikeHomeDashboard(user) {
         const cohortId = internProgress?.cohort_id;
         let start = cohortId ? await fetchCohortStartDate(cohortId) : null;
         if (!start) {
-          const active = await fetchActiveCohort().catch(() => null);
+          const active = await fetchActiveCohort('ra-spike').catch(() => null);
           start = active?.start_date?.slice?.(0, 10) ?? active?.starts_on?.slice?.(0, 10) ?? null;
         }
         const squad = participantId ? await fetchRaSpikeSquadSummary(participantId) : null;
@@ -72,17 +71,8 @@ export function useRaSpikeHomeDashboard(user) {
         forming: false,
       };
     }
-    const fallbackName = internProgress?.squad?.trim();
-    if (fallbackName) {
-      return {
-        name: fallbackName,
-        memberCount: isMockUserId(participantId) ? 3 : 1,
-        motto: null,
-        forming: fallbackName.includes('forming'),
-      };
-    }
     return { name: null, memberCount: 0, motto: null, forming: true };
-  }, [squadSummary, internProgress?.squad, participantId]);
+  }, [squadSummary]);
 
   return {
     loading,

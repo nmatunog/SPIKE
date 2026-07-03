@@ -71,30 +71,40 @@ function isMissingColumnError(error) {
   return error.code === '42703' || /column .* does not exist|schema cache/i.test(message);
 }
 
-/** @param {import('@supabase/supabase-js').SupabaseClient} client @param {string} select */
-async function fetchFirstCohortRow(client, select) {
-  const withActive = await client
+/** @param {import('@supabase/supabase-js').SupabaseClient} client @param {string} select @param {string | null} [programSlug] */
+async function fetchFirstCohortRow(client, select, programSlug = null) {
+  let activeQuery = client
     .from('cohorts')
     .select(select)
     .eq('is_active', true)
     .order('id', { ascending: true })
-    .limit(1)
-    .maybeSingle();
+    .limit(1);
+  if (programSlug) {
+    activeQuery = activeQuery.eq('program_slug', programSlug);
+  }
+  const withActive = await activeQuery.maybeSingle();
   if (!withActive.error) return withActive.data;
 
-  const anyCohort = await client
+  let anyQuery = client
     .from('cohorts')
     .select(select)
     .order('id', { ascending: true })
-    .limit(1)
-    .maybeSingle();
+    .limit(1);
+  if (programSlug) {
+    anyQuery = anyQuery.eq('program_slug', programSlug);
+  }
+  const anyCohort = await anyQuery.maybeSingle();
   if (!anyCohort.error) return anyCohort.data;
   return { error: anyCohort.error ?? withActive.error };
 }
 
-/** @returns {Promise<CohortRow | null>} */
-export async function fetchActiveCohort() {
+/**
+ * @param {string | null} [programSlug] Defaults to SPIKE Internship — never mix with RA-SPIKE.
+ * @returns {Promise<CohortRow | null>}
+ */
+export async function fetchActiveCohort(programSlug = 'spike-internship') {
   const client = assertClient();
+  const slug = programSlug || 'spike-internship';
   const selects = [
     'id, name, code, is_active, onboarding_phase, official_name, photo_url, motto, theme_statement, start_date, starts_on, program_slug, agency, unit_manager, batch_label, batch_invite_code, signup_open',
     'id, name, code, is_active, onboarding_phase, official_name, photo_url, motto, theme_statement, start_date, starts_on, program_slug',
@@ -105,7 +115,7 @@ export async function fetchActiveCohort() {
   ];
 
   for (const select of selects) {
-    const result = await fetchFirstCohortRow(client, select);
+    const result = await fetchFirstCohortRow(client, select, slug);
     if (result && !('error' in result)) {
       const normalized = normalizeCohortRow(result);
       if (normalized) return normalized;
@@ -118,6 +128,7 @@ export async function fetchActiveCohort() {
   const minimal = await client
     .from('cohorts')
     .select('id, name, code')
+    .eq('program_slug', slug)
     .order('id', { ascending: true })
     .limit(1)
     .maybeSingle();

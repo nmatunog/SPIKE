@@ -16,10 +16,10 @@ import {
   staffSaveFinalists,
   staffUpdateCohortStartDate,
   staffUpdateCohortProgram,
-  staffUpdateRaSpikeCohortBatch,
   staffUploadCohortPhoto,
 } from '../../lib/cohortOnboardingService.js';
 import { listProgramDefinitions } from '../../lib/programs/index.js';
+import { PROGRAM_SLUGS } from '../../lib/programs/constants.js';
 import { db } from '../../lib/cohortOnboardingService.js';
 import { isMockUserId } from '../../lib/mockAuth.js';
 import { OnboardingPhotoCapture } from '../onboarding/OnboardingPhotoCapture.jsx';
@@ -47,12 +47,10 @@ export function CohortOnboardingControls({ staffId, interns = [], canAssignSquad
   const [addInternId, setAddInternId] = useState('');
   const [startDateEdit, setStartDateEdit] = useState(DEFAULT_COHORT_START_DATE);
   const [programSlugEdit, setProgramSlugEdit] = useState('spike-internship');
-  const [agencyEdit, setAgencyEdit] = useState('');
-  const [unitManagerEdit, setUnitManagerEdit] = useState('');
-  const [batchLabelEdit, setBatchLabelEdit] = useState('');
-  const [batchInviteCodeEdit, setBatchInviteCodeEdit] = useState('');
-  const [signupOpenEdit, setSignupOpenEdit] = useState(true);
-  const programOptions = useMemo(() => listProgramDefinitions(), []);
+  const programOptions = useMemo(
+    () => listProgramDefinitions().filter((p) => p.slug !== PROGRAM_SLUGS.RA_SPIKE),
+    [],
+  );
 
   const refresh = useCallback(async () => {
     if (!isSupabaseConfigured) {
@@ -88,22 +86,6 @@ export function CohortOnboardingControls({ staffId, interns = [], canAssignSquad
   useEffect(() => {
     if (data?.cohort?.program_slug) setProgramSlugEdit(data.cohort.program_slug);
   }, [data?.cohort?.program_slug]);
-
-  useEffect(() => {
-    const c = data?.cohort;
-    if (!c) return;
-    setAgencyEdit(c.agency ?? '');
-    setUnitManagerEdit(c.unit_manager ?? '');
-    setBatchLabelEdit(c.batch_label ?? '');
-    setBatchInviteCodeEdit(c.batch_invite_code ?? '');
-    setSignupOpenEdit(c.signup_open !== false);
-  }, [
-    data?.cohort?.agency,
-    data?.cohort?.unit_manager,
-    data?.cohort?.batch_label,
-    data?.cohort?.batch_invite_code,
-    data?.cohort?.signup_open,
-  ]);
 
   async function run(label, fn) {
     if (!canWrite) {
@@ -246,7 +228,7 @@ export function CohortOnboardingControls({ staffId, interns = [], canAssignSquad
       <div className="rounded-xl border border-slate-200 bg-white p-4">
         <p className="text-sm font-semibold text-slate-900">Cohort program</p>
         <p className="mt-1 text-sm text-slate-600">
-          New interns inherit this program when enrolled into the active cohort.
+          SPIKE Internship only — RA-SPIKE batches are managed in the RA-SPIKE coach hub.
         </p>
         <div className="mt-3 flex flex-wrap items-end gap-3">
           <label className="text-sm text-slate-700">
@@ -276,83 +258,6 @@ export function CohortOnboardingControls({ staffId, interns = [], canAssignSquad
           ) : null}
         </div>
       </div>
-
-      {(cohort.program_slug === 'ra-spike' || programSlugEdit === 'ra-spike') ? (
-        <div className="rounded-xl border border-spike/20 bg-spike-muted/30 p-4">
-          <p className="text-sm font-semibold text-slate-900">RA-SPIKE batch enrollment</p>
-          <p className="mt-1 text-sm text-slate-600">
-            Agency, unit manager, and invite code power the simplified signup flow on the welcome page.
-          </p>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            <label className="text-sm text-slate-700">
-              <span className="mb-1 block font-medium">Agency</span>
-              <input
-                value={agencyEdit}
-                onChange={(event) => setAgencyEdit(event.target.value)}
-                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
-                disabled={!canWrite}
-              />
-            </label>
-            <label className="text-sm text-slate-700">
-              <span className="mb-1 block font-medium">Unit Manager</span>
-              <input
-                value={unitManagerEdit}
-                onChange={(event) => setUnitManagerEdit(event.target.value)}
-                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
-                disabled={!canWrite}
-              />
-            </label>
-            <label className="text-sm text-slate-700">
-              <span className="mb-1 block font-medium">Batch label</span>
-              <input
-                value={batchLabelEdit}
-                onChange={(event) => setBatchLabelEdit(event.target.value)}
-                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
-                disabled={!canWrite}
-              />
-            </label>
-            <label className="text-sm text-slate-700">
-              <span className="mb-1 block font-medium">Batch invite code</span>
-              <input
-                value={batchInviteCodeEdit}
-                onChange={(event) => setBatchInviteCodeEdit(event.target.value.toUpperCase())}
-                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm uppercase"
-                disabled={!canWrite}
-                autoComplete="off"
-              />
-            </label>
-          </div>
-          <label className="mt-3 flex items-center gap-2 text-sm text-slate-700">
-            <input
-              type="checkbox"
-              checked={signupOpenEdit}
-              onChange={(event) => setSignupOpenEdit(event.target.checked)}
-              disabled={!canWrite}
-            />
-            Signup open for this batch
-          </label>
-          {canWrite ? (
-            <button
-              type="button"
-              disabled={Boolean(busy)}
-              className="spike-btn-secondary mt-3 text-sm"
-              onClick={() =>
-                run('ra-batch', () =>
-                  staffUpdateRaSpikeCohortBatch(cohort.id, {
-                    agency: agencyEdit,
-                    unitManager: unitManagerEdit,
-                    batchLabel: batchLabelEdit,
-                    batchInviteCode: batchInviteCodeEdit,
-                    signupOpen: signupOpenEdit,
-                  }),
-                )
-              }
-            >
-              {busy === 'ra-batch' ? 'Saving…' : 'Save RA-SPIKE batch settings'}
-            </button>
-          ) : null}
-        </div>
-      ) : null}
 
       {!photoOnly ? (
       <div className="flex flex-wrap gap-2">
