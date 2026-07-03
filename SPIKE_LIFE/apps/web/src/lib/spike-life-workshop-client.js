@@ -255,6 +255,11 @@ export async function submitPlayerAutoAdvisor(playerId) {
   return roomCommands.submitAutoAdvisor(roomId, playerId)
 }
 
+export async function beginPlayerDecisionWindow(playerId) {
+  const roomId = requireRoomId()
+  return roomCommands.beginDecisionWindow(roomId, playerId)
+}
+
 export async function submitPlayerCalendarChoice(playerId, allocationId) {
   const roomId = requireRoomId()
   return roomCommands.submitCalendarChoice(roomId, playerId, allocationId)

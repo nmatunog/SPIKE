@@ -16,6 +16,7 @@ import {
   resolveThirteenthMonthPay,
   dismissCalendarEvent as dismissCalendarEventState,
   applyAutoAdvisorDecision,
+  beginDecisionWindow as beginDecisionWindowState,
 } from '@spike-life/domain'
 import type { DreamBoardGoalChoice } from '@spike-life/domain'
 import { DEFAULT_CURRENCY } from './content/bootstrap.js'
@@ -139,6 +140,15 @@ export class FinancialDecisionCommandBus {
     if (!session) throw new Error(`Session not found: ${sessionId}`)
 
     const updated = applyAutoAdvisorDecision(session)
+    await this.repository.save(updated)
+    return updated
+  }
+
+  async beginDecisionWindow(sessionId: string): Promise<SimulationState> {
+    const session = await this.repository.findById(sessionId)
+    if (!session) throw new Error(`Session not found: ${sessionId}`)
+
+    const updated = beginDecisionWindowState(session)
     await this.repository.save(updated)
     return updated
   }

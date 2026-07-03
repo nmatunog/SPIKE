@@ -23,9 +23,9 @@
 .gsv3-shell--play {
   grid-template-rows:
     minmax(0, 7fr)
-    minmax(0, 16fr)
-    minmax(0, 40fr)
-    minmax(0, 20fr)
+    minmax(0, 14fr)
+    minmax(0, 36fr)
+    minmax(0, 28fr)
     minmax(0, 9fr);
 }
 

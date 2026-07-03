@@ -13,6 +13,7 @@ export {
   startRoomCycle as startRoomPlanningCycle,
   startRoomTurn,
   submitPlayerAutoAdvisor,
+  beginPlayerDecisionWindow,
   submitPlayerCalendarChoice,
   submitPlayerDecision,
   submitPlayerDreamBoard,

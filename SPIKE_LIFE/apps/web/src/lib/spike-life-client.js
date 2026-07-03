@@ -80,6 +80,11 @@ export async function applyAutoAdvisor() {
   await financialCommands.applyAutoAdvisor(SESSION_ID)
 }
 
+export async function beginDecisionWindow() {
+  await ensureSessionStarted()
+  return financialCommands.beginDecisionWindow(SESSION_ID)
+}
+
 export async function submitDecision(strategy, rationale) {
   await ensureSessionStarted()
   await boardCommands.submitDecision(BOARD_ID, strategy, rationale)

@@ -12,6 +12,7 @@ import ThirteenthMonthModal from '../gameboard/ThirteenthMonthModal.jsx'
 import AnnualCheckpointCard from '../gameboard/AnnualCheckpointCard.jsx'
 import {
   applyAutoAdvisor,
+  beginDecisionWindow,
   dismissCalendarEvent,
   endBoardTurn,
   finalizeCycle,
@@ -57,7 +58,8 @@ export default function GameScreenV3({ onOpenWorkshop }) {
   const [consequenceReveal, setConsequenceReveal] = useState(null)
   const [drawer, setDrawer] = useState(null)
   const [scanHighlightId, setScanHighlightId] = useState(null)
-  const [autoDecide, setAutoDecide] = useState(false)
+  const [advisorNotice, setAdvisorNotice] = useState(null)
+  const decisionWindowKeyRef = useRef(null)
   const scanTimerRef = useRef(null)
 
   const refresh = useCallback(async () => {
@@ -76,8 +78,8 @@ export default function GameScreenV3({ onOpenWorkshop }) {
 
   useEffect(() => {
     refresh()
-      .then(({ spatial }) => {
-        if (spatial?.phase === 'decision_phase') {
+      .then(({ spatial, dash }) => {
+        if (spatial?.phase === 'decision_phase' && dash?.canDecide) {
           setPhase(PHASE.SITUATION)
           setScanHighlightId(spatial.selectedDomainId ?? null)
         }
@@ -99,6 +101,35 @@ export default function GameScreenV3({ onOpenWorkshop }) {
   const activeDomainId = showSituation
     ? (situation?.domainId ?? board?.selectedDomainId)
     : board?.selectedDomainId
+
+  useEffect(() => {
+    if (!showSituation || !dashboard?.canDecide) return undefined
+
+    const key = `${dashboard.cycleLabel ?? ''}:${board?.selectedDomainId ?? ''}:${dashboard.turnNumber ?? ''}`
+    if (decisionWindowKeyRef.current === key) return undefined
+
+    let cancelled = false
+    decisionWindowKeyRef.current = key
+
+    beginDecisionWindow()
+      .then(() => {
+        if (!cancelled) return refresh()
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err.message)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [
+    showSituation,
+    dashboard?.canDecide,
+    dashboard?.cycleLabel,
+    dashboard?.turnNumber,
+    board?.selectedDomainId,
+    refresh,
+  ])
 
   const domainIds = useMemo(
     () => (board?.lifeDomains ?? []).map((d) => d.id),
@@ -138,8 +169,10 @@ export default function GameScreenV3({ onOpenWorkshop }) {
     if (!canStartCycle) return
     setBusy(true)
     setError(null)
+    setAdvisorNotice(null)
     setSelectedChoiceIndex(0)
     setConsequenceReveal(null)
+    decisionWindowKeyRef.current = null
     setPhase(PHASE.DOMAIN)
     try {
       await rollDice()
@@ -154,10 +187,11 @@ export default function GameScreenV3({ onOpenWorkshop }) {
   }
 
   async function handleTimerExpire() {
-    if (!canDecide || busy || !autoDecide) return
+    if (!canDecide || busy) return
     setBusy(true)
     setError(null)
     try {
+      setAdvisorNotice('Time is up — your advisor applied a balanced choice. Review the results below.')
       await applyAutoAdvisor()
       const plan = await getLensView('plan')
       setPlanView(plan)
@@ -170,6 +204,7 @@ export default function GameScreenV3({ onOpenWorkshop }) {
       }
     } catch (err) {
       setError(err.message)
+      setAdvisorNotice(null)
     } finally {
       setBusy(false)
     }
@@ -234,6 +269,15 @@ export default function GameScreenV3({ onOpenWorkshop }) {
         dreamProgressPercent={dreamProgressPercent}
         onOpenDrawer={setDrawer}
       />
+
+      {advisorNotice && (
+        <p
+          className="absolute inset-x-4 top-[calc(8%+0.5rem)] z-40 rounded-xl border border-amber-200 bg-amber-50 px-4 py-2 text-center text-xs font-medium text-amber-950 shadow-sm"
+          role="status"
+        >
+          {advisorNotice}
+        </p>
+      )}
 
       {rolling && <div className="gsv3-stage-dim" />}
 
@@ -358,11 +402,7 @@ export default function GameScreenV3({ onOpenWorkshop }) {
         </div>
       )}
 
-      <CycleStepperV3
-        phase={phase}
-        autoDecide={autoDecide}
-        onAutoDecideChange={setAutoDecide}
-      />
+      <CycleStepperV3 phase={phase} />
 
       <GameScreenDrawers
         drawer={drawer}
@@ -416,9 +456,15 @@ export default function GameScreenV3({ onOpenWorkshop }) {
 }
 
 function DreamProgressSkip({ onComplete }) {
-  useEffect(() => {
-    const id = setTimeout(onComplete, 400)
-    return () => clearTimeout(id)
-  }, [onComplete])
-  return null
+  return (
+    <div className="flex h-full items-center justify-center px-6">
+      <button
+        type="button"
+        onClick={onComplete}
+        className="rounded-xl bg-indigo-600 px-8 py-3 text-sm font-bold uppercase tracking-wide text-white shadow-md"
+      >
+        Continue to next cycle
+      </button>
+    </div>
+  )
 }

@@ -80,6 +80,11 @@ export function completeDiscovery(session: SimulationState): SimulationState {
   return saveSimulation(sim)
 }
 
+export function beginDecisionWindow(session: SimulationState): SimulationState {
+  const sim = loadSimulation(session).beginDecisionWindow()
+  return saveSimulation(sim)
+}
+
 export function submitDecision(
   session: SimulationState,
   strategy: DecisionStrategy,
@@ -250,11 +255,7 @@ export function startRoomCycle(
   }
 
   const withSituation = sim.presentSituation().completeDiscovery()
-  const state = withSituation.toState()
-  return {
-    ...state,
-    cycleDeadlineAt: cycleDeadlineAt ?? state.cycleDeadlineAt,
-  }
+  return withSituation.toState()
 }
 
 export function runPromotionPlanningCycle(

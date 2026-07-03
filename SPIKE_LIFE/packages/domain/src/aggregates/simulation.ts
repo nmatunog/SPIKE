@@ -197,9 +197,8 @@ export class Simulation {
       fnaBeforeDecision: fna,
       recommendations,
       phase: 'decision_pending',
-      cycleDeadlineAt: this.state.decisionTimerSeconds > 0
-        ? new Date(Date.now() + this.state.decisionTimerSeconds * 1000).toISOString()
-        : null,
+      // Timer starts when the player sees the decision UI (beginDecisionWindow).
+      cycleDeadlineAt: null,
       updatedAt: new Date().toISOString(),
     }
 
@@ -209,6 +208,22 @@ export class Simulation {
       { timing: 'before_decision', overallScore: fna.overallScore },
     ))
 
+    return this
+  }
+
+  /** Start (or refresh) the decision countdown when the player can see choices. */
+  beginDecisionWindow(): Simulation {
+    if (this.state.phase !== 'decision_pending') {
+      throw new Error(`Cannot open decision window in phase "${this.state.phase}".`)
+    }
+    const seconds = this.state.decisionTimerSeconds ?? 0
+    this.state = {
+      ...this.state,
+      cycleDeadlineAt: seconds > 0
+        ? new Date(Date.now() + seconds * 1000).toISOString()
+        : null,
+      updatedAt: new Date().toISOString(),
+    }
     return this
   }
 

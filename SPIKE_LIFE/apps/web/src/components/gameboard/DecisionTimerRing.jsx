@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 export default function DecisionTimerRing({
   deadlineAt,
@@ -8,6 +8,11 @@ export default function DecisionTimerRing({
   variant = 'dark',
 }) {
   const [remaining, setRemaining] = useState(totalSeconds)
+  const expiredRef = useRef(false)
+
+  useEffect(() => {
+    expiredRef.current = false
+  }, [deadlineAt, active])
 
   useEffect(() => {
     if (!active || !deadlineAt || totalSeconds <= 0) return undefined
@@ -16,7 +21,10 @@ export default function DecisionTimerRing({
       const ms = new Date(deadlineAt).getTime() - Date.now()
       const secs = Math.max(0, Math.ceil(ms / 1000))
       setRemaining(secs)
-      if (secs <= 0) onExpire?.()
+      if (secs <= 0 && !expiredRef.current) {
+        expiredRef.current = true
+        onExpire?.()
+      }
     }
 
     tick()

@@ -10,6 +10,7 @@ import type { SimulationRepository } from './ports/simulation-repository.js'
 import {
   advanceTurn,
   applyAutoAdvisorDecision,
+  beginDecisionWindow,
   createWorkshopSession,
   dismissCalendarEvent,
   resolveThirteenthMonthPay,
@@ -145,7 +146,7 @@ export async function startRoomCycle(
 
   for (const slot of room.activeSlots) {
     const sim = await deps.simulationRepo.findById(slot.simulationId)
-    const started = startPlayerCycle(slot.simulationId, sim, existing.cycleDeadlineAt)
+    const started = startPlayerCycle(slot.simulationId, sim)
     await deps.simulationRepo.save(started)
     room = room.syncSlotFromSimulationPhase(slot.playerId, started.phase)
   }
@@ -161,6 +162,25 @@ export async function startRoomTurn(
   _scenarioId?: string,
 ): Promise<GameRoomState> {
   return startRoomCycle(deps, roomId)
+}
+
+export async function beginPlayerDecisionWindow(
+  deps: GameRoomOrchestratorDeps,
+  roomId: string,
+  playerId: string,
+): Promise<SimulationState> {
+  const roomState = await deps.gameRoomRepo.findById(roomId)
+  if (!roomState) throw new Error(`Room not found: ${roomId}`)
+
+  const slot = roomState.slots.find((s) => s.playerId === playerId)
+  if (!slot) throw new Error(`Player not in room: ${playerId}`)
+
+  const sim = await deps.simulationRepo.findById(slot.simulationId)
+  if (!sim) throw new Error(`Simulation not found: ${slot.simulationId}`)
+
+  const updated = beginDecisionWindow(sim)
+  await deps.simulationRepo.save(updated)
+  return updated
 }
 
 export async function submitPlayerAutoAdvisor(

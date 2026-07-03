@@ -169,6 +169,16 @@ export default function PlanLens({
         </section>
       )}
 
+      {data.canDecide && onDecide && (
+        <section className="rounded-2xl border-2 border-indigo-200 bg-indigo-50/60 p-4">
+          <p className="text-sm font-semibold text-indigo-950">Make your decision</p>
+          <p className="mt-1 text-body text-indigo-900/90">
+            Read the situation and FNA below. Choose what you would actually do — tap one option to
+            record your choice.
+          </p>
+        </section>
+      )}
+
       {show('decisions') && data.canDecide && onDecide && (
         <section className="space-y-3">
           {data.situation && (

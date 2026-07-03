@@ -6,15 +6,11 @@ const STEPS = [
   { id: 'next', label: 'Next cycle' },
 ]
 
-export default function CycleStepperV3({
-  phase,
-  autoDecide = false,
-  onAutoDecideChange,
-}) {
+export default function CycleStepperV3({ phase }) {
   const activeIndex = {
     idle: 0,
     domain: 0,
-    situation: 1,
+    situation: 2,
     consequences: 3,
     dream: 4,
   }[phase] ?? 0
@@ -53,21 +49,9 @@ export default function CycleStepperV3({
         })}
       </div>
 
-      <label className="gsv3-auto-toggle">
-        <span>Auto decide</span>
-        <button
-          type="button"
-          role="switch"
-          aria-checked={autoDecide}
-          onClick={() => onAutoDecideChange?.(!autoDecide)}
-          className={`gsv3-toggle ${autoDecide ? 'gsv3-toggle--on' : ''}`}
-        >
-          <span className="gsv3-toggle__knob" />
-        </button>
-        <span className={autoDecide ? 'text-indigo-600' : 'text-slate-400'}>
-          {autoDecide ? 'On' : 'Off'}
-        </span>
-      </label>
+      <p className="hidden text-[10px] font-semibold uppercase tracking-wide text-slate-400 sm:block">
+        Pick one response, then confirm
+      </p>
     </footer>
   )
 }

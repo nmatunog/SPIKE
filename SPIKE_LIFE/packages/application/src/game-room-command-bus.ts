@@ -13,6 +13,7 @@ import {
   joinGameRoom,
   startRoomPlanningCycle,
   submitPlayerAutoAdvisor,
+  beginPlayerDecisionWindow,
   submitPlayerCalendarChoice,
   submitPlayerDecision,
   submitPlayerDreamBoard,
@@ -69,6 +70,10 @@ export class GameRoomCommandBus {
 
   submitAutoAdvisor(roomId: string, playerId: string) {
     return submitPlayerAutoAdvisor(this.deps(), roomId, playerId)
+  }
+
+  beginDecisionWindow(roomId: string, playerId: string) {
+    return beginPlayerDecisionWindow(this.deps(), roomId, playerId)
   }
 
   submitCalendarChoice(roomId: string, playerId: string, allocationId: string) {

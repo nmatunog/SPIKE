@@ -80,6 +80,11 @@ export default function SituationStageV3({
             <p className="gsv3-situation-cycle">{cycleLabel}</p>
           )}
 
+          <p className="rounded-lg border border-indigo-100 bg-indigo-50/80 px-3 py-2 text-xs leading-relaxed text-indigo-950">
+            <strong className="font-semibold">Your turn:</strong> read the situation, then choose one
+            response in the panel below and tap <strong>Confirm</strong>.
+          </p>
+
           <div className="gsv3-situation-detail-grid">
             <DetailBox label="Opportunity" text={opportunity} icon={Lightbulb} accent={identity.color} />
             <DetailBox label="Consideration" text={consideration} icon={Sparkles} accent="#8B5CF6" />

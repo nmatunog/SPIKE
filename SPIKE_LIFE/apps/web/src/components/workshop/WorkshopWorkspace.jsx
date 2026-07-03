@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import LensNav from '../LensNav.jsx'
 import LifeLens from '../lenses/LifeLens.jsx'
 import PlanLens from '../lenses/PlanLens.jsx'
@@ -16,6 +16,7 @@ import GameCodeBadge from './GameCodeBadge.jsx'
 import PersonaAssignedCard from '../gameboard/PersonaAssignedCard.jsx'
 import {
   advanceRoomTurn,
+  beginPlayerDecisionWindow,
   dismissPlayerCalendarEvent,
   getGameBoard,
   getPlayerDashboard,
@@ -55,6 +56,7 @@ export default function WorkshopWorkspace({ session, onExit }) {
   const [error, setError] = useState(null)
   const [lifeSummary, setLifeSummary] = useState(null)
   const [autoAdvisorNotice, setAutoAdvisorNotice] = useState(null)
+  const decisionWindowKeyRef = useRef(null)
 
   const mySlot = board?.players.find((p) => p.playerId === playerId)
   const needsSetup =
@@ -158,6 +160,41 @@ export default function WorkshopWorkspace({ session, onExit }) {
     playerDashboard?.pendingCalendarEvent
     && activePlayerId === playerId
 
+  useEffect(() => {
+    if (!canPlayAsSelf || !playerDashboard?.canDecide) return undefined
+
+    const key = `${playerDashboard.cycleLabel ?? ''}:${playerDashboard.turnNumber ?? ''}`
+    if (decisionWindowKeyRef.current === key) return undefined
+    decisionWindowKeyRef.current = key
+
+    let cancelled = false
+    setActiveLens('plan')
+
+    beginPlayerDecisionWindow(playerId)
+      .then(() => {
+        if (!cancelled) {
+          return Promise.all([
+            getPlayerDashboard(playerId).then(setPlayerDashboard),
+            getPlayerLensView(playerId, 'plan').then(setLensView),
+          ])
+        }
+        return undefined
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err.message)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [
+    canPlayAsSelf,
+    playerDashboard?.canDecide,
+    playerDashboard?.cycleLabel,
+    playerDashboard?.turnNumber,
+    playerId,
+  ])
+
   async function handleDreamBoardSubmit(choices) {
     await runAction(() => submitPlayerDreamBoardGoals(playerId, choices))
   }
@@ -180,8 +217,8 @@ export default function WorkshopWorkspace({ session, onExit }) {
   async function handleTimerExpire() {
     if (!canPlayAsSelf || !playerDashboard?.canDecide || busy) return
     await runAction(async () => {
+      setAutoAdvisorNotice('Time is up — your advisor applied a balanced choice. Review the results in Journey.')
       await submitPlayerAutoAdvisor(playerId)
-      setAutoAdvisorNotice('Auto Advisor decided for you — balanced growth applied.')
       setActiveLens('journey')
       const view = await getPlayerLensView(playerId, 'journey')
       setLensView(view)
