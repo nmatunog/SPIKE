@@ -11,6 +11,7 @@ export function RaSpikeProfilePage({ user }) {
   const program = getProgramForIntern(user?.internProgress);
   const ctx = getRaSpikeContext(user?.internProgress);
   const agency = user?.internProgress?.university;
+  const homeUnit = user?.internProgress?.home_unit;
   const squad = user?.internProgress?.squad;
 
   return (
@@ -49,8 +50,12 @@ export function RaSpikeProfilePage({ user }) {
                 <dd className="text-slate-900">{user?.mobile || '—'}</dd>
               </div>
               <div>
-                <dt className="font-medium text-slate-500">Agency</dt>
+                <dt className="font-medium text-slate-500">Home agency</dt>
                 <dd className="text-slate-900">{agency || '—'}</dd>
+              </div>
+              <div>
+                <dt className="font-medium text-slate-500">Home unit</dt>
+                <dd className="text-slate-900">{homeUnit || '—'}</dd>
               </div>
               <div>
                 <dt className="font-medium text-slate-500">Squad</dt>

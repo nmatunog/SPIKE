@@ -3,7 +3,7 @@
 export const INTERN_PROGRESS_SELECT_BASE =
   'segment, hours, licensed, squad, university, career_track, career_track_selected_at, current_week, current_day, onboarding_complete, onboarding_welcomed_at, cohort_id';
 
-export const INTERN_PROGRESS_SELECT_PROGRAM = `${INTERN_PROGRESS_SELECT_BASE}, program_slug, ra_spike_segment, ra_spike_current_week, gate_1_status, gate_1_score, gate_1_evaluated_at, gate_2_status, gate_2_score, gate_2_evaluated_at, graduated_at`;
+export const INTERN_PROGRESS_SELECT_PROGRAM = `${INTERN_PROGRESS_SELECT_BASE}, program_slug, ra_spike_segment, ra_spike_current_week, gate_1_status, gate_1_score, gate_1_evaluated_at, gate_2_status, gate_2_score, gate_2_evaluated_at, graduated_at, home_unit`;
 
 /** @param {{ code?: string, message?: string }} error */
 export function isMissingInternProgressColumnError(error) {

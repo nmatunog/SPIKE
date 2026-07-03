@@ -24,8 +24,8 @@ export async function fetchRaSpikeBatchesForStaff() {
 
 /**
  * @param {{
- *   agency: string,
- *   unitManager: string,
+ *   agency?: string,
+ *   unitManager?: string,
  *   batchLabel: string,
  *   inviteCode?: string,
  *   startDate?: string,
@@ -36,8 +36,8 @@ export async function staffCreateRaSpikeBatch(input) {
   await assertPortalCanWrite();
   const client = assertClient();
   const { data, error } = await client.rpc('create_ra_spike_batch', {
-    p_agency: input.agency,
-    p_unit_manager: input.unitManager,
+    p_agency: input.agency?.trim() || null,
+    p_unit_manager: input.unitManager?.trim() || null,
     p_batch_label: input.batchLabel,
     p_invite_code: input.inviteCode?.trim() || null,
     p_start_date: input.startDate?.trim() || null,

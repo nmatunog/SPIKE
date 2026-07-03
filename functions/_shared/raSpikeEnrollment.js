@@ -2,7 +2,7 @@
  * RA-SPIKE enrollment — cohort resolution and squad auto-assignment.
  */
 
-import { RA_SPIKE_AGENCIES, mergeRaSpikeEnrollmentOptions } from '../../../shared/raSpikeAgencies.js';
+import { raSpikeHomeOrgOptions } from '../../../shared/raSpikeAgencies.js';
 
 /**
  * @param {import('@supabase/supabase-js').SupabaseClient} admin
@@ -28,46 +28,21 @@ export async function resolveRaSpikeCohort(admin, opts = {}) {
 export async function listRaSpikeEnrollmentOptions(admin) {
   const { data, error } = await admin
     .from('cohorts')
-    .select('id, agency, unit_manager, batch_label, batch_invite_code, name, signup_open')
+    .select('id, batch_label, batch_invite_code, name, signup_open')
     .eq('program_slug', 'ra-spike')
     .eq('signup_open', true)
-    .order('agency')
-    .order('unit_manager')
-    .order('batch_label');
+    .order('batch_label')
+    .order('id');
 
   if (error) throw new Error(error.message);
-  const rows = data ?? [];
 
-  /** @type {Map<string, { agency: string, unitManagers: Map<string, { unitManager: string, batches: object[] }> }>} */
-  const byAgency = new Map();
-
-  for (const row of rows) {
-    const agency = row.agency?.trim() || 'Agency';
-    const unitManager = row.unit_manager?.trim() || 'Unit Manager';
-    if (!byAgency.has(agency)) {
-      byAgency.set(agency, { agency, unitManagers: new Map() });
-    }
-    const agencyEntry = byAgency.get(agency);
-    if (!agencyEntry.unitManagers.has(unitManager)) {
-      agencyEntry.unitManagers.set(unitManager, { unitManager, batches: [] });
-    }
-    agencyEntry.unitManagers.get(unitManager).batches.push({
+  return {
+    batches: (data ?? []).map((row) => ({
       cohortId: row.id,
       batchLabel: row.batch_label || row.name || `Batch ${row.id}`,
       hasInviteCode: Boolean(row.batch_invite_code),
-    });
-  }
-
-  return {
-    agencies: mergeRaSpikeEnrollmentOptions(
-      RA_SPIKE_AGENCIES.map((name) => {
-        const entry = byAgency.get(name);
-        return {
-          agency: name,
-          unitManagers: entry ? [...entry.unitManagers.values()] : [],
-        };
-      }),
-    ),
+    })),
+    agencies: raSpikeHomeOrgOptions(),
   };
 }
 

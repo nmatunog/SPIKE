@@ -733,7 +733,7 @@ const SpikeMasterPortal = () => {
   );
 
   const handleRaSpikeSignup = useCallback(
-    async ({ name, email, password, mobile, batchInviteCode, cohortId }) => {
+    async ({ name, email, password, mobile, batchInviteCode, cohortId, homeAgency, homeUnit }) => {
       if (mockAuthEnabled && !usingSupabaseAuth) {
         throw new Error('RA-SPIKE signup requires Supabase mode.');
       }
@@ -746,6 +746,8 @@ const SpikeMasterPortal = () => {
           mobile,
           batchInviteCode,
           cohortId,
+          homeAgency,
+          homeUnit,
         });
       } catch (apiErr) {
         if (!isRaSpikeSignupApiUnavailable(apiErr)) {

@@ -33,9 +33,16 @@ export function raSpikeUnitsForAgency(agency) {
   return RA_SPIKE_AGENCY_UNITS[agency] ?? [];
 }
 
+/** Canonical home-agency + unit lists for participant signup (not batch enrollment). */
+export function raSpikeHomeOrgOptions() {
+  return RA_SPIKE_AGENCIES.map((agency) => ({
+    agency,
+    units: raSpikeUnitsForAgency(agency),
+  }));
+}
+
 /**
- * Merge API cohort rows with canonical agency/unit lists.
- * @param {Array<{ agency: string, unitManagers?: Array<{ unitManager: string, batches?: object[] }> }>} apiAgencies
+ * @deprecated Batches are mixed-cohort; use {@link raSpikeHomeOrgOptions} + flat batch list.
  */
 export function mergeRaSpikeEnrollmentOptions(apiAgencies = []) {
   const byAgency = new Map((apiAgencies ?? []).map((a) => [a.agency, a]));

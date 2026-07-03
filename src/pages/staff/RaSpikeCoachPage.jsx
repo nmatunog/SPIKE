@@ -38,7 +38,7 @@ export function RaSpikeCoachPage({
           <p className="text-sm font-semibold text-slate-900">Rookie signup</p>
           <p className="mt-1 text-sm text-slate-600">
             New participants use <strong>Join RA-SPIKE™</strong> on the welcome page with your batch invite code.
-            Returning rookies sign in with the same SPIKE login.
+            Each rookie selects their home agency and unit — batches can mix advisors from many organizations.
           </p>
           <p className="mt-3 text-sm text-slate-600">
             {raInterns.length

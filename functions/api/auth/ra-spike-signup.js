@@ -38,6 +38,8 @@ export async function onRequest(ctx) {
   const password = String(body?.password ?? '');
   const inviteCode = body?.batchInviteCode ? String(body.batchInviteCode).trim() : '';
   const cohortId = body?.cohortId != null ? Number(body.cohortId) : null;
+  const homeAgency = String(body?.homeAgency ?? '').trim();
+  const homeUnit = String(body?.homeUnit ?? '').trim();
 
   if (name.length < 2) return json({ message: 'Full name is required.' }, 400);
   if (!mobile || mobile.replace(/\D/g, '').length < 10) {
@@ -47,6 +49,9 @@ export async function onRequest(ctx) {
   if (password.length < 8) return json({ message: 'Password must be at least 8 characters.' }, 400);
   if (!inviteCode && !Number.isFinite(cohortId)) {
     return json({ message: 'Select a batch or enter your batch invite code.' }, 400);
+  }
+  if (!homeAgency || !homeUnit) {
+    return json({ message: 'Select your home agency and unit.' }, 400);
   }
 
   try {
@@ -84,7 +89,8 @@ export async function onRequest(ctx) {
         hours: 0,
         licensed: false,
         squad: squadName,
-        university: cohort.agency,
+        university: homeAgency,
+        home_unit: homeUnit,
         program_slug: 'ra-spike',
         ra_spike_segment: 1,
         ra_spike_current_week: 1,
@@ -99,10 +105,10 @@ export async function onRequest(ctx) {
       userId,
       cohort: {
         id: cohort.id,
-        agency: cohort.agency,
-        unitManager: cohort.unit_manager,
         batchLabel: cohort.batch_label || cohort.name,
       },
+      homeAgency,
+      homeUnit,
       squad: squadName,
     });
   } catch (err) {

@@ -8,6 +8,8 @@ import { ApiError, apiFetch } from '../apiClient.js';
  *   password: string,
  *   batchInviteCode?: string,
  *   cohortId?: number,
+ *   homeAgency: string,
+ *   homeUnit: string,
  * }} payload
  */
 export async function registerRaSpikeViaApi(payload) {
@@ -20,6 +22,8 @@ export async function registerRaSpikeViaApi(payload) {
       password: payload.password,
       batchInviteCode: payload.batchInviteCode?.trim() || undefined,
       cohortId: payload.cohortId,
+      homeAgency: payload.homeAgency.trim(),
+      homeUnit: payload.homeUnit.trim(),
     },
   });
 }

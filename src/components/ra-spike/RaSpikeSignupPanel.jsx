@@ -1,12 +1,10 @@
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { PasswordInput } from '../PasswordInput.jsx';
-import {
-  fetchRaSpikeEnrollmentOptions,
-} from '../../lib/raSpikeSignupService.js';
-import { mergeRaSpikeEnrollmentOptions } from '../../../shared/raSpikeAgencies.js';
+import { fetchRaSpikeEnrollmentOptions } from '../../lib/raSpikeSignupService.js';
+import { RA_SPIKE_AGENCIES, raSpikeHomeOrgOptions, raSpikeUnitsForAgency } from '../../../shared/raSpikeAgencies.js';
 
-const STEPS = ['Account', 'Your batch', 'Done'];
+const STEPS = ['Account', 'Batch & unit', 'Done'];
 
 /**
  * @param {{
@@ -17,6 +15,8 @@ const STEPS = ['Account', 'Your batch', 'Done'];
  *     password: string,
  *     batchInviteCode?: string,
  *     cohortId?: number,
+ *     homeAgency: string,
+ *     homeUnit: string,
  *   }) => Promise<void>,
  * }} props
  */
@@ -29,9 +29,10 @@ export const RaSpikeSignupPanel = memo(function RaSpikeSignupPanel({ onSignup })
   const [password, setPassword] = useState('');
   const [password2, setPassword2] = useState('');
   const [inviteCode, setInviteCode] = useState('');
-  const [agency, setAgency] = useState('');
-  const [unitManager, setUnitManager] = useState('');
   const [cohortId, setCohortId] = useState('');
+  const [homeAgency, setHomeAgency] = useState('');
+  const [homeUnit, setHomeUnit] = useState('');
+  const [homeUnitOther, setHomeUnitOther] = useState('');
   const [options, setOptions] = useState(null);
   const [optionsLoading, setOptionsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -46,7 +47,7 @@ export const RaSpikeSignupPanel = memo(function RaSpikeSignupPanel({ onSignup })
       const data = await fetchRaSpikeEnrollmentOptions();
       setOptions(data);
     } catch {
-      setOptions({ agencies: [] });
+      setOptions({ batches: [], agencies: raSpikeHomeOrgOptions() });
     } finally {
       setOptionsLoading(false);
     }
@@ -60,27 +61,23 @@ export const RaSpikeSignupPanel = memo(function RaSpikeSignupPanel({ onSignup })
     if (step === 1) void loadOptions();
   }, [step, loadOptions]);
 
-  const agencyOptions = useMemo(
-    () => mergeRaSpikeEnrollmentOptions(options?.agencies ?? []),
-    [options],
-  );
+  const openBatches = useMemo(() => options?.batches ?? [], [options]);
 
-  const unitManagers = useMemo(() => {
-    const entry = agencyOptions.find((a) => a.agency === agency);
-    return entry?.unitManagers ?? [];
-  }, [agencyOptions, agency]);
+  const homeAgencyOptions = useMemo(() => {
+    const fromApi = options?.agencies ?? [];
+    if (fromApi.length) return fromApi;
+    return raSpikeHomeOrgOptions();
+  }, [options]);
 
-  const batches = useMemo(() => {
-    const entry = unitManagers.find((u) => u.unitManager === unitManager);
-    return entry?.batches ?? [];
-  }, [unitManagers, unitManager]);
+  const homeUnitOptions = useMemo(() => raSpikeUnitsForAgency(homeAgency), [homeAgency]);
+
+  const resolvedHomeUnit = homeUnit === 'Other' ? homeUnitOther.trim() : homeUnit.trim();
 
   useEffect(() => {
-    if (!unitManager || !batches.length) return;
-    if (batches.length === 1 && !cohortId) {
-      setCohortId(String(batches[0].cohortId));
+    if (openBatches.length === 1 && !cohortId && !inviteCode.trim()) {
+      setCohortId(String(openBatches[0].cohortId));
     }
-  }, [unitManager, batches, cohortId]);
+  }, [openBatches, cohortId, inviteCode]);
 
   function resetForm() {
     setStep(0);
@@ -90,9 +87,10 @@ export const RaSpikeSignupPanel = memo(function RaSpikeSignupPanel({ onSignup })
     setPassword('');
     setPassword2('');
     setInviteCode('');
-    setAgency('');
-    setUnitManager('');
     setCohortId('');
+    setHomeAgency('');
+    setHomeUnit('');
+    setHomeUnitOther('');
     setError('');
   }
 
@@ -116,7 +114,15 @@ export const RaSpikeSignupPanel = memo(function RaSpikeSignupPanel({ onSignup })
     const code = inviteCode.trim();
     const selectedCohortId = cohortId ? Number(cohortId) : null;
     if (!code && !Number.isFinite(selectedCohortId)) {
-      setError('Enter your batch invite code or select agency, unit manager, and batch.');
+      setError('Enter your batch invite code or select your batch.');
+      return;
+    }
+    if (!homeAgency) {
+      setError('Select your home agency.');
+      return;
+    }
+    if (!resolvedHomeUnit) {
+      setError(homeUnit === 'Other' ? 'Enter your unit name.' : 'Select your home unit.');
       return;
     }
     setSubmitting(true);
@@ -128,6 +134,8 @@ export const RaSpikeSignupPanel = memo(function RaSpikeSignupPanel({ onSignup })
         password,
         batchInviteCode: code || undefined,
         cohortId: Number.isFinite(selectedCohortId) ? selectedCohortId : undefined,
+        homeAgency,
+        homeUnit: resolvedHomeUnit,
       });
       resetForm();
       setShow(false);
@@ -207,13 +215,19 @@ export const RaSpikeSignupPanel = memo(function RaSpikeSignupPanel({ onSignup })
                 <PasswordInput required minLength={8} value={password2} onChange={(e) => setPassword2(e.target.value)} className={fieldClass} autoComplete="new-password" />
               </label>
               <button type="submit" className="spike-btn-primary min-h-[48px] w-full">
-                Next — choose your batch
+                Next — batch &amp; home unit
               </button>
             </form>
           ) : null}
 
           {step === 1 ? (
             <form className="space-y-3" onSubmit={submitSignup}>
+              <p className="rounded-xl bg-slate-50 px-3 py-2.5 text-xs leading-relaxed text-slate-600">
+                Each batch includes advisors from many agencies and units. Choose your batch, then tell us your{' '}
+                <strong className="font-semibold text-slate-800">home agency and unit</strong>.
+              </p>
+
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Your batch</p>
               <label className="block text-sm">
                 <span className="mb-1 block font-medium text-slate-700">Batch invite code</span>
                 <input
@@ -224,73 +238,80 @@ export const RaSpikeSignupPanel = memo(function RaSpikeSignupPanel({ onSignup })
                   autoComplete="off"
                 />
               </label>
-              <p className="text-center text-xs text-slate-500">— or select your batch —</p>
+              <p className="text-center text-xs text-slate-500">— or select batch —</p>
               {optionsLoading ? (
                 <p className="flex items-center gap-2 text-sm text-slate-600">
                   <Loader2 className="animate-spin" size={16} /> Loading batches…
                 </p>
               ) : (
-                <>
-                  <label className="block text-sm">
-                    <span className="mb-1 block font-medium text-slate-700">Agency</span>
-                    <select
-                      value={agency}
-                      onChange={(e) => {
-                        setAgency(e.target.value);
-                        setUnitManager('');
-                        setCohortId('');
-                      }}
-                      className={fieldClass}
-                    >
-                      <option value="">Select agency</option>
-                      {agencyOptions.map((a) => (
-                        <option key={a.agency} value={a.agency}>{a.agency}</option>
-                      ))}
-                    </select>
-                  </label>
-
-                  <label className="block text-sm">
-                    <span className="mb-1 block font-medium text-slate-700">Unit</span>
-                    <select
-                      value={unitManager}
-                      onChange={(e) => {
-                        setUnitManager(e.target.value);
-                        setCohortId('');
-                      }}
-                      className={fieldClass}
-                      disabled={!agency}
-                    >
-                      <option value="">
-                        {!agency ? 'Select agency first' : 'Select unit'}
-                      </option>
-                      {unitManagers.map((u) => (
-                        <option key={u.unitManager} value={u.unitManager}>{u.unitManager}</option>
-                      ))}
-                    </select>
-                  </label>
-                  {unitManager && !batches.length ? (
-                    <p className="rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-900">
-                      No open batch for this unit yet. Enter your invite code above or ask your coach.
-                    </p>
-                  ) : null}
-                  <label className="block text-sm">
-                    <span className="mb-1 block font-medium text-slate-700">Batch</span>
-                    <select
-                      value={cohortId}
-                      onChange={(e) => setCohortId(e.target.value)}
-                      className={fieldClass}
-                      disabled={!unitManager || !batches.length}
-                    >
-                      <option value="">
-                        {!unitManager ? 'Select unit first' : batches.length ? 'Select batch' : 'No batches yet'}
-                      </option>
-                      {batches.map((b) => (
-                        <option key={b.cohortId} value={String(b.cohortId)}>{b.batchLabel}</option>
-                      ))}
-                    </select>
-                  </label>
-                </>
+                <label className="block text-sm">
+                  <span className="mb-1 block font-medium text-slate-700">Batch</span>
+                  <select
+                    value={cohortId}
+                    onChange={(e) => setCohortId(e.target.value)}
+                    className={fieldClass}
+                    disabled={!openBatches.length}
+                  >
+                    <option value="">
+                      {openBatches.length ? 'Select batch' : 'No open batches — use invite code'}
+                    </option>
+                    {openBatches.map((b) => (
+                      <option key={b.cohortId} value={String(b.cohortId)}>{b.batchLabel}</option>
+                    ))}
+                  </select>
+                </label>
               )}
+
+              <p className="pt-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Your home organization</p>
+              <label className="block text-sm">
+                <span className="mb-1 block font-medium text-slate-700">Home agency</span>
+                <select
+                  required
+                  value={homeAgency}
+                  onChange={(e) => {
+                    setHomeAgency(e.target.value);
+                    setHomeUnit('');
+                    setHomeUnitOther('');
+                  }}
+                  className={fieldClass}
+                >
+                  <option value="">Select agency</option>
+                  {(homeAgencyOptions.length ? homeAgencyOptions : RA_SPIKE_AGENCIES.map((a) => ({ agency: a, units: [] }))).map((a) => (
+                    <option key={a.agency} value={a.agency}>{a.agency}</option>
+                  ))}
+                </select>
+              </label>
+              <label className="block text-sm">
+                <span className="mb-1 block font-medium text-slate-700">Home unit</span>
+                <select
+                  required
+                  value={homeUnit}
+                  onChange={(e) => {
+                    setHomeUnit(e.target.value);
+                    setHomeUnitOther('');
+                  }}
+                  className={fieldClass}
+                  disabled={!homeAgency}
+                >
+                  <option value="">{homeAgency ? 'Select unit' : 'Select agency first'}</option>
+                  {homeUnitOptions.map((unit) => (
+                    <option key={unit} value={unit}>{unit}</option>
+                  ))}
+                </select>
+              </label>
+              {homeUnit === 'Other' ? (
+                <label className="block text-sm">
+                  <span className="mb-1 block font-medium text-slate-700">Unit name</span>
+                  <input
+                    required
+                    value={homeUnitOther}
+                    onChange={(e) => setHomeUnitOther(e.target.value)}
+                    className={fieldClass}
+                    placeholder="Enter your unit"
+                  />
+                </label>
+              ) : null}
+
               <div className="flex flex-col gap-2 sm:flex-row">
                 <button type="button" className="spike-btn-secondary min-h-[48px] flex-1" onClick={() => setStep(0)}>
                   Back
