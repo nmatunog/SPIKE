@@ -1,6 +1,7 @@
 import type { DecisionStrategy, ScenarioId } from '../types.js'
 import type {
   FinancialProfile,
+  FinancialGoal,
   GoalPortfolio,
   ProtectionPortfolio,
 } from '../entities/financial-state.js'
@@ -201,24 +202,84 @@ function evaluateDecisionQuality(
   }
 }
 
+function distributeToDreamGoals(
+  goals: FinancialGoal[],
+  amount: number,
+): number {
+  const dreamGoals = goals.filter(
+    (g) => g.goalId !== 'emergency_fund' && g.status === 'active' && g.currentFunding < g.targetAmount,
+  )
+  if (dreamGoals.length === 0 || amount <= 0) return amount
+
+  let remaining = amount
+  const share = remaining / dreamGoals.length
+  for (const goal of dreamGoals) {
+    const gap = goal.targetAmount - goal.currentFunding
+    const add = Math.min(remaining, share, gap)
+    if (add > 0) {
+      goal.currentFunding += add
+      remaining -= add
+    }
+  }
+  for (const goal of dreamGoals) {
+    if (remaining <= 0) break
+    const gap = goal.targetAmount - goal.currentFunding
+    const add = Math.min(remaining, gap)
+    if (add > 0) {
+      goal.currentFunding += add
+      remaining -= add
+    }
+  }
+  return remaining
+}
+
 function applyGoalFunding(
   goals: GoalPortfolio,
   amount: number,
+  strategy: DecisionStrategy,
 ): GoalPortfolio {
   if (amount <= 0) return goals
 
   const updated = goals.goals.map((g) => ({ ...g }))
   const emergency = updated.find((g) => g.goalId === 'emergency_fund')
-  const travel = updated.find((g) => g.goalId === 'travel')
+
+  const fundEmergency = (pool: number): number => {
+    if (!emergency || pool <= 0) return 0
+    const gap = emergency.targetAmount - emergency.currentFunding
+    if (gap <= 0) return 0
+    const add = Math.min(pool, gap)
+    emergency.currentFunding += add
+    return add
+  }
 
   let remaining = amount
-  if (emergency && emergency.currentFunding < emergency.targetAmount) {
-    const add = Math.min(remaining, emergency.targetAmount - emergency.currentFunding)
-    emergency.currentFunding += add
-    remaining -= add
-  }
-  if (remaining > 0 && travel) {
-    travel.currentFunding += Math.min(remaining, travel.targetAmount - travel.currentFunding)
+
+  switch (strategy) {
+    case 'fund_goals':
+      remaining = distributeToDreamGoals(updated, remaining)
+      fundEmergency(remaining)
+      break
+    case 'split_allocation': {
+      const toEmergency = fundEmergency(remaining * 0.35)
+      distributeToDreamGoals(updated, remaining - toEmergency)
+      break
+    }
+    case 'maintain_lifestyle_discipline': {
+      const toEmergency = fundEmergency(remaining * 0.4)
+      distributeToDreamGoals(updated, remaining - toEmergency)
+      break
+    }
+    case 'increase_savings':
+    case 'reduce_debt':
+      fundEmergency(remaining)
+      break
+    case 'improve_protection':
+      distributeToDreamGoals(updated, remaining * 0.25)
+      break
+    case 'increase_lifestyle':
+      break
+    default:
+      fundEmergency(remaining)
   }
 
   return { goals: updated }
@@ -294,14 +355,24 @@ export function runConsequenceEngine(
     }
   }
 
-  let goalPortfolio = applyGoalFunding(goals, allocation.goalFunding)
+  let goalPortfolio = goals
 
-  if (strategy === 'increase_savings' || strategy === 'maintain_lifestyle_discipline' || strategy === 'split_allocation') {
-    const cashToEmergency = (allocation.profile.cash ?? 0) * (strategy === 'split_allocation' ? 0.5 : 1)
-    goalPortfolio = applyGoalFunding(goalPortfolio, cashToEmergency)
-    if (cashToEmergency > 0) {
-      financialProfile.cash = Math.max(0, financialProfile.cash - cashToEmergency * 0.5)
-    }
+  const liquidCash = allocation.profile.cash ?? 0
+  let poolForGoals = allocation.goalFunding
+  if (strategy === 'increase_savings') {
+    poolForGoals += liquidCash
+  } else if (strategy === 'split_allocation') {
+    poolForGoals += liquidCash * 0.45
+  } else if (strategy === 'maintain_lifestyle_discipline') {
+    poolForGoals += liquidCash * 0.35
+  }
+
+  if (poolForGoals > 0) {
+    goalPortfolio = applyGoalFunding(goals, poolForGoals, strategy)
+  }
+
+  if (strategy === 'increase_savings' && liquidCash > 0) {
+    financialProfile.cash = Math.max(0, financialProfile.cash - liquidCash * 0.35)
   }
 
   const { quality, explanation } = evaluateDecisionQuality(

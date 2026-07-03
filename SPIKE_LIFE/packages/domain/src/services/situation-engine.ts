@@ -118,6 +118,15 @@ export function applyProtectionStressToProfile(
   }
 }
 
+/** Monthly headroom for non-promotion encounters (no raise applied). */
+export function planningDecisionCapacity(profile: FinancialProfile): number {
+  const surplus = profile.monthlyIncome
+    - profile.monthlyExpenses
+    - profile.monthlyDebtPayments
+    - profile.monthlyProtectionCost
+  return Math.max(0, Math.round(Math.max(surplus, profile.monthlyIncome * 0.08)))
+}
+
 /** Monthly capacity the player can direct toward protection planning responses. */
 export function protectionDecisionCapacity(profile: FinancialProfile): number {
   const surplus = profile.monthlyIncome
@@ -147,12 +156,21 @@ export function createSituationFromEncounter(
     }
   }
 
-  const base = createPromotionSituation(profile, currency)
+  const incomeMultiplier = enc.situationKind === 'income_opportunity' ? 1.05 : 1
+  const incomeAfter = Math.round(profile.monthlyIncome * incomeMultiplier)
+  const monthlyRaise = incomeAfter - profile.monthlyIncome
+
   return {
-    ...base,
     eventId: enc.id,
+    situationKind: enc.situationKind ?? 'life_event',
     title: enc.title,
     narrative: enc.narrative || enc.teaser,
     learningObjective: enc.learningObjective,
+    incomeMultiplier,
+    expenseMultiplier: 1,
+    financialImpactSummary: enc.teaser
+      ?? (monthlyRaise > 0
+        ? `Income may rise by ${Money.of(monthlyRaise, currency.code).format(currency)}/month if you act.`
+        : 'Your choice will shape cash flow, goals, and protection this cycle.'),
   }
 }

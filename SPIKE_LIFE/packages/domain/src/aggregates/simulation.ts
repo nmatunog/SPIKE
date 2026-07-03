@@ -18,6 +18,7 @@ import {
   createPromotionSituation,
   createProtectionStressSituation,
   monthlyRaiseFromSituation,
+  planningDecisionCapacity,
   protectionDecisionCapacity,
   type SituationSnapshot,
 } from '../services/situation-engine.js'
@@ -536,7 +537,10 @@ export class Simulation {
       : applySituationToIncome(this.state.financialProfile, situation)
     const monthlyCapacity = isProtection
       ? protectionDecisionCapacity(profileAfter)
-      : monthlyRaiseFromSituation(this.state.financialProfile, situation)
+      : (() => {
+        const raiseCapacity = monthlyRaiseFromSituation(this.state.financialProfile, situation)
+        return raiseCapacity > 0 ? raiseCapacity : planningDecisionCapacity(profileAfter)
+      })()
 
     this.state = {
       ...this.state,
