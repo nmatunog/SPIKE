@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { CheckCircle, ChevronRight, Loader2, Lock, Wallet } from 'lucide-react';
+import { CheckCircle, ChevronLeft, ChevronRight, Loader2, Lock, Wallet } from 'lucide-react';
 import {
   PITCH_PANEL_ACCESS_PIN,
   PITCH_PANEL_INVESTMENT_CRITERIA,
@@ -296,11 +296,24 @@ export function PitchPanelGuestPage() {
     <div className="min-h-[100dvh] bg-slate-100">
       <header className="sticky top-0 z-20 border-b border-slate-200/80 bg-white/95 px-4 py-3 backdrop-blur">
         <div className="mx-auto flex max-w-2xl items-center justify-between gap-3">
-          <div className="min-w-0">
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-orange-600">SPIKE VC</p>
-            <h1 className="truncate text-lg font-bold text-slate-900">
-              {panelistFinalized ? 'Portfolio locked' : view === 'portfolio' ? 'Investment Committee' : squadName}
-            </h1>
+          <div className="flex min-w-0 items-center gap-2">
+            {!panelistFinalized && view === 'portfolio' ? (
+              <button
+                type="button"
+                onClick={() => setView('invest')}
+                className="inline-flex shrink-0 items-center gap-1 rounded-lg px-2 py-1.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+                aria-label="Back to squad investment"
+              >
+                <ChevronLeft size={18} aria-hidden />
+                Back
+              </button>
+            ) : null}
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-orange-600">SPIKE VC</p>
+              <h1 className="truncate text-lg font-bold text-slate-900">
+                {panelistFinalized ? 'Portfolio locked' : view === 'portfolio' ? 'Investment Committee' : squadName}
+              </h1>
+            </div>
           </div>
           <Wallet size={20} className="shrink-0 text-orange-500" aria-hidden />
         </div>
@@ -422,14 +435,24 @@ export function PitchPanelGuestPage() {
                 </button>
               </>
             ) : (
-              <button
-                type="button"
-                onClick={() => void handleFinalizePortfolio()}
-                disabled={busy || remaining < 0}
-                className={`${BTN_PRIMARY} bg-emerald-600 hover:bg-emerald-700`}
-              >
-                {busy ? 'Finalizing…' : 'Finalize Investment Portfolio'}
-              </button>
+              <>
+                <button
+                  type="button"
+                  onClick={() => setView('invest')}
+                  className="inline-flex min-h-[52px] items-center justify-center gap-1 rounded-xl border border-slate-300 bg-white px-4 text-sm font-bold text-slate-800"
+                >
+                  <ChevronLeft size={16} aria-hidden />
+                  Back to investing
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void handleFinalizePortfolio()}
+                  disabled={busy || remaining < 0}
+                  className={`${BTN_PRIMARY} bg-emerald-600 hover:bg-emerald-700 sm:flex-1`}
+                >
+                  {busy ? 'Finalizing…' : 'Finalize Investment Portfolio'}
+                </button>
+              </>
             )}
           </div>
         </div>
