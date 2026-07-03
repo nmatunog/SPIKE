@@ -2,41 +2,62 @@
   "weekNumber": 6,
   "segment": "advise",
   "title": "Discovery & Approaching",
-  "theme": "Build Trust Before Advice",
+  "theme": "Build trust before advice",
   "modules": ["prospecting", "discovery-approaching"],
   "steps": {
     "learn": {
       "label": "Learn",
       "headline": "Discovery conversations",
-      "summary": "Listen first — advice comes after trust.",
+      "summary": "Listen first. Understand needs before you recommend solutions.",
       "durationMinutes": 20,
-      "bullets": ["Discovery vs. presentation", "Open questions", "Documenting learnings"]
+      "bullets": [
+        "Discovery questions that uncover goals and concerns",
+        "Approaching with respect and professionalism",
+        "Documenting insights for later recommendations"
+      ],
+      "callout": "Trust is the bridge between prospecting and presenting solutions."
     },
     "workshop": {
       "label": "Workshop",
       "headline": "Discovery role-play",
-      "summary": "Practice needs-based conversations.",
+      "summary": "Practice discovery interviews with coach observation.",
       "durationMinutes": 90,
-      "bullets": ["Squad pairs", "Coach observation", "Debrief"]
+      "bullets": [
+        "Run discovery dialogues in pairs",
+        "Capture notes on goals, risks, and priorities",
+        "Coach debrief on listening quality"
+      ],
+      "callout": "Mark complete after class."
     },
     "assignment": {
       "label": "Assignment",
-      "headline": "Discovery conversation log",
-      "summary": "Record notes from at least one real or practice conversation.",
-      "durationMinutes": 60,
+      "headline": "Discovery log",
+      "summary": "Record real or practice discovery conversations.",
+      "durationMinutes": 45,
+      "bullets": [
+        "Log at least one discovery conversation",
+        "Note client goals and open questions",
+        "Identify what you still need to learn"
+      ],
       "action": { "type": "discovery-log", "label": "Open discovery log" }
     },
     "reflection": {
       "label": "Reflection",
-      "headline": "Trust-building insights",
+      "headline": "What did listening teach you?",
+      "summary": "Connect discovery to your persona and value proposition.",
       "durationMinutes": 10,
-      "prompts": ["What did you hear that surprised you?", "When did the client open up?", "What would you do differently?"]
+      "prompts": [
+        "What did you hear that you did not expect?",
+        "How will this change your recommendation?",
+        "What question will you ask next time?"
+      ]
     },
     "submit": {
       "label": "Submit",
       "headline": "Mark Week 6 complete",
+      "summary": "Unlock Week 7 — Presenting Solutions.",
       "durationMinutes": 2,
-      "bullets": ["Discovery log saved"]
+      "bullets": ["Discovery log updated"]
     }
   }
 }

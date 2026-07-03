@@ -1,0 +1,16 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "portal-ra-spike",
+  "main": "src/index.js",
+  "compatibility_date": "2026-07-03",
+  "workers_dev": false,
+  "routes": [
+    { "pattern": "portal.1cma.online/ra-spike", "zone_name": "1cma.online" },
+    { "pattern": "portal.1cma.online/ra-spike/*", "zone_name": "1cma.online" },
+    { "pattern": "portal.1cma.online/content/ra-spike/*", "zone_name": "1cma.online" },
+    { "pattern": "portal.1cma.online/program-coach/ra-spike", "zone_name": "1cma.online" },
+    { "pattern": "portal.1cma.online/program-coach/ra-spike/*", "zone_name": "1cma.online" },
+    { "pattern": "portal.1cma.online/mentor/ra-spike", "zone_name": "1cma.online" },
+    { "pattern": "portal.1cma.online/mentor/ra-spike/*", "zone_name": "1cma.online" }
+  ]
+}

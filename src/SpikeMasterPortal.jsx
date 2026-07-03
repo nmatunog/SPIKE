@@ -245,13 +245,14 @@ const SpikeMasterPortal = () => {
     const atRaSpikeEntry = path === '/ra-spike' || path === '/ra-spike/';
     const atHome = path === ROUTES.home;
 
-    // Legacy staff RA-SPIKE URLs (pre portal proxy) → stay under /ra-spike/*
+    // Legacy staff RA-SPIKE URLs must full-reload into the /ra-spike proxy app
+    // (client navigate would keep the internship bundle and DB).
     if (path === '/program-coach/ra-spike' || path.startsWith('/program-coach/ra-spike/')) {
-      navigate(ROUTES.programCoachRaSpike, { replace: true });
+      window.location.replace(ROUTES.programCoachRaSpike);
       return;
     }
     if (path === '/mentor/ra-spike' || path.startsWith('/mentor/ra-spike/')) {
-      navigate(ROUTES.mentorRaSpike, { replace: true });
+      window.location.replace(ROUTES.mentorRaSpike);
       return;
     }
 
