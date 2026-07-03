@@ -188,6 +188,7 @@ export function FecCanvasProjectionView({
           mode={displayMode}
           variant="poster"
           validationFocus={participantContent?.validationFocus}
+          engineBoxesActive={participantContent?.engineBoxesActive}
           boxScores={participantContent?.boxScores ?? {}}
           animateScores={Boolean(participantContent?.validationFocus)}
           headerMeta={participantContent?.headerMeta}

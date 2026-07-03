@@ -270,6 +270,7 @@ function FecSimpleBox({
  *   showFooter?: boolean,
  *   variant?: 'poster' | 'embedded',
  *   validationFocus?: boolean,
+ *   engineBoxesActive?: boolean,
  *   boxScores?: Record<string, { before?: number, after?: number, status?: string, evidenceCount?: number }>,
  *   animateScores?: boolean,
  *   headerMeta?: { weekLabel?: string, dayLabel?: string, subtitle?: string },
@@ -285,6 +286,7 @@ export function FecCanvasLayout({
   showFooter = true,
   variant = 'poster',
   validationFocus = false,
+  engineBoxesActive = false,
   boxScores = {},
   animateScores = true,
   headerMeta,
@@ -297,8 +299,14 @@ export function FecCanvasLayout({
   const roadmapContent = complexContents.venture_roadmap ?? {};
   const dashboardContent = complexContents.measurement_dashboard ?? {};
 
+  const growthHasContent = Object.values(growthContent).some((value) => String(value ?? '').trim());
+  const financialHasContent = Object.values(financialContent).some((value) => String(value ?? '').trim());
+  const enginesOpen = engineBoxesActive || growthHasContent || financialHasContent;
+
   const activeBoxIds = new Set(['who_we_serve', 'problem_we_solve', 'client_experience', 'winning_strategy']);
   const dimClass = validationFocus ? 'opacity-35 grayscale pointer-events-none' : '';
+  const growthDimClass = validationFocus && !enginesOpen ? dimClass : '';
+  const financialDimClass = validationFocus && !financialHasContent && !engineBoxesActive ? dimClass : '';
 
   const weekBadge = headerMeta?.weekLabel ?? 'Week 1';
   const dayBadge = headerMeta?.dayLabel ?? 'Day 4';
@@ -372,7 +380,7 @@ export function FecCanvasLayout({
           ))}
 
           {/* Row 2 — Growth | UVP center | Financial */}
-          <div className={`lg:col-span-4 lg:row-start-2 ${dimClass}`}>
+          <div className={`lg:col-span-4 lg:row-start-2 ${growthDimClass}`}>
             <FecSideComplexBox
               box={FEC_GROWTH_ENGINES_BOX}
               mode={mode}
@@ -390,7 +398,7 @@ export function FecCanvasLayout({
               focused={validationFocus}
             />
           </div>
-          <div className={`lg:col-span-4 lg:col-start-9 lg:row-start-2 ${dimClass}`}>
+          <div className={`lg:col-span-4 lg:col-start-9 lg:row-start-2 ${financialDimClass}`}>
             <FecSideComplexBox
               box={FEC_FINANCIAL_ENGINE_BOX}
               mode={mode}

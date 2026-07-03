@@ -127,9 +127,13 @@ export function MyVentureHQ({ participantId, state, squadNameFallback = '' }) {
               variant="embedded"
               showHeader={false}
               showFooter={false}
+              validationFocus={fecPreview.validationFocus}
+              engineBoxesActive={fecPreview.engineBoxesActive}
+              boxScores={fecPreview.boxScores ?? {}}
               centerContent={fecPreview.centerContent}
               uvpDetailContent={fecPreview.uvpDetailContent}
               boxContents={fecPreview.boxContents}
+              complexContents={fecPreview.complexContents ?? {}}
             />
           </div>
           </div>

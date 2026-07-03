@@ -22,6 +22,7 @@ export function FecValidationPoster({ participantId, animate = true }) {
         showHeader
         showFooter={false}
         validationFocus={layout.validationFocus}
+        engineBoxesActive={layout.engineBoxesActive}
         animateScores={animate}
         boxScores={layout.boxScores ?? {}}
         headerMeta={

@@ -197,6 +197,11 @@ export function buildFecPreviewContent(participantId) {
     centerContent: layout.centerContent,
     uvpDetailContent: layout.uvpDetailContent,
     boxContents: layout.boxContents,
+    complexContents: layout.complexContents ?? {},
+    validationFocus: layout.validationFocus,
+    engineBoxesActive: layout.engineBoxesActive,
+    boxScores: layout.boxScores,
+    headerMeta: layout.headerMeta,
     canvasHref: internFecCanvasHref(),
   };
 }

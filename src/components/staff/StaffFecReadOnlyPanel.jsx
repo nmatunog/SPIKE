@@ -38,9 +38,13 @@ export function StaffFecReadOnlyPanel({ participantId, participantName = 'Partic
           variant="embedded"
           showHeader={false}
           showFooter={false}
+          validationFocus={preview.validationFocus}
+          engineBoxesActive={preview.engineBoxesActive}
+          boxScores={preview.boxScores ?? {}}
           centerContent={preview.centerContent}
           uvpDetailContent={preview.uvpDetailContent}
           boxContents={preview.boxContents}
+          complexContents={preview.complexContents ?? {}}
         />
       </div>
       {summary.success_revenue ? (

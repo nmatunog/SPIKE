@@ -13,6 +13,11 @@ function pickText(value) {
   return text || undefined;
 }
 
+/** @param {Record<string, string | undefined>} [columns] */
+function columnGroupHasContent(columns) {
+  return Boolean(columns && Object.values(columns).some((value) => pickText(value)));
+}
+
 /**
  * Build projection layout from a participant's synced canvas + venture design data.
  * @param {string} participantId
@@ -76,6 +81,45 @@ export function buildFecLayoutParticipantContent(participantId) {
     || validatedStrategy,
   );
 
+  const complexContents = {
+    growth_engines: {
+      'ADVISOR EXCELLENCE': pickText(getFecField(participantId, 'create_value', 'value_offering')),
+      'TEAM & LEADERSHIP': pickText(
+        getFecField(participantId, 'agency_talent', 'talent_development_system'),
+      ),
+      'SYSTEMS & SCALE': pickText(
+        getFecField(participantId, 'agency_leadership', 'growth_multipliers'),
+      ),
+    },
+    financial_engine: {
+      'REVENUE MODEL': pickText(getFecField(participantId, 'capture_value', 'revenue_streams')),
+      ECONOMICS: pickText(getFecField(participantId, 'capture_value', 'cost_structure')),
+      SUSTAINABILITY: pickText(getFecField(participantId, 'capture_value', 'profit_formula')),
+    },
+    venture_roadmap: {
+      'YEAR 1: ADVISOR EXCELLENCE': pickText(summary.roadmap_12mo),
+      'YEAR 2: UNIT LEADER': pickText(summary.roadmap_24mo),
+      'YEARS 3–4: SENIOR UNIT MANAGER': pickText(summary.roadmap_36mo),
+      'YEAR 5+: AGENCY DIRECTOR': pickText(summary.success_narrative),
+    },
+    measurement_dashboard: {
+      CLIENTS: scorecard.clients
+        ? `Active: ${scorecard.clients}${scorecard.conversion ? ` · Conversion: ${scorecard.conversion}` : ''}`
+        : undefined,
+      REVENUE: pickText(scorecard.revenue) || pickText(summary.success_revenue),
+      PROTECTION: scorecard.families_protected
+        ? `Families: ${scorecard.families_protected}${scorecard.premium_placed ? ` · Premium: ${scorecard.premium_placed}` : ''}`
+        : pickText(summary.success_families_protected),
+      RECRUITMENT: pickText(getFecField(participantId, 'agency_talent', 'recruitment_channels')),
+      LEADERSHIP: pickText(getFecField(participantId, 'agency_leadership', 'leadership_system')),
+      IMPACT: pickText(scorecard.lives_improved),
+    },
+  };
+
+  const hasGrowthEngineContent = columnGroupHasContent(complexContents.growth_engines);
+  const hasFinancialEngineContent = columnGroupHasContent(complexContents.financial_engine);
+  const hasEngineContent = hasGrowthEngineContent || hasFinancialEngineContent;
+
   const hasContent = Boolean(
     mergedCenter
     || mergedBoxes.who_we_serve
@@ -83,6 +127,7 @@ export function buildFecLayoutParticipantContent(participantId) {
     || mergedBoxes.client_experience
     || mergedBoxes.winning_strategy
     || partners
+    || hasEngineContent
     || pickText(summary.roadmap_12mo)
     || pickText(scorecard.revenue),
   );
@@ -93,48 +138,22 @@ export function buildFecLayoutParticipantContent(participantId) {
     uvpDetailContent: mergedCenter,
     boxContents: mergedBoxes,
     validationFocus: hasValidationOverlay,
+    engineBoxesActive: hasEngineContent,
     boxScores: hasValidationOverlay ? boxScores : undefined,
-    headerMeta: hasValidationOverlay
+    headerMeta: hasEngineContent
       ? {
-          weekLabel: 'Week 2',
-          dayLabel: 'FEC Lab',
-          subtitle: 'Your validated venture canvas — boxes 1–5 from interview evidence.',
+          weekLabel: 'Week 3',
+          dayLabel: 'Boxes 6–8',
+          subtitle: 'Growth & Financial Engines — synced from your Week 3 worksheets.',
         }
-      : undefined,
-    complexContents: {
-      growth_engines: {
-        'ADVISOR EXCELLENCE': pickText(getFecField(participantId, 'create_value', 'value_offering')),
-        'TEAM & LEADERSHIP': pickText(
-          getFecField(participantId, 'agency_talent', 'talent_development_system'),
-        ),
-        'SYSTEMS & SCALE': pickText(
-          getFecField(participantId, 'agency_leadership', 'growth_multipliers'),
-        ),
-      },
-      financial_engine: {
-        'REVENUE MODEL': pickText(getFecField(participantId, 'capture_value', 'revenue_streams')),
-        ECONOMICS: pickText(getFecField(participantId, 'capture_value', 'cost_structure')),
-        SUSTAINABILITY: pickText(getFecField(participantId, 'capture_value', 'profit_formula')),
-      },
-      venture_roadmap: {
-        'YEAR 1: ADVISOR EXCELLENCE': pickText(summary.roadmap_12mo),
-        'YEAR 2: UNIT LEADER': pickText(summary.roadmap_24mo),
-        'YEARS 3–4: SENIOR UNIT MANAGER': pickText(summary.roadmap_36mo),
-        'YEAR 5+: AGENCY DIRECTOR': pickText(summary.success_narrative),
-      },
-      measurement_dashboard: {
-        CLIENTS: scorecard.clients
-          ? `Active: ${scorecard.clients}${scorecard.conversion ? ` · Conversion: ${scorecard.conversion}` : ''}`
-          : undefined,
-        REVENUE: pickText(scorecard.revenue) || pickText(summary.success_revenue),
-        PROTECTION: scorecard.families_protected
-          ? `Families: ${scorecard.families_protected}${scorecard.premium_placed ? ` · Premium: ${scorecard.premium_placed}` : ''}`
-          : pickText(summary.success_families_protected),
-        RECRUITMENT: pickText(getFecField(participantId, 'agency_talent', 'recruitment_channels')),
-        LEADERSHIP: pickText(getFecField(participantId, 'agency_leadership', 'leadership_system')),
-        IMPACT: pickText(scorecard.lives_improved),
-      },
-    },
+      : hasValidationOverlay
+        ? {
+            weekLabel: 'Week 2',
+            dayLabel: 'FEC Lab',
+            subtitle: 'Your validated venture canvas — boxes 1–5 from interview evidence.',
+          }
+        : undefined,
+    complexContents,
   };
 }
 
