@@ -37,6 +37,7 @@ export function PitchPanelCoachReviewPanel({
 }) {
   const [matrix, setMatrix] = useState(/** @type {object | null} */ (null));
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [overrides, setOverrides] = useState(() => readCoachOverrides());
   const [dirty, setDirty] = useState(false);
 
@@ -48,9 +49,20 @@ export function PitchPanelCoachReviewPanel({
 
   const loadMatrix = useCallback(async () => {
     setLoading(true);
-    const next = await loadPitchPanelCoachMatrix(squadNames);
-    setMatrix(next);
-    setLoading(false);
+    setLoadError('');
+    try {
+      const next = await loadPitchPanelCoachMatrix(squadNames);
+      setMatrix(next);
+      if (!next?.panelists?.length && squadNames.length) {
+        setLoadError(
+          'No panelist scores yet — share the investor link. If panelists have submitted, tap Refresh live on the dashboard.',
+        );
+      }
+    } catch (err) {
+      setLoadError(err instanceof Error ? err.message : 'Could not load panelist scores.');
+    } finally {
+      setLoading(false);
+    }
   }, [squadNames]);
 
   useEffect(() => {
@@ -138,9 +150,14 @@ export function PitchPanelCoachReviewPanel({
       <section className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-5">
         <p className="text-sm font-semibold text-slate-800">Panelist investment scores</p>
         <p className="mt-1 text-sm text-slate-600">
-          No panelist submissions yet. Share the investor link — scores appear here as panelists save
-          and finalize portfolios.
+          {loadError
+            || 'No panelist submissions yet. Share the investor link — scores appear here as panelists save and finalize portfolios.'}
         </p>
+        {squads.length ? (
+          <p className="mt-2 text-xs text-slate-500">
+            Squads: {squads.join(' · ')}
+          </p>
+        ) : null}
       </section>
     );
   }

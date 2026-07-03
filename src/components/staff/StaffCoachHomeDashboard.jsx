@@ -365,7 +365,7 @@ export function StaffCoachHomeDashboard({
                 <QuickAction
                   to={role === 'mentor' ? ROUTES.mentorPitchPanel : ROUTES.programCoachPitchPanel}
                   icon={Trophy}
-                  label="Pitch panel scores"
+                  label="Demo Day coach view"
                 />
               ) : null}
               <QuickAction to={ROUTES.portfolio} icon={Briefcase} label="Portfolio review" />

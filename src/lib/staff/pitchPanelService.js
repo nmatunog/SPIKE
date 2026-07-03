@@ -243,6 +243,7 @@ export async function syncPitchPanelFromCloud() {
     liveSquads: remote.liveSquads ?? {},
     panelists: remote.panelists ?? [],
     tieVotes: remote.tieVotes ?? {},
+    coachMatrix: remote.coachMatrix ?? null,
   });
   return remote;
 }

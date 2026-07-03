@@ -53,14 +53,12 @@ export function FacultyHomePage({
       {UNLOCK_WEEK2 && programDay.week >= 2 ? (
         <div className="mt-10 space-y-6">
           <Week2CoachTimeline activeDay={programDay.day} role="faculty" interns={interns} />
-          {programDay.day >= 5 ? (
-            <PitchPanelDashboard
-              interns={interns}
-              staffId={staffId}
-              showToast={(msg) => window.alert(msg)}
-              embedded
-            />
-          ) : null}
+          <PitchPanelDashboard
+            interns={interns}
+            staffId={staffId}
+            showToast={(msg) => window.alert(msg)}
+            embedded
+          />
         </div>
       ) : null}
 

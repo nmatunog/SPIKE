@@ -4,6 +4,7 @@
 import {
   PITCH_PANEL_COACH_MATRIX_CACHE_KEY,
   PITCH_PANEL_COACH_OVERRIDES_KEY,
+  PITCH_PANEL_LIVE_STORAGE_KEY,
   PITCH_PANEL_SESSION_ID,
 } from './pitchPanelConstants.js';
 import { fetchPitchPanelCoachMatrixRemote } from '../supabase/pitchPanel.js';
@@ -105,8 +106,21 @@ export function readCoachMatrixCache() {
   return raw;
 }
 
+/** @returns {object | null} */
+function readLivePanelCacheLocal() {
+  const raw = readJson(PITCH_PANEL_LIVE_STORAGE_KEY, null);
+  if (!raw || raw.sessionId !== PITCH_PANEL_SESSION_ID) return null;
+  return raw;
+}
+
 /** @param {string[]} fallbackSquads */
 export async function loadPitchPanelCoachMatrix(fallbackSquads = []) {
+  const live = readLivePanelCacheLocal();
+  if (live?.coachMatrix?.panelists?.length) {
+    writeCoachMatrixCache(live.coachMatrix);
+    return live.coachMatrix;
+  }
+
   try {
     const remote = await fetchPitchPanelCoachMatrixRemote();
     if (remote) {
@@ -114,13 +128,20 @@ export async function loadPitchPanelCoachMatrix(fallbackSquads = []) {
       return remote;
     }
   } catch {
-    /* offline or guest auth */
+    /* try cache below */
   }
+
   const cached = readCoachMatrixCache();
-  if (cached) return cached;
+  if (cached?.panelists?.length) return cached;
+
+  if (live?.coachMatrix) {
+    writeCoachMatrixCache(live.coachMatrix);
+    return live.coachMatrix;
+  }
+
   return {
     sessionId: PITCH_PANEL_SESSION_ID,
-    sessionFinalized: false,
+    sessionFinalized: Boolean(live?.finalized),
     squads: fallbackSquads,
     panelists: [],
   };

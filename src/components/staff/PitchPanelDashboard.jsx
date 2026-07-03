@@ -192,13 +192,15 @@ export function PitchPanelDashboard({ interns, staffId = '', showToast, embedded
         </p>
       )}
 
-      <PitchPanelCoachReviewPanel
-        squadNames={squads.map((s) => s.name)}
-        sessionFinalized={Boolean(finalized)}
-        refreshKey={version + coachRefreshKey}
-        showToast={showToast}
-        onAdjustmentsChange={() => setCoachRefreshKey((k) => k + 1)}
-      />
+      <div id="coach-panelist-scores">
+        <PitchPanelCoachReviewPanel
+          squadNames={squads.map((s) => s.name)}
+          sessionFinalized={Boolean(finalized)}
+          refreshKey={version + coachRefreshKey}
+          showToast={showToast}
+          onAdjustmentsChange={() => setCoachRefreshKey((k) => k + 1)}
+        />
+      </div>
 
       <div className="rounded-3xl bg-gradient-to-br from-slate-900 to-slate-800 p-5 text-white">
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange-400">Live funding leaderboard</p>
