@@ -2,6 +2,8 @@
  * RA-SPIKE enrollment — cohort resolution and squad auto-assignment.
  */
 
+import { RA_SPIKE_AGENCIES } from '../../../shared/raSpikeAgencies.js';
+
 /**
  * @param {import('@supabase/supabase-js').SupabaseClient} admin
  * @param {{ inviteCode?: string, cohortId?: number | string }} opts
@@ -57,10 +59,13 @@ export async function listRaSpikeEnrollmentOptions(admin) {
   }
 
   return {
-    agencies: [...byAgency.values()].map((a) => ({
-      agency: a.agency,
-      unitManagers: [...a.unitManagers.values()],
-    })),
+    agencies: RA_SPIKE_AGENCIES.map((name) => {
+      const entry = byAgency.get(name);
+      return {
+        agency: name,
+        unitManagers: entry ? [...entry.unitManagers.values()] : [],
+      };
+    }),
   };
 }
 

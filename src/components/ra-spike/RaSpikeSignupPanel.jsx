@@ -4,6 +4,7 @@ import { PasswordInput } from '../PasswordInput.jsx';
 import {
   fetchRaSpikeEnrollmentOptions,
 } from '../../lib/raSpikeSignupService.js';
+import { RA_SPIKE_AGENCIES } from '../../../shared/raSpikeAgencies.js';
 
 const STEPS = ['Account', 'Your batch', 'Done'];
 
@@ -52,18 +53,42 @@ export const RaSpikeSignupPanel = memo(function RaSpikeSignupPanel({ onSignup })
   }, []);
 
   useEffect(() => {
-    if (show && !options && !optionsLoading) loadOptions();
-  }, [show, options, optionsLoading, loadOptions]);
+    if (show) void loadOptions();
+  }, [show, loadOptions]);
+
+  useEffect(() => {
+    if (step === 1) void loadOptions();
+  }, [step, loadOptions]);
+
+  const agencyOptions = useMemo(() => {
+    const fromApi = options?.agencies ?? [];
+    if (fromApi.length) return fromApi;
+    return RA_SPIKE_AGENCIES.map((name) => ({ agency: name, unitManagers: [] }));
+  }, [options]);
 
   const unitManagers = useMemo(() => {
-    const entry = options?.agencies?.find((a) => a.agency === agency);
+    const entry = agencyOptions.find((a) => a.agency === agency);
     return entry?.unitManagers ?? [];
-  }, [options, agency]);
+  }, [agencyOptions, agency]);
 
   const batches = useMemo(() => {
     const entry = unitManagers.find((u) => u.unitManager === unitManager);
     return entry?.batches ?? [];
   }, [unitManagers, unitManager]);
+
+  useEffect(() => {
+    if (!agency || !unitManagers.length) return;
+    if (unitManagers.length === 1 && !unitManager) {
+      setUnitManager(unitManagers[0].unitManager);
+    }
+  }, [agency, unitManagers, unitManager]);
+
+  useEffect(() => {
+    if (!unitManager || !batches.length) return;
+    if (batches.length === 1 && !cohortId) {
+      setCohortId(String(batches[0].cohortId));
+    }
+  }, [unitManager, batches, cohortId]);
 
   function resetForm() {
     setStep(0);
@@ -226,11 +251,16 @@ export const RaSpikeSignupPanel = memo(function RaSpikeSignupPanel({ onSignup })
                       className={fieldClass}
                     >
                       <option value="">Select agency</option>
-                      {(options?.agencies ?? []).map((a) => (
+                      {agencyOptions.map((a) => (
                         <option key={a.agency} value={a.agency}>{a.agency}</option>
                       ))}
                     </select>
                   </label>
+                  {agency && !unitManagers.length ? (
+                    <p className="rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-900">
+                      No open batches for this agency yet. Enter your invite code above or ask your coach.
+                    </p>
+                  ) : null}
                   <label className="block text-sm">
                     <span className="mb-1 block font-medium text-slate-700">Unit Manager</span>
                     <select
@@ -240,9 +270,11 @@ export const RaSpikeSignupPanel = memo(function RaSpikeSignupPanel({ onSignup })
                         setCohortId('');
                       }}
                       className={fieldClass}
-                      disabled={!agency}
+                      disabled={!agency || !unitManagers.length}
                     >
-                      <option value="">Select unit manager</option>
+                      <option value="">
+                        {!agency ? 'Select agency first' : unitManagers.length ? 'Select unit manager' : 'No unit managers yet'}
+                      </option>
                       {unitManagers.map((u) => (
                         <option key={u.unitManager} value={u.unitManager}>{u.unitManager}</option>
                       ))}
@@ -254,9 +286,11 @@ export const RaSpikeSignupPanel = memo(function RaSpikeSignupPanel({ onSignup })
                       value={cohortId}
                       onChange={(e) => setCohortId(e.target.value)}
                       className={fieldClass}
-                      disabled={!unitManager}
+                      disabled={!unitManager || !batches.length}
                     >
-                      <option value="">Select batch</option>
+                      <option value="">
+                        {!unitManager ? 'Select unit manager first' : batches.length ? 'Select batch' : 'No batches yet'}
+                      </option>
                       {batches.map((b) => (
                         <option key={b.cohortId} value={String(b.cohortId)}>{b.batchLabel}</option>
                       ))}

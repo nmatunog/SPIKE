@@ -7,6 +7,7 @@ import {
   staffSetActiveCohort,
 } from '../../lib/staffRaSpikeBatchService.js';
 import { usePortalWriteAccess } from '../../hooks/usePortalWriteAccess.js';
+import { RA_SPIKE_AGENCIES } from '../../../shared/raSpikeAgencies.js';
 
 const INPUT =
   'w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-spike focus:ring-2 focus:ring-spike/20';
@@ -143,7 +144,12 @@ export function RaSpikeBatchManagementPanel({ showToast, onChanged }) {
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
               <label className="block text-sm">
                 <span className="mb-1 block font-medium text-slate-700">Agency</span>
-                <input required value={agency} onChange={(e) => setAgency(e.target.value)} className={INPUT} />
+                <select required value={agency} onChange={(e) => setAgency(e.target.value)} className={INPUT}>
+                  <option value="">Select agency</option>
+                  {RA_SPIKE_AGENCIES.map((name) => (
+                    <option key={name} value={name}>{name}</option>
+                  ))}
+                </select>
               </label>
               <label className="block text-sm">
                 <span className="mb-1 block font-medium text-slate-700">Unit Manager</span>
