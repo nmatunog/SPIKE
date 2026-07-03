@@ -112,14 +112,14 @@ export function RaSpikeWeek1FacultyPanel({ interns, showToast, onChanged }) {
   const completeCount = rows.filter((r) => r.faculty_status === 'complete').length;
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <div className="border-b border-slate-100 px-4 py-4 sm:px-5">
+    <section className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-sm">
+      <div className="border-b border-slate-100 bg-gradient-to-r from-spike-muted/40 to-white px-4 py-4 sm:px-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-spike">Week 1</p>
-            <h2 className="mt-1 text-lg font-bold text-slate-900">Faculty review</h2>
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-spike">Week 1</p>
+            <h2 className="mt-1 text-lg font-bold tracking-tight text-slate-900">Faculty review</h2>
             <p className="mt-1 text-sm text-slate-600">
-              Attendance, submissions, Complete / Incomplete only. Publish unlocks Week 2.
+              Attendance · submissions · Complete / Incomplete · publish Week 2
             </p>
           </div>
           {canWrite ? (
@@ -127,7 +127,7 @@ export function RaSpikeWeek1FacultyPanel({ interns, showToast, onChanged }) {
               type="button"
               disabled={busy === 'publish' || completeCount === 0}
               onClick={() => void publishWeek2()}
-              className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-spike px-4 py-2 text-sm font-bold text-white disabled:opacity-50"
+              className="inline-flex min-h-[48px] items-center gap-2 rounded-2xl bg-spike px-4 py-2.5 text-sm font-bold text-white shadow-md shadow-spike/20 disabled:opacity-50"
             >
               {busy === 'publish' ? <Loader2 size={16} className="animate-spin" /> : <Unlock size={16} />}
               Publish Week 2 ({completeCount})
