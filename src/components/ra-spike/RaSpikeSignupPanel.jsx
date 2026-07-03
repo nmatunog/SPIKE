@@ -62,8 +62,8 @@ export const RaSpikeSignupPanel = memo(function RaSpikeSignupPanel({ onSignup })
 
   const agencyOptions = useMemo(() => {
     const fromApi = options?.agencies ?? [];
-    if (fromApi.length) return fromApi;
-    return RA_SPIKE_AGENCIES.map((name) => ({ agency: name, unitManagers: [] }));
+    const byName = new Map(fromApi.map((a) => [a.agency, a]));
+    return RA_SPIKE_AGENCIES.map((name) => byName.get(name) ?? { agency: name, unitManagers: [] });
   }, [options]);
 
   const unitManagers = useMemo(() => {
