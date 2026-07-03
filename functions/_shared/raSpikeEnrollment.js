@@ -2,7 +2,7 @@
  * RA-SPIKE enrollment — cohort resolution and squad auto-assignment.
  */
 
-import { raSpikeHomeOrgOptions } from '../../../shared/raSpikeAgencies.js';
+import { raSpikeHomeOrgOptions } from './raSpikeAgencies.js';
 
 /**
  * @param {import('@supabase/supabase-js').SupabaseClient} admin
