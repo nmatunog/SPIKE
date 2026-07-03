@@ -15,13 +15,19 @@ export class SupabaseGameRoomRepository implements GameRoomRepository {
   }
 
   private async authUserId(): Promise<string | null> {
+    const { data: sessionData } = await this.client.auth.getSession()
+    if (sessionData.session?.user?.id) {
+      return sessionData.session.user.id
+    }
     const { data } = await this.client.auth.getUser()
     return data.user?.id ?? null
   }
 
   private resolveHostAuthId(room: GameRoomState, authUid: string | null): string | null {
     const hostId = room.hostPlayerId ?? room.facilitatorId ?? null
-    if (authUid && hostId && !UUID_RE.test(hostId)) {
+    if (!authUid) return hostId
+    // Empty room on create has no host yet — bind facilitator to the signed-in user.
+    if (!hostId || !UUID_RE.test(String(hostId))) {
       return authUid
     }
     return hostId
@@ -30,6 +36,9 @@ export class SupabaseGameRoomRepository implements GameRoomRepository {
   async save(room: GameRoomState): Promise<void> {
     const authUid = await this.authUserId()
     const hostAuthId = this.resolveHostAuthId(room, authUid)
+    if (!hostAuthId) {
+      throw new Error('Sign in to create or save a SPIKE LIFE multiplayer room.')
+    }
 
     const { error } = await this.client.from('spike_life_game_rooms').upsert({
       id: room.id,

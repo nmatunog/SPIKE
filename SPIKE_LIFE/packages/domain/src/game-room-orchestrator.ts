@@ -92,7 +92,6 @@ export async function joinGameRoom(
   if (workshop.dreamBoard?.goals?.length) {
     // Players complete Life Blueprint in the setup phase — do not auto-submit.
   }
-  await deps.simulationRepo.save(workshop)
 
   const room = GameRoom.fromState(existing).join(
     playerId,
@@ -101,6 +100,7 @@ export async function joinGameRoom(
     archetypeId,
   )
   await deps.gameRoomRepo.save(room.toState())
+  await deps.simulationRepo.save(workshop)
   return room.toState()
 }
 
