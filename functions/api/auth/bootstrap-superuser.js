@@ -109,9 +109,12 @@ export async function onRequest(ctx) {
     const userId = await ensureSuperuserAccount(admin, { name, email, password });
     return json({ ok: true, userId, mode: 'repair' });
   } catch (err) {
-    return json(
-      { message: err instanceof Error ? err.message : 'Bootstrap failed.' },
-      400,
-    );
+    const message =
+      (err && typeof err === 'object' && 'message' in err && err.message)
+        ? String(err.message)
+        : err instanceof Error
+          ? err.message
+          : 'Bootstrap failed.';
+    return json({ message }, 400);
   }
 }

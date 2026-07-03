@@ -29,3 +29,4 @@
 20260805_ra_spike_canonical_units.sql
 20260806_ra_spike_mixed_batches.sql
 20260808_ra_spike_program_isolation.sql
+20260809_bootstrap_superuser_profile_rpc.sql

@@ -85,15 +85,11 @@ export async function ensureSuperuserAccount(admin, { name, email, password }) {
     }
   }
 
-  const { error: profileErr } = await admin.from('profiles').upsert(
-    {
-      id: userId,
-      email: normalizedEmail,
-      name: displayName,
-      role: 'SUPERUSER',
-    },
-    { onConflict: 'id' },
-  );
+  const { error: profileErr } = await admin.rpc('service_upsert_superuser_profile', {
+    p_id: userId,
+    p_email: normalizedEmail,
+    p_name: displayName,
+  });
   if (profileErr) throw profileErr;
 
   return userId;
