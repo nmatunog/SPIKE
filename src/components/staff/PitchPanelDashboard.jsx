@@ -19,6 +19,13 @@ import {
 } from '../../lib/staff/pitchPanelService.js';
 import { ROUTES } from '../../routes/paths.js';
 import { PitchPanelGuestPage } from '../../pages/pitchPanel/PitchPanelGuestPage.jsx';
+import { PitchPanelCoachReviewPanel } from './PitchPanelCoachReviewPanel.jsx';
+import {
+  computeEffectiveSquadTotals,
+  hasCoachOverrides,
+  readCoachMatrixCache,
+  readCoachOverrides,
+} from '../../lib/staff/pitchPanelCoachReview.js';
 import { ConfettiCelebration } from '../pitchPanel/PitchPanelCelebration.jsx';
 import { PitchFundingResults } from '../pitchPanel/PitchPanelInvestmentUI.jsx';
 
@@ -44,19 +51,35 @@ export function PitchPanelDashboard({ interns, staffId = '', showToast, embedded
   const [busy, setBusy] = useState(false);
   const [showGuestPreview, setShowGuestPreview] = useState(false);
   const [showResults, setShowResults] = useState(false);
+  const [coachRefreshKey, setCoachRefreshKey] = useState(0);
 
   const guestUrl = pitchPanelGuestHref();
   const previewPayload = buildFinalizePayload(squads);
+  const coachOverrides = readCoachOverrides();
+  const coachMatrix = readCoachMatrixCache();
+  const coachAdjusted =
+    coachMatrix?.panelists?.length && hasCoachOverrides(coachOverrides);
+  const effectiveTotals = coachAdjusted
+    ? computeEffectiveSquadTotals(
+        coachMatrix,
+        coachOverrides,
+        squads.map((s) => s.name),
+      )
+    : null;
 
   const leaderboard = useMemo(() => {
     if (finalized?.leaderboard?.length) return finalized.leaderboard;
     return buildInvestmentLeaderboard(
       squads.map((s) => ({
         squadName: s.name,
-        totalInvestment: live?.liveSquads?.[s.name]?.finalInvestment ?? live?.liveSquads?.[s.name]?.totalInvestment ?? 0,
+        totalInvestment:
+          effectiveTotals?.[s.name]
+          ?? live?.liveSquads?.[s.name]?.finalInvestment
+          ?? live?.liveSquads?.[s.name]?.totalInvestment
+          ?? 0,
       })),
     );
-  }, [finalized, live, squads]);
+  }, [finalized, live, squads, effectiveTotals]);
 
   const panelists = live?.panelists ?? [];
 
@@ -164,9 +187,18 @@ export function PitchPanelDashboard({ interns, staffId = '', showToast, embedded
         </div>
       ) : (
         <p className="rounded-xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
-          Provisional investments update live. Lock results after all panelists finalize portfolios.
+          Provisional investments update live. Review panelist scores below, adjust if needed, then lock
+          results after all panelists finalize portfolios.
         </p>
       )}
+
+      <PitchPanelCoachReviewPanel
+        squadNames={squads.map((s) => s.name)}
+        sessionFinalized={Boolean(finalized)}
+        refreshKey={version + coachRefreshKey}
+        showToast={showToast}
+        onAdjustmentsChange={() => setCoachRefreshKey((k) => k + 1)}
+      />
 
       <div className="rounded-3xl bg-gradient-to-br from-slate-900 to-slate-800 p-5 text-white">
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange-400">Live funding leaderboard</p>
@@ -189,7 +221,12 @@ export function PitchPanelDashboard({ interns, staffId = '', showToast, embedded
         {squads.map((squad) => {
           const liveRow = live?.liveSquads?.[squad.name] ?? {};
           const finalRow = finalized?.squads?.[squad.name];
-          const total = finalRow?.totalInvestment ?? liveRow.finalInvestment ?? liveRow.totalInvestment ?? 0;
+          const total =
+            finalRow?.totalInvestment
+            ?? effectiveTotals?.[squad.name]
+            ?? liveRow.finalInvestment
+            ?? liveRow.totalInvestment
+            ?? 0;
           const xp = finalRow?.week2PanelXp ?? previewPayload[squad.name]?.week2PanelXp ?? 0;
           const pending = !finalized && (liveRow.provisionalInvestment ?? 0) > 0;
 
@@ -201,6 +238,7 @@ export function PitchPanelDashboard({ interns, staffId = '', showToast, embedded
                   <p className="mt-0.5 text-sm text-slate-500">
                     {liveRow.finalizedInvestorCount ?? liveRow.investorCount ?? 0} investor(s)
                     {pending ? ' · provisional' : ''}
+                    {coachAdjusted && !finalized ? ' · coach adjusted' : ''}
                   </p>
                 </div>
                 <div className="text-right">
@@ -218,9 +256,9 @@ export function PitchPanelDashboard({ interns, staffId = '', showToast, embedded
         })}
       </ul>
 
-      {panelists.length ? (
+      {panelists.length && finalized ? (
         <details className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
-          <summary className="cursor-pointer font-semibold text-slate-800">Panelist portfolios ({panelists.length})</summary>
+          <summary className="cursor-pointer font-semibold text-slate-800">Panelist summary ({panelists.length})</summary>
           <ul className="mt-3 space-y-2 text-sm">
             {panelists.map((p) => (
               <li key={p.panelistToken} className="flex flex-wrap justify-between gap-2 border-t border-slate-100 pt-2">

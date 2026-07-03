@@ -29,6 +29,8 @@ export const PITCH_PANEL_LIVE_STORAGE_KEY = 'spike_pitch_panel_live_v1';
 export const PITCH_PANEL_FINAL_STORAGE_KEY = 'spike_pitch_panel_final_v1';
 export const PITCH_PANEL_TOKEN_STORAGE_KEY = 'spike_pitch_panel_token_v1';
 export const PITCH_PANEL_INVESTMENTS_CACHE_KEY = 'spike_pitch_panel_investments_v1';
+export const PITCH_PANEL_COACH_OVERRIDES_KEY = 'spike_pitch_panel_coach_overrides_v1';
+export const PITCH_PANEL_COACH_MATRIX_CACHE_KEY = 'spike_pitch_panel_coach_matrix_v1';
 
 /** Pitch order for Week 2 Demo Day (Segment 1 cohort). */
 export const PITCH_PANEL_SQUAD_ORDER = ['Cassiopeia', 'Pegasus', 'Argo Navis'];

@@ -20,6 +20,14 @@ import { loadSquadDesignRecord } from '../ventureDesignStudioService.js';
 import { loadFecValidation } from '../customerDiscovery/week2FecValidationStorage.js';
 import { getSquadNameForParticipant } from '../customerDiscovery/week2SquadEvidenceService.js';
 import { loadWeek2Discovery } from '../customerDiscovery/week2DiscoveryStorage.js';
+import {
+  buildEffectiveSquadCards,
+  computeEffectiveSquadTotals,
+  hasCoachOverrides,
+  readCoachMatrixCache,
+  readCoachOverrides,
+} from './pitchPanelCoachReview.js';
+import { writePanelInvestmentsToPortfolio } from '../customerDiscovery/week2PanelFeedbackSync.js';
 
 const REVIEW_KEY = 'spike_squad_mentor_review_v1';
 
@@ -246,11 +254,26 @@ export async function syncPitchPanelFromCloud() {
 export function buildFinalizePayload(squads, week = PITCH_PANEL_WEEK) {
   const live = readLivePanelCache();
   const liveSquads = live?.liveSquads ?? {};
+  const overrides = readCoachOverrides();
+  const coachMatrix = readCoachMatrixCache();
+  const useCoachAdjustments = coachMatrix?.panelists?.length && hasCoachOverrides(overrides);
+
+  const effectiveTotals = useCoachAdjustments
+    ? computeEffectiveSquadTotals(
+        coachMatrix,
+        overrides,
+        squads.map((s) => s.name),
+      )
+    : null;
 
   const leaderboard = buildInvestmentLeaderboard(
     squads.map((s) => ({
       squadName: s.name,
-      finalInvestment: liveSquads[s.name]?.finalInvestment ?? 0,
+      finalInvestment:
+        effectiveTotals?.[s.name]
+        ?? liveSquads[s.name]?.finalInvestment
+        ?? liveSquads[s.name]?.totalInvestment
+        ?? 0,
     })),
   );
 
@@ -283,18 +306,26 @@ export function buildFinalizePayload(squads, week = PITCH_PANEL_WEEK) {
   for (const squad of squads) {
     const liveRow = liveSquads[squad.name] ?? {};
     const rank = rankMap.get(squad.name) ?? squads.length;
-    results[squad.name] = resolveSquadPanelResult(
-      squad.name,
-      squad.memberIds,
-      {
-        totalInvestment: liveRow.totalInvestment,
-        finalInvestment: liveRow.finalInvestment,
-        investorCount: liveRow.investorCount,
-        finalizedInvestorCount: liveRow.finalizedInvestorCount,
-      },
-      week,
-      rank,
-    );
+    const totalInvestment =
+      effectiveTotals?.[squad.name]
+      ?? liveRow.finalInvestment
+      ?? liveRow.totalInvestment
+      ?? 0;
+    results[squad.name] = {
+      ...resolveSquadPanelResult(
+        squad.name,
+        squad.memberIds,
+        {
+          totalInvestment: liveRow.totalInvestment,
+          finalInvestment: totalInvestment,
+          investorCount: liveRow.investorCount,
+          finalizedInvestorCount: liveRow.finalizedInvestorCount,
+        },
+        week,
+        rank,
+      ),
+      coachAdjusted: Boolean(useCoachAdjustments && effectiveTotals?.[squad.name] != null),
+    };
   }
 
   return results;
@@ -307,6 +338,18 @@ export function buildFinalizePayload(squads, week = PITCH_PANEL_WEEK) {
 export async function finalizePitchPanelScores(squads, week = PITCH_PANEL_WEEK) {
   const payload = buildFinalizePayload(squads, week);
   writeFinalizedPanelCache(payload);
+
+  const overrides = readCoachOverrides();
+  const coachMatrix = readCoachMatrixCache();
+  if (coachMatrix?.panelists?.length && hasCoachOverrides(overrides)) {
+    for (const squad of squads) {
+      const cards = buildEffectiveSquadCards(squad.name, coachMatrix, overrides);
+      for (const memberId of squad.memberIds) {
+        if (memberId) writePanelInvestmentsToPortfolio(memberId, squad.name, cards);
+      }
+    }
+  }
+
   try {
     await finalizePitchPanelRemote(payload);
   } catch (err) {

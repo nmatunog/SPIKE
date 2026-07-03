@@ -113,6 +113,16 @@ export async function fetchPitchPanelStateRemote(sessionId = PITCH_PANEL_SESSION
   return data ?? null;
 }
 
+/** @param {string} [sessionId] */
+export async function fetchPitchPanelCoachMatrixRemote(sessionId = PITCH_PANEL_SESSION_ID) {
+  const client = assertClient();
+  const { data, error } = await client.rpc('fetch_pitch_panel_coach_matrix', {
+    p_session_id: sessionId,
+  });
+  if (error) throw new Error(error.message);
+  return data ?? null;
+}
+
 /**
  * @param {Record<string, object>} squadResults
  */
