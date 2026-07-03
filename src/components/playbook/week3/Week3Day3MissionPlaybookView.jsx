@@ -17,7 +17,6 @@ import { isWeek3Day3FecEditSlug } from '../../../lib/week3Day3PortfolioService.j
  *   programWeek?: number,
  *   focusReflection?: boolean,
  *   pendingReflection?: { week: number, day: number, title: string, label: string } | null,
- *   bundle: import('../../../lib/contentLoader.js').DayContentBundle,
  *   onOpenCurriculum?: () => void,
  *   onProgress?: () => void,
  *   onMissionNavigate?: (slug: string) => void,
@@ -30,7 +29,6 @@ export function Week3Day3MissionPlaybookView({
   programWeek = 3,
   focusReflection = false,
   pendingReflection = null,
-  bundle,
   onOpenCurriculum,
   onProgress,
   onMissionNavigate,
@@ -125,14 +123,13 @@ export function Week3Day3MissionPlaybookView({
       ) : null}
 
       {!staffPreview ? (
-        <div id="playbook-day-reflection" className="scroll-mt-24">
-          <PlaybookDayClosingReflectionBlock
-            bundle={bundle}
-            participantId={participantId}
-            onCompleted={onProgress}
-            highlightPending={Boolean(pendingReflection) || focusReflection}
-          />
-        </div>
+        <PlaybookDayClosingReflectionBlock
+          week={3}
+          day={3}
+          participantId={participantId}
+          onCompleted={onProgress}
+          focusReflection={Boolean(pendingReflection) || focusReflection}
+        />
       ) : null}
     </div>
   );

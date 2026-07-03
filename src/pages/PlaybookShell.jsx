@@ -420,7 +420,6 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
         programWeek={entryWeek}
         focusReflection={focusReflection}
         pendingReflection={pendingTodayReflection}
-        bundle={bundle}
         onOpenCurriculum={openCurriculumView}
         onProgress={() => setRefreshKey((k) => k + 1)}
         onMissionNavigate={(slug) => {

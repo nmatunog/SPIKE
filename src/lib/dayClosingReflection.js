@@ -1,11 +1,14 @@
 import { getReflectionMapping } from './activityBlueprintMappings.js';
 
 const CLOSING_REFLECTION_PATTERN = /^reflection-day-(\d+)-close$/;
-const WEEK2_REFLECTION_PATTERN = /^reflection-w2-d(\d+)$/;
+const WEEK_N_REFLECTION_PATTERN = /^reflection-w(\d+)-d(\d+)$/;
 
 /** @param {string} reflectionId */
 export function isDayClosingReflection(reflectionId) {
-  return CLOSING_REFLECTION_PATTERN.test(reflectionId) || WEEK2_REFLECTION_PATTERN.test(reflectionId);
+  return (
+    CLOSING_REFLECTION_PATTERN.test(reflectionId)
+    || WEEK_N_REFLECTION_PATTERN.test(reflectionId)
+  );
 }
 
 /**
@@ -14,8 +17,8 @@ export function isDayClosingReflection(reflectionId) {
  * @returns {{ week: number, day: number } | null}
  */
 export function weekDayFromReflectionMeta(reflectionId, dayId) {
-  const w2 = reflectionId.match(WEEK2_REFLECTION_PATTERN);
-  if (w2) return { week: 2, day: Number(w2[1]) };
+  const wN = reflectionId.match(WEEK_N_REFLECTION_PATTERN);
+  if (wN) return { week: Number(wN[1]), day: Number(wN[2]) };
 
   const w1 = reflectionId.match(CLOSING_REFLECTION_PATTERN);
   if (w1) return { week: 1, day: Number(w1[1]) };
@@ -35,8 +38,8 @@ export function weekDayFromReflectionMeta(reflectionId, dayId) {
 export function dayNumberFromClosingReflectionId(reflectionId) {
   const match = reflectionId.match(CLOSING_REFLECTION_PATTERN);
   if (match) return Number(match[1]);
-  const w2 = reflectionId.match(WEEK2_REFLECTION_PATTERN);
-  return w2 ? Number(w2[1]) : null;
+  const wN = reflectionId.match(WEEK_N_REFLECTION_PATTERN);
+  return wN ? Number(wN[2]) : null;
 }
 
 /**
@@ -65,7 +68,7 @@ export function normalizeBundleReflections(bundle) {
 }
 
 /**
- * End-of-playbook-day reflections interns must complete (Week 1 + Week 2).
+ * End-of-playbook-day reflections interns must complete (Week 1–5).
  * @param {{ reflections?: { reflections?: Array<object> } | Array<object> }} bundle
  */
 export function getPlaybookDayReflections(bundle) {

@@ -32,14 +32,17 @@ export function syncFinancialEngineToFec(participantId, state) {
 
   const summary = `Y1 ₱${Number(state.revenueModel.year1Revenue || 0).toLocaleString()} → Y3 ₱${Number(state.scaling.year3Revenue || 0).toLocaleString()}`;
 
-  createPortfolioArtifactDraft(participantId, {
+  const body = [revenueModel, state.economics.costStructureNarrative, state.sustainability.profitFormulaNarrative]
+    .filter(Boolean)
+    .join('\n\n---\n\n');
+
+  createPortfolioArtifactDraft({
+    participantId,
+    sectionId: 'portfolio-advisor-startup',
     title: 'Financial Engine Worksheet',
+    content: body,
     sourceType: 'financial_engine_worksheet',
     sourceId: 'week-3-day-4',
-    summary,
-    bodyMarkdown: [revenueModel, state.economics.costStructureNarrative, state.sustainability.profitFormulaNarrative]
-      .filter(Boolean)
-      .join('\n\n---\n\n'),
   });
 
   appendBlueprintTimelineEvent(participantId, {

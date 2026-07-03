@@ -1,8 +1,10 @@
-import { BookOpen } from 'lucide-react';
+import { BookOpen, Briefcase } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Week3Day5FecPitchPanel } from './Week3Day5FecPitchPanel.jsx';
 import { PlaybookDayClosingReflectionBlock } from '../PlaybookDayClosingReflectionBlock.jsx';
 import { PlaybookReflectionNudge } from '../PlaybookReflectionNudge.jsx';
 import { ParticipantSquadXpCard } from '../../staff/SquadXpDashboard.jsx';
+import { ROUTES } from '../../../routes/paths.js';
 
 /**
  * Week 3 Day 5 mission-first Playbook — FEC pitch prep for boxes 4–7.
@@ -55,27 +57,34 @@ export function Week3Day5MissionPlaybookView({
       {onOpenCurriculum ? (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
           <p className="text-sm text-slate-700">Coach slides, pitch rubric, and gate checklist for today.</p>
-          <button
-            type="button"
-            onClick={onOpenCurriculum}
-            className="inline-flex items-center gap-2 text-sm font-semibold text-spike hover:underline"
-          >
-            <BookOpen size={16} aria-hidden />
-            Open curriculum
-          </button>
+          <div className="flex flex-wrap items-center gap-4">
+            <Link
+              to={`${ROUTES.myVenturePortfolio}/overview`}
+              className="inline-flex items-center gap-2 text-sm font-semibold text-spike hover:underline"
+            >
+              <Briefcase size={16} aria-hidden />
+              Open venture portfolio
+            </Link>
+            <button
+              type="button"
+              onClick={onOpenCurriculum}
+              className="inline-flex items-center gap-2 text-sm font-semibold text-spike hover:underline"
+            >
+              <BookOpen size={16} aria-hidden />
+              Open curriculum
+            </button>
+          </div>
         </div>
       ) : null}
 
       {!staffPreview ? (
-        <div id="playbook-day-reflection" className="scroll-mt-24">
-          <PlaybookDayClosingReflectionBlock
-            week={3}
-            day={5}
-            participantId={participantId}
-            onCompleted={onProgress}
-            focusReflection={Boolean(pendingReflection) || focusReflection}
-          />
-        </div>
+        <PlaybookDayClosingReflectionBlock
+          week={3}
+          day={5}
+          participantId={participantId}
+          onCompleted={onProgress}
+          focusReflection={Boolean(pendingReflection) || focusReflection}
+        />
       ) : null}
     </div>
   );

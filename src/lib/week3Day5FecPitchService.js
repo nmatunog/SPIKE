@@ -5,6 +5,8 @@
 import { approveFecStep } from './customerDiscovery/week2FecValidationService.js';
 import { loadFecValidation, saveFecValidation } from './customerDiscovery/week2FecValidationStorage.js';
 import { getSquadNameForParticipant } from './customerDiscovery/week2SquadEvidenceService.js';
+import { createPortfolioArtifactDraft } from './blueprintArtifacts.js';
+import { appendBlueprintTimelineEvent } from './blueprintTimeline.js';
 import { getFecField, saveFecField } from './fecCanvasService.js';
 import { loadWeek3Day3Portfolio } from './week3Day3PortfolioService.js';
 import { getWeek3Day3FecBoxDisplayText } from './week3Day3FecBoxContent.js';
@@ -81,14 +83,15 @@ function readSavedFecText(participantId, boxId) {
     const validated = getWeek3Day3FecBoxDisplayText(participantId, 'winning_strategy');
     if (validated) return validated;
     const def = getWeek3Day5PitchBoxDef('winning_strategy');
-    return String(getFecField(participantId, def.engineKey, def.fieldKey) ?? '').trim()
-      || String(getFecField(participantId, 'agency_leadership', 'growth_multipliers') ?? '').trim();
+    return String(getFecField(participantId, def.engineKey, def.fieldKey) ?? '').trim();
   }
   if (boxId === 'growth_engines') {
+    const def = getWeek3Day5PitchBoxDef('growth_engines');
+    const primary = String(getFecField(participantId, def.engineKey, def.fieldKey) ?? '').trim();
+    if (primary) return primary;
     const talent = String(getFecField(participantId, 'agency_talent', 'talent_development_system') ?? '').trim();
     const expansion = String(getFecField(participantId, 'agency_leadership', 'expansion_strategy') ?? '').trim();
-    const systems = String(getFecField(participantId, 'agency_leadership', 'growth_multipliers') ?? '').trim();
-    return joinParts([talent, expansion, systems]);
+    return joinParts([talent, expansion]);
   }
   if (boxId === 'key_partners') {
     const def = getWeek3Day5PitchBoxDef('key_partners');
@@ -281,7 +284,40 @@ export function saveWeek3Day5PitchBoxToFec(participantId, boxId, text) {
   }
 
   saveWeek3Day5PitchDraft(participantId, boxId, trimmed);
+  syncWeek3Day5PitchToPortfolio(participantId);
   return true;
+}
+
+/** @param {string} participantId */
+function syncWeek3Day5PitchToPortfolio(participantId) {
+  if (!participantId) return;
+
+  const overview = getWeek3Day5PitchOverview(participantId);
+  const content = overview
+    .map((box) => {
+      const text = String(box.draftText || box.savedFec || '').trim() || '_Pending_';
+      return `## Box ${box.def.number} — ${box.def.label}\n\n${text}`;
+    })
+    .join('\n\n---\n\n');
+
+  createPortfolioArtifactDraft({
+    participantId,
+    sectionId: 'portfolio-advisor-startup',
+    title: 'Financial Advisory Venture Pitch (FEC Boxes 4–7)',
+    content,
+    sourceType: 'week3_day5_fec_pitch',
+    sourceId: 'week-3-day-5',
+  });
+
+  appendBlueprintTimelineEvent(participantId, {
+    type: 'week3_day5_pitch',
+    title: 'Venture pitch copy updated',
+    detail: isWeek3Day5PitchReady(participantId)
+      ? 'All four FEC pitch boxes ready for Day 15'
+      : 'Pitch draft saved — complete all four boxes before you pitch',
+    week: 3,
+    day: 5,
+  });
 }
 
 /** @param {string} participantId */

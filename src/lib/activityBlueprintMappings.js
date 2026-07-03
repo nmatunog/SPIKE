@@ -82,11 +82,11 @@ export function getReflectionMapping(reflectionId) {
   }
 
   const dayMatch = reflectionId.match(/^reflection-day-(\d+)-close$/);
-  const w2Match = reflectionId.match(/^reflection-w2-d(\d+)$/);
-  if (!dayMatch && !w2Match) return null;
+  const wMatch = reflectionId.match(/^reflection-w(\d+)-d(\d+)$/);
+  if (!dayMatch && !wMatch) return null;
 
-  const weekNum = w2Match ? 2 : 1;
-  const dayNum = Number((w2Match ?? dayMatch)[1]);
+  const weekNum = wMatch ? Number(wMatch[1]) : 1;
+  const dayNum = Number((wMatch ?? dayMatch)[wMatch ? 2 : 1]);
   /** @type {Record<number, string>} */
   const portfolioByWeekDay = {
     '1-1': 'portfolio-identity-purpose',
@@ -98,6 +98,13 @@ export function getReflectionMapping(reflectionId) {
     '2-3': 'portfolio-professional-development',
     '2-4': 'portfolio-financial-blueprint',
     '2-5': 'portfolio-advisor-startup',
+    '3-1': 'portfolio-advisor-startup',
+    '3-2': 'portfolio-advisor-startup',
+    '3-3': 'portfolio-advisor-startup',
+    '3-4': 'portfolio-advisor-startup',
+    '3-5': 'portfolio-advisor-startup',
+    '4-5': 'portfolio-three-year-blueprint',
+    '5-5': 'portfolio-three-year-blueprint',
   };
   /** @type {Record<string, string>} */
   const chapterByWeekDay = {
@@ -110,6 +117,13 @@ export function getReflectionMapping(reflectionId) {
     '2-3': 'bp-chapter-2',
     '2-4': 'bp-chapter-3',
     '2-5': 'bp-chapter-5',
+    '3-1': 'bp-chapter-3',
+    '3-2': 'bp-chapter-3',
+    '3-3': 'bp-chapter-3',
+    '3-4': 'bp-chapter-3',
+    '3-5': 'bp-chapter-3',
+    '4-5': 'bp-chapter-5',
+    '5-5': 'bp-chapter-5',
   };
   const key = `${weekNum}-${dayNum}`;
 

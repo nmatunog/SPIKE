@@ -46,12 +46,13 @@ export function syncGrowthEngineToFec(participantId, state) {
 
   saveFecField(participantId, 'capture_value', 'revenue_streams', revenueSummary);
 
-  createPortfolioArtifactDraft(participantId, {
+  createPortfolioArtifactDraft({
+    participantId,
+    sectionId: 'portfolio-advisor-startup',
     title: 'Growth Engine Worksheet',
+    content: growthNarrative,
     sourceType: 'growth_engine_worksheet',
     sourceId: 'week-3-day-4',
-    summary: `Year 1 target ₱${Number(state.targets.yearRevenueGoal || 0).toLocaleString()} · ${state.targets.requiredClients || '?'} clients`,
-    bodyMarkdown: growthNarrative,
   });
 
   appendBlueprintTimelineEvent(participantId, {
