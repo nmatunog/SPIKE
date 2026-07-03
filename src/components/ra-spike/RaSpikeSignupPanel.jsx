@@ -126,7 +126,7 @@ export const RaSpikeSignupPanel = memo(function RaSpikeSignupPanel({ onSignup })
       <div className="flex items-center justify-between gap-2">
         <div>
           <p className="text-sm font-bold text-slate-900">Join RA-SPIKE™</p>
-          <p className="text-xs text-slate-600">Rookie Academy — 3 quick steps</p>
+          <p className="text-xs text-slate-600">Rookie Academy — new participants only</p>
         </div>
         <button
           type="button"
@@ -139,6 +139,14 @@ export const RaSpikeSignupPanel = memo(function RaSpikeSignupPanel({ onSignup })
           {show ? 'Hide' : 'Create account'}
         </button>
       </div>
+
+      <p className="mt-3 text-xs leading-relaxed text-slate-600">
+        Already have an account? Use <strong className="font-semibold text-slate-800">Sign in to SPIKE</strong>{' '}
+        above — same login for RA-SPIKE rookies and program coaches.
+      </p>
+      <p className="mt-1 text-xs leading-relaxed text-slate-500">
+        Coaches and mentors: sign in above (not here). Your staff role is unchanged.
+      </p>
 
       {show ? (
         <div className="mt-4 space-y-4">
