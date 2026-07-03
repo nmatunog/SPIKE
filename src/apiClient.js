@@ -7,7 +7,24 @@ export {
   hydrateCurriculumFromSupabase,
 } from './lib/curriculumService.js';
 
-const API_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+const CONFIGURED_API_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+
+/**
+ * On portal.1cma.online, RA-SPIKE is proxied under /ra-spike and its Pages
+ * Functions must be called via /ra-spike/api/* (not the internship /api/*).
+ */
+function resolveApiBase() {
+  if (CONFIGURED_API_BASE) return CONFIGURED_API_BASE;
+  if (typeof window === 'undefined') return '';
+  const { hostname, pathname } = window.location;
+  if (
+    hostname === 'portal.1cma.online'
+    && (pathname === '/ra-spike' || pathname.startsWith('/ra-spike/'))
+  ) {
+    return '/ra-spike';
+  }
+  return '';
+}
 
 export class ApiError extends Error {
   constructor(status, message, data) {
@@ -19,7 +36,8 @@ export class ApiError extends Error {
 }
 
 export function apiUrl(path) {
-  return `${API_BASE}${path}`;
+  if (/^https?:\/\//i.test(path)) return path;
+  return `${resolveApiBase()}${path}`;
 }
 
 export async function apiFetch(path, { token, headers = {}, ...rest } = {}) {
