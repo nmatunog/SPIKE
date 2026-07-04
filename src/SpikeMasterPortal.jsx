@@ -1635,6 +1635,70 @@ const SpikeMasterPortal = () => {
   const renderAuthenticatedModule = () => {
     const path = location.pathname;
 
+    // Hard gate: anything under /ra-spike must never fall through to internship dashboards.
+    if (isRaSpikeAppPath(path)) {
+      const internUser = buildSuperuserInternPreviewUser(user, userRole, viewAsRole, {
+        raSpikeApp: true,
+      });
+      const asIntern =
+        (isSuperuserSession && viewAsRole === 'intern')
+        || (effectiveUserRole === 'intern' && !isSuperuserSession);
+
+      if (asIntern) {
+        const programSlug = resolveProgramSlug(
+          (internUser ?? user)?.internProgress ?? { program_slug: 'ra-spike' },
+        );
+        if (programSlug !== 'ra-spike' && !isSuperuserSession) {
+          return (
+            <div className="container mx-auto px-6 py-12 text-center text-gray-700">
+              <p className="font-medium">This account is not enrolled in RA-SPIKE.</p>
+            </div>
+          );
+        }
+        const rookie = internUser ?? user;
+        if (isInternshipOnlyInternPath(path)) {
+          return <Navigate to={ROUTES.raSpikeHome} replace />;
+        }
+        if (path === ROUTES.raSpikeHome || path === '/ra-spike' || path === '/ra-spike/') {
+          return <RaSpikeHomePage user={rookie} />;
+        }
+        if (path === ROUTES.raSpikePlaybook || path.startsWith(`${ROUTES.raSpikePlaybook}/`)) {
+          return <RaSpikePlaybookPage user={rookie} />;
+        }
+        if (path === ROUTES.raSpikeSquad) {
+          return <RaSpikeSquadPage user={rookie} />;
+        }
+        if (path === ROUTES.raSpikeProfile) {
+          return <RaSpikeProfilePage user={rookie} />;
+        }
+        if (path === ROUTES.raSpikeOnboarding) {
+          return <RaSpikeOnboardingPage user={rookie} />;
+        }
+        if (path === ROUTES.raSpikeStageGate) {
+          const search = new URLSearchParams(location.search);
+          const gateParam = Number(search.get('gate'));
+          const gate = gateParam === 2 ? 2 : 1;
+          const weekParam = Number(search.get('week'));
+          const assignmentWeek = Number.isFinite(weekParam) && weekParam >= 1 && weekParam <= 8
+            ? weekParam
+            : undefined;
+          return <RaSpikeStageGatePrepPage user={rookie} gate={gate} assignmentWeek={assignmentWeek} />;
+        }
+        return <Navigate to={ROUTES.raSpikeHome} replace />;
+      }
+
+      const coachRole =
+        effectiveUserRole === 'mentor' || viewAsRole === 'mentor' ? 'mentor' : 'faculty';
+      return (
+        <RaSpikeCoachPage
+          role={coachRole}
+          interns={interns}
+          showToast={showToast}
+          onRefresh={loadInterns}
+        />
+      );
+    }
+
     if (path.startsWith(`${ROUTES.portfolio}/`) && path !== ROUTES.portfolio) {
       return (
         <LazyRoute label="Loading portfolio…">
