@@ -36,9 +36,6 @@ export async function onRequest(ctx) {
   const mobile = String(body?.mobile ?? '').trim();
   const email = String(body?.email ?? '').trim().toLowerCase();
   const password = String(body?.password ?? '');
-  const inviteCode = body?.batchInviteCode
-    ? String(body.batchInviteCode).trim().replace(/\s+/g, '').toUpperCase()
-    : '';
   const cohortId = body?.cohortId != null ? Number(body.cohortId) : null;
   const homeAgency = String(body?.homeAgency ?? '').trim();
   const homeUnit = String(body?.homeUnit ?? '').trim();
@@ -54,9 +51,9 @@ export async function onRequest(ctx) {
   }
 
   try {
-    // Invite codes disabled for now — enroll into active open cohort (optional code still accepted).
+    // Invite codes fully disabled — always enroll into active/open cohort (ignore any code sent).
     const cohort = await resolveRaSpikeCohort(admin, {
-      inviteCode: inviteCode || null,
+      inviteCode: null,
       cohortId: Number.isFinite(cohortId) ? cohortId : null,
     });
 

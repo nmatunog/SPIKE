@@ -2527,6 +2527,7 @@ const SpikeMasterPortal = () => {
                 bootstrapSecretRequired={bootstrapSecretRequired}
                 bootstrapApiConfigured={bootstrapApiConfigured}
                 onSupabaseBootstrap={handleSupabaseBootstrap}
+                raSpikeApp={isRaSpikeAppPath(location.pathname)}
               />
             </LazyRoute>
           )

@@ -25,6 +25,7 @@ import { listMockAuthAccountHints } from '../lib/mockAuthUsers.js';
  *   bootstrapSecretRequired?: boolean,
  *   bootstrapApiConfigured?: boolean,
  *   onSupabaseBootstrap?: (payload: object) => Promise<void>,
+ *   raSpikeApp?: boolean,
  * }} props
  */
 export function WelcomePage({
@@ -44,6 +45,7 @@ export function WelcomePage({
   bootstrapSecretRequired = false,
   bootstrapApiConfigured = true,
   onSupabaseBootstrap,
+  raSpikeApp = false,
 }) {
   return (
       <div className="relative overflow-hidden">
@@ -56,12 +58,14 @@ export function WelcomePage({
         <SpikeLogo size="lg" className="mb-6 h-14 sm:h-16" />
 
         <h1 className="text-center text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl lg:text-4xl">
-          Welcome
+          {raSpikeApp ? 'RA-SPIKE' : 'Welcome'}
         </h1>
         <p className="mt-2 text-center text-sm leading-relaxed text-slate-600 sm:text-base lg:text-lg">
-          {usingSupabaseAuth
-            ? 'Sign in to continue your Venture Blueprint, Playbook, and research work.'
-            : 'Sign in with the account your administrator created for you.'}
+          {raSpikeApp
+            ? 'Sign in or create a rookie account for Rookie Academy.'
+            : usingSupabaseAuth
+              ? 'Sign in to continue your Venture Blueprint, Playbook, and research work.'
+              : 'Sign in with the account your administrator created for you.'}
         </p>
 
         {setupLoadState === 'loading' ? (
@@ -127,7 +131,7 @@ export function WelcomePage({
                 ) : null}
 
                 <GuestLoginForm
-                  heading={setupMeta?.needsBootstrap ? 'Sign in instead' : 'Sign in to SPIKE'}
+                  heading={setupMeta?.needsBootstrap ? 'Sign in instead' : (raSpikeApp ? 'Sign in to RA-SPIKE' : 'Sign in to SPIKE')}
                   onLogin={onLogin}
                   usingSupabaseAuth={usingSupabaseAuth}
                   mockAuthEnabled={mockAuthEnabled}
@@ -135,8 +139,13 @@ export function WelcomePage({
                   onRequestPasswordHelp={usingSupabaseAuth ? onRequestPasswordHelp : undefined}
                 />
 
-                {usingSupabaseAuth ? <InternSignupPanel onSignup={onInternSignup} /> : null}
-                {usingSupabaseAuth && onRaSpikeSignup ? (
+                {usingSupabaseAuth && raSpikeApp && onRaSpikeSignup ? (
+                  <RaSpikeSignupPanel onSignup={onRaSpikeSignup} />
+                ) : null}
+                {usingSupabaseAuth && !raSpikeApp ? (
+                  <InternSignupPanel onSignup={onInternSignup} />
+                ) : null}
+                {usingSupabaseAuth && !raSpikeApp && onRaSpikeSignup ? (
                   <RaSpikeSignupPanel onSignup={onRaSpikeSignup} />
                 ) : null}
                 {usingSupabaseAuth ? <StaffSignupPanel onSignup={onStaffSignup} /> : null}
@@ -166,8 +175,13 @@ export function WelcomePage({
 
         {usingSupabaseAuth && setupLoadState !== 'ok' && !staffBootstrapMode ? (
           <div className="mt-4 w-full space-y-4">
-            <InternSignupPanel onSignup={onInternSignup} />
-            {onRaSpikeSignup ? <RaSpikeSignupPanel onSignup={onRaSpikeSignup} /> : null}
+            {raSpikeApp && onRaSpikeSignup ? (
+              <RaSpikeSignupPanel onSignup={onRaSpikeSignup} />
+            ) : null}
+            {!raSpikeApp ? <InternSignupPanel onSignup={onInternSignup} /> : null}
+            {!raSpikeApp && onRaSpikeSignup ? (
+              <RaSpikeSignupPanel onSignup={onRaSpikeSignup} />
+            ) : null}
           </div>
         ) : null}
 
