@@ -20,8 +20,7 @@ export async function registerRaSpikeViaApi(payload) {
       mobile: payload.mobile.trim(),
       email: payload.email.trim().toLowerCase(),
       password: payload.password,
-      batchInviteCode: payload.batchInviteCode?.trim() || undefined,
-      cohortId: payload.cohortId,
+      // Open enrollment — never send invite code or cohort picker.
       homeAgency: payload.homeAgency.trim(),
       homeUnit: payload.homeUnit.trim(),
     },

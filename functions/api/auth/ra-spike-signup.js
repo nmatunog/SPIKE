@@ -36,7 +36,6 @@ export async function onRequest(ctx) {
   const mobile = String(body?.mobile ?? '').trim();
   const email = String(body?.email ?? '').trim().toLowerCase();
   const password = String(body?.password ?? '');
-  const cohortId = body?.cohortId != null ? Number(body.cohortId) : null;
   const homeAgency = String(body?.homeAgency ?? '').trim();
   const homeUnit = String(body?.homeUnit ?? '').trim();
 
@@ -51,10 +50,10 @@ export async function onRequest(ctx) {
   }
 
   try {
-    // Invite codes fully disabled — always enroll into active/open cohort (ignore any code sent).
+    // Open enrollment: always active/open cohort (ignore invite code and batch picker).
     const cohort = await resolveRaSpikeCohort(admin, {
       inviteCode: null,
-      cohortId: Number.isFinite(cohortId) ? cohortId : null,
+      cohortId: null,
     });
 
     const userId = await createConfirmedPortalUser(admin, {
