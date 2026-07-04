@@ -1,6 +1,6 @@
 /** Superuser portal preview — session-only; does not change DB role. */
 
-import { MENTOR_LABEL } from './terminology.js';
+import { MENTOR_LABEL, ROOKIE_LABEL } from './terminology.js';
 
 export const VIEW_AS_STORAGE_KEY = 'spike_superuser_view_as';
 
@@ -11,6 +11,17 @@ export const VIEW_AS_ROLE_OPTIONS = [
   { id: 'mentor', label: MENTOR_LABEL },
   { id: 'admin', label: 'Admin' },
 ];
+
+/**
+ * Role pills for superuser preview. On RA-SPIKE, participant role is labeled Rookie.
+ * @param {{ raSpikeApp?: boolean }} [options]
+ * @returns {{ id: string; label: string }[]}
+ */
+export function viewAsRoleOptionsFor(options = {}) {
+  if (!options.raSpikeApp) return VIEW_AS_ROLE_OPTIONS;
+  return VIEW_AS_ROLE_OPTIONS.map((option) =>
+    (option.id === 'intern' ? { ...option, label: ROOKIE_LABEL } : option));
+}
 
 const VIEW_AS_IDS = new Set(VIEW_AS_ROLE_OPTIONS.map((o) => o.id));
 

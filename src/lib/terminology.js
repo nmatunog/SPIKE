@@ -34,13 +34,20 @@ export function formatDbRoleLabel(dbRole) {
   return DB_ROLE_LABELS[dbRole] ?? dbRole ?? 'Unknown';
 }
 
-/** @param {string} [userRole] */
-export function formatUiRoleLabel(userRole) {
+/** RA-SPIKE participant label (DB role remains INTERN). */
+export const ROOKIE_LABEL = 'Rookie';
+export const ROOKIE_LABEL_PLURAL = 'Rookies';
+
+/**
+ * @param {string} [userRole]
+ * @param {{ raSpikeApp?: boolean }} [options]
+ */
+export function formatUiRoleLabel(userRole, options = {}) {
   switch (userRole) {
     case 'profile_error':
       return 'Profile pending';
     case 'intern':
-      return 'Intern';
+      return options.raSpikeApp ? ROOKIE_LABEL : 'Intern';
     case 'faculty':
       return PROGRAM_COACH_LABEL;
     case 'mentor':

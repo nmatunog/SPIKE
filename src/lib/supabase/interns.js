@@ -4,6 +4,7 @@ import {
   fetchFormationSquadLabels,
   reconcileFormationSquadLabels,
 } from './cohortOnboarding.js';
+import { isMissingInternProgressColumnError } from './internProgressFields.js';
 
 /**
  * @param {object} profile
@@ -42,10 +43,21 @@ export async function fetchInterns() {
   let formationByUser = {};
 
   if (ids.length > 0) {
-    const progSelects = [
-      'user_id, segment, hours, licensed, squad, university, current_week, current_day, program_slug, ra_spike_segment, ra_spike_current_week',
-      'user_id, segment, hours, licensed, squad, university, current_week, current_day',
-    ];
+    const raSpikeBuild = String(import.meta.env.BASE_URL || '').includes('ra-spike');
+    const progSelects = raSpikeBuild
+      ? [
+        'user_id, segment, hours, licensed, squad, university, program_slug, ra_spike_segment, ra_spike_current_week, gate_1_status, gate_2_status, home_unit, onboarding_complete',
+        'user_id, segment, hours, licensed, squad, university, program_slug, ra_spike_segment, ra_spike_current_week, home_unit',
+        'user_id, segment, hours, licensed, squad, university, program_slug, ra_spike_segment, ra_spike_current_week',
+        'user_id, segment, hours, licensed, squad, university',
+      ]
+      : [
+        'user_id, segment, hours, licensed, squad, university, current_week, current_day, program_slug, ra_spike_segment, ra_spike_current_week, gate_1_status, gate_2_status, home_unit, onboarding_complete',
+        'user_id, segment, hours, licensed, squad, university, current_week, current_day, program_slug, ra_spike_segment, ra_spike_current_week, home_unit',
+        'user_id, segment, hours, licensed, squad, university, program_slug, ra_spike_segment, ra_spike_current_week',
+        'user_id, segment, hours, licensed, squad, university, current_week, current_day',
+        'user_id, segment, hours, licensed, squad, university',
+      ];
     let progRows = [];
     let progErr = null;
     for (const select of progSelects) {
@@ -55,11 +67,17 @@ export async function fetchInterns() {
         progRows = result.data || [];
         break;
       }
-      if (progErr.code !== '42703' && !/column .* does not exist|schema cache/i.test(String(progErr.message ?? ''))) {
+      if (!isMissingInternProgressColumnError(progErr)) {
+        console.warn('[fetchInterns] intern_progress:', progErr.message ?? progErr);
+        progErr = null;
+        progRows = [];
         break;
       }
     }
-    if (progErr) throw progErr;
+    if (progErr) {
+      console.warn('[fetchInterns] intern_progress columns unavailable:', progErr.message ?? progErr);
+      progRows = [];
+    }
     const formationLabels = await fetchFormationSquadLabels(ids).catch(() => ({}));
     progressByUser = Object.fromEntries((progRows || []).map((r) => [r.user_id, r]));
     formationByUser = formationLabels;

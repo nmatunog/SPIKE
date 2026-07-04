@@ -63,6 +63,17 @@ export function getWeek1PortfolioLocal(participantId) {
   }
 }
 
+/** Clear local Week 1 portfolio (superuser Rookie preview). */
+export function resetRaSpikeWeek1PortfolioLocal(participantId) {
+  if (!participantId) return;
+  try {
+    localStorage.removeItem(storageKey(participantId));
+    localStorage.removeItem(`ra_spike_week_progress_v1:${participantId}:w1`);
+  } catch {
+    /* quota / private mode */
+  }
+}
+
 /** @param {string} participantId @param {object} patch */
 function writeWeek1PortfolioLocal(participantId, patch) {
   if (!participantId) return emptyWeek1Portfolio();

@@ -44,8 +44,8 @@ export function RaSpikeCoachPage({
           </p>
           <p className="mt-3 text-sm text-slate-600">
             {raInterns.length
-              ? `${raInterns.length} RA-SPIKE participant${raInterns.length === 1 ? '' : 's'} in this portal view.`
-              : 'No RA-SPIKE participants enrolled yet — create a mixed batch and share the invite code.'}
+              ? `${raInterns.length} RA-SPIKE rookie${raInterns.length === 1 ? '' : 's'} in this portal view.`
+              : 'No RA-SPIKE rookies enrolled yet — create a mixed batch and share the invite code.'}
           </p>
           <p className="mt-3 rounded-lg bg-white/80 px-3 py-2 text-xs font-medium text-slate-700">
             Coach URL: <span className="font-mono text-spike">/ra-spike/coach</span>

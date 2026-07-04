@@ -400,12 +400,15 @@ const SpikeMasterPortal = () => {
 
   const loadInterns = useCallback(async () => {
     if (!STAFF_ROLES.includes(user?.role)) return;
+    const raSpikeApp = isRaSpikeAppPath(location.pathname);
+    const failLabel = raSpikeApp ? 'Failed to load rookies' : 'Failed to load interns';
 
     if (usingSupabaseAuth && supabase) {
       setInternsLoading(true);
       try {
         let rows = await fetchInterns();
-        if (!isSquadAssessmentMigrationComplete()) {
+        // Internship squad-assessment hydration is not on the RA-SPIKE database.
+        if (!raSpikeApp && !isSquadAssessmentMigrationComplete()) {
           await Promise.all(
             rows.flatMap((intern) => [1, 2].map((week) => hydrateWeeklyAssessmentFromSupabase(intern.id, week))),
           );
@@ -413,7 +416,7 @@ const SpikeMasterPortal = () => {
         }
         setInterns(rows);
       } catch (e) {
-        showToast(e.message || 'Failed to load interns', 'info');
+        showToast(e.message || failLabel, 'info');
       } finally {
         setInternsLoading(false);
       }
@@ -424,16 +427,16 @@ const SpikeMasterPortal = () => {
     setInternsLoading(true);
     try {
       const rows = await apiFetch('/api/interns', { token });
-      if (!isSquadAssessmentMigrationComplete()) {
+      if (!raSpikeApp && !isSquadAssessmentMigrationComplete()) {
         ensureSquadAssessmentMigration(rows);
       }
       setInterns(rows);
     } catch (e) {
-      showToast(e.message || 'Failed to load interns', 'info');
+      showToast(e.message || failLabel, 'info');
     } finally {
       setInternsLoading(false);
     }
-  }, [token, user?.role, usingSupabaseAuth, showToast]);
+  }, [token, user?.role, usingSupabaseAuth, showToast, location.pathname]);
 
   const loadPendingLogs = useCallback(async () => {
     if (!STAFF_ROLES.includes(user?.role)) return;

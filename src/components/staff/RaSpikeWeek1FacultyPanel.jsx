@@ -147,7 +147,7 @@ export function RaSpikeWeek1FacultyPanel({ interns, showToast, onChanged }) {
               <h3 className="text-sm font-bold text-slate-900">Attendance · {sessionDate}</h3>
               <ul className="mt-2 divide-y divide-slate-100 rounded-xl border border-slate-100">
                 {raInterns.length === 0 ? (
-                  <li className="px-3 py-3 text-sm text-slate-500">No RA-SPIKE participants yet.</li>
+                  <li className="px-3 py-3 text-sm text-slate-500">No RA-SPIKE rookies yet.</li>
                 ) : raInterns.map((intern) => (
                   <li key={intern.id} className="flex items-center justify-between gap-2 px-3 py-2.5 text-sm">
                     <span className="font-medium text-slate-800">{intern.name || intern.email}</span>

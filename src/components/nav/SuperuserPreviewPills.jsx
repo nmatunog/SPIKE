@@ -1,8 +1,10 @@
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { formatUiRoleLabel } from '../../lib/terminology.js';
-import { VIEW_AS_ROLE_OPTIONS } from '../../lib/superuserViewAs.js';
+import { viewAsRoleOptionsFor } from '../../lib/superuserViewAs.js';
 import { resetSuperuserInternDreamBoard } from '../../lib/superuserInternPreviewData.js';
-import { ROUTES } from '../../routes/paths.js';
+import { SUPERUSER_INTERN_PREVIEW_PARTICIPANT_ID } from '../../lib/superuserInternPreviewData.js';
+import { resetRaSpikeWeek1PortfolioLocal } from '../../lib/raSpikeWeek1Portfolio.js';
+import { isRaSpikeAppPath, ROUTES } from '../../routes/paths.js';
 
 /**
  * Compact role-preview switcher embedded in the main nav for superusers.
@@ -10,9 +12,17 @@ import { ROUTES } from '../../routes/paths.js';
  */
 export function SuperuserPreviewPills({ viewAsRole, onViewAs, compact = false }) {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const raSpikeApp = isRaSpikeAppPath(pathname);
+  const roleOptions = viewAsRoleOptionsFor({ raSpikeApp });
   const activeRole = viewAsRole ?? 'superuser';
 
-  function handleResetDreamBoard() {
+  function handleResetPreviewWork() {
+    if (raSpikeApp) {
+      resetRaSpikeWeek1PortfolioLocal(SUPERUSER_INTERN_PREVIEW_PARTICIPANT_ID);
+      navigate(ROUTES.raSpikePlaybook, { replace: true });
+      return;
+    }
     resetSuperuserInternDreamBoard();
     navigate(`${ROUTES.ventureBlueprint}/day-1-builders`, { replace: true });
   }
@@ -27,7 +37,7 @@ export function SuperuserPreviewPills({ viewAsRole, onViewAs, compact = false })
         Preview
       </p>
       <div className="flex flex-wrap items-center gap-1">
-        {VIEW_AS_ROLE_OPTIONS.map((option) => {
+        {roleOptions.map((option) => {
           const isActive = activeRole === option.id;
           return (
             <button
@@ -68,18 +78,18 @@ export function SuperuserPreviewPills({ viewAsRole, onViewAs, compact = false })
         {viewAsRole === 'intern' ? (
           <button
             type="button"
-            onClick={handleResetDreamBoard}
+            onClick={handleResetPreviewWork}
             className={`touch-manipulation rounded-lg bg-white font-bold text-amber-900 ring-1 ring-amber-300/80 hover:bg-amber-50 ${
               compact ? 'min-h-[32px] px-2 py-1 text-2xs' : 'min-h-[34px] px-2 py-1 text-xs'
             }`}
           >
-            Reset dream board
+            {raSpikeApp ? 'Reset Week 1' : 'Reset dream board'}
           </button>
         ) : null}
       </div>
       {viewAsRole && !compact ? (
         <p className="hidden min-w-[8rem] text-2xs font-medium text-amber-900/80 2xl:block">
-          Viewing as {formatUiRoleLabel(viewAsRole)}
+          Viewing as {formatUiRoleLabel(viewAsRole, { raSpikeApp })}
         </p>
       ) : null}
     </div>
