@@ -40,7 +40,14 @@ if (existsSync(assetsDir)) {
   }
 }
 
-const missing = [...assetRefs].filter((ref) => !existsSync(join(dist, ref)));
+/** Map URL refs (/assets/x or /ra-spike/assets/x) to files under dist/assets/. */
+function resolveAssetFile(ref) {
+  const match = ref.match(/\/assets\/(.+)$/);
+  if (match) return join(assetsDir, match[1]);
+  return join(dist, ref.replace(/^\//, ''));
+}
+
+const missing = [...assetRefs].filter((ref) => !existsSync(resolveAssetFile(ref)));
 
 if (missing.length > 0) {
   console.error('verify-dist-assets: bundle references missing files:');

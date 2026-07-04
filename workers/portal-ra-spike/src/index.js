@@ -43,12 +43,13 @@ function mapToUpstreamPath(pathname) {
  * @returns {string}
  */
 function rewriteHtml(html) {
+  // Prefer builds that already use base /ra-spike/; still rewrite legacy /assets/ refs.
   return html
-    .replaceAll('src="/assets/', 'src="/ra-spike/assets/')
-    .replaceAll('href="/assets/', 'href="/ra-spike/assets/')
-    .replaceAll('href="/content/', 'href="/ra-spike/content/')
-    .replaceAll('src="/content/', 'src="/ra-spike/content/')
-    .replaceAll('content="/assets/', 'content="/ra-spike/assets/');
+    .replaceAll('"/assets/', '"/ra-spike/assets/')
+    .replaceAll("'/assets/", "'/ra-spike/assets/")
+    .replaceAll('"/content/', '"/ra-spike/content/')
+    .replaceAll("'/content/", "'/ra-spike/content/")
+    .replaceAll('(/assets/', '(/ra-spike/assets/');
 }
 
 /**

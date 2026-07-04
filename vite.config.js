@@ -8,10 +8,17 @@ const lifeRoot = path.resolve(__dirname, 'SPIKE_LIFE')
 
 // https://vite.dev/config/
 const capacitorBuild = process.env.CAPACITOR === 'true'
+// RA-SPIKE portal deploy: VITE_BASE_PATH=/ra-spike/ so chunks load under the proxy.
+function resolveBase() {
+  if (capacitorBuild) return './'
+  const raw = (process.env.VITE_BASE_PATH || '/').trim() || '/'
+  if (raw === '/') return '/'
+  return raw.endsWith('/') ? raw : `${raw}/`
+}
 
 export default defineConfig({
-  // Relative paths for native WebView; absolute `/` for Cloudflare Pages SPA routing.
-  base: capacitorBuild ? './' : '/',
+  // Relative for Capacitor; `/ra-spike/` for portal proxy; `/` for internship main.
+  base: resolveBase(),
   plugins: [react()],
   resolve: {
     alias: [

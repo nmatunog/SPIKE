@@ -59,6 +59,7 @@ jobs:
       - name: Build (RA-SPIKE Supabase env baked in)
         run: npm run build
         env:
+          VITE_BASE_PATH: /ra-spike/
           VITE_SUPABASE_URL: ${{ secrets.RA_SPIKE_VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.RA_SPIKE_VITE_SUPABASE_ANON_KEY }}
           VITE_STATIC_ONLY: 'false'
@@ -66,6 +67,23 @@ jobs:
 
       - name: Verify dist assets
         run: node scripts/verify-dist-assets.mjs
+        env:
+          VITE_BASE_PATH: /ra-spike/
+
+      - name: Write Pages redirects for /ra-spike base
+        run: |
+          cat > dist/_redirects <<'EOF'
+          /ra-spike/assets/*  /assets/:splat  200
+          /ra-spike/content/* /content/:splat 200
+          /ra-spike/api/*     /api/:splat     200
+          /ra-spike           /index.html     200
+          /ra-spike/          /index.html     200
+          /ra-spike/*         /index.html     200
+          /*                  /index.html     200
+          EOF
+          # Cloudflare Pages _redirects must not be indented
+          sed -i 's/^[[:space:]]*//' dist/_redirects
+          cat dist/_redirects
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
