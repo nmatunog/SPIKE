@@ -217,8 +217,7 @@ export const RaSpikeSignupPanel = memo(function RaSpikeSignupPanel({ onSignup })
             <form className="space-y-3" onSubmit={submitSignup}>
               <p className="rounded-xl bg-slate-50 px-3 py-2.5 text-xs leading-relaxed text-slate-600">
                 You&apos;ll join the current open RA-SPIKE cohort. Tell us your{' '}
-                <strong className="font-semibold text-slate-800">home agency and unit</strong>
-                {' '}(invite codes are not required right now).
+                <strong className="font-semibold text-slate-800">home agency and unit</strong>.
               </p>
 
               {optionsLoading ? (
@@ -235,6 +234,20 @@ export const RaSpikeSignupPanel = memo(function RaSpikeSignupPanel({ onSignup })
                   No open cohort listed yet — signup will use the active batch if available.
                 </p>
               )}
+
+              <label className="block text-sm">
+                <span className="mb-1 block font-medium text-slate-400">Batch invite code</span>
+                <input
+                  disabled
+                  readOnly
+                  value=""
+                  placeholder="Not required — open enrollment"
+                  className={`${fieldClass} cursor-not-allowed bg-slate-100 text-slate-400 placeholder:text-slate-400`}
+                  autoComplete="off"
+                  aria-disabled="true"
+                />
+                <span className="mt-1 block text-xs text-slate-400">Invite codes are temporarily disabled.</span>
+              </label>
 
               <p className="pt-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Your home organization</p>
               <label className="block text-sm">
