@@ -6,7 +6,6 @@ import { WeeklyCardStack } from '../../components/ra-spike/learning/WeeklyCardSt
 import { RaSpikeGraduationModal } from '../../components/ra-spike/RaSpikeGraduationModal.jsx';
 import { shouldShowRaSpikeGraduation } from '../../lib/raSpikeGraduation.js';
 import { getRaSpikeContext } from '../../lib/programs/ra-spike-context.js';
-import { resolveRaSpikeCalendarWeek } from '../../lib/programs/ra-spike-session.js';
 import { RA_SPIKE_PROGRAM } from '../../lib/programs/ra-spike.js';
 import {
   getRaSpikeWeekContent,
@@ -18,7 +17,6 @@ import {
   raSpikeWeekPercentComplete,
 } from '../../lib/raSpikeWeekProgress.js';
 import { isRaSpikeWeekUnlocked } from '../../lib/programUnlockPolicy.js';
-import { useRaSpikeHomeDashboard } from '../../hooks/useRaSpikeHomeDashboard.js';
 import { RaSpikeWeekStepPage } from './RaSpikeWeekStepPage.jsx';
 import { RaSpikeDreamBoardPage } from './RaSpikeDreamBoardPage.jsx';
 import { RaSpikeCanvasWizardPage } from './RaSpikeCanvasWizardPage.jsx';
@@ -67,13 +65,14 @@ function RaSpikePlaybookOverview({ user }) {
   const navigate = useNavigate();
   const location = useLocation();
   const participantId = user?.id ?? '';
-  const { cohortStartDate } = useRaSpikeHomeDashboard(user);
   const baseCtx = getRaSpikeContext(user?.internProgress);
   const queryWeek = Number(new URLSearchParams(location.search).get('week'));
+  // Participant unlock week only — never calendar-advance past faculty publish.
   const displayWeek = useMemo(() => {
-    if (Number.isFinite(queryWeek) && queryWeek >= 1 && queryWeek <= 8) return queryWeek;
-    return resolveRaSpikeCalendarWeek(cohortStartDate, baseCtx.week);
-  }, [queryWeek, cohortStartDate, baseCtx.week]);
+    const unlocked = baseCtx.week;
+    if (Number.isFinite(queryWeek) && queryWeek >= 1 && queryWeek <= unlocked) return queryWeek;
+    return unlocked;
+  }, [queryWeek, baseCtx.week]);
   const weekUnlocked = isRaSpikeWeekUnlocked(displayWeek, user?.internProgress);
   const weekContent = getRaSpikeWeekContent(displayWeek);
   const [progress, setProgress] = useState({});

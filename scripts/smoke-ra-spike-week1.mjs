@@ -87,8 +87,27 @@ try {
     throw new Error('week-1 day-1 coach presentation missing');
   }
 
+  // Home/playbook must use participant unlock week only — never calendar-advance.
+  const home = await server.ssrLoadModule('/src/lib/programs/ra-spike-home.js');
+  const session = await server.ssrLoadModule('/src/lib/programs/ra-spike-session.js');
+  const pastCohort = '2026-01-01';
+  const model = home.deriveRaSpikeHomeModel(
+    { program_slug: 'ra-spike', ra_spike_current_week: 1, ra_spike_segment: 1 },
+    pastCohort,
+    'mock',
+  );
+  if (model.ctx.week !== 1 || model.ctx.weekTheme !== 'Start With You') {
+    throw new Error(`home week must stay 1 with past cohort, got week ${model.ctx.week} / ${model.ctx.weekTheme}`);
+  }
+  if (/venture pitch/i.test(model.assignment.title)) {
+    throw new Error(`week-1 home must not show internship pitch assignment: ${model.assignment.title}`);
+  }
+  if (session.resolveRaSpikeCalendarWeek(pastCohort, 1) !== 1) {
+    throw new Error('calendar week must not override participant week');
+  }
+
   console.log(
-    `smoke:ra-spike-week1 OK — "${week1.title}", ${steps.length} steps, portfolio gate, faculty unlock`,
+    `smoke:ra-spike-week1 OK — "${week1.title}", ${steps.length} steps, portfolio gate, faculty unlock, home week lock`,
   );
 } catch (error) {
   console.error('smoke:ra-spike-week1 FAIL —', error.message);

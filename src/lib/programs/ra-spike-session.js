@@ -38,14 +38,9 @@ export function resolveRaSpikeNextSession(cohortStartDate, week, now = new Date(
     };
   }
 
-  const clampedWeek = Math.max(1, Math.min(8, week));
-  let targetWeek = clampedWeek;
-  let sessionDate = raSpikeSessionDateForWeek(start, targetWeek);
-
-  if (sessionDate < now && targetWeek < 8) {
-    targetWeek += 1;
-    sessionDate = raSpikeSessionDateForWeek(start, targetWeek);
-  }
+  // Stay on the participant's unlocked week — do not jump ahead by calendar.
+  const targetWeek = Math.max(1, Math.min(8, week));
+  const sessionDate = raSpikeSessionDateForWeek(start, targetWeek);
 
   const end = new Date(sessionDate);
   end.setHours(RA_SPIKE_SESSION_END_HOUR, 0, 0, 0);
@@ -84,30 +79,14 @@ function parseLocalDate(value) {
 }
 
 /**
- * @param {string | null | undefined} cohortStartDate
+ * Curriculum week for display — participant unlock only.
+ * Do not advance content by calendar; faculty publish controls unlock.
+ *
+ * @param {string | null | undefined} _cohortStartDate unused
  * @param {number} participantWeek
- * @param {Date} [now]
  */
-export function resolveRaSpikeCalendarWeek(cohortStartDate, participantWeek, now = new Date()) {
-  const start = effectiveCohortStartDate(cohortStartDate);
-  const fromStart = parseLocalDate(start);
-  if (!fromStart) return Math.max(1, Math.min(8, participantWeek ?? 1));
-
-  const today = new Date(now);
-  today.setHours(0, 0, 0, 0);
-  let calendarWeek = 1;
-  for (let w = 1; w <= 8; w += 1) {
-    const friday = raSpikeSessionDateForWeek(fromStart, w);
-    friday.setHours(23, 59, 59, 999);
-    if (today <= friday) {
-      calendarWeek = w;
-      break;
-    }
-    calendarWeek = Math.min(8, w + 1);
-  }
-
-  const participant = Math.max(1, Math.min(8, participantWeek ?? 1));
-  return Math.max(participant, calendarWeek);
+export function resolveRaSpikeCalendarWeek(_cohortStartDate, participantWeek) {
+  return Math.max(1, Math.min(8, participantWeek ?? 1));
 }
 
 /** @param {Date | null} date */

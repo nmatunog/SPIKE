@@ -54,7 +54,7 @@ export function RaSpikeHomePage({ user }) {
               <p className="mt-2 text-sm text-slate-600">
                 {ctx.stageGate
                   ? `Milestone week — ${ctx.stageGate.title}. Focus on preparation and rehearsal.`
-                  : 'Work through Learn, Workshop, Assignment, Reflection, and Submit in Playbook.'}
+                  : 'Work through Learn, Workshop, Reflection, Assignment, and Portfolio in Playbook.'}
               </p>
             </div>
             <Link

@@ -3,9 +3,9 @@
 /** @type {Record<number, RaSpikeAssignment>} */
 export const RA_SPIKE_WEEKLY_ASSIGNMENTS = {
   1: {
-    title: 'Dream Board reflection',
-    summary: 'Capture your why, strengths, and the life you are building toward. Bring one insight to share in workshop.',
-    dueHint: 'Before this week\'s classroom session',
+    title: 'Vision & Success Blueprint',
+    summary: 'Complete Dream Builder (lifestyle, income, travel + 3 images), your Personal Vision Statement, and Success Blueprint.',
+    dueHint: 'Submit your Week 1 portfolio before your coach publishes Week 2',
     squadObjective: 'Each member shares one Dream Board insight with the squad.',
     estimatedMinutes: 45,
   },
