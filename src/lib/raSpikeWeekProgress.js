@@ -189,8 +189,8 @@ export function isRaSpikeStepUnlocked(progress, stepId) {
   return getStepStatus(progress, prior) === 'complete';
 }
 
-/** @param {RaSpikeWeekProgressRow} progress @param {number} [_week] */
-export function canSubmitRaSpikeWeek(progress, _week) {
+/** @param {RaSpikeWeekProgressRow} progress */
+export function canSubmitRaSpikeWeek(progress) {
   const prior = /** @type {RaSpikeStepId[]} */ (
     RA_SPIKE_STEP_ORDER.filter((s) => s !== 'portfolio')
   );

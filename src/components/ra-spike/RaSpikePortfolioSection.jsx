@@ -9,9 +9,8 @@ import { ROUTES, raSpikePlaybookStepHref } from '../../routes/paths.js';
 
 /**
  * Participant portfolio — only authored weeks list artifacts; others stay blank.
- * @param {{ user?: { internProgress?: object | null } }} props
  */
-export function RaSpikePortfolioSection({ user: _user }) {
+export function RaSpikePortfolioSection() {
   const weeks = Array.from({ length: RA_SPIKE_PROGRAM.totalWeeks }, (_, i) => i + 1);
 
   return (

@@ -78,7 +78,7 @@ export function RaSpikeProfilePage({ user }) {
             <RaSpikeProgressTimeline currentWeek={ctx.week} />
           </section>
 
-          <RaSpikePortfolioSection user={user} />
+          <RaSpikePortfolioSection />
         </div>
       </PageContainer>
     </RaSpikeShell>
