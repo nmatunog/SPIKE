@@ -58,6 +58,43 @@ export async function staffSetActiveCohort(cohortId) {
   return data;
 }
 
+/** Readable invite code (no ambiguous 0/O/1/I). */
+export function generateRaSpikeInviteCode() {
+  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const bytes = typeof crypto !== 'undefined' && crypto.getRandomValues
+    ? crypto.getRandomValues(new Uint8Array(8))
+    : Array.from({ length: 8 }, () => Math.floor(Math.random() * 256));
+  let code = '';
+  for (const b of bytes) code += alphabet[b % alphabet.length];
+  return code;
+}
+
+/**
+ * Issue a new invite code for a cohort (invalidates the previous code).
+ * @param {number} cohortId
+ * @returns {Promise<{ batch_invite_code: string } & object>}
+ */
+export async function staffRegenerateRaSpikeInviteCode(cohortId) {
+  await assertPortalCanWrite();
+  const client = assertClient();
+
+  for (let attempt = 0; attempt < 6; attempt += 1) {
+    const code = generateRaSpikeInviteCode();
+    const { data: clash } = await client
+      .from('cohorts')
+      .select('id')
+      .eq('program_slug', 'ra-spike')
+      .eq('batch_invite_code', code)
+      .maybeSingle();
+    if (clash) continue;
+
+    const row = await staffPatchRaSpikeBatch(cohortId, { batchInviteCode: code });
+    return row;
+  }
+
+  throw new Error('Could not generate a unique invite code. Try again.');
+}
+
 /**
  * @param {number} cohortId
  * @param {{

@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Check, Copy, Loader2, Plus, Sparkles } from 'lucide-react';
+import { Check, Copy, Loader2, Plus, RefreshCw, Sparkles } from 'lucide-react';
 import {
   fetchRaSpikeBatchesForStaff,
   staffCreateRaSpikeBatch,
   staffPatchRaSpikeBatch,
+  staffRegenerateRaSpikeInviteCode,
   staffSetActiveCohort,
 } from '../../lib/staffRaSpikeBatchService.js';
 import { usePortalWriteAccess } from '../../hooks/usePortalWriteAccess.js';
@@ -103,6 +104,35 @@ export function RaSpikeBatchManagementPanel({ showToast, onChanged }) {
     setCopiedId(id);
     showToast?.('Invite code copied.');
     window.setTimeout(() => setCopiedId(null), 2000);
+  }
+
+  async function handleRegenerateCode(cohortId) {
+    if (!canWrite) return;
+    if (!window.confirm('Generate a new invite code? The current code will stop working immediately.')) {
+      return;
+    }
+    setBusy(`regen-${cohortId}`);
+    setError('');
+    try {
+      const row = await staffRegenerateRaSpikeInviteCode(cohortId);
+      const code = row?.batch_invite_code ?? '';
+      if (code) {
+        try {
+          await navigator.clipboard.writeText(code);
+          showToast?.(`New invite code ${code} — copied to clipboard.`);
+        } catch {
+          showToast?.(`New invite code: ${code}`);
+        }
+      } else {
+        showToast?.('Invite code regenerated.');
+      }
+      await load();
+      onChanged?.();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not regenerate invite code.');
+    } finally {
+      setBusy('');
+    }
   }
 
   function startRename(batch) {
@@ -280,6 +310,23 @@ export function RaSpikeBatchManagementPanel({ showToast, onChanged }) {
                                 aria-label="Copy invite code"
                               >
                                 {copiedId === batch.id ? <Check size={16} className="text-emerald-600" /> : <Copy size={16} />}
+                              </button>
+                            ) : null}
+                            {canWrite ? (
+                              <button
+                                type="button"
+                                disabled={Boolean(busy)}
+                                onClick={() => void handleRegenerateCode(batch.id)}
+                                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-2.5 py-2 text-xs font-bold text-slate-800 hover:bg-slate-50 disabled:opacity-60"
+                                aria-label="Regenerate invite code"
+                                title="Regenerate invite code"
+                              >
+                                <RefreshCw
+                                  size={14}
+                                  className={busy === `regen-${batch.id}` ? 'animate-spin' : ''}
+                                  aria-hidden
+                                />
+                                {busy === `regen-${batch.id}` ? '…' : 'Regenerate'}
                               </button>
                             ) : null}
                           </div>
