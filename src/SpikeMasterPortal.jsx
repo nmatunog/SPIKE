@@ -1706,6 +1706,20 @@ const SpikeMasterPortal = () => {
         return <Navigate to={ROUTES.raSpikeHome} replace />;
       }
 
+      // Superuser on RA-SPIKE without Intern preview → coach hub only
+      // (never internship activation-code dashboard).
+      if (raSpikeApp) {
+        const coachRole = viewAsRole === 'mentor' ? 'mentor' : 'faculty';
+        return (
+          <RaSpikeCoachPage
+            role={coachRole}
+            interns={interns}
+            showToast={showToast}
+            onRefresh={loadInterns}
+          />
+        );
+      }
+
       if (path === ROUTES.cohortIdentity) {
         return <CohortIdentityPage participantId={internUser.id} />;
       }
@@ -1914,6 +1928,20 @@ const SpikeMasterPortal = () => {
     }
 
     if (isSuperuserSession || isStaffUiRole(effectiveUserRole)) {
+      // Faculty/mentor/admin on RA-SPIKE portal — coach hub only.
+      if (isRaSpikeAppPath(path)) {
+        const coachRole =
+          effectiveUserRole === 'mentor' || viewAsRole === 'mentor' ? 'mentor' : 'faculty';
+        return (
+          <RaSpikeCoachPage
+            role={coachRole}
+            interns={interns}
+            showToast={showToast}
+            onRefresh={loadInterns}
+          />
+        );
+      }
+
       if (path === ROUTES.playbookFecProjection) {
         return renderFecProjection(effectiveUserRole);
       }
