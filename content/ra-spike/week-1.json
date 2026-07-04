@@ -40,17 +40,11 @@
     },
     {
       "id": "squad",
-      "title": "Squad Formation",
-      "minutes": 15
-    },
-    {
-      "id": "reflection",
-      "title": "Reflection",
-      "minutes": 10,
-      "prompts": [
-        { "id": "inspired", "label": "What inspired you today?" },
-        { "id": "fears", "label": "What fears do you need to overcome?" },
-        { "id": "excites", "label": "What excites you most?" }
+      "title": "Squad & cohort",
+      "minutes": 15,
+      "topics": [
+        "Create or join a squad and name it",
+        "Nominate a cohort name"
       ]
     }
   ],
@@ -58,11 +52,12 @@
     "learn": {
       "label": "Learn",
       "headline": "Start With You",
-      "summary": "Welcome, discover yourself, build your dream, meet your squad, and reflect.",
+      "summary": "Welcome, discover yourself, build your dream, form your squad, and nominate a cohort name.",
       "durationMinutes": 90,
       "bullets": [
-        "Five sequential lesson cards",
+        "Four sequential lesson cards",
         "Dream Builder: lifestyle, income, travel + 3 images",
+        "Self-register into a squad and nominate a cohort name",
         "Autosave on every answer"
       ]
     },
@@ -73,21 +68,9 @@
       "durationMinutes": 180,
       "bullets": [
         "Coach-led session using the Week 1 deck",
-        "Squad formation in class",
-        "Dream Builder support"
+        "Squad huddles and Dream Builder support"
       ],
       "callout": "Mark complete after class."
-    },
-    "reflection": {
-      "label": "Reflection",
-      "headline": "Reflection journal",
-      "summary": "Capture what inspired you, what you fear, and what excites you.",
-      "durationMinutes": 10,
-      "prompts": [
-        "What inspired you today?",
-        "What fears do you need to overcome?",
-        "What excites you most?"
-      ]
     },
     "assignment": {
       "label": "Assignment",
@@ -103,13 +86,23 @@
     "portfolio": {
       "label": "Portfolio",
       "headline": "Week 1 portfolio",
-      "summary": "Review Dream Board, Vision & Blueprint, and Reflection — then submit to lock.",
+      "summary": "Review Dream Board and Vision & Blueprint — then submit to lock.",
       "durationMinutes": 10,
       "bullets": [
         "Dream Board summary",
         "Personal Vision & Success Blueprint",
-        "Reflection journal",
         "Submit locks editing until faculty reopens"
+      ]
+    },
+    "reflection": {
+      "label": "Reflection",
+      "headline": "End-of-day reflection",
+      "summary": "Close the day: what inspired you, what you fear, and what excites you.",
+      "durationMinutes": 10,
+      "prompts": [
+        "What inspired you today?",
+        "What fears do you need to overcome?",
+        "What excites you most?"
       ]
     }
   }

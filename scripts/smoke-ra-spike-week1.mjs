@@ -27,16 +27,16 @@ try {
   const week1 = mod.getRaSpikeWeekContent(1);
   if (week1.title !== 'Start With You') throw new Error('week-1 title mismatch');
   if (!week1.contentReady) throw new Error('week-1 must be contentReady');
-  if (!week1.lessonCards || week1.lessonCards.length !== 5) {
-    throw new Error('week-1 needs 5 lesson cards');
+  if (!week1.lessonCards || week1.lessonCards.length !== 4) {
+    throw new Error('week-1 needs 4 learn cards (reflection is end-of-day step)');
   }
-  for (const id of ['learn', 'workshop', 'reflection', 'assignment', 'portfolio']) {
+  for (const id of ['learn', 'workshop', 'assignment', 'portfolio', 'reflection']) {
     if (!week1.steps?.[id]) throw new Error(`week-1 missing step ${id}`);
   }
 
   const steps = mod.listRaSpikeWeekStepIds(1);
-  if (!steps.includes('portfolio') || steps.includes('submit')) {
-    throw new Error(`week-1 steps should use portfolio not submit: ${steps.join(',')}`);
+  if (steps.join(',') !== 'learn,workshop,assignment,portfolio,reflection') {
+    throw new Error(`week-1 step order wrong: ${steps.join(',')}`);
   }
 
   // Weeks 2–8: outline only, no invented playbook body or internship assignments.
@@ -98,12 +98,18 @@ try {
       discover: true,
       dream_builder: true,
       squad: true,
-      reflection: true,
     },
   };
   if (!portfolio.isDreamBuilderComplete(complete)) throw new Error('dream builder should be complete');
   if (!portfolio.isVisionBlueprintComplete(complete)) throw new Error('vision blueprint should be complete');
   if (!portfolio.canSubmitWeek1Portfolio(complete)) throw new Error('complete portfolio should be submittable');
+  const withoutSquad = {
+    ...complete,
+    cardsCompleted: { welcome: true, discover: true, dream_builder: true },
+  };
+  if (portfolio.canSubmitWeek1Portfolio(withoutSquad)) {
+    throw new Error('portfolio must require squad card complete');
+  }
 
   const unlocked = progress.isRaSpikeStepUnlocked({ learn: 'complete' }, 'workshop');
   if (!unlocked) throw new Error('sequential unlock failed');

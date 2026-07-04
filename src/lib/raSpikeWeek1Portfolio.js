@@ -3,14 +3,14 @@ import { isMockUserId } from './mockAuth.js';
 
 const STORAGE_KEY = 'ra_spike_week1_portfolio_v1';
 
-/** @typedef {'welcome' | 'discover' | 'dream_builder' | 'squad' | 'reflection'} Week1CardId */
+/** @typedef {'welcome' | 'discover' | 'dream_builder' | 'squad'} Week1CardId */
 
+/** Learn cards only — reflection is the end-of-day playbook step. */
 export const WEEK1_CARD_ORDER = /** @type {const} */ ([
   'welcome',
   'discover',
   'dream_builder',
   'squad',
-  'reflection',
 ]);
 
 export const WEEK1_REFLECTION_PROMPTS = [
@@ -257,7 +257,6 @@ export function canSubmitWeek1Portfolio(portfolio) {
     areAllWeek1CardsComplete(portfolio)
     && isDreamBuilderComplete(portfolio)
     && isVisionBlueprintComplete(portfolio)
-    && isReflectionComplete(portfolio)
   );
 }
 
@@ -272,7 +271,7 @@ export async function markWeek1CardComplete(participantId, cardId) {
 export async function submitWeek1Portfolio(participantId) {
   const current = await fetchWeek1Portfolio(participantId);
   if (!canSubmitWeek1Portfolio(current)) {
-    throw new Error('Complete all lesson cards, Dream Builder, Vision & Blueprint, and Reflection first.');
+    throw new Error('Complete Learn cards, Dream Builder, and Vision & Blueprint first.');
   }
   const submittedAt = new Date().toISOString();
   const next = await saveWeek1Portfolio(participantId, {

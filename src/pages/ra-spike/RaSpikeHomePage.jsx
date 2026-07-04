@@ -53,7 +53,7 @@ export function RaSpikeHomePage({ user }) {
               </p>
               <p className="mt-2 text-sm text-slate-600">
                 {contentReady
-                  ? 'Work through Learn, Workshop, Reflection, Assignment, and Portfolio in Playbook.'
+                  ? 'Work through Learn, Workshop, Assignment, Portfolio, then end-of-day Reflection in Playbook.'
                   : 'Playbook content for this week is not published yet. Your coach will release materials when ready.'}
               </p>
             </div>

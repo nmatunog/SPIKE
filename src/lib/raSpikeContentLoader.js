@@ -3,13 +3,13 @@ import { getRaSpikeWeekMeta } from './programs/ra-spike-weeks.js';
 
 /** @typedef {'learn' | 'workshop' | 'assignment' | 'reflection' | 'portfolio' | 'submit'} RaSpikeStepId */
 
-/** Participant step order when a week is contentReady. */
+/** Participant step order when a week is contentReady. Reflection is end-of-day. */
 export const RA_SPIKE_STEP_ORDER = /** @type {const} */ ([
   'learn',
   'workshop',
-  'reflection',
   'assignment',
   'portfolio',
+  'reflection',
 ]);
 
 const weekModules = import.meta.glob('../../content/ra-spike/week-*.json', {

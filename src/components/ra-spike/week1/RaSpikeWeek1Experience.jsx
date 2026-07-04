@@ -33,13 +33,14 @@ import {
 import { setRaSpikeStepStatus } from '../../../lib/raSpikeWeekProgress.js';
 import { ROUTES, raSpikePlaybookStepHref } from '../../../routes/paths.js';
 import { useAuth } from '../../../AuthContext.jsx';
+import { RaSpikeSquadAndCohortPanel } from './RaSpikeSquadAndCohortPanel.jsx';
 
 const STEPS = [
   { id: 'learn', label: 'Learn', short: '1' },
   { id: 'workshop', label: 'Workshop', short: '2' },
-  { id: 'reflection', label: 'Reflect', short: '3' },
-  { id: 'assignment', label: 'Vision', short: '4' },
-  { id: 'portfolio', label: 'Portfolio', short: '5' },
+  { id: 'assignment', label: 'Vision', short: '3' },
+  { id: 'portfolio', label: 'Portfolio', short: '4' },
+  { id: 'reflection', label: 'Reflect', short: '5' },
 ];
 
 const INPUT =
@@ -145,15 +146,6 @@ export function RaSpikeWeek1Experience({ user, stepId = 'learn' }) {
       setPortfolio(next);
       const allCards = WEEK1_CARD_ORDER.every((id) => next.cardsCompleted?.[id]);
       if (allCards) await setRaSpikeStepStatus(participantId, 1, 'learn', 'complete');
-      if (cardId === 'reflection') {
-        await setRaSpikeStepStatus(participantId, 1, 'reflection', 'complete', {
-          reflectionNotes: [
-            next.reflectionAnswers?.inspired,
-            next.reflectionAnswers?.fears,
-            next.reflectionAnswers?.excites,
-          ].filter(Boolean).join('\n\n'),
-        });
-      }
       if (cardId === 'dream_builder' && isDreamBuilderComplete(next) && isVisionBlueprintComplete(next)) {
         await setRaSpikeStepStatus(participantId, 1, 'assignment', 'complete');
       }
@@ -260,6 +252,8 @@ export function RaSpikeWeek1Experience({ user, stepId = 'learn' }) {
               busy={busy}
               onAutosave={autosave}
               onCompleteCard={completeCard}
+              participantId={participantId}
+              internProgress={user?.internProgress}
             />
           ) : activeStep === 'workshop' ? (
             <WorkshopPanel
@@ -267,17 +261,6 @@ export function RaSpikeWeek1Experience({ user, stepId = 'learn' }) {
               locked={locked}
               onDone={async () => {
                 await setRaSpikeStepStatus(participantId, 1, 'workshop', 'complete');
-                navigate(raSpikePlaybookStepHref('reflection', 1));
-              }}
-            />
-          ) : activeStep === 'reflection' ? (
-            <ReflectionPanel
-              portfolio={portfolio}
-              locked={locked}
-              busy={busy}
-              onAutosave={autosave}
-              onComplete={async () => {
-                await completeCard('reflection');
                 navigate(raSpikePlaybookStepHref('assignment', 1));
               }}
             />
@@ -288,7 +271,7 @@ export function RaSpikeWeek1Experience({ user, stepId = 'learn' }) {
               onAutosave={autosave}
               onContinue={() => navigate(raSpikePlaybookStepHref('portfolio', 1))}
             />
-          ) : (
+          ) : activeStep === 'portfolio' ? (
             <PortfolioPanel
               portfolio={portfolio}
               busy={busy}
@@ -300,8 +283,37 @@ export function RaSpikeWeek1Experience({ user, stepId = 'learn' }) {
                   setPortfolio(next);
                   await setRaSpikeStepStatus(participantId, 1, 'portfolio', 'complete');
                   await refreshUser?.();
+                  navigate(raSpikePlaybookStepHref('reflection', 1));
                 } catch (err) {
                   setError(err instanceof Error ? err.message : 'Submit failed.');
+                } finally {
+                  setBusy(false);
+                }
+              }}
+            />
+          ) : (
+            <ReflectionPanel
+              portfolio={portfolio}
+              locked={locked}
+              busy={busy}
+              onAutosave={autosave}
+              onComplete={async () => {
+                setBusy(true);
+                setError('');
+                try {
+                  const next = await saveWeek1Portfolio(participantId, {
+                    cardsCompleted: { ...portfolio.cardsCompleted, reflection: true },
+                  });
+                  setPortfolio(next);
+                  await setRaSpikeStepStatus(participantId, 1, 'reflection', 'complete', {
+                    reflectionNotes: [
+                      next.reflectionAnswers?.inspired,
+                      next.reflectionAnswers?.fears,
+                      next.reflectionAnswers?.excites,
+                    ].filter(Boolean).join('\n\n'),
+                  });
+                } catch (err) {
+                  setError(err instanceof Error ? err.message : 'Could not save reflection.');
                 } finally {
                   setBusy(false);
                 }
@@ -326,6 +338,8 @@ function LearnPanel({
   busy,
   onAutosave,
   onCompleteCard,
+  participantId,
+  internProgress,
 }) {
   const cards = WEEK1_CARD_ORDER;
   const cardId = cards[Math.min(cardIndex, cards.length - 1)];
@@ -507,50 +521,24 @@ function LearnPanel({
 
       {cardId === 'squad' ? (
         <div className="space-y-4">
-          <SectionTitle
-            icon={Users}
-            title="Squad Formation"
-            subtitle="You are not building alone."
+          <RaSpikeSquadAndCohortPanel
+            participantId={participantId}
+            internProgress={internProgress}
+            locked={locked}
+            onComplete={async () => {
+              await onCompleteCard('squad');
+            }}
           />
-          <div className="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-4 text-sm leading-relaxed text-slate-700">
-            Your coach forms and names squads in the coach hub. Open Squad to see your teammates —
-            view only, no chat or scoring.
-          </div>
-          <Link
-            to={ROUTES.raSpikeSquad}
-            className="inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-spike/20 bg-spike-muted/40 px-4 py-2 text-sm font-bold text-spike"
-          >
-            <Users size={16} /> View my squad
-          </Link>
           <ActionRow>
             <SecondaryButton onClick={() => setCardIndex(2)}>
               <ChevronLeft size={16} /> Back
             </SecondaryButton>
-            <PrimaryButton
-              disabled={locked || busy}
-              onClick={async () => {
-                await onCompleteCard('squad');
-                setCardIndex(4);
-              }}
+            <Link
+              to={ROUTES.raSpikeSquad}
+              className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-2xl border border-spike/30 bg-white px-4 py-3 text-sm font-bold text-spike"
             >
-              Mark complete
-            </PrimaryButton>
-          </ActionRow>
-        </div>
-      ) : null}
-
-      {cardId === 'reflection' ? (
-        <div className="space-y-4">
-          <SectionTitle
-            icon={BookOpen}
-            title="Reflection is next"
-            subtitle="Capture what moved you today in the Reflect step."
-          />
-          <ActionRow>
-            <SecondaryButton onClick={() => setCardIndex(3)}>
-              <ChevronLeft size={16} /> Back
-            </SecondaryButton>
-            <PrimaryButton onClick={() => setCardIndex(0)}>Review from start</PrimaryButton>
+              <Users size={16} /> Squad page
+            </Link>
           </ActionRow>
         </div>
       ) : null}
@@ -801,8 +789,8 @@ function ReflectionPanel({ portfolio, locked, busy, onAutosave, onComplete }) {
     <Panel>
       <SectionTitle
         icon={BookOpen}
-        title="Reflection journal"
-        subtitle="Three prompts. Capture the day while it is fresh."
+        title="End-of-day reflection"
+        subtitle="Close the day. Three prompts — capture what moved you."
       />
       {WEEK1_REFLECTION_PROMPTS.map((p, i) => (
         <label key={p.id} className="mt-4 block first:mt-0">
@@ -827,7 +815,7 @@ function ReflectionPanel({ portfolio, locked, busy, onAutosave, onComplete }) {
           disabled={locked || busy || !isReflectionComplete(portfolio)}
           onClick={onComplete}
         >
-          Save &amp; continue to Vision
+          Complete end-of-day reflection
         </PrimaryButton>
       </ActionRow>
     </Panel>
@@ -986,18 +974,9 @@ function PortfolioPanel({ portfolio, busy, onSubmit }) {
         </dl>
       </Artifact>
 
-      <Artifact
-        eyebrow="Artifact 3"
-        title="Reflection Journal"
-        ready={isReflectionComplete(portfolio)}
-      >
-        {WEEK1_REFLECTION_PROMPTS.map((p) => (
-          <p key={p.id} className="mt-2 text-sm leading-relaxed text-slate-700 first:mt-0">
-            <span className="font-semibold text-slate-900">{p.label} </span>
-            {portfolio.reflectionAnswers?.[p.id] || '—'}
-          </p>
-        ))}
-      </Artifact>
+      <p className="mt-3 text-xs text-slate-500">
+        End-of-day reflection comes after you submit — use the Reflect step to close the day.
+      </p>
 
       {portfolio.locked ? (
         <div className="mt-4 flex items-center gap-3 rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-900">

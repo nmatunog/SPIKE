@@ -31,3 +31,4 @@
 20260808_ra_spike_program_isolation.sql
 20260809_bootstrap_superuser_profile_rpc.sql
 20260810_ra_spike_week1_portfolio.sql
+20260811_ra_spike_rookie_squad_self_register.sql

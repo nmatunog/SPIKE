@@ -7,13 +7,13 @@
 import { RA_SPIKE_PROGRAM } from './programs/ra-spike.js';
 import { getRaSpikeWeekMeta } from './programs/ra-spike-weeks.js';
 
-/** SPIKE weekly flow adapted for RA-SPIKE (portfolio replaces internship submit). */
+/** SPIKE weekly flow adapted for RA-SPIKE (reflection is end-of-day). */
 export const RA_SPIKE_FRAMEWORK_STEPS = /** @type {const} */ ([
   'learn',
   'workshop',
-  'reflection',
   'assignment',
   'portfolio',
+  'reflection',
 ]);
 
 /** @type {Record<typeof RA_SPIKE_FRAMEWORK_STEPS[number], string>} */

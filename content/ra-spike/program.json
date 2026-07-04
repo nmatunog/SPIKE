@@ -4,6 +4,6 @@
   "tagline": "An 8-week journey to build your business and master the art of advising",
   "totalWeeks": 8,
   "framework": "SPIKE weekly flow",
-  "weeklyFlow": ["learn", "workshop", "reflection", "assignment", "portfolio"],
+  "weeklyFlow": ["learn", "workshop", "assignment", "portfolio", "reflection"],
   "contentPolicy": "Only weeks with contentReady:true are shown to participants. Unpublished weeks stay blank. Coach view lists authoring prompts — never fill with SPIKE Internship materials."
 }

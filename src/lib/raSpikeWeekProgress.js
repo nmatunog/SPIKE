@@ -191,8 +191,9 @@ export function isRaSpikeStepUnlocked(progress, stepId) {
 
 /** @param {RaSpikeWeekProgressRow} progress */
 export function canSubmitRaSpikeWeek(progress) {
+  // Portfolio submits before end-of-day reflection.
   const prior = /** @type {RaSpikeStepId[]} */ (
-    RA_SPIKE_STEP_ORDER.filter((s) => s !== 'portfolio')
+    RA_SPIKE_STEP_ORDER.filter((s) => s !== 'portfolio' && s !== 'reflection')
   );
   return prior.every((step) => getStepStatus(progress, step) === 'complete')
     && getStepStatus(progress, 'portfolio') !== 'complete';
