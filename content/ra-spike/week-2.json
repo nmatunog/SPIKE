@@ -2,64 +2,9 @@
   "weekNumber": 2,
   "segment": "discover",
   "title": "Discover Your Customer",
-  "theme": "FEC block 2 — Customer (Who & Why)",
-  "modules": ["customer-discovery"],
-  "steps": {
-    "learn": {
-      "label": "Learn",
-      "headline": "Your dreams deserve a plan — next is your customer",
-      "summary": "Week 1 started with YOU. Week 2 fills the Customer block of the Financial Entrepreneurship Canvas.",
-      "durationMinutes": 25,
-      "bullets": [
-        "FEC progress: YOU (complete) → CUSTOMER (this week) → Value, Activities, Income (Week 3) → 3-Year Plan (Week 4)",
-        "Bring your future-self letter and one dream photo from Week 1",
-        "Define who you would genuinely love to help — not everyone",
-        "Customer segments, jobs-to-be-done, pains, and gains"
-      ],
-      "callout": "Read before class. Your coach connects your Dream Board to the people you will serve."
-    },
-    "workshop": {
-      "label": "Workshop",
-      "headline": "Customer discovery lab",
-      "summary": "Facilitated persona work using your Week 1 vision as the starting point.",
-      "durationMinutes": 90,
-      "bullets": [
-        "Share one Dream Board insight and who it points you toward serving",
-        "Draft interview questions with your squad",
-        "Map early persona hypotheses (who, why, urgent problem)",
-        "Coach feedback on segment focus"
-      ],
-      "callout": "Mark complete after your classroom session."
-    },
-    "assignment": {
-      "label": "Assignment",
-      "headline": "Customer persona draft",
-      "summary": "Document who you want to serve and why — FEC Customer block.",
-      "durationMinutes": 60,
-      "bullets": [
-        "Describe your ideal client in concrete terms",
-        "List their top jobs, pains, and gains",
-        "Note one group you would enjoy helping most"
-      ],
-      "action": { "type": "persona", "label": "Open persona worksheet" }
-    },
-    "reflection": {
-      "label": "Reflection",
-      "headline": "What did you learn about your market?",
-      "summary": "Capture insights before submitting.",
-      "durationMinutes": 10,
-      "prompts": [
-        "Who surprised you as a potential client?",
-        "What problem feels most urgent to solve?",
-        "How does this customer connect to the life you want to build?"
-      ]
-    },
-    "submit": {
-      "label": "Submit",
-      "headline": "Mark Week 2 complete",
-      "summary": "Unlock Week 3 — Value, Activities, and Income on the FEC.",
-      "durationMinutes": 2,
-      "bullets": ["Persona draft saved", "Customer block ready for canvas work"]
-    }
-  }
+  "theme": "Who you serve and why",
+  "contentReady": false,
+  "modules": [],
+  "portfolioArtifacts": [],
+  "steps": {}
 }

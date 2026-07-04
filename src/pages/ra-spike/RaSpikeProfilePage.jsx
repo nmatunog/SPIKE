@@ -1,6 +1,7 @@
 import { PageContainer } from '../../components/layout/PageContainer.jsx';
 import { RaSpikeShell } from '../../components/ra-spike/RaSpikeShell.jsx';
 import { RaSpikeProgressTimeline } from '../../components/ra-spike/RaSpikeProgressTimeline.jsx';
+import { RaSpikePortfolioSection } from '../../components/ra-spike/RaSpikePortfolioSection.jsx';
 import { getRaSpikeContext } from '../../lib/programs/ra-spike-context.js';
 import { getProgramForIntern } from '../../lib/programs/index.js';
 
@@ -76,6 +77,8 @@ export function RaSpikeProfilePage({ user }) {
             <p className="text-sm font-semibold text-slate-900">Your progress</p>
             <RaSpikeProgressTimeline currentWeek={ctx.week} />
           </section>
+
+          <RaSpikePortfolioSection user={user} />
         </div>
       </PageContainer>
     </RaSpikeShell>

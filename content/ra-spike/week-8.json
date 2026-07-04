@@ -2,65 +2,9 @@
   "weekNumber": 8,
   "segment": "advise",
   "title": "Advisor Revalida",
-  "theme": "Demonstrate. Deliver. Succeed. — Stage Gate 2",
-  "modules": ["prospecting", "discovery-approaching", "presenting-solutions", "advisor-revalida"],
-  "steps": {
-    "learn": {
-      "label": "Learn",
-      "headline": "Demonstrate professional readiness",
-      "summary": "Stage Gate 2 — Advisor Revalida. Show you can advise with skill and integrity.",
-      "durationMinutes": 20,
-      "bullets": [
-        "Revalida expectations and scoring",
-        "Integrate YOU, Customer, and your advise skills",
-        "Build Yourself. Build Your Business. Build Your Legacy."
-      ],
-      "callout": "This is the capstone of your 8-week RA-SPIKE journey."
-    },
-    "workshop": {
-      "label": "Workshop",
-      "headline": "Revalida rehearsal",
-      "summary": "Final practice before your panel.",
-      "durationMinutes": 90,
-      "bullets": [
-        "Full advise scenario run-through",
-        "Coach and peer feedback",
-        "Mindset reset — you are the CEO of your future"
-      ],
-      "callout": "Mark complete after rehearsal."
-    },
-    "assignment": {
-      "label": "Assignment",
-      "headline": "Stage Gate 2 — Advisor Revalida",
-      "summary": "Complete your Advisor Revalida evaluation.",
-      "durationMinutes": 90,
-      "bullets": [
-        "Attend your scheduled Revalida panel",
-        "Demonstrate discovery and recommendation skills",
-        "Receive coach evaluation for Stage Gate 2"
-      ],
-      "action": { "type": "stage-gate", "label": "Open Stage Gate 2", "gate": 2 }
-    },
-    "reflection": {
-      "label": "Reflection",
-      "headline": "What kind of advisor will you be?",
-      "summary": "Close the loop on your RA-SPIKE journey.",
-      "durationMinutes": 10,
-      "prompts": [
-        "How has your vision from Week 1 evolved?",
-        "What will you protect as non-negotiable in your practice?",
-        "What is your first action after RA-SPIKE?"
-      ]
-    },
-    "submit": {
-      "label": "Submit",
-      "headline": "Complete RA-SPIKE",
-      "summary": "Mark Week 8 complete after Stage Gate 2.",
-      "durationMinutes": 2,
-      "bullets": [
-        "Stage Gate 2 complete",
-        "You built yourself, your business blueprint, and your advising craft"
-      ]
-    }
-  }
+  "theme": "Stage Gate 2 — demonstrate readiness",
+  "contentReady": false,
+  "modules": [],
+  "portfolioArtifacts": [],
+  "steps": {}
 }

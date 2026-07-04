@@ -1,11 +1,11 @@
 import { getRaSpikeAssignment } from './ra-spike-assignments.js';
 import { getRaSpikeContext } from './ra-spike-context.js';
 import { getRaSpikeAssignmentStatus } from '../raSpikeWeekProgress.js';
+import { isRaSpikeWeekContentReady } from '../raSpikeContentLoader.js';
 import { ROUTES } from '../../routes/paths.js';
 
 /**
- * Home dashboard model — uses participant unlock week only (never calendar week).
- * Calendar dates may inform session scheduling, not which curriculum is shown.
+ * Home dashboard model — participant unlock week only; assignment only when content is authored.
  *
  * @param {object | null | undefined} internProgress
  * @param {string | null | undefined} _cohortStartDate unused (kept for call-site compat)
@@ -14,20 +14,21 @@ import { ROUTES } from '../../routes/paths.js';
 export function deriveRaSpikeHomeModel(internProgress, _cohortStartDate, participantId = '') {
   const ctx = getRaSpikeContext(internProgress);
   const week = ctx.week;
-  const assignment = getRaSpikeAssignment(week);
-  const assignmentStatus = participantId
+  const contentReady = isRaSpikeWeekContentReady(week);
+  const assignment = contentReady ? getRaSpikeAssignment(week) : null;
+  const assignmentStatus = assignment && participantId
     ? getRaSpikeAssignmentStatus(participantId, week)
     : 'not_started';
 
-  const isStageGateWeek = Boolean(ctx.stageGate);
-  const continueLabel = isStageGateWeek
-    ? `Prepare for ${ctx.stageGate?.label ?? 'stage gate'}`
+  const continueLabel = !contentReady
+    ? 'Open Playbook'
     : assignmentStatus === 'complete'
       ? 'Review this week\'s playbook'
       : 'Continue in Playbook';
 
   return {
     ctx,
+    contentReady,
     assignment,
     assignmentStatus,
     continueHref: ROUTES.raSpikePlaybook,

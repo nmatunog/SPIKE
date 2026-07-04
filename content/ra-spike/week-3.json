@@ -2,63 +2,9 @@
   "weekNumber": 3,
   "segment": "discover",
   "title": "Design Your Business",
-  "theme": "FEC blocks 3–5 — Value, Activities, Income",
-  "modules": ["dream-board", "customer-discovery", "fec-canvas"],
-  "steps": {
-    "learn": {
-      "label": "Learn",
-      "headline": "Build your advisory business blueprint",
-      "summary": "Complete Value (what & how), Activities (how you operate), and Income (how you earn) on the FEC.",
-      "durationMinutes": 25,
-      "bullets": [
-        "Value: what you deliver and how it helps your customer",
-        "Activities: how your practice operates week to week",
-        "Income: how you earn as a financial entrepreneur",
-        "Canvas wizard walks you through each block step by step"
-      ],
-      "callout": "You and Customer from Weeks 1–2 feed this week’s canvas work."
-    },
-    "workshop": {
-      "label": "Workshop",
-      "headline": "FEC design studio",
-      "summary": "Facilitated canvas building with squad feedback.",
-      "durationMinutes": 90,
-      "bullets": [
-        "Fill Value, Activities, and Income with coach guidance",
-        "Squad peer review of one canvas block",
-        "Identify gaps before Week 4 pitch prep"
-      ],
-      "callout": "Mark complete after your classroom session."
-    },
-    "assignment": {
-      "label": "Assignment",
-      "headline": "Complete FEC canvas blocks",
-      "summary": "Finish Value, Activities, and Income in the canvas wizard.",
-      "durationMinutes": 75,
-      "bullets": [
-        "Use the canvas wizard for guided prompts",
-        "Align each block with your persona and Dream Board",
-        "Save progress so Week 4 can synthesize your 3-year plan"
-      ],
-      "action": { "type": "canvas-wizard", "label": "Open canvas wizard" }
-    },
-    "reflection": {
-      "label": "Reflection",
-      "headline": "Is your business model clear?",
-      "summary": "Check readiness for Stage Gate 1.",
-      "durationMinutes": 10,
-      "prompts": [
-        "Which FEC block is strongest?",
-        "Which block still feels unclear?",
-        "What will you refine before your venture pitch?"
-      ]
-    },
-    "submit": {
-      "label": "Submit",
-      "headline": "Mark Week 3 complete",
-      "summary": "Unlock Week 4 — 3-Year Plan and Venture Pitch (Stage Gate 1).",
-      "durationMinutes": 2,
-      "bullets": ["Canvas blocks saved", "Ready to synthesize your pitch"]
-    }
-  }
+  "theme": "How your practice creates and captures value",
+  "contentReady": false,
+  "modules": [],
+  "portfolioArtifacts": [],
+  "steps": {}
 }

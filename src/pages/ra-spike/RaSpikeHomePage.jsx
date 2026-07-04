@@ -10,7 +10,6 @@ import { RaSpikeGraduationModal } from '../../components/ra-spike/RaSpikeGraduat
 import { shouldShowRaSpikeGraduation } from '../../lib/raSpikeGraduation.js';
 import { getRaSpikeGateStatus } from '../../lib/raSpikeGateService.js';
 import { useRaSpikeHomeDashboard } from '../../hooks/useRaSpikeHomeDashboard.js';
-import { raSpikeStageGateHref } from '../../routes/paths.js';
 
 /**
  * @param {{ user?: { id?: string, name?: string, internProgress?: object | null } }} props
@@ -18,7 +17,7 @@ import { raSpikeStageGateHref } from '../../routes/paths.js';
 export function RaSpikeHomePage({ user }) {
   const participantId = user?.id ?? '';
   const { loading, model, nextSession, squad } = useRaSpikeHomeDashboard(user);
-  const { ctx, assignment, assignmentStatus, primaryAction } = model;
+  const { ctx, contentReady, assignment, assignmentStatus, primaryAction } = model;
   const firstName = (user?.name || 'Participant').split(' ')[0];
   const [showGrad, setShowGrad] = useState(false);
   const gate1 = getRaSpikeGateStatus(user?.internProgress, 1);
@@ -47,14 +46,14 @@ export function RaSpikeHomePage({ user }) {
 
           <section className="spike-card space-y-4 border-spike/20 ring-1 ring-spike/10">
             <div>
-              <p className="spike-label text-spike">Current lesson</p>
+              <p className="spike-label text-spike">Current week</p>
               <p className="mt-1 text-lg font-semibold text-slate-900">
                 Week {ctx.week}: {ctx.weekTheme}
               </p>
               <p className="mt-2 text-sm text-slate-600">
-                {ctx.stageGate
-                  ? `Milestone week — ${ctx.stageGate.title}. Focus on preparation and rehearsal.`
-                  : 'Work through Learn, Workshop, Reflection, Assignment, and Portfolio in Playbook.'}
+                {contentReady
+                  ? 'Work through Learn, Workshop, Reflection, Assignment, and Portfolio in Playbook.'
+                  : 'Playbook content for this week is not published yet. Your coach will release materials when ready.'}
               </p>
             </div>
             <Link
@@ -73,13 +72,20 @@ export function RaSpikeHomePage({ user }) {
             </div>
           ) : (
             <>
-              <RaSpikeAssignmentCard
-                title={assignment.title}
-                summary={assignment.summary}
-                dueHint={assignment.dueHint}
-                estimatedMinutes={assignment.estimatedMinutes}
-                status={assignmentStatus}
-              />
+              {assignment ? (
+                <RaSpikeAssignmentCard
+                  title={assignment.title}
+                  summary={assignment.summary}
+                  dueHint={assignment.dueHint}
+                  estimatedMinutes={assignment.estimatedMinutes}
+                  status={assignmentStatus}
+                />
+              ) : (
+                <section className="spike-card border-dashed border-slate-300 bg-slate-50/80">
+                  <p className="text-sm font-semibold text-slate-900">This week&apos;s assignment</p>
+                  <p className="mt-2 text-sm text-slate-500">No assignment published yet.</p>
+                </section>
+              )}
 
               <RaSpikeNextSessionCard
                 label={nextSession.label}
@@ -93,7 +99,7 @@ export function RaSpikeHomePage({ user }) {
               <RaSpikeSquadSummaryCard
                 squadName={squad.name}
                 memberCount={squad.memberCount}
-                squadObjective={assignment.squadObjective}
+                squadObjective={assignment?.squadObjective ?? ''}
                 forming={squad.forming}
               />
             </>
@@ -102,27 +108,14 @@ export function RaSpikeHomePage({ user }) {
           {gate1 === 'pending' ? (
             <section className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
               <p className="font-semibold">Stage Gate 1 — awaiting panel</p>
-              <p className="mt-1">Your venture pitch is under evaluation. Week 5 unlocks after you pass.</p>
-              <Link to={raSpikeStageGateHref(1)} className="mt-2 inline-block font-semibold text-spike hover:underline">
-                Review prep checklist
-              </Link>
+              <p className="mt-1">Your coach will record the result when evaluation is complete.</p>
             </section>
           ) : null}
 
           {gate2 === 'pending' ? (
             <section className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
               <p className="font-semibold">Stage Gate 2 — awaiting panel</p>
-              <p className="mt-1">Your advisor revalida is under evaluation.</p>
-              <Link to={raSpikeStageGateHref(2)} className="mt-2 inline-block font-semibold text-spike hover:underline">
-                Review prep checklist
-              </Link>
-            </section>
-          ) : null}
-
-          {ctx.stageGate && gate1 !== 'pending' && gate2 !== 'pending' ? (
-            <section className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
-              <p className="font-semibold">{ctx.stageGate.label}</p>
-              <p className="mt-1">{ctx.stageGate.title}</p>
+              <p className="mt-1">Your coach will record the result when evaluation is complete.</p>
             </section>
           ) : null}
         </div>

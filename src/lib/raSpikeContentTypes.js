@@ -7,7 +7,15 @@
  * @property {string[]} [bullets]
  * @property {string} [callout]
  * @property {string[]} [prompts]
- * @property {{ type: string, label?: string }} | null} [action]
+ * @property {{ type: string, label?: string, gate?: number } | null} [action]
+ */
+
+/**
+ * @typedef {{ id: string, label: string }} RaSpikePortfolioArtifactDef
+ */
+
+/**
+ * @typedef {{ id: string, slot: string, prompt: string }} RaSpikeCoachPrompt
  */
 
 /**
@@ -16,8 +24,11 @@
  * @property {string} segment
  * @property {string} title
  * @property {string} theme
+ * @property {boolean} [contentReady]
  * @property {string[]} [modules]
- * @property {Partial<Record<'learn'|'workshop'|'assignment'|'reflection'|'submit', RaSpikeStepContent>>} steps
+ * @property {RaSpikePortfolioArtifactDef[]} [portfolioArtifacts]
+ * @property {RaSpikeCoachPrompt[]} [coachPrompts]
+ * @property {Partial<Record<'learn'|'workshop'|'assignment'|'reflection'|'portfolio'|'submit', RaSpikeStepContent>>} [steps]
  */
 
 export {};

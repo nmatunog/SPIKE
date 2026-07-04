@@ -3,5 +3,7 @@
   "title": "RA-SPIKE™",
   "tagline": "An 8-week journey to build your business and master the art of advising",
   "totalWeeks": 8,
-  "weeklyFlow": ["learn", "workshop", "assignment", "reflection", "submit"]
+  "framework": "SPIKE weekly flow",
+  "weeklyFlow": ["learn", "workshop", "reflection", "assignment", "portfolio"],
+  "contentPolicy": "Only weeks with contentReady:true are shown to participants. Unpublished weeks stay blank. Coach view lists authoring prompts — never fill with SPIKE Internship materials."
 }

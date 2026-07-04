@@ -63,7 +63,9 @@ export function RaSpikeSquadPage({ user }) {
 
           <section className="spike-card space-y-3">
             <p className="text-sm font-semibold text-slate-900">This week&apos;s squad objective</p>
-            <p className="text-sm text-slate-700">{assignment.squadObjective}</p>
+            <p className="text-sm text-slate-700">
+              {assignment?.squadObjective || 'No squad objective published for this week yet.'}
+            </p>
             <div>
               <div className="flex justify-between text-xs text-slate-500">
                 <span>Your week progress</span>

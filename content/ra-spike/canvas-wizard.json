@@ -1,30 +1,7 @@
 {
-  "title": "FEC Canvas Wizard",
-  "subtitle": "Build your business model one section at a time",
-  "steps": [
-    {
-      "id": "create_value",
-      "pillar": "create_value",
-      "title": "Create Value",
-      "description": "Who you serve, their problem, and your offering."
-    },
-    {
-      "id": "capture_value",
-      "pillar": "capture_value",
-      "title": "Capture Value",
-      "description": "How money flows in and out of your practice."
-    },
-    {
-      "id": "enable_value",
-      "pillar": "enable_value",
-      "title": "Enable Value",
-      "description": "Resources, partners, and funding to deliver."
-    },
-    {
-      "id": "uvp",
-      "pillar": "summary",
-      "title": "Unified Venture Proposition",
-      "description": "One sentence that ties your canvas together."
-    }
-  ]
+  "contentReady": false,
+  "title": "Canvas wizard",
+  "subtitle": "Not authored for RA-SPIKE yet",
+  "steps": [],
+  "coachPrompt": "Author RA-SPIKE canvas / business-model tools only when Week 3+ curriculum is ready. Do not import SPIKE Internship FEC or venture canvas content."
 }

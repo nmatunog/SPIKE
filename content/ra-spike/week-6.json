@@ -3,61 +3,8 @@
   "segment": "advise",
   "title": "Discovery & Approaching",
   "theme": "Build trust before advice",
-  "modules": ["prospecting", "discovery-approaching"],
-  "steps": {
-    "learn": {
-      "label": "Learn",
-      "headline": "Discovery conversations",
-      "summary": "Listen first. Understand needs before you recommend solutions.",
-      "durationMinutes": 20,
-      "bullets": [
-        "Discovery questions that uncover goals and concerns",
-        "Approaching with respect and professionalism",
-        "Documenting insights for later recommendations"
-      ],
-      "callout": "Trust is the bridge between prospecting and presenting solutions."
-    },
-    "workshop": {
-      "label": "Workshop",
-      "headline": "Discovery role-play",
-      "summary": "Practice discovery interviews with coach observation.",
-      "durationMinutes": 90,
-      "bullets": [
-        "Run discovery dialogues in pairs",
-        "Capture notes on goals, risks, and priorities",
-        "Coach debrief on listening quality"
-      ],
-      "callout": "Mark complete after class."
-    },
-    "assignment": {
-      "label": "Assignment",
-      "headline": "Discovery log",
-      "summary": "Record real or practice discovery conversations.",
-      "durationMinutes": 45,
-      "bullets": [
-        "Log at least one discovery conversation",
-        "Note client goals and open questions",
-        "Identify what you still need to learn"
-      ],
-      "action": { "type": "discovery-log", "label": "Open discovery log" }
-    },
-    "reflection": {
-      "label": "Reflection",
-      "headline": "What did listening teach you?",
-      "summary": "Connect discovery to your persona and value proposition.",
-      "durationMinutes": 10,
-      "prompts": [
-        "What did you hear that you did not expect?",
-        "How will this change your recommendation?",
-        "What question will you ask next time?"
-      ]
-    },
-    "submit": {
-      "label": "Submit",
-      "headline": "Mark Week 6 complete",
-      "summary": "Unlock Week 7 — Presenting Solutions.",
-      "durationMinutes": 2,
-      "bullets": ["Discovery log updated"]
-    }
-  }
+  "contentReady": false,
+  "modules": [],
+  "portfolioArtifacts": [],
+  "steps": {}
 }

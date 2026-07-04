@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Smoke check — RA-SPIKE Week 1 content, portfolio helpers, unlock policy.
+ * Smoke check — RA-SPIKE Week 1 content, blank unpublished weeks, coach prompts.
  */
 import { createServer } from 'vite';
 import { fileURLToPath } from 'node:url';
@@ -20,9 +20,13 @@ try {
   const progress = await server.ssrLoadModule('/src/lib/raSpikeWeekProgress.js');
   const portfolio = await server.ssrLoadModule('/src/lib/raSpikeWeek1Portfolio.js');
   const unlock = await server.ssrLoadModule('/src/lib/programUnlockPolicy.js');
+  const assignments = await server.ssrLoadModule('/src/lib/programs/ra-spike-assignments.js');
+  const home = await server.ssrLoadModule('/src/lib/programs/ra-spike-home.js');
+  const gates = await server.ssrLoadModule('/src/lib/raSpikeGateService.js');
 
   const week1 = mod.getRaSpikeWeekContent(1);
   if (week1.title !== 'Start With You') throw new Error('week-1 title mismatch');
+  if (!week1.contentReady) throw new Error('week-1 must be contentReady');
   if (!week1.lessonCards || week1.lessonCards.length !== 5) {
     throw new Error('week-1 needs 5 lesson cards');
   }
@@ -33,6 +37,36 @@ try {
   const steps = mod.listRaSpikeWeekStepIds(1);
   if (!steps.includes('portfolio') || steps.includes('submit')) {
     throw new Error(`week-1 steps should use portfolio not submit: ${steps.join(',')}`);
+  }
+
+  // Weeks 2–8: outline only, no invented playbook body or internship assignments.
+  for (let w = 2; w <= 8; w += 1) {
+    const content = mod.getRaSpikeWeekContent(w);
+    if (content.contentReady) throw new Error(`week ${w} must not be contentReady yet`);
+    if (mod.listRaSpikeWeekStepIds(w).length) {
+      throw new Error(`week ${w} must have no participant steps until authored`);
+    }
+    if (assignments.getRaSpikeAssignment(w)) {
+      throw new Error(`week ${w} must not invent an assignment`);
+    }
+    const prompts = mod.getRaSpikeWeekCoachPrompts(w);
+    if (!prompts.length) throw new Error(`week ${w} needs coach authoring prompts`);
+    const joined = prompts.map((p) => p.prompt).join(' ');
+    if (!/do not.*internship|internship materials/i.test(joined)) {
+      throw new Error(`week ${w} prompts must forbid internship materials`);
+    }
+  }
+
+  if (gates.getGatePrepChecklist(1).length || gates.getGatePrepChecklist(2).length) {
+    throw new Error('stage gate checklists must be empty until week content is authored');
+  }
+
+  const status = mod.listRaSpikeCurriculumStatus();
+  if (status.filter((s) => s.contentReady).length !== 1) {
+    throw new Error('only week 1 should be ready');
+  }
+  if (status.find((s) => s.week === 2)?.prompts.length < 5) {
+    throw new Error('week 2 coach prompts incomplete');
   }
 
   const empty = portfolio.emptyWeek1Portfolio();
@@ -74,12 +108,8 @@ try {
   const unlocked = progress.isRaSpikeStepUnlocked({ learn: 'complete' }, 'workshop');
   if (!unlocked) throw new Error('sequential unlock failed');
 
-  // Week 2 stays locked at current_week 1 (faculty publish required).
   if (unlock.isRaSpikeWeekUnlocked(2, { ra_spike_current_week: 1, program_slug: 'ra-spike' })) {
     throw new Error('week 2 must stay locked until faculty publish advances current week');
-  }
-  if (!unlock.isRaSpikeWeekUnlocked(2, { ra_spike_current_week: 2, program_slug: 'ra-spike' })) {
-    throw new Error('week 2 should unlock when current week is 2');
   }
 
   const deck = mod.getRaSpikeCoachPresentation(1, 1);
@@ -87,27 +117,29 @@ try {
     throw new Error('week-1 day-1 coach presentation missing');
   }
 
-  // Home/playbook must use participant unlock week only — never calendar-advance.
-  const home = await server.ssrLoadModule('/src/lib/programs/ra-spike-home.js');
-  const session = await server.ssrLoadModule('/src/lib/programs/ra-spike-session.js');
-  const pastCohort = '2026-01-01';
   const model = home.deriveRaSpikeHomeModel(
     { program_slug: 'ra-spike', ra_spike_current_week: 1, ra_spike_segment: 1 },
-    pastCohort,
+    '2026-01-01',
     'mock',
   );
-  if (model.ctx.week !== 1 || model.ctx.weekTheme !== 'Start With You') {
-    throw new Error(`home week must stay 1 with past cohort, got week ${model.ctx.week} / ${model.ctx.weekTheme}`);
+  if (!model.contentReady || !model.assignment) {
+    throw new Error('week-1 home must expose authored assignment');
   }
-  if (/venture pitch/i.test(model.assignment.title)) {
-    throw new Error(`week-1 home must not show internship pitch assignment: ${model.assignment.title}`);
+  if (/venture pitch|fec|persona draft/i.test(model.assignment.title + model.assignment.summary)) {
+    throw new Error(`week-1 assignment must not use internship language: ${model.assignment.title}`);
   }
-  if (session.resolveRaSpikeCalendarWeek(pastCohort, 1) !== 1) {
-    throw new Error('calendar week must not override participant week');
+
+  const blankHome = home.deriveRaSpikeHomeModel(
+    { program_slug: 'ra-spike', ra_spike_current_week: 4, ra_spike_segment: 1 },
+    '2026-01-01',
+    'mock',
+  );
+  if (blankHome.contentReady || blankHome.assignment) {
+    throw new Error('week-4 home must stay blank until content is authored');
   }
 
   console.log(
-    `smoke:ra-spike-week1 OK — "${week1.title}", ${steps.length} steps, portfolio gate, faculty unlock, home week lock`,
+    'smoke:ra-spike-week1 OK — week 1 ready, weeks 2–8 blank with coach prompts, no internship filler',
   );
 } catch (error) {
   console.error('smoke:ra-spike-week1 FAIL —', error.message);

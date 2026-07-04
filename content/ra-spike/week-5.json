@@ -2,62 +2,9 @@
   "weekNumber": 5,
   "segment": "advise",
   "title": "Prospecting",
-  "theme": "Master the sales process — start conversations",
-  "modules": ["prospecting"],
-  "steps": {
-    "learn": {
-      "label": "Learn",
-      "headline": "Start conversations with purpose",
-      "summary": "You are a financial entrepreneur. Prospecting turns your blueprint into real client conversations.",
-      "durationMinutes": 20,
-      "bullets": [
-        "Natural market and warm outreach",
-        "Opening lines that invite dialogue, not pressure",
-        "Tracking prospects ethically and consistently"
-      ],
-      "callout": "Advise segment (Weeks 5–7): master the sales process."
-    },
-    "workshop": {
-      "label": "Workshop",
-      "headline": "Prospecting practice",
-      "summary": "Role-play openings and build your first prospect list.",
-      "durationMinutes": 90,
-      "bullets": [
-        "Practice openers with your squad",
-        "List natural-market names aligned to your persona",
-        "Coach feedback on tone and clarity"
-      ],
-      "callout": "Mark complete after class."
-    },
-    "assignment": {
-      "label": "Assignment",
-      "headline": "Prospecting log",
-      "summary": "Log outreach attempts and outcomes.",
-      "durationMinutes": 45,
-      "bullets": [
-        "Add prospects from your natural market",
-        "Record contact attempts and next steps",
-        "Stay aligned with your ideal customer from Week 2"
-      ],
-      "action": { "type": "prospecting", "label": "Open prospecting log" }
-    },
-    "reflection": {
-      "label": "Reflection",
-      "headline": "What felt natural in outreach?",
-      "summary": "Note strengths and stretch areas.",
-      "durationMinutes": 10,
-      "prompts": [
-        "Which opener felt most like you?",
-        "Where did you hesitate?",
-        "Who will you contact next week?"
-      ]
-    },
-    "submit": {
-      "label": "Submit",
-      "headline": "Mark Week 5 complete",
-      "summary": "Unlock Week 6 — Discovery & Approaching.",
-      "durationMinutes": 2,
-      "bullets": ["Prospecting log started"]
-    }
-  }
+  "theme": "Start conversations",
+  "contentReady": false,
+  "modules": [],
+  "portfolioArtifacts": [],
+  "steps": {}
 }

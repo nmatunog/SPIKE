@@ -3,14 +3,22 @@ import { PresentationViewer } from '../playbook/PresentationViewer.jsx';
 import {
   getRaSpikeCoachPresentation,
   getRaSpikeDayContent,
+  getRaSpikeWeekCoachPrompts,
   listRaSpikeCoachPresentations,
 } from '../../lib/raSpikeContentLoader.js';
+import { RA_SPIKE_PROGRAM } from '../../lib/programs/ra-spike.js';
 
 /**
  * Coach presentation materials for RA-SPIKE weeks (Day 1 decks).
+ * Missing weeks show authoring prompts — never internship decks.
  */
 export function RaSpikeCoachPresentationPanel() {
   const decks = useMemo(() => listRaSpikeCoachPresentations(), []);
+  const missingWeeks = useMemo(() => {
+    const have = new Set(decks.map((d) => d.week));
+    return Array.from({ length: RA_SPIKE_PROGRAM.totalWeeks }, (_, i) => i + 1).filter((w) => !have.has(w));
+  }, [decks]);
+
   const [selectedKey, setSelectedKey] = useState(() =>
     decks[0] ? `${decks[0].week}-${decks[0].day}` : '',
   );
@@ -24,67 +32,80 @@ export function RaSpikeCoachPresentationPanel() {
     return { week, day, presentation, dayMeta };
   }, [selectedKey]);
 
-  if (!decks.length) {
-    return (
-      <section className="rounded-2xl border border-slate-200 bg-white p-5">
-        <h2 className="text-lg font-semibold text-slate-900">Coach presentation materials</h2>
-        <p className="mt-2 text-sm text-slate-600">
-          No RA-SPIKE coach decks imported yet.
-        </p>
-      </section>
-    );
-  }
-
   return (
     <section className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5">
       <header className="space-y-1">
         <h2 className="text-lg font-semibold text-slate-900">Coach presentation materials</h2>
         <p className="text-sm text-slate-600">
-          Facilitator decks for classroom sessions. Download the PDF or present slide-by-slide with notes.
+          Facilitator decks for RA-SPIKE classroom sessions only.
         </p>
       </header>
 
-      <label className="block text-sm font-medium text-slate-700">
-        Deck
-        <select
-          className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
-          value={selectedKey}
-          onChange={(e) => setSelectedKey(e.target.value)}
-        >
-          {decks.map((d) => (
-            <option key={`${d.week}-${d.day}`} value={`${d.week}-${d.day}`}>
-              Week {d.week} Day {d.day} — {d.title} ({d.slideCount} slides)
-            </option>
-          ))}
-        </select>
-      </label>
-
-      {selected?.dayMeta ? (
-        <div className="rounded-xl border border-spike/20 bg-spike-muted/30 px-4 py-3 text-sm text-slate-700">
-          <p className="font-semibold text-slate-900">{selected.dayMeta.title}</p>
-          {selected.dayMeta.summary ? (
-            <p className="mt-1 text-slate-600">{selected.dayMeta.summary}</p>
-          ) : null}
-          {Array.isArray(selected.dayMeta.agenda) && selected.dayMeta.agenda.length ? (
-            <ol className="mt-3 list-decimal space-y-1 pl-5">
-              {selected.dayMeta.agenda.map((item) => (
-                <li key={`${item.item}-${item.minutes}`}>
-                  <span className="font-medium text-slate-800">{item.minutes} min</span>
-                  {' — '}
-                  {item.item}
-                </li>
+      {decks.length ? (
+        <>
+          <label className="block text-sm font-medium text-slate-700">
+            Deck
+            <select
+              className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
+              value={selectedKey}
+              onChange={(e) => setSelectedKey(e.target.value)}
+            >
+              {decks.map((d) => (
+                <option key={`${d.week}-${d.day}`} value={`${d.week}-${d.day}`}>
+                  Week {d.week} Day {d.day} — {d.title} ({d.slideCount} slides)
+                </option>
               ))}
-            </ol>
-          ) : null}
-        </div>
-      ) : null}
+            </select>
+          </label>
 
-      {selected?.presentation ? (
-        <PresentationViewer
-          presentation={selected.presentation.presentation}
-          slides={selected.presentation.slides}
-          facultyMode
-        />
+          {selected?.dayMeta ? (
+            <div className="rounded-xl border border-spike/20 bg-spike-muted/30 px-4 py-3 text-sm text-slate-700">
+              <p className="font-semibold text-slate-900">{selected.dayMeta.title}</p>
+              {selected.dayMeta.summary ? (
+                <p className="mt-1 text-slate-600">{selected.dayMeta.summary}</p>
+              ) : null}
+              {Array.isArray(selected.dayMeta.agenda) && selected.dayMeta.agenda.length ? (
+                <ol className="mt-3 list-decimal space-y-1 pl-5">
+                  {selected.dayMeta.agenda.map((item) => (
+                    <li key={`${item.item}-${item.minutes}`}>
+                      <span className="font-medium text-slate-800">{item.minutes} min</span>
+                      {' — '}
+                      {item.item}
+                    </li>
+                  ))}
+                </ol>
+              ) : null}
+            </div>
+          ) : null}
+
+          {selected?.presentation ? (
+            <PresentationViewer
+              presentation={selected.presentation.presentation}
+              slides={selected.presentation.slides}
+              facultyMode
+            />
+          ) : null}
+        </>
+      ) : (
+        <p className="text-sm text-slate-600">No RA-SPIKE coach decks imported yet.</p>
+      )}
+
+      {missingWeeks.length ? (
+        <div className="space-y-2 rounded-xl border border-amber-200 bg-amber-50/80 px-4 py-3">
+          <p className="text-sm font-semibold text-amber-950">Missing decks — authoring prompts</p>
+          <ul className="space-y-2 text-sm text-amber-950">
+            {missingWeeks.map((week) => {
+              const deckPrompt = getRaSpikeWeekCoachPrompts(week).find((p) => p.id === 'coach_deck');
+              return (
+                <li key={week}>
+                  <span className="font-semibold">Week {week}:</span>{' '}
+                  {deckPrompt?.prompt
+                    ?? `Add facilitator deck at content/ra-spike/week-${week}/day-1/presentation.json.`}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       ) : null}
     </section>
   );

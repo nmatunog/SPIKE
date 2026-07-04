@@ -36,14 +36,8 @@ export const RA_SPIKE_PROGRAM = {
     { path: '/ra-spike/squad', label: 'Squad', shortLabel: 'Squad', icon: 'people' },
     { path: '/ra-spike/profile', label: 'Profile', shortLabel: 'Profile', icon: 'analytics' },
   ],
+  /** Modules only when week content is authored (see content/ra-spike/week-N.json). */
   weekModuleMap: {
     1: ['dream-board'],
-    2: ['dream-board', 'customer-discovery'],
-    3: ['dream-board', 'customer-discovery', 'fec-canvas'],
-    4: ['dream-board', 'customer-discovery', 'fec-canvas', 'business-plan', 'venture-pitch'],
-    5: ['prospecting'],
-    6: ['prospecting', 'discovery-approaching'],
-    7: ['prospecting', 'discovery-approaching', 'presenting-solutions'],
-    8: ['prospecting', 'discovery-approaching', 'presenting-solutions', 'advisor-revalida'],
   },
 };

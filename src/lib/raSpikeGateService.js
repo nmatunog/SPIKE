@@ -1,25 +1,19 @@
 import { isSupabaseConfigured, supabase } from '../supabaseClient.js';
 import { isMockUserId, updateMockInternProgress } from './mockAuth.js';
 import { RA_SPIKE_PROGRAM } from './programs/ra-spike.js';
+import { isRaSpikeWeekContentReady } from './raSpikeContentLoader.js';
 
 const GATE_PREP_PREFIX = 'ra_spike_gate_prep_v1';
 
-/** @param {number} gateNum */
+/**
+ * Stage gate prep checklist — empty until that week’s RA-SPIKE content is authored.
+ * Never invent internship FEC / persona / pitch items.
+ * @param {number} gateNum
+ */
 export function getGatePrepChecklist(gateNum) {
-  if (gateNum === 1) {
-    return [
-      { id: 'pitch-outline', label: 'Pitch outline reviewed' },
-      { id: 'fec-summary', label: 'FEC / business model summary ready' },
-      { id: 'persona', label: 'Customer persona clear' },
-      { id: 'rehearsal', label: 'Rehearsed with squad or coach' },
-    ];
-  }
-  return [
-    { id: 'scenario', label: 'Client scenario practiced' },
-    { id: 'discovery', label: 'Discovery flow ready' },
-    { id: 'solution', label: 'Solution presentation ready' },
-    { id: 'professional', label: 'Professional standards reviewed' },
-  ];
+  const week = gateNum === 1 ? 4 : 8;
+  if (!isRaSpikeWeekContentReady(week)) return [];
+  return [];
 }
 
 /** @param {string} participantId @param {number} gateNum */
@@ -44,6 +38,7 @@ export function saveGatePrepState(participantId, gateNum, state) {
 /** @param {string} participantId @param {number} gateNum */
 export function isGatePrepComplete(participantId, gateNum) {
   const items = getGatePrepChecklist(gateNum);
+  if (!items.length) return false;
   const state = getGatePrepState(participantId, gateNum);
   return items.every((item) => state[item.id]);
 }

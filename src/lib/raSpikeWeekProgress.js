@@ -189,14 +189,13 @@ export function isRaSpikeStepUnlocked(progress, stepId) {
   return getStepStatus(progress, prior) === 'complete';
 }
 
-/** @param {RaSpikeWeekProgressRow} progress @param {number} [week] */
-export function canSubmitRaSpikeWeek(progress, week) {
-  const steps = week === 1
-    ? /** @type {RaSpikeStepId[]} */ (['learn', 'workshop', 'reflection', 'assignment'])
-    : RA_SPIKE_STEP_ORDER.filter((s) => s !== 'portfolio' && s !== 'submit');
-  const terminal = week === 1 ? 'portfolio' : 'submit';
-  return steps.every((step) => getStepStatus(progress, step) === 'complete')
-    && getStepStatus(progress, terminal) !== 'complete';
+/** @param {RaSpikeWeekProgressRow} progress @param {number} [_week] */
+export function canSubmitRaSpikeWeek(progress, _week) {
+  const prior = /** @type {RaSpikeStepId[]} */ (
+    RA_SPIKE_STEP_ORDER.filter((s) => s !== 'portfolio')
+  );
+  return prior.every((step) => getStepStatus(progress, step) === 'complete')
+    && getStepStatus(progress, 'portfolio') !== 'complete';
 }
 
 /** @param {RaSpikeWeekProgressRow} progress */

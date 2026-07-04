@@ -3,8 +3,14 @@
   "segment": "discover",
   "title": "Start With You",
   "theme": "Discover Your Purpose. Build Your Future.",
+  "contentReady": true,
   "durationHours": 3,
   "modules": ["dream-board"],
+  "portfolioArtifacts": [
+    { "id": "dream_board", "label": "Dream Board" },
+    { "id": "vision_blueprint", "label": "Vision & Success Blueprint" },
+    { "id": "reflection_journal", "label": "Reflection journal" }
+  ],
   "lessonCards": [
     {
       "id": "welcome",

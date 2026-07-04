@@ -3,61 +3,8 @@
   "segment": "advise",
   "title": "Presenting Solutions",
   "theme": "Recommend with confidence",
-  "modules": ["prospecting", "discovery-approaching", "presenting-solutions"],
-  "steps": {
-    "learn": {
-      "label": "Learn",
-      "headline": "From discovery to recommendation",
-      "summary": "Present solutions that fit the client’s goals — as a financial entrepreneur, not a product pusher.",
-      "durationMinutes": 20,
-      "bullets": [
-        "Structure a clear recommendation",
-        "Handle questions with confidence and honesty",
-        "Connect solutions back to the client’s life goals"
-      ],
-      "callout": "Week 8 is Advisor Revalida — practice like it counts."
-    },
-    "workshop": {
-      "label": "Workshop",
-      "headline": "Solution presentation lab",
-      "summary": "Practice full recommendation conversations.",
-      "durationMinutes": 90,
-      "bullets": [
-        "Present a solution based on a discovery scenario",
-        "Peer and coach feedback",
-        "Refine your closing and next-step ask"
-      ],
-      "callout": "Mark complete after class."
-    },
-    "assignment": {
-      "label": "Assignment",
-      "headline": "Stage Gate 2 prep",
-      "summary": "Begin preparing for Advisor Revalida (Stage Gate 2).",
-      "durationMinutes": 60,
-      "bullets": [
-        "Review your FEC and pitch from Week 4",
-        "Practice a full advise conversation",
-        "Note areas for coach feedback"
-      ],
-      "action": { "type": "stage-gate", "label": "Open Stage Gate 2 prep", "gate": 2 }
-    },
-    "reflection": {
-      "label": "Reflection",
-      "headline": "Are you ready to advise?",
-      "summary": "Honest self-assessment before Revalida.",
-      "durationMinutes": 10,
-      "prompts": [
-        "Where do you feel most confident?",
-        "What still needs practice?",
-        "How has your entrepreneur mindset grown since Week 1?"
-      ]
-    },
-    "submit": {
-      "label": "Submit",
-      "headline": "Mark Week 7 complete",
-      "summary": "Unlock Week 8 — Advisor Revalida.",
-      "durationMinutes": 2,
-      "bullets": ["Solution practice complete", "Revalida prep started"]
-    }
-  }
+  "contentReady": false,
+  "modules": [],
+  "portfolioArtifacts": [],
+  "steps": {}
 }
