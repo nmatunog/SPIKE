@@ -42,9 +42,28 @@ export function buildSuperuserInternPreviewProgress(cohortStartDate = null) {
  * @param {object | null | undefined} user
  * @param {string} actualRole
  * @param {string | null | undefined} viewAsRole
+ * @param {{ raSpikeApp?: boolean }} [options]
  */
-export function buildSuperuserInternPreviewUser(user, actualRole, viewAsRole) {
+export function buildSuperuserInternPreviewUser(user, actualRole, viewAsRole, options = {}) {
   if (actualRole !== 'superuser' || viewAsRole !== 'intern' || !user) return user;
+
+  // RA-SPIKE participant preview — local Week 1 portfolio only (no internship seed).
+  if (options.raSpikeApp) {
+    return {
+      ...user,
+      id: SUPERUSER_INTERN_PREVIEW_PARTICIPANT_ID,
+      name: 'RA-SPIKE Sample Rookie',
+      email: user.email,
+      internProgress: {
+        program_slug: 'ra-spike',
+        ra_spike_current_week: 1,
+        ra_spike_segment: 1,
+        onboarding_complete: true,
+        cohort_id: null,
+      },
+      isSuperuserInternPreview: true,
+    };
+  }
 
   ensureSuperuserInternPreviewSeeded();
 
@@ -62,9 +81,10 @@ export function buildSuperuserInternPreviewUser(user, actualRole, viewAsRole) {
  * Intern route user for superuser — always sample data on intern-only pages.
  * @param {object | null | undefined} user
  * @param {string} actualRole
+ * @param {{ raSpikeApp?: boolean }} [options]
  */
-export function resolveSuperuserInternRouteUser(user, actualRole) {
-  return buildSuperuserInternPreviewUser(user, actualRole, 'intern');
+export function resolveSuperuserInternRouteUser(user, actualRole, options = {}) {
+  return buildSuperuserInternPreviewUser(user, actualRole, 'intern', options);
 }
 
 /** @param {object | null | undefined} user */

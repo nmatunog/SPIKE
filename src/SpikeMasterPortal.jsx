@@ -181,8 +181,10 @@ const SpikeMasterPortal = () => {
   );
   const isSuperuserSession = isSuperuserPortalSession(userRole);
   const internModuleUser = useMemo(
-    () => buildSuperuserInternPreviewUser(user, userRole, viewAsRole),
-    [user, userRole, viewAsRole],
+    () => buildSuperuserInternPreviewUser(user, userRole, viewAsRole, {
+      raSpikeApp: isRaSpikeAppPath(location.pathname),
+    }),
+    [user, userRole, viewAsRole, location.pathname],
   );
   const userIsMock = isMockUser(user);
   const compactNav = useCompactNav();
@@ -1664,7 +1666,46 @@ const SpikeMasterPortal = () => {
     }
 
     if (isSuperuserSession) {
-      const internUser = resolveSuperuserInternRouteUser(user, userRole);
+      const raSpikeApp = isRaSpikeAppPath(path);
+      const internUser = resolveSuperuserInternRouteUser(user, userRole, { raSpikeApp });
+
+      // Superuser "Preview: Intern" on the RA-SPIKE portal must use RA-SPIKE pages,
+      // not internship venture/playbook routes (those 400 against the RA-SPIKE DB).
+      if (raSpikeApp && viewAsRole === 'intern') {
+        if (isInternshipOnlyInternPath(path)) {
+          return <Navigate to={ROUTES.raSpikeHome} replace />;
+        }
+        if (path === ROUTES.raSpikeHome || path === '/ra-spike' || path === '/ra-spike/') {
+          return <RaSpikeHomePage user={internUser} />;
+        }
+        if (path === ROUTES.raSpikePlaybook || path.startsWith(`${ROUTES.raSpikePlaybook}/`)) {
+          return <RaSpikePlaybookPage user={internUser} />;
+        }
+        if (path === ROUTES.raSpikeSquad) {
+          return <RaSpikeSquadPage user={internUser} />;
+        }
+        if (path === ROUTES.raSpikeProfile) {
+          return <RaSpikeProfilePage user={internUser} />;
+        }
+        if (path === ROUTES.raSpikeOnboarding) {
+          return <RaSpikeOnboardingPage user={internUser} />;
+        }
+        if (path === ROUTES.raSpikeStageGate) {
+          const search = new URLSearchParams(location.search);
+          const gateParam = Number(search.get('gate'));
+          const gate = gateParam === 2 ? 2 : 1;
+          const weekParam = Number(search.get('week'));
+          const assignmentWeek = Number.isFinite(weekParam) && weekParam >= 1 && weekParam <= 8
+            ? weekParam
+            : undefined;
+          return <RaSpikeStageGatePrepPage user={internUser} gate={gate} assignmentWeek={assignmentWeek} />;
+        }
+        if (path === ROUTES.programCoachRaSpike || path === ROUTES.mentorRaSpike) {
+          return <Navigate to={ROUTES.raSpikeHome} replace />;
+        }
+        return <Navigate to={ROUTES.raSpikeHome} replace />;
+      }
+
       if (path === ROUTES.cohortIdentity) {
         return <CohortIdentityPage participantId={internUser.id} />;
       }
