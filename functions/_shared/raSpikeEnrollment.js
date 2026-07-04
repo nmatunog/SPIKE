@@ -9,7 +9,9 @@ import { raSpikeHomeOrgOptions } from './raSpikeAgencies.js';
  * @param {{ inviteCode?: string, cohortId?: number | string }} opts
  */
 export async function resolveRaSpikeCohort(admin, opts = {}) {
-  const inviteCode = opts.inviteCode ? String(opts.inviteCode).trim() : null;
+  const inviteCode = opts.inviteCode
+    ? String(opts.inviteCode).trim().replace(/\s+/g, '').toUpperCase()
+    : null;
   const cohortId = opts.cohortId != null ? Number(opts.cohortId) : null;
 
   const { data, error } = await admin.rpc('resolve_ra_spike_cohort', {

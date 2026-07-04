@@ -111,7 +111,7 @@ export const RaSpikeSignupPanel = memo(function RaSpikeSignupPanel({ onSignup })
   async function submitSignup(e) {
     e.preventDefault();
     setError('');
-    const code = inviteCode.trim();
+    const code = inviteCode.trim().replace(/\s+/g, '').toUpperCase();
     const selectedCohortId = cohortId ? Number(cohortId) : null;
     if (!code && !Number.isFinite(selectedCohortId)) {
       setError('Enter your batch invite code or select your batch.');

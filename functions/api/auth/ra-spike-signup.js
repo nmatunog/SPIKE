@@ -36,7 +36,9 @@ export async function onRequest(ctx) {
   const mobile = String(body?.mobile ?? '').trim();
   const email = String(body?.email ?? '').trim().toLowerCase();
   const password = String(body?.password ?? '');
-  const inviteCode = body?.batchInviteCode ? String(body.batchInviteCode).trim() : '';
+  const inviteCode = body?.batchInviteCode
+    ? String(body.batchInviteCode).trim().replace(/\s+/g, '').toUpperCase()
+    : '';
   const cohortId = body?.cohortId != null ? Number(body.cohortId) : null;
   const homeAgency = String(body?.homeAgency ?? '').trim();
   const homeUnit = String(body?.homeUnit ?? '').trim();
