@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   BookOpen,
   Check,
@@ -51,19 +51,32 @@ const LABEL = 'mb-1.5 block text-sm font-semibold tracking-tight text-slate-800'
  */
 export function RaSpikeWeek1Experience({ user, stepId = 'learn' }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { refreshUser } = useAuth();
   const participantId = user?.id ?? '';
   const weekContent = getRaSpikeWeekContent(1);
   const activeStep = STEPS.some((s) => s.id === stepId) ? stepId : 'learn';
+  const search = useMemo(() => new URLSearchParams(location.search), [location.search]);
+  const cardParam = search.get('card');
+  const dreamStepParam = search.get('dreamStep');
 
   const [portfolio, setPortfolio] = useState(emptyWeek1Portfolio);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [savedFlash, setSavedFlash] = useState(false);
-  const [cardIndex, setCardIndex] = useState(0);
-  const [dreamStep, setDreamStep] = useState(0);
+  const [cardIndex, setCardIndex] = useState(() => {
+    const idx = WEEK1_CARD_ORDER.indexOf(/** @type {any} */ (cardParam));
+    return idx >= 0 ? idx : 0;
+  });
+  const [dreamStep, setDreamStep] = useState(() => (dreamStepParam === 'images' ? 3 : 0));
   const [discover, setDiscover] = useState({ why_here: '', future_want: '', advisor_become: '' });
+
+  useEffect(() => {
+    const idx = WEEK1_CARD_ORDER.indexOf(/** @type {any} */ (cardParam));
+    if (idx >= 0) setCardIndex(idx);
+    if (dreamStepParam === 'images') setDreamStep(3);
+  }, [cardParam, dreamStepParam]);
 
   const reload = useCallback(async () => {
     if (!participantId) return;
@@ -345,6 +358,27 @@ function LearnPanel({
         </div>
       </div>
 
+      {cardId !== 'dream_builder' ? (
+        <button
+          type="button"
+          onClick={() => {
+            setCardIndex(WEEK1_CARD_ORDER.indexOf('dream_builder'));
+            setDreamStep(3);
+          }}
+          className="mb-4 flex w-full items-center gap-3 rounded-2xl border border-dashed border-spike/30 bg-spike-muted/30 px-3.5 py-3 text-left transition hover:border-spike/50 hover:bg-spike-muted/50"
+        >
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-spike text-white">
+            <ImagePlus size={18} />
+          </span>
+          <span className="min-w-0">
+            <span className="block text-sm font-bold text-slate-900">Upload Dream Board photos</span>
+            <span className="block text-xs text-slate-600">
+              Lifestyle · Success · Destination — tap to open Dream Builder
+            </span>
+          </span>
+        </button>
+      ) : null}
+
       {cardId === 'welcome' ? (
         <div className="space-y-4">
           <SectionTitle
@@ -479,7 +513,7 @@ function LearnPanel({
             subtitle="You are not building alone."
           />
           <div className="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-4 text-sm leading-relaxed text-slate-700">
-            Your coach forms accountability squads in class. Open Squad to see your teammates —
+            Your coach forms and names squads in the coach hub. Open Squad to see your teammates —
             view only, no chat or scoring.
           </div>
           <Link

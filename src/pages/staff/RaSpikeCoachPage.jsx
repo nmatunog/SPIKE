@@ -4,6 +4,7 @@ import { RaSpikeBatchManagementPanel } from '../../components/staff/RaSpikeBatch
 import { RaSpikeCoachPresentationPanel } from '../../components/staff/RaSpikeCoachPresentationPanel.jsx';
 import { RaSpikeCurriculumAuthoringPanel } from '../../components/staff/RaSpikeCurriculumAuthoringPanel.jsx';
 import { RaSpikeGateEvaluationPanel } from '../../components/staff/RaSpikeGateEvaluationPanel.jsx';
+import { RaSpikeSquadFormationPanel } from '../../components/staff/RaSpikeSquadFormationPanel.jsx';
 import { RaSpikeWeek1FacultyPanel } from '../../components/staff/RaSpikeWeek1FacultyPanel.jsx';
 import { internshipEntryHref } from '../../routes/paths.js';
 import { RA_SPIKE_PROGRAM } from '../../lib/programs/ra-spike.js';
@@ -54,6 +55,12 @@ export function RaSpikeCoachPage({
         </section>
 
         <RaSpikeBatchManagementPanel showToast={showToast} onChanged={onRefresh} />
+
+        <RaSpikeSquadFormationPanel
+          interns={interns}
+          showToast={showToast}
+          onChanged={onRefresh}
+        />
 
         <RaSpikeCurriculumAuthoringPanel />
 

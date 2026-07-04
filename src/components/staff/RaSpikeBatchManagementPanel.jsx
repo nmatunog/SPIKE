@@ -25,6 +25,9 @@ export function RaSpikeBatchManagementPanel({ showToast, onChanged }) {
   const [inviteCode, setInviteCode] = useState('');
   const [startDate, setStartDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [copiedId, setCopiedId] = useState(null);
+  const [renameId, setRenameId] = useState(/** @type {number | null} */ (null));
+  const [renameBatchLabel, setRenameBatchLabel] = useState('');
+  const [renameOfficialName, setRenameOfficialName] = useState('');
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -102,15 +105,42 @@ export function RaSpikeBatchManagementPanel({ showToast, onChanged }) {
     window.setTimeout(() => setCopiedId(null), 2000);
   }
 
+  function startRename(batch) {
+    setRenameId(batch.id);
+    setRenameBatchLabel(batch.batch_label || batch.name || '');
+    setRenameOfficialName(batch.official_name || '');
+  }
+
+  async function handleRename(cohortId) {
+    if (!canWrite) return;
+    setBusy(`rename-${cohortId}`);
+    setError('');
+    try {
+      await staffPatchRaSpikeBatch(cohortId, {
+        batchLabel: renameBatchLabel,
+        officialName: renameOfficialName,
+      });
+      showToast?.('Cohort name updated.');
+      setRenameId(null);
+      await load();
+      onChanged?.();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not rename cohort.');
+    } finally {
+      setBusy('');
+    }
+  }
+
   return (
     <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div className="border-b border-slate-100 px-4 py-4 sm:px-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-spike">Enrollment</p>
-            <h2 className="mt-1 text-lg font-bold text-slate-900">RA-SPIKE batches</h2>
+            <h2 className="mt-1 text-lg font-bold text-slate-900">Cohorts &amp; enrollment</h2>
             <p className="mt-1 text-sm text-slate-600">
-              Mixed-agency cohorts — rookies pick their home agency and unit when they sign up.
+              Name each cohort, open signup with an invite code, and set the active batch for coach tools.
+              Rookies pick their home agency and unit when they sign up.
             </p>
           </div>
           {canWrite ? (
@@ -139,8 +169,8 @@ export function RaSpikeBatchManagementPanel({ showToast, onChanged }) {
             </p>
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
               <label className="block text-sm sm:col-span-2">
-                <span className="mb-1 block font-medium text-slate-700">Batch label</span>
-                <input required value={batchLabel} onChange={(e) => setBatchLabel(e.target.value)} className={INPUT} placeholder="e.g. RA-SPIKE Batch 2 · July 2026" />
+                <span className="mb-1 block font-medium text-slate-700">Cohort name</span>
+                <input required value={batchLabel} onChange={(e) => setBatchLabel(e.target.value)} className={INPUT} placeholder="e.g. RA-SPIKE Batch 1 · July 2026" />
               </label>
               <label className="block text-sm">
                 <span className="mb-1 block font-medium text-slate-700">Invite code (optional)</span>
@@ -174,62 +204,121 @@ export function RaSpikeBatchManagementPanel({ showToast, onChanged }) {
           <ul className="space-y-3">
             {batches.map((batch) => {
               const label = batch.batch_label || batch.name || `Batch ${batch.id}`;
+              const official = batch.official_name?.trim();
               const code = batch.batch_invite_code ?? '';
               const active = Boolean(batch.is_active);
+              const renaming = renameId === batch.id;
               return (
                 <li
                   key={batch.id}
                   className={`rounded-2xl border p-4 ${active ? 'border-spike/30 bg-spike-muted/20' : 'border-slate-200 bg-white'}`}
                 >
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                      <p className="font-bold text-slate-900">{label}</p>
-                      <p className="mt-0.5 text-sm text-slate-600">Mixed agencies &amp; units</p>
-                      {active ? (
-                        <span className="mt-2 inline-flex rounded-full bg-spike/15 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-spike">
-                          Active batch
-                        </span>
-                      ) : null}
+                  {renaming ? (
+                    <div className="space-y-3">
+                      <label className="block text-sm">
+                        <span className="mb-1 block font-medium text-slate-700">Cohort name</span>
+                        <input
+                          value={renameBatchLabel}
+                          onChange={(e) => setRenameBatchLabel(e.target.value)}
+                          className={INPUT}
+                          placeholder="Batch label shown to coaches"
+                        />
+                      </label>
+                      <label className="block text-sm">
+                        <span className="mb-1 block font-medium text-slate-700">Official cohort name (optional)</span>
+                        <input
+                          value={renameOfficialName}
+                          onChange={(e) => setRenameOfficialName(e.target.value)}
+                          className={INPUT}
+                          placeholder="e.g. Cassiopeia Rookies · July 2026"
+                        />
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          disabled={busy === `rename-${batch.id}` || !renameBatchLabel.trim()}
+                          onClick={() => void handleRename(batch.id)}
+                          className="rounded-xl bg-spike px-3 py-2 text-xs font-bold text-white disabled:opacity-60"
+                        >
+                          {busy === `rename-${batch.id}` ? 'Saving…' : 'Save names'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setRenameId(null)}
+                          className="rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold text-slate-800"
+                        >
+                          Cancel
+                        </button>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Invite code</p>
-                      <div className="mt-1 flex items-center justify-end gap-2">
-                        <span className="font-mono text-lg font-bold text-slate-900">{code || '—'}</span>
-                        {code ? (
+                  ) : (
+                    <>
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                          <p className="font-bold text-slate-900">{label}</p>
+                          {official ? (
+                            <p className="mt-0.5 text-sm font-medium text-slate-700">Official: {official}</p>
+                          ) : (
+                            <p className="mt-0.5 text-sm text-slate-500">No official cohort name yet</p>
+                          )}
+                          <p className="mt-0.5 text-sm text-slate-600">Mixed agencies &amp; units</p>
+                          {active ? (
+                            <span className="mt-2 inline-flex rounded-full bg-spike/15 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-spike">
+                              Active cohort
+                            </span>
+                          ) : null}
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Invite code</p>
+                          <div className="mt-1 flex items-center justify-end gap-2">
+                            <span className="font-mono text-lg font-bold text-slate-900">{code || '—'}</span>
+                            {code ? (
+                              <button
+                                type="button"
+                                onClick={() => copyCode(code, batch.id)}
+                                className="rounded-lg border border-slate-200 p-2 text-slate-600 hover:bg-slate-50"
+                                aria-label="Copy invite code"
+                              >
+                                {copiedId === batch.id ? <Check size={16} className="text-emerald-600" /> : <Copy size={16} />}
+                              </button>
+                            ) : null}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {canWrite ? (
                           <button
                             type="button"
-                            onClick={() => copyCode(code, batch.id)}
-                            className="rounded-lg border border-slate-200 p-2 text-slate-600 hover:bg-slate-50"
-                            aria-label="Copy invite code"
+                            disabled={Boolean(busy)}
+                            onClick={() => startRename(batch)}
+                            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-800"
                           >
-                            {copiedId === batch.id ? <Check size={16} className="text-emerald-600" /> : <Copy size={16} />}
+                            Name cohort
+                          </button>
+                        ) : null}
+                        {!active && canWrite ? (
+                          <button
+                            type="button"
+                            disabled={Boolean(busy)}
+                            onClick={() => void handleSetActive(batch.id)}
+                            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-800"
+                          >
+                            {busy === `active-${batch.id}` ? 'Setting…' : 'Set as active'}
+                          </button>
+                        ) : null}
+                        {canWrite ? (
+                          <button
+                            type="button"
+                            disabled={Boolean(busy)}
+                            onClick={() => void handleToggleSignup(batch.id, !batch.signup_open)}
+                            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-800"
+                          >
+                            {batch.signup_open ? 'Close signup' : 'Open signup'}
                           </button>
                         ) : null}
                       </div>
-                    </div>
-                  </div>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {!active && canWrite ? (
-                      <button
-                        type="button"
-                        disabled={Boolean(busy)}
-                        onClick={() => void handleSetActive(batch.id)}
-                        className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-800"
-                      >
-                        {busy === `active-${batch.id}` ? 'Setting…' : 'Set as active'}
-                      </button>
-                    ) : null}
-                    {canWrite ? (
-                      <button
-                        type="button"
-                        disabled={Boolean(busy)}
-                        onClick={() => void handleToggleSignup(batch.id, !batch.signup_open)}
-                        className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-800"
-                      >
-                        {batch.signup_open ? 'Close signup' : 'Open signup'}
-                      </button>
-                    ) : null}
-                  </div>
+                    </>
+                  )}
                 </li>
               );
             })}

@@ -14,7 +14,7 @@ export async function fetchRaSpikeBatchesForStaff() {
   const { data, error } = await client
     .from('cohorts')
     .select(
-      'id, name, batch_label, agency, unit_manager, batch_invite_code, signup_open, is_active, start_date, starts_on, created_at',
+      'id, name, official_name, batch_label, agency, unit_manager, batch_invite_code, signup_open, is_active, start_date, starts_on, created_at',
     )
     .eq('program_slug', 'ra-spike')
     .order('created_at', { ascending: false });
@@ -60,7 +60,13 @@ export async function staffSetActiveCohort(cohortId) {
 
 /**
  * @param {number} cohortId
- * @param {{ signupOpen?: boolean, batchInviteCode?: string }} patch
+ * @param {{
+ *   signupOpen?: boolean,
+ *   batchInviteCode?: string,
+ *   batchLabel?: string,
+ *   officialName?: string,
+ *   name?: string,
+ * }} patch
  */
 export async function staffPatchRaSpikeBatch(cohortId, patch) {
   await assertPortalCanWrite();
@@ -72,6 +78,18 @@ export async function staffPatchRaSpikeBatch(cohortId, patch) {
     body.batch_invite_code = patch.batchInviteCode.trim()
       ? patch.batchInviteCode.trim().toUpperCase()
       : null;
+  }
+  if (patch.batchLabel !== undefined) {
+    const label = patch.batchLabel.trim();
+    if (!label) throw new Error('Cohort / batch name is required.');
+    body.batch_label = label;
+    body.name = patch.name?.trim() || label;
+  }
+  if (patch.officialName !== undefined) {
+    body.official_name = patch.officialName.trim() || null;
+  }
+  if (patch.name !== undefined && patch.batchLabel === undefined) {
+    body.name = patch.name.trim();
   }
   const { data, error } = await client
     .from('cohorts')

@@ -436,8 +436,18 @@ export function raSpikePlaybookStepHref(stepId, week) {
   return week ? `${base}?week=${week}` : base;
 }
 
+/**
+ * Deep link into Week 1 Dream Builder (optional images upload step).
+ * @param {{ images?: boolean }} [options]
+ */
+export function raSpikeDreamBoardHref(options = {}) {
+  const params = new URLSearchParams({ week: '1', card: 'dream_builder' });
+  if (options.images) params.set('dreamStep', 'images');
+  return `${ROUTES.raSpikePlaybook}/step/learn?${params.toString()}`;
+}
+
 export function raSpikePlaybookDreamBoardHref() {
-  return ROUTES.raSpikePlaybookDreamBoard;
+  return raSpikeDreamBoardHref({ images: true });
 }
 
 export function raSpikePlaybookCanvasWizardHref() {

@@ -10,6 +10,7 @@ import { RaSpikeGraduationModal } from '../../components/ra-spike/RaSpikeGraduat
 import { shouldShowRaSpikeGraduation } from '../../lib/raSpikeGraduation.js';
 import { getRaSpikeGateStatus } from '../../lib/raSpikeGateService.js';
 import { useRaSpikeHomeDashboard } from '../../hooks/useRaSpikeHomeDashboard.js';
+import { raSpikeDreamBoardHref } from '../../routes/paths.js';
 
 /**
  * @param {{ user?: { id?: string, name?: string, internProgress?: object | null } }} props
@@ -56,13 +57,23 @@ export function RaSpikeHomePage({ user }) {
                   : 'Playbook content for this week is not published yet. Your coach will release materials when ready.'}
               </p>
             </div>
-            <Link
-              to={primaryAction.href}
-              className="inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-spike px-5 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-spike-dark sm:w-auto"
-            >
-              {primaryAction.label}
-              <ArrowRight size={18} aria-hidden />
-            </Link>
+            <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+              <Link
+                to={primaryAction.href}
+                className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-spike px-5 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-spike-dark"
+              >
+                {primaryAction.label}
+                <ArrowRight size={18} aria-hidden />
+              </Link>
+              {contentReady && ctx.week === 1 ? (
+                <Link
+                  to={raSpikeDreamBoardHref({ images: true })}
+                  className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-spike/30 bg-white px-5 py-3 text-base font-semibold text-spike shadow-sm transition hover:bg-spike-muted/40"
+                >
+                  Upload Dream Board photos
+                </Link>
+              ) : null}
+            </div>
           </section>
 
           {loading ? (

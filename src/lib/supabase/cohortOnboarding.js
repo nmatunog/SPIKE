@@ -407,7 +407,7 @@ async function assertParticipantNotInSquad(client, participantId, exceptSquadId 
   if (error) throw error;
   const conflict = (data ?? []).find((row) => row.squad_id !== exceptSquadId);
   if (conflict) {
-    throw new Error('This intern is already assigned to another squad. Remove them there first.');
+    throw new Error('This participant is already assigned to another squad. Remove them there first.');
   }
 }
 
