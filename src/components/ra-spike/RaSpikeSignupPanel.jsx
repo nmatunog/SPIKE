@@ -4,7 +4,7 @@ import { PasswordInput } from '../PasswordInput.jsx';
 import { fetchRaSpikeEnrollmentOptions } from '../../lib/raSpikeSignupService.js';
 import { RA_SPIKE_AGENCIES, raSpikeHomeOrgOptions, raSpikeUnitsForAgency } from '../../../shared/raSpikeAgencies.js';
 
-const STEPS = ['Account', 'Batch & unit', 'Done'];
+const STEPS = ['Account', 'Home unit', 'Done'];
 
 /**
  * @param {{
@@ -28,7 +28,6 @@ export const RaSpikeSignupPanel = memo(function RaSpikeSignupPanel({ onSignup })
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [password2, setPassword2] = useState('');
-  const [inviteCode, setInviteCode] = useState('');
   const [cohortId, setCohortId] = useState('');
   const [homeAgency, setHomeAgency] = useState('');
   const [homeUnit, setHomeUnit] = useState('');
@@ -74,10 +73,10 @@ export const RaSpikeSignupPanel = memo(function RaSpikeSignupPanel({ onSignup })
   const resolvedHomeUnit = homeUnit === 'Other' ? homeUnitOther.trim() : homeUnit.trim();
 
   useEffect(() => {
-    if (openBatches.length === 1 && !cohortId && !inviteCode.trim()) {
+    if (openBatches.length && !cohortId) {
       setCohortId(String(openBatches[0].cohortId));
     }
-  }, [openBatches, cohortId, inviteCode]);
+  }, [openBatches, cohortId]);
 
   function resetForm() {
     setStep(0);
@@ -86,7 +85,6 @@ export const RaSpikeSignupPanel = memo(function RaSpikeSignupPanel({ onSignup })
     setEmail('');
     setPassword('');
     setPassword2('');
-    setInviteCode('');
     setCohortId('');
     setHomeAgency('');
     setHomeUnit('');
@@ -111,12 +109,8 @@ export const RaSpikeSignupPanel = memo(function RaSpikeSignupPanel({ onSignup })
   async function submitSignup(e) {
     e.preventDefault();
     setError('');
-    const code = inviteCode.trim().replace(/\s+/g, '').toUpperCase();
+    // Invite codes disabled — API enrolls into the active open cohort.
     const selectedCohortId = cohortId ? Number(cohortId) : null;
-    if (!code && !Number.isFinite(selectedCohortId)) {
-      setError('Enter your batch invite code or select your batch.');
-      return;
-    }
     if (!homeAgency) {
       setError('Select your home agency.');
       return;
@@ -132,7 +126,6 @@ export const RaSpikeSignupPanel = memo(function RaSpikeSignupPanel({ onSignup })
         mobile: mobile.trim(),
         email: email.trim(),
         password,
-        batchInviteCode: code || undefined,
         cohortId: Number.isFinite(selectedCohortId) ? selectedCohortId : undefined,
         homeAgency,
         homeUnit: resolvedHomeUnit,
@@ -215,7 +208,7 @@ export const RaSpikeSignupPanel = memo(function RaSpikeSignupPanel({ onSignup })
                 <PasswordInput required minLength={8} value={password2} onChange={(e) => setPassword2(e.target.value)} className={fieldClass} autoComplete="new-password" />
               </label>
               <button type="submit" className="spike-btn-primary min-h-[48px] w-full">
-                Next — batch &amp; home unit
+                Next — home agency &amp; unit
               </button>
             </form>
           ) : null}
@@ -223,43 +216,24 @@ export const RaSpikeSignupPanel = memo(function RaSpikeSignupPanel({ onSignup })
           {step === 1 ? (
             <form className="space-y-3" onSubmit={submitSignup}>
               <p className="rounded-xl bg-slate-50 px-3 py-2.5 text-xs leading-relaxed text-slate-600">
-                Each batch includes advisors from many agencies and units. Choose your batch, then tell us your{' '}
-                <strong className="font-semibold text-slate-800">home agency and unit</strong>.
+                You&apos;ll join the current open RA-SPIKE cohort. Tell us your{' '}
+                <strong className="font-semibold text-slate-800">home agency and unit</strong>
+                {' '}(invite codes are not required right now).
               </p>
 
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Your batch</p>
-              <label className="block text-sm">
-                <span className="mb-1 block font-medium text-slate-700">Batch invite code</span>
-                <input
-                  value={inviteCode}
-                  onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
-                  className={`${fieldClass} uppercase`}
-                  placeholder="From your coach"
-                  autoComplete="off"
-                />
-              </label>
-              <p className="text-center text-xs text-slate-500">— or select batch —</p>
               {optionsLoading ? (
                 <p className="flex items-center gap-2 text-sm text-slate-600">
-                  <Loader2 className="animate-spin" size={16} /> Loading batches…
+                  <Loader2 className="animate-spin" size={16} /> Loading…
+                </p>
+              ) : openBatches.length > 0 ? (
+                <p className="rounded-xl border border-spike/15 bg-spike-muted/30 px-3 py-2 text-sm text-slate-700">
+                  Enrolling in <strong>{openBatches.find((b) => String(b.cohortId) === cohortId)?.batchLabel
+                    || openBatches[0].batchLabel}</strong>
                 </p>
               ) : (
-                <label className="block text-sm">
-                  <span className="mb-1 block font-medium text-slate-700">Batch</span>
-                  <select
-                    value={cohortId}
-                    onChange={(e) => setCohortId(e.target.value)}
-                    className={fieldClass}
-                    disabled={!openBatches.length}
-                  >
-                    <option value="">
-                      {openBatches.length ? 'Select batch' : 'No open batches — use invite code'}
-                    </option>
-                    {openBatches.map((b) => (
-                      <option key={b.cohortId} value={String(b.cohortId)}>{b.batchLabel}</option>
-                    ))}
-                  </select>
-                </label>
+                <p className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+                  No open cohort listed yet — signup will use the active batch if available.
+                </p>
               )}
 
               <p className="pt-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Your home organization</p>

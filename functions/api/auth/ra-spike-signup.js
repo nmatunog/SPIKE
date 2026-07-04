@@ -49,14 +49,12 @@ export async function onRequest(ctx) {
   }
   if (!email || !email.includes('@')) return json({ message: 'A valid email is required.' }, 400);
   if (password.length < 8) return json({ message: 'Password must be at least 8 characters.' }, 400);
-  if (!inviteCode && !Number.isFinite(cohortId)) {
-    return json({ message: 'Select a batch or enter your batch invite code.' }, 400);
-  }
   if (!homeAgency || !homeUnit) {
     return json({ message: 'Select your home agency and unit.' }, 400);
   }
 
   try {
+    // Invite codes disabled for now — enroll into active open cohort (optional code still accepted).
     const cohort = await resolveRaSpikeCohort(admin, {
       inviteCode: inviteCode || null,
       cohortId: Number.isFinite(cohortId) ? cohortId : null,
