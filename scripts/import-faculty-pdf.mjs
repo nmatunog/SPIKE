@@ -116,11 +116,7 @@ mkdirSync(imageDir, { recursive: true });
 mkdirSync(sourceDir, { recursive: true });
 
 cpSync(args.pdf, sourcePdfDest);
-const pdfBytes = statSync(args.pdf).size;
-const canPublish = pdfBytes <= MAX_PUBLIC_BYTES;
-if (canPublish) {
-  cpSync(args.pdf, pdfDest);
-} else if (existsSync(pdfDest)) {
+if (existsSync(pdfDest)) {
   rmSync(pdfDest, { force: true });
 }
 
@@ -169,18 +165,13 @@ const presentationMeta = {
   importedAt: new Date().toISOString(),
 };
 delete presentationMeta.pptxUrl;
-if (canPublish) {
-  presentationMeta.pdfUrl = `/content/${args.segment}/${args.week}/${args.day}/${pdfName}`;
-} else {
-  delete presentationMeta.pdfUrl;
-  presentationMeta.deployNote =
-    'PDF exceeds Cloudflare Pages 25MB limit; stored in repo source only. Slides render from PNG exports.';
-}
+presentationMeta.pdfUrl = `/api/coach/faculty-deck/${args.segment}/${args.week}/${args.day}/${pdfName}`;
+delete presentationMeta.deployNote;
 
 writeFileSync(jsonFile, `${JSON.stringify({ presentation: presentationMeta, slides }, null, 2)}\n`);
 
 console.log('import-faculty-pdf OK');
 console.log(`  pdf source: ${sourcePdfDest}`);
-console.log(`  pdf public: ${canPublish ? pdfDest : '(skipped — exceeds 25MB deploy limit)'}`);
+console.log(`  pdf download: ${presentationMeta.pdfUrl} (staff API — not public)`);
 console.log(`  images: ${slideCount} → ${imageDir}`);
 console.log(`  json: ${jsonFile}`);

@@ -1,31 +1,38 @@
 {
   "dayId": "day-segment-1-week-4-day-1",
-  "theme": "Integrity",
-  "title": "Mentor Guide — Day 16 — Insurance Code, AMLA & Data Privacy Ethics",
-  "coachingObjective": "Build compliance reflexes.",
+  "theme": "Platform Integration",
+  "title": "Mentor Guide — Day 16 — Platform Integration",
+  "coachingObjective": "Help participants evolve their Blueprint and FEC — not restart — by connecting their venture to the AIA platform.",
   "timing": {
-    "preSession": "Review facilitator guide and deck speaker notes",
-    "duringSession": "Circulate during squad activities",
-    "postSession": "Complete squad weekly review snapshot"
+    "preSession": "Review Deck 01 Scenes 8–11 and Playbook Blueprint + FEC paths",
+    "duringSession": "Circulate during Blueprint and FEC workshop blocks",
+    "postSession": "Note who still frames AIA as employer vs platform"
   },
   "discussionQuestions": [
-    "Where did participants rationalize shortcuts?",
-    "Do they know escalation paths?",
-    "Ready for product licensing content?"
+    "Does their Business Model reflect their Week 1–3 customer work?",
+    "Is Revenue Model specific or generic?",
+    "Can they explain platform integration in one sentence?"
   ],
   "observationAreas": [
-    "Reasoning quality",
-    "Escalation awareness",
-    "Peer influence"
+    "Emotional shift — pride in prior work vs anxiety about Week 4",
+    "Blueprint Business Model depth",
+    "FEC integration specificity (not product lists)",
+    "Squad share clarity"
   ],
   "coachingTips": [
-    "Praise dissent respectfully in case debates"
+    "Reinforce: Week 1–3 work remains valid — it evolves",
+    "Redirect product pitch energy toward business model design"
   ],
-  "warningSigns": [],
-  "reflectionPrompts": [],
+  "warningSigns": [
+    "Erasing Week 3 FEC foundation instead of extending it",
+    "Treating platform integration as 'joining AIA' instead of building on a platform"
+  ],
+  "reflectionPrompts": [
+    "How did platform integration change how you see your venture?"
+  ],
   "expectedOutcomes": [
-    "Ethics case memo",
-    "Privacy checklist"
+    "Blueprint Business Model + Revenue Model updated",
+    "FEC Platform Integration, Revenue Engine, Agency Growth Strategy"
   ],
   "activityCoachingNotes": [],
   "debriefWithFaculty": []

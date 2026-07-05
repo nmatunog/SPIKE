@@ -2,6 +2,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { coachDeckGuardPlugin } from './scripts/vite-coach-deck-guard.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const lifeRoot = path.resolve(__dirname, 'SPIKE_LIFE')
@@ -12,7 +13,7 @@ const capacitorBuild = process.env.CAPACITOR === 'true'
 export default defineConfig({
   // Relative paths for native WebView; absolute `/` for Cloudflare Pages SPA routing.
   base: capacitorBuild ? './' : '/',
-  plugins: [react()],
+  plugins: [react(), coachDeckGuardPlugin()],
   resolve: {
     alias: [
       {

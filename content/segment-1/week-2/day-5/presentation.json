@@ -22,7 +22,7 @@
     "sourceFile": "faculty-deck-01.pdf",
     "sourcePath": "content/segment-1/week-2/day-5/source/faculty-deck-01.pdf",
     "importedAt": "2026-06-25T15:14:37.747Z",
-    "pdfUrl": "/content/segment-1/week-2/day-5/faculty-deck-01.pdf"
+    "pdfUrl": "/api/coach/faculty-deck/segment-1/week-2/day-5/faculty-deck-01.pdf"
   },
   "slides": [
     {
@@ -112,7 +112,9 @@
       "title": "Squad Discussion",
       "body": "Compare empathy maps — what surprised your squad?",
       "speakerNotes": "7 minutes per squad share.",
-      "discussionQuestions": ["What pattern did multiple squads see in Miguel?"],
+      "discussionQuestions": [
+        "What pattern did multiple squads see in Miguel?"
+      ],
       "imageUrl": "/content/segment-1/week-2/day-5/deck-01/slide-09.png"
     },
     {

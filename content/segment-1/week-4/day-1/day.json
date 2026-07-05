@@ -3,26 +3,29 @@
   "segmentId": "segment-1",
   "weekId": "week-segment-1-4",
   "dayNumber": 1,
-  "title": "Day 16 — Insurance Code, AMLA & Data Privacy Ethics",
-  "theme": "Compliance & Ethics",
+  "title": "Day 16 — Platform Integration",
+  "theme": "Platform Integration",
+  "guidingQuestion": "How will I make my venture work in the real world?",
   "durationHours": 4,
   "learningObjectives": [
-    "Explain core insurance code principles and advisor duties",
-    "Apply AMLA red-flag awareness to case vignettes",
-    "Practice data privacy protocols for client information",
-    "Analyze ethics case studies with defensible reasoning"
+    "Celebrate Weeks 1–3 venture artifacts and name what is still missing before launch",
+    "Frame Week 4 as Blueprint Week — evolving the venture, not replacing it",
+    "Explain platform integration: your venture + AIA platform + business engine = scalable enterprise",
+    "Update Venture Blueprint Business Model and Revenue Model sections",
+    "Extend the FEC from customer discovery (Week 3) to platform, revenue engine, and agency growth (Week 4)"
   ],
   "expectedOutputs": [
-    "Ethics case memo",
-    "Privacy checklist"
+    "Venture Blueprint — Business Model and Revenue Model sections updated",
+    "FEC Week 4 integration — Platform Integration, Revenue Engine, Agency Growth Strategy",
+    "Platform integration narrative in Venture Portfolio"
   ],
   "portfolioDeliverables": [
+    "portfolio-advisor-startup",
     "portfolio-professional-development"
   ],
   "businessPlanIntegration": "bp-chapter-4",
   "presentations": [
-    "presentation-w4-d1-deck-01",
-    "presentation-w4-d1-deck-02"
+    "presentation-w4-d1-deck-01"
   ],
   "activities": [
     "activity-w4-d1-01",
@@ -30,8 +33,7 @@
     "activity-w4-d1-03"
   ],
   "worksheets": [
-    "worksheet-w4-d1-01",
-    "worksheet-w4-d1-02"
+    "worksheet-w4-d1-01"
   ],
   "assessments": [
     "assessment-w4-d1"

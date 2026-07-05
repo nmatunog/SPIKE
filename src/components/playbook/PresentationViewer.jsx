@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Download, Presentation } from 'lucide-react';
+import { Presentation } from 'lucide-react';
 import { SlideViewer } from './SlideViewer.jsx';
 import { SpeakerNotesPanel } from './SpeakerNotesPanel.jsx';
 import { DiscussionPanel } from './DiscussionPanel.jsx';
 import { SlideNavigator } from './SlideNavigator.jsx';
+import { FacultyDeckDownloadButton } from './FacultyDeckDownloadButton.jsx';
 
 /**
  * @param {{
@@ -15,6 +16,9 @@ import { SlideNavigator } from './SlideNavigator.jsx';
 export function PresentationViewer({ presentation, slides, facultyMode = false }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const activeSlide = slides[currentIndex];
+  const allowDownload = facultyMode;
+  const downloadUrl = presentation.pdfUrl || presentation.pptxUrl;
+  const downloadLabel = presentation.pdfUrl ? 'Download PDF' : 'Download PPTX';
 
   if (!activeSlide) {
     return <p className="text-sm text-slate-500 lg:text-base">No slides in this presentation.</p>;
@@ -41,22 +45,8 @@ export function PresentationViewer({ presentation, slides, facultyMode = false }
             Facilitator view
           </span>
         ) : null}
-        {presentation.pdfUrl ? (
-          <a
-            href={presentation.pdfUrl}
-            download
-            className="inline-flex items-center gap-1.5 rounded-lg border border-indigo-200 bg-white px-3 py-1.5 text-xs font-semibold text-indigo-800 hover:bg-indigo-50"
-          >
-            <Download size={14} /> Download PDF
-          </a>
-        ) : presentation.pptxUrl ? (
-          <a
-            href={presentation.pptxUrl}
-            download
-            className="inline-flex items-center gap-1.5 rounded-lg border border-indigo-200 bg-white px-3 py-1.5 text-xs font-semibold text-indigo-800 hover:bg-indigo-50"
-          >
-            <Download size={14} /> Download PPTX
-          </a>
+        {allowDownload && downloadUrl ? (
+          <FacultyDeckDownloadButton href={downloadUrl} label={downloadLabel} />
         ) : null}
       </div>
 

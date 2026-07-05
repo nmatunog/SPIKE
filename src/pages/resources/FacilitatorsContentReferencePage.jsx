@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, BookOpen, ChevronDown, Clock, Layers, Presentation } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { PageContainer } from '../../components/layout/PageContainer.jsx';
+import { FacultyDeckDownloadButton } from '../../components/playbook/FacultyDeckDownloadButton.jsx';
 import { ROUTES } from '../../routes/paths.js';
 import {
   FACILITATORS_CONTENT_REFERENCE_META,
@@ -110,24 +111,18 @@ function DayPanel({ day, week }) {
                     {deck.pdfUrl || deck.pptxUrl ? (
                       <p className="mt-2 flex flex-wrap gap-3 text-sm">
                         {deck.pdfUrl ? (
-                          <a
+                          <FacultyDeckDownloadButton
                             href={deck.pdfUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="font-semibold text-spike hover:underline"
-                          >
-                            Open deck PDF
-                          </a>
+                            label="Open deck PDF"
+                            variant="link"
+                          />
                         ) : null}
                         {deck.pptxUrl ? (
-                          <a
+                          <FacultyDeckDownloadButton
                             href={deck.pptxUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="font-semibold text-spike hover:underline"
-                          >
-                            Download PPTX
-                          </a>
+                            label="Download PPTX"
+                            variant="link"
+                          />
                         ) : null}
                       </p>
                     ) : null}

@@ -4,11 +4,10 @@
       "id": "session-w4-d1-full",
       "dayId": "day-segment-1-week-4-day-1",
       "sessionNumber": 1,
-      "title": "Day 16 — Insurance Code, AMLA & Data Privacy Ethics",
+      "title": "Day 16 — Platform Integration",
       "durationMinutes": 240,
       "presentationIds": [
-        "presentation-w4-d1-deck-01",
-        "presentation-w4-d1-deck-02"
+        "presentation-w4-d1-deck-01"
       ],
       "activityIds": [
         "activity-w4-d1-01",
@@ -16,8 +15,7 @@
         "activity-w4-d1-03"
       ],
       "worksheetIds": [
-        "worksheet-w4-d1-01",
-        "worksheet-w4-d1-02"
+        "worksheet-w4-d1-01"
       ],
       "assessmentIds": [
         "assessment-w4-d1"
