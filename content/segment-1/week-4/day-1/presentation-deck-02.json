@@ -2,60 +2,47 @@
   "presentation": {
     "id": "presentation-w4-d1-deck-02",
     "dayId": "day-segment-1-week-4-day-1",
-    "title": "Program Coach Deck 02 — Ethics Case Lab",
+    "title": "Program Coach Deck 02 — Blueprint & FEC Integration Workshop",
+    "subtitle": "Complete Blueprint · Revenue Model · FEC Integration",
     "slideIds": [
       "slide-w4-d1-dk2-01",
       "slide-w4-d1-dk2-02",
-      "slide-w4-d1-dk2-03",
-      "slide-w4-d1-dk2-04",
-      "slide-w4-d1-dk2-05"
+      "slide-w4-d1-dk2-03"
     ]
   },
   "slides": [
     {
       "id": "slide-w4-d1-dk2-01",
       "presentationId": "presentation-w4-d1-deck-02",
-      "title": "Case Study Protocol",
-      "body": "Small groups, timed deliberation.",
-      "speakerNotes": "Facilitated debate.",
-      "discussionQuestions": [],
-      "sortOrder": 1
+      "sortOrder": 1,
+      "title": "Open the Blueprint",
+      "body": "VISION\n↓\nBUSINESS MODEL  ← today's focus\n↓\nREVENUE MODEL  ← today's focus\n↓\nGROWTH STRATEGY",
+      "speakerNotes": "ACT IV — Scene 10. Open Venture Blueprint in the Playbook.\nDo not explain all ten sections — show only this stack.\nHighlight Business Model and Revenue Model.\nMessage: I already have a venture. Today I make the business model and revenue model real.",
+      "discussionQuestions": [
+        "How does your Business Model change when you integrate with the platform?"
+      ]
     },
     {
       "id": "slide-w4-d1-dk2-02",
       "presentationId": "presentation-w4-d1-deck-02",
-      "title": "AMLA Scenario Set A",
-      "body": "Transaction pattern recognition.",
-      "speakerNotes": "Facilitated debate.",
-      "discussionQuestions": [],
-      "sortOrder": 2
+      "sortOrder": 2,
+      "title": "Open the FEC — Week 3 → Week 4",
+      "body": "Week 3\nCustomers · Problems · Solutions · Value Proposition\n↓\nWeek 4\nPlatform · Revenue Engine · Agency Growth",
+      "speakerNotes": "ACT IV — Scene 11. This is the real transformation.\nWeek 3 FEC = customer and venture discovery.\nWeek 4 FEC = platform integration and scalable revenue.\nOpen FEC in Playbook — extend, do not erase Week 3 boxes.",
+      "discussionQuestions": [
+        "Which Week 3 FEC box connects most directly to Platform?"
+      ]
     },
     {
       "id": "slide-w4-d1-dk2-03",
       "presentationId": "presentation-w4-d1-deck-02",
-      "title": "Privacy Breach Scenario Set B",
-      "body": "Device loss, oversharing in chat.",
-      "speakerNotes": "Facilitated debate.",
-      "discussionQuestions": [],
-      "sortOrder": 3
-    },
-    {
-      "id": "slide-w4-d1-dk2-04",
-      "presentationId": "presentation-w4-d1-deck-02",
-      "title": "Reporting Pathways",
-      "body": "When to escalate to compliance.",
-      "speakerNotes": "Facilitated debate.",
-      "discussionQuestions": [],
-      "sortOrder": 4
-    },
-    {
-      "id": "slide-w4-d1-dk2-05",
-      "presentationId": "presentation-w4-d1-deck-02",
-      "title": "Day 16 Deliverables",
-      "body": "Ethics memo uploaded.",
-      "speakerNotes": "Facilitated debate.",
-      "discussionQuestions": [],
-      "sortOrder": 5
+      "sortOrder": 3,
+      "title": "Workshop Instructions",
+      "body": "Complete today:\n\n✓ Venture Blueprint — Business Model & Revenue Model\n✓ FEC — Platform, Revenue Engine, Agency Growth\n✓ Portfolio sync — platform integration narrative",
+      "speakerNotes": "ACT IV — Scene 12. Workshop block — allow 90+ minutes with mentor circulation.\nChecklist on screen while they work.\nClose: They should leave thinking — I already have a venture. Today I integrated it with a proven platform so it can become a real business.\nPreview Day 17.",
+      "discussionQuestions": [
+        "What changed in your venture story after platform integration?"
+      ]
     }
   ]
 }

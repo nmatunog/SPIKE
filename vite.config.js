@@ -2,6 +2,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { coachDeckGuardPlugin } from './scripts/vite-coach-deck-guard.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const lifeRoot = path.resolve(__dirname, 'SPIKE_LIFE')
@@ -19,7 +20,7 @@ function resolveBase() {
 export default defineConfig({
   // Relative for Capacitor; `/ra-spike/` for portal proxy; `/` for internship main.
   base: resolveBase(),
-  plugins: [react()],
+  plugins: [react(), coachDeckGuardPlugin()],
   resolve: {
     alias: [
       {

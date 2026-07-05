@@ -47,7 +47,7 @@ export function FacultyPlaybookView({ bundle }) {
   return (
     <div className="space-y-6">
       {isWeek2Day1 ? <Week2ActivateHero variant="faculty" /> : null}
-      {isWeek3Day1 ? <Week3Day1PlaybookHero /> : null}
+      {isWeek3Day1 ? <Week3Day1PlaybookHero allowDownload /> : null}
       {isWeek3Day3 ? (
         <>
           <Week3Day3PlaybookHero />

@@ -4,7 +4,7 @@
     "title": "Facilitators Content Reference",
     "subtitle": "Segment 1 — Weeks 1–4: Talks, Decks, Activities & Daily Flow",
     "version": "1.0.0",
-    "updatedAt": "2026-07-03",
+    "updatedAt": "2026-07-05",
     "audience": [
       "Program Coach",
       "Admin",
@@ -70,7 +70,7 @@
               "purpose": "",
               "slideCount": 15,
               "status": "published",
-              "pptxUrl": "/content/segment-1/week-1/day-1/faculty-deck-01.pptx",
+              "pptxUrl": "/api/coach/faculty-deck/segment-1/week-1/day-1/faculty-deck-01.pptx",
               "pdfUrl": null,
               "slides": [
                 {
@@ -915,7 +915,7 @@
               "slideCount": 13,
               "status": "published",
               "pptxUrl": null,
-              "pdfUrl": "/content/segment-1/week-1/day-2/faculty-deck-01.pdf",
+              "pdfUrl": "/api/coach/faculty-deck/segment-1/week-1/day-2/faculty-deck-01.pdf",
               "slides": [
                 {
                   "number": 1,
@@ -1040,7 +1040,7 @@
               "slideCount": 17,
               "status": "published",
               "pptxUrl": null,
-              "pdfUrl": "/content/segment-1/week-1/day-2/faculty-deck-02.pdf",
+              "pdfUrl": "/api/coach/faculty-deck/segment-1/week-1/day-2/faculty-deck-02.pdf",
               "slides": [
                 {
                   "number": 1,
@@ -1776,7 +1776,7 @@
               "slideCount": 10,
               "status": "published",
               "pptxUrl": null,
-              "pdfUrl": "/content/segment-1/week-1/day-4/faculty-deck-01.pdf",
+              "pdfUrl": "/api/coach/faculty-deck/segment-1/week-1/day-4/faculty-deck-01.pdf",
               "slides": [
                 {
                   "number": 1,
@@ -2143,7 +2143,7 @@
               "slideCount": 19,
               "status": "published",
               "pptxUrl": null,
-              "pdfUrl": "/content/segment-1/week-1/day-5/faculty-deck-01.pdf",
+              "pdfUrl": "/api/coach/faculty-deck/segment-1/week-1/day-5/faculty-deck-01.pdf",
               "slides": [
                 {
                   "number": 1,
@@ -2642,7 +2642,7 @@
               "slideCount": 13,
               "status": "published",
               "pptxUrl": null,
-              "pdfUrl": "/content/segment-1/week-2/day-1/faculty-deck-01.pdf",
+              "pdfUrl": "/api/coach/faculty-deck/segment-1/week-2/day-1/faculty-deck-01.pdf",
               "slides": [
                 {
                   "number": 1,
@@ -2757,7 +2757,7 @@
               "slideCount": 15,
               "status": "published",
               "pptxUrl": null,
-              "pdfUrl": "/content/segment-1/week-2/day-1/faculty-deck-02.pdf",
+              "pdfUrl": "/api/coach/faculty-deck/segment-1/week-2/day-1/faculty-deck-02.pdf",
               "slides": [
                 {
                   "number": 1,
@@ -3012,7 +3012,7 @@
               "slideCount": 5,
               "status": "published",
               "pptxUrl": null,
-              "pdfUrl": "/content/segment-1/week-2/day-2/faculty-deck-01.pdf",
+              "pdfUrl": "/api/coach/faculty-deck/segment-1/week-2/day-2/faculty-deck-01.pdf",
               "slides": [
                 {
                   "number": 1,
@@ -3224,7 +3224,7 @@
               "slideCount": 12,
               "status": "published",
               "pptxUrl": null,
-              "pdfUrl": "/content/segment-1/week-2/day-3/faculty-deck-01.pdf",
+              "pdfUrl": "/api/coach/faculty-deck/segment-1/week-2/day-3/faculty-deck-01.pdf",
               "slides": [
                 {
                   "number": 1,
@@ -3468,7 +3468,7 @@
               "slideCount": 18,
               "status": "published",
               "pptxUrl": null,
-              "pdfUrl": "/content/segment-1/week-2/day-4/faculty-deck-01.pdf",
+              "pdfUrl": "/api/coach/faculty-deck/segment-1/week-2/day-4/faculty-deck-01.pdf",
               "slides": [
                 {
                   "number": 1,
@@ -3748,7 +3748,7 @@
               "slideCount": 14,
               "status": "published",
               "pptxUrl": null,
-              "pdfUrl": "/content/segment-1/week-2/day-5/faculty-deck-01.pdf",
+              "pdfUrl": "/api/coach/faculty-deck/segment-1/week-2/day-5/faculty-deck-01.pdf",
               "slides": [
                 {
                   "number": 1,
@@ -4102,7 +4102,7 @@
               "slideCount": 13,
               "status": "published",
               "pptxUrl": null,
-              "pdfUrl": "/content/segment-1/week-3/day-1/faculty-deck-01.pdf",
+              "pdfUrl": "/api/coach/faculty-deck/segment-1/week-3/day-1/faculty-deck-01.pdf",
               "slides": [
                 {
                   "number": 1,
@@ -4475,7 +4475,7 @@
               "slideCount": 10,
               "status": "published",
               "pptxUrl": null,
-              "pdfUrl": "/content/segment-1/week-3/day-2/faculty-deck-01.pdf",
+              "pdfUrl": "/api/coach/faculty-deck/segment-1/week-3/day-2/faculty-deck-01.pdf",
               "slides": [
                 {
                   "number": 1,
@@ -4802,7 +4802,7 @@
               "slideCount": 12,
               "status": "published",
               "pptxUrl": null,
-              "pdfUrl": "/content/segment-1/week-3/day-3/faculty-deck-01.pdf",
+              "pdfUrl": "/api/coach/faculty-deck/segment-1/week-3/day-3/faculty-deck-01.pdf",
               "slides": [
                 {
                   "number": 1,
@@ -5211,7 +5211,7 @@
               "slideCount": 11,
               "status": "published",
               "pptxUrl": null,
-              "pdfUrl": "/content/segment-1/week-3/day-4/faculty-deck-01.pdf",
+              "pdfUrl": "/api/coach/faculty-deck/segment-1/week-3/day-4/faculty-deck-01.pdf",
               "slides": [
                 {
                   "number": 1,
@@ -5640,189 +5640,322 @@
       "milestoneObjective": "Demonstrate professional readiness and licensing pathway progress for Hour 160 gate.",
       "businessPlanChapter": "Business Plan Chapter 4 — Professional Development",
       "portfolioSection": "Portfolio — Professional Development",
-      "status": "draft",
+      "status": "partial",
       "days": [
         {
           "dayNumber": 1,
           "programDay": 16,
-          "title": "Day 16 — Insurance Code, AMLA & Data Privacy Ethics",
-          "theme": "Compliance & Ethics",
+          "title": "Day 16 — Platform Integration",
+          "theme": "Platform Integration",
           "durationHours": 4,
-          "status": "draft",
+          "status": "published",
           "learningObjectives": [
-            "Explain core insurance code principles and advisor duties",
-            "Apply AMLA red-flag awareness to case vignettes",
-            "Practice data privacy protocols for client information",
-            "Analyze ethics case studies with defensible reasoning"
+            "Celebrate Weeks 1–3 venture artifacts and name what is still missing before launch",
+            "Frame Week 4 as Blueprint Week — evolving the venture, not replacing it",
+            "Explain platform integration: your venture + AIA platform + business engine = scalable enterprise",
+            "Update Venture Blueprint Business Model and Revenue Model sections",
+            "Extend the FEC from customer discovery (Week 3) to platform, revenue engine, and agency growth (Week 4)"
           ],
           "decks": [
             {
-              "title": "Program Coach Deck 01 — Professional Duty",
-              "purpose": "Ethics before exam tricks.",
-              "slideCount": 5,
+              "id": "presentation-w4-d1-deck-01",
+              "title": "Program Coach Deck 01 — Platform Integration",
+              "purpose": "How will I make my venture work in the real world?",
+              "slideCount": 11,
+              "status": "published",
+              "pptxUrl": "/api/coach/faculty-deck/segment-1/week-4/day-1/faculty-deck-01.pptx",
+              "pdfUrl": null,
               "slides": [
                 {
-                  "title": "Day 16 — License to Serve",
-                  "purpose": "Licensing as public trust."
+                  "number": 1,
+                  "title": "PLAN — Build Your Financial Enterprise",
+                  "summary": "Week 4 Day 1 · Venture Blueprint Sprint PLAN. | BUILD. | GROW. | LEAD.",
+                  "facilitatorNotes": "Scene 1 — Welcome to Week 4. Reset the room. Introduce Blueprint Week. Guiding question: How will I make my venture work in the real world?",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-01.png"
                 },
                 {
-                  "title": "Insurance Code Essentials",
-                  "purpose": "Duties to client, company, regulator."
+                  "number": 2,
+                  "title": "The Journey So Far",
+                  "summary": "Week 1 — Discover: Dream Board, Your Why Week 2 — Validate: Customer Persona, Customer Validation Week 3 — Advise: FEC, Venture Proposition, Business Concept Now — Plan: Build Your Financial Enterprise",
+                  "facilitatorNotes": "Scene 2 — Pride → Curiosity. Walk the arc slowly: Discover → Validate → Advise → Plan. Say: Look at how far you've already come. You've laid the foundation. Now we connect it to a real platform.",
+                  "discussionQuestions": [
+                    "Which artifact from Weeks 1–3 best represents your venture today?"
+                  ],
+                  "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-02.png"
                 },
                 {
-                  "title": "AMLA Red Flags",
-                  "purpose": "Know, report, document — not investigate."
+                  "number": 3,
+                  "title": "Your Venture Isn't Finished Yet",
+                  "summary": "Dream ✓ · Customers ✓ · Solutions ✓ · Business Idea ✓ · FEC (Draft) ✓ ──────────── Business Engine ❓ What's missing?",
+                  "facilitatorNotes": "Scene 3 — Pause after the checklist. Ask: What's missing? Do not answer immediately. The missing piece is connecting the venture to an operating platform — not more ideas.",
+                  "discussionQuestions": [
+                    "What's missing from your venture today?"
+                  ],
+                  "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-03.png"
                 },
                 {
-                  "title": "Data Privacy Act Basics",
-                  "purpose": "Consent, purpose, security."
+                  "number": 4,
+                  "title": "Our Mindset — Think Like an Entrepreneur. Build Like a Leader.",
+                  "summary": "Purpose · Growth · Leadership · Legacy",
+                  "facilitatorNotes": "Scene 4 — Set the Week 4 mindset before the business reveal. Purpose: create value. Growth: build systems. Leadership: develop people. Legacy: build something that outlives you.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-04.png"
                 },
                 {
-                  "title": "Deck 01 Close — Case Studies",
-                  "purpose": ""
+                  "number": 5,
+                  "title": "What Business Are You Really Building?",
+                  "summary": "If I gave you an AIA code today, what business would you be in? Not insurance. Not just financial advisor. You are building YOUR Financial Advisory Enterprise.",
+                  "facilitatorNotes": "\"Insurance is what you deliver. Financial Advisor is the role you play. But the business you're building is an enterprise.\" \"Insurance is the industry. Financial Advisor is your profession. But your venture is a Financial Advisory Enterprise.\" Poll the room before the reveal. Then connect: today we connect that enterprise to the AIA Platform.",
+                  "discussionQuestions": [
+                    "If I gave you an AIA code today, what business would you be in?"
+                  ],
+                  "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-05.png"
+                },
+                {
+                  "number": 6,
+                  "title": "The AIA Platform",
+                  "summary": "Products · Systems · Technology · Training · Compensation · Leadership Built for You. Backed by AIA.",
+                  "facilitatorNotes": "Scene 6 — Walk the six pillars. AIA is not replacing their business — it becomes the platform that powers it. Products, systems, technology, training, compensation, leadership.",
+                  "discussionQuestions": [
+                    "Which platform pillar will matter most for your venture?"
+                  ],
+                  "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-06.png"
+                },
+                {
+                  "number": 7,
+                  "title": "How Your Enterprise Generates Value",
+                  "summary": "Personal Production → Renewals → Overrides → Leadership Income Four stages. One enterprise. Infinite potential.",
+                  "facilitatorNotes": "Scene 7 — Walk the value flow. Serve Clients → Personal Production → Renewals → Leadership → Enterprise. Create impact. Earn income. Build legacy.",
+                  "discussionQuestions": [
+                    "Which stage of the value flow is furthest from where you are today?"
+                  ],
+                  "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-07.png"
+                },
+                {
+                  "number": 8,
+                  "title": "Platform Integration",
+                  "summary": "Your venture already exists. Today we connect it to a scalable business platform. YOUR VENTURE → AIA PLATFORM → BUSINESS ENGINE → SCALABLE ENTERPRISE",
+                  "facilitatorNotes": "Scene 8 — Everything this morning leads here. Over three weeks they already built their venture — they already have a business. AIA provides products, systems, training, compensation, leadership. AIA is not replacing their business — it powers it. When venture connects to platform, it becomes an operating business with a business engine. Now it can grow through systems, recurring income, leadershi…",
+                  "discussionQuestions": [
+                    "What does your venture gain from platform integration?"
+                  ],
+                  "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-08.png"
+                },
+                {
+                  "number": 9,
+                  "title": "Your Blueprint Evolves",
+                  "summary": "We're not replacing your Blueprint. We're evolving it. Blueprint → Platform Integration → Growth Strategy",
+                  "facilitatorNotes": "Scene 9 — Have participants open the Blueprint they've been building since Week 1. Everything they designed over three weeks remains valid. Today is not about replacing the Blueprint — it evolves. Platform Integration adds: how the venture uses AIA, which products support solutions, how clients enter, where revenue comes from, how they build a team. Close: \"The entrepreneur with the best idea does…",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-09.png"
+                },
+                {
+                  "number": 10,
+                  "title": "Your Blueprint Focus Today",
+                  "summary": "Vision → Business Model → Revenue Model → Growth Strategy Today's focus: Business Model · Revenue Model",
+                  "facilitatorNotes": "Scene 10 — Workshop opens in the Playbook. Today strengthen only Business Model and Revenue Model. Business Model: where clients come from, solutions delivered, value created. Revenue Model: how the business earns income today and five years from now. Vision gives direction. Business and Revenue Models make it executable.",
+                  "discussionQuestions": [
+                    "Where do your clients come from?",
+                    "How will your business earn income five years from now?"
+                  ],
+                  "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-10.png"
+                },
+                {
+                  "number": 11,
+                  "title": "Your FEC Evolves",
+                  "summary": "Week 3 Foundation: Customers · Problems · Solutions · Value Proposition ↓ Week 4 Integration: Platform Integration · Revenue Engine · Agency Growth Strategy",
+                  "facilitatorNotes": "Scene 11 — Open the FEC in the Playbook. Week 3 foundation stays. Week 4 adds Platform Integration, Revenue Engine, Agency Growth Strategy. Customers, mission, and value proposition did not change — the business now has a platform to support it. Workshop: upgrade Blueprint and FEC so they become the operating system for their Financial Advisory Enterprise. Complete: Blueprint Business Model + Reve…",
+                  "discussionQuestions": [
+                    "What changes in your FEC now that you have a platform?"
+                  ],
+                  "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-11.png"
                 }
-              ],
-              "status": "draft"
-            },
-            {
-              "title": "Program Coach Deck 02 — Ethics Case Lab",
-              "purpose": "Facilitated debate.",
-              "slideCount": 5,
-              "slides": [
-                {
-                  "title": "Case Study Protocol",
-                  "purpose": "Small groups, timed deliberation."
-                },
-                {
-                  "title": "AMLA Scenario Set A",
-                  "purpose": "Transaction pattern recognition."
-                },
-                {
-                  "title": "Privacy Breach Scenario Set B",
-                  "purpose": "Device loss, oversharing in chat."
-                },
-                {
-                  "title": "Reporting Pathways",
-                  "purpose": "When to escalate to compliance."
-                },
-                {
-                  "title": "Day 16 Deliverables",
-                  "purpose": "Ethics memo uploaded."
-                }
-              ],
-              "status": "draft"
+              ]
             }
           ],
           "sessionFlow": [
             {
-              "time": "0:00–0:35",
-              "activity": "Deck 01 — Code, AMLA, privacy",
-              "notes": "No legal advice disclaimers read aloud."
+              "time": "0:00–0:10",
+              "activity": "Deck 01 Scenes 1–3 — Welcome, Journey So Far, Missing Piece",
+              "notes": "Emotional arc: pride → curiosity. Pause on What's missing?"
             },
             {
-              "time": "0:35–1:25",
-              "activity": "Ethics case lab — Round 1",
-              "notes": ""
+              "time": "0:10–0:20",
+              "activity": "Deck 01 Scenes 4–7 — Mindset, Enterprise reveal, AIA Platform, Value Flow",
+              "notes": "Poll room on Scene 5 before reveal. Walk six platform pillars."
             },
             {
-              "time": "1:25–1:35",
+              "time": "0:20–0:45",
+              "activity": "Deck 01 Scenes 8–9 — Platform Integration + Blueprint Evolves",
+              "notes": "Key quote: Weeks 1–3 = what business; Week 4 = how it works."
+            },
+            {
+              "time": "0:45–1:35",
+              "activity": "Workshop Scene 10 — Blueprint Business Model + Revenue Model",
+              "notes": "Playbook open. Mentors circulate. No compensation deep-dive today."
+            },
+            {
+              "time": "1:35–1:45",
               "activity": "Break",
               "notes": ""
             },
             {
-              "time": "1:35–2:15",
-              "activity": "Case lab — Round 2",
-              "notes": ""
+              "time": "1:45–2:35",
+              "activity": "Workshop Scene 11 — FEC Platform Integration",
+              "notes": "Week 3 foundation stays. Add Platform, Revenue Engine, Agency Growth."
             },
             {
-              "time": "2:15–2:40",
-              "activity": "Squad ethics presentations",
-              "notes": ""
-            },
-            {
-              "time": "2:40–3:00",
-              "activity": "Reflection + Day 17 Trad Life preview",
-              "notes": ""
+              "time": "2:35–3:00",
+              "activity": "Squad share + Day 16 reflection",
+              "notes": "One sentence per squad: how platform integration changes their venture."
             }
           ],
           "activities": [
             {
-              "title": "Regulatory Concept Sort",
-              "durationMinutes": 20,
+              "title": "Blueprint — Business Model + Revenue Model",
+              "durationMinutes": 50,
               "instructions": [
-                "Sort statements into code / AMLA / privacy buckets"
+                "Open Venture Blueprint in the Playbook",
+                "Update Business Model: client sources, solutions, value delivery",
+                "Update Revenue Model: income today and five-year growth path",
+                "Integrate AIA Platform into both sections — not a product list"
+              ],
+              "materials": [
+                "Venture Blueprint (Playbook)",
+                "Deck 01 Scene 10"
               ],
               "outputs": [
-                "Concept sort sheet"
+                "Blueprint Business Model section",
+                "Blueprint Revenue Model section"
               ],
-              "debriefQuestions": []
+              "debriefQuestions": [
+                "How does the platform change how your business earns income?"
+              ]
             },
             {
-              "title": "Ethics Case Lab",
-              "durationMinutes": 70,
+              "title": "FEC — Platform Integration Workshop",
+              "durationMinutes": 50,
               "instructions": [
-                "Deliberate cases; write recommendation",
-                "Present one decision per squad"
+                "Review Week 3 foundation — do not erase Customers, Problems, Solutions, Value Proposition",
+                "Complete Platform Integration: how venture operates on AIA Platform",
+                "Complete Revenue Engine: how business generates and maximizes income",
+                "Complete Agency Growth Strategy: team and systems that scale the enterprise"
+              ],
+              "materials": [
+                "Financial Entrepreneurship Canvas (Playbook)",
+                "Deck 01 Scene 11"
               ],
               "outputs": [
-                "Ethics case memo"
+                "FEC Platform Integration",
+                "FEC Revenue Engine",
+                "FEC Agency Growth Strategy"
               ],
-              "debriefQuestions": []
+              "debriefQuestions": [
+                "What stayed the same from Week 3? What evolved today?"
+              ]
             },
             {
-              "title": "Privacy Protocol Drill",
-              "durationMinutes": 20,
+              "title": "Squad Platform Integration Share",
+              "durationMinutes": 25,
               "instructions": [
-                "Respond to simulated breach steps"
+                "Each squad shares one sentence: how platform integration changes their venture",
+                "Program coach synthesizes themes across squads"
               ],
+              "materials": [],
               "outputs": [
-                "Privacy response checklist"
+                "Squad platform integration statement"
               ],
-              "debriefQuestions": []
+              "debriefQuestions": [
+                "Which squad articulated the strongest platform connection?"
+              ]
             }
           ],
           "worksheets": [
-            "Ethics case packets",
-            "AMLA red-flag reference"
+            "Platform Integration workshop checklist"
           ],
-          "assessments": [
-            "Ethics case rubric"
-          ],
+          "assessments": [],
           "reflections": [
-            "Day 16 professional duty reflection"
+            "Day 16 — Platform Integration reflection"
           ],
-          "surveys": [
-            "Day 16 ethics confidence survey"
-          ],
+          "surveys": [],
           "prepChecklist": [
-            "Source approved case vignettes from compliance",
-            "No real enforcement cases with identifiers"
+            "Load Deck 01 (faculty-deck-01.pptx) — 11 slides, Scenes 1–11",
+            "Confirm Playbook Blueprint Business Model + Revenue Model sections are accessible",
+            "Confirm FEC Week 4 integration fields (Platform, Revenue Engine, Agency Growth) are live",
+            "Brief mentors: morning is narrative + reveal; afternoon is Blueprint + FEC workshop"
           ],
           "debriefQuestions": [
-            "Where did participants rationalize shortcuts?",
-            "Do they know escalation paths?",
-            "Ready for product licensing content?"
+            "Do participants feel their Week 1–3 work is still valid?",
+            "Can they articulate platform integration in one sentence?",
+            "Are Blueprint and FEC updates specific — not generic?"
           ],
           "commonPitfalls": [
-            "Treating AMLA as only back-office",
-            "Humor that undermines privacy seriousness"
+            "Framing AIA as employer instead of platform",
+            "Using 'install the engine' language — say platform integration instead",
+            "Letting workshop become product pitch instead of business model design"
           ],
           "coachingTips": [
-            "Praise dissent respectfully in case debates"
+            "Celebrate artifacts from Weeks 1–3 before introducing platform",
+            "Use Scene 8 four-box visual as the day's anchor image"
           ],
           "mentorGuide": {
-            "theme": "Integrity",
-            "coachingObjective": "Build compliance reflexes.",
+            "theme": "Platform Integration",
+            "title": "Mentor Guide — Day 16 — Platform Integration",
+            "coachingObjective": "Help participants evolve their Blueprint and FEC — not restart — by connecting their venture to the AIA platform.",
+            "timing": {
+              "preSession": "Review Deck 01 Scenes 8–11 and Playbook Blueprint + FEC paths",
+              "duringSession": "Circulate during Blueprint and FEC workshop blocks",
+              "postSession": "Note who still frames AIA as employer vs platform"
+            },
+            "discussionQuestions": [
+              "Does their Business Model reflect their Week 1–3 customer work?",
+              "Is Revenue Model specific or generic?",
+              "Can they explain platform integration in one sentence?"
+            ],
             "observationAreas": [
-              "Reasoning quality",
-              "Escalation awareness",
-              "Peer influence"
+              "Emotional shift — pride in prior work vs anxiety about Week 4",
+              "Blueprint Business Model depth",
+              "FEC integration specificity (not product lists)",
+              "Squad share clarity"
             ]
           },
           "expectedOutputs": [
-            "Ethics case memo",
-            "Privacy checklist"
-          ]
+            "Venture Blueprint — Business Model and Revenue Model sections updated",
+            "FEC Week 4 integration — Platform Integration, Revenue Engine, Agency Growth Strategy",
+            "Platform integration narrative in Venture Portfolio"
+          ],
+          "dayId": "day-segment-1-week-4-day-1",
+          "contentPath": "/content/segment-1/week-4/day-1",
+          "playbookPath": "/playbook?segment=1&week=4&day=1",
+          "sessions": [
+            {
+              "sessionNumber": 1,
+              "title": "Day 16 — Platform Integration",
+              "durationMinutes": 240,
+              "presentationIds": [
+                "presentation-w4-d1-deck-01"
+              ],
+              "activityIds": [
+                "activity-w4-d1-01",
+                "activity-w4-d1-02",
+                "activity-w4-d1-03"
+              ],
+              "worksheetIds": [
+                "worksheet-w4-d1-01"
+              ],
+              "assessmentIds": [
+                "assessment-w4-d1"
+              ],
+              "reflectionIds": [
+                "reflection-w4-d1"
+              ],
+              "surveyIds": [
+                "survey-w4-d1"
+              ]
+            }
+          ],
+          "evaluations": []
         },
         {
           "dayNumber": 2,

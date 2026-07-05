@@ -132,11 +132,7 @@ try {
   }
 
   cpSync(args.pptx, sourcePptxDest);
-  const pptxBytes = statSync(args.pptx).size;
-  const canPublishPptx = pptxBytes <= MAX_PUBLIC_PPTX_BYTES;
-  if (canPublishPptx) {
-    cpSync(args.pptx, pptxDest);
-  } else if (existsSync(pptxDest)) {
+  if (existsSync(pptxDest)) {
     rmSync(pptxDest, { force: true });
   }
   const speakerNotes = readSpeakerNotes(tmp, slideCount);
@@ -192,13 +188,8 @@ try {
     sourcePath: `${contentBase}/source/${pptxName}`,
     importedAt: new Date().toISOString(),
   };
-  if (canPublishPptx) {
-    presentationMeta.pptxUrl = `/content/${args.segment}/${args.week}/${args.day}/${pptxName}`;
-  } else {
-    delete presentationMeta.pptxUrl;
-    presentationMeta.deployNote =
-      'PPTX exceeds Cloudflare Pages 25MB limit; stored in repo source only. Slides render from PNG exports.';
-  }
+  presentationMeta.pptxUrl = `/api/coach/faculty-deck/${args.segment}/${args.week}/${args.day}/${pptxName}`;
+  delete presentationMeta.deployNote;
 
   const next = {
     presentation: presentationMeta,
@@ -209,7 +200,7 @@ try {
 
   console.log('import-faculty-pptx OK');
   console.log(`  pptx source: ${sourcePptxDest}`);
-  console.log(`  pptx public: ${canPublishPptx ? pptxDest : '(skipped — exceeds 25MB deploy limit)'}`);
+  console.log(`  pptx download: ${presentationMeta.pptxUrl} (staff API — not public)`);
   console.log(`  images: ${slideCount} → ${imageDir}`);
   console.log(`  json: ${jsonFile}`);
 } finally {

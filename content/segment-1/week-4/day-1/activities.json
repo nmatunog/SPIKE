@@ -3,45 +3,66 @@
     {
       "id": "activity-w4-d1-01",
       "dayId": "day-segment-1-week-4-day-1",
-      "title": "Regulatory Concept Sort",
-      "durationMinutes": 20,
-      "materials": [],
+      "title": "Blueprint — Business Model + Revenue Model",
+      "durationMinutes": 50,
+      "materials": [
+        "Venture Blueprint (Playbook)",
+        "Deck 01 Scene 10"
+      ],
       "instructions": [
-        "Sort statements into code / AMLA / privacy buckets"
+        "Open Venture Blueprint in the Playbook",
+        "Update Business Model: client sources, solutions, value delivery",
+        "Update Revenue Model: income today and five-year growth path",
+        "Integrate AIA Platform into both sections — not a product list"
       ],
       "outputs": [
-        "Concept sort sheet"
+        "Blueprint Business Model section",
+        "Blueprint Revenue Model section"
       ],
-      "debriefQuestions": []
+      "debriefQuestions": [
+        "How does the platform change how your business earns income?"
+      ]
     },
     {
       "id": "activity-w4-d1-02",
       "dayId": "day-segment-1-week-4-day-1",
-      "title": "Ethics Case Lab",
-      "durationMinutes": 70,
-      "materials": [],
+      "title": "FEC — Platform Integration Workshop",
+      "durationMinutes": 50,
+      "materials": [
+        "Financial Entrepreneurship Canvas (Playbook)",
+        "Deck 01 Scene 11"
+      ],
       "instructions": [
-        "Deliberate cases; write recommendation",
-        "Present one decision per squad"
+        "Review Week 3 foundation — do not erase Customers, Problems, Solutions, Value Proposition",
+        "Complete Platform Integration: how venture operates on AIA Platform",
+        "Complete Revenue Engine: how business generates and maximizes income",
+        "Complete Agency Growth Strategy: team and systems that scale the enterprise"
       ],
       "outputs": [
-        "Ethics case memo"
+        "FEC Platform Integration",
+        "FEC Revenue Engine",
+        "FEC Agency Growth Strategy"
       ],
-      "debriefQuestions": []
+      "debriefQuestions": [
+        "What stayed the same from Week 3? What evolved today?"
+      ]
     },
     {
       "id": "activity-w4-d1-03",
       "dayId": "day-segment-1-week-4-day-1",
-      "title": "Privacy Protocol Drill",
-      "durationMinutes": 20,
+      "title": "Squad Platform Integration Share",
+      "durationMinutes": 25,
       "materials": [],
       "instructions": [
-        "Respond to simulated breach steps"
+        "Each squad shares one sentence: how platform integration changes their venture",
+        "Program coach synthesizes themes across squads"
       ],
       "outputs": [
-        "Privacy response checklist"
+        "Squad platform integration statement"
       ],
-      "debriefQuestions": []
+      "debriefQuestions": [
+        "Which squad articulated the strongest platform connection?"
+      ]
     }
   ]
 }

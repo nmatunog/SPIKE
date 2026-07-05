@@ -2,7 +2,7 @@
   "survey": {
     "id": "survey-w4-d1",
     "dayId": "day-segment-1-week-4-day-1",
-    "title": "Day 16 ethics confidence survey",
+    "title": "Day 16 platform integration confidence survey",
     "description": "Week 4 Day 1 facilitator pulse check",
     "status": "active"
   },
@@ -10,7 +10,7 @@
     {
       "id": "sq-w4-d1-01",
       "surveyId": "survey-w4-d1",
-      "prompt": "How ready is the cohort for today's session flow?",
+      "prompt": "How clearly did participants understand platform integration vs replacing their venture?",
       "type": "rating",
       "required": true,
       "sortOrder": 1

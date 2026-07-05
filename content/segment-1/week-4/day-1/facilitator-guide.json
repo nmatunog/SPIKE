@@ -1,53 +1,62 @@
 {
   "dayId": "day-segment-1-week-4-day-1",
-  "title": "Facilitator Guide — Day 16 — Insurance Code, AMLA & Data Privacy Ethics",
+  "title": "Facilitator Guide — Day 16 — Platform Integration",
   "durationHours": 4,
   "prepChecklist": [
-    "Source approved case vignettes from compliance",
-    "No real enforcement cases with identifiers"
+    "Load Deck 01 (faculty-deck-01.pptx) — 11 slides, Scenes 1–11",
+    "Confirm Playbook Blueprint Business Model + Revenue Model sections are accessible",
+    "Confirm FEC Week 4 integration fields (Platform, Revenue Engine, Agency Growth) are live",
+    "Brief mentors: morning is narrative + reveal; afternoon is Blueprint + FEC workshop"
   ],
   "sessionFlow": [
     {
-      "time": "0:00–0:35",
-      "activity": "Deck 01 — Code, AMLA, privacy",
-      "notes": "No legal advice disclaimers read aloud."
+      "time": "0:00–0:10",
+      "activity": "Deck 01 Scenes 1–3 — Welcome, Journey So Far, Missing Piece",
+      "notes": "Emotional arc: pride → curiosity. Pause on What's missing?"
     },
     {
-      "time": "0:35–1:25",
-      "activity": "Ethics case lab — Round 1",
-      "notes": ""
+      "time": "0:10–0:20",
+      "activity": "Deck 01 Scenes 4–7 — Mindset, Enterprise reveal, AIA Platform, Value Flow",
+      "notes": "Poll room on Scene 5 before reveal. Walk six platform pillars."
     },
     {
-      "time": "1:25–1:35",
+      "time": "0:20–0:45",
+      "activity": "Deck 01 Scenes 8–9 — Platform Integration + Blueprint Evolves",
+      "notes": "Key quote: Weeks 1–3 = what business; Week 4 = how it works."
+    },
+    {
+      "time": "0:45–1:35",
+      "activity": "Workshop Scene 10 — Blueprint Business Model + Revenue Model",
+      "notes": "Playbook open. Mentors circulate. No compensation deep-dive today."
+    },
+    {
+      "time": "1:35–1:45",
       "activity": "Break",
       "notes": ""
     },
     {
-      "time": "1:35–2:15",
-      "activity": "Case lab — Round 2",
-      "notes": ""
+      "time": "1:45–2:35",
+      "activity": "Workshop Scene 11 — FEC Platform Integration",
+      "notes": "Week 3 foundation stays. Add Platform, Revenue Engine, Agency Growth."
     },
     {
-      "time": "2:15–2:40",
-      "activity": "Squad ethics presentations",
-      "notes": ""
-    },
-    {
-      "time": "2:40–3:00",
-      "activity": "Reflection + Day 17 Trad Life preview",
-      "notes": ""
+      "time": "2:35–3:00",
+      "activity": "Squad share + Day 16 reflection",
+      "notes": "One sentence per squad: how platform integration changes their venture."
     }
   ],
   "debriefQuestions": [
-    "Where did participants rationalize shortcuts?",
-    "Do they know escalation paths?",
-    "Ready for product licensing content?"
+    "Do participants feel their Week 1–3 work is still valid?",
+    "Can they articulate platform integration in one sentence?",
+    "Are Blueprint and FEC updates specific — not generic?"
   ],
   "commonPitfalls": [
-    "Treating AMLA as only back-office",
-    "Humor that undermines privacy seriousness"
+    "Framing AIA as employer instead of platform",
+    "Using 'install the engine' language — say platform integration instead",
+    "Letting workshop become product pitch instead of business model design"
   ],
   "coachingTips": [
-    "Praise dissent respectfully in case debates"
+    "Celebrate artifacts from Weeks 1–3 before introducing platform",
+    "Use Scene 8 four-box visual as the day's anchor image"
   ]
 }
