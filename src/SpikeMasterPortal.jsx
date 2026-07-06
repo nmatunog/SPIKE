@@ -33,7 +33,7 @@ import { PageLoader } from './components/ui/PageLoader.jsx';
 import { RoleRouteGuard } from './components/routing/RoleRouteGuard.jsx';
 import { playbookWeek2MissionHref } from './lib/customerDiscovery/week2MissionService.js';
 import { buildSuperuserMentorPreviewInterns } from './lib/superuserMentorPreview.js';
-import { ROUTES, brandLexiconBackHrefForRole, facilitatorsReferenceBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath, isPlaybookPath, isSpikeLifePath, isSpikeLifeImmersivePath, isInternshipOnlyInternPath, isRaSpikeAppPath, parseStaffSquadHubPath, parseStaffStageGatePath, playbookHref } from './routes/paths.js';
+import { ROUTES, brandLexiconBackHrefForRole, facilitatorsReferenceBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath, isPlaybookPath, isSpikeLifePath, isSpikeLifeImmersivePath, isInternshipOnlyInternPath, isRaSpikeAppPath, parseStaffSquadHubPath, parseStaffStageGatePath, playbookHref, raSpikeRookieEntryHref } from './routes/paths.js';
 import { resolveProgramSlug, isRaSpikeProgram } from './lib/programs/index.js';
 import { RaSpikeHomePage } from './pages/ra-spike/RaSpikeHomePage.jsx';
 import { RaSpikePlaybookPage } from './pages/ra-spike/RaSpikePlaybookPage.jsx';
@@ -267,6 +267,16 @@ const SpikeMasterPortal = () => {
       });
     }
   }, [authLoading, userRole, effectiveUserRole, internProgramSlug, location.pathname, navigate]);
+
+  useEffect(() => {
+    if (authLoading || userRole !== 'guest') return;
+    if (isRaSpikeAppPath(location.pathname)) return;
+    const params = new URLSearchParams(location.search);
+    const join = (params.get('join') || params.get('program') || '').toLowerCase().replace(/_/g, '-');
+    if (join === 'ra-spike' || join === 'raspike') {
+      window.location.replace(raSpikeRookieEntryHref());
+    }
+  }, [authLoading, userRole, location.pathname, location.search]);
 
   useEffect(() => {
     if (authLoading || portalAccessRole !== 'intern') return;

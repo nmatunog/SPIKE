@@ -422,6 +422,14 @@ export function raSpikeStaffEntryHref(userRole) {
   return userRole === 'mentor' ? ROUTES.mentorRaSpike : ROUTES.programCoachRaSpike;
 }
 
+/** Rookie sign-in / open enrollment — always the /ra-spike app (never internship root). */
+export function raSpikeRookieEntryHref() {
+  if (typeof window !== 'undefined' && window.location.hostname === 'ra-spike.pages.dev') {
+    return '/';
+  }
+  return '/ra-spike/';
+}
+
 /** SPIKE Internship intern modules hidden from RA-SPIKE participants. */
 export const INTERNSHIP_ONLY_INTERN_PATHS = [
   ROUTES.ventureBlueprint,
