@@ -134,7 +134,9 @@ export function deriveVentureStage(state, participantId) {
     : 0;
 
   let stageName = 'Ambition & Purpose';
-  if (design.isStarted && !design.isComplete) {
+  if (week >= 4) {
+    stageName = 'Platform Integration';
+  } else if (design.isStarted && !design.isComplete) {
     stageName = 'Venture Design';
   } else if (day >= 2) {
     const meta = WEEK1_DAY_META.find((d) => d.day === day) ?? WEEK1_DAY_META[0];
@@ -156,12 +158,36 @@ export function deriveVentureStage(state, participantId) {
  * @param {{ week: number, segment: number, day?: number, blueprint_completion?: number }} state
  */
 export function deriveVentureTodayMission(participantId, state) {
-  const design = loadVentureDesignRecord(participantId);
+  const week = state.week ?? 1;
   const day = state.day ?? 1;
-  const ventureDesignHref = BLUEPRINT_LINKS.businessPlan;
 
-  if ((day >= 4 || design.isStarted) && !design.isComplete) {
+  if (week >= 4 && state.segment === 1) {
+    const mission = deriveTodayMission(participantId, state);
+    return {
+      title: mission.title,
+      href: mission.href,
+      estimatedMinutes: mission.estimatedMinutes,
+      continueLabel: mission.continueLabel ?? 'Continue',
+      stepHint: mission.stepLabel,
+    };
+  }
+
+  if (week === 3 && state.segment === 1) {
+    const mission = deriveTodayMission(participantId, state);
+    return {
+      title: mission.title,
+      href: mission.href,
+      estimatedMinutes: mission.estimatedMinutes,
+      continueLabel: mission.continueLabel ?? 'Continue',
+      stepHint: mission.stepLabel,
+    };
+  }
+
+  const design = loadVentureDesignRecord(participantId);
+
+  if ((day >= 4 || design.isStarted) && !design.isComplete && week < 3) {
     const step = Math.min(5, Math.max(1, design.currentStep || 1));
+    const ventureDesignHref = BLUEPRINT_LINKS.businessPlan;
     return {
       title: 'Continue Venture Design Studio',
       href: ventureDesignHref,

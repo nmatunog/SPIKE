@@ -21,6 +21,8 @@ import {
   ROUTES,
   playbookWeek2StudioHref,
   playbookBusinessEngineCanvasPreviewHref,
+  playbookWeek4FecPreviewHref,
+  playbookWeek4BlueprintPreviewHref,
   playbookHref,
   staffSquadHubHref,
   staffSquadsListHref,
@@ -160,6 +162,24 @@ export function StaffCoachHomeDashboard({
                 <ClipboardList size={18} />
                 Business Engine Canvas
               </Link>
+            ) : null}
+            {model.week >= 4 && model.day >= 1 ? (
+              <>
+                <Link
+                  to={playbookWeek4FecPreviewHref()}
+                  className="inline-flex min-h-[48px] items-center gap-2 rounded-xl border border-sky-400/40 bg-sky-400/15 px-6 py-3 text-sm font-semibold text-sky-100 transition hover:bg-sky-400/25"
+                >
+                  <ClipboardList size={18} />
+                  Preview FEC
+                </Link>
+                <Link
+                  to={playbookWeek4BlueprintPreviewHref()}
+                  className="inline-flex min-h-[48px] items-center gap-2 rounded-xl border border-sky-400/40 bg-sky-400/15 px-6 py-3 text-sm font-semibold text-sky-100 transition hover:bg-sky-400/25"
+                >
+                  <Briefcase size={18} />
+                  Preview Blueprint
+                </Link>
+              </>
             ) : null}
             {role === 'faculty' ? (
               <Link

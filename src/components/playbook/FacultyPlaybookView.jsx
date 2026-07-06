@@ -6,6 +6,7 @@ import { Week3Day1PlaybookHero } from './week3/Week3Day1PlaybookHero.jsx';
 import { Week3Day3PlaybookHero } from './week3/Week3Day3PlaybookHero.jsx';
 import { Week3Day3PortfolioMission } from './week3/Week3Day3PortfolioMission.jsx';
 import { Week3Day4PlaybookHero } from './week3/Week3Day4PlaybookHero.jsx';
+import { Week4Day1PlaybookHero } from './week4/Week4Day1PlaybookHero.jsx';
 import { GrowthEngineWorksheet } from './week3/GrowthEngineWorksheet.jsx';
 import { FinancialEngineWorksheet } from './week3/FinancialEngineWorksheet.jsx';
 import { BusinessEngineCanvasBlankPreview } from './week3/businessEngine/BusinessEngineCanvasBlankPreview.jsx';
@@ -36,6 +37,7 @@ export function FacultyPlaybookView({ bundle }) {
   const isWeek3Day3 = bundle.day.id === 'day-segment-1-week-3-day-3';
   const isWeek3Day4 = bundle.day.id === 'day-segment-1-week-3-day-4';
   const isWeek3Day5 = bundle.day.id === 'day-segment-1-week-3-day-5';
+  const isWeek4Day1 = bundle.day.id === 'day-segment-1-week-4-day-1';
   const week2DayMatch = bundle.day.id.match(/day-segment-1-week-2-day-(\d+)/);
   const week2Day = week2DayMatch ? Number(week2DayMatch[1]) : 0;
   const facultyPresentations = resolvePresentations(bundle, bundle.day.presentations ?? []).filter(
@@ -48,6 +50,7 @@ export function FacultyPlaybookView({ bundle }) {
     <div className="space-y-6">
       {isWeek2Day1 ? <Week2ActivateHero variant="faculty" /> : null}
       {isWeek3Day1 ? <Week3Day1PlaybookHero allowDownload /> : null}
+      {isWeek4Day1 ? <Week4Day1PlaybookHero allowDownload /> : null}
       {isWeek3Day3 ? (
         <>
           <Week3Day3PlaybookHero />

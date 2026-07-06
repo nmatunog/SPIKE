@@ -3,7 +3,7 @@ import { FecCanvasLayout } from '../ventureDesign/FecCanvasLayout.jsx';
 import { buildFecPreviewContent } from '../../lib/myVentureHqService.js';
 import { computeCanvasCompletionPct } from '../../lib/canvasService.js';
 import { getCanvasSummary } from '../../lib/canvasSummaryService.js';
-import { fecProjectionHref } from '../../routes/paths.js';
+import { fecProjectionHref, playbookWeek4BlueprintPreviewHref, playbookWeek4FecPreviewHref } from '../../routes/paths.js';
 
 /** @param {{ participantId: string, participantName?: string }} props */
 export function StaffFecReadOnlyPanel({ participantId, participantName = 'Participant' }) {
@@ -25,12 +25,26 @@ export function StaffFecReadOnlyPanel({ participantId, participantName = 'Partic
             {participantName}&apos;s canvas — {canvasPct}% complete
           </p>
         </div>
-        <Link
-          to={projectionHref}
-          className="text-sm font-semibold text-spike hover:underline"
-        >
-          Open projection mode →
-        </Link>
+        <div className="flex flex-wrap gap-3">
+          <Link
+            to={projectionHref}
+            className="text-sm font-semibold text-spike hover:underline"
+          >
+            Open projection mode →
+          </Link>
+          <Link
+            to={playbookWeek4FecPreviewHref(participantId, { name: participantName })}
+            className="text-sm font-semibold text-spike hover:underline"
+          >
+            Preview FEC →
+          </Link>
+          <Link
+            to={playbookWeek4BlueprintPreviewHref(participantId, { name: participantName })}
+            className="text-sm font-semibold text-spike hover:underline"
+          >
+            Preview Blueprint →
+          </Link>
+        </div>
       </div>
       <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-slate-50 p-3">
         <FecCanvasLayout

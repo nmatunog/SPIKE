@@ -49,7 +49,7 @@ import { RaSpikeCoachPage } from './pages/staff/RaSpikeCoachPage.jsx';
 import { StaffSquadHubPage, StaffSquadsListPage } from './components/staff/StaffSquadHubPage.jsx';
 import { Week2LoginWelcomeFlow } from './components/week2/Week2LoginWelcomeFlow.jsx';
 import { shouldShowWeek2LoginWelcome } from './lib/week2LoginWelcome.js';
-import { UNLOCK_WEEK2, ensureWeek2OpenForParticipant } from './lib/programUnlocks.js';
+import { UNLOCK_WEEK2, UNLOCK_WEEK4, ensureWeek2OpenForParticipant, ensureWeek4OpenForParticipant } from './lib/programUnlocks.js';
 import { StageGateCeremonyPage } from './components/stageGate/StageGateCeremonyPage.jsx';
 import { PitchPanelDashboard } from './components/staff/PitchPanelDashboard.jsx';
 import { PageContainer } from './components/layout/PageContainer.jsx';
@@ -76,6 +76,8 @@ import {
   Week2StudioPreviewPage,
   BusinessEngineCanvasPreviewPage,
   FecCanvasProjectionPage,
+  Week4Day1FecPreviewPage,
+  Week4Day1BlueprintPreviewPage,
   VentureDesignWorkshopPage,
   PortfolioPage,
   ProgressReportsPage,
@@ -269,6 +271,9 @@ const SpikeMasterPortal = () => {
     const internId = (internModuleUser ?? user)?.id;
     if (internId && UNLOCK_WEEK2 && !isRaSpikeProgram(internProgramSlug)) {
       ensureWeek2OpenForParticipant(internId);
+    }
+    if (internId && UNLOCK_WEEK4 && !isRaSpikeProgram(internProgramSlug)) {
+      ensureWeek4OpenForParticipant(internId);
     }
   }, [authLoading, portalAccessRole, internModuleUser?.id, user?.id, internProgramSlug]);
 
@@ -1586,6 +1591,18 @@ const SpikeMasterPortal = () => {
     </LazyRoute>
   );
 
+  const renderWeek4FecPreview = (viewerRole, defaultParticipantId = '') => (
+    <LazyRoute label="Loading FEC preview…">
+      <Week4Day1FecPreviewPage viewerRole={viewerRole} defaultParticipantId={defaultParticipantId} />
+    </LazyRoute>
+  );
+
+  const renderWeek4BlueprintPreview = (viewerRole, defaultParticipantId = '') => (
+    <LazyRoute label="Loading Blueprint preview…">
+      <Week4Day1BlueprintPreviewPage viewerRole={viewerRole} defaultParticipantId={defaultParticipantId} />
+    </LazyRoute>
+  );
+
   const AdminDashboardHome = () => (
     <div className="container mx-auto px-4 py-6 sm:px-6 sm:py-8">
       <DailyActivationCodeCard showRegenerate className="mb-6" />
@@ -1713,6 +1730,14 @@ const SpikeMasterPortal = () => {
       if (path === ROUTES.playbookFecProjection) {
         const projectionRole = viewAsRole ?? (userRole === 'superuser' ? 'faculty' : userRole);
         return renderFecProjection(projectionRole);
+      }
+      if (path === ROUTES.playbookWeek4FecPreview) {
+        const previewRole = viewAsRole ?? (userRole === 'superuser' ? 'faculty' : userRole);
+        return renderWeek4FecPreview(previewRole, internUser?.id ?? '');
+      }
+      if (path === ROUTES.playbookWeek4BlueprintPreview) {
+        const previewRole = viewAsRole ?? (userRole === 'superuser' ? 'faculty' : userRole);
+        return renderWeek4BlueprintPreview(previewRole, internUser?.id ?? '');
       }
       if (path === ROUTES.playbookVentureDesignWorkshop) {
         const workshopRole = viewAsRole ?? (userRole === 'superuser' ? 'faculty' : userRole);
@@ -1842,6 +1867,12 @@ const SpikeMasterPortal = () => {
       if (path === ROUTES.playbookFecProjection) {
         return renderFecProjection('intern', internUser.id);
       }
+      if (path === ROUTES.playbookWeek4FecPreview) {
+        return renderWeek4FecPreview('intern', internUser.id);
+      }
+      if (path === ROUTES.playbookWeek4BlueprintPreview) {
+        return renderWeek4BlueprintPreview('intern', internUser.id);
+      }
       if (path === ROUTES.playbookVentureDesignWorkshop) {
         return renderVentureDesignWorkshop(internUser, { viewerRole: 'intern', readOnly: false });
       }
@@ -1875,6 +1906,12 @@ const SpikeMasterPortal = () => {
     if (isSuperuserSession || isStaffUiRole(effectiveUserRole)) {
       if (path === ROUTES.playbookFecProjection) {
         return renderFecProjection(effectiveUserRole);
+      }
+      if (path === ROUTES.playbookWeek4FecPreview) {
+        return renderWeek4FecPreview(effectiveUserRole);
+      }
+      if (path === ROUTES.playbookWeek4BlueprintPreview) {
+        return renderWeek4BlueprintPreview(effectiveUserRole);
       }
       if (path === ROUTES.playbookVentureDesignWorkshop) {
         return renderVentureDesignWorkshop(user, {

@@ -8,6 +8,7 @@ export const BLUEPRINT_SECTION_WEIGHTS = {
   'recruitment-growth': 15,
   'leadership-growth': 10,
   'career-accelerator': 10,
+  'venture-execution': 10,
 };
 
 export const VISION_FIELDS = [
@@ -60,6 +61,13 @@ export const CAREER_FIELDS = [
   { key: 'current_position', label: 'Current Position', minChars: 5 },
   { key: 'next_milestone', label: 'Next Milestone', minChars: 10 },
   { key: 'promotion_readiness', label: 'Promotion Readiness Notes', minChars: 20 },
+];
+
+export const VENTURE_EXECUTION_FIELDS = [
+  { key: 'key_activities', label: 'Key Activities', minChars: 20 },
+  { key: 'key_resources', label: 'Key Resources', minChars: 20 },
+  { key: 'business_model_summary', label: 'Business Model Summary', minChars: 20 },
+  { key: 'revenue_model_summary', label: 'Revenue Model Summary', minChars: 20 },
 ];
 
 export const CANVAS_ENGINES = {
@@ -116,6 +124,8 @@ export function fieldsForSection(sectionSlug) {
       return LEADERSHIP_FIELDS;
     case 'career-accelerator':
       return CAREER_FIELDS;
+    case 'venture-execution':
+      return VENTURE_EXECUTION_FIELDS;
     default:
       return [];
   }

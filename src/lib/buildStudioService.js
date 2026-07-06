@@ -106,6 +106,47 @@ export function deriveDay1Journey(participantId) {
   }));
 }
 
+function deriveWeek4BlueprintMission(state) {
+  const day = Math.max(1, Math.min(5, state.day ?? 1));
+  return {
+    title: 'Platform Integration — Blueprint & FEC',
+    stepLabel: `Week 4 · Day ${day}`,
+    href: playbookHref({ segment: 1, week: 4, day }),
+    estimatedMinutes: 240,
+    coachReady: false,
+    progressPercent: day === 1 ? 15 : Math.min(95, day * 18),
+    journey: [],
+    allComplete: false,
+    day1: false,
+    playbookDay: true,
+    continueLabel: day === 1 ? 'Start Week 4 mission' : `Continue Day ${day}`,
+  };
+}
+
+function deriveWeek3PlaybookMission(state) {
+  const day = Math.max(1, Math.min(5, state.day ?? 1));
+  const titles = {
+    1: 'Opportunity Analysis',
+    2: 'FNA as Business Tool',
+    3: 'The Business Engine',
+    4: 'Growth Engine',
+    5: 'Venture Pitch',
+  };
+  return {
+    title: titles[day] ?? `Week 3 Day ${day}`,
+    stepLabel: `Week 3 · Day ${day}`,
+    href: playbookHref({ segment: 1, week: 3, day }),
+    estimatedMinutes: 240,
+    coachReady: false,
+    progressPercent: Math.min(95, day * 18),
+    journey: [],
+    allComplete: false,
+    day1: false,
+    playbookDay: true,
+    continueLabel: `Continue Day ${day}`,
+  };
+}
+
 /**
  * Week 2 field research + validation missions.
  */
@@ -159,6 +200,12 @@ function deriveWeek1PlaybookMission(participantId, state) {
  * @param {{ week: number, segment: number, day?: number, blueprint_completion?: number }} [state]
  */
 export function deriveTodayMission(participantId, state) {
+  if (state && state.segment === 1 && state.week >= 4) {
+    return deriveWeek4BlueprintMission(state);
+  }
+  if (state && state.segment === 1 && state.week === 3) {
+    return deriveWeek3PlaybookMission(state);
+  }
   if (state && state.segment === 1 && state.week === 2) {
     return deriveWeek2DiscoveryMission(participantId, state);
   }

@@ -17,6 +17,9 @@ export const UNLOCK_WEEK2 = true;
 /** When true, Segment 1 interns may access Week 3 (Financial Entrepreneurship / Discover Your Business Model). */
 export const UNLOCK_WEEK3 = true;
 
+/** When true, Segment 1 interns may access Week 4 (Platform Integration / Blueprint Week). */
+export const UNLOCK_WEEK4 = true;
+
 /**
  * Effective program week for interns (cohort pilot may advance ahead of stored progress).
  * @param {object | null | undefined} internProgress
@@ -24,6 +27,9 @@ export const UNLOCK_WEEK3 = true;
 export function resolveInternProgramWeek(internProgress) {
   const segment = internProgress?.segment ?? 1;
   const stored = internProgress?.current_week ?? 1;
+  if (UNLOCK_WEEK4 && segment === 1) {
+    return Math.max(stored, 4);
+  }
   if (UNLOCK_WEEK3 && segment === 1) {
     return Math.max(stored, 3);
   }
@@ -47,6 +53,11 @@ export function resolveInternPlaybookDay(internProgress) {
 
   // Week 2 pilot unlock — stored progress may still reflect Week 1 calendar; playbook starts Day 1.
   if (UNLOCK_WEEK2 && segment === 1 && week >= 2 && storedWeek < 2) {
+    return 1;
+  }
+
+  // Week 4 — playbook starts at Day 1 when cohort advances ahead of stored progress.
+  if (UNLOCK_WEEK4 && segment === 1 && week >= 4 && storedWeek < 4) {
     return 1;
   }
 
@@ -77,4 +88,15 @@ export function isSegment1Week2Open(internProgress) {
 export function ensureWeek2OpenForParticipant(participantId) {
   if (!UNLOCK_WEEK2 || !participantId) return;
   applyStageUnlockToParticipant(participantId, 1, new Date().toISOString().slice(0, 10));
+}
+
+/**
+ * Local unlock — Week 4 Blueprint Week: advance journey to BUILD and open Week 4 Day 1 playbook.
+ * @param {string} participantId
+ */
+export function ensureWeek4OpenForParticipant(participantId) {
+  if (!UNLOCK_WEEK4 || !participantId) return;
+  const today = new Date().toISOString().slice(0, 10);
+  applyStageUnlockToParticipant(participantId, 1, today);
+  applyStageUnlockToParticipant(participantId, 2, today);
 }
