@@ -1,5 +1,5 @@
 import { deriveWeekDay } from './sprint01Metrics.js';
-import { resolveInternPlaybookDay, resolveInternProgramWeek, UNLOCK_WEEK2 } from './programUnlocks.js';
+import { resolveInternPlaybookDay, resolveInternProgramWeek, UNLOCK_WEEK2, UNLOCK_WEEK4 } from './programUnlocks.js';
 import { countCompletedFnas } from './fnaService.js';
 import { computeSpikeReadinessScore } from './spikeReadinessScore.js';
 import { computeBlueprintCompletion } from './blueprintCompletion.js';
@@ -27,6 +27,9 @@ export function buildParticipantState(participantId, internProgress) {
       day = calendar.day;
     }
   } else if (UNLOCK_WEEK2 && segment === 1 && week >= 2) {
+    day = resolveInternPlaybookDay(internProgress);
+  }
+  if (UNLOCK_WEEK4 && segment === 1 && week >= 4) {
     day = resolveInternPlaybookDay(internProgress);
   }
   const trackSelected = Boolean(internProgress?.career_track_selected_at);

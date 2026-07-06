@@ -9,6 +9,8 @@ export const ROUTES = {
   playbookWeek2Studio: '/playbook/week-2-studio',
   playbookBusinessEngineCanvasPreview: '/playbook/business-engine-canvas-preview',
   playbookFecProjection: '/playbook/venture-design/fec-projection',
+  playbookWeek4FecPreview: '/playbook/week-4/fec-preview',
+  playbookWeek4BlueprintPreview: '/playbook/week-4/blueprint-preview',
   playbookVentureDesignWorkshop: '/playbook/venture-design/workshop',
   portfolio: '/portfolio',
   research: '/research',
@@ -98,6 +100,8 @@ export function isPlaybookPath(pathname) {
     || pathname === ROUTES.playbookWeek2Studio
     || pathname === ROUTES.playbookBusinessEngineCanvasPreview
     || pathname === ROUTES.playbookFecProjection
+    || pathname === ROUTES.playbookWeek4FecPreview
+    || pathname === ROUTES.playbookWeek4BlueprintPreview
     || pathname === ROUTES.playbookVentureDesignWorkshop
   );
 }
@@ -129,6 +133,32 @@ export function playbookWeek2StudioHref(opts = {}) {
 /** Week 3 Day 3 — blank Business Engine Canvas for coach/mentor presentation. */
 export function playbookBusinessEngineCanvasPreviewHref() {
   return ROUTES.playbookBusinessEngineCanvasPreview;
+}
+
+/**
+ * Week 4 Day 1 — read-only FEC preview (intern self or staff ?participant=).
+ * @param {string} [participantId]
+ * @param {{ name?: string }} [opts]
+ */
+export function playbookWeek4FecPreviewHref(participantId = '', opts = {}) {
+  const params = new URLSearchParams();
+  if (participantId) params.set('participant', participantId);
+  if (opts.name) params.set('name', opts.name);
+  const q = params.toString();
+  return q ? `${ROUTES.playbookWeek4FecPreview}?${q}` : ROUTES.playbookWeek4FecPreview;
+}
+
+/**
+ * Week 4 Day 1 — read-only Blueprint executive summary preview.
+ * @param {string} [participantId]
+ * @param {{ name?: string }} [opts]
+ */
+export function playbookWeek4BlueprintPreviewHref(participantId = '', opts = {}) {
+  const params = new URLSearchParams();
+  if (participantId) params.set('participant', participantId);
+  if (opts.name) params.set('name', opts.name);
+  const q = params.toString();
+  return q ? `${ROUTES.playbookWeek4BlueprintPreview}?${q}` : ROUTES.playbookWeek4BlueprintPreview;
 }
 
 /** Blueprint sub-routes (PR4) — Business Plan, Milestones, Venture Board live inside the OS. */
