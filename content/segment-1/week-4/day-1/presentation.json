@@ -15,12 +15,29 @@
       "slide-w4-d1-dk1-08",
       "slide-w4-d1-dk1-09",
       "slide-deck01-10",
-      "slide-deck01-11"
+      "slide-deck01-11",
+      "slide-d1-01-12",
+      "slide-d1-01-13",
+      "slide-d1-01-14",
+      "slide-d1-01-15",
+      "slide-d1-01-16",
+      "slide-d1-01-17",
+      "slide-d1-01-18",
+      "slide-d1-01-19",
+      "slide-d1-01-20",
+      "slide-d1-01-21",
+      "slide-d1-01-22",
+      "slide-d1-01-23",
+      "slide-d1-01-24",
+      "slide-d1-01-25",
+      "slide-d1-01-26",
+      "slide-d1-01-27",
+      "slide-d1-01-28"
     ],
-    "sourceFile": "faculty-deck-01.pptx",
-    "sourcePath": "content/segment-1/week-4/day-1/source/faculty-deck-01.pptx",
-    "importedAt": "2026-07-05T15:18:01.016Z",
-    "pptxUrl": "/api/coach/faculty-deck/segment-1/week-4/day-1/faculty-deck-01.pptx"
+    "sourceFile": "faculty-deck-01.pdf",
+    "sourcePath": "content/segment-1/week-4/day-1/source/faculty-deck-01.pdf",
+    "importedAt": "2026-07-06T07:19:12.956Z",
+    "pdfUrl": "/api/coach/faculty-deck/segment-1/week-4/day-1/faculty-deck-01.pdf"
   },
   "slides": [
     {
@@ -149,6 +166,176 @@
         "What changes in your FEC now that you have a platform?"
       ],
       "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-11.png"
+    },
+    {
+      "id": "slide-d1-01-12",
+      "presentationId": "presentation-w4-d1-deck-01",
+      "sortOrder": 12,
+      "title": "Slide 12",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-12.png"
+    },
+    {
+      "id": "slide-d1-01-13",
+      "presentationId": "presentation-w4-d1-deck-01",
+      "sortOrder": 13,
+      "title": "Slide 13",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-13.png"
+    },
+    {
+      "id": "slide-d1-01-14",
+      "presentationId": "presentation-w4-d1-deck-01",
+      "sortOrder": 14,
+      "title": "Slide 14",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-14.png"
+    },
+    {
+      "id": "slide-d1-01-15",
+      "presentationId": "presentation-w4-d1-deck-01",
+      "sortOrder": 15,
+      "title": "Slide 15",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-15.png"
+    },
+    {
+      "id": "slide-d1-01-16",
+      "presentationId": "presentation-w4-d1-deck-01",
+      "sortOrder": 16,
+      "title": "Slide 16",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-16.png"
+    },
+    {
+      "id": "slide-d1-01-17",
+      "presentationId": "presentation-w4-d1-deck-01",
+      "sortOrder": 17,
+      "title": "Slide 17",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-17.png"
+    },
+    {
+      "id": "slide-d1-01-18",
+      "presentationId": "presentation-w4-d1-deck-01",
+      "sortOrder": 18,
+      "title": "Slide 18",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-18.png"
+    },
+    {
+      "id": "slide-d1-01-19",
+      "presentationId": "presentation-w4-d1-deck-01",
+      "sortOrder": 19,
+      "title": "Slide 19",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-19.png"
+    },
+    {
+      "id": "slide-d1-01-20",
+      "presentationId": "presentation-w4-d1-deck-01",
+      "sortOrder": 20,
+      "title": "Slide 20",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-20.png"
+    },
+    {
+      "id": "slide-d1-01-21",
+      "presentationId": "presentation-w4-d1-deck-01",
+      "sortOrder": 21,
+      "title": "Slide 21",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-21.png"
+    },
+    {
+      "id": "slide-d1-01-22",
+      "presentationId": "presentation-w4-d1-deck-01",
+      "sortOrder": 22,
+      "title": "Slide 22",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-22.png"
+    },
+    {
+      "id": "slide-d1-01-23",
+      "presentationId": "presentation-w4-d1-deck-01",
+      "sortOrder": 23,
+      "title": "Slide 23",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-23.png"
+    },
+    {
+      "id": "slide-d1-01-24",
+      "presentationId": "presentation-w4-d1-deck-01",
+      "sortOrder": 24,
+      "title": "Slide 24",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-24.png"
+    },
+    {
+      "id": "slide-d1-01-25",
+      "presentationId": "presentation-w4-d1-deck-01",
+      "sortOrder": 25,
+      "title": "Slide 25",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-25.png"
+    },
+    {
+      "id": "slide-d1-01-26",
+      "presentationId": "presentation-w4-d1-deck-01",
+      "sortOrder": 26,
+      "title": "Slide 26",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-26.png"
+    },
+    {
+      "id": "slide-d1-01-27",
+      "presentationId": "presentation-w4-d1-deck-01",
+      "sortOrder": 27,
+      "title": "Slide 27",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-27.png"
+    },
+    {
+      "id": "slide-d1-01-28",
+      "presentationId": "presentation-w4-d1-deck-01",
+      "sortOrder": 28,
+      "title": "Slide 28",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-28.png"
     }
   ]
 }

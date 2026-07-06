@@ -2,8 +2,8 @@ import { FacultyDeckDownloadButton } from '../FacultyDeckDownloadButton.jsx';
 
 export const WEEK4_DAY1_ID = 'day-segment-1-week-4-day-1';
 export const WEEK4_DAY1_HERO_IMAGE = '/content/segment-1/week-4/day-1/hero-platform-integration.png';
-export const WEEK4_DAY1_PPTX_URL =
-  '/api/coach/faculty-deck/segment-1/week-4/day-1/faculty-deck-01.pptx';
+export const WEEK4_DAY1_DECK_URL =
+  '/api/coach/faculty-deck/segment-1/week-4/day-1/faculty-deck-01.pdf';
 
 /**
  * Week 4 Day 1 playbook hero — Platform Integration (Blueprint Week kickoff).
@@ -35,8 +35,8 @@ export function Week4Day1PlaybookHero({ className = '', allowDownload = false })
         </div>
         {allowDownload ? (
           <FacultyDeckDownloadButton
-            href={WEEK4_DAY1_PPTX_URL}
-            label="Open full deck (PPTX)"
+            href={WEEK4_DAY1_DECK_URL}
+            label="Open full deck (PDF)"
             variant="link"
           />
         ) : null}

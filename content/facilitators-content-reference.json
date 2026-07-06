@@ -5661,10 +5661,10 @@
               "id": "presentation-w4-d1-deck-01",
               "title": "Program Coach Deck 01 — Platform Integration",
               "purpose": "How will I make my venture work in the real world?",
-              "slideCount": 11,
+              "slideCount": 28,
               "status": "published",
-              "pptxUrl": "/api/coach/faculty-deck/segment-1/week-4/day-1/faculty-deck-01.pptx",
-              "pdfUrl": null,
+              "pptxUrl": null,
+              "pdfUrl": "/api/coach/faculty-deck/segment-1/week-4/day-1/faculty-deck-01.pdf",
               "slides": [
                 {
                   "number": 1,
@@ -5770,6 +5770,142 @@
                     "What changes in your FEC now that you have a platform?"
                   ],
                   "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-11.png"
+                },
+                {
+                  "number": 12,
+                  "title": "Slide 12",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-12.png"
+                },
+                {
+                  "number": 13,
+                  "title": "Slide 13",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-13.png"
+                },
+                {
+                  "number": 14,
+                  "title": "Slide 14",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-14.png"
+                },
+                {
+                  "number": 15,
+                  "title": "Slide 15",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-15.png"
+                },
+                {
+                  "number": 16,
+                  "title": "Slide 16",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-16.png"
+                },
+                {
+                  "number": 17,
+                  "title": "Slide 17",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-17.png"
+                },
+                {
+                  "number": 18,
+                  "title": "Slide 18",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-18.png"
+                },
+                {
+                  "number": 19,
+                  "title": "Slide 19",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-19.png"
+                },
+                {
+                  "number": 20,
+                  "title": "Slide 20",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-20.png"
+                },
+                {
+                  "number": 21,
+                  "title": "Slide 21",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-21.png"
+                },
+                {
+                  "number": 22,
+                  "title": "Slide 22",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-22.png"
+                },
+                {
+                  "number": 23,
+                  "title": "Slide 23",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-23.png"
+                },
+                {
+                  "number": 24,
+                  "title": "Slide 24",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-24.png"
+                },
+                {
+                  "number": 25,
+                  "title": "Slide 25",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-25.png"
+                },
+                {
+                  "number": 26,
+                  "title": "Slide 26",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-26.png"
+                },
+                {
+                  "number": 27,
+                  "title": "Slide 27",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-27.png"
+                },
+                {
+                  "number": 28,
+                  "title": "Slide 28",
+                  "summary": "",
+                  "facilitatorNotes": "",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-1/deck-01/slide-28.png"
                 }
               ]
             }
@@ -5880,7 +6016,7 @@
           ],
           "surveys": [],
           "prepChecklist": [
-            "Load Deck 01 (faculty-deck-01.pptx) — 11 slides, Scenes 1–11",
+            "Load Deck 01 (faculty-deck-01.pdf) — 28 slides, Scenes 1–11 + workshop visuals",
             "Confirm Playbook Blueprint Business Model + Revenue Model sections are accessible",
             "Confirm FEC Week 4 integration fields (Platform, Revenue Engine, Agency Growth) are live",
             "Brief mentors: morning is narrative + reveal; afternoon is Blueprint + FEC workshop"
