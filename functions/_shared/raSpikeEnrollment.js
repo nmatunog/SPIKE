@@ -9,11 +9,11 @@ import { raSpikeHomeOrgOptions } from './raSpikeAgencies.js';
  * @param {{ inviteCode?: string, cohortId?: number | string }} opts
  */
 export async function resolveRaSpikeCohort(admin, opts = {}) {
-  const inviteCode = opts.inviteCode ? String(opts.inviteCode).trim() : null;
+  // Invite codes disabled: never pass a code (avoids "Invalid batch invite code" from stale clients).
   const cohortId = opts.cohortId != null ? Number(opts.cohortId) : null;
 
   const { data, error } = await admin.rpc('resolve_ra_spike_cohort', {
-    p_invite_code: inviteCode,
+    p_invite_code: null,
     p_cohort_id: Number.isFinite(cohortId) ? cohortId : null,
   });
 

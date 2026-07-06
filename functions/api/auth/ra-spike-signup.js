@@ -36,8 +36,6 @@ export async function onRequest(ctx) {
   const mobile = String(body?.mobile ?? '').trim();
   const email = String(body?.email ?? '').trim().toLowerCase();
   const password = String(body?.password ?? '');
-  const inviteCode = body?.batchInviteCode ? String(body.batchInviteCode).trim() : '';
-  const cohortId = body?.cohortId != null ? Number(body.cohortId) : null;
   const homeAgency = String(body?.homeAgency ?? '').trim();
   const homeUnit = String(body?.homeUnit ?? '').trim();
 
@@ -47,17 +45,15 @@ export async function onRequest(ctx) {
   }
   if (!email || !email.includes('@')) return json({ message: 'A valid email is required.' }, 400);
   if (password.length < 8) return json({ message: 'Password must be at least 8 characters.' }, 400);
-  if (!inviteCode && !Number.isFinite(cohortId)) {
-    return json({ message: 'Select a batch or enter your batch invite code.' }, 400);
-  }
   if (!homeAgency || !homeUnit) {
     return json({ message: 'Select your home agency and unit.' }, 400);
   }
 
   try {
+    // Open enrollment: always active/open cohort (ignore invite code and batch picker).
     const cohort = await resolveRaSpikeCohort(admin, {
-      inviteCode: inviteCode || null,
-      cohortId: Number.isFinite(cohortId) ? cohortId : null,
+      inviteCode: null,
+      cohortId: null,
     });
 
     const userId = await createConfirmedPortalUser(admin, {
