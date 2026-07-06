@@ -475,6 +475,7 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
   } else if (showWeek4Day1MissionFirst && participantId && bundle) {
     dayContent = (
       <Week4Day1MissionPlaybookView
+        bundle={bundle}
         participantId={participantId}
         programWeek={entryWeek}
         focusReflection={focusReflection}

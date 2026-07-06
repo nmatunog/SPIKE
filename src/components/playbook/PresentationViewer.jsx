@@ -53,8 +53,10 @@ export function PresentationViewer({ presentation, slides, facultyMode = false }
       <SlideNavigator
         currentIndex={currentIndex}
         total={slides.length}
+        slideLabels={slides.map((slide) => slide.title)}
         onPrevious={() => setCurrentIndex((i) => Math.max(0, i - 1))}
         onNext={() => setCurrentIndex((i) => Math.min(slides.length - 1, i + 1))}
+        onJump={setCurrentIndex}
       />
 
       {facultyMode ? (

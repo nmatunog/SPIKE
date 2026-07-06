@@ -8,12 +8,29 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
  *   onNext: () => void,
  * }} props
  */
-export function SlideNavigator({ currentIndex, total, onPrevious, onNext }) {
+/**
+ * @param {{
+ *   currentIndex: number,
+ *   total: number,
+ *   onPrevious: () => void,
+ *   onNext: () => void,
+ *   onJump?: (index: number) => void,
+ *   slideLabels?: string[],
+ * }} props
+ */
+export function SlideNavigator({
+  currentIndex,
+  total,
+  onPrevious,
+  onNext,
+  onJump,
+  slideLabels = [],
+}) {
   const pct = total > 0 ? Math.round(((currentIndex + 1) / total) * 100) : 0;
 
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between 2xl:gap-4">
-      <div className="flex items-center gap-2 sm:gap-3">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
         <button
           type="button"
           onClick={onPrevious}
@@ -26,6 +43,26 @@ export function SlideNavigator({ currentIndex, total, onPrevious, onNext }) {
         <span className="text-sm font-semibold text-slate-700 lg:text-base 2xl:text-lg">
           Slide {currentIndex + 1} of {total}
         </span>
+        {onJump && total > 1 ? (
+          <label className="sr-only" htmlFor="slide-jump-select">
+            Jump to slide
+          </label>
+        ) : null}
+        {onJump && total > 1 ? (
+          <select
+            id="slide-jump-select"
+            value={currentIndex}
+            onChange={(e) => onJump(Number(e.target.value))}
+            className="min-h-[44px] rounded-xl border border-slate-200 bg-white px-2 text-sm font-medium text-slate-800"
+            aria-label="Jump to slide"
+          >
+            {Array.from({ length: total }, (_, i) => (
+              <option key={i} value={i}>
+                {slideLabels[i]?.trim() ? `Slide ${i + 1}: ${slideLabels[i]}` : `Slide ${i + 1}`}
+              </option>
+            ))}
+          </select>
+        ) : null}
         <button
           type="button"
           onClick={onNext}

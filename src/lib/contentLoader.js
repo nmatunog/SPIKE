@@ -290,14 +290,31 @@ export function getPresentationMap(bundle) {
 }
 
 /**
+ * Order and filter slides to match presentation.slideIds (source of truth for deck length).
+ * @param {{ presentation: Presentation, slides: Slide[] }} deck
+ * @returns {Slide[]}
+ */
+export function resolvePresentationSlides(deck) {
+  const { presentation, slides } = deck;
+  if (!presentation?.slideIds?.length) return slides ?? [];
+  const byId = new Map((slides ?? []).map((slide) => [slide.id, slide]));
+  return presentation.slideIds.map((id) => byId.get(id)).filter(Boolean);
+}
+
+/**
  * @param {DayContentBundle} bundle
  * @param {string[]} presentationIds
+ * @returns {Array<{ presentation: Presentation, slides: Slide[] }>}
  */
 export function resolvePresentations(bundle, presentationIds) {
   const map = getPresentationMap(bundle);
   return presentationIds
     .map((id) => map.get(id))
-    .filter(Boolean);
+    .filter(Boolean)
+    .map((deck) => ({
+      presentation: deck.presentation,
+      slides: resolvePresentationSlides(deck),
+    }));
 }
 
 /** Convenience path for acceptance criteria smoke checks. */
