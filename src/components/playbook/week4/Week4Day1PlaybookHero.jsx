@@ -1,6 +1,7 @@
 import { FacultyDeckDownloadButton } from '../FacultyDeckDownloadButton.jsx';
 
 export const WEEK4_DAY1_ID = 'day-segment-1-week-4-day-1';
+export const WEEK4_DAY1_SLIDE_COUNT = 28;
 export const WEEK4_DAY1_HERO_IMAGE = '/content/segment-1/week-4/day-1/hero-platform-integration.png';
 export const WEEK4_DAY1_DECK_URL =
   '/api/coach/faculty-deck/segment-1/week-4/day-1/faculty-deck-01.pdf';
@@ -29,8 +30,9 @@ export function Week4Day1PlaybookHero({ className = '', allowDownload = false })
           <p className="mt-0.5 text-xs text-amber-200/90 italic">
             How will I make my venture work in the real world?
           </p>
-          <p className="mt-1 max-w-2xl text-xs text-slate-400">
-            Connecting your venture to the AIA Platform to build a scalable, sustainable business.
+          <p className="mt-1 text-xs text-slate-400">
+            {WEEK4_DAY1_SLIDE_COUNT} slides · Connecting your venture to the AIA Platform to build a scalable,
+            sustainable business.
           </p>
         </div>
         {allowDownload ? (

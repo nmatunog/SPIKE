@@ -1,14 +1,18 @@
 import { BookOpen } from 'lucide-react';
 import { Week4Day1PlaybookHero } from './Week4Day1PlaybookHero.jsx';
 import { Week4Day1MissionFlow } from './Week4Day1MissionFlow.jsx';
+import { PresentationViewer } from '../PresentationViewer.jsx';
 import { PlaybookDayClosingReflectionBlock } from '../PlaybookDayClosingReflectionBlock.jsx';
 import { PlaybookReflectionNudge } from '../PlaybookReflectionNudge.jsx';
 import { ParticipantSquadXpCard } from '../../staff/SquadXpDashboard.jsx';
+import { resolvePresentations } from '../../../lib/contentLoader.js';
 
 /**
  * Week 4 Day 1 mission-first Playbook — Platform Integration workshop flow.
+ * @param {{ bundle?: import('../../../lib/contentLoader.js').DayContentBundle }} props
  */
 export function Week4Day1MissionPlaybookView({
+  bundle,
   participantId,
   programWeek = 4,
   focusReflection = false,
@@ -17,6 +21,10 @@ export function Week4Day1MissionPlaybookView({
   onProgress,
   staffPreview = false,
 }) {
+  const deck = bundle
+    ? resolvePresentations(bundle, ['presentation-w4-d1-deck-01'])[0]
+    : null;
+
   return (
     <div className="space-y-6">
       {pendingReflection ? (
@@ -33,6 +41,16 @@ export function Week4Day1MissionPlaybookView({
       ) : null}
 
       <Week4Day1PlaybookHero allowDownload={staffPreview} />
+
+      {deck?.slides?.length ? (
+        <section aria-label="Program Coach Deck 01">
+          <PresentationViewer
+            presentation={deck.presentation}
+            slides={deck.slides}
+            facultyMode={staffPreview}
+          />
+        </section>
+      ) : null}
 
       <section className="rounded-3xl border border-slate-200 bg-gradient-to-b from-white to-slate-50/60 p-4 shadow-card sm:p-6">
         <div className="mb-5">
