@@ -1,7 +1,5 @@
-/**
- * @param {object | null | undefined} _progress
- */
-export function shouldGateRaSpikeOnboarding(_progress) {
+/** RA-SPIKE profile photo is optional — never block navigation after sign-in. */
+export function shouldGateRaSpikeOnboarding() {
   return false;
 }
 
