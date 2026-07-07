@@ -1,12 +1,6 @@
-import { isRaSpikeProgram } from './programs/index.js';
-
-/**
- * RA-SPIKE uses a 3-step flow; photo (step 3) sets onboarding_complete.
- * @param {object | null | undefined} progress
- */
-export function shouldGateRaSpikeOnboarding(progress) {
-  if (!isRaSpikeProgram(progress?.program_slug)) return false;
-  return !progress?.onboarding_complete;
+/** RA-SPIKE profile photo is optional — never block navigation after sign-in. */
+export function shouldGateRaSpikeOnboarding() {
+  return false;
 }
 
 /**

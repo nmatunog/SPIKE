@@ -77,6 +77,7 @@ export async function onRequest(ctx) {
 
     const squadName = await assignRaSpikeSquad(admin, cohort.id, userId);
 
+    const welcomedAt = new Date().toISOString();
     const { error: progErr } = await admin.from('intern_progress').upsert(
       {
         user_id: userId,
@@ -90,7 +91,8 @@ export async function onRequest(ctx) {
         program_slug: 'ra-spike',
         ra_spike_segment: 1,
         ra_spike_current_week: 1,
-        onboarding_complete: false,
+        onboarding_complete: true,
+        onboarding_welcomed_at: welcomedAt,
       },
       { onConflict: 'user_id' },
     );

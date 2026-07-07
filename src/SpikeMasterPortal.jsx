@@ -41,7 +41,7 @@ import { RaSpikeSquadPage } from './pages/ra-spike/RaSpikeSquadPage.jsx';
 import { RaSpikeProfilePage } from './pages/ra-spike/RaSpikeProfilePage.jsx';
 import { RaSpikeNav } from './components/ra-spike/RaSpikeNav.jsx';
 import { RA_SPIKE_PROGRAM } from './lib/programs/ra-spike.js';
-import { shouldGateRaSpikeOnboarding, isRaSpikeOnboardingPath } from './lib/raSpikeOnboardingService.js';
+import { isRaSpikeOnboardingPath } from './lib/raSpikeOnboardingService.js';
 import { registerRaSpikeViaApi, isRaSpikeSignupApiUnavailable } from './lib/raSpikeSignupService.js';
 import { RaSpikeOnboardingPage } from './pages/ra-spike/RaSpikeOnboardingPage.jsx';
 import { RaSpikeStageGatePrepPage } from './pages/ra-spike/RaSpikeStageGatePrepPage.jsx';
@@ -183,8 +183,10 @@ const SpikeMasterPortal = () => {
   );
   const isSuperuserSession = isSuperuserPortalSession(userRole);
   const internModuleUser = useMemo(
-    () => buildSuperuserInternPreviewUser(user, userRole, viewAsRole),
-    [user, userRole, viewAsRole],
+    () => buildSuperuserInternPreviewUser(user, userRole, viewAsRole, {
+      raSpikeApp: isRaSpikeAppPath(location.pathname),
+    }),
+    [user, userRole, viewAsRole, location.pathname],
   );
   const userIsMock = isMockUser(user);
   const compactNav = useCompactNav();
@@ -299,11 +301,7 @@ const SpikeMasterPortal = () => {
     if (userRole === 'superuser') return;
     if (!shouldUseSupabaseForUser(user)) return;
     if (isRaSpikeProgram(resolveProgramSlug(user?.internProgress))) {
-      if (shouldGateRaSpikeOnboarding(user.internProgress)) {
-        if (!isRaSpikeOnboardingPath(location.pathname)) {
-          navigate(ROUTES.raSpikeOnboarding, { replace: true });
-        }
-      } else if (isRaSpikeOnboardingPath(location.pathname)) {
+      if (isRaSpikeOnboardingPath(location.pathname)) {
         navigate(ROUTES.raSpikeHome, { replace: true });
       }
       return;
@@ -413,12 +411,15 @@ const SpikeMasterPortal = () => {
 
   const loadInterns = useCallback(async () => {
     if (!STAFF_ROLES.includes(user?.role)) return;
+    const raSpikeApp = isRaSpikeAppPath(location.pathname);
+    const failLabel = raSpikeApp ? 'Failed to load rookies' : 'Failed to load interns';
 
     if (usingSupabaseAuth && supabase) {
       setInternsLoading(true);
       try {
         let rows = await fetchInterns();
-        if (!isSquadAssessmentMigrationComplete()) {
+        // Internship squad-assessment hydration is not on the RA-SPIKE database.
+        if (!raSpikeApp && !isSquadAssessmentMigrationComplete()) {
           await Promise.all(
             rows.flatMap((intern) => [1, 2].map((week) => hydrateWeeklyAssessmentFromSupabase(intern.id, week))),
           );
@@ -426,7 +427,7 @@ const SpikeMasterPortal = () => {
         }
         setInterns(rows);
       } catch (e) {
-        showToast(e.message || 'Failed to load interns', 'info');
+        showToast(e.message || failLabel, 'info');
       } finally {
         setInternsLoading(false);
       }
@@ -437,16 +438,16 @@ const SpikeMasterPortal = () => {
     setInternsLoading(true);
     try {
       const rows = await apiFetch('/api/interns', { token });
-      if (!isSquadAssessmentMigrationComplete()) {
+      if (!raSpikeApp && !isSquadAssessmentMigrationComplete()) {
         ensureSquadAssessmentMigration(rows);
       }
       setInterns(rows);
     } catch (e) {
-      showToast(e.message || 'Failed to load interns', 'info');
+      showToast(e.message || failLabel, 'info');
     } finally {
       setInternsLoading(false);
     }
-  }, [token, user?.role, usingSupabaseAuth, showToast]);
+  }, [token, user?.role, usingSupabaseAuth, showToast, location.pathname]);
 
   const loadPendingLogs = useCallback(async () => {
     if (!STAFF_ROLES.includes(user?.role)) return;
@@ -773,7 +774,7 @@ const SpikeMasterPortal = () => {
   );
 
   const handleRaSpikeSignup = useCallback(
-    async ({ name, email, password, mobile, batchInviteCode, cohortId, homeAgency, homeUnit }) => {
+    async ({ name, email, password, mobile, homeAgency, homeUnit }) => {
       if (mockAuthEnabled && !usingSupabaseAuth) {
         throw new Error('RA-SPIKE signup requires Supabase mode.');
       }
@@ -784,8 +785,6 @@ const SpikeMasterPortal = () => {
           email,
           password,
           mobile,
-          batchInviteCode,
-          cohortId,
           homeAgency,
           homeUnit,
         });
@@ -801,11 +800,8 @@ const SpikeMasterPortal = () => {
 
       const signedIn = await login(email, password);
       const programSlug = resolveProgramSlug(signedIn?.internProgress);
-      const target = shouldGateRaSpikeOnboarding(signedIn?.internProgress)
-        ? ROUTES.raSpikeOnboarding
-        : defaultRouteForRole('intern', programSlug);
-      navigate(target, { replace: true });
-      showToast('Welcome to RA-SPIKE! Complete your profile to get started.', 'success');
+      navigate(defaultRouteForRole('intern', programSlug), { replace: true });
+      showToast('Welcome to RA-SPIKE! Start with your Dream Board or squad registration.', 'success');
     },
     [login, mockAuthEnabled, navigate, showToast, usingSupabaseAuth],
   );
@@ -1660,6 +1656,70 @@ const SpikeMasterPortal = () => {
   const renderAuthenticatedModule = () => {
     const path = location.pathname;
 
+    // Hard gate: anything under /ra-spike must never fall through to internship dashboards.
+    if (isRaSpikeAppPath(path)) {
+      const internUser = buildSuperuserInternPreviewUser(user, userRole, viewAsRole, {
+        raSpikeApp: true,
+      });
+      const asIntern =
+        (isSuperuserSession && viewAsRole === 'intern')
+        || (effectiveUserRole === 'intern' && !isSuperuserSession);
+
+      if (asIntern) {
+        const programSlug = resolveProgramSlug(
+          (internUser ?? user)?.internProgress ?? { program_slug: 'ra-spike' },
+        );
+        if (programSlug !== 'ra-spike' && !isSuperuserSession) {
+          return (
+            <div className="container mx-auto px-6 py-12 text-center text-gray-700">
+              <p className="font-medium">This account is not enrolled in RA-SPIKE.</p>
+            </div>
+          );
+        }
+        const rookie = internUser ?? user;
+        if (isInternshipOnlyInternPath(path)) {
+          return <Navigate to={ROUTES.raSpikeHome} replace />;
+        }
+        if (path === ROUTES.raSpikeHome || path === '/ra-spike' || path === '/ra-spike/') {
+          return <RaSpikeHomePage user={rookie} />;
+        }
+        if (path === ROUTES.raSpikePlaybook || path.startsWith(`${ROUTES.raSpikePlaybook}/`)) {
+          return <RaSpikePlaybookPage user={rookie} />;
+        }
+        if (path === ROUTES.raSpikeSquad) {
+          return <RaSpikeSquadPage user={rookie} />;
+        }
+        if (path === ROUTES.raSpikeProfile) {
+          return <RaSpikeProfilePage user={rookie} />;
+        }
+        if (path === ROUTES.raSpikeOnboarding) {
+          return <RaSpikeOnboardingPage user={rookie} />;
+        }
+        if (path === ROUTES.raSpikeStageGate) {
+          const search = new URLSearchParams(location.search);
+          const gateParam = Number(search.get('gate'));
+          const gate = gateParam === 2 ? 2 : 1;
+          const weekParam = Number(search.get('week'));
+          const assignmentWeek = Number.isFinite(weekParam) && weekParam >= 1 && weekParam <= 8
+            ? weekParam
+            : undefined;
+          return <RaSpikeStageGatePrepPage user={rookie} gate={gate} assignmentWeek={assignmentWeek} />;
+        }
+        return <Navigate to={ROUTES.raSpikeHome} replace />;
+      }
+
+      const coachRole =
+        effectiveUserRole === 'mentor' || viewAsRole === 'mentor' ? 'mentor' : 'faculty';
+      return (
+        <RaSpikeCoachPage
+          role={coachRole}
+          interns={interns}
+          showToast={showToast}
+          onRefresh={loadInterns}
+        />
+      );
+    }
+
     if (path.startsWith(`${ROUTES.portfolio}/`) && path !== ROUTES.portfolio) {
       return (
         <LazyRoute label="Loading portfolio…">
@@ -1691,7 +1751,60 @@ const SpikeMasterPortal = () => {
     }
 
     if (isSuperuserSession) {
-      const internUser = resolveSuperuserInternRouteUser(user, userRole);
+      const raSpikeApp = isRaSpikeAppPath(path);
+      const internUser = resolveSuperuserInternRouteUser(user, userRole, { raSpikeApp });
+
+      // Superuser "Preview: Intern" on the RA-SPIKE portal must use RA-SPIKE pages,
+      // not internship venture/playbook routes (those 400 against the RA-SPIKE DB).
+      if (raSpikeApp && viewAsRole === 'intern') {
+        if (isInternshipOnlyInternPath(path)) {
+          return <Navigate to={ROUTES.raSpikeHome} replace />;
+        }
+        if (path === ROUTES.raSpikeHome || path === '/ra-spike' || path === '/ra-spike/') {
+          return <RaSpikeHomePage user={internUser} />;
+        }
+        if (path === ROUTES.raSpikePlaybook || path.startsWith(`${ROUTES.raSpikePlaybook}/`)) {
+          return <RaSpikePlaybookPage user={internUser} />;
+        }
+        if (path === ROUTES.raSpikeSquad) {
+          return <RaSpikeSquadPage user={internUser} />;
+        }
+        if (path === ROUTES.raSpikeProfile) {
+          return <RaSpikeProfilePage user={internUser} />;
+        }
+        if (path === ROUTES.raSpikeOnboarding) {
+          return <RaSpikeOnboardingPage user={internUser} />;
+        }
+        if (path === ROUTES.raSpikeStageGate) {
+          const search = new URLSearchParams(location.search);
+          const gateParam = Number(search.get('gate'));
+          const gate = gateParam === 2 ? 2 : 1;
+          const weekParam = Number(search.get('week'));
+          const assignmentWeek = Number.isFinite(weekParam) && weekParam >= 1 && weekParam <= 8
+            ? weekParam
+            : undefined;
+          return <RaSpikeStageGatePrepPage user={internUser} gate={gate} assignmentWeek={assignmentWeek} />;
+        }
+        if (path === ROUTES.programCoachRaSpike || path === ROUTES.mentorRaSpike) {
+          return <Navigate to={ROUTES.raSpikeHome} replace />;
+        }
+        return <Navigate to={ROUTES.raSpikeHome} replace />;
+      }
+
+      // Superuser on RA-SPIKE without Intern preview → coach hub only
+      // (never internship activation-code dashboard).
+      if (raSpikeApp) {
+        const coachRole = viewAsRole === 'mentor' ? 'mentor' : 'faculty';
+        return (
+          <RaSpikeCoachPage
+            role={coachRole}
+            interns={interns}
+            showToast={showToast}
+            onRefresh={loadInterns}
+          />
+        );
+      }
+
       if (path === ROUTES.cohortIdentity) {
         return <CohortIdentityPage participantId={internUser.id} />;
       }
@@ -1914,6 +2027,20 @@ const SpikeMasterPortal = () => {
     }
 
     if (isSuperuserSession || isStaffUiRole(effectiveUserRole)) {
+      // Faculty/mentor/admin on RA-SPIKE portal — coach hub only.
+      if (isRaSpikeAppPath(path)) {
+        const coachRole =
+          effectiveUserRole === 'mentor' || viewAsRole === 'mentor' ? 'mentor' : 'faculty';
+        return (
+          <RaSpikeCoachPage
+            role={coachRole}
+            interns={interns}
+            showToast={showToast}
+            onRefresh={loadInterns}
+          />
+        );
+      }
+
       if (path === ROUTES.playbookFecProjection) {
         return renderFecProjection(effectiveUserRole);
       }
@@ -2438,6 +2565,7 @@ const SpikeMasterPortal = () => {
                 bootstrapSecretRequired={bootstrapSecretRequired}
                 bootstrapApiConfigured={bootstrapApiConfigured}
                 onSupabaseBootstrap={handleSupabaseBootstrap}
+                raSpikeApp={isRaSpikeAppPath(location.pathname)}
               />
             </LazyRoute>
           )
