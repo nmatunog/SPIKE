@@ -199,7 +199,7 @@ export const RaSpikeSignupPanel = memo(function RaSpikeSignupPanel({ onSignup })
             {submitting ? 'Creating account…' : 'Create account'}
           </button>
           <p className="text-xs text-slate-500">
-            After signup you can add an optional profile photo, then start Week 1.
+            After signup you can upload your Dream Board and register your squad right away.
           </p>
         </form>
       ) : null}

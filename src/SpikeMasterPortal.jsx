@@ -41,7 +41,7 @@ import { RaSpikeSquadPage } from './pages/ra-spike/RaSpikeSquadPage.jsx';
 import { RaSpikeProfilePage } from './pages/ra-spike/RaSpikeProfilePage.jsx';
 import { RaSpikeNav } from './components/ra-spike/RaSpikeNav.jsx';
 import { RA_SPIKE_PROGRAM } from './lib/programs/ra-spike.js';
-import { shouldGateRaSpikeOnboarding, isRaSpikeOnboardingPath } from './lib/raSpikeOnboardingService.js';
+import { isRaSpikeOnboardingPath } from './lib/raSpikeOnboardingService.js';
 import { registerRaSpikeViaApi, isRaSpikeSignupApiUnavailable } from './lib/raSpikeSignupService.js';
 import { RaSpikeOnboardingPage } from './pages/ra-spike/RaSpikeOnboardingPage.jsx';
 import { RaSpikeStageGatePrepPage } from './pages/ra-spike/RaSpikeStageGatePrepPage.jsx';
@@ -301,11 +301,7 @@ const SpikeMasterPortal = () => {
     if (userRole === 'superuser') return;
     if (!shouldUseSupabaseForUser(user)) return;
     if (isRaSpikeProgram(resolveProgramSlug(user?.internProgress))) {
-      if (shouldGateRaSpikeOnboarding(user.internProgress)) {
-        if (!isRaSpikeOnboardingPath(location.pathname)) {
-          navigate(ROUTES.raSpikeOnboarding, { replace: true });
-        }
-      } else if (isRaSpikeOnboardingPath(location.pathname)) {
+      if (isRaSpikeOnboardingPath(location.pathname)) {
         navigate(ROUTES.raSpikeHome, { replace: true });
       }
       return;
@@ -804,11 +800,8 @@ const SpikeMasterPortal = () => {
 
       const signedIn = await login(email, password);
       const programSlug = resolveProgramSlug(signedIn?.internProgress);
-      const target = shouldGateRaSpikeOnboarding(signedIn?.internProgress)
-        ? ROUTES.raSpikeOnboarding
-        : defaultRouteForRole('intern', programSlug);
-      navigate(target, { replace: true });
-      showToast('Welcome to RA-SPIKE! Complete your profile to get started.', 'success');
+      navigate(defaultRouteForRole('intern', programSlug), { replace: true });
+      showToast('Welcome to RA-SPIKE! Start with your Dream Board or squad registration.', 'success');
     },
     [login, mockAuthEnabled, navigate, showToast, usingSupabaseAuth],
   );
