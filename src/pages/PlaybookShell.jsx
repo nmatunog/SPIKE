@@ -12,6 +12,7 @@ import { Week3Day3MissionPlaybookView } from '../components/playbook/week3/Week3
 import { Week3Day4MissionPlaybookView } from '../components/playbook/week3/Week3Day4MissionPlaybookView.jsx';
 import { Week3Day5MissionPlaybookView } from '../components/playbook/week3/Week3Day5MissionPlaybookView.jsx';
 import { Week4Day1MissionPlaybookView } from '../components/playbook/week4/Week4Day1MissionPlaybookView.jsx';
+import { Week4Day2MissionPlaybookView } from '../components/playbook/week4/Week4Day2MissionPlaybookView.jsx';
 import {
   getCurriculumDataSource,
   getDayContentBundle,
@@ -210,6 +211,13 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
     && (weekSlug === 'week-4' || selectedWeek?.week?.weekNumber === 4)
     && playbookDayNumber === 1;
 
+  const isInternWeek4Day2 =
+    userRole === 'intern'
+    && entryWeek >= 4
+    && entrySegment === 1
+    && (weekSlug === 'week-4' || selectedWeek?.week?.weekNumber === 4)
+    && playbookDayNumber === 2;
+
   const showWeek2MissionFirst =
     isInternWeek2
     && !showCurriculum
@@ -240,12 +248,19 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
     && !browseAllDays
     && Boolean(participantId);
 
+  const showWeek4Day2MissionFirst =
+    isInternWeek4Day2
+    && !showCurriculum
+    && !browseAllDays
+    && Boolean(participantId);
+
   const showMissionFirst =
     showWeek2MissionFirst
     || showWeek3Day3MissionFirst
     || showWeek3Day4MissionFirst
     || showWeek3Day5MissionFirst
-    || showWeek4Day1MissionFirst;
+    || showWeek4Day1MissionFirst
+    || showWeek4Day2MissionFirst;
 
   const resolvedPlaybookDay = participantId
     ? resolveWeek2PlaybookDay(participantId, playbookDayNumber)
@@ -334,12 +349,12 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
   function backToMissionView() {
     const params = new URLSearchParams(searchParams);
     params.delete('view');
-    if (isInternWeek3Day3 || isInternWeek3Day4 || isInternWeek3Day5 || isInternWeek4Day1) {
+    if (isInternWeek3Day3 || isInternWeek3Day4 || isInternWeek3Day5 || isInternWeek4Day1 || isInternWeek4Day2) {
       params.delete('mission');
-      params.set('week', isInternWeek4Day1 ? '4' : '3');
+      params.set('week', isInternWeek4Day1 || isInternWeek4Day2 ? '4' : '3');
       params.set(
         'day',
-        isInternWeek4Day1 ? '1' : isInternWeek3Day5 ? '5' : isInternWeek3Day4 ? '4' : '3',
+        isInternWeek4Day2 ? '2' : isInternWeek4Day1 ? '1' : isInternWeek3Day5 ? '5' : isInternWeek3Day4 ? '4' : '3',
       );
     } else if (participantId) {
       const day = resolveWeek2PlaybookDay(participantId, playbookDayNumber);
@@ -484,6 +499,18 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
         onProgress={() => setRefreshKey((k) => k + 1)}
       />
     );
+  } else if (showWeek4Day2MissionFirst && participantId && bundle) {
+    dayContent = (
+      <Week4Day2MissionPlaybookView
+        bundle={bundle}
+        participantId={participantId}
+        programWeek={entryWeek}
+        focusReflection={focusReflection}
+        pendingReflection={pendingTodayReflection}
+        onOpenCurriculum={openCurriculumView}
+        onProgress={() => setRefreshKey((k) => k + 1)}
+      />
+    );
   } else if (showWeek2MissionFirst && participantId) {
     dayContent = (
       <Week2MissionPlaybookView
@@ -519,7 +546,7 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
         />
       ) : (
         <>
-          {(isInternWeek2 || isInternWeek3Day3 || isInternWeek3Day4 || isInternWeek3Day5 || isInternWeek4Day1) && showCurriculum ? (
+          {(isInternWeek2 || isInternWeek3Day3 || isInternWeek3Day4 || isInternWeek3Day5 || isInternWeek4Day1 || isInternWeek4Day2) && showCurriculum ? (
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-spike/15 bg-spike/5 px-4 py-3">
               <p className="text-sm text-slate-700">
                 Coach session notes — slides and activities for today&apos;s facilitation.

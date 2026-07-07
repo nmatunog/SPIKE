@@ -6096,187 +6096,321 @@
         {
           "dayNumber": 2,
           "programDay": 17,
-          "title": "Day 17 — Traditional Life Licensing Prep",
-          "theme": "Trad Life",
+          "title": "Day 17 — Talent Growth Engine",
+          "theme": "Talent Growth Engine",
           "durationHours": 4,
-          "status": "draft",
+          "status": "published",
           "learningObjectives": [
-            "Master high-yield Traditional Life exam concepts",
-            "Complete timed Trad Life drill sets with score tracking",
-            "Use error logs to target weak domains",
-            "Pair teach difficult concepts in study squads"
+            "Discover the capacity limits of the solo-advisor model",
+            "Shift from an Advisor Engine to a Growth Engine mindset",
+            "Set a bold 5× challenge to guide venture redesign",
+            "Redesign one stage of the Growth Engine Canvas for 5× impact",
+            "Understand leadership as the multiplier that scales the engine"
           ],
           "decks": [
             {
-              "title": "Program Coach Deck 01 — Trad Life Exam Map",
-              "purpose": "Syllabus alignment.",
-              "slideCount": 5,
+              "id": "presentation-w4-d2-deck-01",
+              "title": "Program Coach Deck 01 — Talent Growth Engine",
+              "purpose": "How can we grow 5× faster without working 5× harder?",
+              "slideCount": 13,
+              "status": "published",
+              "pptxUrl": null,
+              "pdfUrl": "/api/coach/faculty-deck/segment-1/week-4/day-2/faculty-deck-01.pdf",
               "slides": [
                 {
-                  "title": "Day 17 — Trad Life Deep Dive",
-                  "purpose": "Exam structure and timing."
+                  "number": 1,
+                  "title": "Scene 1 — One Advisor Can Execute. But Can One Advisor Build an Enterprise?",
+                  "summary": "If your venture succeeds, what happens next?",
+                  "facilitatorNotes": "Discussion: Can one advisor build a great venture and enterprise alone?",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-2/deck-01/slide-01.png"
                 },
                 {
-                  "title": "High-Yield Topic Clusters",
-                  "purpose": "Policy types, provisions, taxes overview."
+                  "number": 2,
+                  "title": "Scene 2 — Every Engine Has a Capacity. What's Ours?",
+                  "summary": "Time, people, geography, skills, energy, opportunity — where does it get constrained?",
+                  "facilitatorNotes": "Reality check: successful advisors hit a ceiling because of capacity, not skill.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-2/deck-01/slide-02.png"
                 },
                 {
-                  "title": "Trap Questions & Distractors",
-                  "purpose": "How exams test precision."
+                  "number": 3,
+                  "title": "Scene 3 — So How Do Great Ventures Break Capacity Limits?",
+                  "summary": "If capacity is the problem, what should we redesign?",
+                  "facilitatorNotes": "Brainstorm four areas to redesign the system — not just work harder.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-2/deck-01/slide-03.png"
                 },
                 {
-                  "title": "Study Sprint Norms",
-                  "purpose": "Pomodoro, error log, teach-back."
+                  "number": 4,
+                  "title": "Scene 4 — What Levers Give Us the Biggest Breakthrough?",
+                  "summary": "What could we redesign to multiply capacity?",
+                  "facilitatorNotes": "Brainstorm together — no wrong answers. Identify high-leverage levers.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-2/deck-01/slide-04.png"
                 },
                 {
-                  "title": "Deck 01 Close — Drill Launch",
-                  "purpose": ""
+                  "number": 5,
+                  "title": "Scene 8 — Redesign One Stage. Make It 5× Better.",
+                  "summary": "Pick one Growth Engine stage. Map bottleneck, design solution, define impact. 20 min squad work.",
+                  "facilitatorNotes": "Workshop launch — squads open Playbook mission for four-field capture.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-2/deck-01/slide-05.png"
+                },
+                {
+                  "number": 6,
+                  "title": "Scene 6 — Every Venture Runs on an Engine",
+                  "summary": "Today: Advisor → Prospects → Clients → Revenue. Tomorrow: Advisor → ??? → Enterprise.",
+                  "facilitatorNotes": "We are designing the next engine — not improving the current one.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-2/deck-01/slide-06.png"
+                },
+                {
+                  "number": 7,
+                  "title": "Scene 5 — Let's Set Our 5× Challenge",
+                  "summary": "What would 5× look like for your venture?",
+                  "facilitatorNotes": "Think big. Record 5× challenge in Playbook mission.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-2/deck-01/slide-07.png"
+                },
+                {
+                  "number": 8,
+                  "title": "Scene 9 — Present Your Redesigned Stage",
+                  "summary": "3 min per squad: stage, bottleneck, solution, expected impact.",
+                  "facilitatorNotes": "Present → Listen → Connect. Great solutions emerge when we share.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-2/deck-01/slide-08.png"
+                },
+                {
+                  "number": 9,
+                  "title": "Scene 7 — The Growth Engine Canvas",
+                  "summary": "Attract → Engage → Qualify → License → Activate → Produce → Multiply → Lead.",
+                  "facilitatorNotes": "Discuss: which stages can technology and AI improve most?",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-2/deck-01/slide-09.png"
+                },
+                {
+                  "number": 10,
+                  "title": "Scene 10 — Connect the Pieces. Build the Engine.",
+                  "summary": "From awareness to enterprise — one seamless engine enabled by technology, data, automation, AI.",
+                  "facilitatorNotes": "How do our pieces work together for continuous momentum and 5× impact?",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-2/deck-01/slide-10.png"
+                },
+                {
+                  "number": 11,
+                  "title": "Scene 11 — Great Engines Need Great Leaders",
+                  "summary": "Growth Engine → More Advisors → More Leaders → Greater Capacity.",
+                  "facilitatorNotes": "Leadership is the multiplier. Systems create consistency; leaders create momentum.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-2/deck-01/slide-11.png"
+                },
+                {
+                  "number": 12,
+                  "title": "Scene 12 — Leadership Creates Leverage",
+                  "summary": "1 advisor × 4 clients = ₱40K. 5 advisors × 20 clients = ₱200K. Leadership multiplies production.",
+                  "facilitatorNotes": "If leadership creates more value, how should a venture reward it?",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-2/deck-01/slide-12.png"
+                },
+                {
+                  "number": 13,
+                  "title": "Scene close",
+                  "summary": "",
+                  "facilitatorNotes": "Transition to Day 18 reflection.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-2/deck-01/slide-13.png"
                 }
-              ],
-              "status": "draft"
-            },
-            {
-              "title": "Program Coach Deck 02 — Trad Life Drill Workshop",
-              "purpose": "Facilitated practice.",
-              "slideCount": 5,
-              "slides": [
-                {
-                  "title": "Drill Set A — Fundamentals",
-                  "purpose": "20 questions timed."
-                },
-                {
-                  "title": "Error Log Review",
-                  "purpose": "Public anonymized misses."
-                },
-                {
-                  "title": "Teach-Back Round",
-                  "purpose": "Squad explains missed concept."
-                },
-                {
-                  "title": "Drill Set B — Application",
-                  "purpose": "Scenario questions."
-                },
-                {
-                  "title": "Day 17 Deliverables",
-                  "purpose": "Score sheet + error log."
-                }
-              ],
-              "status": "draft"
+              ]
             }
           ],
           "sessionFlow": [
             {
-              "time": "0:00–0:25",
-              "activity": "Deck 01 — Exam map",
-              "notes": ""
+              "time": "0:00–0:15",
+              "activity": "Deck 01 Scenes 1–3 — One advisor vs enterprise, capacity limits, redesign thinking",
+              "notes": "Discussion: Can one advisor build a great venture and enterprise alone?"
             },
             {
-              "time": "0:25–1:05",
-              "activity": "Timed drill set A + error log",
-              "notes": ""
+              "time": "0:15–0:30",
+              "activity": "Deck 01 Scenes 4 & 6 — Brainstorm levers, Advisor Engine → Growth Engine",
+              "notes": "Poll room on capacity constraints. Walk Today vs Tomorrow flow."
             },
             {
-              "time": "1:05–1:15",
+              "time": "0:30–0:45",
+              "activity": "Deck 01 Scenes 5 & 7 — 5× Challenge + Growth Engine Canvas",
+              "notes": "Set bold 5× vision. Introduce 8 stages. Discuss where AI/tech helps most."
+            },
+            {
+              "time": "0:45–1:10",
+              "activity": "Workshop Scene 8 — Redesign one stage (squad)",
+              "notes": "20 min squad work. Four inputs: stage, bottleneck, solution, impact."
+            },
+            {
+              "time": "1:10–1:20",
               "activity": "Break",
               "notes": ""
             },
             {
-              "time": "1:15–1:55",
-              "activity": "Teach-back + drill set B",
-              "notes": ""
+              "time": "1:20–1:50",
+              "activity": "Scene 9 — Squad stage presentations (3 min each)",
+              "notes": "Present → Listen → Connect. Capture themes on board."
             },
             {
-              "time": "1:55–2:30",
-              "activity": "Weak domain clinic",
-              "notes": "Program coach targets top 3 missed themes."
+              "time": "1:50–2:15",
+              "activity": "Scenes 10–12 — Connect the engine, leadership multiplier",
+              "notes": "Walk full 10-stage engine. Leadership leverage math."
             },
             {
-              "time": "2:30–3:00",
-              "activity": "Study plan adjustment + reflection",
-              "notes": ""
+              "time": "2:15–2:30",
+              "activity": "Day 17 reflection",
+              "notes": "Leadership multiplier + what connects to tomorrow."
             }
           ],
           "activities": [
             {
-              "title": "Trad Life Timed Drill A",
-              "durationMinutes": 40,
+              "title": "5x Challenge — Set Your Vision",
+              "durationMinutes": 20,
               "instructions": [
-                "Individual timed set",
-                "Log score and misses"
+                "Discuss capacity limits from Scenes 1–4 — what slows your venture from growing more?",
+                "Set a bold 5x challenge: what would 5× impact look like if you break today's limits?",
+                "Record your 5x metric and target in the Playbook mission"
+              ],
+              "materials": [
+                "Deck 01 Scene 5"
               ],
               "outputs": [
-                "Drill A score sheet"
+                "5x challenge statement"
               ],
-              "debriefQuestions": []
+              "debriefQuestions": [
+                "What would 5× impact look like if we break today's limits?"
+              ]
             },
             {
-              "title": "Concept Teach-Back",
+              "title": "Growth Engine Stage Redesign",
               "durationMinutes": 25,
               "instructions": [
-                "Squad teaches missed questions"
+                "Review the 8-stage Growth Engine Canvas with your squad",
+                "Pick one stage to own and redesign",
+                "Map the current bottleneck, design your new solution, and define expected impact",
+                "Complete the four fields in the Playbook mission — brainstorm offline with your squad"
+              ],
+              "materials": [
+                "Deck 01 Scenes 7–8",
+                "Growth Engine Canvas"
               ],
               "outputs": [
-                "Teach-back notes"
+                "Redesigned stage summary",
+                "Blueprint Talent Growth Engine update"
               ],
-              "debriefQuestions": []
+              "debriefQuestions": [
+                "What's the biggest constraint in your stage — and how will your solution break through it?"
+              ]
             },
             {
-              "title": "Trad Life Timed Drill B",
-              "durationMinutes": 40,
+              "title": "Squad Present & Connect the Engine",
+              "durationMinutes": 30,
               "instructions": [
-                "Scenario-heavy set",
-                "Compare to Drill A"
+                "Each squad presents in 3 minutes: stage chosen, bottleneck, solution, expected impact",
+                "Listen for how stages connect — build on each other's ideas",
+                "Name how leadership multiplies your engine (Scenes 11–12)"
+              ],
+              "materials": [
+                "Deck 01 Scenes 9–10"
               ],
               "outputs": [
-                "Drill B score sheet",
-                "Error log v1"
+                "Squad stage presentation",
+                "Leadership multiplier note"
               ],
-              "debriefQuestions": []
+              "debriefQuestions": [
+                "How do our pieces work together to create continuous momentum?",
+                "If leadership is the multiplier, how many leaders does your engine need?"
+              ]
             }
           ],
           "worksheets": [
-            "Trad Life error log",
-            "Formula reference sheet"
+            "Growth Engine Stage Redesign"
           ],
-          "assessments": [
-            "Drill performance check (benchmark TBD)"
-          ],
+          "assessments": [],
           "reflections": [
-            "Day 17 study habits reflection"
+            "Day 17 — Leadership multiplier reflection"
           ],
-          "surveys": [
-            "Day 17 Trad Life confidence survey"
-          ],
+          "surveys": [],
           "prepChecklist": [
-            "Load question bank",
-            "Ensure quiet drill environment",
-            "Calculator policy per exam rules"
+            "Load Deck 01 (faculty-deck-01.pdf) — 12 scenes + workshop visuals",
+            "Confirm Playbook Week 4 Day 2 mission is live for interns",
+            "Brief mentors: morning is capacity + engine shift; afternoon is stage redesign workshop + squad share"
           ],
           "debriefQuestions": [
-            "Top 3 weak domains cohort-wide?",
-            "Who needs tutoring dyad?",
-            "Is error log being used honestly?"
+            "Where is our bottleneck right now?",
+            "Which lever gives the biggest breakthrough?",
+            "How do our redesigned stages connect into one engine?",
+            "If leadership is the multiplier, how many leaders does your engine need?"
           ],
           "commonPitfalls": [
-            "Memorizing without understanding scenarios",
-            "Skipping error log"
+            "Treating this as hiring more people instead of redesigning the system",
+            "Picking a stage without naming a specific bottleneck",
+            "Presenting features instead of expected impact"
           ],
           "coachingTips": [
-            "Celebrate improvement not just absolute score"
+            "Celebrate bold 5× visions — constrain later, dream first",
+            "Push squads to own one stage deeply rather than skimming all eight"
           ],
           "mentorGuide": {
-            "theme": "Study Discipline",
-            "coachingObjective": "Coach exam habits.",
+            "theme": "Talent Growth Engine",
+            "title": "Mentor Guide — Day 17 — Talent Growth Engine",
+            "coachingObjective": "Coach squads through capacity thinking, stage redesign, and leadership leverage.",
+            "timing": {
+              "preSession": "Review facilitator guide and Deck 01 speaker flow",
+              "duringSession": "Circulate during stage redesign workshop — push for specific bottlenecks",
+              "postSession": "Review squad redesigned stages in Playbook mission"
+            },
+            "discussionQuestions": [
+              "Where is the squad's biggest capacity limit today?",
+              "Is the redesigned solution specific enough to create 5× lift?",
+              "How do squad stages connect into one engine?"
+            ],
             "observationAreas": [
-              "Focus during drills",
-              "Teach-back clarity",
-              "Resilience after low scores"
+              "Squad picks a stage with clear ownership",
+              "Bottleneck is named concretely — not generic",
+              "Expected impact is measurable or observable"
             ]
           },
           "expectedOutputs": [
-            "Trad Life drill scores",
-            "Error log v1"
-          ]
+            "5× challenge statement",
+            "Redesigned Growth Engine stage",
+            "Blueprint Talent Growth Engine update"
+          ],
+          "dayId": "day-segment-1-week-4-day-2",
+          "contentPath": "/content/segment-1/week-4/day-2",
+          "playbookPath": "/playbook?segment=1&week=4&day=2",
+          "sessions": [
+            {
+              "sessionNumber": 1,
+              "title": "Day 17 — Talent Growth Engine",
+              "durationMinutes": 240,
+              "presentationIds": [
+                "presentation-w4-d2-deck-01"
+              ],
+              "activityIds": [
+                "activity-w4-d2-01",
+                "activity-w4-d2-02",
+                "activity-w4-d2-03"
+              ],
+              "worksheetIds": [
+                "worksheet-w4-d2-01"
+              ],
+              "assessmentIds": [
+                "assessment-w4-d2"
+              ],
+              "reflectionIds": [
+                "reflection-w4-d2"
+              ],
+              "surveyIds": [
+                "survey-w4-d2"
+              ]
+            }
+          ],
+          "evaluations": []
         },
         {
           "dayNumber": 3,

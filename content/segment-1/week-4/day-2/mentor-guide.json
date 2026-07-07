@@ -1,32 +1,44 @@
 {
   "dayId": "day-segment-1-week-4-day-2",
-  "theme": "Study Discipline",
-  "title": "Mentor Guide — Day 17 — Traditional Life Licensing Prep",
-  "coachingObjective": "Coach exam habits.",
+  "theme": "Talent Growth Engine",
+  "title": "Mentor Guide — Day 17 — Talent Growth Engine",
+  "coachingObjective": "Coach squads through capacity thinking, stage redesign, and leadership leverage.",
   "timing": {
-    "preSession": "Review facilitator guide and deck speaker notes",
-    "duringSession": "Circulate during squad activities",
-    "postSession": "Complete squad weekly review snapshot"
+    "preSession": "Review facilitator guide and Deck 01 speaker flow",
+    "duringSession": "Circulate during stage redesign workshop — push for specific bottlenecks",
+    "postSession": "Review squad redesigned stages in Playbook mission"
   },
   "discussionQuestions": [
-    "Top 3 weak domains cohort-wide?",
-    "Who needs tutoring dyad?",
-    "Is error log being used honestly?"
+    "Where is the squad's biggest capacity limit today?",
+    "Is the redesigned solution specific enough to create 5× lift?",
+    "How do squad stages connect into one engine?"
   ],
   "observationAreas": [
-    "Focus during drills",
-    "Teach-back clarity",
-    "Resilience after low scores"
+    "Squad picks a stage with clear ownership",
+    "Bottleneck is named concretely — not generic",
+    "Expected impact is measurable or observable"
   ],
   "coachingTips": [
-    "Celebrate improvement not just absolute score"
+    "Ask 'what would 5× look like?' before accepting small goals",
+    "Connect stage redesign to Blueprint Talent Growth Engine fields"
   ],
-  "warningSigns": [],
-  "reflectionPrompts": [],
+  "warningSigns": [
+    "Squad copies generic ideas from the deck without tailoring to their venture",
+    "Solution is 'hire more people' without a system design"
+  ],
+  "reflectionPrompts": [
+    "If leadership is the multiplier, how many leaders does your engine need?"
+  ],
   "expectedOutcomes": [
-    "Trad Life drill scores",
-    "Error log v1"
+    "5× challenge statement",
+    "Redesigned Growth Engine stage",
+    "Leadership multiplier reflection"
   ],
-  "activityCoachingNotes": [],
+  "activityCoachingNotes": [
+    {
+      "activityId": "activity-w4-d2-02",
+      "notes": "Ensure each squad owns one canvas stage. Four fields only — keep it simple."
+    }
+  ],
   "debriefWithFaculty": []
 }

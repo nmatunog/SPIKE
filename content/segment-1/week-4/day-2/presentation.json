@@ -2,60 +2,158 @@
   "presentation": {
     "id": "presentation-w4-d2-deck-01",
     "dayId": "day-segment-1-week-4-day-2",
-    "title": "Program Coach Deck 01 — Trad Life Exam Map",
+    "title": "Program Coach Deck 01 — Talent Growth Engine",
+    "subtitle": "How can we grow 5× faster without working 5× harder?",
     "slideIds": [
       "slide-w4-d2-dk1-01",
       "slide-w4-d2-dk1-02",
       "slide-w4-d2-dk1-03",
       "slide-w4-d2-dk1-04",
-      "slide-w4-d2-dk1-05"
-    ]
+      "slide-w4-d2-dk1-05",
+      "slide-d2-01-06",
+      "slide-d2-01-07",
+      "slide-d2-01-08",
+      "slide-d2-01-09",
+      "slide-d2-01-10",
+      "slide-d2-01-11",
+      "slide-d2-01-12",
+      "slide-d2-01-13"
+    ],
+    "sourceFile": "faculty-deck-01.pdf",
+    "sourcePath": "content/segment-1/week-4/day-2/source/faculty-deck-01.pdf",
+    "importedAt": "2026-07-07T07:08:06.692Z",
+    "pdfUrl": "/api/coach/faculty-deck/segment-1/week-4/day-2/faculty-deck-01.pdf"
   },
   "slides": [
     {
       "id": "slide-w4-d2-dk1-01",
       "presentationId": "presentation-w4-d2-deck-01",
-      "title": "Day 17 — Trad Life Deep Dive",
-      "body": "Exam structure and timing.",
-      "speakerNotes": "Syllabus alignment.",
+      "sortOrder": 1,
+      "title": "Scene 1 — One Advisor Can Execute. But Can One Advisor Build an Enterprise?",
+      "body": "If your venture succeeds, what happens next?",
+      "speakerNotes": "Discussion: Can one advisor build a great venture and enterprise alone?",
       "discussionQuestions": [],
-      "sortOrder": 1
+      "imageUrl": "/content/segment-1/week-4/day-2/deck-01/slide-01.png"
     },
     {
       "id": "slide-w4-d2-dk1-02",
       "presentationId": "presentation-w4-d2-deck-01",
-      "title": "High-Yield Topic Clusters",
-      "body": "Policy types, provisions, taxes overview.",
-      "speakerNotes": "Syllabus alignment.",
+      "sortOrder": 2,
+      "title": "Scene 2 — Every Engine Has a Capacity. What's Ours?",
+      "body": "Time, people, geography, skills, energy, opportunity — where does it get constrained?",
+      "speakerNotes": "Reality check: successful advisors hit a ceiling because of capacity, not skill.",
       "discussionQuestions": [],
-      "sortOrder": 2
+      "imageUrl": "/content/segment-1/week-4/day-2/deck-01/slide-02.png"
     },
     {
       "id": "slide-w4-d2-dk1-03",
       "presentationId": "presentation-w4-d2-deck-01",
-      "title": "Trap Questions & Distractors",
-      "body": "How exams test precision.",
-      "speakerNotes": "Syllabus alignment.",
+      "sortOrder": 3,
+      "title": "Scene 3 — So How Do Great Ventures Break Capacity Limits?",
+      "body": "If capacity is the problem, what should we redesign?",
+      "speakerNotes": "Brainstorm four areas to redesign the system — not just work harder.",
       "discussionQuestions": [],
-      "sortOrder": 3
+      "imageUrl": "/content/segment-1/week-4/day-2/deck-01/slide-03.png"
     },
     {
       "id": "slide-w4-d2-dk1-04",
       "presentationId": "presentation-w4-d2-deck-01",
-      "title": "Study Sprint Norms",
-      "body": "Pomodoro, error log, teach-back.",
-      "speakerNotes": "Syllabus alignment.",
+      "sortOrder": 4,
+      "title": "Scene 4 — What Levers Give Us the Biggest Breakthrough?",
+      "body": "What could we redesign to multiply capacity?",
+      "speakerNotes": "Brainstorm together — no wrong answers. Identify high-leverage levers.",
       "discussionQuestions": [],
-      "sortOrder": 4
+      "imageUrl": "/content/segment-1/week-4/day-2/deck-01/slide-04.png"
     },
     {
       "id": "slide-w4-d2-dk1-05",
       "presentationId": "presentation-w4-d2-deck-01",
-      "title": "Deck 01 Close — Drill Launch",
-      "body": "Deck 01 Close — Drill Launch",
-      "speakerNotes": "Syllabus alignment.",
+      "sortOrder": 5,
+      "title": "Scene 8 — Redesign One Stage. Make It 5× Better.",
+      "body": "Pick one Growth Engine stage. Map bottleneck, design solution, define impact. 20 min squad work.",
+      "speakerNotes": "Workshop launch — squads open Playbook mission for four-field capture.",
       "discussionQuestions": [],
-      "sortOrder": 5
+      "imageUrl": "/content/segment-1/week-4/day-2/deck-01/slide-05.png"
+    },
+    {
+      "id": "slide-d2-01-06",
+      "presentationId": "presentation-w4-d2-deck-01",
+      "sortOrder": 6,
+      "title": "Scene 6 — Every Venture Runs on an Engine",
+      "body": "Today: Advisor → Prospects → Clients → Revenue. Tomorrow: Advisor → ??? → Enterprise.",
+      "speakerNotes": "We are designing the next engine — not improving the current one.",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-4/day-2/deck-01/slide-06.png"
+    },
+    {
+      "id": "slide-d2-01-07",
+      "presentationId": "presentation-w4-d2-deck-01",
+      "sortOrder": 7,
+      "title": "Scene 5 — Let's Set Our 5× Challenge",
+      "body": "What would 5× look like for your venture?",
+      "speakerNotes": "Think big. Record 5× challenge in Playbook mission.",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-4/day-2/deck-01/slide-07.png"
+    },
+    {
+      "id": "slide-d2-01-08",
+      "presentationId": "presentation-w4-d2-deck-01",
+      "sortOrder": 8,
+      "title": "Scene 9 — Present Your Redesigned Stage",
+      "body": "3 min per squad: stage, bottleneck, solution, expected impact.",
+      "speakerNotes": "Present → Listen → Connect. Great solutions emerge when we share.",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-4/day-2/deck-01/slide-08.png"
+    },
+    {
+      "id": "slide-d2-01-09",
+      "presentationId": "presentation-w4-d2-deck-01",
+      "sortOrder": 9,
+      "title": "Scene 7 — The Growth Engine Canvas",
+      "body": "Attract → Engage → Qualify → License → Activate → Produce → Multiply → Lead.",
+      "speakerNotes": "Discuss: which stages can technology and AI improve most?",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-4/day-2/deck-01/slide-09.png"
+    },
+    {
+      "id": "slide-d2-01-10",
+      "presentationId": "presentation-w4-d2-deck-01",
+      "sortOrder": 10,
+      "title": "Scene 10 — Connect the Pieces. Build the Engine.",
+      "body": "From awareness to enterprise — one seamless engine enabled by technology, data, automation, AI.",
+      "speakerNotes": "How do our pieces work together for continuous momentum and 5× impact?",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-4/day-2/deck-01/slide-10.png"
+    },
+    {
+      "id": "slide-d2-01-11",
+      "presentationId": "presentation-w4-d2-deck-01",
+      "sortOrder": 11,
+      "title": "Scene 11 — Great Engines Need Great Leaders",
+      "body": "Growth Engine → More Advisors → More Leaders → Greater Capacity.",
+      "speakerNotes": "Leadership is the multiplier. Systems create consistency; leaders create momentum.",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-4/day-2/deck-01/slide-11.png"
+    },
+    {
+      "id": "slide-d2-01-12",
+      "presentationId": "presentation-w4-d2-deck-01",
+      "sortOrder": 12,
+      "title": "Scene 12 — Leadership Creates Leverage",
+      "body": "1 advisor × 4 clients = ₱40K. 5 advisors × 20 clients = ₱200K. Leadership multiplies production.",
+      "speakerNotes": "If leadership creates more value, how should a venture reward it?",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-4/day-2/deck-01/slide-12.png"
+    },
+    {
+      "id": "slide-d2-01-13",
+      "presentationId": "presentation-w4-d2-deck-01",
+      "sortOrder": 13,
+      "title": "Scene close",
+      "body": "",
+      "speakerNotes": "Transition to Day 18 reflection.",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-4/day-2/deck-01/slide-13.png"
     }
   ]
 }

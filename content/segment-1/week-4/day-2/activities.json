@@ -3,47 +3,67 @@
     {
       "id": "activity-w4-d2-01",
       "dayId": "day-segment-1-week-4-day-2",
-      "title": "Trad Life Timed Drill A",
-      "durationMinutes": 40,
-      "materials": [],
+      "title": "5x Challenge — Set Your Vision",
+      "durationMinutes": 20,
+      "materials": [
+        "Deck 01 Scene 5"
+      ],
       "instructions": [
-        "Individual timed set",
-        "Log score and misses"
+        "Discuss capacity limits from Scenes 1–4 — what slows your venture from growing more?",
+        "Set a bold 5x challenge: what would 5× impact look like if you break today's limits?",
+        "Record your 5x metric and target in the Playbook mission"
       ],
       "outputs": [
-        "Drill A score sheet"
+        "5x challenge statement"
       ],
-      "debriefQuestions": []
+      "debriefQuestions": [
+        "What would 5× impact look like if we break today's limits?"
+      ]
     },
     {
       "id": "activity-w4-d2-02",
       "dayId": "day-segment-1-week-4-day-2",
-      "title": "Concept Teach-Back",
+      "title": "Growth Engine Stage Redesign",
       "durationMinutes": 25,
-      "materials": [],
+      "materials": [
+        "Deck 01 Scenes 7–8",
+        "Growth Engine Canvas"
+      ],
       "instructions": [
-        "Squad teaches missed questions"
+        "Review the 8-stage Growth Engine Canvas with your squad",
+        "Pick one stage to own and redesign",
+        "Map the current bottleneck, design your new solution, and define expected impact",
+        "Complete the four fields in the Playbook mission — brainstorm offline with your squad"
       ],
       "outputs": [
-        "Teach-back notes"
+        "Redesigned stage summary",
+        "Blueprint Talent Growth Engine update"
       ],
-      "debriefQuestions": []
+      "debriefQuestions": [
+        "What's the biggest constraint in your stage — and how will your solution break through it?"
+      ]
     },
     {
       "id": "activity-w4-d2-03",
       "dayId": "day-segment-1-week-4-day-2",
-      "title": "Trad Life Timed Drill B",
-      "durationMinutes": 40,
-      "materials": [],
+      "title": "Squad Present & Connect the Engine",
+      "durationMinutes": 30,
+      "materials": [
+        "Deck 01 Scenes 9–10"
+      ],
       "instructions": [
-        "Scenario-heavy set",
-        "Compare to Drill A"
+        "Each squad presents in 3 minutes: stage chosen, bottleneck, solution, expected impact",
+        "Listen for how stages connect — build on each other's ideas",
+        "Name how leadership multiplies your engine (Scenes 11–12)"
       ],
       "outputs": [
-        "Drill B score sheet",
-        "Error log v1"
+        "Squad stage presentation",
+        "Leadership multiplier note"
       ],
-      "debriefQuestions": []
+      "debriefQuestions": [
+        "How do our pieces work together to create continuous momentum?",
+        "If leadership is the multiplier, how many leaders does your engine need?"
+      ]
     }
   ]
 }

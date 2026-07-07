@@ -3,26 +3,29 @@
   "segmentId": "segment-1",
   "weekId": "week-segment-1-4",
   "dayNumber": 2,
-  "title": "Day 17 — Traditional Life Licensing Prep",
-  "theme": "Trad Life",
+  "title": "Day 17 — Talent Growth Engine",
+  "theme": "Talent Growth Engine",
+  "guidingQuestion": "How can we grow 5× faster without working 5× harder?",
   "durationHours": 4,
   "learningObjectives": [
-    "Master high-yield Traditional Life exam concepts",
-    "Complete timed Trad Life drill sets with score tracking",
-    "Use error logs to target weak domains",
-    "Pair teach difficult concepts in study squads"
+    "Discover the capacity limits of the solo-advisor model",
+    "Shift from an Advisor Engine to a Growth Engine mindset",
+    "Set a bold 5× challenge to guide venture redesign",
+    "Redesign one stage of the Growth Engine Canvas for 5× impact",
+    "Understand leadership as the multiplier that scales the engine"
   ],
   "expectedOutputs": [
-    "Trad Life drill scores",
-    "Error log v1"
+    "5× challenge statement",
+    "Redesigned Growth Engine stage",
+    "Blueprint Talent Growth Engine update"
   ],
   "portfolioDeliverables": [
+    "portfolio-advisor-startup",
     "portfolio-professional-development"
   ],
   "businessPlanIntegration": "bp-chapter-4",
   "presentations": [
-    "presentation-w4-d2-deck-01",
-    "presentation-w4-d2-deck-02"
+    "presentation-w4-d2-deck-01"
   ],
   "activities": [
     "activity-w4-d2-01",
@@ -30,8 +33,7 @@
     "activity-w4-d2-03"
   ],
   "worksheets": [
-    "worksheet-w4-d2-01",
-    "worksheet-w4-d2-02"
+    "worksheet-w4-d2-01"
   ],
   "assessments": [
     "assessment-w4-d2"

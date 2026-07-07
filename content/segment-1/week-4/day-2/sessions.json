@@ -4,11 +4,10 @@
       "id": "session-w4-d2-full",
       "dayId": "day-segment-1-week-4-day-2",
       "sessionNumber": 1,
-      "title": "Day 17 — Traditional Life Licensing Prep",
+      "title": "Day 17 — Talent Growth Engine",
       "durationMinutes": 240,
       "presentationIds": [
-        "presentation-w4-d2-deck-01",
-        "presentation-w4-d2-deck-02"
+        "presentation-w4-d2-deck-01"
       ],
       "activityIds": [
         "activity-w4-d2-01",
@@ -16,8 +15,7 @@
         "activity-w4-d2-03"
       ],
       "worksheetIds": [
-        "worksheet-w4-d2-01",
-        "worksheet-w4-d2-02"
+        "worksheet-w4-d2-01"
       ],
       "assessmentIds": [
         "assessment-w4-d2"
