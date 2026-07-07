@@ -32,6 +32,8 @@ import {
 import { useInternWorkHydration } from '../hooks/useInternWorkHydration.js';
 import { useCohortProgramDay } from '../hooks/useCohortProgramDay.js';
 import { listPendingPlaybookReflections } from '../lib/pendingPlaybookReflectionService.js';
+import { isSuperuserInternPreviewParticipantId } from '../lib/superuserInternPreviewData.js';
+import { WEEK4_DAY2_ID } from '../lib/week4Day2/missionConstants.js';
 import { PlaybookDayClosingReflectionBlock } from '../components/playbook/PlaybookDayClosingReflectionBlock.jsx';
 import { PlaybookReflectionNudge } from '../components/playbook/PlaybookReflectionNudge.jsx';
 
@@ -206,14 +208,12 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
 
   const isInternWeek4Day1 =
     userRole === 'intern'
-    && entryWeek >= 4
     && entrySegment === 1
     && (weekSlug === 'week-4' || selectedWeek?.week?.weekNumber === 4)
     && playbookDayNumber === 1;
 
   const isInternWeek4Day2 =
     userRole === 'intern'
-    && entryWeek >= 4
     && entrySegment === 1
     && (weekSlug === 'week-4' || selectedWeek?.week?.weekNumber === 4)
     && playbookDayNumber === 2;
@@ -371,6 +371,23 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
     bundle = null;
   }
 
+  const isWeek4Day2Bundle = bundle?.day?.id === WEEK4_DAY2_ID;
+  const showWeek4Day2MissionResolved =
+    (showWeek4Day2MissionFirst || isWeek4Day2Bundle)
+    && userRole === 'intern'
+    && !showCurriculum
+    && !browseAllDays
+    && Boolean(participantId);
+
+  useEffect(() => {
+    if (!isSuperuserInternPreviewParticipantId(participantId)) return;
+    if (!isWeek4Day2Bundle) return;
+    if (!showCurriculum) return;
+    const params = new URLSearchParams(searchParams);
+    params.delete('view');
+    setSearchParams(params, { replace: true });
+  }, [participantId, isWeek4Day2Bundle, showCurriculum, searchParams, setSearchParams]);
+
   function syncPlaybookQuery(segment, week, day) {
     const params = new URLSearchParams(searchParams);
     params.set('segment', String(segment));
@@ -499,7 +516,7 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
         onProgress={() => setRefreshKey((k) => k + 1)}
       />
     );
-  } else if (showWeek4Day2MissionFirst && participantId && bundle) {
+  } else if (showWeek4Day2MissionResolved && participantId && bundle) {
     dayContent = (
       <Week4Day2MissionPlaybookView
         bundle={bundle}
