@@ -1,53 +1,54 @@
 {
   "dayId": "day-segment-1-week-4-day-3",
-  "title": "Facilitator Guide — Day 18 — VUL Concepts & Licensing Prep",
+  "title": "Facilitator Guide — Day 18 — Build the Business Engine",
   "durationHours": 4,
   "prepChecklist": [
-    "Confirm fund fact sheet samples for study only",
-    "Reinforce no guaranteed return language"
+    "Load Deck 01 (faculty-deck-01.pdf) — 10 slides, Numbers Workshop",
+    "Confirm Playbook Business Engine worksheet fields are accessible",
+    "Brief mentors: morning is numbers narrative; afternoon is reverse-engineer workshop"
   ],
   "sessionFlow": [
     {
-      "time": "0:00–0:30",
-      "activity": "Deck 01 — VUL concepts",
-      "notes": "Use diagrams; avoid return illustrations."
+      "time": "0:00–0:20",
+      "activity": "Deck 01 Scenes 1–3 — Build the Engine, success in numbers, dream to habits",
+      "notes": "Numbers Workshop framing."
     },
     {
-      "time": "0:30–1:10",
-      "activity": "VUL timed drills",
-      "notes": ""
+      "time": "0:20–0:40",
+      "activity": "Deck 01 Scenes 4–5 — Dream Income Worksheet + 10-5-3-1-3 Business Engine",
+      "notes": "Introduce the repeatable system."
     },
     {
-      "time": "1:10–1:20",
+      "time": "0:40–1:00",
+      "activity": "Deck 01 Scenes 6–8 — Leadership Engine, Three Engines, Master/Multiply/Scale",
+      "notes": "Connect personal production to leadership leverage."
+    },
+    {
+      "time": "1:00–1:20",
       "activity": "Break",
       "notes": ""
     },
     {
-      "time": "1:20–2:00",
-      "activity": "Explain-to-a-friend rotations",
-      "notes": "Mentors score clarity."
+      "time": "1:20–2:15",
+      "activity": "Workshop Scenes 9–10 — Build Your Business Engine",
+      "notes": "Squads reverse-engineer annual goal to daily activities."
     },
     {
-      "time": "2:00–2:30",
-      "activity": "Fee disclosure roleplays",
-      "notes": ""
-    },
-    {
-      "time": "2:30–3:00",
-      "activity": "Combined error log review + reflection",
-      "notes": ""
+      "time": "2:15–2:30",
+      "activity": "Squad share + Day 18 reflection",
+      "notes": "Revenue + Leadership + Growth engine numbers."
     }
   ],
   "debriefQuestions": [
-    "Who can explain NAVPU simply?",
-    "Any tendency to oversell investment upside?",
-    "Combined weak areas for mock exam day?"
+    "Can participants reverse-engineer from income goal to daily activities?",
+    "Do their three engines connect into one enterprise story?",
+    "What shifts from Master to Multiply to Scale for their venture?"
   ],
   "commonPitfalls": [
-    "Confusing VUL with mutual funds only",
-    "Omitting charges in client explanations"
+    "Skipping weekly/daily breakdown — staying only at annual goals",
+    "Treating leadership income as separate from personal production"
   ],
   "coachingTips": [
-    "Record exemplar 60-second explanations (with consent)"
+    "Use the 10-5-3-1-3 model as the anchor for activity planning"
   ]
 }

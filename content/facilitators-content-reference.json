@@ -4,7 +4,7 @@
     "title": "Facilitators Content Reference",
     "subtitle": "Segment 1 — Weeks 1–4: Talks, Decks, Activities & Daily Flow",
     "version": "1.0.0",
-    "updatedAt": "2026-07-07",
+    "updatedAt": "2026-07-08",
     "audience": [
       "Program Coach",
       "Admin",
@@ -6415,10 +6415,10 @@
         {
           "dayNumber": 3,
           "programDay": 18,
-          "title": "Day 18 — VUL Concepts & Licensing Prep",
-          "theme": "VUL",
+          "title": "Day 18 — Build the Business Engine",
+          "theme": "Business Engine",
           "durationHours": 4,
-          "status": "draft",
+          "status": "published",
           "learningObjectives": [
             "Explain VUL mechanics: protection, investment funds, charges",
             "Compare Trad Life and VUL suitability factors without inappropriate recommendations",
@@ -6427,92 +6427,178 @@
           ],
           "decks": [
             {
-              "title": "Program Coach Deck 01 — VUL Mechanics",
-              "purpose": "Conceptual clarity.",
-              "slideCount": 5,
+              "id": "presentation-w4-d3-deck-01",
+              "title": "Program Coach Deck 01 — Build the Business Engine",
+              "purpose": "Turning your vision into a measurable business.",
+              "slideCount": 10,
+              "status": "published",
+              "pptxUrl": null,
+              "pdfUrl": "/api/coach/faculty-deck/segment-1/week-4/day-3/faculty-deck-01.pdf",
               "slides": [
                 {
-                  "title": "Day 18 — Variable Unit-Linked",
-                  "purpose": "Protection + investment wrapper."
+                  "number": 1,
+                  "title": "Build the Business Engine",
+                  "summary": "Every successful entrepreneur knows their numbers.",
+                  "facilitatorNotes": "Numbers Workshop — Vision, Systems, People, Process, Growth.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-3/deck-01/slide-01.png"
                 },
                 {
-                  "title": "Funds, NAVPU, Charges",
-                  "purpose": "High-yield exam topics."
+                  "number": 2,
+                  "title": "What Does Success Actually Look Like in Numbers?",
+                  "summary": "Measurable goals, systems, scalable growth, sustainable impact.",
+                  "facilitatorNotes": "Open discussion: what would success look like in numbers for your venture?",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-3/deck-01/slide-02.png"
                 },
                 {
-                  "title": "Suitability & Disclosure",
-                  "purpose": "Never promise returns."
+                  "number": 3,
+                  "title": "The Dream Isn't Enough",
+                  "summary": "Dream lifestyle → Income goal → Monthly revenue → Weekly activity → Daily habits.",
+                  "facilitatorNotes": "Every step connects. Align. Plan. Execute. Repeat.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-3/deck-01/slide-03.png"
                 },
                 {
-                  "title": "Trad vs VUL Decision Framework",
-                  "purpose": "Needs-based, not product-push."
+                  "number": 4,
+                  "title": "Dream Income Worksheet",
+                  "summary": "Annual → monthly → weekly → daily income targets, plus daily action targets.",
+                  "facilitatorNotes": "Workshop: break the dream into daily action.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-3/deck-01/slide-04.png"
                 },
                 {
-                  "title": "Deck 01 Close — Drills",
-                  "purpose": ""
+                  "number": 5,
+                  "title": "The SPIKE Business Engine — 10-5-3-1-3",
+                  "summary": "Prospects → Discovery meetings → Solution presentations → Closed case → Referrals.",
+                  "facilitatorNotes": "One repeatable system. Predictable business results. Referrals fuel the next 10 prospects.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-3/deck-01/slide-05.png"
+                },
+                {
+                  "number": 6,
+                  "title": "The Leadership Engine",
+                  "summary": "You run one Revenue Engine → Build a team of advisors → Multiply your results.",
+                  "facilitatorNotes": "Income is no longer limited by your time — it's multiplied through leadership.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-3/deck-01/slide-06.png"
+                },
+                {
+                  "number": 7,
+                  "title": "The Growth Engine — Three Engines, One Enterprise",
+                  "summary": "Revenue Engine + Leadership Engine + Enterprise Engine — build, multiply, scale together.",
+                  "facilitatorNotes": "You are always producing, developing people, and improving the business.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-3/deck-01/slide-07.png"
+                },
+                {
+                  "number": 8,
+                  "title": "Master → Multiply → Scale",
+                  "summary": "Stage 1: Master the Revenue Engine. Stage 2: Multiply through people. Stage 3: Scale with systems.",
+                  "facilitatorNotes": "Most entrepreneurs begin Stage 2 while mastering Stage 1, and Stage 3 while growing Stage 2.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-3/deck-01/slide-08.png"
+                },
+                {
+                  "number": 9,
+                  "title": "Workshop — Build Your Business Engine",
+                  "summary": "Reverse engineer from annual income goal to prospects and referrals.",
+                  "facilitatorNotes": "Manage the activities. The results will follow. Fill in your numbers.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-3/deck-01/slide-09.png"
+                },
+                {
+                  "number": 10,
+                  "title": "Design the Numbers Behind Your Enterprise",
+                  "summary": "Revenue Engine + Leadership Engine + Growth Engine — connect the numbers.",
+                  "facilitatorNotes": "Revenue creates momentum. Leadership creates leverage. Growth creates impact.",
+                  "discussionQuestions": [],
+                  "imageUrl": "/content/segment-1/week-4/day-3/deck-01/slide-10.png"
                 }
-              ],
-              "status": "draft"
+              ]
             },
             {
+              "id": "presentation-w4-d3-deck-02",
               "title": "Program Coach Deck 02 — VUL Drill & Explanation Lab",
-              "purpose": "Practice explaining simply.",
+              "purpose": "",
               "slideCount": 5,
+              "status": "published",
+              "pptxUrl": null,
+              "pdfUrl": null,
               "slides": [
                 {
+                  "number": 1,
                   "title": "Drill Set — VUL Fundamentals",
-                  "purpose": "Timed questions."
+                  "summary": "Timed questions.",
+                  "facilitatorNotes": "Practice explaining simply.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 },
                 {
+                  "number": 2,
                   "title": "Explain to a Friend",
-                  "purpose": "60-second plain language."
+                  "summary": "60-second plain language.",
+                  "facilitatorNotes": "Practice explaining simply.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 },
                 {
+                  "number": 3,
                   "title": "Fee Disclosure Roleplay",
-                  "purpose": "Client asks about charges."
+                  "summary": "Client asks about charges.",
+                  "facilitatorNotes": "Practice explaining simply.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 },
                 {
+                  "number": 4,
                   "title": "Error Log Sync",
-                  "purpose": "Combine with Trad Life log."
+                  "summary": "Combine with Trad Life log.",
+                  "facilitatorNotes": "Practice explaining simply.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 },
                 {
+                  "number": 5,
                   "title": "Day 18 Deliverables",
-                  "purpose": ""
+                  "summary": "Day 18 Deliverables",
+                  "facilitatorNotes": "Practice explaining simply.",
+                  "discussionQuestions": [],
+                  "imageUrl": null
                 }
-              ],
-              "status": "draft"
+              ]
             }
           ],
           "sessionFlow": [
             {
-              "time": "0:00–0:30",
-              "activity": "Deck 01 — VUL concepts",
-              "notes": "Use diagrams; avoid return illustrations."
+              "time": "0:00–0:20",
+              "activity": "Deck 01 Scenes 1–3 — Build the Engine, success in numbers, dream to habits",
+              "notes": "Numbers Workshop framing."
             },
             {
-              "time": "0:30–1:10",
-              "activity": "VUL timed drills",
-              "notes": ""
+              "time": "0:20–0:40",
+              "activity": "Deck 01 Scenes 4–5 — Dream Income Worksheet + 10-5-3-1-3 Business Engine",
+              "notes": "Introduce the repeatable system."
             },
             {
-              "time": "1:10–1:20",
+              "time": "0:40–1:00",
+              "activity": "Deck 01 Scenes 6–8 — Leadership Engine, Three Engines, Master/Multiply/Scale",
+              "notes": "Connect personal production to leadership leverage."
+            },
+            {
+              "time": "1:00–1:20",
               "activity": "Break",
               "notes": ""
             },
             {
-              "time": "1:20–2:00",
-              "activity": "Explain-to-a-friend rotations",
-              "notes": "Mentors score clarity."
+              "time": "1:20–2:15",
+              "activity": "Workshop Scenes 9–10 — Build Your Business Engine",
+              "notes": "Squads reverse-engineer annual goal to daily activities."
             },
             {
-              "time": "2:00–2:30",
-              "activity": "Fee disclosure roleplays",
-              "notes": ""
-            },
-            {
-              "time": "2:30–3:00",
-              "activity": "Combined error log review + reflection",
-              "notes": ""
+              "time": "2:15–2:30",
+              "activity": "Squad share + Day 18 reflection",
+              "notes": "Revenue + Leadership + Growth engine numbers."
             }
           ],
           "activities": [
@@ -6523,6 +6609,7 @@
                 "Individual timed set",
                 "Log misses by domain"
               ],
+              "materials": [],
               "outputs": [
                 "VUL drill score sheet"
               ],
@@ -6534,6 +6621,7 @@
               "instructions": [
                 "60-sec explanations peer scored"
               ],
+              "materials": [],
               "outputs": [
                 "Explanation feedback"
               ],
@@ -6545,6 +6633,7 @@
               "instructions": [
                 "Advisor explains charges without minimizing"
               ],
+              "materials": [],
               "outputs": [
                 "Roleplay notes"
               ],
@@ -6555,35 +6644,42 @@
             "VUL error log",
             "Suitability comparison matrix"
           ],
-          "assessments": [
-            "VUL drill benchmark check",
-            "Explanation clarity rubric"
-          ],
+          "assessments": [],
           "reflections": [
             "Day 18 VUL confidence reflection"
           ],
-          "surveys": [
-            "Day 18 VUL confidence survey"
-          ],
+          "surveys": [],
           "prepChecklist": [
-            "Confirm fund fact sheet samples for study only",
-            "Reinforce no guaranteed return language"
+            "Load Deck 01 (faculty-deck-01.pdf) — 10 slides, Numbers Workshop",
+            "Confirm Playbook Business Engine worksheet fields are accessible",
+            "Brief mentors: morning is numbers narrative; afternoon is reverse-engineer workshop"
           ],
           "debriefQuestions": [
-            "Who can explain NAVPU simply?",
-            "Any tendency to oversell investment upside?",
-            "Combined weak areas for mock exam day?"
+            "Can participants reverse-engineer from income goal to daily activities?",
+            "Do their three engines connect into one enterprise story?",
+            "What shifts from Master to Multiply to Scale for their venture?"
           ],
           "commonPitfalls": [
-            "Confusing VUL with mutual funds only",
-            "Omitting charges in client explanations"
+            "Skipping weekly/daily breakdown — staying only at annual goals",
+            "Treating leadership income as separate from personal production"
           ],
           "coachingTips": [
-            "Record exemplar 60-second explanations (with consent)"
+            "Use the 10-5-3-1-3 model as the anchor for activity planning"
           ],
           "mentorGuide": {
             "theme": "Clarity",
+            "title": "Mentor Guide — Day 18 — VUL Concepts & Licensing Prep",
             "coachingObjective": "Simple honest explanations.",
+            "timing": {
+              "preSession": "Review facilitator guide and deck speaker notes",
+              "duringSession": "Circulate during squad activities",
+              "postSession": "Complete squad weekly review snapshot"
+            },
+            "discussionQuestions": [
+              "Who can explain NAVPU simply?",
+              "Any tendency to oversell investment upside?",
+              "Combined weak areas for mock exam day?"
+            ],
             "observationAreas": [
               "Jargon use",
               "Disclosure completeness",
@@ -6593,7 +6689,40 @@
           "expectedOutputs": [
             "VUL drill scores",
             "Updated combined error log"
-          ]
+          ],
+          "dayId": "day-segment-1-week-4-day-3",
+          "contentPath": "/content/segment-1/week-4/day-3",
+          "playbookPath": "/playbook?segment=1&week=4&day=3",
+          "sessions": [
+            {
+              "sessionNumber": 1,
+              "title": "Day 18 — Build the Business Engine",
+              "durationMinutes": 240,
+              "presentationIds": [
+                "presentation-w4-d3-deck-01",
+                "presentation-w4-d3-deck-02"
+              ],
+              "activityIds": [
+                "activity-w4-d3-01",
+                "activity-w4-d3-02",
+                "activity-w4-d3-03"
+              ],
+              "worksheetIds": [
+                "worksheet-w4-d3-01",
+                "worksheet-w4-d3-02"
+              ],
+              "assessmentIds": [
+                "assessment-w4-d3"
+              ],
+              "reflectionIds": [
+                "reflection-w4-d3"
+              ],
+              "surveyIds": [
+                "survey-w4-d3"
+              ]
+            }
+          ],
+          "evaluations": []
         },
         {
           "dayNumber": 4,
