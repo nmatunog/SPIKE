@@ -149,7 +149,9 @@ export function WelcomePage({
                 {usingSupabaseAuth && !raSpikeApp ? (
                   <RaSpikeSignupEntryCard />
                 ) : null}
-                {usingSupabaseAuth ? <StaffSignupPanel onSignup={onStaffSignup} /> : null}
+                {usingSupabaseAuth && staffBootstrapMode && onStaffSignup ? (
+                  <StaffSignupPanel onSignup={onStaffSignup} />
+                ) : null}
 
                 {usingSupabaseAuth &&
                 !staffBootstrapMode &&

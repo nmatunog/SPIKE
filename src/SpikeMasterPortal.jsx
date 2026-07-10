@@ -113,6 +113,8 @@ import { supabase } from './supabaseClient.js';
 import { fullSyllabusData } from './fullSyllabusData.js';
 import { orientationSlides } from './orientationSlideContents.jsx';
 import { AdminRegisterForm } from './components/AdminRegisterForm.jsx';
+import { AdminUserDirectory } from './components/admin/AdminUserDirectory.jsx';
+import { SuperuserAddCoachPanel } from './components/admin/SuperuserAddCoachPanel.jsx';
 import { isMockUser, shouldUseSupabaseForUser } from './lib/mockAuth.js';
 import { ForcePasswordChangeGate } from './components/ForcePasswordChangeGate.jsx';
 import { DailyActivationCodeCard } from './components/dashboard/DailyActivationCodeCard.jsx';
@@ -126,8 +128,6 @@ import {
   bootstrapSuperuserAccount,
   fetchBootstrapSuperuserStatus,
 } from './lib/bootstrapSuperuserService.js';
-import { StaffRegistrationCodeCard } from './components/dashboard/StaffRegistrationCodeCard.jsx';
-import { AdminUserDirectory } from './components/admin/AdminUserDirectory.jsx';
 import { createPortalUserViaApi, formatAuthEmailError } from './lib/userAdminService.js';
 import {
   getEffectiveUserRole,
@@ -1402,13 +1402,36 @@ const SpikeMasterPortal = () => {
   const adminPage = useMemo(
     () => (
       <AdminPage
+        userDirectoryPanel={
+          isAdminLikeRole(resolveUserRole(user)) && usingSupabaseAuth ? (
+            <>
+              {isSuperuserDbRole(user?.role) && !readOnlyViewer ? (
+                <SuperuserAddCoachPanel
+                  onCreated={async () => {
+                    showToast('Program coach account created.', 'success');
+                    await loadInterns();
+                    try {
+                      await refreshUser();
+                    } catch {
+                      /* session still valid */
+                    }
+                  }}
+                />
+              ) : null}
+              <AdminUserDirectory
+                currentUserId={user?.id ?? ''}
+                isSuperuser={isSuperuserDbRole(user?.role)}
+                readOnlyViewer={readOnlyViewer}
+              />
+            </>
+          ) : null
+        }
         usersPanel={
           readOnlyViewer ? (
             <div className="rounded-xl border border-amber-200 bg-amber-50 p-6 text-sm text-amber-950">
               <p className="font-semibold">View-only admin account</p>
               <p className="mt-2 text-amber-900/90">
-                Account creation, activation codes, and staff registration codes are hidden for this
-                temporary viewer login.
+                Account creation and activation codes are hidden for this temporary viewer login.
               </p>
             </div>
           ) : (
@@ -1418,27 +1441,15 @@ const SpikeMasterPortal = () => {
                 <h3 className="text-lg font-bold text-gray-900">Create user account</h3>
               </div>
               <p className="mb-4 text-sm text-gray-600">
-                Add another person to the portal (intern, program coach, mentor, or administrator). Interns
-                receive a progress record automatically. Accounts are pre-confirmed — no signup email required.
+                Add interns, mentors, or administrators. Staff self-signup with a registration code is
+                disabled — use Add Program Coach above for new coaches.
               </p>
               <AdminRegisterForm onRegister={handleAdminRegister} />
               {usingSupabaseAuth ? (
                 <DailyActivationCodeCard showRegenerate className="mt-6 border-t border-gray-200 pt-6" />
               ) : null}
-              {usingSupabaseAuth && isAdminLikeRole(resolveUserRole(user)) ? (
-                <StaffRegistrationCodeCard canRegenerate className="mt-6 border-t border-gray-200 pt-6" />
-              ) : null}
             </div>
           )
-        }
-        userDirectoryPanel={
-          isAdminLikeRole(resolveUserRole(user)) && usingSupabaseAuth ? (
-            <AdminUserDirectory
-              currentUserId={user?.id ?? ''}
-              isSuperuser={isSuperuserDbRole(user?.role)}
-              readOnlyViewer={readOnlyViewer}
-            />
-          ) : null
         }
         settingsPanel={
           <div className="rounded-xl border border-gray-200 bg-white p-6 text-center shadow-sm">

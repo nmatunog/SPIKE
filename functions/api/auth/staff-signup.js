@@ -2,8 +2,6 @@ import { createConfirmedPortalUser } from '../../_shared/confirmedSignup.js';
 import { createServiceClient } from '../../_shared/supabaseAdmin.js';
 import { corsPreflight, json } from '../../_shared/verifySuperuser.js';
 
-const STAFF_ROLES = ['FACULTY', 'MENTOR', 'ADMIN'];
-
 /** @param {{ request: Request, env: Record<string, string> }} ctx */
 export async function onRequest(ctx) {
   const { request, env } = ctx;
@@ -33,7 +31,6 @@ export async function onRequest(ctx) {
   const name = String(body?.name ?? '').trim();
   const email = String(body?.email ?? '').trim().toLowerCase();
   const password = String(body?.password ?? '');
-  const code = body?.code ? String(body.code).trim() : '';
   const role = String(body?.role ?? '').trim().toUpperCase();
 
   if (name.length < 2) return json({ message: 'Name is required.' }, 400);
@@ -48,13 +45,14 @@ export async function onRequest(ctx) {
     if (bootstrap === true) {
       targetRole = 'SUPERUSER';
     } else {
-      if (!code) return json({ message: 'Staff registration code is required.' }, 400);
-      const { error: codeErr } = await admin.rpc('validate_staff_registration_code', { p_code: code });
-      if (codeErr) return json({ message: codeErr.message }, 400);
-      if (!STAFF_ROLES.includes(role)) {
-        return json({ message: 'Invalid staff role.' }, 400);
-      }
-      targetRole = role;
+      return json(
+        {
+          message:
+            'Staff self-signup is disabled. Ask a superuser to create your coach account from Admin → Users.',
+          code: 'STAFF_SELF_SIGNUP_DISABLED',
+        },
+        403,
+      );
     }
 
     const userId = await createConfirmedPortalUser(admin, {
