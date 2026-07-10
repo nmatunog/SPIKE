@@ -34,3 +34,4 @@
 20260811_ra_spike_rookie_squad_self_register.sql
 20260812_ra_spike_open_signup_no_code.sql
 20260813_ra_spike_skip_onboarding_gate.sql
+20260814_ra_spike_publish_week.sql
