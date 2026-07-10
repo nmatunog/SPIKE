@@ -33,7 +33,7 @@ import { PageLoader } from './components/ui/PageLoader.jsx';
 import { RoleRouteGuard } from './components/routing/RoleRouteGuard.jsx';
 import { playbookWeek2MissionHref } from './lib/customerDiscovery/week2MissionService.js';
 import { buildSuperuserMentorPreviewInterns } from './lib/superuserMentorPreview.js';
-import { ROUTES, brandLexiconBackHrefForRole, facilitatorsReferenceBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath, isPlaybookPath, isSpikeLifePath, isSpikeLifeImmersivePath, isInternshipOnlyInternPath, isRaSpikeAppPath, parseStaffSquadHubPath, parseStaffStageGatePath, playbookHref, raSpikeRookieEntryHref } from './routes/paths.js';
+import { ROUTES, brandLexiconBackHrefForRole, facilitatorsReferenceBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath, isPlaybookPath, isSpikeLifePath, isSpikeLifeImmersivePath, isInternshipOnlyInternPath, isRaSpikeAppPath, isRaSpikePlaybookPath, parseStaffSquadHubPath, parseStaffStageGatePath, playbookHref, raSpikeRookieEntryHref } from './routes/paths.js';
 import { resolveProgramSlug, isRaSpikeProgram } from './lib/programs/index.js';
 import { RaSpikeHomePage } from './pages/ra-spike/RaSpikeHomePage.jsx';
 import { RaSpikePlaybookPage } from './pages/ra-spike/RaSpikePlaybookPage.jsx';
@@ -46,6 +46,7 @@ import { registerRaSpikeViaApi, isRaSpikeSignupApiUnavailable } from './lib/raSp
 import { RaSpikeOnboardingPage } from './pages/ra-spike/RaSpikeOnboardingPage.jsx';
 import { RaSpikeStageGatePrepPage } from './pages/ra-spike/RaSpikeStageGatePrepPage.jsx';
 import { RaSpikeCoachPage } from './pages/staff/RaSpikeCoachPage.jsx';
+import { buildRaSpikeCoachPreviewUser, isRaSpikeStaffPlaybookRole } from './lib/raSpikeCoachPreview.js';
 import { StaffSquadHubPage, StaffSquadsListPage } from './components/staff/StaffSquadHubPage.jsx';
 import { Week2LoginWelcomeFlow } from './components/week2/Week2LoginWelcomeFlow.jsx';
 import { shouldShowWeek2LoginWelcome } from './lib/week2LoginWelcome.js';
@@ -1721,6 +1722,13 @@ const SpikeMasterPortal = () => {
 
       const coachRole =
         effectiveUserRole === 'mentor' || viewAsRole === 'mentor' ? 'mentor' : 'faculty';
+
+      if (isRaSpikePlaybookPath(path) && isRaSpikeStaffPlaybookRole(effectiveUserRole)) {
+        return (
+          <RaSpikePlaybookPage user={buildRaSpikeCoachPreviewUser(user)} />
+        );
+      }
+
       return (
         <RaSpikeCoachPage
           role={coachRole}

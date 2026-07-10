@@ -59,6 +59,22 @@ try {
     throw new Error('discovery-canvas route not parsed correctly');
   }
 
+  if (!paths.isRaSpikePlaybookPath(paths.ROUTES.raSpikePlaybook)) {
+    throw new Error('isRaSpikePlaybookPath should match playbook root');
+  }
+  if (!paths.rolesForRoute(paths.ROUTES.raSpikePlaybook).includes('faculty')) {
+    throw new Error('faculty must access RA-SPIKE playbook preview');
+  }
+
+  const preview = await server.ssrLoadModule('/src/lib/raSpikeCoachPreview.js');
+  const coachUser = preview.buildRaSpikeCoachPreviewUser({ id: 'coach-1', name: 'Coach' });
+  if (!preview.isRaSpikeCoachPreviewUser(coachUser)) {
+    throw new Error('coach preview user flag missing');
+  }
+  if (coachUser.internProgress?.ra_spike_current_week !== 8) {
+    throw new Error('coach preview should unlock all weeks');
+  }
+
   console.log(
     `smoke:ra-spike-week2 OK — "${week2.title}" with ${intro.steps.length} FEC intro blocks`,
   );

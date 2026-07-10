@@ -27,6 +27,7 @@ import {
   raSpikePlaybookStepHref,
 } from '../../routes/paths.js';
 import { useAuth } from '../../AuthContext.jsx';
+import { isRaSpikeCoachPreviewUser } from '../../lib/raSpikeCoachPreview.js';
 
 /**
  * @param {{
@@ -38,7 +39,8 @@ import { useAuth } from '../../AuthContext.jsx';
 export function RaSpikeWeekStepPage({ user, week, stepId }) {
   const navigate = useNavigate();
   const { refreshUser } = useAuth();
-  const participantId = user?.id ?? '';
+  const staffPreview = isRaSpikeCoachPreviewUser(user);
+  const participantId = staffPreview ? '' : (user?.id ?? '');
   const content = getRaSpikeStepContent(week, /** @type {import('../../lib/raSpikeWeekProgress.js').RaSpikeStepId} */ (stepId));
 
   const [progress, setProgress] = useState({});
@@ -108,7 +110,7 @@ export function RaSpikeWeekStepPage({ user, week, stepId }) {
   }
 
   const stepKey = /** @type {import('../../lib/raSpikeWeekProgress.js').RaSpikeStepId} */ (stepId);
-  const unlocked = isRaSpikeStepUnlocked(progress, stepKey);
+  const unlocked = staffPreview || isRaSpikeStepUnlocked(progress, stepKey);
   const status = getStepStatus(progress, stepKey);
   function assignmentHref() {
     const action = content.action;
@@ -228,14 +230,16 @@ export function RaSpikeWeekStepPage({ user, week, stepId }) {
               <textarea
                 value={reflection}
                 onChange={(e) => {
+                  if (staffPreview) return;
                   setReflection(e.target.value);
                   if (status === 'not_started') {
                     void setRaSpikeStepStatus(participantId, week, 'reflection', 'in_progress');
                   }
                 }}
+                readOnly={staffPreview}
                 rows={6}
                 className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
-                placeholder="Your reflection…"
+                placeholder={staffPreview ? 'Rookies write reflections here.' : 'Your reflection…'}
               />
             </div>
           ) : null}
@@ -259,27 +263,29 @@ export function RaSpikeWeekStepPage({ user, week, stepId }) {
             <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700" role="alert">{error}</p>
           ) : null}
 
-          <div className="flex flex-col gap-2 sm:flex-row">
-            {stepId === 'submit' ? (
-              <button
-                type="button"
-                disabled={busy || !canSubmitRaSpikeWeek(progress) || status === 'complete'}
-                onClick={handleSubmitWeek}
-                className="spike-btn-primary min-h-[48px] flex-1"
-              >
-                {busy ? 'Submitting…' : status === 'complete' ? 'Week submitted' : 'Submit week'}
-              </button>
-            ) : (
-              <button
-                type="button"
-                disabled={busy || status === 'complete'}
-                onClick={() => markComplete('complete')}
-                className="spike-btn-primary min-h-[48px] flex-1"
-              >
-                {busy ? 'Saving…' : status === 'complete' ? 'Completed' : `Mark ${content.label} complete`}
-              </button>
-            )}
-          </div>
+          {!staffPreview ? (
+            <div className="flex flex-col gap-2 sm:flex-row">
+              {stepId === 'submit' ? (
+                <button
+                  type="button"
+                  disabled={busy || !canSubmitRaSpikeWeek(progress) || status === 'complete'}
+                  onClick={handleSubmitWeek}
+                  className="spike-btn-primary min-h-[48px] flex-1"
+                >
+                  {busy ? 'Submitting…' : status === 'complete' ? 'Week submitted' : 'Submit week'}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  disabled={busy || status === 'complete'}
+                  onClick={() => markComplete('complete')}
+                  className="spike-btn-primary min-h-[48px] flex-1"
+                >
+                  {busy ? 'Saving…' : status === 'complete' ? 'Completed' : `Mark ${content.label} complete`}
+                </button>
+              )}
+            </div>
+          ) : null}
         </div>
       </PageContainer>
     </RaSpikeShell>

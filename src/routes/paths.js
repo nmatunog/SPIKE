@@ -457,6 +457,11 @@ export function isRaSpikePath(pathname) {
   );
 }
 
+/** RA-SPIKE playbook tree — coaches preview here; rookies use the same URLs. */
+export function isRaSpikePlaybookPath(pathname) {
+  return pathname === ROUTES.raSpikePlaybook || pathname.startsWith(`${ROUTES.raSpikePlaybook}/`);
+}
+
 /** Staff coach hubs under /ra-spike/* */
 export function isRaSpikeStaffPath(pathname) {
   return (
@@ -700,6 +705,12 @@ export function moduleNavForProgram(userRole, programSlug, options = {}) {
         shortLabel: 'Coach',
         icon: 'dashboard',
       },
+      {
+        path: ROUTES.raSpikePlaybook,
+        label: 'Playbook',
+        shortLabel: 'Playbook',
+        icon: 'playbook',
+      },
     ];
   }
 
@@ -894,6 +905,9 @@ const AUTHENTICATED_ROLES = ['intern', 'faculty', 'mentor', 'admin', 'superuser'
 
 /** Roles allowed on a module route (single source of truth with MODULE_NAV). */
 export function rolesForRoute(pathname) {
+  if (isRaSpikePlaybookPath(pathname)) {
+    return ['faculty', 'mentor', 'admin', 'superuser', 'intern'];
+  }
   if (isRaSpikePath(pathname)) return ['intern'];
   if (isPublicPortfolioPath(pathname)) return AUTHENTICATED_ROLES;
   if (INTERN_FORMATION_ROUTES.includes(pathname)) return ['intern'];

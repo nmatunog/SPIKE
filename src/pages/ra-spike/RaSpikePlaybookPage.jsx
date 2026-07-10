@@ -27,6 +27,7 @@ import { RaSpikePersonaPage } from './RaSpikePersonaPage.jsx';
 import { RaSpikeDiscoveryCanvasPage } from './RaSpikeDiscoveryCanvasPage.jsx';
 import { RaSpikeWorksheetPage } from './RaSpikeWorksheetPage.jsx';
 import { parseRaSpikePlaybookPath, ROUTES } from '../../routes/paths.js';
+import { isRaSpikeCoachPreviewUser } from '../../lib/raSpikeCoachPreview.js';
 
 /**
  * @param {{ user?: { id?: string, internProgress?: object | null } }} props
@@ -57,7 +58,8 @@ export function RaSpikePlaybookPage({ user }) {
 function RaSpikePlaybookOverview({ user }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const participantId = user?.id ?? '';
+  const staffPreview = isRaSpikeCoachPreviewUser(user);
+  const participantId = staffPreview ? '' : (user?.id ?? '');
   const { cohortStartDate } = useRaSpikeHomeDashboard(user);
   const baseCtx = getRaSpikeContext(user?.internProgress);
   const queryWeek = Number(new URLSearchParams(location.search).get('week'));
@@ -108,7 +110,11 @@ function RaSpikePlaybookOverview({ user }) {
                   className="rounded-lg border border-slate-200 px-2 py-1.5 text-sm"
                 >
                   {Array.from({ length: RA_SPIKE_PROGRAM.totalWeeks }, (_, i) => i + 1).map((w) => (
-                    <option key={w} value={w} disabled={!isRaSpikeWeekUnlocked(w, user?.internProgress)}>
+                    <option
+                      key={w}
+                      value={w}
+                      disabled={!staffPreview && !isRaSpikeWeekUnlocked(w, user?.internProgress)}
+                    >
                       Week {w}
                     </option>
                   ))}
@@ -118,13 +124,17 @@ function RaSpikePlaybookOverview({ user }) {
             <p className="mt-1 text-slate-600">Week {displayWeek}: {weekContent.title}</p>
             {weekUnlocked ? (
               <div className="mt-3">
-                <div className="flex items-center justify-between text-xs font-medium text-slate-600">
-                  <span>Week progress</span>
-                  <span>{percent}%</span>
-                </div>
-                <div className="mt-1 h-2 overflow-hidden rounded-full bg-slate-100">
-                  <div className="h-full rounded-full bg-spike transition-all" style={{ width: `${percent}%` }} />
-                </div>
+                {!staffPreview ? (
+                  <>
+                    <div className="flex items-center justify-between text-xs font-medium text-slate-600">
+                      <span>Week progress</span>
+                      <span>{percent}%</span>
+                    </div>
+                    <div className="mt-1 h-2 overflow-hidden rounded-full bg-slate-100">
+                      <div className="h-full rounded-full bg-spike transition-all" style={{ width: `${percent}%` }} />
+                    </div>
+                  </>
+                ) : null}
               </div>
             ) : null}
           </header>
@@ -135,7 +145,7 @@ function RaSpikePlaybookOverview({ user }) {
               <p className="mt-1">Complete prior weeks or pass Stage Gate 1 to unlock Week {displayWeek}.</p>
             </section>
           ) : (
-            <WeeklyCardStack week={displayWeek} steps={steps} progress={progress} />
+            <WeeklyCardStack week={displayWeek} steps={steps} progress={progress} staffPreview={staffPreview} />
           )}
 
           <p className="text-xs text-slate-500">
