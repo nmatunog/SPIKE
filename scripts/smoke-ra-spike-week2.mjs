@@ -45,6 +45,10 @@ try {
     throw new Error(`unexpected intro field keys: ${fieldKeys}`);
   }
 
+  if (!intro.principle?.includes('customer needs')) {
+    throw new Error('intro wizard should state the Week 2 pedagogical principle');
+  }
+
   if (intro.lockedSections?.length < 5) {
     throw new Error('intro wizard should list locked sections for Week 3');
   }

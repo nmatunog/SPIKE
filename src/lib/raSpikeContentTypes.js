@@ -43,6 +43,7 @@
  * @typedef {Object} RaSpikeFecWizardConfig
  * @property {string} title
  * @property {string} [subtitle]
+ * @property {string} [principle]
  * @property {string} [lockedHeading]
  * @property {string[]} [lockedSections]
  * @property {RaSpikeFecWizardField[]} [lockedFieldKeys]

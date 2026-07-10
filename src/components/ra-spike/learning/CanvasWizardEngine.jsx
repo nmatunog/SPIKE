@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight, Lock } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { FecIntroCanvasMap } from './FecIntroCanvasMap.jsx';
 import {
   getRaSpikeFecWizardConfig,
   isFecContinueWizardComplete,
@@ -9,16 +10,30 @@ import {
   writeWizardField,
 } from '../../../lib/raSpikeCanvasWizard.js';
 
+/** @param {string} participantId @param {Array<{ id: string, fields?: Array<{ pillar: string, key: string, minChars?: number }> }>} steps */
+function completedIntroStepIds(participantId, steps) {
+  return steps
+    .filter((step) => {
+      const fields = step.fields?.length ? step.fields : [];
+      if (!fields.length) return false;
+      return fields.every(
+        (f) => readWizardField(participantId, f.pillar, f.key).trim().length >= (f.minChars ?? 10),
+      );
+    })
+    .map((s) => s.id);
+}
+
 /**
  * Guided FEC wizard — one building block per step (Week 2 intro or Week 3 continue).
  *
  * @param {{
  *   participantId: string,
  *   mode: 'intro' | 'continue',
+ *   readOnly?: boolean,
  *   onComplete?: () => void,
  * }} props
  */
-export function CanvasWizardEngine({ participantId, mode, onComplete }) {
+export function CanvasWizardEngine({ participantId, mode, readOnly = false, onComplete }) {
   const config = getRaSpikeFecWizardConfig(mode);
   const steps = config?.steps ?? [];
   const [index, setIndex] = useState(0);
@@ -46,20 +61,28 @@ export function CanvasWizardEngine({ participantId, mode, onComplete }) {
     : isFecContinueWizardComplete(participantId);
 
   const lockedFields = config.lockedFieldKeys ?? [];
-  const lockedLabels = config.lockedSections ?? [];
+  const introSteps = mode === 'intro'
+    ? steps.map((s) => ({ id: s.id, title: s.title ?? s.id, question: s.question }))
+  : [];
+  const completedIds = mode === 'intro' && participantId
+    ? completedIntroStepIds(participantId, steps)
+    : [];
 
   return (
     <div className="space-y-5">
-      {mode === 'intro' && lockedLabels.length ? (
-        <div className="rounded-2xl border border-slate-200 bg-slate-50/90 px-4 py-3">
-          <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-slate-500">
-            <Lock size={14} aria-hidden />
-            {config.lockedHeading ?? 'Locked until Week 3'}
-          </p>
-          <p className="mt-2 text-xs leading-relaxed text-slate-600">
-            {lockedLabels.join(' · ')}
-          </p>
-        </div>
+      {mode === 'intro' ? (
+        <>
+          {config.principle ? (
+            <p className="rounded-xl border border-spike/20 bg-spike-muted/30 px-4 py-3 text-sm font-medium text-slate-800">
+              {config.principle}
+            </p>
+          ) : null}
+          <FecIntroCanvasMap
+            steps={introSteps}
+            activeStepId={step.id}
+            completedStepIds={completedIds}
+          />
+        </>
       ) : null}
 
       {mode === 'continue' && lockedFields.length ? (
@@ -78,6 +101,12 @@ export function CanvasWizardEngine({ participantId, mode, onComplete }) {
             ))}
           </dl>
         </div>
+      ) : null}
+
+      {readOnly ? (
+        <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+          Coach preview — browse the guided flow. Rookies complete and save answers in their own accounts.
+        </p>
       ) : null}
 
       <div className="flex items-center gap-2">
@@ -107,12 +136,15 @@ export function CanvasWizardEngine({ participantId, mode, onComplete }) {
             {field.hint ? <span className="mb-2 block text-xs text-slate-500">{field.hint}</span> : null}
             <textarea
               rows={5}
-              className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-spike focus:ring-2 focus:ring-spike/20"
+              readOnly={readOnly}
+              className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-spike focus:ring-2 focus:ring-spike/20 disabled:bg-slate-50"
               value={fieldValue(field.pillar, field.key)}
               onChange={(e) => {
+                if (readOnly || !participantId) return;
                 writeWizardField(participantId, field.pillar, field.key, e.target.value);
                 refresh();
               }}
+              placeholder={readOnly ? 'Rookies enter answers here.' : undefined}
             />
           </label>
         ))}
@@ -130,13 +162,13 @@ export function CanvasWizardEngine({ participantId, mode, onComplete }) {
         {index < steps.length - 1 ? (
           <button
             type="button"
-            disabled={!allFilled}
+            disabled={readOnly ? false : !allFilled}
             onClick={() => setIndex((i) => i + 1)}
             className="spike-btn-primary inline-flex min-h-[44px] items-center justify-center gap-1"
           >
             Next block <ChevronRight size={16} />
           </button>
-        ) : (
+        ) : readOnly ? null : (
           <button
             type="button"
             disabled={!allFilled && !wizardDone}

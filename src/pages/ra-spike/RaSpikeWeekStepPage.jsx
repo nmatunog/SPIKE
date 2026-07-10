@@ -28,6 +28,8 @@ import {
 } from '../../routes/paths.js';
 import { useAuth } from '../../AuthContext.jsx';
 import { isRaSpikeCoachPreviewUser } from '../../lib/raSpikeCoachPreview.js';
+import { getRaSpikeFecIntroWizardConfig } from '../../lib/raSpikeCanvasWizard.js';
+import { FecIntroCanvasMap } from '../../components/ra-spike/learning/FecIntroCanvasMap.jsx';
 
 /**
  * @param {{
@@ -220,6 +222,16 @@ export function RaSpikeWeekStepPage({ user, week, stepId }) {
             <p className="rounded-xl border border-spike/20 bg-spike-muted/40 px-4 py-3 text-sm text-slate-700">
               {content.callout}
             </p>
+          ) : null}
+
+          {week === 2 && stepId === 'assignment' ? (
+            <FecIntroCanvasMap
+              steps={(getRaSpikeFecIntroWizardConfig()?.steps ?? []).map((s) => ({
+                id: s.id,
+                title: s.title ?? s.id,
+                question: s.question,
+              }))}
+            />
           ) : null}
 
           {stepId === 'reflection' && content.prompts?.length ? (

@@ -10,6 +10,7 @@ import {
   isFecIntroWizardComplete,
 } from '../../lib/raSpikeCanvasWizard.js';
 import { setRaSpikeStepStatus } from '../../lib/raSpikeWeekProgress.js';
+import { isRaSpikeCoachPreviewUser } from '../../lib/raSpikeCoachPreview.js';
 import { ROUTES } from '../../routes/paths.js';
 
 const WEEK = 2;
@@ -19,7 +20,8 @@ const WEEK = 2;
  * @param {{ user?: { id?: string, internProgress?: object | null } }} props
  */
 export function RaSpikeFecIntroWizardPage({ user }) {
-  const participantId = user?.id ?? '';
+  const staffPreview = isRaSpikeCoachPreviewUser(user);
+  const participantId = staffPreview ? '' : (user?.id ?? '');
   const config = getRaSpikeFecIntroWizardConfig();
   const [done, setDone] = useState(false);
 
@@ -65,6 +67,7 @@ export function RaSpikeFecIntroWizardPage({ user }) {
           <CanvasWizardEngine
             participantId={participantId}
             mode="intro"
+            readOnly={staffPreview}
             onComplete={handleComplete}
           />
         </div>

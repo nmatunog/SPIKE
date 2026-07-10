@@ -34,14 +34,15 @@
     },
     "assignment": {
       "label": "Assignment",
-      "headline": "FEC guided start — three building blocks",
-      "summary": "Complete Customer Segment, Customer Problem, and Value Proposition in the guided wizard. Use your Discovery Canvas as input.",
+      "headline": "FEC guided start — your first three building blocks",
+      "summary": "Complete only Customer Segment, Customer Problem, and Value Proposition in the guided wizard. The rest of the Financial Entrepreneurship Canvas stays locked until Week 3 — keeping cognitive load low while you focus on real customer needs.",
       "durationMinutes": 60,
       "bullets": [
-        "Who do I want to serve?",
-        "What important problem do they face?",
-        "How will I help solve that problem?"
+        "Customer Segment — Who do I want to serve?",
+        "Customer Problem — What important problem do they face?",
+        "Value Proposition — How will I help solve that problem?"
       ],
+      "callout": "Use your Customer Discovery Canvas as input. You are not filling the full FEC yet — that unlocks in Week 3.",
       "action": { "type": "fec-intro-wizard", "label": "Open FEC guided start" }
     },
     "reflection": {
