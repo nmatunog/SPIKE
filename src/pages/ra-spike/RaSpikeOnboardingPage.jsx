@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { RaSpikeShell } from '../../components/ra-spike/RaSpikeShell.jsx';
+import { useAuth } from '../../AuthContext.jsx';
+import { ensureRaSpikeOnboardingComplete } from '../../lib/raSpikeOnboardingService.js';
 import { ROUTES } from '../../routes/paths.js';
 
 /**
@@ -10,10 +12,23 @@ import { ROUTES } from '../../routes/paths.js';
  */
 export function RaSpikeOnboardingPage({ user }) {
   const navigate = useNavigate();
+  const { refreshUser } = useAuth();
 
   useEffect(() => {
-    navigate(ROUTES.raSpikeHome, { replace: true });
-  }, [navigate]);
+    let cancelled = false;
+
+    void (async () => {
+      await ensureRaSpikeOnboardingComplete(user?.id, user?.internProgress);
+      await refreshUser?.();
+      if (!cancelled) {
+        navigate(ROUTES.raSpikeHome, { replace: true });
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [navigate, refreshUser, user?.id, user?.internProgress]);
 
   return (
     <RaSpikeShell user={user} showContextBar={false}>

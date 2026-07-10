@@ -36,3 +36,4 @@
 20260813_ra_spike_skip_onboarding_gate.sql
 20260814_ra_spike_publish_week.sql
 20260815_disable_staff_self_signup.sql
+20260816_ra_spike_onboarding_optional.sql

@@ -41,7 +41,7 @@ import { RaSpikeSquadPage } from './pages/ra-spike/RaSpikeSquadPage.jsx';
 import { RaSpikeProfilePage } from './pages/ra-spike/RaSpikeProfilePage.jsx';
 import { RaSpikeNav } from './components/ra-spike/RaSpikeNav.jsx';
 import { RA_SPIKE_PROGRAM } from './lib/programs/ra-spike.js';
-import { isRaSpikeOnboardingPath } from './lib/raSpikeOnboardingService.js';
+import { isRaSpikeOnboardingPath, ensureRaSpikeOnboardingComplete } from './lib/raSpikeOnboardingService.js';
 import { registerRaSpikeViaApi, isRaSpikeSignupApiUnavailable } from './lib/raSpikeSignupService.js';
 import { RaSpikeOnboardingPage } from './pages/ra-spike/RaSpikeOnboardingPage.jsx';
 import { RaSpikeStageGatePrepPage } from './pages/ra-spike/RaSpikeStageGatePrepPage.jsx';
@@ -302,6 +302,9 @@ const SpikeMasterPortal = () => {
     if (userRole === 'superuser') return;
     if (!shouldUseSupabaseForUser(user)) return;
     if (isRaSpikeProgram(resolveProgramSlug(user?.internProgress))) {
+      if (!user.internProgress?.onboarding_complete) {
+        void ensureRaSpikeOnboardingComplete(user.id, user.internProgress);
+      }
       if (isRaSpikeOnboardingPath(location.pathname)) {
         navigate(ROUTES.raSpikeHome, { replace: true });
       }

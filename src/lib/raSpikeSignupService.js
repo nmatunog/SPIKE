@@ -1,4 +1,5 @@
 import { ApiError, apiFetch } from '../apiClient.js';
+import { isSupabaseConfigured, supabase } from '../supabaseClient.js';
 
 /**
  * @param {{
@@ -31,14 +32,26 @@ export async function fetchRaSpikeEnrollmentOptions() {
   return apiFetch('/api/auth/ra-spike-enrollment-options', { method: 'GET' });
 }
 
+/** @returns {Promise<string | null>} */
+async function resolveSupabaseAccessToken(explicitToken) {
+  if (explicitToken) return explicitToken;
+  if (!isSupabaseConfigured || !supabase) return null;
+  const { data } = await supabase.auth.getSession();
+  return data.session?.access_token ?? null;
+}
+
 /**
- * @param {string} token
+ * @param {string | null | undefined} token
  * @param {{ avatarUrl?: string, skipPhoto?: boolean }} payload
  */
 export async function completeRaSpikeOnboarding(token, payload = {}) {
+  const accessToken = await resolveSupabaseAccessToken(token);
+  if (!accessToken) {
+    throw new Error('Sign in required.');
+  }
   return apiFetch('/api/auth/ra-spike-complete-onboarding', {
     method: 'POST',
-    token,
+    token: accessToken,
     body: payload,
   });
 }

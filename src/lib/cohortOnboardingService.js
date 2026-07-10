@@ -78,6 +78,9 @@ export function hasCompletedOnboardingSync(participantId) {
 export function isInternOnboardingSatisfied(progress) {
   if (!progress) return false;
   if (progress.onboarding_complete) return true;
+  if (progress.program_slug === 'ra-spike' || Number(progress.ra_spike_current_week) > 0) {
+    return true;
+  }
   return Boolean(
     progress.onboarding_welcomed_at?.trim()
     && progress.cohort_id

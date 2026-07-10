@@ -44,16 +44,26 @@ export async function onRequest(ctx) {
 
   const { data: progress, error: progReadErr } = await admin
     .from('intern_progress')
-    .select('program_slug')
+    .select('program_slug, cohort_id, ra_spike_current_week')
     .eq('user_id', userId)
     .maybeSingle();
   if (progReadErr) return json({ message: progReadErr.message }, 400);
-  if (progress?.program_slug !== 'ra-spike') {
+
+  let isRaSpike = progress?.program_slug === 'ra-spike' || Number(progress?.ra_spike_current_week) > 0;
+  if (!isRaSpike && progress?.cohort_id) {
+    const { data: cohort } = await admin
+      .from('cohorts')
+      .select('program_slug')
+      .eq('id', progress.cohort_id)
+      .maybeSingle();
+    isRaSpike = cohort?.program_slug === 'ra-spike';
+  }
+  if (!isRaSpike) {
     return json({ message: 'Not an RA-SPIKE participant.' }, 403);
   }
 
   if (avatarUrl && avatarUrl.length > MAX_AVATAR_CHARS) {
-    return json({ message: 'Photo is too large. Use a smaller image.' }, 400);
+    return json({ message: 'Photo is too large. Use a smaller image or skip for now.' }, 400);
   }
 
   if (avatarUrl && !skipPhoto) {
@@ -70,6 +80,7 @@ export async function onRequest(ctx) {
     .update({
       onboarding_complete: true,
       onboarding_welcomed_at: welcomedAt,
+      program_slug: 'ra-spike',
     })
     .eq('user_id', userId);
   if (progErr) return json({ message: progErr.message }, 400);
