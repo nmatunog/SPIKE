@@ -1735,6 +1735,7 @@ const SpikeMasterPortal = () => {
       return (
         <RaSpikeCoachPage
           role={coachRole}
+          user={user}
           interns={interns}
           showToast={showToast}
           onRefresh={loadInterns}

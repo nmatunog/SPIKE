@@ -698,7 +698,7 @@ export function moduleNavForProgram(userRole, programSlug, options = {}) {
   // Staff inside RA-SPIKE must not see internship module links (they leave the proxy).
   if (raSpikeApp && userRole !== 'intern') {
     const coachPath = userRole === 'mentor' ? ROUTES.mentorRaSpike : ROUTES.programCoachRaSpike;
-    return [
+    const items = [
       {
         path: coachPath,
         label: 'RA-SPIKE Coach',
@@ -712,6 +712,15 @@ export function moduleNavForProgram(userRole, programSlug, options = {}) {
         icon: 'playbook',
       },
     ];
+    if (userRole === 'superuser') {
+      items.push({
+        path: ROUTES.admin,
+        label: 'Admin',
+        shortLabel: 'Admin',
+        icon: 'admin',
+      });
+    }
+    return items;
   }
 
   if (userRole === 'superuser') {
