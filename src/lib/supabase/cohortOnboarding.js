@@ -3,6 +3,7 @@ import {
   bootstrapInternProgressViaApi,
   isInternProgressApiUnavailable,
 } from '../internProgressApi.js';
+import { fetchInternProgressRow } from './internProgressFields.js';
 
 /** @param {{ code?: string, message?: string }} error */
 function isMissingRpcError(error) {
@@ -554,19 +555,6 @@ export async function updateFormationSquad(squadId, patch) {
   if (patch.name) {
     await syncFormationSquadMemberLabels(squadId);
   }
-  return data;
-}
-
-/** @param {import('@supabase/supabase-js').SupabaseClient} client @param {string} userId */
-async function fetchInternProgressRow(client, userId) {
-  const { data, error } = await client
-    .from('intern_progress')
-    .select(
-      'segment, hours, licensed, squad, university, career_track, career_track_selected_at, current_week, current_day, onboarding_complete, onboarding_welcomed_at, cohort_id',
-    )
-    .eq('user_id', userId)
-    .maybeSingle();
-  if (error) throw error;
   return data;
 }
 
