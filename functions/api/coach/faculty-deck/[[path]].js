@@ -11,7 +11,7 @@ export async function onRequest(ctx) {
   if (request.method === 'OPTIONS') return corsPreflight();
   if (request.method !== 'GET') return json({ message: 'Method not allowed.' }, 405);
 
-  const actor = await verifyCoachMaterialAccess(env, request);
+  const actor = await verifyCoachMaterialAccess(env, request, relPath);
   if (!actor) return json({ message: 'Coach access required.' }, 403);
 
   const rawPath = Array.isArray(params.path) ? params.path.join('/') : String(params.path ?? '');

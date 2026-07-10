@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { PageContainer } from '../../components/layout/PageContainer.jsx';
 import { RaSpikeBatchManagementPanel } from '../../components/staff/RaSpikeBatchManagementPanel.jsx';
 import { RaSpikeCoachPlaybookPanel } from '../../components/staff/RaSpikeCoachPlaybookPanel.jsx';
+import { RaSpikeCoachPresentationPanel } from '../../components/staff/RaSpikeCoachPresentationPanel.jsx';
 import { RaSpikeGateEvaluationPanel } from '../../components/staff/RaSpikeGateEvaluationPanel.jsx';
 import { RaSpikeWeekPublishPanel } from '../../components/staff/RaSpikeWeekPublishPanel.jsx';
 import { ROUTES } from '../../routes/paths.js';
@@ -38,6 +39,8 @@ export function RaSpikeCoachPage({
         </header>
 
         <RaSpikeCoachPlaybookPanel />
+
+        <RaSpikeCoachPresentationPanel defaultWeek={2} />
 
         {canManageCoaches ? (
           <section className="rounded-2xl border border-spike/25 bg-spike-muted/20 p-5">
