@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="%BASE_URL%spike-logo.png" />
+    <link rel="apple-touch-icon" href="%BASE_URL%spike-logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="theme-color" content="#8B0000" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <title>RA-SPIKE™ Rookie Academy</title>
+    <script>
+      (function () {
+        var key = 'spike_preload_reload';
+        var max = 2;
+        function reloadFresh() {
+          var count = parseInt(sessionStorage.getItem(key) || '0', 10) || 0;
+          if (count >= max) return;
+          sessionStorage.setItem(key, String(count + 1));
+          var url = new URL(window.location.href);
+          url.searchParams.set('_cb', String(Date.now()));
+          window.location.replace(url.toString());
+        }
+        window.addEventListener('vite:preloadError', function (event) {
+          event.preventDefault();
+          reloadFresh();
+        });
+        window.addEventListener('error', function (event) {
+          var target = event.target;
+          if (!target) return;
+          var href = target.src || target.href || '';
+          if (!/(?:\/ra-spike)?\/assets\/.*\.(js|css)/.test(href)) return;
+          reloadFresh();
+        }, true);
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/apps/ra-spike/main.jsx"></script>
+  </body>
+</html>

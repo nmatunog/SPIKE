@@ -9,8 +9,12 @@ const lifeRoot = path.resolve(__dirname, 'SPIKE_LIFE')
 
 // https://vite.dev/config/
 const capacitorBuild = process.env.CAPACITOR === 'true'
+const raSpikeStandalone = process.env.VITE_RA_SPIKE_STANDALONE === 'true'
 const appBaseRaw = process.env.VITE_APP_BASE || (capacitorBuild ? './' : '/')
 const appBase = appBaseRaw.endsWith('/') ? appBaseRaw : `${appBaseRaw}/`
+const buildEntries = raSpikeStandalone
+  ? { main: 'ra-spike.html' }
+  : { main: 'index.html', pitchPanel: 'pitch-panel.html' }
 
 export default defineConfig({
   // Internship: `/`. RA-SPIKE Pages origin: `/ra-spike/` (portal proxy + dynamic chunks).
@@ -59,10 +63,7 @@ export default defineConfig({
   build: {
     chunkSizeWarningLimit: 1200,
     rollupOptions: {
-      input: {
-        main: 'index.html',
-        pitchPanel: 'pitch-panel.html',
-      },
+      input: buildEntries,
       output: {
         manualChunks(id) {
           if (!id.includes('node_modules')) return undefined

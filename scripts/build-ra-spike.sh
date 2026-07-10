@@ -18,12 +18,14 @@ fi
 export VITE_SUPABASE_URL="$VITE_RA_SPIKE_SUPABASE_URL"
 export VITE_SUPABASE_ANON_KEY="$VITE_RA_SPIKE_SUPABASE_ANON_KEY"
 export VITE_APP_BASE=/ra-spike/
+export VITE_RA_SPIKE_STANDALONE=true
 # Leave VITE_API_URL unset: on portal.1cma.online, /api/* must hit the main SPIKE Pages
 # project (admin, auth, coach). Prefixing /ra-spike routes APIs to ra-spike.pages.dev,
 # which breaks superuser admin actions (403 Administrator access required).
 unset VITE_API_URL
 
 echo "→ Building RA-SPIKE bundle (base=${VITE_APP_BASE}, supabase=${VITE_SUPABASE_URL})"
+rm -rf dist
 SKIP_AUTO_SHIP=1 npm run build
 
 if grep -rq '/ra-spike/api/' dist/assets/*.js 2>/dev/null; then
@@ -36,6 +38,14 @@ if grep -rq 'lzbfjbtjropoaynbcxew' dist/assets/*.js 2>/dev/null; then
 fi
 if ! grep -rq 'yruwfdjqigxxwbqsqhho' dist/assets/*.js 2>/dev/null; then
   echo "ERROR: RA-SPIKE bundle missing RA-SPIKE Supabase project ref (yruwfdjqigxxwbqsqhho)"
+  exit 1
+fi
+if grep -rq 'SpikeMasterPortal' dist/assets/*.js 2>/dev/null; then
+  echo "ERROR: RA-SPIKE bundle still includes SpikeMasterPortal (internship router)"
+  exit 1
+fi
+if ! grep -rq 'VITE_RA_SPIKE_STANDALONE' dist/assets/*.js 2>/dev/null; then
+  echo "ERROR: RA-SPIKE bundle missing standalone app marker (VITE_RA_SPIKE_STANDALONE)"
   exit 1
 fi
 echo "→ RA-SPIKE API prefix + Supabase project checks OK"

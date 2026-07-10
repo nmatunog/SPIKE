@@ -74,6 +74,7 @@ jobs:
       - name: Build RA-SPIKE (prefixed /ra-spike/ base for portal proxy)
         run: npm run build:ra-spike
         env:
+          VITE_RA_SPIKE_STANDALONE: 'true'
           VITE_RA_SPIKE_SUPABASE_URL: ${{ secrets.RA_SPIKE_SUPABASE_URL }}
           VITE_RA_SPIKE_SUPABASE_ANON_KEY: ${{ secrets.RA_SPIKE_SUPABASE_ANON_KEY }}
           VITE_STATIC_ONLY: 'false'
