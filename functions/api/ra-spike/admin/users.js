@@ -1,6 +1,6 @@
-import { createRaSpikeServiceClient } from '../../_shared/supabaseAdmin.js';
-import { handlePortalUsersAdmin } from '../../_shared/portalUserAdminHandler.js';
-import { verifyRaSpikeAdminActor } from '../../_shared/verifySuperuser.js';
+import { createRaSpikeServiceClient } from '../../../_shared/supabaseAdmin.js';
+import { handlePortalUsersAdmin } from '../../../_shared/portalUserAdminHandler.js';
+import { verifyRaSpikeAdminActor } from '../../../_shared/verifySuperuser.js';
 
 /** RA-SPIKE account directory — validates JWT against the RA-SPIKE Supabase project. */
 export async function onRequest(ctx) {
