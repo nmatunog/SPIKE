@@ -79,6 +79,34 @@ try {
     throw new Error('coach preview should unlock all weeks');
   }
 
+  const assist = await server.ssrLoadModule('/src/lib/raSpikeFecWizardAssist.js');
+  const fec = await server.ssrLoadModule('/src/lib/fecCanvasService.js');
+  if (!globalThis.localStorage) {
+    const store = new Map();
+    globalThis.localStorage = {
+      getItem: (key) => store.get(key) ?? null,
+      setItem: (key, value) => store.set(key, value),
+      removeItem: (key) => store.delete(key),
+    };
+  }
+  const demoId = 'smoke-fec-assist-demo';
+  fec.prepareFecCanvas(demoId);
+  fec.saveFecField(demoId, 'create_value', 'customer_segments', 'Young BPO professionals in Cebu');
+  fec.saveFecField(
+    demoId,
+    'create_value',
+    'customer_problem',
+    'They earn well but have no protection plan and feel confused by insurance jargon.',
+  );
+  const vpAssist = assist.buildFecIntroWizardAssist(demoId, 'value_proposition');
+  if (!vpAssist.includes('BPO') || !vpAssist.includes('protection')) {
+    throw new Error('value proposition AI assist should connect segment + problem');
+  }
+  const coachAssist = assist.buildFecIntroWizardAssist('', 'value_proposition');
+  if (!coachAssist.trim()) {
+    throw new Error('coach preview AI assist should return exemplar copy');
+  }
+
   console.log(
     `smoke:ra-spike-week2 OK — "${week2.title}" with ${intro.steps.length} FEC intro blocks`,
   );

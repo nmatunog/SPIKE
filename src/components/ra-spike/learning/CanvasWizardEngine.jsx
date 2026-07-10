@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { FecIntroCanvasMap } from './FecIntroCanvasMap.jsx';
+import { FecWizardAiAssist } from './FecWizardAiAssist.jsx';
+import { buildFecIntroWizardAssist } from '../../../lib/raSpikeFecWizardAssist.js';
 import {
   getRaSpikeFecWizardConfig,
   isFecContinueWizardComplete,
@@ -130,10 +132,28 @@ export function CanvasWizardEngine({ participantId, mode, readOnly = false, onCo
       </header>
 
       <div className="space-y-4">
-        {fields.map((field) => (
+        {fields.map((field) => {
+          const current = fieldValue(field.pillar, field.key).trim();
+          const assistSuggestion = mode === 'intro'
+            ? buildFecIntroWizardAssist(participantId, step.id)
+            : '';
+          const showAssist = Boolean(assistSuggestion) && !current;
+
+          return (
           <label key={`${field.pillar}-${field.key}`} className="block text-sm">
             <span className="mb-1 block font-medium text-slate-800">{field.label}</span>
             {field.hint ? <span className="mb-2 block text-xs text-slate-500">{field.hint}</span> : null}
+            {showAssist ? (
+              <FecWizardAiAssist
+                suggestion={assistSuggestion}
+                readOnly={readOnly}
+                onUse={(text) => {
+                  if (!participantId) return;
+                  writeWizardField(participantId, field.pillar, field.key, text);
+                  refresh();
+                }}
+              />
+            ) : null}
             <textarea
               rows={5}
               readOnly={readOnly}
@@ -147,7 +167,8 @@ export function CanvasWizardEngine({ participantId, mode, readOnly = false, onCo
               placeholder={readOnly ? 'Rookies enter answers here.' : undefined}
             />
           </label>
-        ))}
+          );
+        })}
       </div>
 
       <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
