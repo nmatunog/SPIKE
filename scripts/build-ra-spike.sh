@@ -27,6 +27,14 @@ echo "→ Building RA-SPIKE bundle (base=${VITE_APP_BASE}, supabase=${VITE_SUPAB
 rm -rf dist
 SKIP_AUTO_SHIP=1 npm run build
 
+# Cloudflare Pages serves index.html at /. Standalone Vite only emits ra-spike.html; without
+# this copy, an old internship index.html can linger and reference missing /ra-spike/assets/* chunks.
+cp dist/ra-spike.html dist/index.html
+if ! grep -q 'RA-SPIKE' dist/index.html; then
+  echo "ERROR: dist/index.html is not the RA-SPIKE shell (expected title from ra-spike.html)"
+  exit 1
+fi
+
 if grep -rq '/ra-spike/api/admin' dist/assets/*.js 2>/dev/null; then
   echo "ERROR: RA-SPIKE bundle bakes /ra-spike/api/admin — admin APIs must use /api on portal host"
   exit 1
