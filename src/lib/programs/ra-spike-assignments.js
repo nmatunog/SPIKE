@@ -10,11 +10,11 @@ export const RA_SPIKE_WEEKLY_ASSIGNMENTS = {
     estimatedMinutes: 45,
   },
   2: {
-    title: 'FEC guided start',
-    summary: 'Complete Customer Segment, Customer Problem, and Value Proposition in the guided wizard.',
+    title: 'Customer Discovery Canvas + FEC start',
+    summary: 'Complete your interview worksheet, then Customer Segment, Problem, and Value Proposition in the FEC wizard.',
     dueHint: 'Before this week\'s classroom session',
-    squadObjective: 'Compare segments and agree on one shared customer to explore.',
-    estimatedMinutes: 60,
+    squadObjective: 'Share one discovery insight per squad member — compare who you interviewed and what problems surfaced.',
+    estimatedMinutes: 90,
   },
   3: {
     title: 'FEC canvas continuation',

@@ -30,6 +30,16 @@ try {
     throw new Error(`expected 3 intro wizard steps, got ${intro?.steps?.length ?? 0}`);
   }
 
+  if (week2.steps?.workshop?.action?.type !== 'discovery-canvas') {
+    throw new Error('week-2 workshop must use discovery-canvas action');
+  }
+
+  const discovery = await server.ssrLoadModule('/src/lib/raSpikeDiscoveryCanvas.js');
+  const dcConfig = discovery.getRaSpikeDiscoveryCanvasConfig();
+  if (!dcConfig?.title?.includes('Customer Discovery')) {
+    throw new Error('discovery canvas config missing');
+  }
+
   const fieldKeys = intro.steps.map((s) => s.fields?.[0]?.key).join(',');
   if (fieldKeys !== 'customer_segments,customer_problem,value_offering') {
     throw new Error(`unexpected intro field keys: ${fieldKeys}`);
@@ -42,6 +52,11 @@ try {
   const parsed = paths.parseRaSpikePlaybookPath(paths.ROUTES.raSpikePlaybookFecIntro);
   if (parsed?.view !== 'fec-intro') {
     throw new Error('fec-intro route not parsed correctly');
+  }
+
+  const parsedCanvas = paths.parseRaSpikePlaybookPath(paths.ROUTES.raSpikePlaybookDiscoveryCanvas);
+  if (parsedCanvas?.view !== 'discovery-canvas') {
+    throw new Error('discovery-canvas route not parsed correctly');
   }
 
   console.log(

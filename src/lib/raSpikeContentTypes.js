@@ -49,4 +49,27 @@
  * @property {RaSpikeFecWizardStep[]} steps
  */
 
+/**
+ * @typedef {Object} RaSpikeDiscoveryCanvas
+ * @property {string} interviewed
+ * @property {string[]} problems
+ * @property {string} topProblem
+ * @property {string} whyImportant
+ * @property {string} idealAge
+ * @property {string} idealOccupation
+ * @property {string} idealFamily
+ * @property {string} idealIncome
+ * @property {string} idealLifeStage
+ * @property {string} ifNothingChanges
+ * @property {string} reflectionStruggle
+ */
+
+/**
+ * @typedef {Object} RaSpikeDiscoveryCanvasConfig
+ * @property {string} title
+ * @property {string} [subtitle]
+ * @property {string[]} [interviewExamples]
+ * @property {number} [problemCount]
+ */
+
 export {};

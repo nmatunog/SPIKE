@@ -14,6 +14,7 @@ import {
   submitRaSpikeWeek,
 } from '../../lib/raSpikeWeekProgress.js';
 import { isCanvasWizardComplete, isFecIntroWizardComplete } from '../../lib/raSpikeCanvasWizard.js';
+import { isDiscoveryCanvasComplete } from '../../lib/raSpikeDiscoveryCanvas.js';
 import { isRaSpikeWorksheetComplete } from '../../lib/raSpikeWorksheetStorage.js';
 import { isGatePrepComplete, gateNumberForWeek } from '../../lib/raSpikeGateService.js';
 import {
@@ -21,6 +22,7 @@ import {
   raSpikePlaybookDreamBoardHref,
   raSpikePlaybookFecIntroHref,
   raSpikePlaybookCanvasWizardHref,
+  raSpikePlaybookDiscoveryCanvasHref,
   raSpikeStageGateHref,
   raSpikePlaybookStepHref,
 } from '../../routes/paths.js';
@@ -66,7 +68,11 @@ export function RaSpikeWeekStepPage({ user, week, stepId }) {
   }, [reload]);
 
   useEffect(() => {
-    if (stepId !== 'assignment' || !participantId) return;
+    if (!participantId) return;
+    if (stepId === 'workshop' && week === 2 && isDiscoveryCanvasComplete(participantId)) {
+      setRaSpikeStepStatus(participantId, week, 'workshop', 'complete').then(setProgress).catch(() => {});
+    }
+    if (stepId !== 'assignment') return;
     if (week === 1 && isBuilderCompleted(participantId, 'dream-board')) {
       setRaSpikeStepStatus(participantId, week, 'assignment', 'complete').then(setProgress).catch(() => {});
     }
@@ -109,6 +115,7 @@ export function RaSpikeWeekStepPage({ user, week, stepId }) {
     if (!action) return null;
     if (action.type === 'dream-board') return raSpikePlaybookDreamBoardHref();
     if (action.type === 'fec-intro-wizard') return raSpikePlaybookFecIntroHref();
+    if (action.type === 'discovery-canvas') return raSpikePlaybookDiscoveryCanvasHref();
     if (action.type === 'canvas-wizard') return raSpikePlaybookCanvasWizardHref();
     if (action.type === 'stage-gate') return raSpikeStageGateHref(action.gate ?? 1, week);
     if (action.type === 'prospecting') return ROUTES.raSpikePlaybookProspecting;
@@ -116,7 +123,8 @@ export function RaSpikeWeekStepPage({ user, week, stepId }) {
     return null;
   }
 
-  const assignmentLink = stepId === 'assignment' ? assignmentHref() : null;
+  const stepActionLink =
+    (stepId === 'assignment' || stepId === 'workshop') && content.action ? assignmentHref() : null;
 
   async function markComplete(nextStatus = 'complete') {
     setBusy(true);
@@ -238,9 +246,9 @@ export function RaSpikeWeekStepPage({ user, week, stepId }) {
             </p>
           ) : null}
 
-          {assignmentLink ? (
+          {stepActionLink ? (
             <Link
-              to={assignmentLink}
+              to={stepActionLink}
               className="spike-btn-primary inline-flex min-h-[48px] w-full items-center justify-center sm:w-auto"
             >
               {content.action?.label ?? 'Open assignment'}

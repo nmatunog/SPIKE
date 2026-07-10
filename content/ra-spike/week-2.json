@@ -2,39 +2,40 @@
   "weekNumber": 2,
   "segment": "discover",
   "title": "Discover Your Customer",
-  "theme": "FEC guided start — Customer Segment, Problem, Value Proposition",
+  "theme": "Customer Discovery Canvas + FEC guided start",
   "modules": ["customer-discovery", "fec-canvas"],
   "steps": {
     "learn": {
       "label": "Learn",
       "headline": "Your dreams deserve a plan — next is your customer",
-      "summary": "Week 1 started with YOU. Week 2 introduces the first three FEC building blocks — customer before solution.",
+      "summary": "Week 1 started with YOU. Week 2 captures real customer evidence, then maps your first FEC building blocks.",
       "durationMinutes": 25,
       "bullets": [
-        "FEC progress: YOU (Week 1) → Customer Segment, Problem, Value Proposition (this week) → full canvas (Week 3)",
-        "Bring your future-self letter and one dream photo from Week 1",
-        "Define who you would genuinely love to help — not everyone",
-        "Name their urgent problem before designing any solution"
+        "Interview real people — capture problems before solutions",
+        "Complete your Customer Discovery Canvas individually",
+        "FEC progress: YOU (Week 1) → Customer (this week) → full canvas (Week 3)",
+        "Bring your future-self letter and one dream photo from Week 1"
       ],
       "callout": "Read before class. Your coach connects your Dream Board to the people you will serve."
     },
     "workshop": {
       "label": "Workshop",
       "headline": "Customer discovery lab",
-      "summary": "Facilitated FEC intro work using your Week 1 vision as the starting point.",
+      "summary": "Interview conversations, then complete your Customer Discovery Canvas with what you heard.",
       "durationMinutes": 90,
       "bullets": [
         "Share one Dream Board insight and who it points you toward serving",
-        "Draft interview questions with your squad",
-        "Map early hypotheses: segment, urgent problem, first value proposition",
+        "Conduct discovery conversations (class or homework)",
+        "List top problems, choose the most common, describe your ideal customer",
         "Coach feedback on segment focus"
       ],
-      "callout": "Mark complete after your classroom session."
+      "action": { "type": "discovery-canvas", "label": "Open Customer Discovery Canvas" },
+      "callout": "Save your worksheet after interviews — then mark Workshop complete."
     },
     "assignment": {
       "label": "Assignment",
       "headline": "FEC guided start — three building blocks",
-      "summary": "Complete Customer Segment, Customer Problem, and Value Proposition in the guided wizard. The rest of the canvas unlocks in Week 3.",
+      "summary": "Complete Customer Segment, Customer Problem, and Value Proposition in the guided wizard. Use your Discovery Canvas as input.",
       "durationMinutes": 60,
       "bullets": [
         "Who do I want to serve?",
@@ -59,7 +60,7 @@
       "headline": "Mark Week 2 complete",
       "summary": "Unlock Week 3 — the rest of your Financial Entrepreneurship Canvas.",
       "durationMinutes": 2,
-      "bullets": ["Three FEC blocks saved", "Ready to continue the canvas in Week 3"]
+      "bullets": ["Discovery canvas saved", "Three FEC blocks saved", "Ready to continue the canvas in Week 3"]
     }
   }
 }

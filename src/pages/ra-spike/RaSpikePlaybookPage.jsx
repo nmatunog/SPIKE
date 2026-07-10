@@ -24,6 +24,7 @@ import { RaSpikeDreamBoardPage } from './RaSpikeDreamBoardPage.jsx';
 import { RaSpikeCanvasWizardPage } from './RaSpikeCanvasWizardPage.jsx';
 import { RaSpikeFecIntroWizardPage } from './RaSpikeFecIntroWizardPage.jsx';
 import { RaSpikePersonaPage } from './RaSpikePersonaPage.jsx';
+import { RaSpikeDiscoveryCanvasPage } from './RaSpikeDiscoveryCanvasPage.jsx';
 import { RaSpikeWorksheetPage } from './RaSpikeWorksheetPage.jsx';
 import { parseRaSpikePlaybookPath, ROUTES } from '../../routes/paths.js';
 
@@ -41,6 +42,7 @@ export function RaSpikePlaybookPage({ user }) {
   if (parsed?.view === 'persona') return <RaSpikePersonaPage user={user} />;
   if (parsed?.view === 'prospecting') return <RaSpikeWorksheetPage user={user} kind="prospecting" />;
   if (parsed?.view === 'discovery-log') return <RaSpikeWorksheetPage user={user} kind="discovery-log" />;
+  if (parsed?.view === 'discovery-canvas') return <RaSpikeDiscoveryCanvasPage user={user} />;
   if (parsed?.view === 'step' && parsed.stepId) {
     const week = Number.isFinite(weekParam) && weekParam >= 1
       ? weekParam

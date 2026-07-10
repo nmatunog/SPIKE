@@ -65,6 +65,7 @@ export const ROUTES = {
   raSpikePlaybookPersona: '/ra-spike/playbook/persona',
   raSpikePlaybookProspecting: '/ra-spike/playbook/prospecting',
   raSpikePlaybookDiscoveryLog: '/ra-spike/playbook/discovery-log',
+  raSpikePlaybookDiscoveryCanvas: '/ra-spike/playbook/discovery-canvas',
   raSpikeStageGate: '/ra-spike/stage-gate',
 };
 
@@ -491,6 +492,10 @@ export function raSpikePlaybookPersonaHref() {
   return ROUTES.raSpikePlaybookPersona;
 }
 
+export function raSpikePlaybookDiscoveryCanvasHref() {
+  return ROUTES.raSpikePlaybookDiscoveryCanvas;
+}
+
 export function raSpikeStageGateHref(gate = 1, assignmentWeek) {
   const params = new URLSearchParams({ gate: String(gate) });
   if (assignmentWeek != null && Number.isFinite(Number(assignmentWeek))) {
@@ -501,7 +506,7 @@ export function raSpikeStageGateHref(gate = 1, assignmentWeek) {
 
 /**
  * @param {string} pathname
- * @returns {{ view: 'overview' } | { view: 'dream-board' } | { view: 'fec-intro' } | { view: 'canvas-wizard' } | { view: 'persona' } | { view: 'prospecting' } | { view: 'discovery-log' } | { view: 'step', stepId: string } | null}
+ * @returns {{ view: 'overview' } | { view: 'dream-board' } | { view: 'fec-intro' } | { view: 'canvas-wizard' } | { view: 'persona' } | { view: 'prospecting' } | { view: 'discovery-log' } | { view: 'discovery-canvas' } | { view: 'step', stepId: string } | null}
  */
 export function parseRaSpikePlaybookPath(pathname) {
   if (pathname === ROUTES.raSpikePlaybook) return { view: 'overview' };
@@ -511,6 +516,7 @@ export function parseRaSpikePlaybookPath(pathname) {
   if (pathname === ROUTES.raSpikePlaybookPersona) return { view: 'persona' };
   if (pathname === ROUTES.raSpikePlaybookProspecting) return { view: 'prospecting' };
   if (pathname === ROUTES.raSpikePlaybookDiscoveryLog) return { view: 'discovery-log' };
+  if (pathname === ROUTES.raSpikePlaybookDiscoveryCanvas) return { view: 'discovery-canvas' };
   const prefix = `${ROUTES.raSpikePlaybook}/step/`;
   if (pathname.startsWith(prefix)) {
     const stepId = pathname.slice(prefix.length).split('/')[0];
