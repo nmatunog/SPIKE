@@ -140,8 +140,37 @@ export async function onRequest(ctx) {
   const { request, env } = ctx;
   if (request.method === 'OPTIONS') return corsPreflight();
 
+  const authHeader = request.headers.get('Authorization') ?? '';
+  if (!authHeader.startsWith('Bearer ')) {
+    return json(
+      { message: 'Your session expired. Sign out and sign in again, then retry.', code: 'MISSING_TOKEN' },
+      403,
+    );
+  }
+
+  const anonKey = env.VITE_SUPABASE_ANON_KEY || env.SUPABASE_ANON_KEY;
+  if (!anonKey) {
+    return json(
+      {
+        message:
+          'Server admin API is not configured (missing Supabase anon key). Add VITE_SUPABASE_ANON_KEY to Cloudflare Pages Production env vars.',
+        code: 'MISSING_ANON_KEY',
+      },
+      503,
+    );
+  }
+
   const actor = await verifyAdminActor(env, request);
-  if (!actor) return json({ message: 'Administrator access required.' }, 403);
+  if (!actor) {
+    return json(
+      {
+        message:
+          'Administrator access required. Sign in with a Superuser or Admin account — your session may have expired.',
+        code: 'ADMIN_REQUIRED',
+      },
+      403,
+    );
+  }
 
   let admin;
   try {

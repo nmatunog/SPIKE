@@ -153,15 +153,39 @@ export async function fetchUserDirectory() {
   };
 }
 
-async function runAdminDirectoryApi(payload) {
+async function getAdminApiAccessToken() {
   const { data: sessionData } = await supabase.auth.getSession();
-  const token = sessionData.session?.access_token;
-  if (!token) throw new Error('Your session expired. Sign in again.');
-  return apiFetch('/api/admin/users', {
-    method: 'POST',
-    token,
-    body: payload,
-  });
+  let token = sessionData.session?.access_token;
+  if (token) return token;
+
+  const { data: refreshed, error: refreshErr } = await supabase.auth.refreshSession();
+  if (refreshErr) {
+    throw new Error('Your session expired. Sign out and sign in again, then retry.');
+  }
+  token = refreshed.session?.access_token;
+  if (!token) {
+    throw new Error('Your session expired. Sign out and sign in again, then retry.');
+  }
+  return token;
+}
+
+async function runAdminDirectoryApi(payload) {
+  await getActorContext();
+  const token = await getAdminApiAccessToken();
+  try {
+    return await apiFetch('/api/admin/users', {
+      method: 'POST',
+      token,
+      body: payload,
+    });
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 403) {
+      throw new Error(
+        'Administrator API rejected this session. Sign out, sign in with your Superuser account, and try again.',
+      );
+    }
+    throw wrapServiceKeyError(err);
+  }
 }
 
 /**
