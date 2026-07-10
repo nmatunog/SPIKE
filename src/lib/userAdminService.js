@@ -1,4 +1,5 @@
 import { ApiError, apiFetch } from '../apiClient.js';
+import { isRaSpikePortalContext, raSpikeApiFetch } from './raSpikeApiClient.js';
 import { supabase } from '../supabaseClient.js';
 import { assertPortalCanWrite } from './portalWriteAccess.js';
 
@@ -27,8 +28,17 @@ function normalizePortalRole(role) {
   return String(role ?? '').trim().toUpperCase();
 }
 
-const SERVICE_KEY_HINT =
-  'Add SUPABASE_SERVICE_ROLE_KEY to Cloudflare Pages → spike → Settings → Environment variables (Production), then redeploy.';
+const SERVICE_KEY_HINT = isRaSpikePortalContext()
+  ? 'Add RA_SPIKE_SERVICE_ROLE_KEY to Cloudflare Pages → ra-spike → Settings → Environment variables (Production), then redeploy.'
+  : 'Add SUPABASE_SERVICE_ROLE_KEY to Cloudflare Pages → spike → Settings → Environment variables (Production), then redeploy.';
+
+/** @param {Parameters<typeof apiFetch>[1]} [opts] */
+async function fetchAdminUsersApi(opts = {}) {
+  if (isRaSpikePortalContext()) {
+    return raSpikeApiFetch('/ra-spike/admin/users', opts);
+  }
+  return apiFetch('/api/admin/users', opts);
+}
 
 /** @param {unknown} err */
 export function formatAuthEmailError(err) {
@@ -103,7 +113,7 @@ async function fetchUserDirectoryViaApi(actorIsSuperuser) {
   const token = sessionData.session?.access_token;
   if (!token) throw new Error('Your session expired. Sign in again.');
 
-  const res = await apiFetch('/api/admin/users', { method: 'GET', token });
+  const res = await fetchAdminUsersApi({ method: 'GET', token });
   return {
     users: res.users ?? [],
     actorIsSuperuser: res.actorIsSuperuser ?? actorIsSuperuser,
@@ -173,7 +183,7 @@ async function runAdminDirectoryApi(payload) {
   await getActorContext();
   const token = await getAdminApiAccessToken();
   try {
-    return await apiFetch('/api/admin/users', {
+    return await fetchAdminUsersApi({
       method: 'POST',
       token,
       body: payload,
@@ -276,7 +286,7 @@ export async function runUserDirectoryAction(payload, { isSuperuser, target = nu
       const { data: sessionData } = await supabase.auth.getSession();
       const token = sessionData.session?.access_token;
       if (!token) throw new Error('Your session expired. Sign in again.');
-      return await apiFetch('/api/admin/users', {
+      return await fetchAdminUsersApi({
         method: 'POST',
         token,
         body: payload,

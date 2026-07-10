@@ -36,6 +36,21 @@ export function createRaSpikeServiceClient(env) {
 }
 
 /** @param {Record<string, string>} env @param {string | null} authHeader */
+export function createRaSpikeUserClient(env, authHeader) {
+  const url = getRaSpikeSupabaseUrl(env);
+  const anon =
+    env.VITE_RA_SPIKE_SUPABASE_ANON_KEY ||
+    env.RA_SPIKE_SUPABASE_ANON_KEY ||
+    env.SUPABASE_ANON_KEY;
+  const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : '';
+  if (!url || !anon || !token) return null;
+  return createClient(url, anon, {
+    auth: { persistSession: false, autoRefreshToken: false },
+    global: { headers: { Authorization: `Bearer ${token}` } },
+  });
+}
+
+/** @param {Record<string, string>} env @param {string | null} authHeader */
 export function createUserClient(env, authHeader) {
   const url = getSupabaseUrl(env);
   const anon = env.VITE_SUPABASE_ANON_KEY || env.SUPABASE_ANON_KEY;

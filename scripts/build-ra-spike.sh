@@ -47,6 +47,10 @@ if ! grep -rq '/ra-spike/signup' dist/assets/*.js 2>/dev/null; then
   echo "ERROR: RA-SPIKE bundle missing /ra-spike/signup auth route"
   exit 1
 fi
+if ! grep -rq '/ra-spike/admin/users' dist/assets/*.js 2>/dev/null; then
+  echo "ERROR: RA-SPIKE bundle missing /ra-spike/admin/users staff API route"
+  exit 1
+fi
 if grep -rq 'lzbfjbtjropoaynbcxew' dist/assets/*.js 2>/dev/null; then
   echo "ERROR: RA-SPIKE bundle still references SPIKE Internship Supabase (lzbfjbtjropoaynbcxew)"
   exit 1

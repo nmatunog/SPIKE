@@ -1,4 +1,4 @@
-import { createUserClient } from '../_shared/supabaseAdmin.js';
+import { createRaSpikeUserClient, createUserClient } from '../_shared/supabaseAdmin.js';
 
 /** @param {Record<string, string>} env @param {Request} request */
 export async function verifySuperuser(env, request) {
@@ -17,6 +17,36 @@ export async function verifySuperuser(env, request) {
 
   if (profErr || profile?.role !== 'SUPERUSER') return null;
   return { user: userData.user, profile };
+}
+
+/** @param {Record<string, string>} env @param {Request} request */
+export async function verifyRaSpikeAdminActor(env, request) {
+  const auth = request.headers.get('Authorization');
+  const client = createRaSpikeUserClient(env, auth);
+  if (!client) return null;
+
+  const { data: userData, error: userErr } = await client.auth.getUser();
+  if (userErr || !userData?.user) return null;
+
+  const { data: profile, error: profErr } = await client
+    .from('profiles')
+    .select('id, role, email, name, read_only')
+    .eq('id', userData.user.id)
+    .maybeSingle();
+
+  if (profErr || !profile?.role) return null;
+  if (!['ADMIN', 'SUPERUSER'].includes(profile.role)) return null;
+
+  const readOnly =
+    profile.role === 'ADMIN'
+    && (Boolean(profile.read_only) || String(profile.email ?? '').toLowerCase() === 'admin01@viewer.1cma.online');
+
+  return {
+    user: userData.user,
+    profile,
+    isSuperuser: profile.role === 'SUPERUSER',
+    readOnly,
+  };
 }
 
 /** @param {Record<string, string>} env @param {Request} request */
