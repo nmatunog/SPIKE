@@ -13,15 +13,14 @@ import {
   setRaSpikeStepStatus,
   submitRaSpikeWeek,
 } from '../../lib/raSpikeWeekProgress.js';
-import { isCanvasWizardComplete } from '../../lib/raSpikeCanvasWizard.js';
-import { isRaSpikePersonaComplete } from '../../lib/raSpikePersonaStorage.js';
+import { isCanvasWizardComplete, isFecIntroWizardComplete } from '../../lib/raSpikeCanvasWizard.js';
 import { isRaSpikeWorksheetComplete } from '../../lib/raSpikeWorksheetStorage.js';
 import { isGatePrepComplete, gateNumberForWeek } from '../../lib/raSpikeGateService.js';
 import {
   ROUTES,
   raSpikePlaybookDreamBoardHref,
+  raSpikePlaybookFecIntroHref,
   raSpikePlaybookCanvasWizardHref,
-  raSpikePlaybookPersonaHref,
   raSpikeStageGateHref,
   raSpikePlaybookStepHref,
 } from '../../routes/paths.js';
@@ -71,7 +70,7 @@ export function RaSpikeWeekStepPage({ user, week, stepId }) {
     if (week === 1 && isBuilderCompleted(participantId, 'dream-board')) {
       setRaSpikeStepStatus(participantId, week, 'assignment', 'complete').then(setProgress).catch(() => {});
     }
-    if (week === 2 && isRaSpikePersonaComplete(participantId)) {
+    if (week === 2 && isFecIntroWizardComplete(participantId)) {
       setRaSpikeStepStatus(participantId, week, 'assignment', 'complete').then(setProgress).catch(() => {});
     }
     if (week === 3 && isCanvasWizardComplete(participantId)) {
@@ -109,8 +108,8 @@ export function RaSpikeWeekStepPage({ user, week, stepId }) {
     const action = content.action;
     if (!action) return null;
     if (action.type === 'dream-board') return raSpikePlaybookDreamBoardHref();
+    if (action.type === 'fec-intro-wizard') return raSpikePlaybookFecIntroHref();
     if (action.type === 'canvas-wizard') return raSpikePlaybookCanvasWizardHref();
-    if (action.type === 'persona') return raSpikePlaybookPersonaHref();
     if (action.type === 'stage-gate') return raSpikeStageGateHref(action.gate ?? 1, week);
     if (action.type === 'prospecting') return ROUTES.raSpikePlaybookProspecting;
     if (action.type === 'discovery-log') return ROUTES.raSpikePlaybookDiscoveryLog;

@@ -1,0 +1,61 @@
+{
+  "title": "FEC Guided Start",
+  "subtitle": "Start with your customer — three building blocks only. The rest of the canvas unlocks in Week 3.",
+  "lockedHeading": "Locked until Week 3",
+  "lockedSections": [
+    "Revenue Streams",
+    "Cost Structure",
+    "Profit Formula",
+    "Key Resources",
+    "Key Partners",
+    "Funding Strategy",
+    "Unified Venture Proposition"
+  ],
+  "steps": [
+    {
+      "id": "customer_segment",
+      "title": "Customer Segment",
+      "question": "Who do I want to serve?",
+      "description": "Name a specific group you would genuinely love to help — not everyone. Use your Week 1 Dream Board as a clue.",
+      "fields": [
+        {
+          "pillar": "create_value",
+          "key": "customer_segments",
+          "label": "Your customer segment",
+          "hint": "Be concrete: age, life stage, occupation, or situation.",
+          "minChars": 15
+        }
+      ]
+    },
+    {
+      "id": "customer_problem",
+      "title": "Customer Problem",
+      "question": "What important problem do they face?",
+      "description": "Describe the urgent financial or life problem this segment struggles with today — before you offer any solution.",
+      "fields": [
+        {
+          "pillar": "create_value",
+          "key": "customer_problem",
+          "label": "Their core problem",
+          "hint": "Focus on pain, fear, or risk — not product features.",
+          "minChars": 15
+        }
+      ]
+    },
+    {
+      "id": "value_proposition",
+      "title": "Value Proposition",
+      "question": "How will I help solve that problem?",
+      "description": "State how you will help this customer move from their problem toward a better outcome — your first draft of value.",
+      "fields": [
+        {
+          "pillar": "create_value",
+          "key": "value_offering",
+          "label": "Your value proposition",
+          "hint": "Connect your segment + problem to the transformation you offer.",
+          "minChars": 15
+        }
+      ]
+    }
+  ]
+}

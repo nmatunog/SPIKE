@@ -6,25 +6,22 @@ import { RaSpikeShell } from '../../components/ra-spike/RaSpikeShell.jsx';
 import { CanvasWizardEngine } from '../../components/ra-spike/learning/CanvasWizardEngine.jsx';
 import { prepareFecCanvas } from '../../lib/fecCanvasService.js';
 import {
-  getRaSpikeCanvasWizardConfig,
-  isFecContinueWizardComplete,
+  getRaSpikeFecIntroWizardConfig,
   isFecIntroWizardComplete,
 } from '../../lib/raSpikeCanvasWizard.js';
 import { setRaSpikeStepStatus } from '../../lib/raSpikeWeekProgress.js';
 import { ROUTES } from '../../routes/paths.js';
 
-const WEEK = 3;
+const WEEK = 2;
 
 /**
- * Week 3 — FEC canvas continuation (Capture Value, Enable Value, UVP).
- * Week 2 create_value blocks are read-only above the wizard.
+ * Week 2 — guided FEC intro (Customer Segment, Problem, Value Proposition only).
  * @param {{ user?: { id?: string, internProgress?: object | null } }} props
  */
-export function RaSpikeCanvasWizardPage({ user }) {
+export function RaSpikeFecIntroWizardPage({ user }) {
   const participantId = user?.id ?? '';
-  const config = getRaSpikeCanvasWizardConfig();
+  const config = getRaSpikeFecIntroWizardConfig();
   const [done, setDone] = useState(false);
-  const introComplete = participantId ? isFecIntroWizardComplete(participantId) : false;
 
   useEffect(() => {
     if (participantId) prepareFecCanvas(participantId);
@@ -32,7 +29,7 @@ export function RaSpikeCanvasWizardPage({ user }) {
 
   useEffect(() => {
     if (!participantId) return;
-    if (isFecContinueWizardComplete(participantId)) {
+    if (isFecIntroWizardComplete(participantId)) {
       setDone(true);
       void setRaSpikeStepStatus(participantId, WEEK, 'assignment', 'complete');
     }
@@ -55,31 +52,19 @@ export function RaSpikeCanvasWizardPage({ user }) {
             <ArrowLeft size={16} /> Playbook
           </Link>
           <header>
-            <h1 className="text-2xl font-bold text-slate-900">{config?.title ?? 'FEC Canvas Wizard'}</h1>
+            <h1 className="text-2xl font-bold text-slate-900">{config?.title ?? 'FEC Guided Start'}</h1>
             <p className="mt-1 text-sm text-slate-600">
-              {config?.subtitle ?? 'Continue your Financial Entrepreneurship Canvas.'}
+              {config?.subtitle ?? 'Complete three customer-focused blocks. The full canvas unlocks in Week 3.'}
             </p>
           </header>
-
-          {!introComplete ? (
-            <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
-              Complete the Week 2 FEC guided start (Customer Segment, Problem, Value Proposition) before
-              finishing these blocks.{' '}
-              <Link to={ROUTES.raSpikePlaybookFecIntro} className="font-semibold text-spike hover:underline">
-                Open Week 2 FEC wizard
-              </Link>
-            </p>
-          ) : null}
-
           {done ? (
             <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
-              Canvas assignment complete. Return to Playbook to finish Reflection and Submit.
+              Week 2 FEC blocks saved. Return to Playbook for Reflection and Submit.
             </p>
           ) : null}
-
           <CanvasWizardEngine
             participantId={participantId}
-            mode="continue"
+            mode="intro"
             onComplete={handleComplete}
           />
         </div>

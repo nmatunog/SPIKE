@@ -20,4 +20,33 @@
  * @property {Partial<Record<'learn'|'workshop'|'assignment'|'reflection'|'submit', RaSpikeStepContent>>} steps
  */
 
+/**
+ * @typedef {Object} RaSpikeFecWizardField
+ * @property {string} pillar
+ * @property {string} key
+ * @property {string} [label]
+ * @property {string} [hint]
+ * @property {number} [minChars]
+ */
+
+/**
+ * @typedef {Object} RaSpikeFecWizardStep
+ * @property {string} id
+ * @property {string} [title]
+ * @property {string} [question]
+ * @property {string} [description]
+ * @property {string} [pillar]
+ * @property {RaSpikeFecWizardField[]} [fields]
+ */
+
+/**
+ * @typedef {Object} RaSpikeFecWizardConfig
+ * @property {string} title
+ * @property {string} [subtitle]
+ * @property {string} [lockedHeading]
+ * @property {string[]} [lockedSections]
+ * @property {RaSpikeFecWizardField[]} [lockedFieldKeys]
+ * @property {RaSpikeFecWizardStep[]} steps
+ */
+
 export {};

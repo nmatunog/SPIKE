@@ -4,19 +4,35 @@ import {
   getFecSummaryField,
   saveFecFieldDebounced,
   saveFecSummaryField,
-  computeFecCanvasCompletionPct,
   prepareFecCanvas,
 } from './fecCanvasService.js';
 
-const wizardModule = import.meta.glob('../../content/ra-spike/canvas-wizard.json', {
+const introModule = import.meta.glob('../../content/ra-spike/fec-intro-wizard.json', {
+  eager: true,
+  import: 'default',
+});
+const continueModule = import.meta.glob('../../content/ra-spike/canvas-wizard.json', {
   eager: true,
   import: 'default',
 });
 
-/** @returns {import('../../lib/raSpikeContentTypes.js').RaSpikeCanvasWizardConfig | null} */
-export function getRaSpikeCanvasWizardConfig() {
-  const entry = Object.values(wizardModule)[0];
+/** @typedef {'intro' | 'continue'} RaSpikeFecWizardMode */
+
+/** @returns {import('./raSpikeContentTypes.js').RaSpikeFecWizardConfig | null} */
+export function getRaSpikeFecIntroWizardConfig() {
+  const entry = Object.values(introModule)[0];
   return entry ?? null;
+}
+
+/** @returns {import('./raSpikeContentTypes.js').RaSpikeFecWizardConfig | null} */
+export function getRaSpikeCanvasWizardConfig() {
+  const entry = Object.values(continueModule)[0];
+  return entry ?? null;
+}
+
+/** @param {RaSpikeFecWizardMode} mode */
+export function getRaSpikeFecWizardConfig(mode) {
+  return mode === 'intro' ? getRaSpikeFecIntroWizardConfig() : getRaSpikeCanvasWizardConfig();
 }
 
 /**
@@ -45,10 +61,37 @@ export function writeWizardField(participantId, pillarId, fieldKey, value) {
   saveFecFieldDebounced(participantId, pillarId, fieldKey, value);
 }
 
-/** @param {string} participantId */
-export function isCanvasWizardComplete(participantId) {
+/** @param {{ pillar: string, key: string, minChars?: number }} field */
+function fieldMeetsMin(participantId, field) {
+  return readWizardField(participantId, field.pillar, field.key).trim().length >= (field.minChars ?? 10);
+}
+
+/** @param {string} participantId @param {Array<{ fields?: Array<{ pillar: string, key: string, minChars?: number }> }>} steps */
+function stepsComplete(participantId, steps) {
   prepareFecCanvas(participantId);
-  return computeFecCanvasCompletionPct(participantId) >= 40;
+  return steps.every((step) => {
+    const fields = step.fields?.length ? step.fields : getWizardStepFields(step.id);
+    return fields.length > 0 && fields.every((f) => fieldMeetsMin(participantId, f));
+  });
+}
+
+/** Week 2 — Customer Segment, Problem, Value Proposition only. */
+export function isFecIntroWizardComplete(participantId) {
+  const config = getRaSpikeFecIntroWizardConfig();
+  if (!config?.steps?.length) return false;
+  return stepsComplete(participantId, config.steps);
+}
+
+/** Week 3 — Capture Value, Enable Value, UVP (create_value locked from Week 2). */
+export function isFecContinueWizardComplete(participantId) {
+  const config = getRaSpikeCanvasWizardConfig();
+  if (!config?.steps?.length) return false;
+  return stepsComplete(participantId, config.steps);
+}
+
+/** @deprecated Use isFecContinueWizardComplete for Week 3. */
+export function isCanvasWizardComplete(participantId) {
+  return isFecContinueWizardComplete(participantId);
 }
 
 /** @param {string} stepId */
@@ -70,4 +113,13 @@ export function getWizardStepFields(stepId) {
     label: f.label,
     minChars: f.minChars ?? 10,
   }));
+}
+
+/**
+ * @param {{ fields?: Array<{ pillar: string, key: string, label?: string, hint?: string, minChars?: number }> } | undefined} step
+ */
+export function resolveWizardStepFields(step) {
+  if (!step) return [];
+  if (step.fields?.length) return step.fields;
+  return getWizardStepFields(step.id);
 }

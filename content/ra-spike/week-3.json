@@ -2,21 +2,21 @@
   "weekNumber": 3,
   "segment": "discover",
   "title": "Design Your Business",
-  "theme": "FEC blocks 3–5 — Value, Activities, Income",
+  "theme": "FEC blocks 4–6 — Capture Value, Enable Value, UVP",
   "modules": ["dream-board", "customer-discovery", "fec-canvas"],
   "steps": {
     "learn": {
       "label": "Learn",
       "headline": "Build your advisory business blueprint",
-      "summary": "Complete Value (what & how), Activities (how you operate), and Income (how you earn) on the FEC.",
+      "summary": "Continue your FEC — Capture Value (revenue, costs, profit), Enable Value (resources & partners), and your Unified Venture Proposition.",
       "durationMinutes": 25,
       "bullets": [
-        "Value: what you deliver and how it helps your customer",
-        "Activities: how your practice operates week to week",
-        "Income: how you earn as a financial entrepreneur",
-        "Canvas wizard walks you through each block step by step"
+        "Your Week 2 blocks (segment, problem, value) stay locked as your foundation",
+        "Capture Value: how money flows in and out of your practice",
+        "Enable Value: resources, partners, and funding to deliver consistently",
+        "Canvas wizard walks you through each remaining block step by step"
       ],
-      "callout": "You and Customer from Weeks 1–2 feed this week’s canvas work."
+      "callout": "Customer work from Week 2 feeds this week’s canvas continuation."
     },
     "workshop": {
       "label": "Workshop",
@@ -24,7 +24,7 @@
       "summary": "Facilitated canvas building with squad feedback.",
       "durationMinutes": 90,
       "bullets": [
-        "Fill Value, Activities, and Income with coach guidance",
+        "Fill Capture Value, Enable Value, and UVP with coach guidance",
         "Squad peer review of one canvas block",
         "Identify gaps before Week 4 pitch prep"
       ],
@@ -32,12 +32,12 @@
     },
     "assignment": {
       "label": "Assignment",
-      "headline": "Complete FEC canvas blocks",
-      "summary": "Finish Value, Activities, and Income in the canvas wizard.",
+      "headline": "Complete remaining FEC blocks",
+      "summary": "Finish Capture Value, Enable Value, and Unified Venture Proposition in the canvas wizard.",
       "durationMinutes": 75,
       "bullets": [
-        "Use the canvas wizard for guided prompts",
-        "Align each block with your persona and Dream Board",
+        "Review your Week 2 blocks at the top of the wizard",
+        "Use guided prompts for each new block",
         "Save progress so Week 4 can synthesize your 3-year plan"
       ],
       "action": { "type": "canvas-wizard", "label": "Open canvas wizard" }

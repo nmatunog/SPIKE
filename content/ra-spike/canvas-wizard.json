@@ -1,24 +1,24 @@
 {
   "title": "FEC Canvas Wizard",
-  "subtitle": "Build your business model one section at a time",
+  "subtitle": "Continue your canvas — Value, Activities, and Income blocks (Week 3).",
+  "lockedHeading": "Completed in Week 2",
+  "lockedFieldKeys": [
+    { "pillar": "create_value", "key": "customer_segments", "label": "Customer Segment" },
+    { "pillar": "create_value", "key": "customer_problem", "label": "Customer Problem" },
+    { "pillar": "create_value", "key": "value_offering", "label": "Value Proposition" }
+  ],
   "steps": [
-    {
-      "id": "create_value",
-      "pillar": "create_value",
-      "title": "Create Value",
-      "description": "Who you serve, their problem, and your offering."
-    },
     {
       "id": "capture_value",
       "pillar": "capture_value",
       "title": "Capture Value",
-      "description": "How money flows in and out of your practice."
+      "description": "How money flows in and out of your practice — revenue, costs, and profit."
     },
     {
       "id": "enable_value",
       "pillar": "enable_value",
       "title": "Enable Value",
-      "description": "Resources, partners, and funding to deliver."
+      "description": "Resources, partners, and funding you need to deliver consistently."
     },
     {
       "id": "uvp",

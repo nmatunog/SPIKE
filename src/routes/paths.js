@@ -60,6 +60,7 @@ export const ROUTES = {
   raSpikeProfile: '/ra-spike/profile',
   raSpikeOnboarding: '/ra-spike/onboarding',
   raSpikePlaybookDreamBoard: '/ra-spike/playbook/dream-board',
+  raSpikePlaybookFecIntro: '/ra-spike/playbook/fec-intro',
   raSpikePlaybookCanvasWizard: '/ra-spike/playbook/canvas-wizard',
   raSpikePlaybookPersona: '/ra-spike/playbook/persona',
   raSpikePlaybookProspecting: '/ra-spike/playbook/prospecting',
@@ -478,6 +479,10 @@ export function raSpikePlaybookDreamBoardHref() {
   return ROUTES.raSpikePlaybookDreamBoard;
 }
 
+export function raSpikePlaybookFecIntroHref() {
+  return ROUTES.raSpikePlaybookFecIntro;
+}
+
 export function raSpikePlaybookCanvasWizardHref() {
   return ROUTES.raSpikePlaybookCanvasWizard;
 }
@@ -496,11 +501,12 @@ export function raSpikeStageGateHref(gate = 1, assignmentWeek) {
 
 /**
  * @param {string} pathname
- * @returns {{ view: 'overview' } | { view: 'dream-board' } | { view: 'canvas-wizard' } | { view: 'persona' } | { view: 'prospecting' } | { view: 'discovery-log' } | { view: 'step', stepId: string } | null}
+ * @returns {{ view: 'overview' } | { view: 'dream-board' } | { view: 'fec-intro' } | { view: 'canvas-wizard' } | { view: 'persona' } | { view: 'prospecting' } | { view: 'discovery-log' } | { view: 'step', stepId: string } | null}
  */
 export function parseRaSpikePlaybookPath(pathname) {
   if (pathname === ROUTES.raSpikePlaybook) return { view: 'overview' };
   if (pathname === ROUTES.raSpikePlaybookDreamBoard) return { view: 'dream-board' };
+  if (pathname === ROUTES.raSpikePlaybookFecIntro) return { view: 'fec-intro' };
   if (pathname === ROUTES.raSpikePlaybookCanvasWizard) return { view: 'canvas-wizard' };
   if (pathname === ROUTES.raSpikePlaybookPersona) return { view: 'persona' };
   if (pathname === ROUTES.raSpikePlaybookProspecting) return { view: 'prospecting' };
