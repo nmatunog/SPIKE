@@ -46,15 +46,29 @@ function linkClass(isActive, isMobile) {
     : 'spike-nav-pill spike-nav-pill-inactive';
 }
 
-function NavItems({ userRole, variant }) {
+function NavItems({ userRole, variant, isSuperuserPortal = false }) {
   const programSlug = useProgramSlug();
   const { pathname } = useLocation();
   const raSpikeApp = isRaSpikeAppPath(pathname) || programSlug === 'ra-spike';
-  const items = moduleNavForProgram(
+  let items = moduleNavForProgram(
     userRole,
     userRole === 'intern' ? programSlug : null,
     { raSpikeApp },
   );
+  if (isSuperuserPortal && raSpikeApp && userRole !== 'superuser') {
+    const hasAdmin = items.some((item) => item.path === ROUTES.admin);
+    if (!hasAdmin) {
+      items = [
+        ...items,
+        {
+          path: ROUTES.admin,
+          label: 'Admin',
+          shortLabel: 'Admin',
+          icon: 'admin',
+        },
+      ];
+    }
+  }
   const isMobile = variant === 'mobile';
   const internActive = userRole === 'intern'
     ? internNavActiveModuleForProgram(pathname, programSlug)
@@ -100,18 +114,32 @@ function NavItems({ userRole, variant }) {
 }
 
 /**
- * @param {{ userRole: string, superuserPreview?: { viewAsRole: string | null, onViewAs: (role: string) => void } }} props
+ * @param {{ userRole: string, superuserPreview?: { viewAsRole: string | null, onViewAs: (role: string) => void }, isSuperuserPortal?: boolean }} props
  */
-export function ModuleNav({ userRole, superuserPreview }) {
+export function ModuleNav({ userRole, superuserPreview, isSuperuserPortal = false }) {
   const compact = useCompactNav();
   const programSlug = useProgramSlug();
   const { pathname } = useLocation();
   const raSpikeApp = isRaSpikeAppPath(pathname) || programSlug === 'ra-spike';
-  const items = moduleNavForProgram(
+  let items = moduleNavForProgram(
     userRole,
     userRole === 'intern' ? programSlug : null,
     { raSpikeApp },
   );
+  if (isSuperuserPortal && raSpikeApp && userRole !== 'superuser') {
+    const hasAdmin = items.some((item) => item.path === ROUTES.admin);
+    if (!hasAdmin) {
+      items = [
+        ...items,
+        {
+          path: ROUTES.admin,
+          label: 'Admin',
+          shortLabel: 'Admin',
+          icon: 'admin',
+        },
+      ];
+    }
+  }
   if (items.length === 0) return null;
 
   if (compact) {
@@ -132,7 +160,7 @@ export function ModuleNav({ userRole, superuserPreview }) {
         >
           <div className="mx-auto flex max-w-projection items-stretch justify-around gap-1 px-1 sm:px-2">
             <StaffProgramSwitcher userRole={userRole} />
-            <NavItems userRole={userRole} variant="mobile" />
+            <NavItems userRole={userRole} variant="mobile" isSuperuserPortal={isSuperuserPortal} />
           </div>
         </nav>
       </>
@@ -146,7 +174,7 @@ export function ModuleNav({ userRole, superuserPreview }) {
           {superuserPreview ? <SuperuserPreviewPills {...superuserPreview} /> : null}
           <StaffProgramSwitcher userRole={userRole} />
           <div className="flex min-w-0 flex-1 gap-1 sm:gap-2">
-            <NavItems userRole={userRole} variant="desktop" />
+            <NavItems userRole={userRole} variant="desktop" isSuperuserPortal={isSuperuserPortal} />
           </div>
         </div>
       </div>

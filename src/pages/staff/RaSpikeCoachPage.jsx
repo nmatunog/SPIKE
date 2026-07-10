@@ -15,6 +15,7 @@ import { isSuperuserDbRole } from '../../lib/roles.js';
  * @param {{
  *   role?: 'faculty' | 'mentor',
  *   user?: { id?: string, role?: string | null },
+ *   canManageCoaches?: boolean,
  *   interns: Array<object>,
  *   showToast?: (msg: string) => void,
  *   onRefresh?: () => void,
@@ -23,6 +24,7 @@ import { isSuperuserDbRole } from '../../lib/roles.js';
 export function RaSpikeCoachPage({
   role = 'faculty',
   user,
+  canManageCoaches = false,
   interns,
   showToast,
   onRefresh,
@@ -30,7 +32,7 @@ export function RaSpikeCoachPage({
   const raInterns = filterRaSpikeInterns(interns);
   const internshipHref = internshipEntryHref(role === 'mentor' ? 'mentor' : 'faculty');
   const roleLabel = role === 'mentor' ? 'Mentor' : 'Program Coach';
-  const isSuperuser = isSuperuserDbRole(user?.role);
+  const showAddCoach = canManageCoaches || isSuperuserDbRole(user?.role);
 
   return (
     <PageContainer wide>
@@ -43,7 +45,7 @@ export function RaSpikeCoachPage({
 
         <RaSpikeCoachPlaybookPanel />
 
-        {isSuperuser ? (
+        {showAddCoach ? (
           <SuperuserAddCoachPanel
             onCreated={async () => {
               showToast?.('Program coach account created.', 'success');

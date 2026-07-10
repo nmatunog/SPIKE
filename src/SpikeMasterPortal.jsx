@@ -1668,6 +1668,20 @@ const SpikeMasterPortal = () => {
     return null;
   };
 
+  const renderRaSpikeCoachHub = useCallback(
+    (coachRole = 'faculty', coachInterns = interns) => (
+      <RaSpikeCoachPage
+        role={coachRole}
+        user={user}
+        canManageCoaches={isSuperuserSession}
+        interns={coachInterns}
+        showToast={showToast}
+        onRefresh={loadInterns}
+      />
+    ),
+    [user, isSuperuserSession, interns, showToast, loadInterns],
+  );
+
   const renderAuthenticatedModule = () => {
     const path = location.pathname;
 
@@ -1732,15 +1746,7 @@ const SpikeMasterPortal = () => {
         );
       }
 
-      return (
-        <RaSpikeCoachPage
-          role={coachRole}
-          user={user}
-          interns={interns}
-          showToast={showToast}
-          onRefresh={loadInterns}
-        />
-      );
+      return renderRaSpikeCoachHub(coachRole);
     }
 
     if (path.startsWith(`${ROUTES.portfolio}/`) && path !== ROUTES.portfolio) {
@@ -1818,14 +1824,7 @@ const SpikeMasterPortal = () => {
       // (never internship activation-code dashboard).
       if (raSpikeApp) {
         const coachRole = viewAsRole === 'mentor' ? 'mentor' : 'faculty';
-        return (
-          <RaSpikeCoachPage
-            role={coachRole}
-            interns={interns}
-            showToast={showToast}
-            onRefresh={loadInterns}
-          />
-        );
+        return renderRaSpikeCoachHub(coachRole);
       }
 
       if (path === ROUTES.cohortIdentity) {
@@ -2054,14 +2053,7 @@ const SpikeMasterPortal = () => {
       if (isRaSpikeAppPath(path)) {
         const coachRole =
           effectiveUserRole === 'mentor' || viewAsRole === 'mentor' ? 'mentor' : 'faculty';
-        return (
-          <RaSpikeCoachPage
-            role={coachRole}
-            interns={interns}
-            showToast={showToast}
-            onRefresh={loadInterns}
-          />
-        );
+        return renderRaSpikeCoachHub(coachRole);
       }
 
       if (path === ROUTES.playbookFecProjection) {
@@ -2202,14 +2194,7 @@ const SpikeMasterPortal = () => {
         );
       }
       if (path === ROUTES.programCoachRaSpike) {
-        return (
-          <RaSpikeCoachPage
-            role="faculty"
-            interns={interns}
-            showToast={showToast}
-            onRefresh={loadInterns}
-          />
-        );
+        return renderRaSpikeCoachHub('faculty');
       }
       if (path === ROUTES.programCoachHome) {
         return (
@@ -2308,14 +2293,7 @@ const SpikeMasterPortal = () => {
         );
       }
       if (path === ROUTES.mentorRaSpike) {
-        return (
-          <RaSpikeCoachPage
-            role="mentor"
-            interns={mentorInterns}
-            showToast={showToast}
-            onRefresh={loadInterns}
-          />
-        );
+        return renderRaSpikeCoachHub('mentor', mentorInterns);
       }
       if (path === ROUTES.mentorSquads) {
         return (
@@ -2519,6 +2497,7 @@ const SpikeMasterPortal = () => {
         ) : showRaSpikeChrome ? null : (
           <ModuleNav
             userRole={moduleNavRole}
+            isSuperuserPortal={isSuperuserSession}
             superuserPreview={
               isSuperuserSession ? { viewAsRole, onViewAs: handleViewAs } : undefined
             }
