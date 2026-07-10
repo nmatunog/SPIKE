@@ -5,7 +5,7 @@ import { RaSpikeBatchManagementPanel } from '../../components/staff/RaSpikeBatch
 import { RaSpikeCoachPlaybookPanel } from '../../components/staff/RaSpikeCoachPlaybookPanel.jsx';
 import { RaSpikeGateEvaluationPanel } from '../../components/staff/RaSpikeGateEvaluationPanel.jsx';
 import { RaSpikeWeekPublishPanel } from '../../components/staff/RaSpikeWeekPublishPanel.jsx';
-import { internshipEntryHref, ROUTES } from '../../routes/paths.js';
+import { ROUTES } from '../../routes/paths.js';
 import { RA_SPIKE_PROGRAM } from '../../lib/programs/ra-spike.js';
 import { filterRaSpikeInterns } from '../../lib/raSpikeStaffGateService.js';
 
@@ -26,7 +26,6 @@ export function RaSpikeCoachPage({
   onRefresh,
 }) {
   const raInterns = filterRaSpikeInterns(interns);
-  const internshipHref = internshipEntryHref(role === 'mentor' ? 'mentor' : 'faculty');
   const roleLabel = role === 'mentor' ? 'Mentor' : 'Program Coach';
 
   return (
@@ -87,20 +86,6 @@ export function RaSpikeCoachPage({
           showToast={showToast}
           onEvaluated={onRefresh}
         />
-
-        <section className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm text-slate-600">
-          <p className="font-semibold text-slate-800">SPIKE Internship tools</p>
-          <p className="mt-1">
-            Playbook, Demo Day, and squad XP for the internship cohort are on the main coach home.
-          </p>
-          <a
-            href={internshipHref}
-            className="mt-3 inline-flex items-center gap-1 font-semibold text-spike hover:underline"
-          >
-            Open {roleLabel} home (SPIKE Internship)
-            <ArrowRight size={16} aria-hidden />
-          </a>
-        </section>
       </div>
     </PageContainer>
   );
