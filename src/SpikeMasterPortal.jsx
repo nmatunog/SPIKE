@@ -46,7 +46,10 @@ import { registerRaSpikeViaApi, isRaSpikeSignupApiUnavailable } from './lib/raSp
 import { RaSpikeOnboardingPage } from './pages/ra-spike/RaSpikeOnboardingPage.jsx';
 import { RaSpikeStageGatePrepPage } from './pages/ra-spike/RaSpikeStageGatePrepPage.jsx';
 import { RaSpikeCoachPage } from './pages/staff/RaSpikeCoachPage.jsx';
+import { RaSpikeAdminPage } from './pages/staff/RaSpikeAdminPage.jsx';
 import { buildRaSpikeCoachPreviewUser, isRaSpikeStaffPlaybookRole } from './lib/raSpikeCoachPreview.js';
+import { SuperuserPreviewBar } from './components/nav/SuperuserPreviewBar.jsx';
+import { RaSpikeStaffNav } from './components/ra-spike/RaSpikeStaffNav.jsx';
 import { StaffSquadHubPage, StaffSquadsListPage } from './components/staff/StaffSquadHubPage.jsx';
 import { Week2LoginWelcomeFlow } from './components/week2/Week2LoginWelcomeFlow.jsx';
 import { shouldShowWeek2LoginWelcome } from './lib/week2LoginWelcome.js';
@@ -1672,14 +1675,13 @@ const SpikeMasterPortal = () => {
     (coachRole = 'faculty', coachInterns = interns) => (
       <RaSpikeCoachPage
         role={coachRole}
-        user={user}
         canManageCoaches={isSuperuserSession}
         interns={coachInterns}
         showToast={showToast}
         onRefresh={loadInterns}
       />
     ),
-    [user, isSuperuserSession, interns, showToast, loadInterns],
+    [isSuperuserSession, interns, showToast, loadInterns],
   );
 
   const renderAuthenticatedModule = () => {
@@ -1743,6 +1745,20 @@ const SpikeMasterPortal = () => {
       if (isRaSpikePlaybookPath(path) && isRaSpikeStaffPlaybookRole(effectiveUserRole)) {
         return (
           <RaSpikePlaybookPage user={buildRaSpikeCoachPreviewUser(user)} />
+        );
+      }
+
+      if (path === ROUTES.raSpikeAdmin || path.startsWith(`${ROUTES.raSpikeAdmin}/`)) {
+        if (!isSuperuserSession && effectiveUserRole !== 'admin') {
+          return <Navigate to={ROUTES.programCoachRaSpike} replace />;
+        }
+        return (
+          <RaSpikeAdminPage
+            user={user}
+            readOnlyViewer={readOnlyViewer}
+            showToast={showToast}
+            onChanged={loadInterns}
+          />
         );
       }
 
@@ -1818,13 +1834,6 @@ const SpikeMasterPortal = () => {
           return <Navigate to={ROUTES.raSpikeHome} replace />;
         }
         return <Navigate to={ROUTES.raSpikeHome} replace />;
-      }
-
-      // Superuser on RA-SPIKE without Intern preview → coach hub only
-      // (never internship activation-code dashboard).
-      if (raSpikeApp) {
-        const coachRole = viewAsRole === 'mentor' ? 'mentor' : 'faculty';
-        return renderRaSpikeCoachHub(coachRole);
       }
 
       if (path === ROUTES.cohortIdentity) {
@@ -2049,13 +2058,6 @@ const SpikeMasterPortal = () => {
     }
 
     if (isSuperuserSession || isStaffUiRole(effectiveUserRole)) {
-      // Faculty/mentor/admin on RA-SPIKE portal — coach hub only.
-      if (isRaSpikeAppPath(path)) {
-        const coachRole =
-          effectiveUserRole === 'mentor' || viewAsRole === 'mentor' ? 'mentor' : 'faculty';
-        return renderRaSpikeCoachHub(coachRole);
-      }
-
       if (path === ROUTES.playbookFecProjection) {
         return renderFecProjection(effectiveUserRole);
       }
@@ -2459,7 +2461,16 @@ const SpikeMasterPortal = () => {
     && isRaSpikeProgram(internProgramSlug)
     && !authLoading;
 
-  const raSpikeHeaderSubtitle = showRaSpikeChrome
+  const showRaSpikeStaffChrome =
+    !immersiveLife
+    && isRaSpikeAppPath(location.pathname)
+    && userRole !== 'guest'
+    && userRole !== 'profile_error'
+    && !authLoading
+    && !(isSuperuserSession && viewAsRole === 'intern')
+    && (isStaffUiRole(userRole) || isStaffUiRole(effectiveUserRole));
+
+  const raSpikeHeaderSubtitle = showRaSpikeChrome || showRaSpikeStaffChrome
     ? `RA-SPIKE™ · ${RA_SPIKE_PROGRAM.theme}`
     : undefined;
 
@@ -2469,7 +2480,7 @@ const SpikeMasterPortal = () => {
         immersiveLife
           ? 'spike-app-shell--immersive-life'
           : `${compactNav ? 'spike-app-shell--compact-nav' : 'spike-app-shell--desktop-nav'}${
-              isSuperuserSession && compactNav ? ' spike-app-shell--superuser-preview' : ''
+              isSuperuserSession ? ' spike-app-shell--superuser-preview' : ''
             }${
               internCloudSyncing || internWorkStatus?.showBanner ? ' spike-app-shell--cloud-syncing' : ''
             }${hasPendingReflection ? ' spike-app-shell--pending-reflection' : ''}`
@@ -2491,17 +2502,20 @@ const SpikeMasterPortal = () => {
 
       {!immersiveLife && readOnlyViewer ? <ReadOnlyViewerBar /> : null}
 
+      {!immersiveLife && isSuperuserSession && !authLoading ? (
+        <SuperuserPreviewBar viewAsRole={viewAsRole} onViewAs={handleViewAs} compact={compactNav} />
+      ) : null}
+
       {!immersiveLife && userRole !== 'guest' && userRole !== 'profile_error' && !authLoading && (
         showRaSpikeChrome && !isRaSpikeOnboardingPath(location.pathname) ? (
           <RaSpikeNav />
-        ) : showRaSpikeChrome ? null : (
-          <ModuleNav
+        ) : showRaSpikeStaffChrome ? (
+          <RaSpikeStaffNav
             userRole={moduleNavRole}
-            isSuperuserPortal={isSuperuserSession}
-            superuserPreview={
-              isSuperuserSession ? { viewAsRole, onViewAs: handleViewAs } : undefined
-            }
+            showAdmin={isSuperuserSession || effectiveUserRole === 'admin'}
           />
+        ) : (
+          <ModuleNav userRole={moduleNavRole} />
         )
       )}
 

@@ -67,7 +67,7 @@ function RaSpikePlaybookOverview({ user }) {
     if (Number.isFinite(queryWeek) && queryWeek >= 1 && queryWeek <= 8) return queryWeek;
     return resolveRaSpikeCalendarWeek(cohortStartDate, baseCtx.week);
   }, [queryWeek, cohortStartDate, baseCtx.week]);
-  const weekUnlocked = isRaSpikeWeekUnlocked(displayWeek, user?.internProgress);
+  const weekUnlocked = staffPreview || isRaSpikeWeekUnlocked(displayWeek, user?.internProgress);
   const weekContent = getRaSpikeWeekContent(displayWeek);
   const [progress, setProgress] = useState({});
   const [showGrad, setShowGrad] = useState(false);

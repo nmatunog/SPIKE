@@ -67,6 +67,7 @@ export const ROUTES = {
   raSpikePlaybookDiscoveryLog: '/ra-spike/playbook/discovery-log',
   raSpikePlaybookDiscoveryCanvas: '/ra-spike/playbook/discovery-canvas',
   raSpikeStageGate: '/ra-spike/stage-gate',
+  raSpikeAdmin: '/ra-spike/admin',
 };
 
 /** Redirect target after onboarding completes — Build Challenge 1 (Ambition). */
@@ -462,13 +463,15 @@ export function isRaSpikePlaybookPath(pathname) {
   return pathname === ROUTES.raSpikePlaybook || pathname.startsWith(`${ROUTES.raSpikePlaybook}/`);
 }
 
-/** Staff coach hubs under /ra-spike/* */
+/** Staff coach hubs and admin under /ra-spike/* */
 export function isRaSpikeStaffPath(pathname) {
   return (
     pathname === ROUTES.programCoachRaSpike
     || pathname.startsWith(`${ROUTES.programCoachRaSpike}/`)
     || pathname === ROUTES.mentorRaSpike
     || pathname.startsWith(`${ROUTES.mentorRaSpike}/`)
+    || pathname === ROUTES.raSpikeAdmin
+    || pathname.startsWith(`${ROUTES.raSpikeAdmin}/`)
   );
 }
 
@@ -712,11 +715,11 @@ export function moduleNavForProgram(userRole, programSlug, options = {}) {
         icon: 'playbook',
       },
     ];
-    if (userRole === 'superuser') {
+    if (userRole === 'superuser' || userRole === 'admin') {
       items.push({
-        path: ROUTES.admin,
-        label: 'Admin',
-        shortLabel: 'Admin',
+        path: ROUTES.raSpikeAdmin,
+        label: 'Accounts',
+        shortLabel: 'Accounts',
         icon: 'admin',
       });
     }
@@ -857,6 +860,9 @@ export function matchModulePath(pathname) {
   if (pathname === ROUTES.programCoachRaSpike || pathname.startsWith(`${ROUTES.programCoachRaSpike}/`)) {
     return ROUTES.programCoachRaSpike;
   }
+  if (pathname === ROUTES.raSpikeAdmin || pathname.startsWith(`${ROUTES.raSpikeAdmin}/`)) {
+    return ROUTES.raSpikeAdmin;
+  }
   if (pathname === ROUTES.programCoachHome || pathname.startsWith(`${ROUTES.programCoachHome}/`)) {
     return ROUTES.programCoachHome;
   }
@@ -916,6 +922,12 @@ const AUTHENTICATED_ROLES = ['intern', 'faculty', 'mentor', 'admin', 'superuser'
 export function rolesForRoute(pathname) {
   if (isRaSpikePlaybookPath(pathname)) {
     return ['faculty', 'mentor', 'admin', 'superuser', 'intern'];
+  }
+  if (pathname === ROUTES.raSpikeAdmin || pathname.startsWith(`${ROUTES.raSpikeAdmin}/`)) {
+    return ['admin', 'superuser'];
+  }
+  if (isRaSpikeStaffPath(pathname)) {
+    return ['faculty', 'mentor', 'admin', 'superuser'];
   }
   if (isRaSpikePath(pathname)) return ['intern'];
   if (isPublicPortfolioPath(pathname)) return AUTHENTICATED_ROLES;
@@ -1025,7 +1037,9 @@ export function defaultRouteForRole(userRole, programSlug, options = {}) {
   }
 
   if (raSpikeApp) {
+    if (userRole === 'intern') return ROUTES.raSpikeHome;
     if (userRole === 'mentor') return ROUTES.mentorRaSpike;
+    if (userRole === 'admin' || userRole === 'superuser') return ROUTES.raSpikeAdmin;
     return ROUTES.programCoachRaSpike;
   }
 

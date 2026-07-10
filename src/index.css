@@ -54,7 +54,16 @@
   }
 
   .spike-app-shell--compact-nav.spike-app-shell--superuser-preview {
-    --spike-bottom-nav-offset: calc(8rem + env(safe-area-inset-bottom, 0px));
+    --spike-bottom-nav-offset: calc(5.25rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .spike-app-shell--superuser-preview {
+    --spike-superuser-preview-offset: 3.25rem;
+  }
+
+  .spike-app-shell--superuser-preview [aria-label='RA-SPIKE staff navigation'].sticky,
+  .spike-app-shell--superuser-preview nav[aria-label='Main navigation'].sticky {
+    top: var(--spike-superuser-preview-offset);
   }
 
   .spike-app-shell--desktop-nav {

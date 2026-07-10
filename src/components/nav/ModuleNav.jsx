@@ -56,14 +56,14 @@ function NavItems({ userRole, variant, isSuperuserPortal = false }) {
     { raSpikeApp },
   );
   if (isSuperuserPortal && raSpikeApp && userRole !== 'superuser') {
-    const hasAdmin = items.some((item) => item.path === ROUTES.admin);
+    const hasAdmin = items.some((item) => item.path === ROUTES.raSpikeAdmin);
     if (!hasAdmin) {
       items = [
         ...items,
         {
-          path: ROUTES.admin,
-          label: 'Admin',
-          shortLabel: 'Admin',
+          path: ROUTES.raSpikeAdmin,
+          label: 'Accounts',
+          shortLabel: 'Accounts',
           icon: 'admin',
         },
       ];
@@ -127,14 +127,14 @@ export function ModuleNav({ userRole, superuserPreview, isSuperuserPortal = fals
     { raSpikeApp },
   );
   if (isSuperuserPortal && raSpikeApp && userRole !== 'superuser') {
-    const hasAdmin = items.some((item) => item.path === ROUTES.admin);
+    const hasAdmin = items.some((item) => item.path === ROUTES.raSpikeAdmin);
     if (!hasAdmin) {
       items = [
         ...items,
         {
-          path: ROUTES.admin,
-          label: 'Admin',
-          shortLabel: 'Admin',
+          path: ROUTES.raSpikeAdmin,
+          label: 'Accounts',
+          shortLabel: 'Accounts',
           icon: 'admin',
         },
       ];

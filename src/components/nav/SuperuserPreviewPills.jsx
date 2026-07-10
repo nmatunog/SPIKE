@@ -1,8 +1,8 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { formatUiRoleLabel } from '../../lib/terminology.js';
 import { VIEW_AS_ROLE_OPTIONS } from '../../lib/superuserViewAs.js';
 import { resetSuperuserInternDreamBoard } from '../../lib/superuserInternPreviewData.js';
-import { ROUTES } from '../../routes/paths.js';
+import { ROUTES, isRaSpikeAppPath } from '../../routes/paths.js';
 
 /**
  * Compact role-preview switcher embedded in the main nav for superusers.
@@ -10,10 +10,15 @@ import { ROUTES } from '../../routes/paths.js';
  */
 export function SuperuserPreviewPills({ viewAsRole, onViewAs, compact = false }) {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const activeRole = viewAsRole ?? 'superuser';
 
   function handleResetDreamBoard() {
     resetSuperuserInternDreamBoard();
+    if (isRaSpikeAppPath(pathname)) {
+      navigate(ROUTES.raSpikePlaybookDreamBoard, { replace: true });
+      return;
+    }
     navigate(`${ROUTES.ventureBlueprint}/day-1-builders`, { replace: true });
   }
 

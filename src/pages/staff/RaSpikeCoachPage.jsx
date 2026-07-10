@@ -1,7 +1,6 @@
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PageContainer } from '../../components/layout/PageContainer.jsx';
-import { SuperuserAddCoachPanel } from '../../components/admin/SuperuserAddCoachPanel.jsx';
 import { RaSpikeBatchManagementPanel } from '../../components/staff/RaSpikeBatchManagementPanel.jsx';
 import { RaSpikeCoachPlaybookPanel } from '../../components/staff/RaSpikeCoachPlaybookPanel.jsx';
 import { RaSpikeGateEvaluationPanel } from '../../components/staff/RaSpikeGateEvaluationPanel.jsx';
@@ -9,12 +8,10 @@ import { RaSpikeWeekPublishPanel } from '../../components/staff/RaSpikeWeekPubli
 import { internshipEntryHref, ROUTES } from '../../routes/paths.js';
 import { RA_SPIKE_PROGRAM } from '../../lib/programs/ra-spike.js';
 import { filterRaSpikeInterns } from '../../lib/raSpikeStaffGateService.js';
-import { isSuperuserDbRole } from '../../lib/roles.js';
 
 /**
  * @param {{
  *   role?: 'faculty' | 'mentor',
- *   user?: { id?: string, role?: string | null },
  *   canManageCoaches?: boolean,
  *   interns: Array<object>,
  *   showToast?: (msg: string) => void,
@@ -23,7 +20,6 @@ import { isSuperuserDbRole } from '../../lib/roles.js';
  */
 export function RaSpikeCoachPage({
   role = 'faculty',
-  user,
   canManageCoaches = false,
   interns,
   showToast,
@@ -32,7 +28,6 @@ export function RaSpikeCoachPage({
   const raInterns = filterRaSpikeInterns(interns);
   const internshipHref = internshipEntryHref(role === 'mentor' ? 'mentor' : 'faculty');
   const roleLabel = role === 'mentor' ? 'Mentor' : 'Program Coach';
-  const showAddCoach = canManageCoaches || isSuperuserDbRole(user?.role);
 
   return (
     <PageContainer wide>
@@ -45,24 +40,24 @@ export function RaSpikeCoachPage({
 
         <RaSpikeCoachPlaybookPanel />
 
-        {showAddCoach ? (
-          <SuperuserAddCoachPanel
-            onCreated={async () => {
-              showToast?.('Program coach account created.', 'success');
-              await onRefresh?.();
-            }}
-          />
+        {canManageCoaches ? (
+          <section className="rounded-2xl border border-spike/25 bg-spike-muted/20 p-5">
+            <p className="text-sm font-semibold text-slate-900">Coach accounts</p>
+            <p className="mt-1 text-sm text-slate-600">
+              Create Program Coach logins, fix duplicate signups, reset passwords, or remove test accounts.
+            </p>
+            <Link
+              to={ROUTES.raSpikeAdmin}
+              className="mt-4 inline-flex min-h-[44px] items-center gap-1 rounded-xl bg-spike px-4 py-2.5 text-sm font-bold text-white hover:bg-spike/90"
+            >
+              Manage accounts
+              <ArrowRight size={16} aria-hidden />
+            </Link>
+          </section>
         ) : (
           <section className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm text-slate-600">
-            <p className="font-semibold text-slate-800">Add another coach</p>
-            <p className="mt-1">
-              Staff self-signup is disabled. Only a <span className="font-semibold">Superuser</span> can
-              create Program Coach accounts — sign in with your superuser account, or open{' '}
-              <Link to={ROUTES.admin} className="font-semibold text-spike hover:underline">
-                Admin
-              </Link>
-              {' '}if you have access.
-            </p>
+            <p className="font-semibold text-slate-800">Need another coach account?</p>
+            <p className="mt-1">Ask your portal superuser to create one — staff self-signup is disabled.</p>
           </section>
         )}
 
