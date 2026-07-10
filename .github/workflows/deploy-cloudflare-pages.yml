@@ -55,7 +55,7 @@ jobs:
       - name: Verify dist assets
         run: node scripts/verify-dist-assets.mjs
 
-      - name: Deploy to Cloudflare Pages
+      - name: Deploy to Cloudflare Pages (SPIKE Internship)
         uses: cloudflare/wrangler-action@v3
         env:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
@@ -67,6 +67,19 @@ jobs:
           wranglerVersion: '4'
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           command: pages deploy dist --project-name spike
+
+      - name: Deploy to Cloudflare Pages (RA-SPIKE proxy origin)
+        uses: cloudflare/wrangler-action@v3
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: '4'
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          command: pages deploy dist --project-name ra-spike --branch ra-spike
 
       - name: Purge portal CDN cache
         continue-on-error: true
