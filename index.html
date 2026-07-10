@@ -2,8 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/spike-logo.png" />
-    <link rel="apple-touch-icon" href="/spike-logo.png" />
+    <link rel="icon" type="image/png" href="%BASE_URL%spike-logo.png" />
+    <link rel="apple-touch-icon" href="%BASE_URL%spike-logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="format-detection" content="telephone=no" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -37,7 +37,7 @@
           var target = event.target;
           if (!target) return;
           var href = target.src || target.href || '';
-          if (!/\/assets\/.*\.(js|css)/.test(href)) return;
+          if (!/(?:\/ra-spike)?\/assets\/.*\.(js|css)/.test(href)) return;
           reloadFresh();
         }, true);
       })();

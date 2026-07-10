@@ -9,10 +9,12 @@ const lifeRoot = path.resolve(__dirname, 'SPIKE_LIFE')
 
 // https://vite.dev/config/
 const capacitorBuild = process.env.CAPACITOR === 'true'
+const appBaseRaw = process.env.VITE_APP_BASE || (capacitorBuild ? './' : '/')
+const appBase = appBaseRaw.endsWith('/') ? appBaseRaw : `${appBaseRaw}/`
 
 export default defineConfig({
-  // Relative paths for native WebView; absolute `/` for Cloudflare Pages SPA routing.
-  base: capacitorBuild ? './' : '/',
+  // Internship: `/`. RA-SPIKE Pages origin: `/ra-spike/` (portal proxy + dynamic chunks).
+  base: appBase,
   plugins: [react(), coachDeckGuardPlugin()],
   resolve: {
     alias: [

@@ -13,6 +13,7 @@ function mapToUpstreamPath(pathname) {
     return '/';
   }
 
+  // Vite base `/ra-spike/` in URLs; files are stored at /assets/* on the Pages origin.
   if (pathname.startsWith('/ra-spike/assets/')) {
     return pathname.slice('/ra-spike'.length);
   }
@@ -23,6 +24,14 @@ function mapToUpstreamPath(pathname) {
 
   if (pathname.startsWith('/ra-spike/content/')) {
     return pathname.slice('/ra-spike'.length);
+  }
+
+  // Public files — index uses /ra-spike/spike-logo.png → /spike-logo.png on origin.
+  if (pathname.startsWith('/ra-spike/')) {
+    const leaf = pathname.slice('/ra-spike'.length);
+    if (/^\/[\w.-]+\.(png|ico|svg|webp|txt)$/i.test(leaf)) {
+      return leaf;
+    }
   }
 
   // Coach deck + other public content for RA-SPIKE (no /ra-spike prefix in URLs).

@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "vite",
     "build": "node scripts/build-facilitators-content-reference.mjs && npm run build:spike-life && vite build && node scripts/copy-protected-coach-decks.mjs && node scripts/strip-public-coach-decks.mjs && bash scripts/strip-oversized-pages-assets.sh && node scripts/verify-dist-assets.mjs",
+    "build:ra-spike": "bash scripts/build-ra-spike.sh",
     "build:spike-life": "npm run build:packages --prefix SPIKE_LIFE",
     "build:facilitators-reference": "node scripts/build-facilitators-content-reference.mjs",
     "postbuild": "bash scripts/postbuild-ship.sh",

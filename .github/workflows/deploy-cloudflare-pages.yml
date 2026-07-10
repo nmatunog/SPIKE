@@ -68,6 +68,17 @@ jobs:
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           command: pages deploy dist --project-name spike
 
+      - name: Build RA-SPIKE (prefixed /ra-spike/ base for portal proxy)
+        run: npm run build:ra-spike
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_STATIC_ONLY: 'false'
+          VITE_MOCK_AUTH: 'false'
+
+      - name: Verify RA-SPIKE dist assets
+        run: node scripts/verify-dist-assets.mjs
+
       - name: Deploy to Cloudflare Pages (RA-SPIKE proxy origin)
         uses: cloudflare/wrangler-action@v3
         env:
