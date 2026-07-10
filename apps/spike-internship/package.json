@@ -1,0 +1,12 @@
+{
+  "name": "@1cma/spike-internship",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "SPIKE Venture Studio internship portal (portal.1cma.online/)",
+  "scripts": {
+    "dev": "vite --config ../../vite.config.js",
+    "build": "bash ../../scripts/build-internship.sh",
+    "lint": "eslint ../../src"
+  }
+}

@@ -19,17 +19,24 @@ export VITE_SUPABASE_URL="$VITE_RA_SPIKE_SUPABASE_URL"
 export VITE_SUPABASE_ANON_KEY="$VITE_RA_SPIKE_SUPABASE_ANON_KEY"
 export VITE_APP_BASE=/ra-spike/
 export VITE_RA_SPIKE_STANDALONE=true
-# Leave VITE_API_URL unset: on portal.1cma.online, /api/* must hit the main SPIKE Pages
-# project (admin, auth, coach). Prefixing /ra-spike routes APIs to ra-spike.pages.dev,
-# which breaks superuser admin actions (403 Administrator access required).
+export VITE_RA_SPIKE_API_PREFIX=/ra-spike/api
+# Leave VITE_API_URL unset: admin /api/* must hit the main SPIKE Pages project on portal host.
 unset VITE_API_URL
 
 echo "→ Building RA-SPIKE bundle (base=${VITE_APP_BASE}, supabase=${VITE_SUPABASE_URL})"
 rm -rf dist
 SKIP_AUTO_SHIP=1 npm run build
 
-if grep -rq '/ra-spike/api/' dist/assets/*.js 2>/dev/null; then
-  echo "ERROR: RA-SPIKE bundle still bakes /ra-spike/api — admin APIs must use /api on portal host"
+if grep -rq '/ra-spike/api/admin' dist/assets/*.js 2>/dev/null; then
+  echo "ERROR: RA-SPIKE bundle bakes /ra-spike/api/admin — admin APIs must use /api on portal host"
+  exit 1
+fi
+if ! grep -rq 'VITE_RA_SPIKE_API_PREFIX' dist/assets/*.js 2>/dev/null; then
+  echo "ERROR: RA-SPIKE bundle missing VITE_RA_SPIKE_API_PREFIX (auth APIs must route via /ra-spike/api)"
+  exit 1
+fi
+if ! grep -rq '/ra-spike/signup' dist/assets/*.js 2>/dev/null; then
+  echo "ERROR: RA-SPIKE bundle missing /ra-spike/signup auth route"
   exit 1
 fi
 if grep -rq 'lzbfjbtjropoaynbcxew' dist/assets/*.js 2>/dev/null; then

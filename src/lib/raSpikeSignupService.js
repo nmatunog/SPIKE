@@ -1,5 +1,6 @@
-import { ApiError, apiFetch } from '../apiClient.js';
+import { ApiError } from '../apiClient.js';
 import { isSupabaseConfigured, supabase } from '../supabaseClient.js';
+import { raSpikeApiFetch } from './raSpikeApiClient.js';
 
 /**
  * @param {{
@@ -14,14 +15,13 @@ import { isSupabaseConfigured, supabase } from '../supabaseClient.js';
  * }} payload
  */
 export async function registerRaSpikeViaApi(payload) {
-  return apiFetch('/api/auth/ra-spike-signup', {
+  return raSpikeApiFetch('/ra-spike/signup', {
     method: 'POST',
     body: {
       name: payload.name.trim(),
       mobile: payload.mobile.trim(),
       email: payload.email.trim().toLowerCase(),
       password: payload.password,
-      // Open enrollment — never send invite code or cohort picker.
       homeAgency: payload.homeAgency.trim(),
       homeUnit: payload.homeUnit.trim(),
     },
@@ -29,7 +29,7 @@ export async function registerRaSpikeViaApi(payload) {
 }
 
 export async function fetchRaSpikeEnrollmentOptions() {
-  return apiFetch('/api/auth/ra-spike-enrollment-options', { method: 'GET' });
+  return raSpikeApiFetch('/ra-spike/enrollment-options', { method: 'GET' });
 }
 
 /** @returns {Promise<string | null>} */
@@ -49,7 +49,7 @@ export async function completeRaSpikeOnboarding(token, payload = {}) {
   if (!accessToken) {
     throw new Error('Sign in required.');
   }
-  return apiFetch('/api/auth/ra-spike-complete-onboarding', {
+  return raSpikeApiFetch('/ra-spike/complete-onboarding', {
     method: 'POST',
     token: accessToken,
     body: payload,
