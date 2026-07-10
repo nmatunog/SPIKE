@@ -34,6 +34,9 @@ fi
 SUPABASE_URL="${VITE_SUPABASE_URL:-https://lzbfjbtjropoaynbcxew.supabase.co}"
 SUPABASE_ANON="${VITE_SUPABASE_ANON_KEY:-}"
 SUPABASE_SERVICE="${SUPABASE_SERVICE_ROLE_KEY:-}"
+RA_SPIKE_URL="${VITE_RA_SPIKE_SUPABASE_URL:-https://yruwfdjqigxxwbqsqhho.supabase.co}"
+RA_SPIKE_ANON="${VITE_RA_SPIKE_SUPABASE_ANON_KEY:-}"
+RA_SPIKE_SERVICE="${RA_SPIKE_SERVICE_ROLE_KEY:-}"
 ACCOUNT_ID="${CLOUDFLARE_ACCOUNT_ID:-66e72ecb625c7e76d017a366156ec53f}"
 CF_TOKEN="${CLOUDFLARE_API_TOKEN:-}"
 
@@ -85,6 +88,19 @@ if [[ -n "$SUPABASE_SERVICE" ]]; then
   echo "✓ SUPABASE_SERVICE_ROLE_KEY set (superuser admin API)."
 else
   echo "⚠ Skipped SUPABASE_SERVICE_ROLE_KEY — set in GitHub secrets for superuser user directory API."
+fi
+if [[ -n "$RA_SPIKE_ANON" ]]; then
+  gh secret set RA_SPIKE_SUPABASE_URL --body "$RA_SPIKE_URL"
+  gh secret set RA_SPIKE_SUPABASE_ANON_KEY --body "$RA_SPIKE_ANON"
+  echo "✓ RA_SPIKE_SUPABASE_URL + RA_SPIKE_SUPABASE_ANON_KEY set (RA-SPIKE portal)."
+else
+  echo "⚠ Skipped RA_SPIKE_* — set VITE_RA_SPIKE_SUPABASE_* in .env for RA-SPIKE deploy."
+fi
+if [[ -n "$RA_SPIKE_SERVICE" ]]; then
+  gh secret set RA_SPIKE_SERVICE_ROLE_KEY --body "$RA_SPIKE_SERVICE"
+  echo "✓ RA_SPIKE_SERVICE_ROLE_KEY set (RA-SPIKE signup API)."
+else
+  echo "⚠ Skipped RA_SPIKE_SERVICE_ROLE_KEY — required for /api/auth/ra-spike-signup."
 fi
 gh secret set CLOUDFLARE_ACCOUNT_ID --body "$ACCOUNT_ID"
 gh secret set CLOUDFLARE_API_TOKEN --body "$CF_TOKEN"

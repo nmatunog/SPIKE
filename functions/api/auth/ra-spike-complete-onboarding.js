@@ -1,4 +1,4 @@
-import { createServiceClient } from '../../_shared/supabaseAdmin.js';
+import { createRaSpikeServiceClient } from '../../_shared/supabaseAdmin.js';
 import { corsPreflight, json } from '../../_shared/verifySuperuser.js';
 
 const MAX_AVATAR_CHARS = 750_000;
@@ -15,7 +15,7 @@ export async function onRequest(ctx) {
 
   let admin;
   try {
-    admin = createServiceClient(env);
+    admin = createRaSpikeServiceClient(env);
   } catch (err) {
     return json(
       {

@@ -1,5 +1,5 @@
 import { listRaSpikeEnrollmentOptions } from '../../_shared/raSpikeEnrollment.js';
-import { createServiceClient } from '../../_shared/supabaseAdmin.js';
+import { createRaSpikeServiceClient } from '../../_shared/supabaseAdmin.js';
 import { corsPreflight, json } from '../../_shared/verifySuperuser.js';
 
 /** @param {{ request: Request, env: Record<string, string> }} ctx */
@@ -10,7 +10,7 @@ export async function onRequest(ctx) {
 
   let admin;
   try {
-    admin = createServiceClient(env);
+    admin = createRaSpikeServiceClient(env);
   } catch (err) {
     return json(
       {

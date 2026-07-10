@@ -26,6 +26,7 @@ export function normalizeLoginIdentifier(identifier) {
   if (!raw.includes('@') && VIEWER_LOGIN_ALIASES.has(key.replace(/\s+/g, ''))) {
     return ADMIN_VIEWER_EMAIL;
   }
+  if (raw.includes('@')) return key;
   return raw;
 }
 

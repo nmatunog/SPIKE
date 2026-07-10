@@ -6,12 +6,31 @@ export function getSupabaseUrl(env) {
   return raw.replace(/\/(rest|auth|storage)\/v1\/?$/i, '');
 }
 
+/** RA-SPIKE™ uses a separate Supabase project from SPIKE Internship. */
+export function getRaSpikeSupabaseUrl(env) {
+  const raw =
+    env.RA_SPIKE_SUPABASE_URL ||
+    env.VITE_RA_SPIKE_SUPABASE_URL ||
+    '';
+  return raw.replace(/\/(rest|auth|storage)\/v1\/?$/i, '');
+}
+
 /** @param {Record<string, string>} env */
 export function createServiceClient(env) {
   const url = getSupabaseUrl(env);
   const key = env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) {
     throw new Error('SUPABASE_SERVICE_ROLE_KEY and VITE_SUPABASE_URL must be configured.');
+  }
+  return createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+}
+
+/** @param {Record<string, string>} env */
+export function createRaSpikeServiceClient(env) {
+  const url = getRaSpikeSupabaseUrl(env);
+  const key = env.RA_SPIKE_SERVICE_ROLE_KEY || env.RA_SPIKE_SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) {
+    throw new Error('RA_SPIKE_SERVICE_ROLE_KEY and RA_SPIKE_SUPABASE_URL must be configured.');
   }
   return createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
 }

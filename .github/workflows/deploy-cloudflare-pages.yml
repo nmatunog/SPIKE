@@ -61,6 +61,9 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          RA_SPIKE_SUPABASE_URL: ${{ secrets.RA_SPIKE_SUPABASE_URL }}
+          RA_SPIKE_SERVICE_ROLE_KEY: ${{ secrets.RA_SPIKE_SERVICE_ROLE_KEY }}
+          VITE_RA_SPIKE_SUPABASE_ANON_KEY: ${{ secrets.RA_SPIKE_SUPABASE_ANON_KEY }}
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -71,8 +74,8 @@ jobs:
       - name: Build RA-SPIKE (prefixed /ra-spike/ base for portal proxy)
         run: npm run build:ra-spike
         env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_RA_SPIKE_SUPABASE_URL: ${{ secrets.RA_SPIKE_SUPABASE_URL }}
+          VITE_RA_SPIKE_SUPABASE_ANON_KEY: ${{ secrets.RA_SPIKE_SUPABASE_ANON_KEY }}
           VITE_STATIC_ONLY: 'false'
           VITE_MOCK_AUTH: 'false'
 
@@ -85,6 +88,9 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          RA_SPIKE_SUPABASE_URL: ${{ secrets.RA_SPIKE_SUPABASE_URL }}
+          RA_SPIKE_SERVICE_ROLE_KEY: ${{ secrets.RA_SPIKE_SERVICE_ROLE_KEY }}
+          VITE_RA_SPIKE_SUPABASE_ANON_KEY: ${{ secrets.RA_SPIKE_SUPABASE_ANON_KEY }}
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
