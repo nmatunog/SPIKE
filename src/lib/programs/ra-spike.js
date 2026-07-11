@@ -30,6 +30,8 @@ export const RA_SPIKE_PROGRAM = {
     },
   ],
   graduationTarget: null,
+  /** Max rookies per squad (classroom teams). */
+  squadMaxMembers: 4,
   nav: [
     { path: '/ra-spike/home', label: 'Home', shortLabel: 'Home', icon: 'dashboard' },
     { path: '/ra-spike/playbook', label: 'Playbook', shortLabel: 'Playbook', icon: 'playbook' },

@@ -2,6 +2,9 @@ import { isSupabaseConfigured, supabase } from '../supabaseClient.js';
 import { isMockUserId } from './mockAuth.js';
 import { fetchFormationSquads, fetchSuggestions } from './supabase/cohortOnboarding.js';
 import { PROGRAM_SLUGS } from './programs/constants.js';
+import { RA_SPIKE_PROGRAM } from './programs/ra-spike.js';
+
+const SQUAD_CAPACITY = RA_SPIKE_PROGRAM.squadMaxMembers;
 
 const MOCK_KEY = 'ra_spike_self_squad_v1';
 
@@ -14,6 +17,7 @@ const MOCK_KEY = 'ra_spike_self_squad_v1';
  *   role: string | null,
  *   isLeader: boolean,
  *   memberCount: number,
+ *   squadCapacity: number,
  *   openSquads: Array<{ id: string, name: string, memberCount: number, capacity: number, open: boolean }>,
  *   cohortSuggestion: string | null,
  *   peerSuggestions: Array<{ name: string, count: number }>,
@@ -58,6 +62,7 @@ export async function fetchRaSpikeSquadSelfState(participantId, internProgress) 
     role: null,
     isLeader: false,
     memberCount: 0,
+    squadCapacity: SQUAD_CAPACITY,
     openSquads: [],
     cohortSuggestion: null,
     peerSuggestions: [],
@@ -70,7 +75,7 @@ export async function fetchRaSpikeSquadSelfState(participantId, internProgress) 
     if (!mock) return { ...empty, cohortLabel: 'RA-SPIKE sample cohort' };
     const openSquads = (mock.openSquads ?? []).map((s) => ({
       ...s,
-      open: s.id === mock.squadId ? false : s.memberCount < (s.capacity ?? 3),
+      open: s.id === mock.squadId ? false : s.memberCount < (s.capacity ?? SQUAD_CAPACITY),
     }));
     return {
       cohortId: mock.cohortId ?? 1,
@@ -80,6 +85,7 @@ export async function fetchRaSpikeSquadSelfState(participantId, internProgress) 
       role: mock.role ?? null,
       isLeader: Boolean(mock.isLeader),
       memberCount: mock.memberCount ?? (mock.squadId ? 1 : 0),
+      squadCapacity: mock.squadCapacity ?? SQUAD_CAPACITY,
       openSquads,
       cohortSuggestion: mock.cohortSuggestion ?? null,
       peerSuggestions: mock.peerSuggestions ?? [],
@@ -118,7 +124,7 @@ export async function fetchRaSpikeSquadSelfState(participantId, internProgress) 
 
   for (const squad of squads) {
     const members = squad.formation_squad_members ?? [];
-    const capacity = squad.capacity ?? 3;
+    const capacity = squad.capacity ?? SQUAD_CAPACITY;
     const memberCount = members.length;
     const membership = members.find((m) => m.participant_id === participantId);
     if (membership) {
@@ -128,6 +134,7 @@ export async function fetchRaSpikeSquadSelfState(participantId, internProgress) 
         role: membership.role ?? 'Member',
         isLeader: membership.role === 'Leader',
         memberCount,
+        squadCapacity: capacity,
       };
     }
     openSquads.push({
@@ -157,6 +164,7 @@ export async function fetchRaSpikeSquadSelfState(participantId, internProgress) 
     role: mine?.role ?? null,
     isLeader: Boolean(mine?.isLeader),
     memberCount: mine?.memberCount ?? 0,
+    squadCapacity: mine?.squadCapacity ?? SQUAD_CAPACITY,
     openSquads: openSquads.filter((s) => s.open || s.id === mine?.squadId),
     cohortSuggestion: mineSuggestion?.suggested_name ?? null,
     peerSuggestions: [...peerMap.entries()]
@@ -180,7 +188,7 @@ export async function raSpikeCreateSquad(participantId, name) {
       role: 'Leader',
       isLeader: true,
       memberCount: 1,
-      openSquads: [{ id, name: trimmed, memberCount: 1, capacity: 3, open: false }],
+      openSquads: [{ id, name: trimmed, memberCount: 1, capacity: SQUAD_CAPACITY, open: false }],
       cohortSuggestion: readMockState(participantId)?.cohortSuggestion ?? null,
       peerSuggestions: readMockState(participantId)?.peerSuggestions ?? [],
     };
@@ -199,7 +207,7 @@ export async function raSpikeJoinSquad(participantId, squadId) {
     const state = readMockState(participantId) ?? {};
     const open = (state.openSquads ?? []).find((s) => s.id === squadId);
     if (!open) throw new Error('Squad not found.');
-    if (open.memberCount >= (open.capacity ?? 3)) throw new Error('This squad is full.');
+    if (open.memberCount >= (open.capacity ?? SQUAD_CAPACITY)) throw new Error('This squad is full.');
     const next = {
       ...state,
       squadId,

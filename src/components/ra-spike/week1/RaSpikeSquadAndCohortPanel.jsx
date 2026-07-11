@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Check, Loader2, Users } from 'lucide-react';
+import { RA_SPIKE_PROGRAM } from '../../../lib/programs/ra-spike.js';
 import {
   fetchRaSpikeSquadSelfState,
   isRaSpikeSquadSelfComplete,
@@ -111,7 +112,7 @@ export function RaSpikeSquadAndCohortPanel({
             <p className="text-base font-semibold text-slate-900">
               {state.squadName}
               <span className="ml-2 text-xs font-medium text-slate-500">
-                ({state.role} · {state.memberCount}/3)
+                ({state.role} · {state.memberCount}/{state.squadCapacity ?? RA_SPIKE_PROGRAM.squadMaxMembers})
               </span>
             </p>
             {state.isLeader && !locked ? (

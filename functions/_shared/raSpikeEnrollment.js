@@ -65,7 +65,7 @@ export async function assignRaSpikeSquad(admin, cohortId, userId) {
   let minCount = Infinity;
   for (const squad of squads ?? []) {
     const count = (squad.formation_squad_members ?? []).length;
-    const cap = squad.capacity ?? 6;
+    const cap = squad.capacity ?? 4;
     if (count < cap && count < minCount) {
       minCount = count;
       target = squad;
