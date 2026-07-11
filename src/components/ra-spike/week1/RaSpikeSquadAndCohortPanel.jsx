@@ -25,7 +25,6 @@ const INPUT =
 export function RaSpikeSquadAndCohortPanel({
   participantId,
   internProgress,
-  locked = false,
   onComplete,
 }) {
   const [state, setState] = useState(null);

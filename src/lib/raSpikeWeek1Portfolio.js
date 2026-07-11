@@ -188,7 +188,6 @@ export async function fetchWeek1Portfolio(participantId) {
  */
 export async function saveWeek1Portfolio(participantId, patch) {
   if (!participantId) throw new Error('Sign in required.');
-  const current = getWeek1PortfolioLocal(participantId);
 
   const next = writeWeek1PortfolioLocal(participantId, patch);
   if (isMockUserId(participantId) || !isSupabaseConfigured || !supabase) {

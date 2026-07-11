@@ -258,7 +258,6 @@ export function RaSpikeWeek1Experience({ user, stepId = 'learn' }) {
           ) : activeStep === 'workshop' ? (
             <WorkshopPanel
               participantId={participantId}
-              locked={locked}
               onDone={async () => {
                 await setRaSpikeStepStatus(participantId, 1, 'workshop', 'complete');
                 navigate(raSpikePlaybookStepHref('assignment', 1));
@@ -505,7 +504,6 @@ function LearnPanel({
       {cardId === 'dream_builder' ? (
         <DreamBuilder
           portfolio={portfolio}
-          locked={locked}
           step={dreamStep}
           setStep={setDreamStep}
           onAutosave={onAutosave}
@@ -544,7 +542,7 @@ function LearnPanel({
   );
 }
 
-function DreamBuilder({ portfolio, locked, step, setStep, onAutosave, onBack, onDone }) {
+function DreamBuilder({ portfolio, step, setStep, onAutosave, onBack, onDone }) {
   const [incomeDraft, setIncomeDraft] = useState(
     portfolio.incomePhp != null ? String(portfolio.incomePhp) : '',
   );
@@ -664,7 +662,6 @@ function DreamBuilder({ portfolio, locked, step, setStep, onAutosave, onBack, on
               label={slot.label}
               hint={slot.hint}
               url={portfolio[slot.key]}
-              locked={locked}
               onPick={async (file) => {
                 const url = await readImageAsDataUrl(file);
                 await onAutosave({ [slot.key]: url });
@@ -695,7 +692,7 @@ function DreamBuilder({ portfolio, locked, step, setStep, onAutosave, onBack, on
   );
 }
 
-function ImageSlot({ label, hint, url, locked, onPick }) {
+function ImageSlot({ label, hint, url, onPick }) {
   const [err, setErr] = useState('');
   return (
     <label className="group block cursor-pointer overflow-hidden rounded-2xl border border-dashed border-slate-300 bg-slate-50/80 transition hover:border-spike/40 hover:bg-spike-muted/20">
@@ -742,7 +739,7 @@ function ImageSlot({ label, hint, url, locked, onPick }) {
   );
 }
 
-function WorkshopPanel({ participantId, locked, onDone }) {
+function WorkshopPanel({ participantId, onDone }) {
   const [busy, setBusy] = useState(false);
   return (
     <Panel>
@@ -775,7 +772,7 @@ function WorkshopPanel({ participantId, locked, onDone }) {
   );
 }
 
-function ReflectionPanel({ portfolio, locked, busy, onAutosave, onComplete }) {
+function ReflectionPanel({ portfolio, busy, onAutosave, onComplete }) {
   const answers = portfolio.reflectionAnswers ?? {};
   return (
     <Panel>
@@ -1035,7 +1032,7 @@ function Artifact({ eyebrow, title, ready, children }) {
   );
 }
 
-function Field({ label, value, onChange, locked, rows, placeholder }) {
+function Field({ label, value, onChange, rows, placeholder }) {
   const shared = {
     className: INPUT,
     placeholder,
