@@ -12,6 +12,9 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 MIGRATIONS_DIR="$ROOT/supabase/migrations"
 
+# shellcheck disable=SC1091
+source "$ROOT/scripts/supabase-projects.sh"
+
 if [[ "${SKIP_DB_MIGRATE:-}" == "1" ]]; then
   echo "run-supabase-migrations: skipped (SKIP_DB_MIGRATE=1)"
   exit 0
@@ -33,6 +36,8 @@ if ! supabase projects list >/dev/null 2>&1; then
 fi
 
 cd "$ROOT"
+
+ensure_supabase_linked "$SPIKE_INTERNSHIP_PROJECT_REF" "SPIKE Internship"
 
 MAX_REMOTE="$(
   supabase db query --linked --output json \

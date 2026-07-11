@@ -22,8 +22,13 @@ echo "════════════════════════�
 cd "$ROOT"
 
 if [[ -f "$ROOT/scripts/run-supabase-migrations.sh" ]]; then
-  echo "→ Checking Supabase migrations..."
-  bash "$ROOT/scripts/run-supabase-migrations.sh" || echo "→ db:migrate failed (see log); continuing ship"
+  echo "→ Checking SPIKE Internship Supabase migrations..."
+  bash "$ROOT/scripts/run-supabase-migrations.sh" || echo "→ internship db:migrate failed (see log); continuing ship"
+fi
+
+if [[ -f "$ROOT/scripts/run-ra-spike-migrations.sh" ]]; then
+  echo "→ Checking RA-SPIKE Supabase migrations..."
+  bash "$ROOT/scripts/run-ra-spike-migrations.sh" || echo "→ RA-SPIKE db:migrate failed (see log); continuing ship"
 fi
 
 if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then

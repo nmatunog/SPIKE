@@ -36,6 +36,7 @@ import { buildSuperuserMentorPreviewInterns } from './lib/superuserMentorPreview
 import { ROUTES, brandLexiconBackHrefForRole, facilitatorsReferenceBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath, isPlaybookPath, isSpikeLifePath, isSpikeLifeImmersivePath, parseStaffSquadHubPath, parseStaffStageGatePath, playbookHref, raSpikeRookieEntryHref } from './routes/paths.js';
 import { resolveProgramSlug, isRaSpikeProgram } from './lib/programs/index.js';
 import { SuperuserPreviewBar } from './components/nav/SuperuserPreviewBar.jsx';
+import { RaSpikeHardRedirect } from './components/ra-spike/RaSpikeHardRedirect.jsx';
 import { StaffSquadHubPage, StaffSquadsListPage } from './components/staff/StaffSquadHubPage.jsx';
 import { Week2LoginWelcomeFlow } from './components/week2/Week2LoginWelcomeFlow.jsx';
 import { shouldShowWeek2LoginWelcome } from './lib/week2LoginWelcome.js';
@@ -1729,10 +1730,7 @@ const SpikeMasterPortal = () => {
 
       if (programSlug === 'ra-spike') {
         return (
-          <div className="flex flex-col items-center justify-center gap-3 py-24 text-slate-600">
-            <Loader2 className="animate-spin text-spike" size={40} />
-            <p className="text-sm font-medium">Opening RA-SPIKE…</p>
-          </div>
+          <RaSpikeHardRedirect href={raSpikeRookieEntryHref()} label="Opening RA-SPIKE…" />
         );
       }
 
@@ -1967,11 +1965,9 @@ const SpikeMasterPortal = () => {
         );
       }
       if (path === ROUTES.programCoachRaSpike || path === ROUTES.mentorRaSpike) {
+        const coachHref = path === ROUTES.mentorRaSpike ? ROUTES.mentorRaSpike : ROUTES.programCoachRaSpike;
         return (
-          <div className="flex flex-col items-center justify-center gap-3 py-24 text-slate-600">
-            <Loader2 className="animate-spin text-spike" size={40} />
-            <p className="text-sm font-medium">Opening RA-SPIKE coach hub…</p>
-          </div>
+          <RaSpikeHardRedirect href={coachHref} label="Opening RA-SPIKE coach hub…" />
         );
       }
       if (path === ROUTES.programCoachHome) {
@@ -2072,10 +2068,7 @@ const SpikeMasterPortal = () => {
       }
       if (path === ROUTES.mentorRaSpike) {
         return (
-          <div className="flex flex-col items-center justify-center gap-3 py-24 text-slate-600">
-            <Loader2 className="animate-spin text-spike" size={40} />
-            <p className="text-sm font-medium">Opening RA-SPIKE coach hub…</p>
-          </div>
+          <RaSpikeHardRedirect href={ROUTES.mentorRaSpike} label="Opening RA-SPIKE coach hub…" />
         );
       }
       if (path === ROUTES.mentorSquads) {

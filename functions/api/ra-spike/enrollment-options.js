@@ -1,1 +1,1 @@
-export { onRequest } from '../auth/ra-spike-enrollment-options.js';
+export { onRequest } from '../../_shared/raSpikeEnrollmentOptionsHandler.js';

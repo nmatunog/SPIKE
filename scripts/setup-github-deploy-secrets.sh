@@ -100,7 +100,7 @@ if [[ -n "$RA_SPIKE_SERVICE" ]]; then
   gh secret set RA_SPIKE_SERVICE_ROLE_KEY --body "$RA_SPIKE_SERVICE"
   echo "✓ RA_SPIKE_SERVICE_ROLE_KEY set (RA-SPIKE signup API)."
 else
-  echo "⚠ Skipped RA_SPIKE_SERVICE_ROLE_KEY — required for /api/auth/ra-spike-signup."
+  echo "⚠ Skipped RA_SPIKE_SERVICE_ROLE_KEY — required for /ra-spike/api on the ra-spike Pages project."
 fi
 gh secret set CLOUDFLARE_ACCOUNT_ID --body "$ACCOUNT_ID"
 gh secret set CLOUDFLARE_API_TOKEN --body "$CF_TOKEN"

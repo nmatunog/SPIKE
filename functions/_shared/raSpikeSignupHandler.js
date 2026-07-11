@@ -1,7 +1,7 @@
-import { validateInternActivationCode } from '../../_shared/activationCode.js';
-import { createConfirmedPortalUser } from '../../_shared/confirmedSignup.js';
-import { createServiceClient } from '../../_shared/supabaseAdmin.js';
-import { corsPreflight, json } from '../../_shared/verifySuperuser.js';
+import { createConfirmedPortalUser } from './confirmedSignup.js';
+import { assignRaSpikeSquad, resolveRaSpikeCohort } from './raSpikeEnrollment.js';
+import { createRaSpikeServiceClient } from './supabaseAdmin.js';
+import { corsPreflight, json } from './verifySuperuser.js';
 
 /** @param {{ request: Request, env: Record<string, string> }} ctx */
 export async function onRequest(ctx) {
@@ -11,11 +11,11 @@ export async function onRequest(ctx) {
 
   let admin;
   try {
-    admin = createServiceClient(env);
+    admin = createRaSpikeServiceClient(env);
   } catch (err) {
     return json(
       {
-        message: `Intern signup API is not configured. ${err instanceof Error ? err.message : 'Missing service role key.'}`,
+        message: `RA-SPIKE signup API is not configured. ${err instanceof Error ? err.message : 'Missing service role key.'}`,
         code: 'MISSING_SERVICE_KEY',
       },
       503,
@@ -30,19 +30,27 @@ export async function onRequest(ctx) {
   }
 
   const name = String(body?.name ?? '').trim();
+  const mobile = String(body?.mobile ?? '').trim();
   const email = String(body?.email ?? '').trim().toLowerCase();
   const password = String(body?.password ?? '');
-  const code = String(body?.code ?? '').trim();
-  const university = body?.university ? String(body.university).trim() : null;
-  const squad = body?.squad ? String(body.squad).trim() : null;
+  const homeAgency = String(body?.homeAgency ?? '').trim();
+  const homeUnit = String(body?.homeUnit ?? '').trim();
 
-  if (name.length < 2) return json({ message: 'Name is required.' }, 400);
+  if (name.length < 2) return json({ message: 'Full name is required.' }, 400);
+  if (!mobile || mobile.replace(/\D/g, '').length < 10) {
+    return json({ message: 'A valid mobile number is required.' }, 400);
+  }
   if (!email || !email.includes('@')) return json({ message: 'A valid email is required.' }, 400);
   if (password.length < 8) return json({ message: 'Password must be at least 8 characters.' }, 400);
-  if (!code) return json({ message: 'Daily activation code is required.' }, 400);
+  if (!homeAgency || !homeUnit) {
+    return json({ message: 'Select your home agency and unit.' }, 400);
+  }
 
   try {
-    await validateInternActivationCode(admin, code);
+    const cohort = await resolveRaSpikeCohort(admin, {
+      inviteCode: null,
+      cohortId: null,
+    });
 
     const userId = await createConfirmedPortalUser(admin, {
       email,
@@ -57,26 +65,46 @@ export async function onRequest(ctx) {
         email,
         name,
         role: 'INTERN',
+        mobile,
       },
       { onConflict: 'id' },
     );
     if (profileErr) return json({ message: profileErr.message }, 400);
 
+    const squadName = await assignRaSpikeSquad(admin, cohort.id, userId);
+
+    const welcomedAt = new Date().toISOString();
     const { error: progErr } = await admin.from('intern_progress').upsert(
       {
         user_id: userId,
+        cohort_id: cohort.id,
         segment: 1,
         hours: 0,
         licensed: false,
-        university,
-        squad,
-        program_slug: 'spike-internship',
+        squad: squadName,
+        university: homeAgency,
+        home_unit: homeUnit,
+        program_slug: 'ra-spike',
+        ra_spike_segment: 1,
+        ra_spike_current_week: 1,
+        onboarding_complete: true,
+        onboarding_welcomed_at: welcomedAt,
       },
       { onConflict: 'user_id' },
     );
     if (progErr) return json({ message: progErr.message }, 400);
 
-    return json({ ok: true, userId });
+    return json({
+      ok: true,
+      userId,
+      cohort: {
+        id: cohort.id,
+        batchLabel: cohort.batch_label || cohort.name,
+      },
+      homeAgency,
+      homeUnit,
+      squad: squadName,
+    });
   } catch (err) {
     return json({ message: err instanceof Error ? err.message : 'Signup failed.' }, 400);
   }

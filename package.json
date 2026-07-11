@@ -19,7 +19,7 @@
     "build:spike-life": "npm run build:packages --prefix SPIKE_LIFE",
     "build:facilitators-reference": "node scripts/build-facilitators-content-reference.mjs",
     "postbuild": "bash scripts/postbuild-ship.sh",
-    "ship": "npm run lint && npm run build",
+    "ship": "npm run lint && npm run build:internship && bash scripts/ship-after-build.sh",
     "lint": "eslint .",
     "preview": "vite preview",
     "deploy:cf": "bash ./scripts/deploy-cloudflare.sh",

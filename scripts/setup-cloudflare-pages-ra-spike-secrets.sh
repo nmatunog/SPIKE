@@ -35,7 +35,7 @@ put_secret() {
   echo "  ✓ ${project}: ${name}"
 }
 
-for project in spike ra-spike; do
+for project in ra-spike; do
   echo "→ ${project} production secrets"
   put_secret "$project" RA_SPIKE_SUPABASE_URL "$RA_URL"
   put_secret "$project" RA_SPIKE_SERVICE_ROLE_KEY "$RA_KEY"

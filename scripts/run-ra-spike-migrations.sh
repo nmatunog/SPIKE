@@ -4,6 +4,9 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 MIGRATIONS_DIR="$ROOT/supabase/ra-spike/migrations"
 
+# shellcheck disable=SC1091
+source "$ROOT/scripts/supabase-projects.sh"
+
 bash "$ROOT/scripts/sync-ra-spike-migrations.sh"
 
 if [[ "${SKIP_DB_MIGRATE:-}" == "1" ]]; then
@@ -22,9 +25,8 @@ if ! supabase projects list >/dev/null 2>&1; then
 fi
 
 LINKED="$(cat "$ROOT/supabase/.temp/project-ref" 2>/dev/null || echo '')"
-if [[ "$LINKED" != "yruwfdjqigxxwbqsqhho" ]]; then
-  echo "run-ra-spike-migrations: linking to RA-SPIKE project (yruwfdjqigxxwbqsqhho)…"
-  supabase link --project-ref yruwfdjqigxxwbqsqhho
+if [[ "$LINKED" != "$RA_SPIKE_PROJECT_REF" ]]; then
+  ensure_supabase_linked "$RA_SPIKE_PROJECT_REF" "RA-SPIKE"
 fi
 
 cd "$ROOT"

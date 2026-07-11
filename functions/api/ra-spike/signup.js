@@ -1,1 +1,1 @@
-export { onRequest } from '../auth/ra-spike-signup.js';
+export { onRequest } from '../../_shared/raSpikeSignupHandler.js';
