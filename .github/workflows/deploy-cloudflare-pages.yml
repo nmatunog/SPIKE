@@ -40,9 +40,22 @@ jobs:
             echo "::error::CLOUDFLARE_ACCOUNT_ID is missing. Run: ./scripts/setup-github-deploy-secrets.sh"
             missing=1
           fi
+          if [ -z "${{ secrets.RA_SPIKE_SUPABASE_URL }}" ] || [ -z "${{ secrets.RA_SPIKE_SERVICE_ROLE_KEY }}" ]; then
+            echo "::error::RA_SPIKE_SUPABASE_URL and RA_SPIKE_SERVICE_ROLE_KEY are required for rookie signup."
+            missing=1
+          fi
           if [ "$missing" -ne 0 ]; then
             exit 1
           fi
+
+      # Pages Functions read secrets at deploy time — sync before each production deploy.
+      - name: Sync RA-SPIKE Pages runtime secrets
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          RA_SPIKE_SUPABASE_URL: ${{ secrets.RA_SPIKE_SUPABASE_URL }}
+          RA_SPIKE_SERVICE_ROLE_KEY: ${{ secrets.RA_SPIKE_SERVICE_ROLE_KEY }}
+        run: bash scripts/setup-cloudflare-pages-ra-spike-secrets.sh
 
       - name: Build (Supabase env baked in)
         run: npm run build
