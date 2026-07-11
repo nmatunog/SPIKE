@@ -1,0 +1,42 @@
+{
+  "weekNumber": 3,
+  "dayNumber": 1,
+  "title": "Week 3 Day 1 Mentor Guide",
+  "mentorRole": "Support rookies in translating customer insights into viable business model components",
+  "keyFocus": [
+    "Revenue model clarity and realism",
+    "Resource requirements beyond 'just me'",
+    "Partner identification and value exchange",
+    "UVP differentiation"
+  ],
+  "beforeSession": [
+    "Review each mentee's Week 2 Customer Discovery Canvas",
+    "Note gaps between customer problems and proposed solutions",
+    "Prepare to challenge revenue assumptions with market data"
+  ],
+  "duringSession": [
+    "Observe squad peer review, note who gives/receives feedback well",
+    "Ask probing questions during canvas work: 'How will you price this?' 'Who else needs to succeed for you to succeed?'",
+    "Flag rookies struggling with financial realism for 1-on-1 follow-up"
+  ],
+  "after Session": [
+    "Review submitted canvases within 48 hours",
+    "Provide async feedback on mentor dashboard",
+    "Flag rookies at risk of weak Stage Gate 1 performance"
+  ],
+  "coachingQuestions": [
+    "How does your revenue model align with your customer's ability and willingness to pay?",
+    "What resources do you already have? What do you need to acquire?",
+    "Who are potential partners? What value do you offer them?",
+    "What makes your UVP unique compared to other advisors serving similar clients?",
+    "Are your costs realistic for a starting practice?"
+  ],
+  "redFlags": [
+    "Revenue model is vague ('I'll charge fees')",
+    "No mention of costs or expenses",
+    "Resources list is only 'myself'",
+    "UVP is generic ('I provide excellent service')",
+    "Canvas blocks contradict each other"
+  ],
+  "week3MentorOutcomes": "Each rookie should have a coherent business model that connects customer needs to value delivery and financial sustainability."
+}

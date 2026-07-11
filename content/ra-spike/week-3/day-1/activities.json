@@ -1,0 +1,55 @@
+{
+  "weekNumber": 3,
+  "dayNumber": 1,
+  "activities": [
+    {
+      "id": "canvas-wizard-guided",
+      "title": "Complete FEC Blocks 4-6",
+      "type": "digital",
+      "duration": 75,
+      "description": "Use the canvas wizard to complete Capture Value, Enable Value, and Unified Venture Proposition.",
+      "instructions": [
+        "Open the Canvas Wizard from your Playbook",
+        "Review your Week 2 blocks (read-only at top)",
+        "Follow guided prompts for each new block",
+        "Auto-saves as you work",
+        "Mark complete when all blocks are filled"
+      ],
+      "deliverable": "Completed FEC blocks 4-6",
+      "rubric": [
+        "Capture Value: Revenue model and cost structure are clear and realistic",
+        "Enable Value: Key resources and partners are identified",
+        "UVP: Unique position is articulated and differentiated"
+      ]
+    },
+    {
+      "id": "squad-peer-review",
+      "title": "Squad Canvas Peer Review",
+      "type": "collaborative",
+      "duration": 30,
+      "description": "Each squad member presents one FEC block for feedback.",
+      "instructions": [
+        "Take turns sharing your screen or canvas printout",
+        "Present one block (Capture Value, Enable Value, or UVP)",
+        "Squad provides constructive feedback (2 min per person)",
+        "Note gaps or areas to strengthen before Week 4"
+      ],
+      "deliverable": "Peer feedback notes",
+      "facilitatorRole": "Rotate between squads, ensure feedback is constructive and specific"
+    },
+    {
+      "id": "revenue-model-discussion",
+      "title": "Advisory Practice Revenue Models",
+      "type": "facilitated",
+      "duration": 20,
+      "description": "Group discussion on different revenue models for advisory practices.",
+      "discussionQuestions": [
+        "What are common revenue streams for financial advisors?",
+        "How do fee structures differ (commission, fee-only, hybrid)?",
+        "What cost structures do advisory practices typically have?",
+        "How does your revenue model align with your customer segment?"
+      ],
+      "facilitatorRole": "Present examples, answer questions, connect to rookies' canvases"
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "weekNumber": 3,
+  "dayNumber": 1,
+  "title": "Week 3 Day 1 Facilitator Guide",
+  "objective": "Guide rookies through completing FEC blocks 4-6, ensuring they understand how to capture and enable value in their advisory practice.",
+  "preparation": [
+    "Review each rookie's Week 2 FEC progress in advance",
+    "Prepare 2-3 revenue model examples relevant to the cohort",
+    "Test canvas wizard functionality before class",
+    "Print FEC reference sheets for each squad",
+    "Set up breakout spaces for squad peer review"
+  ],
+  "sessionFlow": [
+    {
+      "segment": "Opening",
+      "duration": 15,
+      "facilitation": [
+        "Welcome and attendance",
+        "Quick squad check-in on Week 2 customer discoveries",
+        "Frame today: 'Your customer work becomes your business model'"
+      ]
+    },
+    {
+      "segment": "Presentation",
+      "duration": 30,
+      "facilitation": [
+        "Walk through FEC blocks 4-6 using coach deck",
+        "Show examples of revenue models (commission, fee-only, hybrid)",
+        "Explain how resources and partners enable consistent delivery",
+        "Demo canvas wizard interface"
+      ]
+    },
+    {
+      "segment": "Workshop",
+      "duration": 75,
+      "facilitation": [
+        "Rookies work individually on canvas wizard (30 min)",
+        "Circulate, answer questions, troubleshoot",
+        "Squad peer review (30 min) - 1 block per rookie",
+        "Facilitator feedback rounds (15 min)"
+      ]
+    },
+    {
+      "segment": "Synthesis",
+      "duration": 30,
+      "facilitation": [
+        "Group debrief: What was hardest? What surprised you?",
+        "Address common gaps or misconceptions",
+        "Preview Week 4: synthesizing canvas into 3-Year Plan and pitch"
+      ]
+    },
+    {
+      "segment": "Closing",
+      "duration": 10,
+      "facilitation": [
+        "Clarify Week 3 assignment (finish canvas if incomplete)",
+        "Remind about Reflection prompts",
+        "Preview Stage Gate 1 expectations"
+      ]
+    }
+  ],
+  "commonChallenges": [
+    {
+      "challenge": "Rookies struggle to define realistic revenue models",
+      "response": "Provide industry benchmarks, ask about their current practice (if applicable), connect to customer willingness to pay"
+    },
+    {
+      "challenge": "Canvas wizard technical issues",
+      "response": "Have backup: printable canvas template, allow manual entry in portfolio later"
+    },
+    {
+      "challenge": "Rookies feel overwhelmed by completing multiple blocks",
+      "response": "Emphasize this is a draft, will iterate after Stage Gate 1 feedback, focus on clarity over perfection"
+    },
+    {
+      "challenge": "Squad peer review becomes too critical or too soft",
+      "response": "Model constructive feedback: 'This is clear because...' and 'This could be stronger if...'"
+    }
+  ],
+  "assessmentFocus": [
+    "Is the revenue model realistic for their customer segment?",
+    "Have they identified key resources beyond just 'myself'?",
+    "Does the UVP differentiate them from competitors?",
+    "Are cost structures reasonable for a starting practice?"
+  ],
+  "week3Success": "By end of Week 3, each rookie should have a complete 6-block FEC that serves as their business blueprint going into Week 4 pitch prep."
+}
