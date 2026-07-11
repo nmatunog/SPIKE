@@ -103,7 +103,7 @@ export function RaSpikeWeekStepPage({ user, week, stepId }) {
   }
 
   const stepKey = /** @type {import('../../lib/raSpikeWeekProgress.js').RaSpikeStepId} */ (stepId);
-  const unlocked = isRaSpikeStepUnlocked(progress, stepKey);
+  const unlocked = isRaSpikeStepUnlocked(progress, stepKey, week);
   const status = getStepStatus(progress, stepKey);
   function assignmentHref() {
     const action = content.action;

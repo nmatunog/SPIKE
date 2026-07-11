@@ -14,7 +14,7 @@ export function WeeklyCardStack({ week, steps, progress = {} }) {
     <ol className="space-y-3">
       {steps.map((step, index) => {
         const status = getStepStatus(progress, /** @type {import('../../../lib/raSpikeWeekProgress.js').RaSpikeStepId} */ (step.id));
-        const locked = !isRaSpikeStepUnlocked(progress, /** @type {import('../../../lib/raSpikeWeekProgress.js').RaSpikeStepId} */ (step.id));
+        const locked = !isRaSpikeStepUnlocked(progress, /** @type {import('../../../lib/raSpikeWeekProgress.js').RaSpikeStepId} */ (step.id), week);
         return (
           <WeeklyCard
             key={step.id}

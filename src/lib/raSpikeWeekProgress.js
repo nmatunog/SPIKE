@@ -181,8 +181,11 @@ export function getStepStatus(progress, stepId) {
   return 'not_started';
 }
 
-/** @param {RaSpikeWeekProgressRow} progress @param {RaSpikeStepId} stepId */
-export function isRaSpikeStepUnlocked(progress, stepId) {
+/** @param {RaSpikeWeekProgressRow} progress @param {RaSpikeStepId} stepId @param {number} [week] */
+export function isRaSpikeStepUnlocked(progress, stepId, week) {
+  // Weeks 1 and 2 are fully open — all steps unlocked from the start
+  if (week === 1 || week === 2) return true;
+  
   const index = RA_SPIKE_STEP_ORDER.indexOf(stepId);
   if (index <= 0) return true;
   const prior = RA_SPIKE_STEP_ORDER[index - 1];
