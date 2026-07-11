@@ -121,7 +121,7 @@ export function RaSpikeWeek1Experience({ user, stepId = 'learn' }) {
   }, [portfolio]);
 
   async function autosave(patch) {
-    if (!participantId || portfolio.locked) return;
+    if (!participantId) return;
     setError('');
     try {
       const next = await saveWeek1Portfolio(participantId, patch);
@@ -134,7 +134,7 @@ export function RaSpikeWeek1Experience({ user, stepId = 'learn' }) {
   }
 
   async function completeCard(cardId, extraPatch = {}) {
-    if (!participantId || portfolio.locked) return;
+    if (!participantId) return;
     setBusy(true);
     try {
       const cardsCompleted = {
@@ -460,7 +460,6 @@ function LearnPanel({
               <span className="mb-1.5 block text-xs text-slate-500">{p.hint}</span>
               <textarea
                 rows={3}
-                disabled={locked}
                 className={INPUT}
                 placeholder="Write freely…"
                 value={discover[p.id]}
@@ -480,8 +479,7 @@ function LearnPanel({
             </SecondaryButton>
             <PrimaryButton
               disabled={
-                locked
-                || busy
+                busy
                 || !discover.why_here.trim()
                 || !discover.future_want.trim()
                 || !discover.advisor_become.trim()
@@ -596,7 +594,6 @@ function DreamBuilder({ portfolio, locked, step, setStep, onAutosave, onBack, on
       {screen.key === 'lifestyle' ? (
         <textarea
           rows={5}
-          disabled={locked}
           className={INPUT}
           placeholder="In 5–10 years, my days look like…"
           defaultValue={portfolio.lifestyleAnswer}
@@ -614,7 +611,6 @@ function DreamBuilder({ portfolio, locked, step, setStep, onAutosave, onBack, on
                 type="number"
                 min="0"
                 step="1000"
-                disabled={locked}
                 className="w-full border-0 bg-transparent py-2 text-lg font-semibold text-slate-900 outline-none placeholder:font-normal placeholder:text-slate-400"
                 placeholder="300,000"
                 value={incomeDraft}
@@ -628,7 +624,6 @@ function DreamBuilder({ portfolio, locked, step, setStep, onAutosave, onBack, on
           <label className="block">
             <span className={LABEL}>Notes (optional)</span>
             <input
-              disabled={locked}
               className={INPUT}
               placeholder="What does this income make possible?"
               defaultValue={portfolio.incomeNotes}
@@ -650,7 +645,6 @@ function DreamBuilder({ portfolio, locked, step, setStep, onAutosave, onBack, on
       {screen.key === 'travel' ? (
         <textarea
           rows={4}
-          disabled={locked}
           className={INPUT}
           placeholder="Japan in spring, Italy with family…"
           defaultValue={portfolio.travelAnswer}
@@ -690,7 +684,7 @@ function DreamBuilder({ portfolio, locked, step, setStep, onAutosave, onBack, on
           </PrimaryButton>
         ) : (
           <PrimaryButton
-            disabled={locked || !isDreamBuilderComplete(portfolio)}
+            disabled={!isDreamBuilderComplete(portfolio)}
             onClick={onDone}
           >
             <Check size={18} /> Dream Board done
@@ -725,25 +719,23 @@ function ImageSlot({ label, hint, url, locked, onPick }) {
           <span className="text-[10px]">JPG, PNG, WEBP · max 5 MB</span>
         </div>
       )}
-      {!locked ? (
-        <input
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          className="sr-only"
-          onChange={async (e) => {
-            const file = e.target.files?.[0];
-            if (!file) return;
-            setErr('');
-            try {
-              await onPick(file);
-            } catch (ex) {
-              setErr(ex instanceof Error ? ex.message : 'Upload failed.');
-            }
-          }}
-        />
-      ) : null}
+      <input
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        className="sr-only"
+        onChange={async (e) => {
+          const file = e.target.files?.[0];
+          if (!file) return;
+          setErr('');
+          try {
+            await onPick(file);
+          } catch (ex) {
+            setErr(ex instanceof Error ? ex.message : 'Upload failed.');
+          }
+        }}
+      />
       {err ? <p className="px-3.5 py-2 text-xs text-red-600">{err}</p> : null}
-      {url && !locked ? (
+      {url ? (
         <p className="px-3.5 py-2 text-center text-xs font-semibold text-spike">Tap to replace</p>
       ) : null}
     </label>
@@ -765,7 +757,7 @@ function WorkshopPanel({ participantId, locked, onDone }) {
       </div>
       <ActionRow>
         <PrimaryButton
-          disabled={locked || busy || !participantId}
+          disabled={busy || !participantId}
           onClick={async () => {
             setBusy(true);
             try {
@@ -800,7 +792,6 @@ function ReflectionPanel({ portfolio, locked, busy, onAutosave, onComplete }) {
           </span>
           <textarea
             rows={3}
-            disabled={locked}
             className={INPUT}
             placeholder="Write a few honest sentences…"
             value={answers[p.id] ?? ''}
@@ -812,7 +803,7 @@ function ReflectionPanel({ portfolio, locked, busy, onAutosave, onComplete }) {
       ))}
       <ActionRow className="mt-4">
         <PrimaryButton
-          disabled={locked || busy || !isReflectionComplete(portfolio)}
+          disabled={busy || !isReflectionComplete(portfolio)}
           onClick={onComplete}
         >
           Complete end-of-day reflection
@@ -853,7 +844,6 @@ function AssignmentPanel({ portfolio, locked, onAutosave, onContinue }) {
         </span>
         <textarea
           rows={4}
-          disabled={locked}
           className={INPUT}
           placeholder="I choose financial advising because…"
           value={portfolio.personalVision}
@@ -1047,7 +1037,6 @@ function Artifact({ eyebrow, title, ready, children }) {
 
 function Field({ label, value, onChange, locked, rows, placeholder }) {
   const shared = {
-    disabled: locked,
     className: INPUT,
     placeholder,
     value,

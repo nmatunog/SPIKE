@@ -61,7 +61,6 @@ export function RaSpikeSquadAndCohortPanel({
   }, [reload]);
 
   async function run(key, fn) {
-    if (locked) return;
     setBusy(key);
     setError('');
     try {
@@ -114,7 +113,7 @@ export function RaSpikeSquadAndCohortPanel({
                 ({state.role} · {state.memberCount}/3)
               </span>
             </p>
-            {state.isLeader && !locked ? (
+            {state.isLeader ? (
               <div className="flex flex-col gap-2 sm:flex-row">
                 <input
                   value={renameValue}
@@ -134,19 +133,17 @@ export function RaSpikeSquadAndCohortPanel({
                 </button>
               </div>
             ) : null}
-            {!locked ? (
-              <button
-                type="button"
-                disabled={Boolean(busy)}
-                onClick={() => {
-                  if (!window.confirm('Leave this squad?')) return;
-                  void run('leave', () => raSpikeLeaveSquad(participantId));
-                }}
-                className="text-xs font-semibold text-slate-600 hover:text-red-700"
-              >
-                Leave squad
-              </button>
-            ) : null}
+            <button
+              type="button"
+              disabled={Boolean(busy)}
+              onClick={() => {
+                if (!window.confirm('Leave this squad?')) return;
+                void run('leave', () => raSpikeLeaveSquad(participantId));
+              }}
+              className="text-xs font-semibold text-slate-600 hover:text-red-700"
+            >
+              Leave squad
+            </button>
           </div>
         ) : (
           <div className="space-y-4">
@@ -154,7 +151,6 @@ export function RaSpikeSquadAndCohortPanel({
               <p className="mb-2 text-sm font-semibold text-slate-800">Create a new squad</p>
               <div className="flex flex-col gap-2 sm:flex-row">
                 <input
-                  disabled={locked}
                   value={newSquadName}
                   onChange={(e) => setNewSquadName(e.target.value)}
                   className={INPUT}
@@ -162,7 +158,7 @@ export function RaSpikeSquadAndCohortPanel({
                 />
                 <button
                   type="button"
-                  disabled={locked || Boolean(busy) || newSquadName.trim().length < 2}
+                  disabled={Boolean(busy) || newSquadName.trim().length < 2}
                   onClick={() =>
                     void run('create', async () => {
                       await raSpikeCreateSquad(participantId, newSquadName);
@@ -181,7 +177,6 @@ export function RaSpikeSquadAndCohortPanel({
                 <p className="mb-2 text-sm font-semibold text-slate-800">Or join an open squad</p>
                 <div className="flex flex-col gap-2 sm:flex-row">
                   <select
-                    disabled={locked}
                     value={joinId}
                     onChange={(e) => setJoinId(e.target.value)}
                     className={INPUT}
@@ -195,7 +190,7 @@ export function RaSpikeSquadAndCohortPanel({
                   </select>
                   <button
                     type="button"
-                    disabled={locked || Boolean(busy) || !joinId}
+                    disabled={Boolean(busy) || !joinId}
                     onClick={() =>
                       void run('join', async () => {
                         await raSpikeJoinSquad(participantId, joinId);
@@ -222,7 +217,6 @@ export function RaSpikeSquadAndCohortPanel({
         </p>
         <div className="flex flex-col gap-2 sm:flex-row">
           <input
-            disabled={locked}
             value={cohortName}
             onChange={(e) => setCohortName(e.target.value)}
             className={INPUT}
@@ -230,7 +224,7 @@ export function RaSpikeSquadAndCohortPanel({
           />
           <button
             type="button"
-            disabled={locked || Boolean(busy) || cohortName.trim().length < 2}
+            disabled={Boolean(busy) || cohortName.trim().length < 2}
             onClick={() =>
               void run('nominate', () => raSpikeNominateCohortName(participantId, cohortName))
             }
@@ -262,22 +256,20 @@ export function RaSpikeSquadAndCohortPanel({
         ) : null}
       </section>
 
-      {!locked ? (
-        <button
-          type="button"
-          disabled={!complete || Boolean(busy)}
-          onClick={() => void onComplete()}
-          className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-2xl bg-spike px-5 py-3 text-base font-bold text-white disabled:opacity-50"
-        >
-          {complete ? (
-            <>
-              <Check size={18} /> Squad &amp; cohort done
-            </>
-          ) : (
-            'Join a squad and nominate a cohort name to continue'
-          )}
-        </button>
-      ) : null}
+      <button
+        type="button"
+        disabled={!complete || Boolean(busy)}
+        onClick={() => void onComplete()}
+        className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-2xl bg-spike px-5 py-3 text-base font-bold text-white disabled:opacity-50"
+      >
+        {complete ? (
+          <>
+            <Check size={18} /> Squad &amp; cohort done
+          </>
+        ) : (
+          'Join a squad and nominate a cohort name to continue'
+        )}
+      </button>
     </div>
   );
 }

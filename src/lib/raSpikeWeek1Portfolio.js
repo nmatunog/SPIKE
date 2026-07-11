@@ -189,9 +189,6 @@ export async function fetchWeek1Portfolio(participantId) {
 export async function saveWeek1Portfolio(participantId, patch) {
   if (!participantId) throw new Error('Sign in required.');
   const current = getWeek1PortfolioLocal(participantId);
-  if (current.locked) {
-    throw new Error('Portfolio is locked. Ask your coach to reopen it.');
-  }
 
   const next = writeWeek1PortfolioLocal(participantId, patch);
   if (isMockUserId(participantId) || !isSupabaseConfigured || !supabase) {
