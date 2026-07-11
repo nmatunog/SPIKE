@@ -3,7 +3,6 @@ import { SpikeLogo } from '../components/brand/SpikeLogo.jsx';
 import { GuestBootstrapForm } from '../components/GuestBootstrapForm.jsx';
 import { GuestLoginForm } from '../components/GuestLoginForm.jsx';
 import { InternSignupPanel } from '../components/InternSignupPanel.jsx';
-import { RaSpikeSignupEntryCard } from '../components/ra-spike/RaSpikeSignupEntryCard.jsx';
 import { RaSpikeSignupPanel } from '../components/ra-spike/RaSpikeSignupPanel.jsx';
 import { StaffSignupPanel } from '../components/StaffSignupPanel.jsx';
 import { listMockAuthAccountHints } from '../lib/mockAuthUsers.js';
@@ -146,9 +145,6 @@ export function WelcomePage({
                 {usingSupabaseAuth && !raSpikeApp ? (
                   <InternSignupPanel onSignup={onInternSignup} />
                 ) : null}
-                {usingSupabaseAuth && !raSpikeApp ? (
-                  <RaSpikeSignupEntryCard />
-                ) : null}
                 {usingSupabaseAuth && staffBootstrapMode && onStaffSignup ? (
                   <StaffSignupPanel onSignup={onStaffSignup} />
                 ) : null}
@@ -182,7 +178,6 @@ export function WelcomePage({
               <RaSpikeSignupPanel onSignup={onRaSpikeSignup} />
             ) : null}
             {!raSpikeApp ? <InternSignupPanel onSignup={onInternSignup} /> : null}
-            {!raSpikeApp ? <RaSpikeSignupEntryCard /> : null}
           </div>
         ) : null}
 

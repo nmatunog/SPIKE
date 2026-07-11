@@ -22,7 +22,6 @@ import {
   defaultRouteForRole,
   isInternshipOnlyInternPath,
   isRaSpikePlaybookPath,
-  internshipEntryHref,
 } from '../../routes/paths.js';
 import { resolveProgramSlug, isRaSpikeProgram } from '../../lib/programs/index.js';
 import { RA_SPIKE_PROGRAM } from '../../lib/programs/ra-spike.js';
@@ -435,13 +434,9 @@ export function RaSpikeApp() {
       if (programSlug !== 'ra-spike' && !isSuperuserSession) {
         return (
           <div className="container mx-auto px-6 py-12 text-center text-gray-700">
-            <p className="font-medium">This account is not enrolled in RA-SPIKE.</p>
+            <p className="font-medium">This account is not enrolled here.</p>
             <p className="mt-2 text-sm text-slate-600">
-              SPIKE Internship accounts use{' '}
-              <a href={internshipEntryHref('intern')} className="font-semibold text-spike hover:underline">
-                portal.1cma.online
-              </a>
-              .
+              Sign in with the account your coach gave you for this program.
             </p>
           </div>
         );
@@ -503,7 +498,7 @@ export function RaSpikeApp() {
       {readOnlyViewer ? <ReadOnlyViewerBar /> : null}
 
       {isSuperuserSession && !authLoading ? (
-        <SuperuserPreviewBar viewAsRole={viewAsRole} onViewAs={handleViewAs} compact={compactNav} />
+        <SuperuserPreviewBar viewAsRole={viewAsRole} onViewAs={handleViewAs} compact={compactNav} userRole={userRole} />
       ) : null}
 
       {userRole !== 'guest' && userRole !== 'profile_error' && !authLoading && (

@@ -1730,7 +1730,7 @@ const SpikeMasterPortal = () => {
 
       if (programSlug === 'ra-spike') {
         return (
-          <RaSpikeHardRedirect href={raSpikeRookieEntryHref()} label="Opening RA-SPIKE…" />
+          <RaSpikeHardRedirect href={raSpikeRookieEntryHref()} label="Redirecting…" />
         );
       }
 
@@ -1967,7 +1967,7 @@ const SpikeMasterPortal = () => {
       if (path === ROUTES.programCoachRaSpike || path === ROUTES.mentorRaSpike) {
         const coachHref = path === ROUTES.mentorRaSpike ? ROUTES.mentorRaSpike : ROUTES.programCoachRaSpike;
         return (
-          <RaSpikeHardRedirect href={coachHref} label="Opening RA-SPIKE coach hub…" />
+          <RaSpikeHardRedirect href={coachHref} label="Redirecting…" />
         );
       }
       if (path === ROUTES.programCoachHome) {
@@ -2068,7 +2068,7 @@ const SpikeMasterPortal = () => {
       }
       if (path === ROUTES.mentorRaSpike) {
         return (
-          <RaSpikeHardRedirect href={ROUTES.mentorRaSpike} label="Opening RA-SPIKE coach hub…" />
+          <RaSpikeHardRedirect href={ROUTES.mentorRaSpike} label="Redirecting…" />
         );
       }
       if (path === ROUTES.mentorSquads) {
@@ -2257,7 +2257,7 @@ const SpikeMasterPortal = () => {
       {!immersiveLife && readOnlyViewer ? <ReadOnlyViewerBar /> : null}
 
       {!immersiveLife && isSuperuserSession && !authLoading ? (
-        <SuperuserPreviewBar viewAsRole={viewAsRole} onViewAs={handleViewAs} compact={compactNav} />
+        <SuperuserPreviewBar viewAsRole={viewAsRole} onViewAs={handleViewAs} compact={compactNav} userRole={userRole} />
       ) : null}
 
       {!immersiveLife && userRole !== 'guest' && userRole !== 'profile_error' && !authLoading && (

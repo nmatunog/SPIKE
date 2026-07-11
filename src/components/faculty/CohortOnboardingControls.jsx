@@ -228,7 +228,7 @@ export function CohortOnboardingControls({ staffId, interns = [], canAssignSquad
       <div className="rounded-xl border border-slate-200 bg-white p-4">
         <p className="text-sm font-semibold text-slate-900">Cohort program</p>
         <p className="mt-1 text-sm text-slate-600">
-          SPIKE Internship only — RA-SPIKE batches are managed in the RA-SPIKE coach hub.
+          Sets which program curriculum applies to this cohort.
         </p>
         <div className="mt-3 flex flex-wrap items-end gap-3">
           <label className="text-sm text-slate-700">

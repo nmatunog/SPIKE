@@ -45,9 +45,6 @@ export function RaSpikeGraduationModal({ user, onClose }) {
           <li>Stage 1 — Entrepreneurial Foundation</li>
           <li>Stage 2 — Foundational Client Acquisition</li>
         </ul>
-        <p className="mt-4 text-center text-xs text-slate-500">
-          RA-SPIKE is separate from the SPIKE Internship program — your internship portfolio is unchanged.
-        </p>
         {error ? <p className="mt-3 text-sm text-red-700">{error}</p> : null}
         <div className="mt-6 flex flex-col gap-2">
           <button type="button" disabled={busy} onClick={completeRaSpike} className="spike-btn-primary min-h-[48px]">

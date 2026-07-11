@@ -4,17 +4,14 @@ import {
   isRaSpikeAppPath,
   raSpikeStaffEntryHref,
 } from '../../routes/paths.js';
-import { isStaffUiRole } from '../../lib/roles.js';
 
 /**
- * SPIKE Internship vs RA-SPIKE coach context switcher (top nav).
- * Uses full-page navigation so portal.1cma.online switches between the
- * internship Pages project and the RA-SPIKE /ra-spike proxy (separate DBs).
+ * Superuser-only switch between SPIKE Internship and RA-SPIKE portals (separate DBs).
  * @param {{ userRole: string }} props
  */
 export function StaffProgramSwitcher({ userRole }) {
   const { pathname } = useLocation();
-  if (!isStaffUiRole(userRole)) return null;
+  if (userRole !== 'superuser') return null;
 
   const onRaSpike = isRaSpikeAppPath(pathname);
   const raSpikeHref = raSpikeStaffEntryHref(userRole);
@@ -23,33 +20,22 @@ export function StaffProgramSwitcher({ userRole }) {
   const pill =
     'inline-flex min-h-[40px] items-center rounded-full px-4 py-2 text-xs font-bold transition sm:text-sm';
 
-  if (onRaSpike) {
-    return (
-      <span
-        className={`${pill} shrink-0 bg-spike text-white shadow-sm`}
-        aria-current="page"
-      >
-        RA-SPIKE™
-      </span>
-    );
-  }
-
   return (
     <div
-      className="flex shrink-0 items-center gap-1 rounded-full border border-slate-200 bg-slate-100 p-1"
+      className="flex shrink-0 items-center gap-1 rounded-full border border-amber-300/80 bg-amber-100/60 p-1"
       role="group"
-      aria-label="Program"
+      aria-label="Program portal"
     >
       <a
         href={internshipHref}
-        className={`${pill} ${!onRaSpike ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
+        className={`${pill} ${!onRaSpike ? 'bg-amber-800 text-white shadow-sm' : 'text-amber-950 hover:bg-amber-200/80'}`}
         aria-current={!onRaSpike ? 'page' : undefined}
       >
         SPIKE Internship
       </a>
       <a
         href={raSpikeHref}
-        className={`${pill} ${onRaSpike ? 'bg-spike text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
+        className={`${pill} ${onRaSpike ? 'bg-amber-800 text-white shadow-sm' : 'text-amber-950 hover:bg-amber-200/80'}`}
         aria-current={onRaSpike ? 'page' : undefined}
       >
         RA-SPIKE™

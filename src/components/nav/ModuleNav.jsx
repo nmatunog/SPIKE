@@ -20,7 +20,6 @@ import {
   ROUTES,
 } from '../../routes/paths.js';
 import { SuperuserPreviewPills } from './SuperuserPreviewPills.jsx';
-import { StaffProgramSwitcher } from './StaffProgramSwitcher.jsx';
 
 const ICONS = {
   dashboard: LayoutDashboard,
@@ -159,7 +158,6 @@ export function ModuleNav({ userRole, superuserPreview, isSuperuserPortal = fals
           style={{ WebkitTransform: 'translateZ(0)' }}
         >
           <div className="mx-auto flex max-w-projection items-stretch justify-around gap-1 px-1 sm:px-2">
-            <StaffProgramSwitcher userRole={userRole} />
             <NavItems userRole={userRole} variant="mobile" isSuperuserPortal={isSuperuserPortal} />
           </div>
         </nav>
@@ -172,7 +170,6 @@ export function ModuleNav({ userRole, superuserPreview, isSuperuserPortal = fals
       <div className="mx-auto max-w-projection px-4 sm:px-6 lg:px-8 2xl:px-10">
         <div className="scrollbar-thin flex items-center gap-2 overflow-x-auto py-2.5 sm:gap-3 lg:py-3">
           {superuserPreview ? <SuperuserPreviewPills {...superuserPreview} /> : null}
-          <StaffProgramSwitcher userRole={userRole} />
           <div className="flex min-w-0 flex-1 gap-1 sm:gap-2">
             <NavItems userRole={userRole} variant="desktop" isSuperuserPortal={isSuperuserPortal} />
           </div>

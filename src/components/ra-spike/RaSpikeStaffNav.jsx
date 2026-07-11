@@ -2,7 +2,6 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { BookOpen, LayoutDashboard, Settings } from 'lucide-react';
 import { useCompactNav } from '../../hooks/useCompactNav.js';
 import { ROUTES, isRaSpikePlaybookPath } from '../../routes/paths.js';
-import { StaffProgramSwitcher } from '../nav/StaffProgramSwitcher.jsx';
 
 function linkClass(isActive, isMobile) {
   if (isMobile) {
@@ -75,7 +74,6 @@ export function RaSpikeStaffNav({ userRole, showAdmin = false }) {
         style={{ WebkitTransform: 'translateZ(0)' }}
       >
         <div className="mx-auto flex max-w-projection items-stretch justify-around gap-1 px-1 sm:px-2">
-          <StaffProgramSwitcher userRole={userRole} />
           {navItems}
         </div>
       </nav>
@@ -89,7 +87,6 @@ export function RaSpikeStaffNav({ userRole, showAdmin = false }) {
     >
       <div className="mx-auto max-w-projection px-4 sm:px-6 lg:px-8 2xl:px-10">
         <div className="scrollbar-thin flex items-center gap-2 overflow-x-auto py-2.5 sm:gap-3 lg:py-3">
-          <StaffProgramSwitcher userRole={userRole} />
           <div className="flex min-w-0 flex-1 gap-1 sm:gap-2">{navItems}</div>
         </div>
       </div>

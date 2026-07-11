@@ -50,19 +50,6 @@ export function FacultyHomePage({
         cohortStartDate={cohortStartDate}
       />
 
-      <div className="mt-6 rounded-2xl border border-spike/25 bg-gradient-to-r from-spike-muted/40 to-white p-4 sm:p-5">
-        <p className="text-sm font-bold text-slate-900">RA-SPIKE™ Rookie Academy</p>
-        <p className="mt-1 text-sm text-slate-600">
-          Create batches, share invite codes, and evaluate stage gates — separate from SPIKE Internship playbook.
-        </p>
-        <a
-          href={ROUTES.programCoachRaSpike}
-          className="mt-3 inline-flex min-h-[44px] items-center rounded-xl bg-spike px-4 py-2 text-sm font-bold text-white"
-        >
-          Open RA-SPIKE coach hub
-        </a>
-      </div>
-
       {UNLOCK_WEEK2 && programDay.week >= 2 ? (
         <div className="mt-10 space-y-6">
           <Week2CoachTimeline activeDay={programDay.day} role="faculty" interns={interns} />
