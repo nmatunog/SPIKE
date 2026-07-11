@@ -9,10 +9,10 @@ import {
   canSubmitRaSpikeWeek,
   fetchRaSpikeWeekProgress,
   getStepStatus,
-  isRaSpikeStepUnlocked,
   setRaSpikeStepStatus,
   submitRaSpikeWeek,
 } from '../../lib/raSpikeWeekProgress.js';
+import { isRaSpikeWeekUnlocked } from '../../lib/programUnlockPolicy.js';
 import { isCanvasWizardComplete, isFecIntroWizardComplete } from '../../lib/raSpikeCanvasWizard.js';
 import { isDiscoveryCanvasComplete } from '../../lib/raSpikeDiscoveryCanvas.js';
 import { isRaSpikeWorksheetComplete } from '../../lib/raSpikeWorksheetStorage.js';
@@ -24,7 +24,6 @@ import {
   raSpikePlaybookCanvasWizardHref,
   raSpikePlaybookDiscoveryCanvasHref,
   raSpikeStageGateHref,
-  raSpikePlaybookStepHref,
 } from '../../routes/paths.js';
 import { useAuth } from '../../AuthContext.jsx';
 import { isRaSpikeCoachPreviewUser } from '../../lib/raSpikeCoachPreview.js';
@@ -112,7 +111,7 @@ export function RaSpikeWeekStepPage({ user, week, stepId }) {
   }
 
   const stepKey = /** @type {import('../../lib/raSpikeWeekProgress.js').RaSpikeStepId} */ (stepId);
-  const unlocked = staffPreview || isRaSpikeStepUnlocked(progress, stepKey);
+  const weekAccessible = staffPreview || isRaSpikeWeekUnlocked(week, user?.internProgress);
   const status = getStepStatus(progress, stepKey);
   function assignmentHref() {
     const action = content.action;
@@ -138,15 +137,6 @@ export function RaSpikeWeekStepPage({ user, week, stepId }) {
         reflectionNotes: stepId === 'reflection' ? reflection : undefined,
       });
       setProgress(next);
-      if (nextStatus === 'complete' && stepId !== 'submit') {
-        const order = ['learn', 'workshop', 'assignment', 'reflection', 'submit'];
-        const idx = order.indexOf(stepId);
-        const nextStep = order[idx + 1];
-        if (nextStep) {
-          navigate(raSpikePlaybookStepHref(nextStep, week), { replace: true });
-          return;
-        }
-      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not save progress.');
     } finally {
@@ -168,11 +158,11 @@ export function RaSpikeWeekStepPage({ user, week, stepId }) {
     }
   }
 
-  if (!unlocked && !loading) {
+  if (!weekAccessible && !loading) {
     return (
       <RaSpikeShell user={user}>
         <PageContainer>
-          <p className="text-slate-600">Complete the previous step to unlock this one.</p>
+          <p className="text-slate-600">This week is not published yet. Return to your current week in the Playbook.</p>
           <Link to={ROUTES.raSpikePlaybook} className="mt-4 inline-block text-spike hover:underline">
             Back to Playbook
           </Link>

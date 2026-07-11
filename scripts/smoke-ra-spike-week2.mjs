@@ -75,8 +75,8 @@ try {
   if (!preview.isRaSpikeCoachPreviewUser(coachUser)) {
     throw new Error('coach preview user flag missing');
   }
-  if (coachUser.internProgress?.ra_spike_current_week !== 8) {
-    throw new Error('coach preview should unlock all weeks');
+  if (coachUser.internProgress?.ra_spike_current_week === 8) {
+    throw new Error('coach preview should not default to week 8');
   }
 
   const assist = await server.ssrLoadModule('/src/lib/raSpikeFecWizardAssist.js');

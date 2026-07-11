@@ -6,7 +6,6 @@ import { WeeklyCardStack } from '../../components/ra-spike/learning/WeeklyCardSt
 import { RaSpikeGraduationModal } from '../../components/ra-spike/RaSpikeGraduationModal.jsx';
 import { shouldShowRaSpikeGraduation } from '../../lib/raSpikeGraduation.js';
 import { getRaSpikeContext } from '../../lib/programs/ra-spike-context.js';
-import { resolveRaSpikeCalendarWeek } from '../../lib/programs/ra-spike-session.js';
 import { RA_SPIKE_PROGRAM } from '../../lib/programs/ra-spike.js';
 import {
   getRaSpikeWeekContent,
@@ -17,8 +16,8 @@ import {
   fetchRaSpikeWeekProgress,
   raSpikeWeekPercentComplete,
 } from '../../lib/raSpikeWeekProgress.js';
-import { isRaSpikeWeekUnlocked } from '../../lib/programUnlockPolicy.js';
-import { useRaSpikeHomeDashboard } from '../../hooks/useRaSpikeHomeDashboard.js';
+import { isRaSpikeWeekUnlocked, resolveRaSpikeDefaultPlaybookWeek } from '../../lib/programUnlockPolicy.js';
+import { fetchRaSpikeWeekPublishStats } from '../../lib/staffRaSpikeWeekPublishService.js';
 import { RaSpikeWeekStepPage } from './RaSpikeWeekStepPage.jsx';
 import { RaSpikeDreamBoardPage } from './RaSpikeDreamBoardPage.jsx';
 import { RaSpikeCanvasWizardPage } from './RaSpikeCanvasWizardPage.jsx';
@@ -60,13 +59,21 @@ function RaSpikePlaybookOverview({ user }) {
   const location = useLocation();
   const staffPreview = isRaSpikeCoachPreviewUser(user);
   const participantId = staffPreview ? '' : (user?.id ?? '');
-  const { cohortStartDate } = useRaSpikeHomeDashboard(user);
-  const baseCtx = getRaSpikeContext(user?.internProgress);
   const queryWeek = Number(new URLSearchParams(location.search).get('week'));
+  const [staffPublishedWeek, setStaffPublishedWeek] = useState(null);
+
+  useEffect(() => {
+    if (!staffPreview) return;
+    fetchRaSpikeWeekPublishStats()
+      .then((stats) => setStaffPublishedWeek(stats.maxWeek || 1))
+      .catch(() => setStaffPublishedWeek(1));
+  }, [staffPreview]);
+
   const displayWeek = useMemo(() => {
     if (Number.isFinite(queryWeek) && queryWeek >= 1 && queryWeek <= 8) return queryWeek;
-    return resolveRaSpikeCalendarWeek(cohortStartDate, baseCtx.week);
-  }, [queryWeek, cohortStartDate, baseCtx.week]);
+    if (staffPreview && staffPublishedWeek != null) return staffPublishedWeek;
+    return resolveRaSpikeDefaultPlaybookWeek(null, user?.internProgress);
+  }, [queryWeek, staffPreview, staffPublishedWeek, user?.internProgress]);
   const weekUnlocked = staffPreview || isRaSpikeWeekUnlocked(displayWeek, user?.internProgress);
   const weekContent = getRaSpikeWeekContent(displayWeek);
   const [progress, setProgress] = useState({});
@@ -141,15 +148,15 @@ function RaSpikePlaybookOverview({ user }) {
 
           {!weekUnlocked ? (
             <section className="spike-card text-sm text-slate-600">
-              <p className="font-semibold text-slate-900">This week is locked</p>
-              <p className="mt-1">Complete prior weeks or pass Stage Gate 1 to unlock Week {displayWeek}.</p>
+              <p className="font-semibold text-slate-900">This week is not published yet</p>
+              <p className="mt-1">Your coach will open Week {displayWeek} when it is ready. Work on your current week in the meantime.</p>
             </section>
           ) : (
-            <WeeklyCardStack week={displayWeek} steps={steps} progress={progress} staffPreview={staffPreview} />
+            <WeeklyCardStack week={displayWeek} steps={steps} progress={progress} />
           )}
 
           <p className="text-xs text-slate-500">
-            Flow: {RA_SPIKE_STEP_ORDER.join(' → ')}. Complete each step in order.
+            Flow: {RA_SPIKE_STEP_ORDER.join(' → ')}. Open any activity once your coach publishes the week.
           </p>
         </div>
       </PageContainer>

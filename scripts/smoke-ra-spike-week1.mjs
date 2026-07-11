@@ -35,8 +35,8 @@ try {
     throw new Error(`expected 5 steps, got ${steps.length}`);
   }
 
-  const unlocked = progress.isRaSpikeStepUnlocked({ learn: 'complete' }, 'workshop');
-  if (!unlocked) throw new Error('sequential unlock failed');
+  const unlocked = progress.isRaSpikeStepUnlocked({}, 'workshop');
+  if (!unlocked) throw new Error('published-week activities should all be open');
 
   console.log(
     `smoke:ra-spike-week1 OK — "${week1.title}" with ${steps.length} steps, dream-board module`,

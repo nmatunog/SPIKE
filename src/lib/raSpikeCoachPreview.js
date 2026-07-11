@@ -1,5 +1,4 @@
 import { PROGRAM_SLUGS } from './programs/constants.js';
-import { RA_SPIKE_PROGRAM } from './programs/ra-spike.js';
 
 /** @param {object | null | undefined} user */
 export function isRaSpikeCoachPreviewUser(user) {
@@ -19,9 +18,8 @@ export function buildRaSpikeCoachPreviewUser(user) {
     isRaSpikeCoachPreview: true,
     internProgress: {
       program_slug: PROGRAM_SLUGS.RA_SPIKE,
-      ra_spike_current_week: RA_SPIKE_PROGRAM.totalWeeks,
-      ra_spike_segment: 2,
-      gate_1_status: 'passed',
+      ra_spike_current_week: 1,
+      ra_spike_segment: 1,
     },
   };
 }

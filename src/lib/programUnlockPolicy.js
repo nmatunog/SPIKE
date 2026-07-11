@@ -56,14 +56,18 @@ export function isPlaybookDayUnlocked(week, segment, day = 1, programSlug, inter
  */
 export function isRaSpikeWeekUnlocked(targetWeek, internProgress) {
   const week = Math.max(1, Math.min(8, targetWeek));
-  const current = internProgress?.ra_spike_current_week ?? 1;
-  if (week > current) return false;
-  if (week >= 5) {
-    const gate1 = internProgress?.gate_1_status === 'passed';
-    const segment = internProgress?.ra_spike_segment ?? 1;
-    if (segment < 2 && !gate1) return false;
-  }
-  return true;
+  const publishedThrough = internProgress?.ra_spike_current_week ?? 1;
+  return week <= publishedThrough;
+}
+
+/**
+ * Default playbook week when no ?week= query — latest published week for the participant.
+ * @param {number | null | undefined} queryWeek
+ * @param {object | null | undefined} internProgress
+ */
+export function resolveRaSpikeDefaultPlaybookWeek(queryWeek, internProgress) {
+  if (Number.isFinite(queryWeek) && queryWeek >= 1 && queryWeek <= 8) return queryWeek;
+  return Math.max(1, Math.min(8, internProgress?.ra_spike_current_week ?? 1));
 }
 
 /**
