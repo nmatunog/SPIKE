@@ -27,6 +27,7 @@ import { resolveProgramSlug, isRaSpikeProgram } from '../../lib/programs/index.j
 import { RA_SPIKE_PROGRAM } from '../../lib/programs/ra-spike.js';
 import { isRaSpikeOnboardingPath, ensureRaSpikeOnboardingComplete } from '../../lib/raSpikeOnboardingService.js';
 import { registerRaSpikeViaApi, isRaSpikeSignupApiUnavailable } from '../../lib/raSpikeSignupService.js';
+import { loginWithPortalRouting } from '../../lib/portalAuthHintService.js';
 import { buildRaSpikeCoachPreviewUser, isRaSpikeStaffPlaybookRole } from '../../lib/raSpikeCoachPreview.js';
 import { buildSuperuserInternPreviewUser } from '../../lib/superuserInternPreview.js';
 import {
@@ -268,7 +269,13 @@ export function RaSpikeApp() {
 
   const handleGuestLogin = useCallback(
     async (email, password) => {
-      const signedIn = await login(email, password);
+      const signedIn = await loginWithPortalRouting({
+        email,
+        password,
+        login,
+        currentPortal: 'ra-spike',
+      });
+      if (!signedIn) return;
       const role = resolveUserRole(signedIn);
       const programSlug = resolveProgramSlug(signedIn?.internProgress);
       const target = defaultRouteForRole(

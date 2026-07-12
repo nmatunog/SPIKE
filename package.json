@@ -52,7 +52,7 @@
     "smoke:ra-spike-week1": "node scripts/smoke-ra-spike-week1.mjs",
     "smoke:ra-spike-week2": "node scripts/smoke-ra-spike-week2.mjs",
     "smoke:ra-spike-gates": "node scripts/smoke-ra-spike-gates.mjs",
-    "audit:intern-recovery": "node scripts/audit-intern-cloud-recovery.mjs",
+    "audit:program-db": "node scripts/audit-program-database-integrity.mjs",
     "cap:sync": "CAPACITOR=true npm run build && npx cap sync",
     "cap:ios": "npm run cap:sync && npx cap open ios",
     "cap:android": "npm run cap:sync && npx cap open android",

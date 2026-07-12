@@ -35,6 +35,7 @@ import { playbookWeek2MissionHref } from './lib/customerDiscovery/week2MissionSe
 import { buildSuperuserMentorPreviewInterns } from './lib/superuserMentorPreview.js';
 import { ROUTES, brandLexiconBackHrefForRole, facilitatorsReferenceBackHrefForRole, defaultRouteForRole, isPublicPortfolioPath, isVentureBlueprintPath, isPlaybookPath, isSpikeLifePath, isSpikeLifeImmersivePath, parseStaffSquadHubPath, parseStaffStageGatePath, playbookHref, raSpikeRookieEntryHref } from './routes/paths.js';
 import { resolveProgramSlug, isRaSpikeProgram } from './lib/programs/index.js';
+import { loginWithPortalRouting } from './lib/portalAuthHintService.js';
 import { SuperuserPreviewBar } from './components/nav/SuperuserPreviewBar.jsx';
 import { RaSpikeHardRedirect } from './components/ra-spike/RaSpikeHardRedirect.jsx';
 import { StaffSquadHubPage, StaffSquadsListPage } from './components/staff/StaffSquadHubPage.jsx';
@@ -719,7 +720,13 @@ const SpikeMasterPortal = () => {
 
   const handleGuestLogin = useCallback(
     async (email, password) => {
-      const signedIn = await login(email, password);
+      const signedIn = await loginWithPortalRouting({
+        email,
+        password,
+        login,
+        currentPortal: 'internship',
+      });
+      if (!signedIn) return;
       const role = resolveUserRole(signedIn);
       const programSlug = resolveProgramSlug(signedIn?.internProgress);
       if (isRaSpikeProgram(programSlug)) {
