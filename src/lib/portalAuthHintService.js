@@ -36,6 +36,7 @@ export async function fetchPortalAuthHint(email) {
  * @returns {string | null}
  */
 export function portalRedirectForHint(currentPortal, hint) {
+  if (hint === 'both') return null;
   if (hint === 'ra-spike' && currentPortal === 'internship') return '/ra-spike/';
   if (hint === 'internship' && currentPortal === 'ra-spike') return '/';
   return null;

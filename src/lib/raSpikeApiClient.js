@@ -3,13 +3,20 @@
  * SPIKE Internship admin APIs stay on portal /api (main Pages project).
  */
 import { apiFetch } from '../apiClient.js';
+import { isRaSpikeAppPath } from '../routes/paths.js';
 
 const RA_PREFIX = (import.meta.env.VITE_RA_SPIKE_API_PREFIX || '/ra-spike/api').replace(/\/$/, '');
 
-/** @returns {boolean} */
+/**
+ * True only inside the RA-SPIKE app bundle or /ra-spike/* URLs on the shared portal host.
+ * Do not infer from RA_PREFIX alone — the internship bundle also defaults to /ra-spike/api for proxy calls.
+ */
 export function isRaSpikePortalContext() {
-  return import.meta.env.VITE_RA_SPIKE_STANDALONE === 'true'
-    || Boolean(RA_PREFIX.startsWith('/ra-spike'));
+  if (import.meta.env.VITE_RA_SPIKE_STANDALONE === 'true') return true;
+  if (typeof window !== 'undefined') {
+    return isRaSpikeAppPath(window.location.pathname);
+  }
+  return false;
 }
 
 /** @param {string} path Must start with / (e.g. /ra-spike/signup) */

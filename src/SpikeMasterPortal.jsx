@@ -288,6 +288,7 @@ const SpikeMasterPortal = () => {
   useEffect(() => {
     if (authLoading || effectiveUserRole !== 'intern' || !user?.id) return;
     if (userRole === 'superuser') return;
+    if (isStaffUiRole(userRole)) return;
     if (isRaSpikeProgram(resolveProgramSlug(user?.internProgress))) {
       window.location.replace(raSpikeRookieEntryHref());
       return;
