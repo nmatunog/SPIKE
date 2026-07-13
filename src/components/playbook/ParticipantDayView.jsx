@@ -26,6 +26,7 @@ import { BusinessEngineCanvasBlankPreview } from './week3/businessEngine/Busines
 import { Week3Day4PlaybookHero } from './week3/Week3Day4PlaybookHero.jsx';
 import { Week4Day1PlaybookHero } from './week4/Week4Day1PlaybookHero.jsx';
 import { Week4Day2PlaybookHero } from './week4/Week4Day2PlaybookHero.jsx';
+import { Week5PlaybookHero } from './week5/Week5PlaybookHero.jsx';
 import { GrowthEngineWorksheet } from './week3/GrowthEngineWorksheet.jsx';
 import { FinancialEngineWorksheet } from './week3/FinancialEngineWorksheet.jsx';
 import { playbookWeek3Day3Href } from '../../lib/week3Day3PortfolioService.js';
@@ -95,6 +96,8 @@ export function ParticipantDayView({
   const isWeek3Day4 = bundle.day.id === 'day-segment-1-week-3-day-4';
   const isWeek4Day1 = bundle.day.id === 'day-segment-1-week-4-day-1';
   const isWeek4Day2 = bundle.day.id === 'day-segment-1-week-4-day-2';
+  const isWeek5 = bundle.day.id?.startsWith('day-segment-1-week-5-');
+  const isWeek5Day1 = bundle.day.id === 'day-segment-1-week-5-day-1';
   const weekDayMatch = bundle.day.id.match(/day-segment-1-week-(\d+)-day-(\d+)/);
   const week2Day = weekDayMatch && Number(weekDayMatch[1]) === 2 ? Number(weekDayMatch[2]) : 0;
   const resolvedProgramWeek = programWeek ?? (weekDayMatch ? Number(weekDayMatch[1]) : 1);
@@ -135,6 +138,8 @@ export function ParticipantDayView({
       {isWeek4Day1 ? <Week4Day1PlaybookHero /> : null}
 
       {isWeek4Day2 ? <Week4Day2PlaybookHero /> : null}
+
+      {isWeek5 ? <Week5PlaybookHero showDay1Deck={isWeek5Day1} /> : null}
 
       {isWeek3Day3 ? (
         <>
