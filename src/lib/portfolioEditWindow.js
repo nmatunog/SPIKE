@@ -1,8 +1,8 @@
 /** Fallback grace after the program edit window closes (per-item window). */
 export const PORTFOLIO_EDIT_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
 
-/** Default open-edit deadline for the founding cohort pilot. */
-export const DEFAULT_PROGRAM_EDIT_UNTIL = '2026-06-30';
+/** Default open-edit deadline for the founding cohort pilot (through Week 5). */
+export const DEFAULT_PROGRAM_EDIT_UNTIL = '2026-07-18';
 
 /**
  * End of program edit window (local 23:59:59.999).

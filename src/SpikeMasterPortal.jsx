@@ -41,7 +41,7 @@ import { RaSpikeHardRedirect } from './components/ra-spike/RaSpikeHardRedirect.j
 import { StaffSquadHubPage, StaffSquadsListPage } from './components/staff/StaffSquadHubPage.jsx';
 import { Week2LoginWelcomeFlow } from './components/week2/Week2LoginWelcomeFlow.jsx';
 import { shouldShowWeek2LoginWelcome } from './lib/week2LoginWelcome.js';
-import { UNLOCK_WEEK2, UNLOCK_WEEK4, ensureWeek2OpenForParticipant, ensureWeek4OpenForParticipant } from './lib/programUnlocks.js';
+import { UNLOCK_WEEK2, UNLOCK_WEEK4, UNLOCK_WEEK5, ensureWeek2OpenForParticipant, ensureWeek4OpenForParticipant, ensureWeek5OpenForParticipant } from './lib/programUnlocks.js';
 import { StageGateCeremonyPage } from './components/stageGate/StageGateCeremonyPage.jsx';
 import { PitchPanelDashboard } from './components/staff/PitchPanelDashboard.jsx';
 import { PageContainer } from './components/layout/PageContainer.jsx';
@@ -272,6 +272,9 @@ const SpikeMasterPortal = () => {
     }
     if (internId && UNLOCK_WEEK4 && !isRaSpikeProgram(internProgramSlug)) {
       ensureWeek4OpenForParticipant(internId);
+    }
+    if (internId && UNLOCK_WEEK5 && !isRaSpikeProgram(internProgramSlug)) {
+      ensureWeek5OpenForParticipant(internId);
     }
   }, [authLoading, portalAccessRole, internModuleUser?.id, user?.id, internProgramSlug]);
 

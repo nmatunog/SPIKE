@@ -20,6 +20,9 @@ export const UNLOCK_WEEK3 = true;
 /** When true, Segment 1 interns may access Week 4 (Platform Integration / Blueprint Week). */
 export const UNLOCK_WEEK4 = true;
 
+/** When true, Segment 1 interns may access Week 5 (Pitch / portfolio finalize). */
+export const UNLOCK_WEEK5 = true;
+
 /**
  * Effective program week for interns (cohort pilot may advance ahead of stored progress).
  * @param {object | null | undefined} internProgress
@@ -27,6 +30,9 @@ export const UNLOCK_WEEK4 = true;
 export function resolveInternProgramWeek(internProgress) {
   const segment = internProgress?.segment ?? 1;
   const stored = internProgress?.current_week ?? 1;
+  if (UNLOCK_WEEK5 && segment === 1) {
+    return Math.max(stored, 5);
+  }
   if (UNLOCK_WEEK4 && segment === 1) {
     return Math.max(stored, 4);
   }
@@ -53,6 +59,11 @@ export function resolveInternPlaybookDay(internProgress) {
 
   // Week 2 pilot unlock — stored progress may still reflect Week 1 calendar; playbook starts Day 1.
   if (UNLOCK_WEEK2 && segment === 1 && week >= 2 && storedWeek < 2) {
+    return 1;
+  }
+
+  // Week 5 — playbook starts at Day 1 when cohort advances ahead of stored progress.
+  if (UNLOCK_WEEK5 && segment === 1 && week >= 5 && storedWeek < 5) {
     return 1;
   }
 
@@ -99,4 +110,15 @@ export function ensureWeek4OpenForParticipant(participantId) {
   const today = new Date().toISOString().slice(0, 10);
   applyStageUnlockToParticipant(participantId, 1, today);
   applyStageUnlockToParticipant(participantId, 2, today);
+}
+
+/**
+ * Local unlock — Week 5 Pitch: complete BUILD stage gate and open pitch journey.
+ * @param {string} participantId
+ */
+export function ensureWeek5OpenForParticipant(participantId) {
+  if (!UNLOCK_WEEK5 || !participantId) return;
+  ensureWeek4OpenForParticipant(participantId);
+  const today = new Date().toISOString().slice(0, 10);
+  applyStageUnlockToParticipant(participantId, 4, today);
 }

@@ -6,6 +6,8 @@ import {
   UNLOCK_WEEK1_DAY2_PLUS,
   UNLOCK_WEEK2,
   UNLOCK_WEEK3,
+  UNLOCK_WEEK4,
+  UNLOCK_WEEK5,
   resolveInternPlaybookDay,
   resolveInternProgramWeek,
   isPlaybookDayUnlocked as internshipPlaybookDayUnlocked,
@@ -86,4 +88,4 @@ export function shouldBypassInternPilotUnlocks(programSlug) {
   return unlockPolicyForProgram(programSlug) === 'strict';
 }
 
-export { UNLOCK_WEEK1_DAY2_PLUS, UNLOCK_WEEK2, UNLOCK_WEEK3 };
+export { UNLOCK_WEEK1_DAY2_PLUS, UNLOCK_WEEK2, UNLOCK_WEEK3, UNLOCK_WEEK4, UNLOCK_WEEK5 };

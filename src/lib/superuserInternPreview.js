@@ -5,7 +5,7 @@ import {
   SUPERUSER_INTERN_PREVIEW_PROGRESS,
 } from './superuserInternPreviewData.js';
 import { resolveStaffProgramDay } from './programCalendar.js';
-import { UNLOCK_WEEK2, UNLOCK_WEEK3, UNLOCK_WEEK4 } from './programUnlocks.js';
+import { UNLOCK_WEEK2, UNLOCK_WEEK3, UNLOCK_WEEK4, UNLOCK_WEEK5 } from './programUnlocks.js';
 
 const SAMPLE_INTERN_NAME = 'Alex Rivera (Sample)';
 
@@ -27,7 +27,8 @@ export function buildSuperuserInternPreviewProgress(cohortStartDate = null) {
   }
 
   let week = calendar.week;
-  if (UNLOCK_WEEK4) week = Math.max(week, 4);
+  if (UNLOCK_WEEK5) week = Math.max(week, 5);
+  else if (UNLOCK_WEEK4) week = Math.max(week, 4);
   else if (UNLOCK_WEEK3) week = Math.max(week, 3);
   else if (UNLOCK_WEEK2) week = Math.max(week, 2);
 
