@@ -39,6 +39,13 @@ for project in spike ra-spike; do
   echo "→ ${project} production secrets (server runtime — portal auth hint)"
   put_secret "$project" RA_SPIKE_SUPABASE_URL "$RA_URL"
   put_secret "$project" RA_SPIKE_SERVICE_ROLE_KEY "$RA_KEY"
+  if [[ -n "${SETUP_SECRET:-}" ]]; then
+    put_secret "$project" SETUP_SECRET "$SETUP_SECRET"
+  fi
 done
+
+if [[ -z "${SETUP_SECRET:-}" ]]; then
+  echo "⚠ SETUP_SECRET not set in .env — staff cross-portal handoff will not work until both Pages projects have the same SETUP_SECRET."
+fi
 
 echo "setup-cloudflare-pages-ra-spike-secrets OK"

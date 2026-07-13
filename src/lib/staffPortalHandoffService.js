@@ -11,7 +11,7 @@ function handoffApiFetch(body, accessToken) {
     token: accessToken,
   };
   return isRaSpikePortalContext()
-    ? raSpikeApiFetch('/staff-portal-handoff', opts)
+    ? raSpikeApiFetch('/ra-spike/staff-portal-handoff', opts)
     : apiFetch('/api/auth/staff-portal-handoff', opts);
 }
 
@@ -38,7 +38,7 @@ export function readPortalHandoffToken() {
 export async function consumeStaffPortalHandoff(token) {
   if (!supabase) throw new Error('Supabase is not configured.');
   const data = isRaSpikePortalContext()
-    ? await raSpikeApiFetch('/staff-portal-handoff', {
+    ? await raSpikeApiFetch('/ra-spike/staff-portal-handoff', {
         method: 'POST',
         body: { action: 'consume', token },
       })
