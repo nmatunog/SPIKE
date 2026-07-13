@@ -13,6 +13,7 @@ import {
   isInlineDreamBoardImageUrl,
 } from './dreamBoardStorageUtils.js';
 import { canWriteParticipantRow } from './supabase/writeGuards.js';
+import { supabaseUrl } from '../supabaseClient.js';
 import { isMockUserId } from './mockAuth.js';
 import {
   stripInlineDreamBoardImage,
@@ -211,8 +212,7 @@ export async function hydrateDreamBoardImagesFromCloud(participantId, opts = {})
  * @param {Set<string>} [storageClientIds]
  */
 export function attachDreamBoardStorageUrlsForParticipant(participantId, assets, storageClientIds = new Set()) {
-  const base = import.meta.env.VITE_SUPABASE_URL ?? '';
-  return attachDreamBoardStorageUrls(base, participantId, assets, storageClientIds);
+  return attachDreamBoardStorageUrls(supabaseUrl ?? '', participantId, assets, storageClientIds);
 }
 
 /**

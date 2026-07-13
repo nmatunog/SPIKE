@@ -5,7 +5,7 @@
   "type": "module",
   "description": "RA-SPIKE Rookie Academy (portal.1cma.online/ra-spike/)",
   "scripts": {
-    "dev": "VITE_RA_SPIKE_STANDALONE=true VITE_APP_BASE=/ra-spike/ VITE_RA_SPIKE_API_PREFIX=/ra-spike/api vite --config vite.config.js",
+    "dev": "VITE_RA_SPIKE_STANDALONE=true VITE_APP_BASE=/ra-spike/ VITE_RA_SPIKE_API_PREFIX=/ra-spike/api vite --mode ra-spike --config vite.config.js",
     "build": "bash ../../scripts/build-ra-spike.sh",
     "lint": "eslint ../../src/apps/ra-spike ../../src/pages/ra-spike ../../src/lib/raSpike"
   },

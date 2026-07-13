@@ -12,6 +12,28 @@ if [[ -f .env ]]; then
   set +a
 fi
 
+if [[ -f .env.ra-spike ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  source .env.ra-spike
+  set +a
+fi
+
+if [[ -f .env.ra-spike.local ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  source .env.ra-spike.local
+  set +a
+fi
+
+if [[ -z "${VITE_RA_SPIKE_SUPABASE_URL:-}" && "${VITE_SUPABASE_URL:-}" == *"yruwfdjqigxxwbqsqhho"* ]]; then
+  export VITE_RA_SPIKE_SUPABASE_URL="$VITE_SUPABASE_URL"
+fi
+
+if [[ -z "${VITE_RA_SPIKE_SUPABASE_ANON_KEY:-}" && -n "${VITE_SUPABASE_ANON_KEY:-}" ]]; then
+  export VITE_RA_SPIKE_SUPABASE_ANON_KEY="$VITE_SUPABASE_ANON_KEY"
+fi
+
 : "${VITE_RA_SPIKE_SUPABASE_URL:?RA-SPIKE build requires VITE_RA_SPIKE_SUPABASE_URL (or set in .env)}"
 : "${VITE_RA_SPIKE_SUPABASE_ANON_KEY:?RA-SPIKE build requires VITE_RA_SPIKE_SUPABASE_ANON_KEY}"
 

@@ -15,7 +15,7 @@
     "build": "node scripts/build-facilitators-content-reference.mjs && npm run build:spike-life && vite build && node scripts/copy-protected-coach-decks.mjs && node scripts/strip-public-coach-decks.mjs && bash scripts/strip-oversized-pages-assets.sh && node scripts/verify-dist-assets.mjs",
     "build:internship": "bash scripts/build-internship.sh",
     "build:ra-spike": "bash scripts/build-ra-spike.sh",
-    "dev:ra-spike": "VITE_RA_SPIKE_STANDALONE=true VITE_APP_BASE=/ra-spike/ VITE_RA_SPIKE_API_PREFIX=/ra-spike/api vite --open /ra-spike.html",
+    "dev:ra-spike": "VITE_RA_SPIKE_STANDALONE=true VITE_APP_BASE=/ra-spike/ VITE_RA_SPIKE_API_PREFIX=/ra-spike/api vite --mode ra-spike --open /ra-spike.html",
     "build:spike-life": "npm run build:packages --prefix SPIKE_LIFE",
     "build:facilitators-reference": "node scripts/build-facilitators-content-reference.mjs",
     "postbuild": "bash scripts/postbuild-ship.sh",
