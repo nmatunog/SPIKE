@@ -729,7 +729,7 @@ const SpikeMasterPortal = () => {
       if (!signedIn) return;
       const role = resolveUserRole(signedIn);
       const programSlug = resolveProgramSlug(signedIn?.internProgress);
-      if (isRaSpikeProgram(programSlug)) {
+      if (role === 'intern' && isRaSpikeProgram(programSlug)) {
         window.location.replace(raSpikeRookieEntryHref());
         return;
       }
@@ -2263,7 +2263,7 @@ const SpikeMasterPortal = () => {
 
       {!immersiveLife && readOnlyViewer ? <ReadOnlyViewerBar /> : null}
 
-      {!immersiveLife && isSuperuserSession && !authLoading ? (
+      {!immersiveLife && isStaffUiRole(userRole) && !authLoading ? (
         <SuperuserPreviewBar viewAsRole={viewAsRole} onViewAs={handleViewAs} compact={compactNav} userRole={userRole} />
       ) : null}
 

@@ -1,6 +1,8 @@
 import { createRaSpikeServiceClient, createServiceClient } from './supabaseAdmin.js';
 import { corsPreflight, json } from './verifySuperuser.js';
 
+const STAFF_ROLES = new Set(['FACULTY', 'MENTOR', 'ADMIN', 'SUPERUSER']);
+
 /** @param {string} email */
 function normalizeEmail(email) {
   return String(email || '').trim().toLowerCase();
@@ -17,15 +19,20 @@ export async function resolvePortalForEmail(env, email) {
 
   let inInternship = false;
   let inRaSpike = false;
+  let internshipStaff = false;
+  let raSpikeStaff = false;
 
   try {
     const intern = createServiceClient(env);
     const { data, error } = await intern
       .from('profiles')
-      .select('id')
+      .select('id, role')
       .eq('email', normalized)
       .maybeSingle();
-    if (!error && data?.id) inInternship = true;
+    if (!error && data?.id) {
+      inInternship = true;
+      internshipStaff = STAFF_ROLES.has(String(data.role).toUpperCase());
+    }
   } catch {
     /* internship DB not configured on this Pages project */
   }
@@ -34,14 +41,19 @@ export async function resolvePortalForEmail(env, email) {
     const ra = createRaSpikeServiceClient(env);
     const { data, error } = await ra
       .from('profiles')
-      .select('id')
+      .select('id, role')
       .eq('email', normalized)
       .maybeSingle();
-    if (!error && data?.id) inRaSpike = true;
+    if (!error && data?.id) {
+      inRaSpike = true;
+      raSpikeStaff = STAFF_ROLES.has(String(data.role).toUpperCase());
+    }
   } catch {
     /* RA-SPIKE DB not configured on this Pages project */
   }
 
+  if (internshipStaff && !raSpikeStaff) return 'internship';
+  if (raSpikeStaff && !internshipStaff) return 'ra-spike';
   if (inRaSpike && !inInternship) return 'ra-spike';
   if (inInternship && !inRaSpike) return 'internship';
   if (inRaSpike && inInternship) return 'both';

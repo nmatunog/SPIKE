@@ -23,6 +23,11 @@ import { fetchProfileRow } from './lib/supabase/profileFields.js';
 import { scheduleInternDelayedUpload, clearInternDelayedUploadSchedule, runInternSignInCloudUpload } from './lib/internSessionSync.js';
 import { runInternLogoutBackup } from './lib/internLogoutBackup.js';
 import { isSupabaseConfigured, supabase } from './supabaseClient';
+import {
+  clearPortalHandoffParam,
+  consumeStaffPortalHandoff,
+  readPortalHandoffToken,
+} from './lib/staffPortalHandoffService.js';
 
 const AuthContext = createContext(null);
 const STATIC_ONLY = import.meta.env.VITE_STATIC_ONLY === 'true';
@@ -236,6 +241,15 @@ export function AuthProvider({ children }) {
           setUser(mockUser);
           setLoading(false);
           return;
+        }
+
+        const handoffToken = readPortalHandoffToken();
+        if (handoffToken) {
+          try {
+            await consumeStaffPortalHandoff(handoffToken);
+          } catch {
+            clearPortalHandoffParam();
+          }
         }
 
         const { data, error } = await supabase.auth.getSession();

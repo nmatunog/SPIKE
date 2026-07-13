@@ -504,7 +504,7 @@ export function RaSpikeApp() {
 
       {readOnlyViewer ? <ReadOnlyViewerBar /> : null}
 
-      {isSuperuserSession && !authLoading ? (
+      {isStaffUiRole(userRole) && !authLoading ? (
         <SuperuserPreviewBar viewAsRole={viewAsRole} onViewAs={handleViewAs} compact={compactNav} userRole={userRole} />
       ) : null}
 
