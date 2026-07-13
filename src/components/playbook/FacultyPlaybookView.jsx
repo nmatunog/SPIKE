@@ -9,6 +9,8 @@ import { Week3Day4PlaybookHero } from './week3/Week3Day4PlaybookHero.jsx';
 import { Week4Day1PlaybookHero } from './week4/Week4Day1PlaybookHero.jsx';
 import { Week4Day2PlaybookHero } from './week4/Week4Day2PlaybookHero.jsx';
 import { Week5PlaybookHero } from './week5/Week5PlaybookHero.jsx';
+import { Week5Day1MissionFlow } from './week5/Week5Day1MissionFlow.jsx';
+import { Week5Day2MissionFlow } from './week5/Week5Day2MissionFlow.jsx';
 import { GrowthEngineWorksheet } from './week3/GrowthEngineWorksheet.jsx';
 import { FinancialEngineWorksheet } from './week3/FinancialEngineWorksheet.jsx';
 import { BusinessEngineCanvasBlankPreview } from './week3/businessEngine/BusinessEngineCanvasBlankPreview.jsx';
@@ -43,6 +45,7 @@ export function FacultyPlaybookView({ bundle }) {
   const isWeek4Day2 = bundle.day.id === 'day-segment-1-week-4-day-2';
   const isWeek5 = bundle.day.id?.startsWith('day-segment-1-week-5-');
   const isWeek5Day1 = bundle.day.id === 'day-segment-1-week-5-day-1';
+  const isWeek5Day2 = bundle.day.id === 'day-segment-1-week-5-day-2';
   const week2DayMatch = bundle.day.id.match(/day-segment-1-week-2-day-(\d+)/);
   const week2Day = week2DayMatch ? Number(week2DayMatch[1]) : 0;
   const facultyPresentations = resolvePresentations(bundle, bundle.day.presentations ?? []).filter(
@@ -58,6 +61,26 @@ export function FacultyPlaybookView({ bundle }) {
       {isWeek4Day1 ? <Week4Day1PlaybookHero allowDownload /> : null}
       {isWeek4Day2 ? <Week4Day2PlaybookHero allowDownload /> : null}
       {isWeek5 ? <Week5PlaybookHero allowDownload showDay1Deck={isWeek5Day1} /> : null}
+      {isWeek5Day1 ? (
+        <section className="rounded-3xl border border-slate-200 bg-white p-4 shadow-card sm:p-6">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-spike">Week 5 · Day 1 preview</p>
+          <h3 className="mt-1 text-lg font-bold text-slate-900">Finalize the Business</h3>
+          <p className="mt-2 text-sm text-slate-600">Participant mission workbook — all fields optional, no blocking validation.</p>
+          <div className="mt-4">
+            <Week5Day1MissionFlow participantId="" readOnly />
+          </div>
+        </section>
+      ) : null}
+      {isWeek5Day2 ? (
+        <section className="rounded-3xl border border-slate-200 bg-white p-4 shadow-card sm:p-6">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-spike">Week 5 · Day 2 preview</p>
+          <h3 className="mt-1 text-lg font-bold text-slate-900">Build the Final Pitch</h3>
+          <p className="mt-2 text-sm text-slate-600">Pitch storyboard, panel bank, and readiness checklist preview.</p>
+          <div className="mt-4">
+            <Week5Day2MissionFlow participantId="" readOnly />
+          </div>
+        </section>
+      ) : null}
       {isWeek3Day3 ? (
         <>
           <Week3Day3PlaybookHero />

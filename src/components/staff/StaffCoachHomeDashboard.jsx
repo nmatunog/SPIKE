@@ -9,6 +9,7 @@ import {
   ClipboardList,
   Lightbulb,
   MessageSquarePlus,
+  Presentation,
   Trophy,
   Users,
   FlaskConical,
@@ -178,6 +179,24 @@ export function StaffCoachHomeDashboard({
                 >
                   <Briefcase size={18} />
                   Preview Blueprint
+                </Link>
+              </>
+            ) : null}
+            {model.week >= 5 && model.day >= 1 ? (
+              <>
+                <Link
+                  to={playbookHref({ week: 5, day: 1 })}
+                  className="inline-flex min-h-[48px] items-center gap-2 rounded-xl border border-amber-400/40 bg-amber-400/15 px-6 py-3 text-sm font-semibold text-amber-100 transition hover:bg-amber-400/25"
+                >
+                  <Presentation size={18} />
+                  Week 5 Day 1 playbook
+                </Link>
+                <Link
+                  to={playbookHref({ week: 5, day: 2 })}
+                  className="inline-flex min-h-[48px] items-center gap-2 rounded-xl border border-amber-400/40 bg-amber-400/15 px-6 py-3 text-sm font-semibold text-amber-100 transition hover:bg-amber-400/25"
+                >
+                  <Trophy size={18} />
+                  Week 5 Day 2 playbook
                 </Link>
               </>
             ) : null}

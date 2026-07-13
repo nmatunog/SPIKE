@@ -13,6 +13,8 @@ import { Week3Day4MissionPlaybookView } from '../components/playbook/week3/Week3
 import { Week3Day5MissionPlaybookView } from '../components/playbook/week3/Week3Day5MissionPlaybookView.jsx';
 import { Week4Day1MissionPlaybookView } from '../components/playbook/week4/Week4Day1MissionPlaybookView.jsx';
 import { Week4Day2MissionPlaybookView } from '../components/playbook/week4/Week4Day2MissionPlaybookView.jsx';
+import { Week5Day1MissionPlaybookView } from '../components/playbook/week5/Week5Day1MissionPlaybookView.jsx';
+import { Week5Day2MissionPlaybookView } from '../components/playbook/week5/Week5Day2MissionPlaybookView.jsx';
 import {
   getCurriculumDataSource,
   getDayContentBundle,
@@ -34,6 +36,7 @@ import { useCohortProgramDay } from '../hooks/useCohortProgramDay.js';
 import { listPendingPlaybookReflections } from '../lib/pendingPlaybookReflectionService.js';
 import { isSuperuserInternPreviewParticipantId } from '../lib/superuserInternPreviewData.js';
 import { WEEK4_DAY2_ID } from '../lib/week4Day2/missionConstants.js';
+import { WEEK5_DAY1_ID, WEEK5_DAY2_ID } from '../lib/week5Day1/missionConstants.js';
 import { PlaybookDayClosingReflectionBlock } from '../components/playbook/PlaybookDayClosingReflectionBlock.jsx';
 import { PlaybookReflectionNudge } from '../components/playbook/PlaybookReflectionNudge.jsx';
 
@@ -219,6 +222,18 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
     && (weekSlug === 'week-4' || selectedWeek?.week?.weekNumber === 4)
     && playbookDayNumber === 2;
 
+  const isInternWeek5Day1 =
+    userRole === 'intern'
+    && entrySegment === 1
+    && (weekSlug === 'week-5' || selectedWeek?.week?.weekNumber === 5)
+    && playbookDayNumber === 1;
+
+  const isInternWeek5Day2 =
+    userRole === 'intern'
+    && entrySegment === 1
+    && (weekSlug === 'week-5' || selectedWeek?.week?.weekNumber === 5)
+    && playbookDayNumber === 2;
+
   const showWeek2MissionFirst =
     isInternWeek2
     && !showCurriculum
@@ -255,13 +270,27 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
     && !browseAllDays
     && Boolean(participantId);
 
+  const showWeek5Day1MissionFirst =
+    isInternWeek5Day1
+    && !showCurriculum
+    && !browseAllDays
+    && Boolean(participantId);
+
+  const showWeek5Day2MissionFirst =
+    isInternWeek5Day2
+    && !showCurriculum
+    && !browseAllDays
+    && Boolean(participantId);
+
   const showMissionFirst =
     showWeek2MissionFirst
     || showWeek3Day3MissionFirst
     || showWeek3Day4MissionFirst
     || showWeek3Day5MissionFirst
     || showWeek4Day1MissionFirst
-    || showWeek4Day2MissionFirst;
+    || showWeek4Day2MissionFirst
+    || showWeek5Day1MissionFirst
+    || showWeek5Day2MissionFirst;
 
   const resolvedPlaybookDay = participantId
     ? resolveWeek2PlaybookDay(participantId, playbookDayNumber)
@@ -350,13 +379,26 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
   function backToMissionView() {
     const params = new URLSearchParams(searchParams);
     params.delete('view');
-    if (isInternWeek3Day3 || isInternWeek3Day4 || isInternWeek3Day5 || isInternWeek4Day1 || isInternWeek4Day2) {
+    if (
+      isInternWeek3Day3
+      || isInternWeek3Day4
+      || isInternWeek3Day5
+      || isInternWeek4Day1
+      || isInternWeek4Day2
+      || isInternWeek5Day1
+      || isInternWeek5Day2
+    ) {
       params.delete('mission');
-      params.set('week', isInternWeek4Day1 || isInternWeek4Day2 ? '4' : '3');
-      params.set(
-        'day',
-        isInternWeek4Day2 ? '2' : isInternWeek4Day1 ? '1' : isInternWeek3Day5 ? '5' : isInternWeek3Day4 ? '4' : '3',
-      );
+      if (isInternWeek5Day1 || isInternWeek5Day2) {
+        params.set('week', '5');
+        params.set('day', isInternWeek5Day2 ? '2' : '1');
+      } else {
+        params.set('week', isInternWeek4Day1 || isInternWeek4Day2 ? '4' : '3');
+        params.set(
+          'day',
+          isInternWeek4Day2 ? '2' : isInternWeek4Day1 ? '1' : isInternWeek3Day5 ? '5' : isInternWeek3Day4 ? '4' : '3',
+        );
+      }
     } else if (participantId) {
       const day = resolveWeek2PlaybookDay(participantId, playbookDayNumber);
       params.set('mission', getActiveWeek2Task(participantId, day).slug);
@@ -373,8 +415,22 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
   }
 
   const isWeek4Day2Bundle = bundle?.day?.id === WEEK4_DAY2_ID;
+  const isWeek5Day1Bundle = bundle?.day?.id === WEEK5_DAY1_ID;
+  const isWeek5Day2Bundle = bundle?.day?.id === WEEK5_DAY2_ID;
   const showWeek4Day2MissionResolved =
     (showWeek4Day2MissionFirst || isWeek4Day2Bundle)
+    && userRole === 'intern'
+    && !showCurriculum
+    && !browseAllDays
+    && Boolean(participantId);
+  const showWeek5Day1MissionResolved =
+    (showWeek5Day1MissionFirst || isWeek5Day1Bundle)
+    && userRole === 'intern'
+    && !showCurriculum
+    && !browseAllDays
+    && Boolean(participantId);
+  const showWeek5Day2MissionResolved =
+    (showWeek5Day2MissionFirst || isWeek5Day2Bundle)
     && userRole === 'intern'
     && !showCurriculum
     && !browseAllDays
@@ -529,6 +585,30 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
         onProgress={() => setRefreshKey((k) => k + 1)}
       />
     );
+  } else if (showWeek5Day1MissionResolved && participantId && bundle) {
+    dayContent = (
+      <Week5Day1MissionPlaybookView
+        bundle={bundle}
+        participantId={participantId}
+        programWeek={entryWeek}
+        focusReflection={focusReflection}
+        pendingReflection={pendingTodayReflection}
+        onOpenCurriculum={openCurriculumView}
+        onProgress={() => setRefreshKey((k) => k + 1)}
+      />
+    );
+  } else if (showWeek5Day2MissionResolved && participantId && bundle) {
+    dayContent = (
+      <Week5Day2MissionPlaybookView
+        bundle={bundle}
+        participantId={participantId}
+        programWeek={entryWeek}
+        focusReflection={focusReflection}
+        pendingReflection={pendingTodayReflection}
+        onOpenCurriculum={openCurriculumView}
+        onProgress={() => setRefreshKey((k) => k + 1)}
+      />
+    );
   } else if (showWeek2MissionFirst && participantId) {
     dayContent = (
       <Week2MissionPlaybookView
@@ -564,7 +644,7 @@ function ContentCurriculum({ participantId, userRole = 'intern', interns = [], i
         />
       ) : (
         <>
-          {(isInternWeek2 || isInternWeek3Day3 || isInternWeek3Day4 || isInternWeek3Day5 || isInternWeek4Day1 || isInternWeek4Day2) && showCurriculum ? (
+          {(isInternWeek2 || isInternWeek3Day3 || isInternWeek3Day4 || isInternWeek3Day5 || isInternWeek4Day1 || isInternWeek4Day2 || isInternWeek5Day1 || isInternWeek5Day2) && showCurriculum ? (
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-spike/15 bg-spike/5 px-4 py-3">
               <p className="text-sm text-slate-700">
                 Coach session notes — slides and activities for today&apos;s facilitation.
