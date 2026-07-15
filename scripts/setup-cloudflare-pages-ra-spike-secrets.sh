@@ -21,25 +21,31 @@ load_kv() {
   printf '%s' "${line#*=}"
 }
 
-SETUP_SECRET_VALUE="$(load_kv .env SETUP_SECRET)"
+SETUP_SECRET_VALUE="${SETUP_SECRET:-}"
+[[ -n "$SETUP_SECRET_VALUE" ]] || SETUP_SECRET_VALUE="$(load_kv .env SETUP_SECRET)"
 [[ -n "$SETUP_SECRET_VALUE" ]] || SETUP_SECRET_VALUE="$(load_kv .env.ra-spike.local SETUP_SECRET)"
 export SETUP_SECRET="$SETUP_SECRET_VALUE"
 
-RA_URL="$(load_kv .env RA_SPIKE_SUPABASE_URL)"
+# Prefer CI / shell env, then local files.
+RA_URL="${RA_SPIKE_SUPABASE_URL:-${VITE_RA_SPIKE_SUPABASE_URL:-}}"
+[[ -n "$RA_URL" ]] || RA_URL="$(load_kv .env RA_SPIKE_SUPABASE_URL)"
 [[ -n "$RA_URL" ]] || RA_URL="$(load_kv .env VITE_RA_SPIKE_SUPABASE_URL)"
 [[ -n "$RA_URL" ]] || RA_URL="$(load_kv .env.ra-spike.local RA_SPIKE_SUPABASE_URL)"
 [[ -n "$RA_URL" ]] || RA_URL="$(load_kv .env.ra-spike.local VITE_SUPABASE_URL)"
 [[ -n "$RA_URL" ]] || RA_URL="https://yruwfdjqigxxwbqsqhho.supabase.co"
 
-RA_KEY="$(load_kv .env RA_SPIKE_SERVICE_ROLE_KEY)"
+RA_KEY="${RA_SPIKE_SERVICE_ROLE_KEY:-}"
+[[ -n "$RA_KEY" ]] || RA_KEY="$(load_kv .env RA_SPIKE_SERVICE_ROLE_KEY)"
 [[ -n "$RA_KEY" ]] || RA_KEY="$(load_kv .env.ra-spike.local RA_SPIKE_SERVICE_ROLE_KEY)"
 [[ -n "$RA_KEY" ]] || RA_KEY="$(load_kv .env.ra-spike.local SUPABASE_SERVICE_ROLE_KEY)"
 
-# Internship keys must come from main .env (never from .env.ra-spike.local).
-INTERN_URL="$(load_kv .env VITE_SUPABASE_URL)"
+# Internship keys must come from env / main .env (never from .env.ra-spike.local).
+INTERN_URL="${VITE_SUPABASE_URL:-${SUPABASE_URL:-}}"
+[[ -n "$INTERN_URL" ]] || INTERN_URL="$(load_kv .env VITE_SUPABASE_URL)"
 [[ -n "$INTERN_URL" ]] || INTERN_URL="$(load_kv .env SUPABASE_URL)"
 [[ -n "$INTERN_URL" ]] || INTERN_URL="https://lzbfjbtjropoaynbcxew.supabase.co"
-INTERN_KEY="$(load_kv .env SUPABASE_SERVICE_ROLE_KEY)"
+INTERN_KEY="${SUPABASE_SERVICE_ROLE_KEY:-}"
+[[ -n "$INTERN_KEY" ]] || INTERN_KEY="$(load_kv .env SUPABASE_SERVICE_ROLE_KEY)"
 
 if [[ "$INTERN_URL" == *"yruwfdjqigxxwbqsqhho"* ]]; then
   INTERN_URL="https://lzbfjbtjropoaynbcxew.supabase.co"

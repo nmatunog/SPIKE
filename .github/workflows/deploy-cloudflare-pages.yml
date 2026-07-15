@@ -29,7 +29,7 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Verify deploy secrets
+      - name: Verify SPIKE Internship deploy secrets
         run: |
           missing=0
           if [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ]; then
@@ -40,24 +40,15 @@ jobs:
             echo "::error::CLOUDFLARE_ACCOUNT_ID is missing. Run: ./scripts/setup-github-deploy-secrets.sh"
             missing=1
           fi
-          if [ -z "${{ secrets.RA_SPIKE_SUPABASE_URL }}" ] || [ -z "${{ secrets.RA_SPIKE_SERVICE_ROLE_KEY }}" ]; then
-            echo "::error::RA_SPIKE_SUPABASE_URL and RA_SPIKE_SERVICE_ROLE_KEY are required for rookie signup."
+          if [ -z "${{ secrets.VITE_SUPABASE_URL }}" ] || [ -z "${{ secrets.VITE_SUPABASE_ANON_KEY }}" ]; then
+            echo "::error::VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are required for SPIKE Internship."
             missing=1
           fi
           if [ "$missing" -ne 0 ]; then
             exit 1
           fi
 
-      # Pages Functions read secrets at deploy time — sync before each production deploy.
-      - name: Sync RA-SPIKE Pages runtime secrets
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          RA_SPIKE_SUPABASE_URL: ${{ secrets.RA_SPIKE_SUPABASE_URL }}
-          RA_SPIKE_SERVICE_ROLE_KEY: ${{ secrets.RA_SPIKE_SERVICE_ROLE_KEY }}
-        run: bash scripts/setup-cloudflare-pages-ra-spike-secrets.sh
-
-      - name: Build SPIKE Internship (main portal — interns only)
+      - name: Build SPIKE Internship (main portal)
         run: npm run build:internship
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
@@ -74,8 +65,6 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-          RA_SPIKE_SUPABASE_URL: ${{ secrets.RA_SPIKE_SUPABASE_URL }}
-          RA_SPIKE_SERVICE_ROLE_KEY: ${{ secrets.RA_SPIKE_SERVICE_ROLE_KEY }}
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -83,7 +72,29 @@ jobs:
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           command: pages deploy dist --project-name spike
 
+      - name: Purge portal CDN cache
+        continue-on-error: true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: bash scripts/purge-portal-cache.sh || echo "purge-portal-cache skipped"
+
+      # RA-SPIKE is optional — never block SPIKE Internship /pitch-panel deploys.
+      - name: Sync RA-SPIKE Pages runtime secrets
+        if: ${{ secrets.RA_SPIKE_SUPABASE_URL != '' && secrets.RA_SPIKE_SERVICE_ROLE_KEY != '' }}
+        continue-on-error: true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          RA_SPIKE_SUPABASE_URL: ${{ secrets.RA_SPIKE_SUPABASE_URL }}
+          RA_SPIKE_SERVICE_ROLE_KEY: ${{ secrets.RA_SPIKE_SERVICE_ROLE_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+        run: bash scripts/setup-cloudflare-pages-ra-spike-secrets.sh
+
       - name: Build RA-SPIKE (prefixed /ra-spike/ base for portal proxy)
+        if: ${{ secrets.RA_SPIKE_SUPABASE_URL != '' && secrets.RA_SPIKE_SUPABASE_ANON_KEY != '' }}
+        continue-on-error: true
         run: npm run build:ra-spike
         env:
           VITE_RA_SPIKE_STANDALONE: 'true'
@@ -94,9 +105,13 @@ jobs:
           VITE_MOCK_AUTH: 'false'
 
       - name: Verify RA-SPIKE dist assets
+        if: ${{ secrets.RA_SPIKE_SUPABASE_URL != '' && secrets.RA_SPIKE_SUPABASE_ANON_KEY != '' }}
+        continue-on-error: true
         run: node scripts/verify-dist-assets.mjs
 
       - name: Deploy to Cloudflare Pages (RA-SPIKE proxy origin)
+        if: ${{ secrets.RA_SPIKE_SUPABASE_URL != '' && secrets.RA_SPIKE_SUPABASE_ANON_KEY != '' }}
+        continue-on-error: true
         uses: cloudflare/wrangler-action@v3
         env:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
@@ -111,10 +126,3 @@ jobs:
           wranglerVersion: '4'
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           command: pages deploy dist --project-name ra-spike --branch ra-spike
-
-      - name: Purge portal CDN cache
-        continue-on-error: true
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: bash scripts/purge-portal-cache.sh || echo "purge-portal-cache skipped"
