@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Database, ExternalLink, Loader2, RefreshCw, Trophy, Wallet } from 'lucide-react';
+import { ChevronDown, Database, ExternalLink, Loader2, RefreshCw, Trophy, Wallet } from 'lucide-react';
 import { usePitchPanelLive } from '../../hooks/usePitchPanelLive.js';
 import {
   PITCH_PANEL_ACCESS_PIN,
@@ -38,6 +39,7 @@ export function Week5PitchInvestmentsMonitor({
   showToast,
   embedDashboard = true,
 }) {
+  const [demoDayOpen, setDemoDayOpen] = useState(false);
   const { ready, version, error, refresh } = usePitchPanelLive(true);
   void version;
 
@@ -71,7 +73,7 @@ export function Week5PitchInvestmentsMonitor({
           <h2 className="mt-1 text-xl font-bold sm:text-2xl">Pitch investments monitor</h2>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-300">
             Live panelist VC allocations for today&apos;s pitch. Guest scores write to Supabase; coaches
-            review, adjust, and lock from the full dashboard below.
+            refresh here or open the full coach tools when needed.
           </p>
         </div>
 
@@ -172,12 +174,41 @@ export function Week5PitchInvestmentsMonitor({
       </div>
 
       {embedDashboard ? (
-        <PitchPanelDashboard
-          interns={interns}
-          staffId={staffId}
-          showToast={showToast}
-          embedded
-        />
+        <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <button
+            type="button"
+            onClick={() => setDemoDayOpen((v) => !v)}
+            aria-expanded={demoDayOpen}
+            className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left hover:bg-slate-50 sm:px-5"
+          >
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                Legacy · Week 2
+              </p>
+              <p className="text-sm font-semibold text-slate-800">
+                Demo Day coach card
+                <span className="ml-2 font-normal text-slate-500">
+                  {demoDayOpen ? 'Hide' : 'Show score review, lock & export'}
+                </span>
+              </p>
+            </div>
+            <ChevronDown
+              size={18}
+              className={`shrink-0 text-slate-500 transition ${demoDayOpen ? 'rotate-180' : ''}`}
+              aria-hidden
+            />
+          </button>
+          {demoDayOpen ? (
+            <div className="border-t border-slate-100 px-4 py-4 sm:px-5">
+              <PitchPanelDashboard
+                interns={interns}
+                staffId={staffId}
+                showToast={showToast}
+                embedded
+              />
+            </div>
+          ) : null}
+        </div>
       ) : null}
     </section>
   );
