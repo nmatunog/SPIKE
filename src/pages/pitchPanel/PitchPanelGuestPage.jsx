@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CheckCircle, ChevronLeft, ChevronRight, Loader2, Lock, Wallet } from 'lucide-react';
 import {
   PITCH_PANEL_ACCESS_PIN,
@@ -88,6 +88,9 @@ export function PitchPanelGuestPage() {
   const [error, setError] = useState('');
   const [saved, setSaved] = useState(false);
   const token = useMemo(() => readToken(), []);
+  /** Keep draft amount/comment while typing — poll must not wipe unsaved edits. */
+  const editingDraftRef = useRef(false);
+  const prevSquadRef = useRef('');
 
   const remaining = useMemo(
     () => computeRemainingCapital(Object.fromEntries(Object.entries(allocations).map(([k, v]) => [k, v.amount]))),
@@ -150,14 +153,30 @@ export function PitchPanelGuestPage() {
   }, [unlocked, sessionFinalized, loadPortfolio]);
 
   useEffect(() => {
-    if (squadName && allocations[squadName]) {
-      setAmount(allocations[squadName].amount);
-      setComment(allocations[squadName].comment ?? '');
-    } else {
-      setAmount(0);
-      setComment('');
+    const squadChanged = prevSquadRef.current !== squadName;
+    if (squadChanged) {
+      prevSquadRef.current = squadName;
+      editingDraftRef.current = false;
     }
+    // Poll/sync may rebuild `allocations` every few seconds — only hydrate the form
+    // when switching squads or when the panelist is not mid-edit.
+    if (!squadChanged && editingDraftRef.current) return;
+    const row = squadName ? allocations[squadName] : null;
+    setAmount(row?.amount ?? 0);
+    setComment(row?.comment ?? '');
   }, [squadName, allocations]);
+
+  function setAmountDraft(next) {
+    editingDraftRef.current = true;
+    setSaved(false);
+    setAmount(next);
+  }
+
+  function setCommentDraft(next) {
+    editingDraftRef.current = true;
+    setSaved(false);
+    setComment(next);
+  }
 
   async function handleUnlock(e) {
     e.preventDefault();
@@ -217,6 +236,7 @@ export function PitchPanelGuestPage() {
         ...prev,
         [targetSquad]: { amount: targetAmount, comment: targetComment, isFinal: false },
       }));
+      editingDraftRef.current = false;
       setSaved(true);
       return true;
     } catch (err) {
@@ -418,8 +438,8 @@ export function PitchPanelGuestPage() {
               amount={amount}
               comment={comment}
               remaining={remaining}
-              onAmountChange={setAmount}
-              onCommentChange={setComment}
+              onAmountChange={setAmountDraft}
+              onCommentChange={setCommentDraft}
             />
 
             <details className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
