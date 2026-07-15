@@ -10,6 +10,7 @@ import { MentorDashboardPanels } from '../../components/mentor/MentorDashboardPa
 import { StageGateReadyCard } from '../../components/stageGate/StageGateReadyCard.jsx';
 import { ROUTES, staffStageGateHref } from '../../routes/paths.js';
 import { DailyActivationCodeCard } from '../../components/dashboard/DailyActivationCodeCard.jsx';
+import { CohortOnboardingControls } from '../../components/faculty/CohortOnboardingControls.jsx';
 import { MentorWeek2ScoringSection } from '../../components/mentor/MentorWeek2ScoringSection.jsx';
 import { MentorWeek2SquadProgress } from '../../components/mentor/MentorWeek2SquadProgress.jsx';
 import { Week2CoachTimeline } from '../../components/playbook/week2/Week2CoachTimeline.jsx';
