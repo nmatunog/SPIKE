@@ -9,31 +9,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="format-detection" content="telephone=no" />
     <title>SPIKE Pitch Panel</title>
-    <script>
-      (function () {
-        var key = 'spike_pitch_panel_reload';
-        var max = 3;
-        function reloadFresh() {
-          var count = parseInt(sessionStorage.getItem(key) || '0', 10) || 0;
-          if (count >= max) return;
-          sessionStorage.setItem(key, String(count + 1));
-          var url = new URL(window.location.href);
-          url.searchParams.set('_cb', String(Date.now()));
-          window.location.replace(url.toString());
-        }
-        window.addEventListener('vite:preloadError', function (event) {
-          event.preventDefault();
-          reloadFresh();
-        });
-        window.addEventListener('error', function (event) {
-          var target = event.target;
-          if (!target) return;
-          var href = target.src || target.href || '';
-          if (!/\/assets\/.*\.(js|css)/.test(href)) return;
-          reloadFresh();
-        }, true);
-      })();
-    </script>
   </head>
   <body>
     <div id="root"></div>

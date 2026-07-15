@@ -50,6 +50,8 @@ export function VentureCapitalHeader({ remaining, className = '' }) {
  *   onCommentChange: (s: string) => void,
  *   onCommentFocus?: () => void,
  *   onCommentBlur?: () => void,
+ *   onAmountFocus?: () => void,
+ *   onAmountBlur?: () => void,
  * }} props
  */
 export function InvestmentAllocationPanel({
@@ -63,6 +65,8 @@ export function InvestmentAllocationPanel({
   onCommentChange,
   onCommentFocus,
   onCommentBlur,
+  onAmountFocus,
+  onAmountBlur,
 }) {
   const otherAllocated = PITCH_PANEL_CAPITAL - remaining - amount;
   const maxForSquad = PITCH_PANEL_CAPITAL - otherAllocated;
@@ -119,6 +123,8 @@ export function InvestmentAllocationPanel({
             max={maxForSquad}
             value={amount || ''}
             onChange={(e) => onAmountChange(Math.max(0, Number(e.target.value) || 0))}
+            onFocus={onAmountFocus}
+            onBlur={onAmountBlur}
             readOnly={readOnly}
             className={INPUT_CLASS}
           />
