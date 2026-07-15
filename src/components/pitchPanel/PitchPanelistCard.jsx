@@ -87,6 +87,8 @@ export function PanelistCapitalBar({ allocated = 0, total = PITCH_PANEL_CAPITAL,
  *   showCapitalBar?: boolean,
  *   onNameChange?: (v: string) => void,
  *   onOrgChange?: (v: string) => void,
+ *   onFieldFocus?: () => void,
+ *   onFieldBlur?: () => void,
  *   className?: string,
  * }} props
  */
@@ -100,6 +102,8 @@ export function PanelistIdentityCard({
   showCapitalBar = true,
   onNameChange,
   onOrgChange,
+  onFieldFocus,
+  onFieldBlur,
   className = '',
 }) {
   const allocated =
@@ -149,6 +153,8 @@ export function PanelistIdentityCard({
               <input
                 value={panelistName}
                 onChange={(e) => onNameChange?.(e.target.value)}
+                onFocus={onFieldFocus}
+                onBlur={onFieldBlur}
                 className={INPUT_CLASS}
                 required
                 placeholder="Dr. Jane Santos"
@@ -162,6 +168,8 @@ export function PanelistIdentityCard({
               <input
                 value={panelistOrg}
                 onChange={(e) => onOrgChange?.(e.target.value)}
+                onFocus={onFieldFocus}
+                onBlur={onFieldBlur}
                 className={INPUT_CLASS}
                 placeholder="Acme Ventures"
               />

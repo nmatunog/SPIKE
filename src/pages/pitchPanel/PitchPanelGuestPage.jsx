@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { CheckCircle, ChevronLeft, ChevronRight, Loader2, Lock, Wallet } from 'lucide-react';
 import {
   PITCH_PANEL_ACCESS_PIN,
   PITCH_PANEL_INVESTMENT_CRITERIA,
   PITCH_PANEL_TOKEN_STORAGE_KEY,
   PITCH_PANEL_CAPITAL,
+  PITCH_PANEL_SESSION_ID,
   computeRemainingCapital,
   buildInvestmentLeaderboard,
   isValidInvestmentIncrement,
@@ -32,6 +33,21 @@ const INPUT_CLASS =
 const BTN_PRIMARY =
   'flex min-h-[52px] w-full touch-manipulation items-center justify-center gap-2 rounded-xl bg-spike px-4 text-base font-bold text-white transition active:scale-[0.98] disabled:opacity-60';
 
+const GUEST_SESSION_KEY = `spike_pitch_panel_guest_${PITCH_PANEL_SESSION_ID}`;
+
+/**
+ * @typedef {{ amount: number, comment: string }} SquadDraft
+ * @typedef {{
+ *   unlocked: boolean,
+ *   name: string,
+ *   org: string,
+ *   squads: string[],
+ *   squadName: string,
+ *   view: string,
+ *   drafts: Record<string, SquadDraft>,
+ * }} GuestSessionSnapshot
+ */
+
 function readToken() {
   try {
     let token = localStorage.getItem(PITCH_PANEL_TOKEN_STORAGE_KEY);
@@ -42,6 +58,28 @@ function readToken() {
     return token;
   } catch {
     return crypto.randomUUID();
+  }
+}
+
+/** @returns {GuestSessionSnapshot | null} */
+function readGuestSession() {
+  try {
+    const raw = sessionStorage.getItem(GUEST_SESSION_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+/** @param {GuestSessionSnapshot} snapshot */
+function writeGuestSession(snapshot) {
+  try {
+    sessionStorage.setItem(GUEST_SESSION_KEY, JSON.stringify(snapshot));
+  } catch {
+    /* private mode */
   }
 }
 
@@ -70,41 +108,83 @@ function SquadPicker({ squads, value, onChange }) {
 
 /** Public guest VC investment — PIN W2PITCH */
 export function PitchPanelGuestPage() {
+  const savedSession = useMemo(() => readGuestSession(), []);
   const [pin, setPin] = useState('');
-  const [unlocked, setUnlocked] = useState(false);
-  const [name, setName] = useState('');
-  const [org, setOrg] = useState('');
-  const [squads, setSquads] = useState([]);
-  const [squadName, setSquadName] = useState('');
-  const [view, setView] = useState('invest');
-  const [amount, setAmount] = useState(0);
-  const [comment, setComment] = useState('');
+  const [unlocked, setUnlocked] = useState(() => Boolean(savedSession?.unlocked));
+  const [name, setName] = useState(() => savedSession?.name ?? '');
+  const [org, setOrg] = useState(() => savedSession?.org ?? '');
+  const [squads, setSquads] = useState(() => savedSession?.squads ?? []);
+  const [squadName, setSquadName] = useState(() => savedSession?.squadName ?? '');
+  const [view, setView] = useState(() => savedSession?.view ?? 'invest');
   /** @type {[Record<string, { amount: number, comment: string, isFinal?: boolean }>, Function]} */
   const [allocations, setAllocations] = useState({});
+  /** Local per-squad drafts — cloud sync must never wipe these while typing. */
+  /** @type {[Record<string, SquadDraft>, Function]} */
+  const [drafts, setDrafts] = useState(() => savedSession?.drafts ?? {});
   const [panelistFinalized, setPanelistFinalized] = useState(false);
   const [sessionFinalized, setSessionFinalized] = useState(false);
   const [tieSquads, setTieSquads] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [saved, setSaved] = useState(false);
+  const [formFocused, setFormFocused] = useState(false);
   const token = useMemo(() => readToken(), []);
-  /** Keep draft amount/comment while typing — poll must not wipe unsaved edits. */
-  const editingDraftRef = useRef(false);
-  const prevSquadRef = useRef('');
 
-  const remaining = useMemo(
-    () => computeRemainingCapital(Object.fromEntries(Object.entries(allocations).map(([k, v]) => [k, v.amount]))),
-    [allocations],
-  );
+  const amount = squadName
+    ? (drafts[squadName]?.amount ?? allocations[squadName]?.amount ?? 0)
+    : 0;
+  const comment = squadName
+    ? (drafts[squadName]?.comment ?? allocations[squadName]?.comment ?? '')
+    : '';
+
+  const displayAllocations = useMemo(() => {
+    const merged = { ...allocations };
+    for (const [squad, draft] of Object.entries(drafts)) {
+      merged[squad] = {
+        amount: draft.amount,
+        comment: draft.comment,
+        isFinal: allocations[squad]?.isFinal ?? false,
+      };
+    }
+    return merged;
+  }, [allocations, drafts]);
+
+  const remaining = useMemo(() => {
+    const amounts = Object.fromEntries(
+      Object.entries(displayAllocations).map(([k, v]) => [k, v.amount]),
+    );
+    return computeRemainingCapital(amounts);
+  }, [displayAllocations]);
 
   const leaderboard = useMemo(() => {
     const finalized = readFinalizedPanelCache();
     if (finalized?.leaderboard?.length) return finalized.leaderboard;
     return buildInvestmentLeaderboard(
-      squads.map((s) => ({ squadName: s, totalInvestment: allocations[s]?.amount ?? 0 })),
+      squads.map((s) => ({
+        squadName: s,
+        totalInvestment: displayAllocations[s]?.amount ?? 0,
+      })),
     );
-  }, [squads, allocations, sessionFinalized]);
+  }, [squads, displayAllocations]);
 
+  // Survive hard reloads (deploy chunk recovery mid-typing).
+  useEffect(() => {
+    if (!unlocked) return;
+    writeGuestSession({
+      unlocked: true,
+      name,
+      org,
+      squads,
+      squadName,
+      view,
+      drafts,
+    });
+  }, [unlocked, name, org, squads, squadName, view, drafts]);
+
+  /**
+   * Cloud sync for status + saved allocations only.
+   * Never overwrite local name/org/drafts — that is what was blanking the form.
+   */
   const loadPortfolio = useCallback(async () => {
     if (!isSupabaseConfigured) return null;
     try {
@@ -125,8 +205,6 @@ export function PitchPanelGuestPage() {
       if (!finalized) {
         setView((current) => (current === 'finalized' ? 'invest' : current));
       }
-      if (data.capital?.panelistName) setName(data.capital.panelistName);
-      if (data.capital?.panelistOrg) setOrg(data.capital.panelistOrg);
       return data;
     } catch {
       return null;
@@ -140,42 +218,42 @@ export function PitchPanelGuestPage() {
   }, []);
 
   useEffect(() => {
-    if (unlocked) void loadPortfolio();
-  }, [unlocked, loadPortfolio]);
+    if (!unlocked) return undefined;
+    void (async () => {
+      if (!squads.length) {
+        try {
+          const list = await fetchPitchPanelSquads(PITCH_PANEL_ACCESS_PIN);
+          setSquads(list);
+          setSquadName((current) => current || list[0] || '');
+        } catch {
+          /* keep restored squads if any */
+        }
+      }
+      await loadPortfolio();
+    })();
+  }, [unlocked, loadPortfolio, squads.length]);
 
-  // Poll cloud so coach reopen / session changes reach panelists without a full reload.
+  // Background status poll — pause while any field is focused so typing stays stable.
   useEffect(() => {
-    if (!unlocked || sessionFinalized || !isSupabaseConfigured) return undefined;
+    if (!unlocked || sessionFinalized || !isSupabaseConfigured || formFocused) return undefined;
     const timer = window.setInterval(() => {
       void loadPortfolio();
-    }, 8000);
+    }, 15000);
     return () => window.clearInterval(timer);
-  }, [unlocked, sessionFinalized, loadPortfolio]);
+  }, [unlocked, sessionFinalized, loadPortfolio, formFocused]);
 
-  useEffect(() => {
-    const squadChanged = prevSquadRef.current !== squadName;
-    if (squadChanged) {
-      prevSquadRef.current = squadName;
-      editingDraftRef.current = false;
-    }
-    // Poll/sync may rebuild `allocations` every few seconds — only hydrate the form
-    // when switching squads or when the panelist is not mid-edit.
-    if (!squadChanged && editingDraftRef.current) return;
-    const row = squadName ? allocations[squadName] : null;
-    setAmount(row?.amount ?? 0);
-    setComment(row?.comment ?? '');
-  }, [squadName, allocations]);
-
-  function setAmountDraft(next) {
-    editingDraftRef.current = true;
+  /** @param {string} squad @param {Partial<SquadDraft>} patch */
+  function patchDraft(squad, patch) {
+    if (!squad) return;
     setSaved(false);
-    setAmount(next);
-  }
-
-  function setCommentDraft(next) {
-    editingDraftRef.current = true;
-    setSaved(false);
-    setComment(next);
+    setDrafts((prev) => {
+      const cloud = allocations[squad];
+      const base = prev[squad] ?? {
+        amount: cloud?.amount ?? 0,
+        comment: cloud?.comment ?? '',
+      };
+      return { ...prev, [squad]: { ...base, ...patch } };
+    });
   }
 
   async function handleUnlock(e) {
@@ -193,9 +271,16 @@ export function PitchPanelGuestPage() {
     try {
       const list = await fetchPitchPanelSquads(pin.trim());
       setSquads(list);
-      setSquadName(list[0] ?? '');
+      setSquadName((current) => current || list[0] || '');
       setUnlocked(true);
-      await loadPortfolio();
+      const data = await loadPortfolio();
+      // Fill identity only when the local form is still blank.
+      if (data?.capital?.panelistName && !name.trim()) {
+        setName(data.capital.panelistName);
+      }
+      if (data?.capital?.panelistOrg && !org.trim()) {
+        setOrg(data.capital.panelistOrg);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not load squads.');
     } finally {
@@ -212,7 +297,7 @@ export function PitchPanelGuestPage() {
       setError('Use ₱10,000 increments (₱0 allowed).');
       return false;
     }
-    const otherTotal = Object.entries(allocations)
+    const otherTotal = Object.entries(displayAllocations)
       .filter(([k]) => k !== targetSquad)
       .reduce((sum, [, v]) => sum + (v.amount || 0), 0);
     if (otherTotal + targetAmount > 1_000_000) {
@@ -236,7 +321,10 @@ export function PitchPanelGuestPage() {
         ...prev,
         [targetSquad]: { amount: targetAmount, comment: targetComment, isFinal: false },
       }));
-      editingDraftRef.current = false;
+      setDrafts((prev) => ({
+        ...prev,
+        [targetSquad]: { amount: targetAmount, comment: targetComment },
+      }));
       setSaved(true);
       return true;
     } catch (err) {
@@ -253,9 +341,12 @@ export function PitchPanelGuestPage() {
   }
 
   async function handlePortfolioChange(squad, newAmount) {
-    const row = allocations[squad] ?? { amount: 0, comment: '' };
+    const row = drafts[squad] ?? allocations[squad] ?? { amount: 0, comment: '' };
     const ok = await saveAllocation(squad, newAmount, row.comment ?? '');
-    if (ok) setAllocations((prev) => ({ ...prev, [squad]: { ...row, amount: newAmount, isFinal: false } }));
+    if (ok) {
+      setAllocations((prev) => ({ ...prev, [squad]: { ...row, amount: newAmount, isFinal: false } }));
+      setDrafts((prev) => ({ ...prev, [squad]: { amount: newAmount, comment: row.comment ?? '' } }));
+    }
   }
 
   async function handleFinalizePortfolio() {
@@ -381,6 +472,8 @@ export function PitchPanelGuestPage() {
           showCapitalBar={false}
           onNameChange={setName}
           onOrgChange={setOrg}
+          onFieldFocus={() => setFormFocused(true)}
+          onFieldBlur={() => setFormFocused(false)}
         />
 
         <VentureCapitalHeader remaining={remaining} />
@@ -429,7 +522,14 @@ export function PitchPanelGuestPage() {
             <section className="rounded-2xl border border-slate-200 bg-white p-4">
               <h2 className="text-sm font-bold uppercase tracking-wide text-slate-500">Squad presenting now</h2>
               <div className="mt-3">
-                <SquadPicker squads={squads} value={squadName} onChange={(s) => { setSquadName(s); setSaved(false); }} />
+                <SquadPicker
+                  squads={squads}
+                  value={squadName}
+                  onChange={(s) => {
+                    setSquadName(s);
+                    setSaved(false);
+                  }}
+                />
               </div>
             </section>
 
@@ -438,8 +538,12 @@ export function PitchPanelGuestPage() {
               amount={amount}
               comment={comment}
               remaining={remaining}
-              onAmountChange={setAmountDraft}
-              onCommentChange={setCommentDraft}
+              onAmountChange={(n) => patchDraft(squadName, { amount: n })}
+              onCommentChange={(s) => patchDraft(squadName, { comment: s })}
+              onCommentFocus={() => setFormFocused(true)}
+              onCommentBlur={() => setFormFocused(false)}
+              onAmountFocus={() => setFormFocused(true)}
+              onAmountBlur={() => setFormFocused(false)}
             />
 
             <details className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
@@ -456,7 +560,7 @@ export function PitchPanelGuestPage() {
         {!panelistFinalized && view === 'portfolio' ? (
           <InvestmentPortfolioReview
             squads={squads}
-            allocations={allocations}
+            allocations={displayAllocations}
             remaining={remaining}
             onChange={(squad, amt) => void handlePortfolioChange(squad, amt)}
           />

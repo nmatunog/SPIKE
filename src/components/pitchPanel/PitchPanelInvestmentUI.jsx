@@ -48,6 +48,8 @@ export function VentureCapitalHeader({ remaining, className = '' }) {
  *   readOnly?: boolean,
  *   onAmountChange: (n: number) => void,
  *   onCommentChange: (s: string) => void,
+ *   onCommentFocus?: () => void,
+ *   onCommentBlur?: () => void,
  * }} props
  */
 export function InvestmentAllocationPanel({
@@ -59,6 +61,8 @@ export function InvestmentAllocationPanel({
   readOnly = false,
   onAmountChange,
   onCommentChange,
+  onCommentFocus,
+  onCommentBlur,
 }) {
   const otherAllocated = PITCH_PANEL_CAPITAL - remaining - amount;
   const maxForSquad = PITCH_PANEL_CAPITAL - otherAllocated;
@@ -123,14 +127,16 @@ export function InvestmentAllocationPanel({
 
       <label className="mt-4 block text-sm font-semibold text-slate-700">
         Reason for investment <span className="font-normal text-slate-400">(optional)</span>
-        <input
-          type="text"
+        <textarea
           maxLength={PITCH_PANEL_COMMENT_MAX_CHARS}
           value={comment}
           onChange={(e) => onCommentChange(e.target.value)}
+          onFocus={onCommentFocus}
+          onBlur={onCommentBlur}
           readOnly={readOnly}
+          rows={3}
           placeholder="e.g. Excellent scalability"
-          className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+          className="mt-1.5 w-full resize-y rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
         />
         <span className="mt-1 block text-right text-xs text-slate-400">
           {comment.length}/{PITCH_PANEL_COMMENT_MAX_CHARS}
