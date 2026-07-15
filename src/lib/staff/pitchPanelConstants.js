@@ -1,6 +1,7 @@
 /** Week 2 Market Validation Pitch — Venture Capital investment simulation. */
 
-export const PITCH_PANEL_SESSION_ID = 'segment-1-week-2';
+/** Bump this for each live Demo Day so browser/local caches and cloud rows stay isolated. */
+export const PITCH_PANEL_SESSION_ID = 'segment-1-2026-07-15';
 export const PITCH_PANEL_ACCESS_PIN = 'W2PITCH';
 export const PITCH_PANEL_WEEK = 2;
 
