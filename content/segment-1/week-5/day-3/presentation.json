@@ -2,60 +2,124 @@
   "presentation": {
     "id": "presentation-w5-d3-deck-01",
     "dayId": "day-segment-1-week-5-day-3",
-    "title": "Program Coach Deck 01 — Venture Board Standards",
+    "title": "Week 5 Day 3 Pitch",
     "slideIds": [
       "slide-w5-d3-dk1-01",
       "slide-w5-d3-dk1-02",
       "slide-w5-d3-dk1-03",
       "slide-w5-d3-dk1-04",
-      "slide-w5-d3-dk1-05"
-    ]
+      "slide-w5-d3-dk1-05",
+      "slide-d3-01-06",
+      "slide-d3-01-07",
+      "slide-d3-01-08",
+      "slide-d3-01-09",
+      "slide-d3-01-10"
+    ],
+    "sourceFile": "faculty-deck-01.pdf",
+    "sourcePath": "content/segment-1/week-5/day-3/source/faculty-deck-01.pdf",
+    "importedAt": "2026-07-15T11:29:54.906Z",
+    "pdfUrl": "/api/coach/faculty-deck/segment-1/week-5/day-3/faculty-deck-01.pdf"
   },
   "slides": [
     {
       "id": "slide-w5-d3-dk1-01",
       "presentationId": "presentation-w5-d3-deck-01",
+      "sortOrder": 1,
       "title": "Day 23 — Tell Your Venture Story",
-      "body": "Day 23 — Tell Your Venture Story",
+      "body": "",
       "speakerNotes": "Hour 200 gate preview.",
       "discussionQuestions": [],
-      "sortOrder": 1
+      "imageUrl": "/content/segment-1/week-5/day-3/deck-01/slide-01.png"
     },
     {
       "id": "slide-w5-d3-dk1-02",
       "presentationId": "presentation-w5-d3-deck-01",
+      "sortOrder": 2,
       "title": "Board Deck Architecture",
-      "body": "Problem, solution, market, ops, ask.",
+      "body": "",
       "speakerNotes": "Hour 200 gate preview.",
       "discussionQuestions": [],
-      "sortOrder": 2
+      "imageUrl": "/content/segment-1/week-5/day-3/deck-01/slide-02.png"
     },
     {
       "id": "slide-w5-d3-dk1-03",
       "presentationId": "presentation-w5-d3-deck-01",
+      "sortOrder": 3,
       "title": "Evidence Standards",
-      "body": "No vanity metrics.",
+      "body": "",
       "speakerNotes": "Hour 200 gate preview.",
       "discussionQuestions": [],
-      "sortOrder": 3
+      "imageUrl": "/content/segment-1/week-5/day-3/deck-01/slide-03.png"
     },
     {
       "id": "slide-w5-d3-dk1-04",
       "presentationId": "presentation-w5-d3-deck-01",
+      "sortOrder": 4,
       "title": "Timing & Q&A Prep",
-      "body": "10 min + 5 min Q&A.",
+      "body": "",
       "speakerNotes": "Hour 200 gate preview.",
       "discussionQuestions": [],
-      "sortOrder": 4
+      "imageUrl": "/content/segment-1/week-5/day-3/deck-01/slide-04.png"
     },
     {
       "id": "slide-w5-d3-dk1-05",
       "presentationId": "presentation-w5-d3-deck-01",
+      "sortOrder": 5,
       "title": "Deck 01 Close",
-      "body": "Deck 01 Close",
+      "body": "",
       "speakerNotes": "Hour 200 gate preview.",
       "discussionQuestions": [],
-      "sortOrder": 5
+      "imageUrl": "/content/segment-1/week-5/day-3/deck-01/slide-05.png"
+    },
+    {
+      "id": "slide-d3-01-06",
+      "presentationId": "presentation-w5-d3-deck-01",
+      "sortOrder": 6,
+      "title": "Slide 6",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-5/day-3/deck-01/slide-06.png"
+    },
+    {
+      "id": "slide-d3-01-07",
+      "presentationId": "presentation-w5-d3-deck-01",
+      "sortOrder": 7,
+      "title": "Slide 7",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-5/day-3/deck-01/slide-07.png"
+    },
+    {
+      "id": "slide-d3-01-08",
+      "presentationId": "presentation-w5-d3-deck-01",
+      "sortOrder": 8,
+      "title": "Slide 8",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-5/day-3/deck-01/slide-08.png"
+    },
+    {
+      "id": "slide-d3-01-09",
+      "presentationId": "presentation-w5-d3-deck-01",
+      "sortOrder": 9,
+      "title": "Slide 9",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-5/day-3/deck-01/slide-09.png"
+    },
+    {
+      "id": "slide-d3-01-10",
+      "presentationId": "presentation-w5-d3-deck-01",
+      "sortOrder": 10,
+      "title": "Slide 10",
+      "body": "",
+      "speakerNotes": "",
+      "discussionQuestions": [],
+      "imageUrl": "/content/segment-1/week-5/day-3/deck-01/slide-10.png"
     }
   ]
 }
