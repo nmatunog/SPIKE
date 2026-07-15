@@ -90,3 +90,5 @@ if ! grep -rq 'VITE_RA_SPIKE_STANDALONE' dist/assets/*.js 2>/dev/null; then
   exit 1
 fi
 echo "→ RA-SPIKE API prefix + Supabase project checks OK"
+echo "Deploy with: npx wrangler pages deploy dist --project-name ra-spike --branch ra-spike --commit-dirty=true"
+echo "(Production branch for this project is ra-spike, not main.)"

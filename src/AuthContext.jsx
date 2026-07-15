@@ -247,8 +247,16 @@ export function AuthProvider({ children }) {
         if (handoffToken) {
           try {
             await consumeStaffPortalHandoff(handoffToken);
-          } catch {
+          } catch (handoffErr) {
             clearPortalHandoffParam();
+            try {
+              sessionStorage.setItem(
+                'spike_portal_handoff_error',
+                handoffErr?.message || 'Portal switch failed. Sign in on this portal.',
+              );
+            } catch {
+              /* ignore */
+            }
           }
         }
 

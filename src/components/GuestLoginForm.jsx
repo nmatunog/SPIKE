@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { PasswordInput } from './PasswordInput.jsx';
 
 export const GuestLoginForm = memo(function GuestLoginForm({
@@ -18,6 +18,17 @@ export const GuestLoginForm = memo(function GuestLoginForm({
   const [helpSubmitting, setHelpSubmitting] = useState(false);
   const [helpMessage, setHelpMessage] = useState('');
 
+  useEffect(() => {
+    try {
+      const handoffErr = sessionStorage.getItem('spike_portal_handoff_error');
+      if (handoffErr) {
+        sessionStorage.removeItem('spike_portal_handoff_error');
+        setError(handoffErr);
+      }
+    } catch {
+      /* ignore */
+    }
+  }, []);
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');

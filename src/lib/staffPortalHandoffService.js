@@ -61,28 +61,31 @@ export async function consumeStaffPortalHandoff(token) {
  */
 export async function navigateWithStaffPortalHandoff(targetPortal, redirectPath) {
   const path = redirectPath.startsWith('/') ? redirectPath : `/${redirectPath}`;
-  const fallback = () => {
-    window.location.href = path;
-  };
+  const label = targetPortal === 'internship' ? 'SPIKE Internship' : 'RA-SPIKE';
 
   if (!supabase) {
-    fallback();
-    return;
+    throw new Error(`Sign in again, then switch to ${label}.`);
   }
 
   const { data: sessionData } = await supabase.auth.getSession();
   const accessToken = sessionData.session?.access_token;
   if (!accessToken) {
-    fallback();
-    return;
+    throw new Error(`Your session expired. Sign in again, then switch to ${label}.`);
   }
 
+  let data;
   try {
-    const data = await handoffApiFetch({ action: 'create', target: targetPortal }, accessToken);
-    const url = new URL(path, window.location.origin);
-    url.searchParams.set(HANDOFF_PARAM, data.token);
-    window.location.href = url.toString();
-  } catch {
-    fallback();
+    data = await handoffApiFetch({ action: 'create', target: targetPortal }, accessToken);
+  } catch (err) {
+    const detail = err?.message ? ` ${err.message}` : '';
+    throw new Error(`Could not switch to ${label}.${detail}`);
   }
+
+  if (!data?.token) {
+    throw new Error(`Could not switch to ${label}. Handoff token missing.`);
+  }
+
+  const url = new URL(path, window.location.origin);
+  url.searchParams.set(HANDOFF_PARAM, data.token);
+  window.location.href = url.toString();
 }

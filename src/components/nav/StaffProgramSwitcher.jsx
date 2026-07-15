@@ -23,6 +23,14 @@ export function StaffProgramSwitcher({ userRole }) {
   const pill =
     'inline-flex min-h-[40px] items-center rounded-full px-4 py-2 text-xs font-bold transition sm:text-sm';
 
+  const switchPortal = async (target, href) => {
+    try {
+      await navigateWithStaffPortalHandoff(target, href);
+    } catch (err) {
+      window.alert(err?.message || 'Could not switch portals.');
+    }
+  };
+
   return (
     <div
       className="flex shrink-0 items-center gap-1 rounded-full border border-amber-300/80 bg-amber-100/60 p-1"
@@ -33,7 +41,7 @@ export function StaffProgramSwitcher({ userRole }) {
         type="button"
         onClick={() => {
           if (onRaSpike) {
-            navigateWithStaffPortalHandoff('internship', internshipHref);
+            void switchPortal('internship', internshipHref);
           }
         }}
         className={`${pill} ${!onRaSpike ? 'bg-amber-800 text-white shadow-sm' : 'text-amber-950 hover:bg-amber-200/80'}`}
@@ -46,7 +54,7 @@ export function StaffProgramSwitcher({ userRole }) {
         type="button"
         onClick={() => {
           if (!onRaSpike) {
-            navigateWithStaffPortalHandoff('ra-spike', raSpikeHref);
+            void switchPortal('ra-spike', raSpikeHref);
           }
         }}
         className={`${pill} ${onRaSpike ? 'bg-amber-800 text-white shadow-sm' : 'text-amber-950 hover:bg-amber-200/80'}`}

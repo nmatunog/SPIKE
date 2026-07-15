@@ -61,6 +61,13 @@ export async function loginWithPortalRouting({ email, password, login, currentPo
       window.location.replace(redirectTo);
       return null;
     }
+    if (hint === 'both') {
+      const other =
+        currentPortal === 'internship' ? 'RA-SPIKE' : 'SPIKE Internship';
+      throw new Error(
+        `Wrong password for this portal. Staff accounts on both portals use separate passwords — try ${other}, then use the program switcher.`,
+      );
+    }
     throw err;
   }
 }

@@ -60,6 +60,37 @@ export async function resolvePortalForEmail(env, email) {
   return 'unknown';
 }
 
+/** Safe diagnostics for cross-portal wiring (no secret values). */
+export function portalEnvDiagnostics(env) {
+  const internUrl = String(env.VITE_SUPABASE_URL || env.SUPABASE_URL || '');
+  const raUrl = String(env.RA_SPIKE_SUPABASE_URL || env.VITE_RA_SPIKE_SUPABASE_URL || '');
+  return {
+    hasSetupSecret: Boolean(String(env.SETUP_SECRET || env.CROSS_PORTAL_HANDOFF_SECRET || '').trim()),
+    hasInternUrl: Boolean(internUrl),
+    hasInternServiceKey: Boolean(env.SUPABASE_SERVICE_ROLE_KEY),
+    hasRaUrl: Boolean(raUrl),
+    hasRaServiceKey: Boolean(env.RA_SPIKE_SERVICE_ROLE_KEY || env.RA_SPIKE_SUPABASE_SERVICE_ROLE_KEY),
+    internLooksLikeRa: internUrl.includes('yruwfdjqigxxwbqsqhho'),
+    raLooksLikeIntern: raUrl.includes('lzbfjbtjropoaynbcxew'),
+    internClientOk: (() => {
+      try {
+        createServiceClient(env);
+        return true;
+      } catch (e) {
+        return String(e?.message || e);
+      }
+    })(),
+    raClientOk: (() => {
+      try {
+        createRaSpikeServiceClient(env);
+        return true;
+      } catch (e) {
+        return String(e?.message || e);
+      }
+    })(),
+  };
+}
+
 /** @param {{ request: Request, env: Record<string, string> }} ctx */
 export async function onPortalHintRequest(ctx) {
   const { request, env } = ctx;
@@ -77,5 +108,9 @@ export async function onPortalHintRequest(ctx) {
   if (!email.includes('@')) return json({ message: 'A valid email is required.' }, 400);
 
   const portal = await resolvePortalForEmail(env, email);
-  return json({ portal });
+  const payload = { portal };
+  if (body?.debug === true) {
+    payload.debug = portalEnvDiagnostics(env);
+  }
+  return json(payload);
 }
