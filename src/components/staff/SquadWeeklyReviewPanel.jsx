@@ -105,10 +105,10 @@ export function SquadWeeklyReviewPanel({
           <p className="text-xs text-amber-600">{formatStarDisplay(squadXp.totalXp)}</p>
           <p className="mt-1 text-[10px] text-slate-400">
             Auto {squadXp.autoXp} + W1 {squadXp.week1PitchXp}
-            {squadXp.week2PanelXp ? ` + W2 ${squadXp.week2PanelXp}` : ''}
+            {squadXp.week2PanelXp ? ` + W5 ${squadXp.week2PanelXp}` : ''}
             {squadXp.coachBonusXp > 0 ? ` + Coach ${squadXp.coachBonusXp}` : ''}
             {squadXp.panelPending && squadXp.provisionalWeek2PanelXp
-              ? ` · ~${squadXp.provisionalWeek2PanelXp} W2 pending`
+              ? ` · ~${squadXp.provisionalWeek2PanelXp} W5 pending`
               : ''}
           </p>
         </div>
