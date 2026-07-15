@@ -14,9 +14,10 @@ import { DailyActivationCodeCard } from '../../components/dashboard/DailyActivat
 import { FacultyCohortSyncPanel } from '../../components/faculty/FacultyCohortSyncPanel.jsx';
 import { CohortOnboardingControls } from '../../components/faculty/CohortOnboardingControls.jsx';
 import { FacultySquadReviewPanel } from '../../components/staff/SquadWeeklyReviewPanel.jsx';
-import { UNLOCK_WEEK2 } from '../../lib/programUnlocks.js';
+import { UNLOCK_WEEK2, UNLOCK_WEEK5 } from '../../lib/programUnlocks.js';
 import { Week2CoachTimeline } from '../../components/playbook/week2/Week2CoachTimeline.jsx';
 import { PitchPanelDashboard } from '../../components/staff/PitchPanelDashboard.jsx';
+import { Week5PitchInvestmentsMonitor } from '../../components/staff/Week5PitchInvestmentsMonitor.jsx';
 import { groupInternsBySquad } from '../../lib/mentorFrameworkService.js';
 
 /**
@@ -50,7 +51,16 @@ export function FacultyHomePage({
         cohortStartDate={cohortStartDate}
       />
 
-      {UNLOCK_WEEK2 && programDay.week >= 2 ? (
+      {UNLOCK_WEEK5 && programDay.week >= 5 ? (
+        <div className="mt-10 space-y-6">
+          <Week5PitchInvestmentsMonitor
+            interns={interns}
+            staffId={staffId}
+            role="faculty"
+            showToast={(msg) => window.alert(msg)}
+          />
+        </div>
+      ) : UNLOCK_WEEK2 && programDay.week >= 2 ? (
         <div className="mt-10 space-y-6">
           <Week2CoachTimeline activeDay={programDay.day} role="faculty" interns={interns} />
           <PitchPanelDashboard

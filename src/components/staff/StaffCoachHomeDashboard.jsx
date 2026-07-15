@@ -28,7 +28,7 @@ import {
   staffSquadHubHref,
   staffSquadsListHref,
 } from '../../routes/paths.js';
-import { UNLOCK_WEEK2 } from '../../lib/programUnlocks.js';
+import { UNLOCK_WEEK2, UNLOCK_WEEK5 } from '../../lib/programUnlocks.js';
 
 /**
  * @param {{
@@ -400,7 +400,13 @@ export function StaffCoachHomeDashboard({
                   label="Business Engine Canvas (blank)"
                 />
               ) : null}
-              {UNLOCK_WEEK2 && model.week >= 2 ? (
+              {UNLOCK_WEEK5 && model.week >= 5 ? (
+                <QuickAction
+                  to={role === 'mentor' ? ROUTES.mentorPitchPanel : ROUTES.programCoachPitchPanel}
+                  icon={Trophy}
+                  label="Week 5 pitch investments"
+                />
+              ) : UNLOCK_WEEK2 && model.week >= 2 ? (
                 <QuickAction
                   to={role === 'mentor' ? ROUTES.mentorPitchPanel : ROUTES.programCoachPitchPanel}
                   icon={Trophy}

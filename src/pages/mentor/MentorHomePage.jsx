@@ -13,7 +13,8 @@ import { DailyActivationCodeCard } from '../../components/dashboard/DailyActivat
 import { MentorWeek2ScoringSection } from '../../components/mentor/MentorWeek2ScoringSection.jsx';
 import { MentorWeek2SquadProgress } from '../../components/mentor/MentorWeek2SquadProgress.jsx';
 import { Week2CoachTimeline } from '../../components/playbook/week2/Week2CoachTimeline.jsx';
-import { UNLOCK_WEEK2 } from '../../lib/programUnlocks.js';
+import { UNLOCK_WEEK2, UNLOCK_WEEK5 } from '../../lib/programUnlocks.js';
+import { Week5PitchInvestmentsMonitor } from '../../components/staff/Week5PitchInvestmentsMonitor.jsx';
 
 /**
  * @param {{
@@ -31,7 +32,8 @@ export function MentorHomePage({ user, interns, showToast }) {
   const { cohortStartDate, programDay } = useCohortProgramDay();
   const stageGateHref = staffStageGateHref('mentor', 1, programDay.week);
   const closingWeek = programDay.week;
-  const showWeek2Scoring = UNLOCK_WEEK2 && programDay.week >= 2;
+  const showWeek2Scoring = UNLOCK_WEEK2 && programDay.week >= 2 && programDay.week < 5;
+  const showWeek5PitchMonitor = UNLOCK_WEEK5 && programDay.week >= 5;
 
   return (
     <PageContainer wide>
@@ -42,6 +44,17 @@ export function MentorHomePage({ user, interns, showToast }) {
         homeHref={ROUTES.mentorHome}
         cohortStartDate={cohortStartDate}
       />
+
+      {showWeek5PitchMonitor ? (
+        <div className="mt-10">
+          <Week5PitchInvestmentsMonitor
+            interns={interns}
+            staffId={user?.id ?? ''}
+            role="mentor"
+            showToast={showToast}
+          />
+        </div>
+      ) : null}
 
       {showWeek2Scoring ? (
         <div className="mt-10">
