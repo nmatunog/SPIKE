@@ -1,0 +1,94 @@
+{
+  "weekNumber": 3,
+  "dayNumber": 1,
+  "title": "Week 3 Day 1 Session Feedback",
+  "description": "Help us improve the FEC Canvas workshop experience",
+  "surveyType": "session_feedback",
+  "questions": [
+    {
+      "id": "clarity",
+      "type": "scale",
+      "question": "How clear was the explanation of FEC blocks 4-6?",
+      "scale": {
+        "min": 1,
+        "max": 5,
+        "minLabel": "Very unclear",
+        "maxLabel": "Very clear"
+      }
+    },
+    {
+      "id": "canvas-wizard-usability",
+      "type": "scale",
+      "question": "How easy was the canvas wizard tool to use?",
+      "scale": {
+        "min": 1,
+        "max": 5,
+        "minLabel": "Very difficult",
+        "maxLabel": "Very easy"
+      }
+    },
+    {
+      "id": "peer-review-value",
+      "type": "scale",
+      "question": "How valuable was the squad peer review?",
+      "scale": {
+        "min": 1,
+        "max": 5,
+        "minLabel": "Not valuable",
+        "maxLabel": "Very valuable"
+      }
+    },
+    {
+      "id": "facilitator-support",
+      "type": "scale",
+      "question": "Did you receive enough facilitator support during canvas work?",
+      "scale": {
+        "min": 1,
+        "max": 5,
+        "minLabel": "Not enough",
+        "maxLabel": "More than enough"
+      }
+    },
+    {
+      "id": "pitch-readiness",
+      "type": "scale",
+      "question": "How ready do you feel for Week 4 pitch preparation?",
+      "scale": {
+        "min": 1,
+        "max": 5,
+        "minLabel": "Not ready",
+        "maxLabel": "Very ready"
+      }
+    },
+    {
+      "id": "most-helpful",
+      "type": "open",
+      "question": "What was most helpful about today's session?",
+      "placeholder": "e.g., revenue model examples, squad feedback, facilitator guidance..."
+    },
+    {
+      "id": "improvement",
+      "type": "open",
+      "question": "What could be improved?",
+      "placeholder": "e.g., more time for canvas work, clearer instructions, better examples..."
+    },
+    {
+      "id": "additional-support",
+      "type": "multiselect",
+      "question": "What additional support would help you strengthen your canvas? (select all that apply)",
+      "options": [
+        "1-on-1 coaching on revenue models",
+        "Examples from successful advisors",
+        "More time to work on canvas",
+        "Partner identification help",
+        "UVP refinement workshop",
+        "Financial projection templates",
+        "None - I feel ready"
+      ]
+    }
+  ],
+  "submissionTiming": "End of session (last 5 minutes)",
+  "anonymous": false,
+  "optional": false,
+  "coachDashboardVisibility": "Aggregated results visible to coaches after 75% of cohort submits"
+}

@@ -1,0 +1,68 @@
+{
+  "weekNumber": 3,
+  "dayNumber": 1,
+  "sessions": [
+    {
+      "id": "opening",
+      "title": "Opening & Week 2 Reflection",
+      "duration": 15,
+      "type": "facilitated",
+      "description": "Welcome rookies and review Week 2 Customer Discovery outcomes.",
+      "activities": [
+        "Squad check-in: share one customer insight from Week 2",
+        "Facilitator recap: how FEC blocks 1-3 become the foundation",
+        "Preview today's focus: completing the canvas"
+      ]
+    },
+    {
+      "id": "canvas-overview",
+      "title": "FEC Blocks 4-6 Overview",
+      "duration": 30,
+      "type": "presentation",
+      "description": "Introduction to Capture Value, Enable Value, and Unified Venture Proposition.",
+      "keyPoints": [
+        "Capture Value: Revenue streams, cost structure, profit model",
+        "Enable Value: Key resources, partners, funding",
+        "UVP: Your unique position in the market"
+      ]
+    },
+    {
+      "id": "canvas-workshop",
+      "title": "Canvas Design Studio",
+      "duration": 75,
+      "type": "workshop",
+      "description": "Guided canvas completion with facilitator support and squad feedback.",
+      "activities": [
+        "Individual work: Canvas wizard blocks 4-6 (30 min)",
+        "Squad peer review: each rookie shares one block (30 min)",
+        "Facilitator feedback rounds (15 min)"
+      ]
+    },
+    {
+      "id": "synthesis",
+      "title": "Canvas Synthesis",
+      "duration": 30,
+      "type": "facilitated",
+      "description": "Review complete FEC and prepare for Week 4 pitch.",
+      "activities": [
+        "Identify strongest and weakest blocks",
+        "Q&A on revenue models and cost structures",
+        "Preview Week 4: 3-Year Plan and Stage Gate 1"
+      ]
+    },
+    {
+      "id": "closing",
+      "title": "Assignment & Closing",
+      "duration": 10,
+      "type": "facilitated",
+      "description": "Clarify Week 3 assignment and next steps.",
+      "activities": [
+        "Complete canvas wizard if not finished in class",
+        "Complete Reflection prompts",
+        "Submit Week 3 to unlock Week 4"
+      ]
+    }
+  ],
+  "totalDuration": 160,
+  "facilitatorNotes": "Rookies should arrive with their Week 2 FEC blocks visible. Be prepared to troubleshoot canvas wizard issues and provide examples from real advisory practices."
+}
