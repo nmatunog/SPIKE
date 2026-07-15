@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Loader2, Sparkles, Trophy } from 'lucide-react';
-import { formatPitchPeso } from '../../lib/staff/pitchPanelConstants.js';
+import { formatPitchPeso, PITCH_PANEL_LABEL_XP } from '../../lib/staff/pitchPanelConstants.js';
 import { getParticipantSquad } from '../../lib/cohortFormationService.js';
 import { useCohortProgramDay } from '../../hooks/useCohortProgramDay.js';
 import { useSquadXpHydration } from '../../hooks/useParticipantHydration.js';
@@ -22,10 +22,10 @@ function squadXpDisplayMeta(xp) {
   const progressPct = Math.round((xp.totalXp / SQUAD_XP_TOTAL_MAX) * 100);
   const coachBonus = xp.coachBonusXp > 0 ? ` · Coach +${xp.coachBonusXp}` : '';
   const footerXp = xp.panelFinalized
-    ? `Auto ${xp.autoXp}/80 · W1 pitch ${xp.week1PitchXp}/20 · W2 panel ${xp.week2PanelXp}/20${coachBonus}`
+    ? `Auto ${xp.autoXp}/80 · W1 pitch ${xp.week1PitchXp}/20 · W5 panel ${xp.week2PanelXp}/20${coachBonus}`
     : xp.panelPending
-      ? `Auto ${xp.autoXp}/80 · W1 pitch ${xp.week1PitchXp}/20 · W2 panel ~${xp.provisionalWeek2PanelXp}/20 pending${coachBonus}`
-      : `Auto ${xp.autoXp}/80 · W1 pitch ${xp.week1PitchXp}/20 · W2 panel 0/20${coachBonus}`;
+      ? `Auto ${xp.autoXp}/80 · W1 pitch ${xp.week1PitchXp}/20 · W5 panel ~${xp.provisionalWeek2PanelXp}/20 pending${coachBonus}`
+      : `Auto ${xp.autoXp}/80 · W1 pitch ${xp.week1PitchXp}/20 · W5 panel 0/20${coachBonus}`;
   return { progressPct, footerXp };
 }
 
@@ -114,12 +114,12 @@ export function SquadXpSummaryCard({
       </div>
       {xp.panelPending && xp.totalInvestment > 0 ? (
         <p className="text-xs font-medium text-amber-700">
-          Demo Day {formatPitchPeso(xp.totalInvestment)} — Week 2 XP pending faculty lock
+          Demo Day {formatPitchPeso(xp.totalInvestment)} — {PITCH_PANEL_LABEL_XP} pending faculty lock
         </p>
       ) : null}
       {xp.panelFinalized && xp.totalInvestment > 0 ? (
         <p className="text-xs text-emerald-700">
-          Demo Day {formatPitchPeso(xp.totalInvestment)} · +{xp.week2PanelXp} Week 2 XP
+          Demo Day {formatPitchPeso(xp.totalInvestment)} · +{xp.week2PanelXp} {PITCH_PANEL_LABEL_XP}
         </p>
       ) : null}
       <ul className="space-y-1 text-sm text-slate-700">
@@ -257,7 +257,7 @@ export function SquadXpDashboard({
       </div>
       {xp.panelPending && xp.totalInvestment > 0 ? (
         <p className="text-xs font-medium text-amber-700">
-          Demo Day {formatPitchPeso(xp.totalInvestment)} — Week 2 XP pending faculty lock
+          Demo Day {formatPitchPeso(xp.totalInvestment)} — {PITCH_PANEL_LABEL_XP} pending faculty lock
         </p>
       ) : null}
 

@@ -5,6 +5,9 @@ import { usePitchPanelLive } from '../../hooks/usePitchPanelLive.js';
 import {
   PITCH_PANEL_ACCESS_PIN,
   PITCH_PANEL_INVESTMENT_CRITERIA,
+  PITCH_PANEL_LABEL_WEEK,
+  PITCH_PANEL_LABEL_XP,
+  PITCH_PANEL_LABEL_XP_SHORT,
   buildInvestmentLeaderboard,
   formatPitchPeso,
   sortPitchPanelSquads,
@@ -92,7 +95,7 @@ export function PitchPanelDashboard({ interns, staffId = '', showToast, embedded
       await finalizePitchPanelScores(squads);
       await refresh();
       setShowResults(true);
-      showToast?.('Demo Day results locked — Week 2 XP applied by funding rank.');
+      showToast?.(`Demo Day results locked — ${PITCH_PANEL_LABEL_XP} applied by funding rank.`);
     } catch (err) {
       showToast?.(err instanceof Error ? err.message : 'Finalize failed');
     } finally {
@@ -162,7 +165,7 @@ export function PitchPanelDashboard({ interns, staffId = '', showToast, embedded
     <section className={`spike-surface space-y-4 sm:space-y-5 ${embedded ? '' : 'p-4 sm:p-5'}`}>
       <div className="space-y-4">
         <div>
-          <p className="spike-label">Week 2 Demo Day</p>
+          <p className="spike-label">{PITCH_PANEL_LABEL_WEEK} Demo Day</p>
           <h2 className="text-lg font-bold text-slate-900 sm:text-xl">Venture Capital investment dashboard</h2>
           <p className="mt-2 text-sm leading-relaxed text-slate-600">
             Each panelist receives ₱1,000,000 SPIKE Venture Capital. Share the investor link — PIN{' '}
@@ -266,7 +269,7 @@ export function PitchPanelDashboard({ interns, staffId = '', showToast, embedded
                     {formatPitchPeso(total)}
                   </p>
                   <p className={`text-sm font-semibold ${pending ? 'text-slate-400' : 'text-spike'}`}>
-                    {pending ? 'Awaiting finalize' : `${xp} W2 XP`}
+                    {pending ? 'Awaiting finalize' : `${xp} ${PITCH_PANEL_LABEL_XP_SHORT}`}
                   </p>
                 </div>
               </div>
@@ -323,7 +326,7 @@ export function PitchPanelDashboard({ interns, staffId = '', showToast, embedded
             onClick={() => void handleFinalize()}
             className="min-h-[52px] w-full rounded-xl bg-spike px-4 py-3 text-base font-bold text-white shadow-lg disabled:opacity-50"
           >
-            {busy ? 'Locking results…' : 'Lock Demo Day results & apply Week 2 XP'}
+            {busy ? 'Locking results…' : `Lock Demo Day results & apply ${PITCH_PANEL_LABEL_XP}`}
           </button>
         </div>
       ) : (

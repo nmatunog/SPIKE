@@ -1,11 +1,12 @@
 /**
- * Week 2 pitch panel — VC investment aggregation, finalize, XP mapping.
+ * Pitch panel — VC investment aggregation, finalize, XP mapping.
  */
 import {
   buildInvestmentLeaderboard,
   detectInvestmentTie,
   investmentRankToWeek2Xp,
   PITCH_PANEL_FINAL_STORAGE_KEY,
+  PITCH_PANEL_LABEL_XP,
   PITCH_PANEL_LIVE_STORAGE_KEY,
   PITCH_PANEL_SESSION_ID,
   PITCH_PANEL_WEEK,
@@ -370,7 +371,7 @@ export function pitchPanelGuestHref() {
  */
 export function exportPitchPanelResultsCsv(squads) {
   const finalized = readFinalizedPanelCache();
-  const rows = [['Squad', 'Total Investment', 'Rank', 'Week 2 XP', 'Investors', 'Source']];
+  const rows = [['Squad', 'Total Investment', 'Rank', PITCH_PANEL_LABEL_XP, 'Investors', 'Source']];
   const leaderboard = buildInvestmentLeaderboard(
     squads.map((s) => ({
       squadName: s.name,

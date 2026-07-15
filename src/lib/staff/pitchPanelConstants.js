@@ -1,9 +1,15 @@
-/** Week 2 Market Validation Pitch — Venture Capital investment simulation. */
+/** Segment 1 pitch panel — Venture Capital investment simulation (live session: Week 5 Execute). */
 
 /** Bump this for each live Demo Day so browser/local caches and cloud rows stay isolated. */
 export const PITCH_PANEL_SESSION_ID = 'segment-1-2026-07-15';
+/** Guest PIN (unchanged mid-session so panelists keep access). */
 export const PITCH_PANEL_ACCESS_PIN = 'W2PITCH';
-export const PITCH_PANEL_WEEK = 2;
+/** Program week this pitch session awards XP against. */
+export const PITCH_PANEL_WEEK = 5;
+/** Coach-facing labels for the live pitch (do not change PIN mid-event). */
+export const PITCH_PANEL_LABEL_WEEK = 'Week 5';
+export const PITCH_PANEL_LABEL_XP = 'Week 5 XP';
+export const PITCH_PANEL_LABEL_XP_SHORT = 'W5 XP';
 
 /** Each panelist receives ₱1M SPIKE Venture Capital. */
 export const PITCH_PANEL_CAPITAL = 1_000_000;
@@ -33,7 +39,7 @@ export const PITCH_PANEL_INVESTMENTS_CACHE_KEY = 'spike_pitch_panel_investments_
 export const PITCH_PANEL_COACH_OVERRIDES_KEY = 'spike_pitch_panel_coach_overrides_v1';
 export const PITCH_PANEL_COACH_MATRIX_CACHE_KEY = 'spike_pitch_panel_coach_matrix_v1';
 
-/** Pitch order for Week 2 Demo Day (Segment 1 cohort). */
+/** Pitch order for Demo Day (Segment 1 cohort). */
 export const PITCH_PANEL_SQUAD_ORDER = ['Cassiopeia', 'Pegasus', 'Argo Navis'];
 
 /** @param {string[]} names */
@@ -92,7 +98,7 @@ export function detectInvestmentTie(leaderboard) {
   return tied.length > 1 ? tied.map((r) => r.squadName) : null;
 }
 
-/** Rank-based Week 2 panel XP (investment winner model). */
+/** Rank-based panel XP (investment winner model). */
 export const PITCH_PANEL_RANK_XP = [20, 13, 7];
 
 /**

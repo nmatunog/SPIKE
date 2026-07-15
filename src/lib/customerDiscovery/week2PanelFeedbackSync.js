@@ -1,10 +1,13 @@
 /**
- * Sync guest panelist investments → each intern's Week 2 Day 5 portfolio.
+ * Sync guest panelist investments → each intern's Demo Day portfolio.
  */
 import { createPortfolioArtifactDraft } from '../blueprintArtifacts.js';
 import { setSectionField } from '../blueprintSectionStore.js';
 import { getParticipantSquad } from '../cohortFormationService.js';
-import { formatPitchPeso } from '../staff/pitchPanelConstants.js';
+import {
+  formatPitchPeso,
+  PITCH_PANEL_LABEL_WEEK,
+} from '../staff/pitchPanelConstants.js';
 import { fetchPitchPanelSquadInvestmentsRemote } from '../supabase/pitchPanel.js';
 
 const SOURCE_ID = 'panelist-investments-week2-day5';
@@ -40,8 +43,9 @@ export function loadPanelFeedbackCards(participantId) {
  * @param {Array<{ panelistName: string, panelistOrg?: string, amount: number, comment?: string, isFinal?: boolean }>} cards
  */
 export function buildPanelInvestmentMarkdown(squadName, cards) {
+  const heading = `# Demo Day funding — ${PITCH_PANEL_LABEL_WEEK}`;
   if (!cards.length) {
-    return `# Demo Day funding — Week 2 · Day 5\n\n**Squad:** ${squadName}\n\n_No panelist investments finalized yet._`;
+    return `${heading}\n\n**Squad:** ${squadName}\n\n_No panelist investments finalized yet._`;
   }
 
   const total = cards.reduce((sum, c) => sum + (Number(c.amount) || 0), 0);
@@ -51,7 +55,7 @@ export function buildPanelInvestmentMarkdown(squadName, cards) {
   );
 
   return [
-    '# Demo Day funding — Week 2 · Day 5',
+    heading,
     '',
     `**Squad:** ${squadName}`,
     `**Total investment received:** ${formatPitchPeso(total)}`,
@@ -81,7 +85,7 @@ export function writePanelInvestmentsToPortfolio(participantId, squadName, cards
   createPortfolioArtifactDraft({
     participantId,
     sectionId: 'portfolio-market-intelligence',
-    title: 'Demo Day funding · Week 2 Day 5',
+    title: `Demo Day funding · ${PITCH_PANEL_LABEL_WEEK}`,
     content,
     sourceType: 'pitch-panel-investments',
     sourceId: SOURCE_ID,

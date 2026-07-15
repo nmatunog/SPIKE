@@ -269,10 +269,10 @@ function buildSquadChecklist(squadName, memberIds, week = 2, panel) {
     ? (snapshot.week2PanelXp ?? 0) > 0
     : snapshot.pending || squadWeek2PitchComplete(memberIds);
   const week2Label = snapshot.finalized
-    ? `Week 2 Pitch (Demo Day ${snapshot.totalInvestment ? formatPitchPeso(snapshot.totalInvestment) : 'funding'})`
+    ? `Week 5 Pitch (Demo Day ${snapshot.totalInvestment ? formatPitchPeso(snapshot.totalInvestment) : 'funding'})`
     : snapshot.pending
-      ? `Week 2 Pitch (Demo Day ${formatPitchPeso(snapshot.totalInvestment ?? 0)} pending)`
-      : 'Week 2 Pitch (Demo Day)';
+      ? `Week 5 Pitch (Demo Day ${formatPitchPeso(snapshot.totalInvestment ?? 0)} pending)`
+      : 'Week 5 Pitch (Demo Day)';
   return [
     { id: 'interviews', label: 'Interviews completed', done: breakdown.interviews >= AUTO_XP_WEIGHTS.interviews * 0.8 },
     { id: 'portfolio', label: 'Portfolio updated', done: breakdown.portfolio >= AUTO_XP_WEIGHTS.portfolio * 0.8 },

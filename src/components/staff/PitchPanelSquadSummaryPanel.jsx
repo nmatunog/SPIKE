@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Loader2, TrendingUp } from 'lucide-react';
 import { usePitchPanelLive } from '../../hooks/usePitchPanelLive.js';
-import { formatPitchPeso } from '../../lib/staff/pitchPanelConstants.js';
+import { formatPitchPeso, PITCH_PANEL_LABEL_XP_SHORT } from '../../lib/staff/pitchPanelConstants.js';
 import { PanelistInvestmentCard } from '../pitchPanel/PitchPanelistCard.jsx';
 import { loadSquadPitchPanelSummary } from '../../lib/staff/pitchPanelSummaryService.js';
 
@@ -75,7 +75,7 @@ export function PitchPanelSquadSummaryPanel({
         </div>
         <p className="mt-1 text-xs text-orange-900/80">
           {summary.panelistCount} investor{summary.panelistCount === 1 ? '' : 's'}
-          {summary.finalized ? ` · ${xp} W2 XP` : xp ? ` · pending` : ''}
+          {summary.finalized ? ` · ${xp} ${PITCH_PANEL_LABEL_XP_SHORT}` : xp ? ` · pending` : ''}
         </p>
       </div>
     );

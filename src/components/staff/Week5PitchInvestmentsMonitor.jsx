@@ -183,12 +183,12 @@ export function Week5PitchInvestmentsMonitor({
           >
             <div className="min-w-0">
               <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
-                Legacy · Week 2
+                Week 5 · Coach tools
               </p>
               <p className="text-sm font-semibold text-slate-800">
-                Demo Day coach card
+                Demo Day score review
                 <span className="ml-2 font-normal text-slate-500">
-                  {demoDayOpen ? 'Hide' : 'Show score review, lock & export'}
+                  {demoDayOpen ? 'Hide' : 'Show panelist matrix, lock & export'}
                 </span>
               </p>
             </div>

@@ -3,6 +3,7 @@ import { Loader2, Pencil, RotateCcw } from 'lucide-react';
 import { PanelistStatusBadge } from '../pitchPanel/PitchPanelistCard.jsx';
 import {
   PITCH_PANEL_INVESTMENT_INCREMENT,
+  PITCH_PANEL_LABEL_XP,
   formatPitchPeso,
   sortPitchPanelSquads,
 } from '../../lib/staff/pitchPanelConstants.js';
@@ -173,7 +174,7 @@ export function PitchPanelCoachReviewPanel({
             <p className="mt-1 text-sm text-slate-600">
               {readOnly
                 ? 'Results locked — investments shown as submitted (with any coach adjustments applied at lock).'
-                : 'Review each panelist allocation. Edit amounts before locking — adjustments apply to funding totals and Week 2 XP.'}
+                : `Review each panelist allocation. Edit amounts before locking — adjustments apply to funding totals and ${PITCH_PANEL_LABEL_XP}.`}
             </p>
           </div>
           {!readOnly && adjusted ? (

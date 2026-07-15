@@ -9,7 +9,7 @@ import { PanelistInvestmentCard } from '../pitchPanel/PitchPanelistCard.jsx';
 import { getParticipantSquad } from '../../lib/cohortFormationService.js';
 
 /**
- * Guest panelist investments — Week 2 Day 5 funding for the intern's squad.
+ * Guest panelist investments — Week 5 Demo Day funding for the intern's squad.
  * @param {{ participantId: string, refreshKey?: number }} props
  */
 export function PortfolioPanelistFeedbackPanel({ participantId, refreshKey = 0 }) {
@@ -38,7 +38,7 @@ export function PortfolioPanelistFeedbackPanel({ participantId, refreshKey = 0 }
         <p className="text-sm font-bold text-slate-900">Demo Day funding</p>
       </div>
       <p className="text-xs text-slate-500">
-        Week 2 · Day 5 — SPIKE Venture Capital allocations for {squadName}.
+        Week 5 · Demo Day — SPIKE Venture Capital allocations for {squadName}.
       </p>
 
       {!cards.length ? (
