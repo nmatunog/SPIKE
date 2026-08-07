@@ -36,3 +36,4 @@
 20260816_ra_spike_onboarding_optional.sql
 20260817_ra_spike_superuser_progress_rls.sql
 20260818_ra_spike_squad_capacity_4.sql
+20260819_revalida_panel_rating.sql
