@@ -147,7 +147,7 @@ export function RaSpikeRevalidaRatingPage() {
     } else {
       setExistingRating(null);
     }
-  }, [user?.id]);
+  }, [user]);
 
   useEffect(() => {
     loadCohorts().finally(() => setLoading(false));
