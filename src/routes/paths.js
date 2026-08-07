@@ -67,6 +67,8 @@ export const ROUTES = {
   raSpikePlaybookDiscoveryLog: '/ra-spike/playbook/discovery-log',
   raSpikePlaybookDiscoveryCanvas: '/ra-spike/playbook/discovery-canvas',
   raSpikeStageGate: '/ra-spike/stage-gate',
+  raSpikeRevalidaRating: '/ra-spike/revalida-rating',
+  raSpikeRevalidaResults: '/ra-spike/revalida-results',
   raSpikeAdmin: '/ra-spike/admin',
 };
 
