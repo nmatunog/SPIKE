@@ -282,7 +282,7 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
       setSquadRatings(next);
       return next;
     },
-    [isGuestFlow, panelistToken, user?.id],
+    [isGuestFlow, panelistToken, user],
   );
 
   const applyCurrentSquadFromRatings = useCallback((next) => {
@@ -539,7 +539,7 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
     } finally {
       setDownloadingPdf(false);
     }
-  }, [activeCohort?.name, squads]);
+  }, [activeCohort, squads]);
 
   if (loading) {
     return (

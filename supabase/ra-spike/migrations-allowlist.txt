@@ -42,3 +42,4 @@
 20260822_revalida_coach_finalize.sql
 20260823_revalida_disable_panelist_pin.sql
 20260824_revalida_draft_saves.sql
+20260825_revalida_guest_upsert_fix.sql
