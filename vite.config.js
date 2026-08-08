@@ -16,10 +16,55 @@ const buildEntries = raSpikeStandalone
   ? { main: 'ra-spike.html' }
   : { main: 'index.html', pitchPanel: 'pitch-panel.html' }
 
+/** Dev-only: serve ra-spike.html for /ra-spike/* navigations (not internship index.html). */
+function raSpikeStandaloneDevHtmlPlugin() {
+  if (!raSpikeStandalone) {
+    return { name: 'ra-spike-standalone-dev-html-skipped' }
+  }
+  return {
+    name: 'ra-spike-standalone-dev-html',
+    configureServer(server) {
+      return () => {
+        server.middlewares.use((req, res, next) => {
+          const url = req.url ?? ''
+          const pathOnly = url.split('?')[0]
+          const query = url.includes('?') ? url.slice(url.indexOf('?')) : ''
+
+          if (
+            pathOnly.startsWith('/@')
+            || pathOnly.startsWith('/node_modules/')
+            || pathOnly.startsWith('/src/')
+            || pathOnly.startsWith('/api')
+            || pathOnly.startsWith('/ra-spike/api')
+            || pathOnly.startsWith('/ra-spike/@')
+            || pathOnly.startsWith('/ra-spike/node_modules/')
+            || pathOnly.startsWith('/ra-spike/src/')
+            || (pathOnly.includes('.') && !pathOnly.endsWith('.html'))
+          ) {
+            return next()
+          }
+
+          const raSpikeEntry =
+            pathOnly === '/ra-spike.html' || pathOnly === '/ra-spike/ra-spike.html'
+          const underRaSpike =
+            pathOnly === '/ra-spike'
+            || pathOnly === '/ra-spike/'
+            || pathOnly.startsWith('/ra-spike/')
+
+          if (!raSpikeEntry && underRaSpike) {
+            req.url = `/ra-spike.html${query}`
+          }
+          next()
+        })
+      }
+    },
+  }
+}
+
 export default defineConfig({
   // Internship: `/`. RA-SPIKE Pages origin: `/ra-spike/` (portal proxy + dynamic chunks).
   base: appBase,
-  plugins: [react(), coachDeckGuardPlugin()],
+  plugins: [react(), coachDeckGuardPlugin(), raSpikeStandaloneDevHtmlPlugin()],
   resolve: {
     alias: [
       {
