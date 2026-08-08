@@ -374,7 +374,7 @@ export function RaSpikeRevalidaResultsPage() {
                             <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
                               <div>
                                 <p className="font-bold text-slate-900">
-                                  {rating.panelist?.name || 'Anonymous'}
+                                  {rating.panelist?.name || rating.panelist_name || 'Anonymous'}
                                 </p>
                                 <p className="text-xs text-slate-500">
                                   {new Date(rating.submitted_at).toLocaleString()}

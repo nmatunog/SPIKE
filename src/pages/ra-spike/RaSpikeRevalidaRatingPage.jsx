@@ -1,8 +1,22 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Check, Loader2 } from 'lucide-react';
+import { Check, Loader2, LogIn } from 'lucide-react';
 import { useAuth } from '../../AuthContext.jsx';
 import { supabase } from '../../supabaseClient.js';
 import { PageContainer } from '../../components/layout/PageContainer.jsx';
+import {
+  RA_SPIKE_REVALIDA_ACCESS_PIN,
+  readRevalidaGuestSession,
+  readRevalidaPanelistToken,
+  writeRevalidaGuestSession,
+} from '../../lib/raSpikeRevalidaConstants.js';
+import {
+  fetchRevalidaCohortsRemote,
+  fetchRevalidaGuestRatingRemote,
+  fetchRevalidaSquadMembersRemote,
+  fetchRevalidaSquadsRemote,
+  revalidaPanelistCheckInRemote,
+  submitRevalidaGuestRatingRemote,
+} from '../../lib/supabase/revalidaPanel.js';
 
 const RATING_OPTIONS = {
   fvp: [12, 14, 16, 18, 20],
@@ -45,18 +59,39 @@ const CRITERIA = [
   },
 ];
 
-export function RaSpikeRevalidaRatingPage() {
+const INPUT_CLASS =
+  'w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base focus:border-spike focus:outline-none focus:ring-2 focus:ring-spike/20';
+
+/**
+ * @param {{ guestMode?: boolean }} props
+ */
+export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
   const { user } = useAuth();
+  const isGuestFlow = guestMode || !user?.id;
+  const savedSession = useMemo(() => (isGuestFlow ? readRevalidaGuestSession() : null), [isGuestFlow]);
+  const panelistToken = useMemo(
+    () => (isGuestFlow ? readRevalidaPanelistToken() : null),
+    [isGuestFlow],
+  );
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [checkingIn, setCheckingIn] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [checkInError, setCheckInError] = useState('');
+
+  const [pin, setPin] = useState('');
+  const [checkedIn, setCheckedIn] = useState(() => Boolean(savedSession?.unlocked));
+  const [panelistName, setPanelistName] = useState(() => savedSession?.name ?? '');
+  const [panelistOrg, setPanelistOrg] = useState(() => savedSession?.org ?? '');
+
   const [cohorts, setCohorts] = useState([]);
   const [squads, setSquads] = useState([]);
   const [squadMembers, setSquadMembers] = useState([]);
   const [existingRating, setExistingRating] = useState(null);
 
   const [formData, setFormData] = useState({
-    cohort_id: '',
+    cohort_id: savedSession?.cohortId ?? '',
     squad_id: '',
     fvp_score: null,
     business_model_score: null,
@@ -81,7 +116,34 @@ export function RaSpikeRevalidaRatingPage() {
     return scores.reduce((sum, score) => sum + score, 0);
   }, [formData]);
 
+  const applyExistingRating = useCallback((data) => {
+    if (!data) {
+      setExistingRating(null);
+      return;
+    }
+    setExistingRating(data);
+    setFormData({
+      cohort_id: String(data.cohort_id),
+      squad_id: data.squad_id,
+      fvp_score: data.fvp_score,
+      business_model_score: data.business_model_score,
+      strategy_score: data.strategy_score,
+      presentation_score: data.presentation_score,
+      investment_score: data.investment_score,
+      greatest_strength: data.greatest_strength || '',
+      improvement: data.improvement || '',
+      recommendation: data.recommendation || '',
+      standout_participant_id: data.standout_participant_id || '',
+    });
+    setSubmitted(false);
+  }, []);
+
   const loadCohorts = useCallback(async () => {
+    if (isGuestFlow) {
+      const data = await fetchRevalidaCohortsRemote(pin || RA_SPIKE_REVALIDA_ACCESS_PIN);
+      setCohorts(data);
+      return;
+    }
     if (!supabase) return;
     const { data } = await supabase
       .from('cohorts')
@@ -89,73 +151,97 @@ export function RaSpikeRevalidaRatingPage() {
       .eq('is_active', true)
       .order('created_at', { ascending: false });
     setCohorts(data || []);
-  }, []);
+  }, [isGuestFlow, pin]);
 
-  const loadSquads = useCallback(async (cohortId) => {
-    if (!supabase || !cohortId) return;
-    const { data } = await supabase
-      .from('formation_squads')
-      .select('id, name, cohort_id')
-      .eq('cohort_id', cohortId)
-      .eq('status', 'active')
-      .order('name');
-    setSquads(data || []);
-  }, []);
+  const loadSquads = useCallback(
+    async (cohortId) => {
+      if (!cohortId) return;
+      if (isGuestFlow) {
+        const data = await fetchRevalidaSquadsRemote(cohortId, pin || RA_SPIKE_REVALIDA_ACCESS_PIN);
+        setSquads(data);
+        return;
+      }
+      if (!supabase) return;
+      const { data } = await supabase
+        .from('formation_squads')
+        .select('id, name, cohort_id')
+        .eq('cohort_id', cohortId)
+        .eq('status', 'active')
+        .order('name');
+      setSquads(data || []);
+    },
+    [isGuestFlow, pin],
+  );
 
-  const loadSquadMembers = useCallback(async (squadId) => {
-    if (!supabase || !squadId) return;
-    const { data } = await supabase
-      .from('formation_squad_members')
-      .select(`
-        participant_id,
-        role,
-        profiles:participant_id (
-          id,
-          name
-        )
-      `)
-      .eq('squad_id', squadId)
-      .order('role');
-    setSquadMembers(data || []);
-  }, []);
+  const loadSquadMembers = useCallback(
+    async (squadId) => {
+      if (!squadId) return;
+      if (isGuestFlow) {
+        const data = await fetchRevalidaSquadMembersRemote(squadId, pin || RA_SPIKE_REVALIDA_ACCESS_PIN);
+        setSquadMembers(
+          data.map((m) => ({
+            participant_id: m.participant_id,
+            role: m.role,
+            profiles: { id: m.participant_id, name: m.name },
+          })),
+        );
+        return;
+      }
+      if (!supabase) return;
+      const { data } = await supabase
+        .from('formation_squad_members')
+        .select(`
+          participant_id,
+          role,
+          profiles:participant_id (
+            id,
+            name
+          )
+        `)
+        .eq('squad_id', squadId)
+        .order('role');
+      setSquadMembers(data || []);
+    },
+    [isGuestFlow, pin],
+  );
 
-  const loadExistingRating = useCallback(async (squadId) => {
-    if (!supabase || !squadId || !user?.id) return;
-    const { data } = await supabase
-      .from('revalida_panel_ratings')
-      .select('*')
-      .eq('panelist_id', user.id)
-      .eq('squad_id', squadId)
-      .maybeSingle();
-
-    if (data) {
-      setExistingRating(data);
-      setFormData({
-        cohort_id: String(data.cohort_id),
-        squad_id: data.squad_id,
-        fvp_score: data.fvp_score,
-        business_model_score: data.business_model_score,
-        strategy_score: data.strategy_score,
-        presentation_score: data.presentation_score,
-        investment_score: data.investment_score,
-        greatest_strength: data.greatest_strength || '',
-        improvement: data.improvement || '',
-        recommendation: data.recommendation || '',
-        standout_participant_id: data.standout_participant_id || '',
-      });
-      setSubmitted(false);
-    } else {
-      setExistingRating(null);
-    }
-  }, [user]);
+  const loadExistingRating = useCallback(
+    async (squadId) => {
+      if (!squadId) return;
+      if (isGuestFlow && panelistToken) {
+        const data = await fetchRevalidaGuestRatingRemote(
+          panelistToken,
+          squadId,
+          pin || RA_SPIKE_REVALIDA_ACCESS_PIN,
+        );
+        applyExistingRating(data);
+        return;
+      }
+      if (!supabase || !user?.id) return;
+      const { data } = await supabase
+        .from('revalida_panel_ratings')
+        .select('*')
+        .eq('panelist_id', user.id)
+        .eq('squad_id', squadId)
+        .maybeSingle();
+      applyExistingRating(data);
+    },
+    [applyExistingRating, isGuestFlow, panelistToken, pin, user?.id],
+  );
 
   useEffect(() => {
-    loadCohorts().finally(() => setLoading(false));
-  }, [loadCohorts]);
+    if (isGuestFlow && !checkedIn) {
+      setLoading(false);
+      return;
+    }
+    loadCohorts()
+      .catch(() => setCohorts([]))
+      .finally(() => setLoading(false));
+  }, [checkedIn, isGuestFlow, loadCohorts]);
 
   useEffect(() => {
     if (formData.cohort_id) {
-      loadSquads(formData.cohort_id);
+      loadSquads(formData.cohort_id).catch(() => setSquads([]));
     } else {
       setSquads([]);
     }
@@ -163,74 +249,103 @@ export function RaSpikeRevalidaRatingPage() {
 
   useEffect(() => {
     if (formData.squad_id) {
-      loadSquadMembers(formData.squad_id);
-      loadExistingRating(formData.squad_id);
+      loadSquadMembers(formData.squad_id).catch(() => setSquadMembers([]));
+      loadExistingRating(formData.squad_id).catch(() => setExistingRating(null));
     } else {
       setSquadMembers([]);
       setExistingRating(null);
     }
-  }, [formData.squad_id, loadSquadMembers, loadExistingRating]);
+  }, [formData.squad_id, loadExistingRating, loadSquadMembers]);
 
-  const handleCohortChange = (cohortId) => {
-    setFormData((prev) => ({
-      ...prev,
-      cohort_id: cohortId,
-      squad_id: '',
-    }));
-  };
-
-  const handleSquadChange = (squadId) => {
-    setFormData((prev) => ({
-      ...prev,
-      squad_id: squadId,
-    }));
-  };
-
-  const handleScoreSelect = (criterion, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [`${criterion}_score`]: value,
-    }));
+  const handleCheckIn = async (e) => {
+    e.preventDefault();
+    setCheckInError('');
+    setCheckingIn(true);
+    try {
+      const accessPin = pin.trim() || RA_SPIKE_REVALIDA_ACCESS_PIN;
+      const result = await revalidaPanelistCheckInRemote({
+        pin: accessPin,
+        panelistToken,
+        name: panelistName.trim(),
+        org: panelistOrg.trim(),
+        cohortId: formData.cohort_id || null,
+      });
+      const cohortId = String(result?.cohort_id ?? formData.cohort_id ?? '');
+      writeRevalidaGuestSession({
+        unlocked: true,
+        name: panelistName.trim(),
+        org: panelistOrg.trim(),
+        cohortId,
+      });
+      setFormData((prev) => ({ ...prev, cohort_id: cohortId || prev.cohort_id }));
+      setCheckedIn(true);
+    } catch (err) {
+      setCheckInError(err.message || 'Check-in failed. Check your PIN and try again.');
+    } finally {
+      setCheckingIn(false);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!supabase || !user?.id || existingRating?.finalized) return;
+    if (existingRating?.finalized) return;
 
     setSaving(true);
     try {
       const payload = {
-        panelist_id: user.id,
-        cohort_id: parseInt(formData.cohort_id, 10),
-        squad_id: formData.squad_id,
-        fvp_score: formData.fvp_score,
-        business_model_score: formData.business_model_score,
-        strategy_score: formData.strategy_score,
-        presentation_score: formData.presentation_score,
-        investment_score: formData.investment_score,
-        greatest_strength: formData.greatest_strength.trim(),
+        cohortId: formData.cohort_id,
+        squadId: formData.squad_id,
+        fvpScore: formData.fvp_score,
+        businessModelScore: formData.business_model_score,
+        strategyScore: formData.strategy_score,
+        presentationScore: formData.presentation_score,
+        investmentScore: formData.investment_score,
+        greatestStrength: formData.greatest_strength.trim(),
         improvement: formData.improvement.trim(),
         recommendation: formData.recommendation,
-        standout_participant_id: formData.standout_participant_id || null,
+        standoutParticipantId: formData.standout_participant_id || null,
       };
 
-      if (existingRating) {
-        const { error } = await supabase
-          .from('revalida_panel_ratings')
-          .update(payload)
-          .eq('id', existingRating.id);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from('revalida_panel_ratings')
-          .insert([payload]);
-        if (error) throw error;
+      if (isGuestFlow && panelistToken) {
+        await submitRevalidaGuestRatingRemote({
+          ...payload,
+          pin: pin.trim() || RA_SPIKE_REVALIDA_ACCESS_PIN,
+          panelistToken,
+          panelistName: panelistName.trim(),
+          panelistOrg: panelistOrg.trim(),
+        });
+      } else if (supabase && user?.id) {
+        const row = {
+          panelist_id: user.id,
+          panelist_name: user.name || user.email || 'Staff panelist',
+          cohort_id: parseInt(formData.cohort_id, 10),
+          squad_id: formData.squad_id,
+          fvp_score: formData.fvp_score,
+          business_model_score: formData.business_model_score,
+          strategy_score: formData.strategy_score,
+          presentation_score: formData.presentation_score,
+          investment_score: formData.investment_score,
+          greatest_strength: payload.greatestStrength,
+          improvement: payload.improvement,
+          recommendation: formData.recommendation,
+          standout_participant_id: payload.standoutParticipantId,
+        };
+        if (existingRating) {
+          const { error } = await supabase
+            .from('revalida_panel_ratings')
+            .update(row)
+            .eq('id', existingRating.id);
+          if (error) throw error;
+        } else {
+          const { error } = await supabase.from('revalida_panel_ratings').insert([row]);
+          if (error) throw error;
+        }
       }
 
       setSubmitted(true);
       setTimeout(() => {
-        setFormData({
-          cohort_id: formData.cohort_id,
+        setFormData((prev) => ({
+          ...prev,
           squad_id: '',
           fvp_score: null,
           business_model_score: null,
@@ -241,7 +356,7 @@ export function RaSpikeRevalidaRatingPage() {
           improvement: '',
           recommendation: '',
           standout_participant_id: '',
-        });
+        }));
         setSubmitted(false);
       }, 2000);
     } catch (err) {
@@ -251,20 +366,106 @@ export function RaSpikeRevalidaRatingPage() {
     }
   };
 
-  const isFormValid = useMemo(() => {
+  const isFormValid = useMemo(
+    () =>
+      formData.cohort_id
+      && formData.squad_id
+      && formData.fvp_score !== null
+      && formData.business_model_score !== null
+      && formData.strategy_score !== null
+      && formData.presentation_score !== null
+      && formData.investment_score !== null
+      && formData.greatest_strength.trim()
+      && formData.improvement.trim()
+      && formData.recommendation,
+    [formData],
+  );
+
+  if (isGuestFlow && !checkedIn) {
     return (
-      formData.cohort_id &&
-      formData.squad_id &&
-      formData.fvp_score !== null &&
-      formData.business_model_score !== null &&
-      formData.strategy_score !== null &&
-      formData.presentation_score !== null &&
-      formData.investment_score !== null &&
-      formData.greatest_strength.trim() &&
-      formData.improvement.trim() &&
-      formData.recommendation
+      <PageContainer>
+        <div className="mx-auto max-w-md pb-12 pt-6">
+          <header className="mb-8 space-y-2 border-b border-slate-200 pb-6 text-center">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-spike">RA-SPIKE REVALIDA</p>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Panelist Check-In</h1>
+            <p className="text-sm text-slate-600">
+              Enter your name to begin rating squad pitches. No portal account required.
+            </p>
+          </header>
+
+          <form onSubmit={handleCheckIn} className="space-y-4">
+            <div>
+              <label htmlFor="pin" className="mb-2 block text-sm font-bold text-slate-900">
+                Access PIN
+              </label>
+              <input
+                id="pin"
+                type="password"
+                inputMode="text"
+                autoComplete="off"
+                value={pin}
+                onChange={(e) => setPin(e.target.value)}
+                placeholder="Ask the coach for today's PIN"
+                className={INPUT_CLASS}
+              />
+              <p className="mt-1 text-xs text-slate-500">Default event PIN: REVALIDA</p>
+            </div>
+
+            <div>
+              <label htmlFor="panelist-name" className="mb-2 block text-sm font-bold text-slate-900">
+                Your name
+              </label>
+              <input
+                id="panelist-name"
+                type="text"
+                value={panelistName}
+                onChange={(e) => setPanelistName(e.target.value)}
+                placeholder="Full name"
+                className={INPUT_CLASS}
+                required
+              />
+            </div>
+
+            <div>
+              <label htmlFor="panelist-org" className="mb-2 block text-sm font-bold text-slate-900">
+                Organization <span className="font-normal text-slate-500">(optional)</span>
+              </label>
+              <input
+                id="panelist-org"
+                type="text"
+                value={panelistOrg}
+                onChange={(e) => setPanelistOrg(e.target.value)}
+                placeholder="Company or role"
+                className={INPUT_CLASS}
+              />
+            </div>
+
+            {checkInError ? (
+              <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800">{checkInError}</p>
+            ) : null}
+
+            <button
+              type="submit"
+              disabled={checkingIn || !panelistName.trim()}
+              className="flex min-h-[56px] w-full items-center justify-center gap-2 rounded-xl bg-spike px-6 py-4 text-lg font-bold text-white transition hover:bg-spike/90 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {checkingIn ? (
+                <>
+                  <Loader2 className="animate-spin" size={20} />
+                  Checking in…
+                </>
+              ) : (
+                <>
+                  <LogIn size={20} />
+                  Check in &amp; start rating
+                </>
+              )}
+            </button>
+          </form>
+        </div>
+      </PageContainer>
     );
-  }, [formData]);
+  }
 
   if (loading) {
     return (
@@ -284,6 +485,12 @@ export function RaSpikeRevalidaRatingPage() {
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
             REVALIDA PANEL RATING
           </h1>
+          {isGuestFlow && panelistName ? (
+            <p className="text-sm text-slate-600">
+              Panelist: <span className="font-semibold text-slate-900">{panelistName}</span>
+              {panelistOrg.trim() ? ` · ${panelistOrg.trim()}` : ''}
+            </p>
+          ) : null}
         </header>
 
         {submitted ? (
@@ -296,7 +503,6 @@ export function RaSpikeRevalidaRatingPage() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Cohort & Squad Selection */}
             <section className="space-y-4">
               <div>
                 <label htmlFor="cohort" className="mb-2 block text-sm font-bold text-slate-900">
@@ -305,8 +511,9 @@ export function RaSpikeRevalidaRatingPage() {
                 <select
                   id="cohort"
                   value={formData.cohort_id}
-                  onChange={(e) => handleCohortChange(e.target.value)}
-                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base focus:border-spike focus:outline-none focus:ring-2 focus:ring-spike/20"
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, cohort_id: e.target.value, squad_id: '' }))}
+                  className={INPUT_CLASS}
                   required
                 >
                   <option value="">Select cohort</option>
@@ -325,9 +532,9 @@ export function RaSpikeRevalidaRatingPage() {
                 <select
                   id="squad"
                   value={formData.squad_id}
-                  onChange={(e) => handleSquadChange(e.target.value)}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, squad_id: e.target.value }))}
                   disabled={!formData.cohort_id}
-                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base focus:border-spike focus:outline-none focus:ring-2 focus:ring-spike/20 disabled:cursor-not-allowed disabled:bg-slate-100"
+                  className={`${INPUT_CLASS} disabled:cursor-not-allowed disabled:bg-slate-100`}
                   required
                 >
                   <option value="">Select squad</option>
@@ -339,21 +546,19 @@ export function RaSpikeRevalidaRatingPage() {
                 </select>
               </div>
 
-              {existingRating && (
+              {existingRating ? (
                 <div className="rounded-lg bg-blue-50 px-4 py-3 text-sm text-blue-800">
                   {existingRating.finalized
                     ? '✓ You previously rated this squad. Ratings are finalized and cannot be edited.'
                     : '✓ You previously rated this squad. You can update your rating below.'}
                 </div>
-              )}
+              ) : null}
             </section>
 
-            {formData.squad_id && !existingRating?.finalized && (
+            {formData.squad_id && !existingRating?.finalized ? (
               <>
-                {/* Scoring */}
                 <section className="space-y-6">
                   <h2 className="text-lg font-bold text-slate-900">SCORING</h2>
-
                   {CRITERIA.map((criterion) => (
                     <div key={criterion.key} className="space-y-3">
                       <div>
@@ -365,16 +570,15 @@ export function RaSpikeRevalidaRatingPage() {
                         </h3>
                         <p className="mt-1 text-sm text-slate-600">{criterion.description}</p>
                       </div>
-
                       <div className="flex flex-wrap gap-2">
                         {RATING_OPTIONS[criterion.key].map((value) => {
-                          const isSelected =
-                            formData[`${criterion.key}_score`] === value;
+                          const isSelected = formData[`${criterion.key}_score`] === value;
                           return (
                             <button
                               key={value}
                               type="button"
-                              onClick={() => handleScoreSelect(criterion.key, value)}
+                              onClick={() =>
+                                setFormData((prev) => ({ ...prev, [`${criterion.key}_score`]: value }))}
                               className={`min-h-[52px] min-w-[68px] flex-1 rounded-xl border-2 px-4 py-3 text-lg font-bold transition sm:flex-none ${
                                 isSelected
                                   ? 'border-spike bg-spike text-white'
@@ -386,7 +590,6 @@ export function RaSpikeRevalidaRatingPage() {
                           );
                         })}
                       </div>
-
                       <div className="flex justify-between text-xs font-medium text-slate-500">
                         <span>NEEDS WORK</span>
                         <span>OUTSTANDING</span>
@@ -395,22 +598,17 @@ export function RaSpikeRevalidaRatingPage() {
                   ))}
                 </section>
 
-                {/* Total Score */}
-                {totalScore !== null && (
+                {totalScore !== null ? (
                   <div className="sticky top-4 z-10 rounded-2xl border-2 border-spike bg-spike-muted/90 p-5 text-center backdrop-blur-sm">
-                    <p className="text-sm font-bold uppercase tracking-wide text-slate-700">
-                      TOTAL SCORE
-                    </p>
+                    <p className="text-sm font-bold uppercase tracking-wide text-slate-700">TOTAL SCORE</p>
                     <p className="mt-1 text-4xl font-bold text-spike">
                       {totalScore} <span className="text-2xl text-slate-600">/ 100</span>
                     </p>
                   </div>
-                )}
+                ) : null}
 
-                {/* Feedback */}
                 <section className="space-y-4">
                   <h2 className="text-lg font-bold text-slate-900">FEEDBACK</h2>
-
                   <div>
                     <label htmlFor="strength" className="mb-2 block text-sm font-bold text-slate-900">
                       Greatest Strength
@@ -419,14 +617,12 @@ export function RaSpikeRevalidaRatingPage() {
                       id="strength"
                       value={formData.greatest_strength}
                       onChange={(e) =>
-                        setFormData((prev) => ({ ...prev, greatest_strength: e.target.value }))
-                      }
+                        setFormData((prev) => ({ ...prev, greatest_strength: e.target.value }))}
                       rows={3}
-                      className="w-full rounded-xl border border-slate-300 px-4 py-3 text-base focus:border-spike focus:outline-none focus:ring-2 focus:ring-spike/20"
+                      className={INPUT_CLASS}
                       required
                     />
                   </div>
-
                   <div>
                     <label htmlFor="improvement" className="mb-2 block text-sm font-bold text-slate-900">
                       Most Important Improvement
@@ -435,14 +631,12 @@ export function RaSpikeRevalidaRatingPage() {
                       id="improvement"
                       value={formData.improvement}
                       onChange={(e) =>
-                        setFormData((prev) => ({ ...prev, improvement: e.target.value }))
-                      }
+                        setFormData((prev) => ({ ...prev, improvement: e.target.value }))}
                       rows={3}
-                      className="w-full rounded-xl border border-slate-300 px-4 py-3 text-base focus:border-spike focus:outline-none focus:ring-2 focus:ring-spike/20"
+                      className={INPUT_CLASS}
                       required
                     />
                   </div>
-
                   <div>
                     <label className="mb-2 block text-sm font-bold text-slate-900">
                       Final Recommendation
@@ -463,8 +657,7 @@ export function RaSpikeRevalidaRatingPage() {
                             value={option.value}
                             checked={formData.recommendation === option.value}
                             onChange={(e) =>
-                              setFormData((prev) => ({ ...prev, recommendation: e.target.value }))
-                            }
+                              setFormData((prev) => ({ ...prev, recommendation: e.target.value }))}
                             className="h-5 w-5 text-spike focus:ring-spike"
                             required
                           />
@@ -473,7 +666,6 @@ export function RaSpikeRevalidaRatingPage() {
                       ))}
                     </div>
                   </div>
-
                   <div>
                     <label htmlFor="standout" className="mb-2 block text-sm font-bold text-slate-900">
                       Standout Participant <span className="font-normal text-slate-500">(Optional)</span>
@@ -482,9 +674,8 @@ export function RaSpikeRevalidaRatingPage() {
                       id="standout"
                       value={formData.standout_participant_id}
                       onChange={(e) =>
-                        setFormData((prev) => ({ ...prev, standout_participant_id: e.target.value }))
-                      }
-                      className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base focus:border-spike focus:outline-none focus:ring-2 focus:ring-spike/20"
+                        setFormData((prev) => ({ ...prev, standout_participant_id: e.target.value }))}
+                      className={INPUT_CLASS}
                     >
                       <option value="">Select participant</option>
                       {squadMembers.map((m) => (
@@ -496,7 +687,6 @@ export function RaSpikeRevalidaRatingPage() {
                   </div>
                 </section>
 
-                {/* Submit */}
                 <button
                   type="submit"
                   disabled={!isFormValid || saving}
@@ -512,7 +702,7 @@ export function RaSpikeRevalidaRatingPage() {
                   )}
                 </button>
               </>
-            )}
+            ) : null}
           </form>
         )}
       </div>

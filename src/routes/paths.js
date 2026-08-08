@@ -465,6 +465,11 @@ export function isRaSpikePlaybookPath(pathname) {
   return pathname === ROUTES.raSpikePlaybook || pathname.startsWith(`${ROUTES.raSpikePlaybook}/`);
 }
 
+/** Public guest panelist rating (no login). */
+export function isRaSpikeRevalidaGuestPath(pathname) {
+  return pathname === ROUTES.raSpikeRevalidaRating;
+}
+
 /** Staff coach hubs and admin under /ra-spike/* */
 export function isRaSpikeStaffPath(pathname) {
   return (
@@ -997,6 +1002,8 @@ export function canAccessRoute(pathname, userRole) {
  */
 export function canAccessRouteForProgram(pathname, userRole, programSlug) {
   if (isPublicPortfolioPath(pathname)) return true;
+  if (isRaSpikeRevalidaGuestPath(pathname)) return true;
+
   if (!AUTHENTICATED_ROLES.includes(userRole)) return false;
 
   if (userRole === 'intern' && programSlug === 'ra-spike') {

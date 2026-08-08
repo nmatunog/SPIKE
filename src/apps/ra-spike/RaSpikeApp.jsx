@@ -530,7 +530,13 @@ export function RaSpikeApp() {
       )}
 
       <main>
-        {userRole === 'guest' && (
+        {userRole === 'guest' && !authLoading && path === ROUTES.raSpikeRevalidaRating && (
+          <LazyRoute label="Loading Revalida…">
+            <RaSpikeRevalidaRatingPage guestMode />
+          </LazyRoute>
+        )}
+
+        {userRole === 'guest' && !authLoading && path !== ROUTES.raSpikeRevalidaRating && (
           STATIC_ONLY ? (
             <div className="container mx-auto px-6 py-12 text-center text-slate-600">
               <p className="font-medium">RA-SPIKE static preview is not configured.</p>
