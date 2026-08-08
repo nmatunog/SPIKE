@@ -1,5 +1,5 @@
-/** Guest panelist access for RA-SPIKE Revalida rating (share with panelists). */
-export const RA_SPIKE_REVALIDA_ACCESS_PIN = 'REVALIDA';
+/** @deprecated PIN no longer required for panelists; kept for RPC signature compatibility. */
+export const RA_SPIKE_REVALIDA_ACCESS_PIN = '';
 
 export const RA_SPIKE_REVALIDA_TOKEN_KEY = 'ra_spike_revalida_panelist_token_v1';
 export const RA_SPIKE_REVALIDA_SESSION_KEY = 'ra_spike_revalida_panelist_session_v1';

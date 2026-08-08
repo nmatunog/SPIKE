@@ -1,20 +1,19 @@
 import { supabase } from '../../supabaseClient.js';
-import { RA_SPIKE_REVALIDA_ACCESS_PIN } from '../raSpikeRevalidaConstants.js';
 
 function client() {
   if (!supabase) throw new Error('Cloud sync is not configured.');
   return supabase;
 }
 
-/** @param {string} pin */
-export async function fetchRevalidaCohortsRemote(pin = RA_SPIKE_REVALIDA_ACCESS_PIN) {
+/** @param {string} [pin] — ignored; kept for RPC compatibility */
+export async function fetchRevalidaCohortsRemote(pin = '') {
   const { data, error } = await client().rpc('fetch_revalida_cohorts', { p_pin: pin });
   if (error) throw error;
   return Array.isArray(data) ? data : [];
 }
 
 /** @param {number | string} cohortId @param {string} [pin] */
-export async function fetchRevalidaGuestRatingsRemote(cohortId, panelistToken, pin = RA_SPIKE_REVALIDA_ACCESS_PIN) {
+export async function fetchRevalidaGuestRatingsRemote(cohortId, panelistToken, pin = '') {
   const { data, error } = await client().rpc('fetch_revalida_guest_ratings', {
     p_pin: pin,
     p_panelist_token: panelistToken,
@@ -34,7 +33,7 @@ export async function fetchRevalidaPanelistRatingsRemote(cohortId) {
 }
 
 /** @param {number | string} cohortId @param {string} [pin] */
-export async function fetchRevalidaSquadsRemote(cohortId, pin = RA_SPIKE_REVALIDA_ACCESS_PIN) {
+export async function fetchRevalidaSquadsRemote(cohortId, pin = '') {
   const { data, error } = await client().rpc('fetch_revalida_squads', {
     p_pin: pin,
     p_cohort_id: parseInt(String(cohortId), 10),
@@ -44,7 +43,7 @@ export async function fetchRevalidaSquadsRemote(cohortId, pin = RA_SPIKE_REVALID
 }
 
 /** @param {string} squadId @param {string} [pin] */
-export async function fetchRevalidaSquadMembersRemote(squadId, pin = RA_SPIKE_REVALIDA_ACCESS_PIN) {
+export async function fetchRevalidaSquadMembersRemote(squadId, pin = '') {
   const { data, error } = await client().rpc('fetch_revalida_squad_members', {
     p_pin: pin,
     p_squad_id: squadId,
@@ -63,7 +62,7 @@ export async function fetchRevalidaSquadMembersRemote(squadId, pin = RA_SPIKE_RE
  */
 export async function revalidaPanelistCheckInRemote(input) {
   const { data, error } = await client().rpc('revalida_panelist_check_in', {
-    p_pin: input.pin ?? RA_SPIKE_REVALIDA_ACCESS_PIN,
+    p_pin: input.pin ?? '',
     p_panelist_token: input.panelistToken,
     p_panelist_name: input.name,
     p_panelist_org: input.org ?? '',
@@ -74,7 +73,7 @@ export async function revalidaPanelistCheckInRemote(input) {
 }
 
 /** @param {string} panelistToken @param {string} squadId @param {string} [pin] */
-export async function fetchRevalidaGuestRatingRemote(panelistToken, squadId, pin = RA_SPIKE_REVALIDA_ACCESS_PIN) {
+export async function fetchRevalidaGuestRatingRemote(panelistToken, squadId, pin = '') {
   const { data, error } = await client().rpc('fetch_revalida_guest_rating', {
     p_pin: pin,
     p_panelist_token: panelistToken,
@@ -87,7 +86,7 @@ export async function fetchRevalidaGuestRatingRemote(panelistToken, squadId, pin
 /** @param {object} payload */
 export async function submitRevalidaGuestRatingRemote(payload) {
   const { data, error } = await client().rpc('submit_revalida_guest_rating', {
-    p_pin: payload.pin ?? RA_SPIKE_REVALIDA_ACCESS_PIN,
+    p_pin: payload.pin ?? '',
     p_panelist_token: payload.panelistToken,
     p_panelist_name: payload.panelistName,
     p_panelist_org: payload.panelistOrg ?? '',

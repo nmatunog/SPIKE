@@ -4,7 +4,6 @@ import { useAuth } from '../../AuthContext.jsx';
 import { supabase } from '../../supabaseClient.js';
 import { PageContainer } from '../../components/layout/PageContainer.jsx';
 import {
-  RA_SPIKE_REVALIDA_ACCESS_PIN,
   readRevalidaGuestSession,
   readRevalidaPanelistToken,
   writeRevalidaGuestSession,
@@ -127,7 +126,6 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
   const [saveNotice, setSaveNotice] = useState('');
   const [checkInError, setCheckInError] = useState('');
 
-  const [pin, setPin] = useState('');
   const checkInRef = useRef('');
   const squadIdRef = useRef('');
   const [panelistName, setPanelistName] = useState(() => {
@@ -185,7 +183,7 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
 
   const loadCohorts = useCallback(async () => {
     if (isGuestFlow) {
-      const data = await fetchRevalidaCohortsRemote(pin || RA_SPIKE_REVALIDA_ACCESS_PIN);
+      const data = await fetchRevalidaCohortsRemote();
       setCohorts(data);
       return;
     }
@@ -197,13 +195,13 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
       .eq('program_slug', 'ra-spike')
       .order('created_at', { ascending: false });
     setCohorts(data || []);
-  }, [isGuestFlow, pin]);
+  }, [isGuestFlow]);
 
   const loadSquads = useCallback(
     async (cohortId) => {
       if (!cohortId) return;
       if (isGuestFlow) {
-        const data = await fetchRevalidaSquadsRemote(cohortId, pin || RA_SPIKE_REVALIDA_ACCESS_PIN);
+        const data = await fetchRevalidaSquadsRemote(cohortId);
         setSquads(data);
         return;
       }
@@ -216,14 +214,14 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
         .order('name');
       setSquads(data || []);
     },
-    [isGuestFlow, pin],
+    [isGuestFlow],
   );
 
   const loadSquadMembers = useCallback(
     async (squadId) => {
       if (!squadId) return;
       if (isGuestFlow) {
-        const data = await fetchRevalidaSquadMembersRemote(squadId, pin || RA_SPIKE_REVALIDA_ACCESS_PIN);
+        const data = await fetchRevalidaSquadMembersRemote(squadId);
         setSquadMembers(
           data.map((m) => ({
             participant_id: m.participant_id,
@@ -248,18 +246,14 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
         .order('role');
       setSquadMembers(data || []);
     },
-    [isGuestFlow, pin],
+    [isGuestFlow],
   );
 
   const loadAllRatings = useCallback(
     async (cohortId) => {
       if (!cohortId) return {};
       if (isGuestFlow && panelistToken) {
-        const rows = await fetchRevalidaGuestRatingsRemote(
-          cohortId,
-          panelistToken,
-          pin || RA_SPIKE_REVALIDA_ACCESS_PIN,
-        );
+        const rows = await fetchRevalidaGuestRatingsRemote(cohortId, panelistToken);
         const next = {};
         for (const row of rows) next[row.squad_id] = row;
         setSquadRatings(next);
@@ -277,7 +271,7 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
       setSquadRatings(next);
       return next;
     },
-    [isGuestFlow, panelistToken, pin, user?.id],
+    [isGuestFlow, panelistToken, user?.id],
   );
 
   useEffect(() => {
@@ -309,15 +303,13 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
   useEffect(() => {
     if (!isGuestFlow || !panelistName.trim() || !formData.cohort_id) return;
 
-    const signature = `${panelistName.trim()}|${panelistOrg.trim()}|${formData.cohort_id}|${pin.trim()}`;
+    const signature = `${panelistName.trim()}|${panelistOrg.trim()}|${formData.cohort_id}`;
     if (checkInRef.current === signature) return;
 
     let cancelled = false;
     const timer = window.setTimeout(async () => {
       try {
-        const accessPin = pin.trim() || RA_SPIKE_REVALIDA_ACCESS_PIN;
         const result = await revalidaPanelistCheckInRemote({
-          pin: accessPin,
           panelistToken,
           name: panelistName.trim(),
           org: panelistOrg.trim(),
@@ -330,7 +322,7 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
         setFormData((prev) => ({ ...prev, cohort_id: cohortId || prev.cohort_id }));
       } catch (err) {
         if (!cancelled) {
-          setCheckInError(err.message || 'Could not check in. Check your PIN and try again.');
+          setCheckInError(err.message || 'Could not check in. Please try again.');
         }
       }
     }, 400);
@@ -339,7 +331,7 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [formData.cohort_id, isGuestFlow, panelistName, panelistOrg, panelistToken, pin]);
+  }, [formData.cohort_id, isGuestFlow, panelistName, panelistOrg, panelistToken]);
 
   useEffect(() => {
     squadIdRef.current = formData.squad_id;
@@ -402,7 +394,6 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
     if (isGuestFlow && panelistToken) {
       return submitRevalidaGuestRatingRemote({
         ...payload,
-        pin: pin.trim() || RA_SPIKE_REVALIDA_ACCESS_PIN,
         panelistToken,
         panelistName: panelistName.trim(),
         panelistOrg: panelistOrg.trim(),
@@ -537,31 +528,6 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
         ) : null}
 
         <form onSubmit={handleSaveSquad} className="space-y-8">
-            {isGuestFlow ? (
-              <section className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                <label htmlFor="pin" className="mb-1 block text-sm font-bold text-slate-900">
-                  Access PIN
-                </label>
-                <input
-                  id="pin"
-                  type="password"
-                  inputMode="text"
-                  autoComplete="off"
-                  value={pin}
-                  onChange={(e) => {
-                    checkInRef.current = '';
-                    setPin(e.target.value);
-                  }}
-                  placeholder="Ask the coach for today's PIN"
-                  className={INPUT_CLASS}
-                />
-                <p className="mt-1 text-xs text-slate-500">Default event PIN: REVALIDA</p>
-                {checkInError ? (
-                  <p className="mt-2 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800">{checkInError}</p>
-                ) : null}
-              </section>
-            ) : null}
-
             <section className="rounded-2xl border border-spike/25 bg-gradient-to-br from-spike-muted/40 to-white p-4 shadow-sm">
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-spike">Panelist</p>
               <div className="mt-3 flex items-start gap-3">
@@ -601,6 +567,9 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
                   </div>
                 </div>
               </div>
+              {checkInError ? (
+                <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800">{checkInError}</p>
+              ) : null}
             </section>
 
             <section className="space-y-4">

@@ -3,7 +3,6 @@ import { Check, Loader2, Lock, Users } from 'lucide-react';
 import { useAuth } from '../../AuthContext.jsx';
 import { supabase } from '../../supabaseClient.js';
 import {
-  RA_SPIKE_REVALIDA_ACCESS_PIN,
   isRevalidaFinalizeCoach,
   revalidaPanelistHref,
 } from '../../lib/raSpikeRevalidaConstants.js';
@@ -100,7 +99,7 @@ export function RaSpikeRevalidaPanelistPanel({ showToast }) {
   async function copyPanelistLink() {
     try {
       await navigator.clipboard.writeText(panelistUrl);
-      showToast?.('Panelist link copied — share with judges (PIN: REVALIDA)', 'success');
+      showToast?.('Panelist link copied — share with judges', 'success');
     } catch {
       showToast?.('Could not copy link', 'info');
     }
@@ -132,8 +131,7 @@ export function RaSpikeRevalidaPanelistPanel({ showToast }) {
       <p className="text-xs font-bold uppercase tracking-[0.18em] text-spike">REVALIDA</p>
       <h2 className="mt-1 text-base font-bold text-slate-900">Panel Rating System</h2>
       <p className="mt-2 text-sm text-slate-600">
-        Share the panelist link with judges — they check in with their name (no login). PIN:{' '}
-        <span className="font-mono font-bold text-spike">{RA_SPIKE_REVALIDA_ACCESS_PIN}</span>
+        Share the panelist link with judges — they check in with their name (no login or PIN required).
       </p>
 
       <div className="mt-4 flex flex-wrap gap-3">
