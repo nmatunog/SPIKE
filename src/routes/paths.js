@@ -474,6 +474,8 @@ export function isRaSpikeStaffPath(pathname) {
     || pathname.startsWith(`${ROUTES.mentorRaSpike}/`)
     || pathname === ROUTES.raSpikeAdmin
     || pathname.startsWith(`${ROUTES.raSpikeAdmin}/`)
+    || pathname === ROUTES.raSpikeRevalidaRating
+    || pathname === ROUTES.raSpikeRevalidaResults
   );
 }
 
