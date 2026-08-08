@@ -16,7 +16,6 @@ import {
 import {
   fetchRevalidaCohortsRemote,
   fetchRevalidaGuestRatingsRemote,
-  fetchRevalidaPanelistRatingsRemote,
   fetchRevalidaSquadMembersRemote,
   fetchRevalidaSquadsRemote,
   revalidaPanelistCheckInRemote,
@@ -25,6 +24,8 @@ import {
 
 const RATING_OPTIONS = REVALIDA_RATING_OPTIONS;
 const CRITERIA = REVALIDA_CRITERIA;
+
+const RATING_SYNC_MS = 15000;
 
 const INPUT_CLASS =
   'w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base focus:border-spike focus:outline-none focus:ring-2 focus:ring-spike/20';
@@ -137,6 +138,10 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
 
   const checkInRef = useRef('');
   const squadIdRef = useRef('');
+  const formDirtyRef = useRef(false);
+  const suppressDirtyRef = useRef(false);
+  const [syncing, setSyncing] = useState(false);
+  const [syncedAt, setSyncedAt] = useState(null);
   const [panelistName, setPanelistName] = useState(() => {
     if (savedSession?.name) return savedSession.name;
     if (!guestMode && user?.name) return user.name;
@@ -280,6 +285,38 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
     [isGuestFlow, panelistToken, user?.id],
   );
 
+  const applyCurrentSquadFromRatings = useCallback((next) => {
+    if (formDirtyRef.current) return;
+    const squadId = squadIdRef.current;
+    if (!squadId || !next[squadId]) return;
+    suppressDirtyRef.current = true;
+    setFormData((prev) => ({
+      ...prev,
+      squad_id: squadId,
+      ...ratingToFormFields(next[squadId]),
+    }));
+    queueMicrotask(() => {
+      suppressDirtyRef.current = false;
+    });
+  }, []);
+
+  const refreshRatings = useCallback(
+    async ({ silent = true } = {}) => {
+      if (!formData.cohort_id) return;
+      if (!silent) setSyncing(true);
+      try {
+        const next = await loadAllRatings(formData.cohort_id);
+        applyCurrentSquadFromRatings(next);
+        setSyncedAt(new Date());
+      } catch {
+        /* background sync — ignore */
+      } finally {
+        if (!silent) setSyncing(false);
+      }
+    },
+    [applyCurrentSquadFromRatings, formData.cohort_id, loadAllRatings],
+  );
+
   useEffect(() => {
     loadCohorts()
       .catch(() => setCohorts([]))
@@ -346,21 +383,50 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
   useEffect(() => {
     if (formData.cohort_id) {
       loadSquads(formData.cohort_id).catch(() => setSquads([]));
-      loadAllRatings(formData.cohort_id)
-        .then((next) => {
-          const squadId = squadIdRef.current;
-          if (!squadId) return;
-          setFormData((prev) => ({
-            ...prev,
-            ...ratingToFormFields(next[squadId]),
-          }));
-        })
-        .catch(() => setSquadRatings({}));
+      refreshRatings().catch(() => setSquadRatings({}));
     } else {
       setSquads([]);
       setSquadRatings({});
     }
-  }, [formData.cohort_id, loadAllRatings, loadSquads]);
+  }, [formData.cohort_id, loadSquads, refreshRatings]);
+
+  useEffect(() => {
+    if (!formData.cohort_id) return undefined;
+
+    const tick = () => {
+      if (document.visibilityState === 'hidden') return;
+      refreshRatings().catch(() => {});
+    };
+
+    tick();
+    const interval = window.setInterval(tick, RATING_SYNC_MS);
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') tick();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener('focus', tick);
+
+    return () => {
+      window.clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('focus', tick);
+    };
+  }, [formData.cohort_id, refreshRatings]);
+
+  useEffect(() => {
+    if (suppressDirtyRef.current || !formData.squad_id) return;
+    formDirtyRef.current = true;
+  }, [
+    formData.fvp_score,
+    formData.business_model_score,
+    formData.strategy_score,
+    formData.presentation_score,
+    formData.investment_score,
+    formData.greatest_strength,
+    formData.improvement,
+    formData.recommendation,
+    formData.standout_participant_id,
+  ]);
 
   useEffect(() => {
     if (!saveNotice) return undefined;
@@ -372,14 +438,20 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
     (squadId) => {
       setSaveNotice('');
       squadIdRef.current = squadId;
+      formDirtyRef.current = false;
+      suppressDirtyRef.current = true;
       setFormData((prev) => ({
         ...prev,
         squad_id: squadId,
         ...ratingToFormFields(squadRatings[squadId]),
       }));
+      queueMicrotask(() => {
+        suppressDirtyRef.current = false;
+      });
       loadSquadMembers(squadId).catch(() => setSquadMembers([]));
+      refreshRatings().catch(() => {});
     },
-    [loadSquadMembers, squadRatings],
+    [loadSquadMembers, refreshRatings, squadRatings],
   );
 
   const persistSquadRating = async () => {
@@ -441,7 +513,9 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
     setSaving(true);
     try {
       const saved = await persistSquadRating();
+      formDirtyRef.current = false;
       setSquadRatings((prev) => ({ ...prev, [formData.squad_id]: saved }));
+      setSyncedAt(new Date());
       setSaveNotice(`${selectedSquadName} rating saved`);
     } catch (err) {
       alert(err.message || 'Failed to save rating');
@@ -570,9 +644,21 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
               </div>
 
               {squads.length ? (
-                <p className="text-sm text-slate-600">
-                  {ratedCount} of {squads.length} squads saved · switch squads anytime to continue or edit
-                </p>
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                  <p className="text-sm text-slate-600">
+                    {ratedCount} of {squads.length} squads saved · switch squads anytime to continue or edit
+                  </p>
+                  {syncing ? (
+                    <span className="inline-flex items-center gap-1 text-xs text-slate-500">
+                      <Loader2 className="animate-spin" size={12} aria-hidden />
+                      Syncing…
+                    </span>
+                  ) : syncedAt ? (
+                    <span className="text-xs text-slate-400">
+                      Updated {syncedAt.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+                    </span>
+                  ) : null}
+                </div>
               ) : null}
 
               <SquadPicker
