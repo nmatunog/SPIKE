@@ -38,3 +38,4 @@
 20260818_ra_spike_squad_capacity_4.sql
 20260819_revalida_panel_rating.sql
 20260820_revalida_guest_panelists.sql
+20260821_revalida_panelist_finalize.sql

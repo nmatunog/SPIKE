@@ -14,6 +14,26 @@ export async function fetchRevalidaCohortsRemote(pin = RA_SPIKE_REVALIDA_ACCESS_
 }
 
 /** @param {number | string} cohortId @param {string} [pin] */
+export async function fetchRevalidaGuestRatingsRemote(cohortId, panelistToken, pin = RA_SPIKE_REVALIDA_ACCESS_PIN) {
+  const { data, error } = await client().rpc('fetch_revalida_guest_ratings', {
+    p_pin: pin,
+    p_panelist_token: panelistToken,
+    p_cohort_id: parseInt(String(cohortId), 10),
+  });
+  if (error) throw error;
+  return Array.isArray(data) ? data : [];
+}
+
+/** @param {number | string} cohortId */
+export async function fetchRevalidaPanelistRatingsRemote(cohortId) {
+  const { data, error } = await client().rpc('fetch_revalida_panelist_ratings', {
+    p_cohort_id: parseInt(String(cohortId), 10),
+  });
+  if (error) throw error;
+  return Array.isArray(data) ? data : [];
+}
+
+/** @param {number | string} cohortId @param {string} [pin] */
 export async function fetchRevalidaSquadsRemote(cohortId, pin = RA_SPIKE_REVALIDA_ACCESS_PIN) {
   const { data, error } = await client().rpc('fetch_revalida_squads', {
     p_pin: pin,
@@ -82,6 +102,26 @@ export async function submitRevalidaGuestRatingRemote(payload) {
     p_improvement: payload.improvement,
     p_recommendation: payload.recommendation,
     p_standout_participant_id: payload.standoutParticipantId || null,
+  });
+  if (error) throw error;
+  return data;
+}
+
+/** @param {object} payload */
+export async function finalizeRevalidaGuestRatingsRemote(payload) {
+  const { data, error } = await client().rpc('finalize_revalida_guest_ratings', {
+    p_pin: payload.pin ?? RA_SPIKE_REVALIDA_ACCESS_PIN,
+    p_panelist_token: payload.panelistToken,
+    p_cohort_id: parseInt(String(payload.cohortId), 10),
+  });
+  if (error) throw error;
+  return data;
+}
+
+/** @param {number | string} cohortId */
+export async function finalizeRevalidaPanelistRatingsRemote(cohortId) {
+  const { data, error } = await client().rpc('finalize_revalida_panelist_ratings', {
+    p_cohort_id: parseInt(String(cohortId), 10),
   });
   if (error) throw error;
   return data;

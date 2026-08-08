@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Check, Loader2, LogIn } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Check, Loader2 } from 'lucide-react';
 import { useAuth } from '../../AuthContext.jsx';
 import { supabase } from '../../supabaseClient.js';
 import { PageContainer } from '../../components/layout/PageContainer.jsx';
@@ -11,9 +11,12 @@ import {
 } from '../../lib/raSpikeRevalidaConstants.js';
 import {
   fetchRevalidaCohortsRemote,
-  fetchRevalidaGuestRatingRemote,
+  fetchRevalidaGuestRatingsRemote,
+  fetchRevalidaPanelistRatingsRemote,
   fetchRevalidaSquadMembersRemote,
   fetchRevalidaSquadsRemote,
+  finalizeRevalidaGuestRatingsRemote,
+  finalizeRevalidaPanelistRatingsRemote,
   revalidaPanelistCheckInRemote,
   submitRevalidaGuestRatingRemote,
 } from '../../lib/supabase/revalidaPanel.js';
@@ -62,6 +65,85 @@ const CRITERIA = [
 const INPUT_CLASS =
   'w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base focus:border-spike focus:outline-none focus:ring-2 focus:ring-spike/20';
 
+const EMPTY_SQUAD_FIELDS = {
+  fvp_score: null,
+  business_model_score: null,
+  strategy_score: null,
+  presentation_score: null,
+  investment_score: null,
+  greatest_strength: '',
+  improvement: '',
+  recommendation: '',
+  standout_participant_id: '',
+};
+
+/** @param {object | null | undefined} data */
+function ratingToFormFields(data) {
+  if (!data) return { ...EMPTY_SQUAD_FIELDS };
+  return {
+    fvp_score: data.fvp_score,
+    business_model_score: data.business_model_score,
+    strategy_score: data.strategy_score,
+    presentation_score: data.presentation_score,
+    investment_score: data.investment_score,
+    greatest_strength: data.greatest_strength || '',
+    improvement: data.improvement || '',
+    recommendation: data.recommendation || '',
+    standout_participant_id: data.standout_participant_id || '',
+  };
+}
+
+/** @param {Record<string, object>} squadRatings */
+function isPortfolioFinalized(squads, squadRatings) {
+  if (!squads.length) return false;
+  return squads.every((squad) => squadRatings[squad.id]?.finalized);
+}
+
+function panelistInitials(name) {
+  const parts = String(name ?? '')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2);
+  if (!parts.length) return '?';
+  return parts.map((part) => part[0]?.toUpperCase() ?? '').join('');
+}
+
+/** @param {{ squads: { id: string, name: string }[], value: string, onChange: (id: string) => void, ratedIds: Set<string> }} props */
+function SquadPicker({ squads, value, onChange, ratedIds }) {
+  if (!squads.length) {
+    return <p className="text-sm text-slate-500">No squads available for this cohort.</p>;
+  }
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      {squads.map((squad) => {
+        const selected = value === squad.id;
+        const rated = ratedIds.has(squad.id);
+        return (
+          <button
+            key={squad.id}
+            type="button"
+            onClick={() => onChange(squad.id)}
+            className={`relative min-h-[52px] flex-1 rounded-xl border-2 px-4 py-3 text-sm font-bold transition active:scale-[0.98] sm:flex-none sm:min-w-[140px] ${
+              selected
+                ? 'border-spike bg-spike text-white shadow-md'
+                : rated
+                  ? 'border-emerald-400 bg-emerald-50 text-emerald-900 hover:border-spike/50'
+                  : 'border-slate-300 bg-white text-slate-700 hover:border-spike/50'
+            }`}
+          >
+            <span className="flex items-center justify-center gap-2">
+              {rated ? <Check size={16} className={selected ? 'text-white' : 'text-emerald-600'} /> : null}
+              {squad.name}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 /**
  * @param {{ guestMode?: boolean }} props
  */
@@ -76,32 +158,31 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [checkingIn, setCheckingIn] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [finalizing, setFinalizing] = useState(false);
+  const [saveNotice, setSaveNotice] = useState('');
+  const [finalizedNotice, setFinalizedNotice] = useState(false);
   const [checkInError, setCheckInError] = useState('');
 
   const [pin, setPin] = useState('');
-  const [checkedIn, setCheckedIn] = useState(() => Boolean(savedSession?.unlocked));
-  const [panelistName, setPanelistName] = useState(() => savedSession?.name ?? '');
+  const checkInRef = useRef('');
+  const squadIdRef = useRef('');
+  const [panelistName, setPanelistName] = useState(() => {
+    if (savedSession?.name) return savedSession.name;
+    if (!guestMode && user?.name) return user.name;
+    return '';
+  });
   const [panelistOrg, setPanelistOrg] = useState(() => savedSession?.org ?? '');
 
   const [cohorts, setCohorts] = useState([]);
   const [squads, setSquads] = useState([]);
   const [squadMembers, setSquadMembers] = useState([]);
-  const [existingRating, setExistingRating] = useState(null);
+  /** @type {[Record<string, object>, Function]} */
+  const [squadRatings, setSquadRatings] = useState({});
 
   const [formData, setFormData] = useState({
     cohort_id: savedSession?.cohortId ?? '',
     squad_id: '',
-    fvp_score: null,
-    business_model_score: null,
-    strategy_score: null,
-    presentation_score: null,
-    investment_score: null,
-    greatest_strength: '',
-    improvement: '',
-    recommendation: '',
-    standout_participant_id: '',
+    ...EMPTY_SQUAD_FIELDS,
   });
 
   const totalScore = useMemo(() => {
@@ -116,27 +197,27 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
     return scores.reduce((sum, score) => sum + score, 0);
   }, [formData]);
 
-  const applyExistingRating = useCallback((data) => {
-    if (!data) {
-      setExistingRating(null);
-      return;
-    }
-    setExistingRating(data);
-    setFormData({
-      cohort_id: String(data.cohort_id),
-      squad_id: data.squad_id,
-      fvp_score: data.fvp_score,
-      business_model_score: data.business_model_score,
-      strategy_score: data.strategy_score,
-      presentation_score: data.presentation_score,
-      investment_score: data.investment_score,
-      greatest_strength: data.greatest_strength || '',
-      improvement: data.improvement || '',
-      recommendation: data.recommendation || '',
-      standout_participant_id: data.standout_participant_id || '',
-    });
-    setSubmitted(false);
-  }, []);
+  const activeCohort = useMemo(() => {
+    if (!cohorts.length) return null;
+    const match = cohorts.find((c) => String(c.id) === String(formData.cohort_id));
+    return match ?? cohorts[0];
+  }, [cohorts, formData.cohort_id]);
+
+  const ratedSquadIds = useMemo(
+    () => new Set(Object.keys(squadRatings).filter((id) => squadRatings[id])),
+    [squadRatings],
+  );
+
+  const ratedCount = useMemo(
+    () => squads.filter((squad) => ratedSquadIds.has(squad.id)).length,
+    [ratedSquadIds, squads],
+  );
+
+  const allSquadsRated = squads.length > 0 && ratedCount === squads.length;
+  const portfolioFinalized = isPortfolioFinalized(squads, squadRatings);
+  const currentSquadRating = formData.squad_id ? squadRatings[formData.squad_id] : null;
+  const currentSquadLocked = portfolioFinalized || Boolean(currentSquadRating?.finalized);
+  const selectedSquadName = squads.find((s) => s.id === formData.squad_id)?.name ?? 'Squad';
 
   const loadCohorts = useCallback(async () => {
     if (isGuestFlow) {
@@ -149,6 +230,7 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
       .from('cohorts')
       .select('id, name, code')
       .eq('is_active', true)
+      .eq('program_slug', 'ra-spike')
       .order('created_at', { ascending: false });
     setCohorts(data || []);
   }, [isGuestFlow, pin]);
@@ -205,170 +287,242 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
     [isGuestFlow, pin],
   );
 
-  const loadExistingRating = useCallback(
-    async (squadId) => {
-      if (!squadId) return;
+  const loadAllRatings = useCallback(
+    async (cohortId) => {
+      if (!cohortId) return {};
       if (isGuestFlow && panelistToken) {
-        const data = await fetchRevalidaGuestRatingRemote(
+        const rows = await fetchRevalidaGuestRatingsRemote(
+          cohortId,
           panelistToken,
-          squadId,
           pin || RA_SPIKE_REVALIDA_ACCESS_PIN,
         );
-        applyExistingRating(data);
-        return;
+        const next = {};
+        for (const row of rows) next[row.squad_id] = row;
+        setSquadRatings(next);
+        return next;
       }
-      if (!supabase || !user?.id) return;
-      const { data } = await supabase
+      if (!supabase || !user?.id) return {};
+      const { data, error } = await supabase
         .from('revalida_panel_ratings')
         .select('*')
         .eq('panelist_id', user.id)
-        .eq('squad_id', squadId)
-        .maybeSingle();
-      applyExistingRating(data);
+        .eq('cohort_id', parseInt(String(cohortId), 10));
+      if (error) throw error;
+      const next = {};
+      for (const row of data || []) next[row.squad_id] = row;
+      setSquadRatings(next);
+      return next;
     },
-    [applyExistingRating, isGuestFlow, panelistToken, pin, user?.id],
+    [isGuestFlow, panelistToken, pin, user?.id],
   );
 
   useEffect(() => {
-    if (isGuestFlow && !checkedIn) {
-      setLoading(false);
-      return;
-    }
     loadCohorts()
       .catch(() => setCohorts([]))
       .finally(() => setLoading(false));
-  }, [checkedIn, isGuestFlow, loadCohorts]);
+  }, [loadCohorts]);
+
+  useEffect(() => {
+    if (!cohorts.length || formData.cohort_id) return;
+    setFormData((prev) => ({ ...prev, cohort_id: String(cohorts[0].id) }));
+  }, [cohorts, formData.cohort_id]);
+
+  useEffect(() => {
+    if (isGuestFlow || panelistName.trim() || !user?.name) return;
+    setPanelistName(user.name);
+  }, [isGuestFlow, panelistName, user?.name]);
+
+  useEffect(() => {
+    if (!isGuestFlow) return;
+    writeRevalidaGuestSession({
+      unlocked: Boolean(panelistName.trim()),
+      name: panelistName.trim(),
+      org: panelistOrg.trim(),
+      cohortId: formData.cohort_id,
+    });
+  }, [isGuestFlow, panelistName, panelistOrg, formData.cohort_id]);
+
+  useEffect(() => {
+    if (!isGuestFlow || !panelistName.trim() || !formData.cohort_id) return;
+
+    const signature = `${panelistName.trim()}|${panelistOrg.trim()}|${formData.cohort_id}|${pin.trim()}`;
+    if (checkInRef.current === signature) return;
+
+    let cancelled = false;
+    const timer = window.setTimeout(async () => {
+      try {
+        const accessPin = pin.trim() || RA_SPIKE_REVALIDA_ACCESS_PIN;
+        const result = await revalidaPanelistCheckInRemote({
+          pin: accessPin,
+          panelistToken,
+          name: panelistName.trim(),
+          org: panelistOrg.trim(),
+          cohortId: formData.cohort_id,
+        });
+        if (cancelled) return;
+        checkInRef.current = signature;
+        const cohortId = String(result?.cohort_id ?? formData.cohort_id);
+        setCheckInError('');
+        setFormData((prev) => ({ ...prev, cohort_id: cohortId || prev.cohort_id }));
+      } catch (err) {
+        if (!cancelled) {
+          setCheckInError(err.message || 'Could not check in. Check your PIN and try again.');
+        }
+      }
+    }, 400);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [formData.cohort_id, isGuestFlow, panelistName, panelistOrg, panelistToken, pin]);
+
+  useEffect(() => {
+    squadIdRef.current = formData.squad_id;
+  }, [formData.squad_id]);
 
   useEffect(() => {
     if (formData.cohort_id) {
       loadSquads(formData.cohort_id).catch(() => setSquads([]));
+      loadAllRatings(formData.cohort_id)
+        .then((next) => {
+          const squadId = squadIdRef.current;
+          if (!squadId) return;
+          setFormData((prev) => ({
+            ...prev,
+            ...ratingToFormFields(next[squadId]),
+          }));
+        })
+        .catch(() => setSquadRatings({}));
     } else {
       setSquads([]);
+      setSquadRatings({});
     }
-  }, [formData.cohort_id, loadSquads]);
+  }, [formData.cohort_id, loadAllRatings, loadSquads]);
 
   useEffect(() => {
-    if (formData.squad_id) {
-      loadSquadMembers(formData.squad_id).catch(() => setSquadMembers([]));
-      loadExistingRating(formData.squad_id).catch(() => setExistingRating(null));
-    } else {
-      setSquadMembers([]);
-      setExistingRating(null);
-    }
-  }, [formData.squad_id, loadExistingRating, loadSquadMembers]);
+    if (!saveNotice) return undefined;
+    const timer = window.setTimeout(() => setSaveNotice(''), 3000);
+    return () => window.clearTimeout(timer);
+  }, [saveNotice]);
 
-  const handleCheckIn = async (e) => {
-    e.preventDefault();
-    setCheckInError('');
-    setCheckingIn(true);
-    try {
-      const accessPin = pin.trim() || RA_SPIKE_REVALIDA_ACCESS_PIN;
-      const result = await revalidaPanelistCheckInRemote({
-        pin: accessPin,
+  const selectSquad = useCallback(
+    (squadId) => {
+      setSaveNotice('');
+      squadIdRef.current = squadId;
+      setFormData((prev) => ({
+        ...prev,
+        squad_id: squadId,
+        ...ratingToFormFields(squadRatings[squadId]),
+      }));
+      loadSquadMembers(squadId).catch(() => setSquadMembers([]));
+    },
+    [loadSquadMembers, squadRatings],
+  );
+
+  const persistSquadRating = async () => {
+    const payload = {
+      cohortId: formData.cohort_id,
+      squadId: formData.squad_id,
+      fvpScore: formData.fvp_score,
+      businessModelScore: formData.business_model_score,
+      strategyScore: formData.strategy_score,
+      presentationScore: formData.presentation_score,
+      investmentScore: formData.investment_score,
+      greatestStrength: formData.greatest_strength.trim(),
+      improvement: formData.improvement.trim(),
+      recommendation: formData.recommendation,
+      standoutParticipantId: formData.standout_participant_id || null,
+    };
+
+    if (isGuestFlow && panelistToken) {
+      return submitRevalidaGuestRatingRemote({
+        ...payload,
+        pin: pin.trim() || RA_SPIKE_REVALIDA_ACCESS_PIN,
         panelistToken,
-        name: panelistName.trim(),
-        org: panelistOrg.trim(),
-        cohortId: formData.cohort_id || null,
+        panelistName: panelistName.trim(),
+        panelistOrg: panelistOrg.trim(),
       });
-      const cohortId = String(result?.cohort_id ?? formData.cohort_id ?? '');
-      writeRevalidaGuestSession({
-        unlocked: true,
-        name: panelistName.trim(),
-        org: panelistOrg.trim(),
-        cohortId,
-      });
-      setFormData((prev) => ({ ...prev, cohort_id: cohortId || prev.cohort_id }));
-      setCheckedIn(true);
-    } catch (err) {
-      setCheckInError(err.message || 'Check-in failed. Check your PIN and try again.');
-    } finally {
-      setCheckingIn(false);
     }
+
+    if (!supabase || !user?.id) throw new Error('Not signed in');
+
+    const row = {
+      panelist_id: user.id,
+      panelist_name: panelistName.trim() || user.name || user.email || 'Staff panelist',
+      cohort_id: parseInt(formData.cohort_id, 10),
+      squad_id: formData.squad_id,
+      fvp_score: formData.fvp_score,
+      business_model_score: formData.business_model_score,
+      strategy_score: formData.strategy_score,
+      presentation_score: formData.presentation_score,
+      investment_score: formData.investment_score,
+      greatest_strength: payload.greatestStrength,
+      improvement: payload.improvement,
+      recommendation: formData.recommendation,
+      standout_participant_id: payload.standoutParticipantId,
+    };
+
+    const existing = squadRatings[formData.squad_id];
+    if (existing?.id) {
+      const { data, error } = await supabase
+        .from('revalida_panel_ratings')
+        .update(row)
+        .eq('id', existing.id)
+        .select('*')
+        .single();
+      if (error) throw error;
+      return data;
+    }
+
+    const { data, error } = await supabase.from('revalida_panel_ratings').insert([row]).select('*').single();
+    if (error) throw error;
+    return data;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSaveSquad = async (e) => {
     e.preventDefault();
-    if (existingRating?.finalized) return;
+    if (currentSquadLocked || !formData.squad_id) return;
 
     setSaving(true);
     try {
-      const payload = {
-        cohortId: formData.cohort_id,
-        squadId: formData.squad_id,
-        fvpScore: formData.fvp_score,
-        businessModelScore: formData.business_model_score,
-        strategyScore: formData.strategy_score,
-        presentationScore: formData.presentation_score,
-        investmentScore: formData.investment_score,
-        greatestStrength: formData.greatest_strength.trim(),
-        improvement: formData.improvement.trim(),
-        recommendation: formData.recommendation,
-        standoutParticipantId: formData.standout_participant_id || null,
-      };
-
-      if (isGuestFlow && panelistToken) {
-        await submitRevalidaGuestRatingRemote({
-          ...payload,
-          pin: pin.trim() || RA_SPIKE_REVALIDA_ACCESS_PIN,
-          panelistToken,
-          panelistName: panelistName.trim(),
-          panelistOrg: panelistOrg.trim(),
-        });
-      } else if (supabase && user?.id) {
-        const row = {
-          panelist_id: user.id,
-          panelist_name: user.name || user.email || 'Staff panelist',
-          cohort_id: parseInt(formData.cohort_id, 10),
-          squad_id: formData.squad_id,
-          fvp_score: formData.fvp_score,
-          business_model_score: formData.business_model_score,
-          strategy_score: formData.strategy_score,
-          presentation_score: formData.presentation_score,
-          investment_score: formData.investment_score,
-          greatest_strength: payload.greatestStrength,
-          improvement: payload.improvement,
-          recommendation: formData.recommendation,
-          standout_participant_id: payload.standoutParticipantId,
-        };
-        if (existingRating) {
-          const { error } = await supabase
-            .from('revalida_panel_ratings')
-            .update(row)
-            .eq('id', existingRating.id);
-          if (error) throw error;
-        } else {
-          const { error } = await supabase.from('revalida_panel_ratings').insert([row]);
-          if (error) throw error;
-        }
-      }
-
-      setSubmitted(true);
-      setTimeout(() => {
-        setFormData((prev) => ({
-          ...prev,
-          squad_id: '',
-          fvp_score: null,
-          business_model_score: null,
-          strategy_score: null,
-          presentation_score: null,
-          investment_score: null,
-          greatest_strength: '',
-          improvement: '',
-          recommendation: '',
-          standout_participant_id: '',
-        }));
-        setSubmitted(false);
-      }, 2000);
+      const saved = await persistSquadRating();
+      setSquadRatings((prev) => ({ ...prev, [formData.squad_id]: saved }));
+      setSaveNotice(`${selectedSquadName} rating saved`);
     } catch (err) {
-      alert(err.message || 'Failed to submit rating');
+      alert(err.message || 'Failed to save rating');
     } finally {
       setSaving(false);
     }
   };
 
+  const handleFinalizeAll = async () => {
+    if (!allSquadsRated || portfolioFinalized) return;
+
+    setFinalizing(true);
+    try {
+      if (isGuestFlow && panelistToken) {
+        await finalizeRevalidaGuestRatingsRemote({
+          pin: pin.trim() || RA_SPIKE_REVALIDA_ACCESS_PIN,
+          panelistToken,
+          cohortId: formData.cohort_id,
+        });
+      } else {
+        await finalizeRevalidaPanelistRatingsRemote(formData.cohort_id);
+      }
+      await loadAllRatings(formData.cohort_id);
+      setFinalizedNotice(true);
+    } catch (err) {
+      alert(err.message || 'Failed to finalize ratings');
+    } finally {
+      setFinalizing(false);
+    }
+  };
+
   const isFormValid = useMemo(
     () =>
-      formData.cohort_id
+      panelistName.trim()
+      && formData.cohort_id
       && formData.squad_id
       && formData.fvp_score !== null
       && formData.business_model_score !== null
@@ -378,94 +532,8 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
       && formData.greatest_strength.trim()
       && formData.improvement.trim()
       && formData.recommendation,
-    [formData],
+    [formData, panelistName],
   );
-
-  if (isGuestFlow && !checkedIn) {
-    return (
-      <PageContainer>
-        <div className="mx-auto max-w-md pb-12 pt-6">
-          <header className="mb-8 space-y-2 border-b border-slate-200 pb-6 text-center">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-spike">RA-SPIKE REVALIDA</p>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Panelist Check-In</h1>
-            <p className="text-sm text-slate-600">
-              Enter your name to begin rating squad pitches. No portal account required.
-            </p>
-          </header>
-
-          <form onSubmit={handleCheckIn} className="space-y-4">
-            <div>
-              <label htmlFor="pin" className="mb-2 block text-sm font-bold text-slate-900">
-                Access PIN
-              </label>
-              <input
-                id="pin"
-                type="password"
-                inputMode="text"
-                autoComplete="off"
-                value={pin}
-                onChange={(e) => setPin(e.target.value)}
-                placeholder="Ask the coach for today's PIN"
-                className={INPUT_CLASS}
-              />
-              <p className="mt-1 text-xs text-slate-500">Default event PIN: REVALIDA</p>
-            </div>
-
-            <div>
-              <label htmlFor="panelist-name" className="mb-2 block text-sm font-bold text-slate-900">
-                Your name
-              </label>
-              <input
-                id="panelist-name"
-                type="text"
-                value={panelistName}
-                onChange={(e) => setPanelistName(e.target.value)}
-                placeholder="Full name"
-                className={INPUT_CLASS}
-                required
-              />
-            </div>
-
-            <div>
-              <label htmlFor="panelist-org" className="mb-2 block text-sm font-bold text-slate-900">
-                Organization <span className="font-normal text-slate-500">(optional)</span>
-              </label>
-              <input
-                id="panelist-org"
-                type="text"
-                value={panelistOrg}
-                onChange={(e) => setPanelistOrg(e.target.value)}
-                placeholder="Company or role"
-                className={INPUT_CLASS}
-              />
-            </div>
-
-            {checkInError ? (
-              <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800">{checkInError}</p>
-            ) : null}
-
-            <button
-              type="submit"
-              disabled={checkingIn || !panelistName.trim()}
-              className="flex min-h-[56px] w-full items-center justify-center gap-2 rounded-xl bg-spike px-6 py-4 text-lg font-bold text-white transition hover:bg-spike/90 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {checkingIn ? (
-                <>
-                  <Loader2 className="animate-spin" size={20} />
-                  Checking in…
-                </>
-              ) : (
-                <>
-                  <LogIn size={20} />
-                  Check in &amp; start rating
-                </>
-              )}
-            </button>
-          </form>
-        </div>
-      </PageContainer>
-    );
-  }
 
   if (loading) {
     return (
@@ -485,77 +553,127 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
             REVALIDA PANEL RATING
           </h1>
-          {isGuestFlow && panelistName ? (
-            <p className="text-sm text-slate-600">
-              Panelist: <span className="font-semibold text-slate-900">{panelistName}</span>
-              {panelistOrg.trim() ? ` · ${panelistOrg.trim()}` : ''}
-            </p>
-          ) : null}
         </header>
 
-        {submitted ? (
-          <div className="rounded-2xl border-2 border-emerald-500 bg-emerald-50 p-8 text-center">
-            <Check className="mx-auto mb-3 text-emerald-600" size={48} />
-            <h2 className="text-xl font-bold text-emerald-900">RATING SUBMITTED ✓</h2>
+        {finalizedNotice || portfolioFinalized ? (
+          <div className="mb-8 rounded-2xl border-2 border-emerald-500 bg-emerald-50 p-6 text-center">
+            <Check className="mx-auto mb-3 text-emerald-600" size={40} />
+            <h2 className="text-xl font-bold text-emerald-900">ALL RATINGS SUBMITTED</h2>
             <p className="mt-2 text-sm text-emerald-700">
-              {existingRating ? 'Your rating has been updated.' : 'Thank you for your evaluation.'}
+              Thank you — your evaluations for all squads are locked in.
             </p>
           </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-8">
-            <section className="space-y-4">
-              <div>
-                <label htmlFor="cohort" className="mb-2 block text-sm font-bold text-slate-900">
-                  Cohort
+        ) : null}
+
+        <form onSubmit={handleSaveSquad} className="space-y-8">
+            {isGuestFlow ? (
+              <section className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <label htmlFor="pin" className="mb-1 block text-sm font-bold text-slate-900">
+                  Access PIN
                 </label>
-                <select
-                  id="cohort"
-                  value={formData.cohort_id}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, cohort_id: e.target.value, squad_id: '' }))}
+                <input
+                  id="pin"
+                  type="password"
+                  inputMode="text"
+                  autoComplete="off"
+                  value={pin}
+                  onChange={(e) => {
+                    checkInRef.current = '';
+                    setPin(e.target.value);
+                  }}
+                  placeholder="Ask the coach for today's PIN"
                   className={INPUT_CLASS}
-                  required
+                />
+                <p className="mt-1 text-xs text-slate-500">Default event PIN: REVALIDA</p>
+                {checkInError ? (
+                  <p className="mt-2 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800">{checkInError}</p>
+                ) : null}
+              </section>
+            ) : null}
+
+            <section className="rounded-2xl border border-spike/25 bg-gradient-to-br from-spike-muted/40 to-white p-4 shadow-sm">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-spike">Panelist</p>
+              <div className="mt-3 flex items-start gap-3">
+                <div
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-spike text-lg font-bold text-white"
+                  aria-hidden
                 >
-                  <option value="">Select cohort</option>
-                  {cohorts.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name} {c.code ? `(${c.code})` : ''}
-                    </option>
-                  ))}
-                </select>
+                  {panelistInitials(panelistName)}
+                </div>
+                <div className="min-w-0 flex-1 space-y-3">
+                  <div>
+                    <label htmlFor="rating-panelist-name" className="mb-1 block text-sm font-bold text-slate-900">
+                      Your name
+                    </label>
+                    <input
+                      id="rating-panelist-name"
+                      type="text"
+                      value={panelistName}
+                      onChange={(e) => setPanelistName(e.target.value)}
+                      placeholder="Full name as panelist"
+                      className={INPUT_CLASS}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="rating-panelist-org" className="mb-1 block text-sm font-bold text-slate-900">
+                      Organization <span className="font-normal text-slate-500">(optional)</span>
+                    </label>
+                    <input
+                      id="rating-panelist-org"
+                      type="text"
+                      value={panelistOrg}
+                      onChange={(e) => setPanelistOrg(e.target.value)}
+                      placeholder="Company or role"
+                      className={INPUT_CLASS}
+                    />
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section className="space-y-4">
+              <div className="flex flex-wrap items-end justify-between gap-2">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-spike">Squad</p>
+                  <h2 className="mt-1 text-lg font-bold text-slate-900">Which pitch are you rating?</h2>
+                </div>
+                {activeCohort ? (
+                  <p className="rounded-full bg-spike-muted px-3 py-1 text-xs font-bold text-spike">
+                    {activeCohort.name}
+                    {activeCohort.code ? ` · ${activeCohort.code}` : ''}
+                  </p>
+                ) : null}
               </div>
 
-              <div>
-                <label htmlFor="squad" className="mb-2 block text-sm font-bold text-slate-900">
-                  Squad
-                </label>
-                <select
-                  id="squad"
-                  value={formData.squad_id}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, squad_id: e.target.value }))}
-                  disabled={!formData.cohort_id}
-                  className={`${INPUT_CLASS} disabled:cursor-not-allowed disabled:bg-slate-100`}
-                  required
-                >
-                  <option value="">Select squad</option>
-                  {squads.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              {squads.length ? (
+                <p className="text-sm text-slate-600">
+                  {ratedCount} of {squads.length} squads rated
+                  {!portfolioFinalized ? ' · switch squads anytime to edit saved ratings' : ''}
+                </p>
+              ) : null}
 
-              {existingRating ? (
+              <SquadPicker
+                squads={squads}
+                value={formData.squad_id}
+                onChange={selectSquad}
+                ratedIds={ratedSquadIds}
+              />
+
+              {saveNotice ? (
+                <p className="rounded-lg bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800">
+                  {saveNotice}
+                </p>
+              ) : null}
+
+              {currentSquadRating && !portfolioFinalized ? (
                 <div className="rounded-lg bg-blue-50 px-4 py-3 text-sm text-blue-800">
-                  {existingRating.finalized
-                    ? '✓ You previously rated this squad. Ratings are finalized and cannot be edited.'
-                    : '✓ You previously rated this squad. You can update your rating below.'}
+                  Saved for {selectedSquadName}. You can update and save again until you submit all ratings.
                 </div>
               ) : null}
             </section>
 
-            {formData.squad_id && !existingRating?.finalized ? (
+            {formData.squad_id && !currentSquadLocked ? (
               <>
                 <section className="space-y-6">
                   <h2 className="text-lg font-bold text-slate-900">SCORING</h2>
@@ -695,16 +813,45 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
                   {saving ? (
                     <span className="flex items-center justify-center gap-2">
                       <Loader2 className="animate-spin" size={20} />
-                      SUBMITTING...
+                      SAVING...
                     </span>
                   ) : (
-                    'SUBMIT RATING'
+                    `SAVE ${selectedSquadName.toUpperCase()} RATING`
                   )}
                 </button>
               </>
+            ) : formData.squad_id && currentSquadLocked ? (
+              <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                {selectedSquadName} rating is locked.
+              </div>
+            ) : null}
+
+            {allSquadsRated && !portfolioFinalized ? (
+              <section className="rounded-2xl border-2 border-spike bg-spike-muted/30 p-5 space-y-4">
+                <div>
+                  <h2 className="text-lg font-bold text-slate-900">Final submission</h2>
+                  <p className="mt-1 text-sm text-slate-600">
+                    All squads are rated. Submit once to lock your evaluations — you can still edit any squad until then.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleFinalizeAll}
+                  disabled={finalizing}
+                  className="w-full min-h-[56px] rounded-xl border-2 border-spike bg-white px-6 py-4 text-lg font-bold text-spike transition hover:bg-spike hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {finalizing ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <Loader2 className="animate-spin" size={20} />
+                      SUBMITTING ALL RATINGS...
+                    </span>
+                  ) : (
+                    'SUBMIT ALL RATINGS'
+                  )}
+                </button>
+              </section>
             ) : null}
           </form>
-        )}
       </div>
     </PageContainer>
   );
