@@ -203,7 +203,7 @@ export function RaSpikeRevalidaPanelistPanel({ showToast }) {
           {allRatingsFinalized ? (
             <p className="inline-flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-800">
               <Check size={16} />
-              All ratings finalized — panelists are locked out of edits.
+              All ratings finalized — panelists can still save updates anytime.
             </p>
           ) : (
             <button

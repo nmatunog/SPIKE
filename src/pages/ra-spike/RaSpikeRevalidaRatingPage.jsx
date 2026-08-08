@@ -57,10 +57,19 @@ function ratingToFormFields(data) {
   };
 }
 
-/** @param {Record<string, object>} squadRatings */
-function isPortfolioFinalized(squads, squadRatings) {
-  if (!squads.length) return false;
-  return squads.every((squad) => squadRatings[squad.id]?.finalized);
+/** @param {object} formData */
+function normalizeRatingPayload(formData) {
+  return {
+    fvpScore: formData.fvp_score,
+    businessModelScore: formData.business_model_score,
+    strategyScore: formData.strategy_score,
+    presentationScore: formData.presentation_score,
+    investmentScore: formData.investment_score,
+    greatestStrength: formData.greatest_strength.trim(),
+    improvement: formData.improvement.trim(),
+    recommendation: formData.recommendation || null,
+    standoutParticipantId: formData.standout_participant_id || null,
+  };
 }
 
 function panelistInitials(name) {
@@ -176,9 +185,6 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
   );
 
   const allSquadsRated = squads.length > 0 && ratedCount === squads.length;
-  const portfolioFinalized = isPortfolioFinalized(squads, squadRatings);
-  const currentSquadRating = formData.squad_id ? squadRatings[formData.squad_id] : null;
-  const currentSquadLocked = portfolioFinalized || Boolean(currentSquadRating?.finalized);
   const selectedSquadName = squads.find((s) => s.id === formData.squad_id)?.name ?? 'Squad';
 
   const loadCohorts = useCallback(async () => {
@@ -377,18 +383,11 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
   );
 
   const persistSquadRating = async () => {
+    const scores = normalizeRatingPayload(formData);
     const payload = {
       cohortId: formData.cohort_id,
       squadId: formData.squad_id,
-      fvpScore: formData.fvp_score,
-      businessModelScore: formData.business_model_score,
-      strategyScore: formData.strategy_score,
-      presentationScore: formData.presentation_score,
-      investmentScore: formData.investment_score,
-      greatestStrength: formData.greatest_strength.trim(),
-      improvement: formData.improvement.trim(),
-      recommendation: formData.recommendation,
-      standoutParticipantId: formData.standout_participant_id || null,
+      ...scores,
     };
 
     if (isGuestFlow && panelistToken) {
@@ -402,23 +401,23 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
 
     if (!supabase || !user?.id) throw new Error('Not signed in');
 
+    const existing = squadRatings[formData.squad_id];
     const row = {
       panelist_id: user.id,
       panelist_name: panelistName.trim() || user.name || user.email || 'Staff panelist',
       cohort_id: parseInt(formData.cohort_id, 10),
       squad_id: formData.squad_id,
-      fvp_score: formData.fvp_score,
-      business_model_score: formData.business_model_score,
-      strategy_score: formData.strategy_score,
-      presentation_score: formData.presentation_score,
-      investment_score: formData.investment_score,
-      greatest_strength: payload.greatestStrength,
-      improvement: payload.improvement,
-      recommendation: formData.recommendation,
-      standout_participant_id: payload.standoutParticipantId,
+      fvp_score: scores.fvpScore ?? existing?.fvp_score ?? null,
+      business_model_score: scores.businessModelScore ?? existing?.business_model_score ?? null,
+      strategy_score: scores.strategyScore ?? existing?.strategy_score ?? null,
+      presentation_score: scores.presentationScore ?? existing?.presentation_score ?? null,
+      investment_score: scores.investmentScore ?? existing?.investment_score ?? null,
+      greatest_strength: scores.greatestStrength,
+      improvement: scores.improvement,
+      recommendation: scores.recommendation ?? existing?.recommendation ?? null,
+      standout_participant_id: scores.standoutParticipantId ?? existing?.standout_participant_id ?? null,
     };
 
-    const existing = squadRatings[formData.squad_id];
     if (existing?.id) {
       const { data, error } = await supabase
         .from('revalida_panel_ratings')
@@ -437,7 +436,7 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
 
   const handleSaveSquad = async (e) => {
     e.preventDefault();
-    if (currentSquadLocked || !formData.squad_id) return;
+    if (!formData.squad_id || !panelistName.trim()) return;
 
     setSaving(true);
     try {
@@ -451,21 +450,7 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
     }
   };
 
-  const isFormValid = useMemo(
-    () =>
-      panelistName.trim()
-      && formData.cohort_id
-      && formData.squad_id
-      && formData.fvp_score !== null
-      && formData.business_model_score !== null
-      && formData.strategy_score !== null
-      && formData.presentation_score !== null
-      && formData.investment_score !== null
-      && formData.greatest_strength.trim()
-      && formData.improvement.trim()
-      && formData.recommendation,
-    [formData, panelistName],
-  );
+  const canSave = Boolean(panelistName.trim() && formData.cohort_id && formData.squad_id);
 
   const handleDownloadPdf = useCallback(async () => {
     setDownloadingPdf(true);
@@ -517,12 +502,10 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
           </button>
         </header>
 
-        {portfolioFinalized ? (
-          <div className="mb-8 rounded-2xl border-2 border-emerald-500 bg-emerald-50 p-6 text-center">
-            <Check className="mx-auto mb-3 text-emerald-600" size={40} />
-            <h2 className="text-xl font-bold text-emerald-900">RATINGS FINALIZED</h2>
-            <p className="mt-2 text-sm text-emerald-700">
-              Your coach has locked your evaluations. Thank you for serving on the panel.
+        {allSquadsRated ? (
+          <div className="mb-8 rounded-2xl border border-emerald-300 bg-emerald-50 p-4 text-center">
+            <p className="text-sm font-medium text-emerald-800">
+              All squads have saved ratings. You can keep editing and saving anytime.
             </p>
           </div>
         ) : null}
@@ -588,8 +571,7 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
 
               {squads.length ? (
                 <p className="text-sm text-slate-600">
-                  {ratedCount} of {squads.length} squads rated
-                  {!portfolioFinalized ? ' · switch squads anytime to edit saved ratings' : ''}
+                  {ratedCount} of {squads.length} squads saved · switch squads anytime to continue or edit
                 </p>
               ) : null}
 
@@ -606,14 +588,14 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
                 </p>
               ) : null}
 
-              {currentSquadRating && !portfolioFinalized ? (
+              {squadRatings[formData.squad_id] ? (
                 <div className="rounded-lg bg-blue-50 px-4 py-3 text-sm text-blue-800">
-                  Saved for {selectedSquadName}. You can update and save again until you submit all ratings.
+                  Saved for {selectedSquadName}. You can update and save again anytime.
                 </div>
               ) : null}
             </section>
 
-            {formData.squad_id && !currentSquadLocked ? (
+            {formData.squad_id ? (
               <>
                 <section className="space-y-6">
                   <h2 className="text-lg font-bold text-slate-900">SCORING</h2>
@@ -678,7 +660,6 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
                         setFormData((prev) => ({ ...prev, greatest_strength: e.target.value }))}
                       rows={3}
                       className={INPUT_CLASS}
-                      required
                     />
                   </div>
                   <div>
@@ -692,7 +673,6 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
                         setFormData((prev) => ({ ...prev, improvement: e.target.value }))}
                       rows={3}
                       className={INPUT_CLASS}
-                      required
                     />
                   </div>
                   <div>
@@ -715,7 +695,6 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
                             onChange={(e) =>
                               setFormData((prev) => ({ ...prev, recommendation: e.target.value }))}
                             className="h-5 w-5 text-spike focus:ring-spike"
-                            required
                           />
                           <span className="text-base font-medium text-slate-900">{option.label}</span>
                         </label>
@@ -745,7 +724,7 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
 
                 <button
                   type="submit"
-                  disabled={!isFormValid || saving}
+                  disabled={!canSave || saving}
                   className="w-full min-h-[56px] rounded-xl bg-spike px-6 py-4 text-lg font-bold text-white transition hover:bg-spike/90 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {saving ? (
@@ -758,18 +737,14 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
                   )}
                 </button>
               </>
-            ) : formData.squad_id && currentSquadLocked ? (
-              <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-                {selectedSquadName} rating is locked.
-              </div>
             ) : null}
 
-            {allSquadsRated && !portfolioFinalized ? (
+            {allSquadsRated ? (
               <section className="rounded-2xl border border-amber-200 bg-amber-50 p-5">
                 <h2 className="text-lg font-bold text-amber-950">All squads saved</h2>
                 <p className="mt-1 text-sm text-amber-900">
                   Your ratings are saved. The program coach will finalize the panel when everyone is
-                  done — you can still switch squads and update scores until then.
+                  done — you can still switch squads and save updates anytime.
                 </p>
               </section>
             ) : null}
