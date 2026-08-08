@@ -53,6 +53,8 @@ import { RaSpikeSquadPage } from '../../pages/ra-spike/RaSpikeSquadPage.jsx';
 import { RaSpikeProfilePage } from '../../pages/ra-spike/RaSpikeProfilePage.jsx';
 import { RaSpikeOnboardingPage } from '../../pages/ra-spike/RaSpikeOnboardingPage.jsx';
 import { RaSpikeStageGatePrepPage } from '../../pages/ra-spike/RaSpikeStageGatePrepPage.jsx';
+import { RaSpikeRevalidaRatingPage } from '../../pages/ra-spike/RaSpikeRevalidaRatingPage.jsx';
+import { RaSpikeRevalidaResultsPage } from '../../pages/ra-spike/RaSpikeRevalidaResultsPage.jsx';
 import { RaSpikeCoachPage } from '../../pages/staff/RaSpikeCoachPage.jsx';
 import { RaSpikeAdminPage } from '../../pages/staff/RaSpikeAdminPage.jsx';
 import { canonicalRaSpikePathname, isRaSpikeStandaloneEntry } from './raSpikePath.js';
@@ -456,6 +458,14 @@ export function RaSpikeApp() {
 
     if (isRaSpikePlaybookPath(path) && isRaSpikeStaffPlaybookRole(effectiveUserRole)) {
       return <RaSpikePlaybookPage user={buildRaSpikeCoachPreviewUser(user)} />;
+    }
+
+    if (path === ROUTES.raSpikeRevalidaRating) {
+      return <RaSpikeRevalidaRatingPage />;
+    }
+
+    if (path === ROUTES.raSpikeRevalidaResults) {
+      return <RaSpikeRevalidaResultsPage />;
     }
 
     if (path === ROUTES.raSpikeAdmin || path.startsWith(`${ROUTES.raSpikeAdmin}/`)) {

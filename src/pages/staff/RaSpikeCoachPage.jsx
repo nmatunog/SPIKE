@@ -42,6 +42,30 @@ export function RaSpikeCoachPage({
 
         <RaSpikeCoachPresentationPanel defaultWeek={2} />
 
+        <section className="rounded-2xl border border-spike/20 bg-gradient-to-br from-amber-50/80 to-white p-5 shadow-sm">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-spike">REVALIDA</p>
+          <h2 className="mt-1 text-base font-bold text-slate-900">Panel Rating System</h2>
+          <p className="mt-2 text-sm text-slate-600">
+            Rate squad business pitches immediately after presentations. View aggregated results and individual feedback.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Link
+              to={ROUTES.raSpikeRevalidaRating}
+              className="inline-flex min-h-[44px] items-center gap-1 rounded-xl bg-spike px-4 py-2.5 text-sm font-bold text-white hover:bg-spike/90"
+            >
+              Submit Rating
+              <ArrowRight size={16} aria-hidden />
+            </Link>
+            <Link
+              to={ROUTES.raSpikeRevalidaResults}
+              className="inline-flex min-h-[44px] items-center gap-1 rounded-xl border border-spike bg-white px-4 py-2.5 text-sm font-bold text-spike hover:bg-spike-muted/30"
+            >
+              View Results
+              <ArrowRight size={16} aria-hidden />
+            </Link>
+          </div>
+        </section>
+
         {canManageCoaches ? (
           <section className="rounded-2xl border border-spike/25 bg-spike-muted/20 p-5">
             <p className="text-sm font-semibold text-slate-900">Coach accounts</p>
