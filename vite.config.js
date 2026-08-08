@@ -114,6 +114,7 @@ export default defineConfig({
           if (!id.includes('node_modules')) return undefined
           if (
             id.includes('jspdf')
+            || id.includes('pdf-lib')
             || id.includes('html2canvas')
             || id.includes('pptxgenjs')
             || id.includes('canvg')

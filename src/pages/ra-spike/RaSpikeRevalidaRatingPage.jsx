@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Check, Loader2 } from 'lucide-react';
+import { Check, Download, Loader2 } from 'lucide-react';
 import { useAuth } from '../../AuthContext.jsx';
 import { supabase } from '../../supabaseClient.js';
 import { PageContainer } from '../../components/layout/PageContainer.jsx';
@@ -10,6 +10,11 @@ import {
   writeRevalidaGuestSession,
 } from '../../lib/raSpikeRevalidaConstants.js';
 import {
+  REVALIDA_CRITERIA,
+  REVALIDA_RATING_OPTIONS,
+  REVALIDA_RECOMMENDATIONS,
+} from '../../lib/raSpikeRevalidaRatingSchema.js';
+import {
   fetchRevalidaCohortsRemote,
   fetchRevalidaGuestRatingsRemote,
   fetchRevalidaPanelistRatingsRemote,
@@ -19,46 +24,8 @@ import {
   submitRevalidaGuestRatingRemote,
 } from '../../lib/supabase/revalidaPanel.js';
 
-const RATING_OPTIONS = {
-  fvp: [12, 14, 16, 18, 20],
-  business_model: [15, 17.5, 20, 22.5, 25],
-  strategy: [12, 14, 16, 18, 20],
-  presentation: [12, 14, 16, 18, 20],
-  investment: [9, 10.5, 12, 13.5, 15],
-};
-
-const CRITERIA = [
-  {
-    key: 'fvp',
-    title: 'Financial Value Proposition',
-    description: 'Clear, relevant, customer-focused and compelling.',
-    max: 20,
-  },
-  {
-    key: 'business_model',
-    title: 'Business Model',
-    description: 'Revenue Engine and Leadership Engine are practical, executable and scalable.',
-    max: 25,
-  },
-  {
-    key: 'strategy',
-    title: 'Strategy & Planning',
-    description: 'MAPA projections, milestones and monitoring system are realistic and aligned.',
-    max: 20,
-  },
-  {
-    key: 'presentation',
-    title: 'Presentation & Defense',
-    description: 'Clear, confident, cohesive, and demonstrates understanding of the business.',
-    max: 20,
-  },
-  {
-    key: 'investment',
-    title: 'Investment Potential',
-    description: 'Overall entrepreneurial viability — would you back this venture?',
-    max: 15,
-  },
-];
+const RATING_OPTIONS = REVALIDA_RATING_OPTIONS;
+const CRITERIA = REVALIDA_CRITERIA;
 
 const INPUT_CLASS =
   'w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base focus:border-spike focus:outline-none focus:ring-2 focus:ring-spike/20';
@@ -156,6 +123,7 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [saveNotice, setSaveNotice] = useState('');
   const [checkInError, setCheckInError] = useState('');
 
@@ -508,6 +476,21 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
     [formData, panelistName],
   );
 
+  const handleDownloadPdf = useCallback(async () => {
+    setDownloadingPdf(true);
+    try {
+      const { downloadRevalidaRatingPdf } = await import('../../lib/raSpikeRevalidaRatingPdf.js');
+      await downloadRevalidaRatingPdf({
+        squads: squads.map((squad) => ({ name: squad.name })),
+        cohortName: activeCohort?.name ?? '',
+      });
+    } catch (err) {
+      alert(err.message || 'Could not generate PDF rating card');
+    } finally {
+      setDownloadingPdf(false);
+    }
+  }, [activeCohort?.name, squads]);
+
   if (loading) {
     return (
       <PageContainer>
@@ -521,11 +504,26 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
   return (
     <PageContainer>
       <div className="mx-auto max-w-2xl pb-12">
-        <header className="mb-8 space-y-2 border-b border-slate-200 pb-6">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-spike">RA-SPIKE</p>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-            REVALIDA PANEL RATING
-          </h1>
+        <header className="mb-8 flex items-start justify-between gap-4 border-b border-slate-200 pb-6">
+          <div className="space-y-2">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-spike">RA-SPIKE</p>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+              REVALIDA PANEL RATING
+            </h1>
+          </div>
+          <button
+            type="button"
+            onClick={() => void handleDownloadPdf()}
+            disabled={downloadingPdf}
+            className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-spike bg-white px-4 py-2.5 text-sm font-bold text-spike transition hover:bg-spike-muted/40 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {downloadingPdf ? (
+              <Loader2 className="animate-spin" size={16} aria-hidden />
+            ) : (
+              <Download size={16} aria-hidden />
+            )}
+            PDF rating card
+          </button>
         </header>
 
         {portfolioFinalized ? (
@@ -734,9 +732,7 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
                     </label>
                     <div className="space-y-2">
                       {[
-                        { value: 'ready', label: 'Ready for Segment 2' },
-                        { value: 'ready_with_revisions', label: 'Ready with Minor Revisions' },
-                        { value: 'needs_development', label: 'Needs Further Development' },
+                        ...REVALIDA_RECOMMENDATIONS,
                       ].map((option) => (
                         <label
                           key={option.value}
