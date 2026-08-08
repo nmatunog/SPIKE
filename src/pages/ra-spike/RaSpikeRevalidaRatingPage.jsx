@@ -15,8 +15,6 @@ import {
   fetchRevalidaPanelistRatingsRemote,
   fetchRevalidaSquadMembersRemote,
   fetchRevalidaSquadsRemote,
-  finalizeRevalidaGuestRatingsRemote,
-  finalizeRevalidaPanelistRatingsRemote,
   revalidaPanelistCheckInRemote,
   submitRevalidaGuestRatingRemote,
 } from '../../lib/supabase/revalidaPanel.js';
@@ -158,9 +156,7 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [finalizing, setFinalizing] = useState(false);
   const [saveNotice, setSaveNotice] = useState('');
-  const [finalizedNotice, setFinalizedNotice] = useState(false);
   const [checkInError, setCheckInError] = useState('');
 
   const [pin, setPin] = useState('');
@@ -496,29 +492,6 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
     }
   };
 
-  const handleFinalizeAll = async () => {
-    if (!allSquadsRated || portfolioFinalized) return;
-
-    setFinalizing(true);
-    try {
-      if (isGuestFlow && panelistToken) {
-        await finalizeRevalidaGuestRatingsRemote({
-          pin: pin.trim() || RA_SPIKE_REVALIDA_ACCESS_PIN,
-          panelistToken,
-          cohortId: formData.cohort_id,
-        });
-      } else {
-        await finalizeRevalidaPanelistRatingsRemote(formData.cohort_id);
-      }
-      await loadAllRatings(formData.cohort_id);
-      setFinalizedNotice(true);
-    } catch (err) {
-      alert(err.message || 'Failed to finalize ratings');
-    } finally {
-      setFinalizing(false);
-    }
-  };
-
   const isFormValid = useMemo(
     () =>
       panelistName.trim()
@@ -555,12 +528,12 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
           </h1>
         </header>
 
-        {finalizedNotice || portfolioFinalized ? (
+        {portfolioFinalized ? (
           <div className="mb-8 rounded-2xl border-2 border-emerald-500 bg-emerald-50 p-6 text-center">
             <Check className="mx-auto mb-3 text-emerald-600" size={40} />
-            <h2 className="text-xl font-bold text-emerald-900">ALL RATINGS SUBMITTED</h2>
+            <h2 className="text-xl font-bold text-emerald-900">RATINGS FINALIZED</h2>
             <p className="mt-2 text-sm text-emerald-700">
-              Thank you — your evaluations for all squads are locked in.
+              Your coach has locked your evaluations. Thank you for serving on the panel.
             </p>
           </div>
         ) : null}
@@ -827,28 +800,12 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
             ) : null}
 
             {allSquadsRated && !portfolioFinalized ? (
-              <section className="rounded-2xl border-2 border-spike bg-spike-muted/30 p-5 space-y-4">
-                <div>
-                  <h2 className="text-lg font-bold text-slate-900">Final submission</h2>
-                  <p className="mt-1 text-sm text-slate-600">
-                    All squads are rated. Submit once to lock your evaluations — you can still edit any squad until then.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleFinalizeAll}
-                  disabled={finalizing}
-                  className="w-full min-h-[56px] rounded-xl border-2 border-spike bg-white px-6 py-4 text-lg font-bold text-spike transition hover:bg-spike hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {finalizing ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <Loader2 className="animate-spin" size={20} />
-                      SUBMITTING ALL RATINGS...
-                    </span>
-                  ) : (
-                    'SUBMIT ALL RATINGS'
-                  )}
-                </button>
+              <section className="rounded-2xl border border-amber-200 bg-amber-50 p-5">
+                <h2 className="text-lg font-bold text-amber-950">All squads saved</h2>
+                <p className="mt-1 text-sm text-amber-900">
+                  Your ratings are saved. The program coach will finalize the panel when everyone is
+                  done — you can still switch squads and update scores until then.
+                </p>
               </section>
             ) : null}
           </form>

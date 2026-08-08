@@ -39,3 +39,4 @@
 20260819_revalida_panel_rating.sql
 20260820_revalida_guest_panelists.sql
 20260821_revalida_panelist_finalize.sql
+20260822_revalida_coach_finalize.sql

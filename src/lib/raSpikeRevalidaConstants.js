@@ -52,3 +52,11 @@ export function revalidaPanelistHref() {
   if (typeof window === 'undefined') return '/ra-spike/revalida-rating';
   return `${window.location.origin}/ra-spike/revalida-rating`;
 }
+
+/** Coach authorized to lock all Revalida panel ratings. */
+export const RA_SPIKE_REVALIDA_FINALIZE_COACH_EMAIL = 'nmatunog@gmail.com';
+
+/** @param {string | undefined | null} email */
+export function isRevalidaFinalizeCoach(email) {
+  return String(email ?? '').trim().toLowerCase() === RA_SPIKE_REVALIDA_FINALIZE_COACH_EMAIL;
+}

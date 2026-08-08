@@ -107,20 +107,9 @@ export async function submitRevalidaGuestRatingRemote(payload) {
   return data;
 }
 
-/** @param {object} payload */
-export async function finalizeRevalidaGuestRatingsRemote(payload) {
-  const { data, error } = await client().rpc('finalize_revalida_guest_ratings', {
-    p_pin: payload.pin ?? RA_SPIKE_REVALIDA_ACCESS_PIN,
-    p_panelist_token: payload.panelistToken,
-    p_cohort_id: parseInt(String(payload.cohortId), 10),
-  });
-  if (error) throw error;
-  return data;
-}
-
 /** @param {number | string} cohortId */
-export async function finalizeRevalidaPanelistRatingsRemote(cohortId) {
-  const { data, error } = await client().rpc('finalize_revalida_panelist_ratings', {
+export async function finalizeRevalidaCohortRatingsRemote(cohortId) {
+  const { data, error } = await client().rpc('finalize_revalida_cohort_ratings', {
     p_cohort_id: parseInt(String(cohortId), 10),
   });
   if (error) throw error;

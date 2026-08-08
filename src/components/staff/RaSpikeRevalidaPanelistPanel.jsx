@@ -1,54 +1,101 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Loader2, Users } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Check, Loader2, Lock, Users } from 'lucide-react';
+import { useAuth } from '../../AuthContext.jsx';
 import { supabase } from '../../supabaseClient.js';
-import { RA_SPIKE_REVALIDA_ACCESS_PIN, revalidaPanelistHref } from '../../lib/raSpikeRevalidaConstants.js';
+import {
+  RA_SPIKE_REVALIDA_ACCESS_PIN,
+  isRevalidaFinalizeCoach,
+  revalidaPanelistHref,
+} from '../../lib/raSpikeRevalidaConstants.js';
+import { finalizeRevalidaCohortRatingsRemote } from '../../lib/supabase/revalidaPanel.js';
 
 /**
- * Coach view — panelist share link + live check-in list.
+ * Coach view — panelist share link, live check-in list, and coach-only finalize control.
  * @param {{ showToast?: (msg: string, type?: string) => void }} props
  */
 export function RaSpikeRevalidaPanelistPanel({ showToast }) {
+  const { user } = useAuth();
   const panelistUrl = revalidaPanelistHref();
-  const [checkins, setCheckins] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const canFinalize = isRevalidaFinalizeCoach(user?.email);
 
-  const loadCheckins = useCallback(async () => {
+  const [checkins, setCheckins] = useState([]);
+  const [cohortId, setCohortId] = useState(null);
+  const [squadCount, setSquadCount] = useState(0);
+  const [ratingStats, setRatingStats] = useState({ total: 0, finalized: 0, panelists: 0 });
+  const [loading, setLoading] = useState(true);
+  const [finalizing, setFinalizing] = useState(false);
+
+  const allRatingsFinalized = useMemo(
+    () => ratingStats.total > 0 && ratingStats.finalized === ratingStats.total,
+    [ratingStats],
+  );
+
+  const loadPanelData = useCallback(async () => {
     if (!supabase) {
       setCheckins([]);
       setLoading(false);
       return;
     }
+
     const { data: cohorts } = await supabase
       .from('cohorts')
       .select('id')
       .eq('is_active', true)
+      .eq('program_slug', 'ra-spike')
       .order('created_at', { ascending: false })
       .limit(1);
 
-    const cohortId = cohorts?.[0]?.id;
-    if (!cohortId) {
+    const activeCohortId = cohorts?.[0]?.id ?? null;
+    setCohortId(activeCohortId);
+
+    if (!activeCohortId) {
       setCheckins([]);
+      setSquadCount(0);
+      setRatingStats({ total: 0, finalized: 0, panelists: 0 });
       setLoading(false);
       return;
     }
 
-    const { data } = await supabase
-      .from('revalida_panelist_checkins')
-      .select('panelist_name, panelist_org, checked_in_at')
-      .eq('cohort_id', cohortId)
-      .order('checked_in_at', { ascending: false });
+    const [{ data: checkinRows }, { data: squadRows }, { data: ratingRows }] = await Promise.all([
+      supabase
+        .from('revalida_panelist_checkins')
+        .select('panelist_name, panelist_org, checked_in_at')
+        .eq('cohort_id', activeCohortId)
+        .order('checked_in_at', { ascending: false }),
+      supabase
+        .from('formation_squads')
+        .select('id')
+        .eq('cohort_id', activeCohortId)
+        .eq('status', 'active'),
+      supabase
+        .from('revalida_panel_ratings')
+        .select('id, finalized, panelist_token, panelist_id')
+        .eq('cohort_id', activeCohortId),
+    ]);
 
-    setCheckins(data || []);
+    setCheckins(checkinRows || []);
+    setSquadCount(squadRows?.length ?? 0);
+
+    const ratings = ratingRows || [];
+    const panelistKeys = new Set(
+      ratings.map((row) => row.panelist_token || row.panelist_id).filter(Boolean),
+    );
+
+    setRatingStats({
+      total: ratings.length,
+      finalized: ratings.filter((row) => row.finalized).length,
+      panelists: panelistKeys.size,
+    });
     setLoading(false);
   }, []);
 
   useEffect(() => {
-    loadCheckins().catch(() => setLoading(false));
+    loadPanelData().catch(() => setLoading(false));
     const interval = setInterval(() => {
-      loadCheckins().catch(() => {});
+      loadPanelData().catch(() => {});
     }, 15000);
     return () => clearInterval(interval);
-  }, [loadCheckins]);
+  }, [loadPanelData]);
 
   async function copyPanelistLink() {
     try {
@@ -56,6 +103,27 @@ export function RaSpikeRevalidaPanelistPanel({ showToast }) {
       showToast?.('Panelist link copied — share with judges (PIN: REVALIDA)', 'success');
     } catch {
       showToast?.('Could not copy link', 'info');
+    }
+  }
+
+  async function handleFinalizeCohort() {
+    if (!canFinalize || !cohortId || allRatingsFinalized) return;
+
+    const confirmed = window.confirm(
+      'Finalize all Revalida panel ratings for this cohort? Panelists will no longer be able to edit their scores.',
+    );
+    if (!confirmed) return;
+
+    setFinalizing(true);
+    try {
+      const result = await finalizeRevalidaCohortRatingsRemote(cohortId);
+      await loadPanelData();
+      const count = result?.finalized_count ?? result?.total_count ?? ratingStats.total;
+      showToast?.(`Finalized ${count} rating${count === 1 ? '' : 's'}`, 'success');
+    } catch (err) {
+      showToast?.(err.message || 'Could not finalize ratings', 'info');
+    } finally {
+      setFinalizing(false);
     }
   }
 
@@ -122,6 +190,46 @@ export function RaSpikeRevalidaPanelistPanel({ showToast }) {
           </ul>
         )}
       </div>
+
+      {canFinalize ? (
+        <div className="mt-5 border-t border-spike/10 pt-4 space-y-3">
+          <div className="flex items-center gap-2 text-sm font-semibold text-slate-800">
+            <Lock size={16} aria-hidden />
+            Coach finalize
+          </div>
+          <p className="text-sm text-slate-600">
+            {ratingStats.total} saved rating{ratingStats.total === 1 ? '' : 's'} across{' '}
+            {ratingStats.panelists} panelist{ratingStats.panelists === 1 ? '' : 's'} · {squadCount}{' '}
+            squad{squadCount === 1 ? '' : 's'} in cohort
+          </p>
+          {allRatingsFinalized ? (
+            <p className="inline-flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-800">
+              <Check size={16} />
+              All ratings finalized — panelists are locked out of edits.
+            </p>
+          ) : (
+            <button
+              type="button"
+              onClick={() => void handleFinalizeCohort()}
+              disabled={finalizing || ratingStats.total === 0}
+              className="inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl border-2 border-spike bg-white px-4 py-3 text-sm font-bold text-spike transition hover:bg-spike hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {finalizing ? (
+                <>
+                  <Loader2 className="animate-spin" size={16} />
+                  Finalizing…
+                </>
+              ) : (
+                'Finalize all panel ratings'
+              )}
+            </button>
+          )}
+          <p className="text-xs text-slate-500">
+            Only {user?.email} can finalize. Panelists save squad-by-squad; this locks everyone when
+            the panel is complete.
+          </p>
+        </div>
+      ) : null}
     </section>
   );
 }
