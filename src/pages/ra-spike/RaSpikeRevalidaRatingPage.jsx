@@ -20,6 +20,7 @@ import {
   fetchRevalidaSquadsRemote,
   revalidaPanelistCheckInRemote,
   submitRevalidaGuestRatingRemote,
+  submitRevalidaStaffRatingRemote,
 } from '../../lib/supabase/revalidaPanel.js';
 
 const RATING_OPTIONS = REVALIDA_RATING_OPTIONS;
@@ -137,6 +138,7 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
   const [checkInError, setCheckInError] = useState('');
 
   const checkInRef = useRef('');
+  const savingRef = useRef(false);
   const squadIdRef = useRef('');
   const formDirtyRef = useRef(false);
   const suppressDirtyRef = useRef(false);
@@ -471,45 +473,19 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
       });
     }
 
-    if (!supabase || !user?.id) throw new Error('Not signed in');
+    if (!user?.id) throw new Error('Not signed in');
 
-    const existing = squadRatings[formData.squad_id];
-    const row = {
-      panelist_id: user.id,
-      panelist_name: panelistName.trim() || user.name || user.email || 'Staff panelist',
-      cohort_id: parseInt(formData.cohort_id, 10),
-      squad_id: formData.squad_id,
-      fvp_score: scores.fvpScore ?? existing?.fvp_score ?? null,
-      business_model_score: scores.businessModelScore ?? existing?.business_model_score ?? null,
-      strategy_score: scores.strategyScore ?? existing?.strategy_score ?? null,
-      presentation_score: scores.presentationScore ?? existing?.presentation_score ?? null,
-      investment_score: scores.investmentScore ?? existing?.investment_score ?? null,
-      greatest_strength: scores.greatestStrength,
-      improvement: scores.improvement,
-      recommendation: scores.recommendation ?? existing?.recommendation ?? null,
-      standout_participant_id: scores.standoutParticipantId ?? existing?.standout_participant_id ?? null,
-    };
-
-    if (existing?.id) {
-      const { data, error } = await supabase
-        .from('revalida_panel_ratings')
-        .update(row)
-        .eq('id', existing.id)
-        .select('*')
-        .single();
-      if (error) throw error;
-      return data;
-    }
-
-    const { data, error } = await supabase.from('revalida_panel_ratings').insert([row]).select('*').single();
-    if (error) throw error;
-    return data;
+    return submitRevalidaStaffRatingRemote({
+      ...payload,
+      panelistName: panelistName.trim() || user.name || user.email || 'Staff panelist',
+    });
   };
 
   const handleSaveSquad = async (e) => {
     e.preventDefault();
-    if (!formData.squad_id || !panelistName.trim()) return;
+    if (!formData.squad_id || !panelistName.trim() || savingRef.current) return;
 
+    savingRef.current = true;
     setSaving(true);
     try {
       const saved = await persistSquadRating();
@@ -520,6 +496,7 @@ export function RaSpikeRevalidaRatingPage({ guestMode = false }) {
     } catch (err) {
       alert(err.message || 'Failed to save rating');
     } finally {
+      savingRef.current = false;
       setSaving(false);
     }
   };

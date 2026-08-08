@@ -106,6 +106,26 @@ export async function submitRevalidaGuestRatingRemote(payload) {
   return data;
 }
 
+/** @param {object} payload */
+export async function submitRevalidaStaffRatingRemote(payload) {
+  const { data, error } = await client().rpc('submit_revalida_staff_rating', {
+    p_cohort_id: parseInt(String(payload.cohortId), 10),
+    p_squad_id: payload.squadId,
+    p_panelist_name: payload.panelistName,
+    p_fvp_score: payload.fvpScore,
+    p_business_model_score: payload.businessModelScore,
+    p_strategy_score: payload.strategyScore,
+    p_presentation_score: payload.presentationScore,
+    p_investment_score: payload.investmentScore,
+    p_greatest_strength: payload.greatestStrength,
+    p_improvement: payload.improvement,
+    p_recommendation: payload.recommendation,
+    p_standout_participant_id: payload.standoutParticipantId || null,
+  });
+  if (error) throw error;
+  return data;
+}
+
 /** @param {number | string} cohortId */
 export async function finalizeRevalidaCohortRatingsRemote(cohortId) {
   const { data, error } = await client().rpc('finalize_revalida_cohort_ratings', {
