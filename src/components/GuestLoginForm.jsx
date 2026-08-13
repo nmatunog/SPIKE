@@ -54,11 +54,11 @@ export const GuestLoginForm = memo(function GuestLoginForm({
     }
     setHelpSubmitting(true);
     try {
-      await onRequestPasswordHelp(em, helpNote);
+      await onRequestPasswordHelp(em);
       setHelpNote('');
-      setHelpMessage('Administrators have been notified. They will contact you with a new password.');
+      setHelpMessage('Password reset link sent! Check your email to reset your password.');
     } catch (err) {
-      setHelpMessage(err.message || 'Could not send request.');
+      setHelpMessage(err.message || 'Could not send reset link.');
     } finally {
       setHelpSubmitting(false);
     }
@@ -141,17 +141,16 @@ export const GuestLoginForm = memo(function GuestLoginForm({
 
       {showForgot ? (
         <div className="rounded-xl border border-amber-200 bg-amber-50/80 p-3 text-left text-xs leading-relaxed text-slate-800">
-          <p className="mb-2 font-semibold text-amber-950">Password help</p>
+          <p className="mb-2 font-semibold text-amber-950">Reset your password</p>
           <p className="mb-3 text-slate-700">
-            Contact your administrator for a temporary password, then sign in and set your own when
-            prompted.
+            Enter your email above and click the button below to receive a password reset link.
           </p>
           {usingSupabaseAuth && onRequestPasswordHelp ? (
             <div className="border-t border-amber-200/80 pt-3">
               {helpMessage ? (
                 <p
                   className={`mb-2 rounded-lg p-2 text-center text-[11px] ${
-                    helpMessage.startsWith('Administrators')
+                    helpMessage.includes('sent')
                       ? 'bg-emerald-50 text-emerald-800'
                       : 'bg-red-50 text-red-700'
                   }`}
@@ -159,20 +158,13 @@ export const GuestLoginForm = memo(function GuestLoginForm({
                   {helpMessage}
                 </p>
               ) : null}
-              <textarea
-                value={helpNote}
-                onChange={(e) => setHelpNote(e.target.value)}
-                rows={2}
-                placeholder="Optional note for admins"
-                className="mb-2 w-full rounded-xl border border-slate-200 p-2 text-sm outline-none focus:border-spike focus:ring-2 focus:ring-spike/20"
-              />
               <button
                 type="button"
                 disabled={helpSubmitting}
                 onClick={handleHelpRequest}
                 className="w-full rounded-xl bg-amber-900 py-2 text-xs font-semibold text-white transition hover:bg-amber-950 disabled:opacity-60"
               >
-                {helpSubmitting ? 'Sending…' : 'Notify administrators'}
+                {helpSubmitting ? 'Sending…' : 'Send reset link'}
               </button>
             </div>
           ) : null}

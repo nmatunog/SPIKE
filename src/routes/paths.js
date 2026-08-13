@@ -2,6 +2,7 @@ import { getProgramDefinition } from '../lib/programs/index.js';
 
 export const ROUTES = {
   home: '/',
+  resetPassword: '/reset-password',
   dashboard: '/dashboard',
   ventureBlueprint: '/venture-blueprint',
   playbook: '/playbook',

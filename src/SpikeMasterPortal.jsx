@@ -89,6 +89,7 @@ import {
   SpikeLifeWorkshopPage,
   SpikeLifeFacilitatorPage,
 } from './routes/lazyPages.js';
+import { PasswordResetPage } from './pages/PasswordResetPage.jsx';
 import { InternWorkStatusBanner } from './components/intern/InternWorkStatusBanner.jsx';
 import { InternPendingReflectionBanner } from './components/intern/InternPendingReflectionBanner.jsx';
 import { useInternHasPendingReflection } from './hooks/useInternHasPendingReflection.js';
@@ -366,11 +367,29 @@ const SpikeMasterPortal = () => {
   );
 
   const requestPasswordHelpForGuest = useCallback(
-    async (em, note) => {
-      await submitPasswordResetRequest(em, note);
-      showToast('Administrators will see your request on their dashboard.', 'success');
+    async (em) => {
+      if (!usingSupabaseAuth || !supabase) {
+        throw new Error('Password reset requires Supabase.');
+      }
+      const { error } = await supabase.auth.resetPasswordForEmail(em.trim().toLowerCase(), {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
     },
-    [submitPasswordResetRequest, showToast],
+    [usingSupabaseAuth],
+  );
+
+  const handlePasswordReset = useCallback(
+    async (newPassword) => {
+      if (!usingSupabaseAuth || !supabase) {
+        throw new Error('Password reset requires Supabase.');
+      }
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+      if (error) throw error;
+    },
+    [usingSupabaseAuth],
   );
 
   const resolvePasswordResetRequest = useCallback(
@@ -2311,6 +2330,11 @@ const SpikeMasterPortal = () => {
               </div>
               {publicTab === 'orientation' ? <OrientationModule /> : <MasterSyllabusView />}
             </div>
+          ) : location.pathname === ROUTES.resetPassword ? (
+            <PasswordResetPage
+              onPasswordReset={handlePasswordReset}
+              onNavigateToLogin={() => navigate(ROUTES.home)}
+            />
           ) : authLoading ? (
             <div className="flex flex-col items-center justify-center gap-3 py-24 text-gray-600">
               <Loader2 className="animate-spin text-[#8B0000]" size={40} />
