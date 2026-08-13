@@ -14,7 +14,6 @@ export const GuestLoginForm = memo(function GuestLoginForm({
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [showForgot, setShowForgot] = useState(false);
-  const [helpNote, setHelpNote] = useState('');
   const [helpSubmitting, setHelpSubmitting] = useState(false);
   const [helpMessage, setHelpMessage] = useState('');
 
@@ -55,7 +54,6 @@ export const GuestLoginForm = memo(function GuestLoginForm({
     setHelpSubmitting(true);
     try {
       await onRequestPasswordHelp(em);
-      setHelpNote('');
       setHelpMessage('Password reset link sent! Check your email to reset your password.');
     } catch (err) {
       setHelpMessage(err.message || 'Could not send reset link.');

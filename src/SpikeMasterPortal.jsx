@@ -352,20 +352,6 @@ const SpikeMasterPortal = () => {
     }
   }, [showToast, usingSupabaseAuth, user?.role]);
 
-  const submitPasswordResetRequest = useCallback(
-    async (requestEmail, note) => {
-      if (!usingSupabaseAuth || !supabase) {
-        throw new Error('Password help requests require Supabase.');
-      }
-      const { error } = await supabase.from('password_reset_requests').insert({
-        email: requestEmail.trim().toLowerCase(),
-        note: (note || '').trim() || null,
-      });
-      if (error) throw error;
-    },
-    [usingSupabaseAuth],
-  );
-
   const requestPasswordHelpForGuest = useCallback(
     async (em) => {
       if (!usingSupabaseAuth || !supabase) {
