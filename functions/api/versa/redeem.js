@@ -1,4 +1,5 @@
 import { createServiceClient, createUserClient } from '../../_shared/supabaseAdmin.js';
+import { createSessionIdentityProvider } from '../../_shared/versaCode/adapters.js';
 import {
   GENERIC_DENY_MESSAGE,
   isVersaCsvCodeGateEnabled,
@@ -7,8 +8,9 @@ import {
 import { corsPreflight, json } from '../../_shared/verifySuperuser.js';
 
 /**
- * Authenticated Versa code + verified-identity redemption.
- * Client cannot assert payment or email confirmation.
+ * Portable authenticated redeem. Not wired into intern signup.
+ * Identity comes from the auth provider session; email is proven only when
+ * the provider confirmed it. Does not set profiles.role.
  */
 export async function handleVersaRedeem(ctx, deps = {}) {
   const { request, env } = ctx;
@@ -53,6 +55,7 @@ export async function handleVersaRedeem(ctx, deps = {}) {
 
   const submittedCode = String(body?.code ?? body?.accessCode ?? '').trim();
   const expectedLevel = String(body?.level ?? 'L1').toUpperCase() === 'L2' ? 'L2' : 'L1';
+  const programRoute = body?.programRoute ? String(body.programRoute) : undefined;
   const user = userData.user;
 
   const result = await verify({
@@ -60,19 +63,17 @@ export async function handleVersaRedeem(ctx, deps = {}) {
     admin,
     request,
     submittedCode,
-    identity: {
+    identityProvider: createSessionIdentityProvider({
       userId: user.id,
       email: user.email,
-      emailConfirmed: Boolean(user.email_confirmed_at),
-      versaHandoffVerified: false,
-    },
+      emailConfirmedAt: user.email_confirmed_at,
+    }),
     expected: {
       level: expectedLevel,
-      programRoute: expectedLevel === 'L1' ? 'spike-interns' : 'ra-spike',
+      programRoute,
     },
     paymentVerified: false,
     consume: true,
-    grantIntern: expectedLevel === 'L1',
   });
 
   if (!result.ok) {

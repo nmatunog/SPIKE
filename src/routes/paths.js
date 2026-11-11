@@ -47,6 +47,8 @@ export const ROUTES = {
   myVenturePortfolio: '/my-venture-portfolio',
   stageGatePresentation: '/presentation/stagegate',
   pitchPanel: '/pitch-panel',
+  /** Isolated Versa activation demo. Dev-only; not intern-portal signup. */
+  versaActivateHarness: '/dev/versa-activate',
   programCoachPitchPanel: '/program-coach/pitch-panel',
   mentorPitchPanel: '/mentor/pitch-panel',
   adminPortfolioSettings: '/admin/portfolio-settings',

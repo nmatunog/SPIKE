@@ -31,18 +31,15 @@ create table if not exists versa_entitlements (
   unique (user_id, offering_id)
 );
 
-create table if not exists intern_progress (
-  user_id uuid primary key,
-  segment integer not null default 1,
-  hours numeric not null default 0,
-  licensed boolean not null default false,
-  program_slug text not null default 'spike-internship'
+create table if not exists versa_rate_limits (
+  rate_key text primary key,
+  fail_count integer not null default 0,
+  window_start timestamptz not null default now()
 );
 
 create or replace function redeem_versa_code_and_grant(
   p_id bigint,
-  p_user_id uuid,
-  p_grant_intern boolean default false
+  p_user_id uuid
 )
 returns jsonb
 language plpgsql
@@ -65,12 +62,6 @@ begin
     on conflict (user_id, offering_id) do update
       set inventory_id = excluded.inventory_id
     returning * into ent;
-
-    if p_grant_intern and inv.program_route = 'spike-interns' and inv.level = 'L1' then
-      insert into intern_progress (user_id, segment, hours, licensed, program_slug)
-      values (p_user_id, 1, 0, false, 'spike-internship')
-      on conflict (user_id) do nothing;
-    end if;
 
     return jsonb_build_object(
       'ok', true,
@@ -101,18 +92,28 @@ begin
     set inventory_id = excluded.inventory_id
   returning * into ent;
 
-  if p_grant_intern and inv.program_route = 'spike-interns' and inv.level = 'L1' then
-    insert into intern_progress (user_id, segment, hours, licensed, program_slug)
-    values (p_user_id, 1, 0, false, 'spike-internship')
-    on conflict (user_id) do nothing;
-  end if;
-
   return jsonb_build_object(
     'ok', true,
     'already_granted', false,
     'row', to_jsonb(inv),
     'entitlement', to_jsonb(ent)
   );
+end;
+$$;
+
+create or replace function versa_rate_limit_record_fail(p_rate_key text, p_window_ms integer)
+returns integer
+language plpgsql
+as $$
+declare
+  new_count integer;
+begin
+  insert into versa_rate_limits (rate_key, fail_count, window_start)
+  values (p_rate_key, 1, now())
+  on conflict (rate_key) do update
+    set fail_count = versa_rate_limits.fail_count + 1
+  returning fail_count into new_count;
+  return new_count;
 end;
 $$;
 `;
@@ -141,8 +142,8 @@ describe('Versa redeem_versa_code_and_grant (PGlite)', () => {
   it('single-use: concurrent-style calls consume the row once', async () => {
     const id = await boot();
     const [first, second] = await Promise.all([
-      db.query('select redeem_versa_code_and_grant($1, $2, true) as result', [id, USER_A]),
-      db.query('select redeem_versa_code_and_grant($1, $2, true) as result', [id, USER_B]),
+      db.query('select redeem_versa_code_and_grant($1, $2) as result', [id, USER_A]),
+      db.query('select redeem_versa_code_and_grant($1, $2) as result', [id, USER_B]),
     ]);
     const outcomes = [first.rows[0].result, second.rows[0].result];
     const wins = outcomes.filter((row) => row.ok === true && row.already_granted === false);
@@ -158,30 +159,36 @@ describe('Versa redeem_versa_code_and_grant (PGlite)', () => {
     const entitlements = await db.query('select user_id from versa_entitlements');
     expect(entitlements.rows).toHaveLength(1);
     expect(entitlements.rows[0].user_id).toBe(redeemedBy);
-
-    const progress = await db.query('select user_id, program_slug from intern_progress');
-    expect(progress.rows).toHaveLength(1);
-    expect(progress.rows[0]).toMatchObject({ user_id: redeemedBy, program_slug: 'spike-internship' });
   });
 
   it('recoverable grant: same learner retry recreates a missing entitlement without burning a second code', async () => {
     const id = await boot();
-    const first = await db.query('select redeem_versa_code_and_grant($1, $2, true) as result', [id, USER_A]);
+    const first = await db.query('select redeem_versa_code_and_grant($1, $2) as result', [id, USER_A]);
     expect(first.rows[0].result.ok).toBe(true);
     expect(first.rows[0].result.already_granted).toBe(false);
 
-    await db.exec('delete from versa_entitlements; delete from intern_progress;');
+    await db.exec('delete from versa_entitlements;');
 
-    const retry = await db.query('select redeem_versa_code_and_grant($1, $2, true) as result', [id, USER_A]);
+    const retry = await db.query('select redeem_versa_code_and_grant($1, $2) as result', [id, USER_A]);
     expect(retry.rows[0].result.ok).toBe(true);
     expect(retry.rows[0].result.already_granted).toBe(true);
 
     const entitlements = await db.query('select user_id, offering_id from versa_entitlements');
     expect(entitlements.rows).toHaveLength(1);
-    const progress = await db.query('select user_id from intern_progress');
-    expect(progress.rows).toHaveLength(1);
 
-    const other = await db.query('select redeem_versa_code_and_grant($1, $2, true) as result', [id, USER_B]);
+    const other = await db.query('select redeem_versa_code_and_grant($1, $2) as result', [id, USER_B]);
     expect(other.rows[0].result).toMatchObject({ ok: false, reason: 'reused' });
+  });
+
+  it('rate limit increment is atomic (fail_count = fail_count + 1)', async () => {
+    await boot();
+    const [a, b] = await Promise.all([
+      db.query('select versa_rate_limit_record_fail($1, $2) as n', ['ip:test', 600000]),
+      db.query('select versa_rate_limit_record_fail($1, $2) as n', ['ip:test', 600000]),
+    ]);
+    const counts = [Number(a.rows[0].n), Number(b.rows[0].n)].sort((x, y) => x - y);
+    expect(counts).toEqual([1, 2]);
+    const row = await db.query('select fail_count from versa_rate_limits where rate_key = $1', ['ip:test']);
+    expect(Number(row.rows[0].fail_count)).toBe(2);
   });
 });

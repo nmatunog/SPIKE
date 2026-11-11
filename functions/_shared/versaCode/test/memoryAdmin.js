@@ -28,21 +28,6 @@ function upsertEntitlementRow(tables, nextId, row) {
   return clone(inserted);
 }
 
-function ensureInternProgress(tables, nextId, userId) {
-  const existing = tables.intern_progress.find((item) => String(item.user_id) === String(userId));
-  if (existing) return clone(existing);
-  const row = {
-    user_id: userId,
-    segment: 1,
-    hours: 0,
-    licensed: false,
-    program_slug: 'spike-internship',
-  };
-  row.id = nextId.intern_progress ?? tables.intern_progress.length + 1;
-  nextId.intern_progress = row.id + 1;
-  tables.intern_progress.push(row);
-  return clone(row);
-}
 
 export function createMemoryAdmin(seed = {}) {
   const tables = {
@@ -70,6 +55,18 @@ export function createMemoryAdmin(seed = {}) {
   }
 
   function from(table) {
+    if (seed.missingRateLimits && table === 'versa_rate_limits') {
+      const err = { data: null, error: { code: '42P01', message: 'relation versa_rate_limits does not exist' } };
+      const missing = {
+        select() { return missing; },
+        eq() { return missing; },
+        upsert() { return missing; },
+        update() { return missing; },
+        maybeSingle: async () => err,
+        then: (resolve, reject) => Promise.resolve(err).then(resolve, reject),
+      };
+      return missing;
+    }
     if (!tables[table]) tables[table] = [];
     /** @type {{ filters: {col:string,val:unknown}[], patch: object | null, insertRows: object[] | null, columns: string | null, op: string }} */
     const state = {
@@ -181,14 +178,33 @@ export function createMemoryAdmin(seed = {}) {
   }
 
   async function rpc(name, args) {
+    if (name === 'versa_rate_limit_record_fail') {
+      if (seed.missingRateLimits) {
+        return { data: null, error: { code: '42P01', message: 'relation versa_rate_limits does not exist' } };
+      }
+      const key = args.p_rate_key;
+      const windowMs = Number(args.p_window_ms) || 600000;
+      const now = Date.now();
+      let row = tables.versa_rate_limits.find((item) => item.rate_key === key);
+      if (!row) {
+        row = { rate_key: key, fail_count: 1, window_start: new Date(now).toISOString() };
+        tables.versa_rate_limits.push(row);
+        return { data: 1, error: null };
+      }
+      const start = new Date(row.window_start).getTime();
+      if (!Number.isFinite(start) || now - start > windowMs) {
+        row.fail_count = 1;
+        row.window_start = new Date(now).toISOString();
+      } else {
+        row.fail_count = Number(row.fail_count) + 1;
+      }
+      return { data: row.fail_count, error: null };
+    }
+
     if (name === 'redeem_versa_code_and_grant') {
       return serialize(async () => {
         const row = tables.versa_code_inventory.find((item) => item.id === args.p_id);
         if (!row) return { data: { ok: false, reason: 'unknown' }, error: null };
-
-        const grantIntern = Boolean(args.p_grant_intern);
-        const grantInternOk =
-          grantIntern && row.program_route === 'spike-interns' && String(row.level).toUpperCase() === 'L1';
 
         if (row.status === 'redeemed' && String(row.redeemed_by) === String(args.p_user_id)) {
           const entitlement = upsertEntitlementRow(tables, nextId, {
@@ -200,7 +216,6 @@ export function createMemoryAdmin(seed = {}) {
             program_route: row.program_route,
             granted_at: new Date().toISOString(),
           });
-          if (grantInternOk) ensureInternProgress(tables, nextId, args.p_user_id);
           return { data: { ok: true, already_granted: true, row: clone(row), entitlement }, error: null };
         }
 
@@ -220,7 +235,6 @@ export function createMemoryAdmin(seed = {}) {
           program_route: row.program_route,
           granted_at: new Date().toISOString(),
         });
-        if (grantInternOk) ensureInternProgress(tables, nextId, args.p_user_id);
         return { data: { ok: true, already_granted: false, row: clone(row), entitlement }, error: null };
       });
     }

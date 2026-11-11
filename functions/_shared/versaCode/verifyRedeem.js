@@ -4,6 +4,7 @@ import {
   REASONS,
   VERSA_L1_OFFERING_ENV,
 } from './constants.js';
+import { createPortableEntitlementGrantor, createSessionIdentityProvider } from './adapters.js';
 import { digestCode, normalizeEmail, normalizeSubmittedCode, requireHmacSecret } from './digest.js';
 import { isVersaCsvCodeGateEnabled } from './flag.js';
 import { consumeAndGrant, findInventoryByDigest, recordAttempt } from './inventory.js';
@@ -20,15 +21,10 @@ function expectedL1Offering(env) {
  * A typed/unverified email is never proof. Accept:
  * - CSV verified_user_id === session user id
  * - auth-provider-confirmed email matching CSV verified_email
- * - server-side Versa handoff flag plus matching verified link
+ * - Versa-verified handoff (versa_lead_ref and/or proven email)
  *
  * @param {object} row
- * @param {{
- *   userId?: string | null,
- *   email?: string | null,
- *   emailConfirmed?: boolean,
- *   versaHandoffVerified?: boolean,
- * }} identity
+ * @param {import('./adapters.js').VerifiedIdentity} identity
  */
 export function identityMatchesImportedRow(row, identity) {
   const sessionUserId = identity?.userId ? String(identity.userId) : '';
@@ -37,13 +33,18 @@ export function identityMatchesImportedRow(row, identity) {
   const verifiedEmail = normalizeEmail(row?.verified_email);
   const verifiedUserId = row?.verified_user_id ? String(row.verified_user_id) : '';
   const sessionEmail = normalizeEmail(identity?.email);
+  const rowLead = String(row?.versa_lead_ref ?? '').trim();
+  const handoffLead = String(identity?.versaLeadRef ?? '').trim();
 
-  if (!verifiedEmail && !verifiedUserId) return false;
+  if (!verifiedEmail && !verifiedUserId && !rowLead) return false;
   if (verifiedUserId && verifiedUserId === sessionUserId) return true;
 
   const sessionEmailIsProven =
     identity?.emailConfirmed === true || identity?.versaHandoffVerified === true;
   if (sessionEmailIsProven && verifiedEmail && sessionEmail && verifiedEmail === sessionEmail) {
+    return true;
+  }
+  if (identity?.versaHandoffVerified === true && handoffLead && rowLead && handoffLead === rowLead) {
     return true;
   }
   return false;
@@ -72,22 +73,19 @@ function rowUnavailableReason(row, now = Date.now()) {
 }
 
 /**
+ * Portable verify + redeem. Host portals pass IdentityProvider + EntitlementGrantor.
  * @param {{
  *   env: Record<string, string>,
  *   admin: import('@supabase/supabase-js').SupabaseClient,
  *   request?: Request | null,
  *   submittedCode: string,
- *   identity: {
- *     userId?: string | null,
- *     email?: string | null,
- *     emailConfirmed?: boolean,
- *     versaHandoffVerified?: boolean,
- *   },
+ *   identity?: import('./adapters.js').VerifiedIdentity,
+ *   identityProvider?: import('./adapters.js').IdentityProvider,
+ *   grantor?: import('./adapters.js').EntitlementGrantor,
  *   expected?: { level?: string, offeringId?: string | null, programRoute?: string },
  *   paymentVerified?: boolean,
  *   prerequisiteOk?: boolean,
  *   consume?: boolean,
- *   grantIntern?: boolean,
  *   logger?: ReturnType<typeof createVersaLogger>,
  * }} input
  */
@@ -101,14 +99,18 @@ export async function verifyVersaCode(input) {
     return { ok: false, reason: REASONS.flag_off, message: GENERIC_DENY_MESSAGE };
   }
 
-  const rlKey = rateLimitKey(input.request, input.identity);
+  const identity = input.identityProvider
+    ? await input.identityProvider.resolve()
+    : input.identity || (await createSessionIdentityProvider({}).resolve());
+
+  const rlKey = rateLimitKey(input.request, identity);
   const limited = await assertDurableRateLimit({ admin: input.admin, key: rlKey });
   if (!limited.ok) {
     logger.warn({ event: 'versa_denied', reason: REASONS.rate_limited });
     return { ok: false, reason: REASONS.rate_limited, message: GENERIC_DENY_MESSAGE };
   }
 
-  if (!input.identity?.userId) {
+  if (!identity?.userId) {
     await recordDurableFail({ admin: input.admin, key: rlKey });
     logger.warn({ event: 'versa_denied', reason: REASONS.unverified_identity });
     return { ok: false, reason: REASONS.unverified_identity, message: GENERIC_DENY_MESSAGE };
@@ -132,7 +134,7 @@ export async function verifyVersaCode(input) {
   const row = await findInventoryByDigest(input.admin, digest);
   if (!row) {
     await recordDurableFail({ admin: input.admin, key: rlKey });
-    await recordAttempt(input.admin, { actorUserId: input.identity?.userId, reason: REASONS.unknown });
+    await recordAttempt(input.admin, { actorUserId: identity.userId, reason: REASONS.unknown });
     logger.warn({ event: 'versa_denied', reason: REASONS.unknown });
     return { ok: false, reason: REASONS.unknown, message: GENERIC_DENY_MESSAGE };
   }
@@ -140,7 +142,7 @@ export async function verifyVersaCode(input) {
   const deny = async (reason) => {
     await recordDurableFail({ admin: input.admin, key: rlKey });
     await recordAttempt(input.admin, {
-      actorUserId: input.identity?.userId,
+      actorUserId: identity.userId,
       inventoryId: row.id,
       reason,
       offeringId: row.offering_id,
@@ -151,14 +153,13 @@ export async function verifyVersaCode(input) {
     return { ok: false, reason, message: GENERIC_DENY_MESSAGE, inventoryId: row.id };
   };
 
-  if (!identityMatchesImportedRow(row, input.identity)) {
+  if (!identityMatchesImportedRow(row, identity)) {
     return deny(REASONS.wrong_identity);
   }
 
   const expected = input.expected || {
     level: 'L1',
     offeringId: expectedL1Offering(env),
-    programRoute: 'spike-interns',
   };
   if (!programRouteMatches(row, expected)) {
     return deny(REASONS.wrong_program_route);
@@ -167,9 +168,21 @@ export async function verifyVersaCode(input) {
     return deny(REASONS.wrong_offering);
   }
 
+  const grantor = input.grantor || createPortableEntitlementGrantor(input.admin);
+  if (await grantor.hasExisting(identity.userId, row.offering_id)) {
+    logger.info({ event: 'versa_already_granted', inventoryId: row.id, bypass: true });
+    return {
+      ok: true,
+      reason: REASONS.already_granted,
+      alreadyGranted: true,
+      row,
+      message: 'Access verified',
+    };
+  }
+
   const unavailable = rowUnavailableReason(row);
   if (unavailable === REASONS.reused) {
-    if (input.identity?.userId && String(row.redeemed_by) === String(input.identity.userId)) {
+    if (identity.userId && String(row.redeemed_by) === String(identity.userId)) {
       logger.info({ event: 'versa_already_granted', inventoryId: row.id });
       return {
         ok: true,
@@ -195,15 +208,11 @@ export async function verifyVersaCode(input) {
     return { ok: true, reason: REASONS.valid, row, message: 'Access verified' };
   }
 
-  const grantIntern =
-    input.grantIntern === true
-    && String(row.program_route) === 'spike-interns'
-    && String(row.level).toUpperCase() === 'L1';
-
   const granted = await consumeAndGrant(input.admin, {
     id: row.id,
-    userId: input.identity.userId,
-    grantIntern,
+    userId: identity.userId,
+    grantor,
+    paymentVerified: input.paymentVerified === true,
   });
   if (!granted?.ok) {
     return deny(granted?.reason || REASONS.reused);

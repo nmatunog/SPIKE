@@ -111,7 +111,6 @@ import { SuperuserAddCoachPanel } from './components/admin/SuperuserAddCoachPane
 import { isMockUser, shouldUseSupabaseForUser } from './lib/mockAuth.js';
 import { ForcePasswordChangeGate } from './components/ForcePasswordChangeGate.jsx';
 import { DailyActivationCodeCard } from './components/dashboard/DailyActivationCodeCard.jsx';
-import { VersaAccessCard } from './components/VersaAccessCard.jsx';
 import { BrandLexiconDashboardCard } from './components/resources/BrandLexiconDashboardCard.jsx';
 import { FacilitatorsContentReferenceDashboardCard } from './components/resources/FacilitatorsContentReferenceDashboardCard.jsx';
 import {
@@ -776,13 +775,8 @@ const SpikeMasterPortal = () => {
       }
 
       try {
-        const created = await registerInternViaApi({ name, email, password, university, squad, code });
-        showToast(
-          created?.versaRedeemRequired
-            ? 'Account created. Confirm your email, sign in, then activate access.'
-            : 'Account created. Sign in with your email and password — no confirmation email needed.',
-          'success',
-        );
+        await registerInternViaApi({ name, email, password, university, squad, code });
+        showToast('Account created. Sign in with your email and password — no confirmation email needed.', 'success');
         return;
       } catch (apiErr) {
         if (!isInternSignupApiUnavailable(apiErr)) {
@@ -791,7 +785,9 @@ const SpikeMasterPortal = () => {
       }
 
       if (!clientDailyActivationFallbackAllowed()) {
-        throw new Error('Intern signup API is not available. Client-side activation-code fallback is disabled.');
+        throw new Error(
+          'Intern signup API is not available. Client-side activation-code fallback is disabled (F1).',
+        );
       }
     },
     [usingSupabaseAuth, showToast],
@@ -2264,13 +2260,10 @@ const SpikeMasterPortal = () => {
         && (effectiveUserRole === 'intern' || (isSuperuserSession && viewAsRole === 'intern'))
         && !authLoading
         && !isRaSpikeProgram(internProgramSlug) ? (
-          <>
-            <ProgramWeekRibbon
-              internProgress={(internModuleUser ?? user)?.internProgress}
-              participantId={(internModuleUser ?? user)?.id ?? ''}
-            />
-            <VersaAccessCard />
-          </>
+          <ProgramWeekRibbon
+            internProgress={(internModuleUser ?? user)?.internProgress}
+            participantId={(internModuleUser ?? user)?.id ?? ''}
+          />
         ) : null}
 
       <main className={immersiveLife ? 'spike-life-immersive-main' : undefined}>

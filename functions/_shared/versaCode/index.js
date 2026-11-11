@@ -8,3 +8,10 @@ export { createVersaLogger } from './log.js';
 export { evaluateExistingOfferingGate } from './offeringGate.js';
 export { resetVersaRateLimitStore, versaRateLimitStore } from './rateLimit.js';
 export { identityMatchesImportedRow, verifyVersaCode } from './verifyRedeem.js';
+export {
+  createSessionIdentityProvider,
+  createMockVersaHandoffIdentityProvider,
+  createPortableEntitlementGrantor,
+  createMockL1Grantor,
+  createMockL2Grantor,
+} from './adapters.js';

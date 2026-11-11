@@ -1,7 +1,7 @@
 import React, { memo, useState } from 'react';
 import { PasswordInput } from './PasswordInput.jsx';
 
-export const InternSignupPanel = memo(function InternSignupPanel({ onSignup, versaGateEnabled = false }) {
+export const InternSignupPanel = memo(function InternSignupPanel({ onSignup }) {
   const [show, setShow] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -91,16 +91,12 @@ export const InternSignupPanel = memo(function InternSignupPanel({ onSignup, ver
             <span className="mb-1 block font-medium text-slate-700">Squad (optional)</span>
             <input id="intern-signup-squad" value={squad} onChange={(e) => setSquad(e.target.value)} className={fieldClass} />
           </label>
-          {versaGateEnabled ? null : (
-            <label className="block text-sm">
-              <span className="mb-1 block font-medium text-slate-700">Daily activation code</span>
-              <input required id="intern-signup-code" value={code} onChange={(e) => setCode(e.target.value)} className={`${fieldClass} uppercase`} autoComplete="one-time-code" />
-            </label>
-          )}
+          <label className="block text-sm">
+            <span className="mb-1 block font-medium text-slate-700">Daily activation code</span>
+            <input required id="intern-signup-code" value={code} onChange={(e) => setCode(e.target.value)} className={`${fieldClass} uppercase`} autoComplete="one-time-code" />
+          </label>
           <p className="text-xs text-slate-500">
-            {versaGateEnabled
-              ? 'Create your account, confirm your email, sign in, then activate access. Do not paste codes into the address bar.'
-              : 'No confirmation email — sign in right away after creating your account.'}
+            No confirmation email — sign in right away after creating your account.
           </p>
           <button type="submit" disabled={submitting} className="spike-btn-primary w-full">
             {submitting ? 'Creating account…' : 'Sign up as intern'}

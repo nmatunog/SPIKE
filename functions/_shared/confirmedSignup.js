@@ -8,14 +8,12 @@ import { findAuthUserByEmail } from './bootstrapSuperuser.js';
  *   password: string,
  *   name: string,
  *   mustChangePassword?: boolean,
- *   emailConfirm?: boolean,
  * }} input
  */
 export async function createConfirmedPortalUser(admin, input) {
   const email = String(input.email).trim().toLowerCase();
   const password = String(input.password ?? '');
   const name = String(input.name ?? '').trim();
-  const emailConfirm = input.emailConfirm !== false;
 
   const existing = await findAuthUserByEmail(admin, email);
   if (existing) {
@@ -25,7 +23,7 @@ export async function createConfirmedPortalUser(admin, input) {
   const { data: created, error: createErr } = await admin.auth.admin.createUser({
     email,
     password,
-    email_confirm: emailConfirm,
+    email_confirm: true,
     user_metadata: {
       name,
       must_change_password: Boolean(input.mustChangePassword),

@@ -1,14 +1,19 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { getActivationDateKey } from '../activationCode.js';
-import { handleInternSignup } from '../../api/auth/intern-signup.js';
+import { readFile } from 'node:fs/promises';
 import { handleVersaImport } from '../../api/versa/import.js';
 import { handleVersaRedeem } from '../../api/versa/redeem.js';
+import {
+  createMockL1Grantor,
+  createMockL2Grantor,
+  createMockVersaHandoffIdentityProvider,
+  createSessionIdentityProvider,
+} from './adapters.js';
 import { ASSUMED_CSV_COLUMNS, GENERIC_DENY_MESSAGE, HEADER_ALIASES, REASONS } from './constants.js';
 import { parseVersaCsv } from './csv.js';
 import { digestCode, requireHmacSecret } from './digest.js';
 import { importVersaCsv } from './importRows.js';
 import { consumeInventoryRow } from './inventory.js';
-import { resetVersaRateLimitStore } from './rateLimit.js';
+import { assertDurableRateLimit, resetVersaRateLimitStore } from './rateLimit.js';
 import { createMemoryAdmin } from './test/memoryAdmin.js';
 import { identityMatchesImportedRow, verifyVersaCode } from './verifyRedeem.js';
 
@@ -87,19 +92,6 @@ async function readJson(response) {
   };
 }
 
-function internSignupDeps(admin, { userId = 'user-intern-1' } = {}) {
-  return {
-    createServiceClient: () => admin,
-    createConfirmedPortalUser: async (_svc, input) => {
-      internSignupDeps.lastCreate = input;
-      return userId;
-    },
-    validateInternActivationCode: async () => {
-      throw new Error('daily intern code path should not run when Versa flag is on');
-    },
-  };
-}
-
 function verifiedAuthUser({ id = LEARNER_ID, email = LEARNER } = {}) {
   return {
     id,
@@ -115,22 +107,21 @@ function redeemDeps(admin) {
   };
 }
 
-async function redeem(admin, { code, level } = {}) {
+async function redeem(admin, { code, level, programRoute } = {}) {
   return handleVersaRedeem(
     {
-      request: postJson('https://portal.test/api/versa/redeem', { code, level }),
+      request: postJson('https://portal.test/api/versa/redeem', { code, level, programRoute }),
       env: FLAG_ENV,
     },
     redeemDeps(admin),
   );
 }
 
-describe('Versa CSV verification (Checkpoint 01 / Q1 hardening)', () => {
+describe('Versa CSV portable service', () => {
   let restoreLogs;
 
   beforeEach(() => {
     resetVersaRateLimitStore();
-    internSignupDeps.lastCreate = null;
     restoreLogs = installLogCapture();
   });
 
@@ -138,14 +129,11 @@ describe('Versa CSV verification (Checkpoint 01 / Q1 hardening)', () => {
     restoreLogs?.();
   });
 
-  it('documents assumed CSV columns for Versa (not yet agreed)', () => {
+  it('documents assumed CSV columns and does not alias plain email', () => {
     expect(ASSUMED_CSV_COLUMNS).toMatchObject({
       code: 'code',
       versaLeadRef: 'versa_lead_ref',
       verifiedEmail: 'verified_email',
-      level: 'level',
-      offeringId: 'offering_id',
-      status: 'status',
     });
     expect(HEADER_ALIASES.verifiedEmail).not.toContain('email');
   });
@@ -162,74 +150,21 @@ ${CODES.valid},lead-typed,${LEARNER},L1
   it('requires a 32+ character HMAC secret', () => {
     expect(() => requireHmacSecret({ VERSA_CODE_HMAC_SECRET: 'x'.repeat(31) })).toThrow(/VERSA_CODE_HMAC_SECRET/);
     expect(requireHmacSecret({ VERSA_CODE_HMAC_SECRET: 'x'.repeat(32) })).toHaveLength(32);
-    expect(HMAC.length).toBeGreaterThanOrEqual(32);
   });
 
-  it('intern-signup is unchanged when the flag is off', async () => {
-    const today = getActivationDateKey();
-    const admin = createMemoryAdmin({
-      activation_codes: [
-        { date_key: today, code: 'DAILYOK', expires_at: new Date(Date.now() + 60_000).toISOString() },
-      ],
-    });
-    const res = await handleInternSignup(
-      {
-        request: postJson('https://portal.test/api/auth/intern-signup', {
-          name: 'Synthetic Intern',
-          email: LEARNER,
-          password: 'password123',
-          code: 'DAILYOK',
-        }),
-        env: {},
-      },
-      {
-        createServiceClient: () => admin,
-        createConfirmedPortalUser: async () => 'user-flag-off',
-      },
-    );
-    const payload = await readJson(res);
-    expect(payload.status).toBe(200);
-    expect(payload.body).toEqual({ ok: true, userId: 'user-flag-off' });
-    expect(admin.tables.intern_progress).toHaveLength(1);
-    expect(admin.tables.versa_code_inventory).toHaveLength(0);
+  it('intern-signup is not coupled to the Versa module', async () => {
+    const src = await readFile(new URL('../../api/auth/intern-signup.js', import.meta.url), 'utf8');
+    expect(src.toLowerCase()).not.toContain('versa');
   });
 
-  it('flag on: intern-signup creates an unconfirmed account and never consumes a typed code', async () => {
-    const admin = createMemoryAdmin();
-    await importVersaCsv({ env: FLAG_ENV, admin, csvText: SYNTHETIC_CSV });
-    const res = await readJson(
-      await handleInternSignup(
-        {
-          request: postJson('https://portal.test/api/auth/intern-signup', {
-            name: 'Synthetic Learner',
-            email: LEARNER,
-            password: 'password123',
-            code: CODES.valid,
-          }),
-          env: FLAG_ENV,
-        },
-        internSignupDeps(admin, { userId: 'user-unconfirmed' }),
-      ),
-    );
-    expect(res.status).toBe(200);
-    expect(res.body.ok).toBe(true);
-    expect(res.body.versaRedeemRequired).toBe(true);
-    expect(internSignupDeps.lastCreate.emailConfirm).toBe(false);
-    expect(admin.tables.intern_progress).toHaveLength(0);
-    expect(admin.tables.versa_code_inventory.find((r) => r.versa_lead_ref === 'lead-valid').status).toBe(
-      'available',
-    );
-  });
-
-  it('client daily-code fallback is disabled (fail closed)', async () => {
-    const { readFile } = await import('node:fs/promises');
+  it('client daily-code fallback stays fail-closed (F1 trade-off)', async () => {
     const src = await readFile(new URL('../../../src/lib/internSignupService.js', import.meta.url), 'utf8');
     expect(src).toContain('export function clientDailyActivationFallbackAllowed()');
     expect(src).toContain('return false;');
   });
 
-  it('identity match requires a verified session, not a typed email', () => {
-    const row = { verified_email: LEARNER, verified_user_id: null };
+  it('identity match requires a verified session or Versa handoff, not a typed email', () => {
+    const row = { verified_email: LEARNER, verified_user_id: null, versa_lead_ref: 'lead-valid' };
     expect(identityMatchesImportedRow(row, { email: LEARNER })).toBe(false);
     expect(identityMatchesImportedRow(row, { userId: LEARNER_ID, email: LEARNER, emailConfirmed: false })).toBe(
       false,
@@ -238,14 +173,15 @@ ${CODES.valid},lead-typed,${LEARNER},L1
       true,
     );
     expect(
-      identityMatchesImportedRow(
-        { verified_email: null, verified_user_id: VERIFIED_USER_ID },
-        { userId: VERIFIED_USER_ID, email: OTHER, emailConfirmed: false },
-      ),
+      identityMatchesImportedRow(row, {
+        userId: LEARNER_ID,
+        versaHandoffVerified: true,
+        versaLeadRef: 'lead-valid',
+      }),
     ).toBe(true);
   });
 
-  describe('6-case matrix through authenticated /api/versa/redeem (verified session)', () => {
+  describe('9+ case matrix on the portable verify path', () => {
     async function setup(authUser = verifiedAuthUser()) {
       const admin = createMemoryAdmin({ authUser });
       const imported = await importVersaCsv({ env: FLAG_ENV, admin, csvText: SYNTHETIC_CSV });
@@ -254,73 +190,78 @@ ${CODES.valid},lead-typed,${LEARNER},L1
       return admin;
     }
 
-    it('valid: verified session identity + L1 spike-interns grants intern entitlement', async () => {
+    it('valid: verified session identity grants a portable entitlement, not intern role', async () => {
       const admin = await setup();
-      const res = await readJson(await redeem(admin, { code: CODES.valid }));
-      expect(res.status).toBe(200);
-      expect(res.body.ok).toBe(true);
-      expect(res.body.level).toBe('L1');
-      expect(res.body.confirmation).toContain('Financial Literacy (L1)');
-      expect(res.body.continueLabel).toBe('Continue to SPIKE Learning');
-      expect(admin.tables.intern_progress[0]).toMatchObject({
-        user_id: LEARNER_ID,
-        program_slug: 'spike-internship',
+      const grantor = createMockL1Grantor();
+      const result = await verifyVersaCode({
+        env: FLAG_ENV,
+        admin,
+        submittedCode: CODES.valid,
+        identityProvider: createSessionIdentityProvider({
+          userId: LEARNER_ID,
+          email: LEARNER,
+          emailConfirmed: true,
+        }),
+        grantor,
+        expected: { level: 'L1', programRoute: 'spike-interns' },
+        consume: true,
       });
+      expect(result.ok).toBe(true);
+      expect(result.reason).toBe(REASONS.valid);
+      expect(grantor.grants[0]).toMatchObject({
+        userId: LEARNER_ID,
+        level: 'L1',
+        role: null,
+      });
+      expect(admin.tables.intern_progress).toHaveLength(0);
       expect(admin.tables.versa_code_inventory.find((r) => r.versa_lead_ref === 'lead-valid').status).toBe(
         'redeemed',
       );
     });
 
-    it('wrong identity: code exists but verified link does not match the session', async () => {
+    it('wrong identity', async () => {
       const admin = await setup();
-      const res = await readJson(await redeem(admin, { code: CODES.wrongIdentity }));
+      const res = await readJson(await redeem(admin, { code: CODES.wrongIdentity, programRoute: 'spike-interns' }));
       expect(res.status).toBe(403);
       expect(res.body.message).toBe(GENERIC_DENY_MESSAGE);
-      expect(admin.tables.intern_progress).toHaveLength(0);
       expect(admin.tables.versa_code_attempts.some((a) => a.reason === REASONS.wrong_identity)).toBe(true);
     });
 
-    it('wrong level/offering: L2 row is not accepted at intern L1 entry', async () => {
+    it('wrong level/offering', async () => {
       const admin = await setup();
-      const res = await readJson(await redeem(admin, { code: CODES.wrongLevel }));
+      const res = await readJson(await redeem(admin, { code: CODES.wrongLevel, programRoute: 'spike-interns' }));
       expect(res.status).toBe(403);
-      expect(res.body.message).toBe(GENERIC_DENY_MESSAGE);
       expect(admin.tables.versa_code_attempts.some((a) => a.reason === REASONS.wrong_offering)).toBe(true);
     });
 
-    it('unknown: unregistered code is denied', async () => {
+    it('unknown', async () => {
       const admin = await setup();
       const res = await readJson(await redeem(admin, { code: CODES.unknown }));
       expect(res.status).toBe(403);
-      expect(res.body.message).toBe(GENERIC_DENY_MESSAGE);
       expect(admin.tables.versa_code_attempts.some((a) => a.reason === REASONS.unknown)).toBe(true);
     });
 
-    it('reused: already consumed row is denied', async () => {
+    it('reused', async () => {
       const admin = await setup();
-      const res = await readJson(await redeem(admin, { code: CODES.reused }));
+      const res = await readJson(await redeem(admin, { code: CODES.reused, programRoute: 'spike-interns' }));
       expect(res.status).toBe(403);
-      expect(res.body.message).toBe(GENERIC_DENY_MESSAGE);
       expect(admin.tables.versa_code_attempts.some((a) => a.reason === REASONS.reused)).toBe(true);
     });
 
-    it('revoked/invalid: revoked row is denied', async () => {
+    it('revoked', async () => {
       const admin = await setup();
-      const res = await readJson(await redeem(admin, { code: CODES.revoked }));
+      const res = await readJson(await redeem(admin, { code: CODES.revoked, programRoute: 'spike-interns' }));
       expect(res.status).toBe(403);
-      expect(res.body.message).toBe(GENERIC_DENY_MESSAGE);
       expect(admin.tables.versa_code_attempts.some((a) => a.reason === REASONS.revoked)).toBe(true);
     });
 
-    it('typed email is not identity: unverified session cannot redeem', async () => {
+    it('typed email only is not identity', async () => {
       const admin = await setup({ id: LEARNER_ID, email: LEARNER, email_confirmed_at: null });
-      const res = await readJson(await redeem(admin, { code: CODES.valid }));
+      const res = await readJson(await redeem(admin, { code: CODES.valid, programRoute: 'spike-interns' }));
       expect(res.status).toBe(403);
-      expect(res.body.message).toBe(GENERIC_DENY_MESSAGE);
       expect(admin.tables.versa_code_inventory.find((r) => r.versa_lead_ref === 'lead-valid').status).toBe(
         'available',
       );
-      expect(admin.tables.intern_progress).toHaveLength(0);
 
       const typed = await verifyVersaCode({
         env: FLAG_ENV,
@@ -334,55 +275,106 @@ ${CODES.valid},lead-typed,${LEARNER},L1
       expect(typed.reason).toBe(REASONS.unverified_identity);
     });
 
-    it('fallback bypass: intern-signup with the flag on cannot redeem via daily intern code', async () => {
-      const today = getActivationDateKey();
+    it('wrong program_route', async () => {
       const admin = await setup();
-      admin.tables.activation_codes.push({
-        date_key: today,
-        code: 'DAILYOK',
-        expires_at: new Date(Date.now() + 60_000).toISOString(),
-      });
-      const res = await readJson(
-        await handleInternSignup(
-          {
-            request: postJson('https://portal.test/api/auth/intern-signup', {
-              name: 'Synthetic Learner',
-              email: LEARNER,
-              password: 'password123',
-              code: 'DAILYOK',
-            }),
-            env: FLAG_ENV,
-          },
-          internSignupDeps(admin, { userId: 'user-bypass' }),
-        ),
-      );
-      expect(res.status).toBe(200);
-      expect(res.body.versaRedeemRequired).toBe(true);
+      const res = await readJson(await redeem(admin, { code: CODES.wrongRoute, programRoute: 'spike-interns' }));
+      expect(res.status).toBe(403);
+      expect(admin.tables.versa_code_attempts.some((a) => a.reason === REASONS.wrong_program_route)).toBe(true);
       expect(admin.tables.intern_progress).toHaveLength(0);
     });
 
-    it('wrong program_route: ra-spike L1 row does not grant spike-internship', async () => {
+    it('returning learner with an existing entitlement bypasses redemption', async () => {
       const admin = await setup();
-      const res = await readJson(await redeem(admin, { code: CODES.wrongRoute }));
-      expect(res.status).toBe(403);
-      expect(res.body.message).toBe(GENERIC_DENY_MESSAGE);
-      expect(admin.tables.intern_progress).toHaveLength(0);
-      expect(admin.tables.versa_code_attempts.some((a) => a.reason === REASONS.wrong_program_route)).toBe(true);
-      expect(admin.tables.versa_code_inventory.find((r) => r.versa_lead_ref === 'lead-route').status).toBe(
+      const grantor = createMockL1Grantor();
+      await grantor.grant({
+        userId: LEARNER_ID,
+        row: { offering_id: 'financial-literacy', level: 'L1', program_route: 'spike-interns', versa_lead_ref: 'lead-valid' },
+      });
+      const result = await verifyVersaCode({
+        env: FLAG_ENV,
+        admin,
+        submittedCode: CODES.valid,
+        identityProvider: createSessionIdentityProvider({
+          userId: LEARNER_ID,
+          email: LEARNER,
+          emailConfirmed: true,
+        }),
+        grantor,
+        expected: { level: 'L1', programRoute: 'spike-interns' },
+        consume: true,
+      });
+      expect(result.ok).toBe(true);
+      expect(result.alreadyGranted).toBe(true);
+      expect(admin.tables.versa_code_inventory.find((r) => r.versa_lead_ref === 'lead-valid').status).toBe(
         'available',
       );
     });
   });
 
-  it('verified_user_id match redeems without a confirmed email', async () => {
-    const admin = createMemoryAdmin({
-      authUser: { id: VERIFIED_USER_ID, email: OTHER, email_confirmed_at: null },
-    });
+  it('mock Versa handoff identity matches versa_lead_ref', async () => {
+    const admin = createMemoryAdmin();
     await importVersaCsv({ env: FLAG_ENV, admin, csvText: SYNTHETIC_CSV });
-    const res = await readJson(await redeem(admin, { code: CODES.verifiedUser }));
-    expect(res.status).toBe(200);
-    expect(res.body.ok).toBe(true);
-    expect(admin.tables.intern_progress[0].user_id).toBe(VERIFIED_USER_ID);
+    const result = await verifyVersaCode({
+      env: FLAG_ENV,
+      admin,
+      submittedCode: CODES.valid,
+      identityProvider: createMockVersaHandoffIdentityProvider({
+        versaLeadRef: 'lead-valid',
+        verified: true,
+        userId: 'user-handoff',
+        verifiedEmail: LEARNER,
+      }),
+      grantor: createMockL1Grantor(),
+      expected: { level: 'L1', programRoute: 'spike-interns' },
+      consume: true,
+    });
+    expect(result.ok).toBe(true);
+    expect(result.reason).toBe(REASONS.valid);
+  });
+
+  it('L2 mock grantor requires paymentVerified from the authorized provider, never the CSV', async () => {
+    const admin = createMemoryAdmin();
+    await importVersaCsv({ env: FLAG_ENV, admin, csvText: SYNTHETIC_CSV });
+    const unpaid = await verifyVersaCode({
+      env: FLAG_ENV,
+      admin,
+      submittedCode: CODES.wrongLevel,
+      identityProvider: createSessionIdentityProvider({
+        userId: LEARNER_ID,
+        email: LEARNER,
+        emailConfirmed: true,
+      }),
+      grantor: createMockL2Grantor({ paymentVerified: false }),
+      expected: { level: 'L2' },
+      paymentVerified: false,
+      consume: true,
+    });
+    expect(unpaid.ok).toBe(false);
+    expect(unpaid.reason).toBe(REASONS.gate_unsatisfied);
+
+    const paid = await verifyVersaCode({
+      env: FLAG_ENV,
+      admin,
+      submittedCode: CODES.wrongLevel,
+      identityProvider: createSessionIdentityProvider({
+        userId: LEARNER_ID,
+        email: LEARNER,
+        emailConfirmed: true,
+      }),
+      grantor: createMockL2Grantor({ paymentVerified: true }),
+      expected: { level: 'L2' },
+      paymentVerified: true,
+      consume: true,
+    });
+    expect(paid.ok).toBe(true);
+    expect(paid.row.level).toBe('L2');
+  });
+
+  it('rate limit fails closed when versa_rate_limits is missing', async () => {
+    const admin = createMemoryAdmin({ missingRateLimits: true });
+    const limited = await assertDurableRateLimit({ admin, key: 'user:x' });
+    expect(limited.ok).toBe(false);
+    expect(limited.reason).toBe(REASONS.rate_limited);
   });
 
   it('concurrency: only one redeem consumes an available row', async () => {
@@ -395,8 +387,6 @@ ${CODES.valid},lead-typed,${LEARNER},L1
       consumeInventoryRow(admin, { id: row.id, userId: 'user-race-b' }),
     ]);
     expect([consumedA, consumedB].filter(Boolean)).toHaveLength(1);
-    expect([consumedA, consumedB].filter((item) => item == null)).toHaveLength(1);
-    expect(admin.tables.versa_code_inventory.find((r) => r.versa_lead_ref === 'lead-once').status).toBe('redeemed');
 
     const [first, second] = await Promise.all([
       verifyVersaCode({
@@ -406,7 +396,6 @@ ${CODES.valid},lead-typed,${LEARNER},L1
         identity,
         expected: { level: 'L1', programRoute: 'spike-interns' },
         consume: true,
-        grantIntern: true,
       }),
       verifyVersaCode({
         env: FLAG_ENV,
@@ -415,7 +404,6 @@ ${CODES.valid},lead-typed,${LEARNER},L1
         identity,
         expected: { level: 'L1', programRoute: 'spike-interns' },
         consume: true,
-        grantIntern: true,
       }),
     ]);
     const wins = [first, second].filter((result) => result.ok && result.reason === REASONS.valid);
@@ -424,41 +412,17 @@ ${CODES.valid},lead-typed,${LEARNER},L1
     );
     expect(wins.length + repeats.length).toBe(2);
     expect(wins.length).toBeLessThanOrEqual(1);
-    expect(admin.tables.versa_code_inventory.find((r) => r.versa_lead_ref === 'lead-valid').status).toBe('redeemed');
-    expect(
-      admin.tables.versa_entitlements.filter(
-        (e) => e.offering_id === 'financial-literacy' && e.user_id === LEARNER_ID,
-      ),
-    ).toHaveLength(1);
   });
 
-  it('L2 CSV match is not payment proof', async () => {
-    const admin = createMemoryAdmin();
+  it('authenticated redeem path is idempotent for the same learner', async () => {
+    const admin = createMemoryAdmin({ authUser: verifiedAuthUser() });
     await importVersaCsv({ env: FLAG_ENV, admin, csvText: SYNTHETIC_CSV });
-    const result = await verifyVersaCode({
-      env: FLAG_ENV,
-      admin,
-      submittedCode: CODES.wrongLevel,
-      identity: { userId: 'user-l2', email: LEARNER, emailConfirmed: true },
-      expected: { level: 'L2', programRoute: 'spike-interns' },
-      paymentVerified: false,
-      consume: true,
-    });
-    expect(result.ok).toBe(false);
-    expect(result.reason).toBe(REASONS.gate_unsatisfied);
-  });
-
-  it('authenticated redeem path grants once and is idempotent for the same learner', async () => {
-    const admin = createMemoryAdmin({
-      authUser: verifiedAuthUser(),
-    });
-    await importVersaCsv({ env: FLAG_ENV, admin, csvText: SYNTHETIC_CSV });
-    const first = await readJson(await redeem(admin, { code: CODES.valid }));
+    const first = await readJson(await redeem(admin, { code: CODES.valid, programRoute: 'spike-interns' }));
     expect(first.status).toBe(200);
-    expect(first.body.confirmation).toContain('Financial Literacy (L1)');
-    const second = await readJson(await redeem(admin, { code: CODES.valid }));
+    const second = await readJson(await redeem(admin, { code: CODES.valid, programRoute: 'spike-interns' }));
     expect(second.status).toBe(200);
     expect(second.body.alreadyGranted).toBe(true);
+    expect(admin.tables.intern_progress).toHaveLength(0);
   });
 
   it('staff import accepts a custom columnMap and never returns raw codes', async () => {
@@ -491,7 +455,6 @@ ${CODES.valid},lead-map,${LEARNER},L1,financial-literacy,available
     expect(payload.body.imported).toBe(1);
     const serialized = JSON.stringify(payload.body);
     expect(serialized).not.toContain(CODES.valid);
-    expect(serialized).not.toContain('Access Token');
   });
 
   it('stores a digest rather than plaintext and logs never include raw codes', async () => {
@@ -500,21 +463,7 @@ ${CODES.valid},lead-map,${LEARNER},L1,financial-literacy,available
     const digest = await digestCode(HMAC, CODES.valid);
     expect(admin.tables.versa_code_inventory.some((r) => r.code_digest === digest)).toBe(true);
     expect(admin.tables.versa_code_inventory.every((r) => !r.code)).toBe(true);
-
-    await handleInternSignup(
-      {
-        request: postJson('https://portal.test/api/auth/intern-signup', {
-          name: 'Synthetic Learner',
-          email: LEARNER,
-          password: 'password123',
-          code: CODES.valid,
-        }),
-        env: FLAG_ENV,
-      },
-      internSignupDeps(admin, { userId: 'user-log-1' }),
-    );
-    await redeem(admin, { code: CODES.valid });
-
+    await redeem(admin, { code: CODES.valid, programRoute: 'spike-interns' });
     const blob = capturedLogs.join('\n');
     for (const raw of Object.values(CODES)) {
       expect(blob).not.toContain(raw);

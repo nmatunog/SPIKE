@@ -8,6 +8,6 @@ export async function onRequest(ctx) {
   if (request.method !== 'GET') return json({ message: 'Method not allowed.' }, 405);
   return json({
     enabled: isVersaCsvCodeGateEnabled(env),
-    program: 'spike-interns',
+    service: 'versa-csv-identity',
   });
 }

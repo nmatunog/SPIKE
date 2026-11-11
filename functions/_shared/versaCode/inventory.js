@@ -1,6 +1,7 @@
 /**
  * Inventory helpers against versa_code_inventory (service-role client).
  * Tests inject an in-memory admin with the same chainable surface.
+ * Portable grant = versa_entitlements. No intern role / intern_progress.
  */
 
 /** @param {import('@supabase/supabase-js').SupabaseClient} admin */
@@ -17,18 +18,21 @@ export async function findInventoryByDigest(admin, digest) {
 }
 
 /**
- * Atomic consume + entitlement grant. Rolls back consume if grant fails (RPC).
- * Retry: if this user already redeemed the row, ensure entitlement exists.
+ * Atomic consume + portable entitlement grant. Destination grantor runs in the
+ * same JS fallback transaction (rollback consume if grant throws).
  * @param {import('@supabase/supabase-js').SupabaseClient} admin
  */
-export async function consumeAndGrant(admin, { id, userId, grantIntern = false }) {
+export async function consumeAndGrant(admin, { id, userId, grantor = null, paymentVerified = false }) {
   const { data, error } = await admin.rpc('redeem_versa_code_and_grant', {
     p_id: id,
     p_user_id: userId,
-    p_grant_intern: Boolean(grantIntern),
   });
   if (!error) {
-    return data ?? { ok: false, reason: 'reused' };
+    const result = data ?? { ok: false, reason: 'reused' };
+    if (result.ok && grantor) {
+      await grantor.grant({ userId, row: result.row, paymentVerified });
+    }
+    return result;
   }
 
   const missingRpc =
@@ -36,11 +40,10 @@ export async function consumeAndGrant(admin, { id, userId, grantIntern = false }
     /could not find the function|schema cache|does not exist/i.test(error.message || '');
   if (!missingRpc) throw new Error(error.message);
 
-  return consumeAndGrantFallback(admin, { id, userId, grantIntern });
+  return consumeAndGrantFallback(admin, { id, userId, grantor, paymentVerified });
 }
 
-/** In-memory / pre-RPC fallback — still serialized by the admin mock. */
-async function consumeAndGrantFallback(admin, { id, userId, grantIntern }) {
+async function consumeAndGrantFallback(admin, { id, userId, grantor, paymentVerified }) {
   const { data: existing } = await admin
     .from('versa_code_inventory')
     .select(
@@ -58,9 +61,7 @@ async function consumeAndGrantFallback(admin, { id, userId, grantIntern }) {
       offeringId: existing.offering_id,
       programRoute: existing.program_route,
     });
-    if (grantIntern && existing.program_route === 'spike-interns' && existing.level === 'L1') {
-      await ensureInternProgressRow(admin, userId);
-    }
+    if (grantor) await grantor.grant({ userId, row: existing, paymentVerified });
     return { ok: true, already_granted: true, row: existing, entitlement };
   }
 
@@ -89,9 +90,7 @@ async function consumeAndGrantFallback(admin, { id, userId, grantIntern }) {
       offeringId: updated.offering_id,
       programRoute: updated.program_route,
     });
-    if (grantIntern && updated.program_route === 'spike-interns' && updated.level === 'L1') {
-      await ensureInternProgressRow(admin, userId);
-    }
+    if (grantor) await grantor.grant({ userId, row: updated, paymentVerified });
     return { ok: true, already_granted: false, row: updated, entitlement };
   } catch (grantErr) {
     await admin
@@ -107,26 +106,9 @@ async function consumeAndGrantFallback(admin, { id, userId, grantIntern }) {
   }
 }
 
-async function ensureInternProgressRow(admin, userId) {
-  const { data: existing } = await admin
-    .from('intern_progress')
-    .select('user_id')
-    .eq('user_id', userId)
-    .maybeSingle();
-  if (existing) return;
-  const { error } = await admin.from('intern_progress').insert({
-    user_id: userId,
-    segment: 1,
-    hours: 0,
-    licensed: false,
-    program_slug: 'spike-internship',
-  });
-  if (error) throw new Error(error.message);
-}
-
 /** @deprecated use consumeAndGrant */
 export async function consumeInventoryRow(admin, { id, userId }) {
-  const result = await consumeAndGrant(admin, { id, userId, grantIntern: false });
+  const result = await consumeAndGrant(admin, { id, userId });
   return result?.ok ? result.row : null;
 }
 
