@@ -88,7 +88,7 @@ export function createMockVersaHandoffIdentityProvider(payload = {}) {
  * profiles.role = INTERN.
  *
  * @typedef {{
- *   hasExisting: (userId: string, offeringId: string) => Promise<boolean>,
+ *   hasExisting: (userId: string, offeringId: string, programRoute?: string) => Promise<boolean>,
  *   grant: (input: { userId: string, row: object, paymentVerified?: boolean }) => Promise<object>,
  * }} EntitlementGrantor
  */
@@ -96,9 +96,13 @@ export function createMockVersaHandoffIdentityProvider(payload = {}) {
 /** Portable store: versa_entitlements only. */
 export function createPortableEntitlementGrantor(admin) {
   return {
-    async hasExisting(userId, offeringId) {
+    async hasExisting(userId, offeringId, programRoute) {
       const rows = await listEntitlementsForUser(admin, userId);
-      return rows.some((row) => String(row.offering_id) === String(offeringId));
+      return rows.some(
+        (row) =>
+          String(row.offering_id) === String(offeringId) &&
+          (!programRoute || String(row.program_route) === String(programRoute)),
+      );
     },
     async grant({ userId, row }) {
       return upsertEntitlement(admin, {
@@ -120,9 +124,12 @@ export function createMockL1Grantor() {
   return {
     grants,
     level: 'L1',
-    async hasExisting(userId, offeringId) {
+    async hasExisting(userId, offeringId, programRoute) {
       return grants.some(
-        (row) => String(row.userId) === String(userId) && String(row.offeringId) === String(offeringId),
+        (row) =>
+          String(row.userId) === String(userId) &&
+          String(row.offeringId) === String(offeringId) &&
+          (!programRoute || String(row.programRoute) === String(programRoute)),
       );
     },
     async grant({ userId, row }) {
@@ -154,9 +161,12 @@ export function createMockL2Grantor({ paymentVerified = false } = {}) {
     grants,
     level: 'L2',
     paymentVerified: Boolean(paymentVerified),
-    async hasExisting(userId, offeringId) {
+    async hasExisting(userId, offeringId, programRoute) {
       return grants.some(
-        (row) => String(row.userId) === String(userId) && String(row.offeringId) === String(offeringId),
+        (row) =>
+          String(row.userId) === String(userId) &&
+          String(row.offeringId) === String(offeringId) &&
+          (!programRoute || String(row.programRoute) === String(programRoute)),
       );
     },
     async grant({ userId, row, paymentVerified: paid }) {

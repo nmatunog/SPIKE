@@ -3,13 +3,16 @@ import { digestCode, requireHmacSecret } from './digest.js';
 import { isVersaCsvCodeGateEnabled } from './flag.js';
 import { insertInventoryRow } from './inventory.js';
 import { createVersaLogger } from './log.js';
+import { spreadsheetToCsvText } from './spreadsheet.js';
 
 /**
  * Staff-only CSV intake. Stores digests, never plaintext codes.
  * @param {{
  *   env: Record<string, string>,
  *   admin: import('@supabase/supabase-js').SupabaseClient,
- *   csvText: string,
+ *   csvText?: string,
+ *   xlsxBuffer?: Buffer | Uint8Array,
+ *   spreadsheet?: string | Buffer | Uint8Array,
  *   columnMap?: Record<string, string>,
  *   importedBy?: string | null,
  *   logger?: ReturnType<typeof createVersaLogger>,
@@ -28,7 +31,11 @@ export async function importVersaCsv(input) {
     return { ok: false, error: 'VERSA_CODE_HMAC_SECRET is not configured.', imported: 0, rejected: [] };
   }
 
-  const parsed = parseVersaCsv(input.csvText, input.columnMap || {});
+  const csvText = input.csvText
+    || (input.xlsxBuffer || input.spreadsheet
+      ? await spreadsheetToCsvText(input.xlsxBuffer || input.spreadsheet)
+      : '');
+  const parsed = parseVersaCsv(csvText, input.columnMap || {});
   if (!parsed.ok) {
     return { ok: false, error: parsed.error, imported: 0, rejected: parsed.rejected || [] };
   }

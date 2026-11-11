@@ -35,6 +35,7 @@ export const REASONS = Object.freeze({
   invalid_row: 'invalid_row',
   wrong_program_route: 'wrong_program_route',
   unverified_identity: 'unverified_identity',
+  code_not_required: 'code_not_required',
 });
 
 /**

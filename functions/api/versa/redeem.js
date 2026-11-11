@@ -1,9 +1,10 @@
 import { createServiceClient, createUserClient } from '../../_shared/supabaseAdmin.js';
 import { createSessionIdentityProvider } from '../../_shared/versaCode/adapters.js';
 import {
-  GENERIC_DENY_MESSAGE,
+  enrollmentUiMessage,
+  enrollmentUiState,
   isVersaCsvCodeGateEnabled,
-  verifyVersaCode,
+  redeem as redeemVersa,
 } from '../../_shared/versaCode/index.js';
 import { corsPreflight, json } from '../../_shared/verifySuperuser.js';
 
@@ -23,7 +24,7 @@ export async function handleVersaRedeem(ctx, deps = {}) {
 
   const createUser = deps.createUserClient || createUserClient;
   const createService = deps.createServiceClient || createServiceClient;
-  const verify = deps.verifyVersaCode || verifyVersaCode;
+  const redeemFn = deps.redeem || redeemVersa;
 
   const userClient = createUser(env, request.headers.get('Authorization'));
   if (!userClient) return json({ message: 'Sign in to verify your access code.' }, 401);
@@ -54,44 +55,56 @@ export async function handleVersaRedeem(ctx, deps = {}) {
   }
 
   const submittedCode = String(body?.code ?? body?.accessCode ?? '').trim();
-  const expectedLevel = String(body?.level ?? 'L1').toUpperCase() === 'L2' ? 'L2' : 'L1';
-  const programRoute = body?.programRoute ? String(body.programRoute) : undefined;
+  const intendedLevel = String(body?.intendedLevel ?? body?.level ?? 'L1').toUpperCase() === 'L2' ? 'L2' : 'L1';
+  const intendedCourse = String(body?.intendedCourse ?? body?.programRoute ?? '').trim();
   const user = userData.user;
 
-  const result = await verify({
-    env,
-    admin,
-    request,
+  const result = await redeemFn(
     submittedCode,
-    identityProvider: createSessionIdentityProvider({
+    createSessionIdentityProvider({
       userId: user.id,
       email: user.email,
       emailConfirmedAt: user.email_confirmed_at,
     }),
-    expected: {
-      level: expectedLevel,
-      programRoute,
+    intendedCourse,
+    intendedLevel,
+    {
+      env,
+      admin,
+      request,
+      offeringId: body?.offeringId,
+      programRoute: body?.programRoute,
+      paymentVerified: body?.paymentVerified === true,
     },
-    paymentVerified: false,
-    consume: true,
-  });
+  );
 
+  const state = enrollmentUiState(result);
   if (!result.ok) {
-    return json({ message: result.message || GENERIC_DENY_MESSAGE }, 403);
+    return json(
+      {
+        message: enrollmentUiMessage(state),
+        state,
+      },
+      403,
+    );
   }
 
   const confirmation =
-    result.row?.level === 'L1'
-      ? 'Access verified — Financial Literacy (L1)'
-      : `Access verified — ${result.row?.offering_id || 'approved L2 offering'}`;
+    state === 'free-no-code'
+      ? enrollmentUiMessage('free-no-code')
+      : result.row?.level === 'L1'
+        ? 'Access verified — Financial Literacy (L1)'
+        : `Access verified — ${result.row?.offering_id || result.offering?.label || 'approved offering'}`;
 
   return json({
     ok: true,
+    state,
     alreadyGranted: Boolean(result.alreadyGranted),
-    level: result.row?.level,
-    offeringId: result.row?.offering_id,
+    level: result.row?.level || result.offering?.level,
+    offeringId: result.row?.offering_id || result.offering?.id,
     programRoute: result.row?.program_route,
     confirmation,
+    message: enrollmentUiMessage(state),
     continueLabel: 'Continue to SPIKE Learning',
   });
 }

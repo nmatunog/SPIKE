@@ -1,5 +1,10 @@
 import { createServiceClient } from '../../_shared/supabaseAdmin.js';
-import { importVersaCsv, isVersaCsvCodeGateEnabled } from '../../_shared/versaCode/index.js';
+import {
+  importVersaCsv,
+  isVersaCsvCodeGateEnabled,
+  loadColumnMapFromEnv,
+  mergeColumnMaps,
+} from '../../_shared/versaCode/index.js';
 import {
   assertAdminCanWrite,
   corsPreflight,
@@ -50,15 +55,20 @@ export async function handleVersaImport(ctx, deps = {}) {
   }
 
   const csvText = String(body?.csv ?? body?.csvText ?? '');
-  const columnMap = body?.columnMap && typeof body.columnMap === 'object' ? body.columnMap : {};
-  if (!csvText.trim()) {
-    return json({ message: 'CSV text is required.' }, 400);
+  const xlsxBase64 = String(body?.xlsxBase64 ?? body?.xlsx ?? '').trim();
+  const columnMap = mergeColumnMaps(
+    loadColumnMapFromEnv(env),
+    body?.columnMap && typeof body.columnMap === 'object' ? body.columnMap : {},
+  );
+  if (!csvText.trim() && !xlsxBase64) {
+    return json({ message: 'CSV text or xlsxBase64 is required.' }, 400);
   }
 
   const result = await importer({
     env,
     admin,
-    csvText,
+    csvText: csvText.trim() || undefined,
+    xlsxBuffer: xlsxBase64 ? Buffer.from(xlsxBase64, 'base64') : undefined,
     columnMap,
     importedBy: actor.profile?.id ?? actor.user?.id ?? null,
   });

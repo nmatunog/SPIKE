@@ -9,6 +9,7 @@ import { digestCode, normalizeEmail, normalizeSubmittedCode, requireHmacSecret }
 import { isVersaCsvCodeGateEnabled } from './flag.js';
 import { consumeAndGrant, findInventoryByDigest, recordAttempt } from './inventory.js';
 import { createVersaLogger } from './log.js';
+import { resolveOfferingPolicy } from './offerings.js';
 import { evaluateExistingOfferingGate } from './offeringGate.js';
 import { assertDurableRateLimit, rateLimitKey, recordDurableFail } from './rateLimit.js';
 
@@ -116,6 +117,32 @@ export async function verifyVersaCode(input) {
     return { ok: false, reason: REASONS.unverified_identity, message: GENERIC_DENY_MESSAGE };
   }
 
+  const expected = input.expected || {
+    level: 'L1',
+    offeringId: expectedL1Offering(env),
+  };
+  const policy = resolveOfferingPolicy(expected.offeringId, expected.level);
+
+  if (!submittedCode && policy.requiresCode === false) {
+    if (
+      expected.programRoute
+      && policy.courses?.length
+      && !policy.courses.includes(String(expected.programRoute))
+    ) {
+      await recordDurableFail({ admin: input.admin, key: rlKey });
+      logger.warn({ event: 'versa_denied', reason: REASONS.wrong_program_route });
+      return { ok: false, reason: REASONS.wrong_program_route, message: GENERIC_DENY_MESSAGE };
+    }
+    logger.info({ event: 'versa_code_not_required', offeringId: policy.id, level: policy.level });
+    return {
+      ok: true,
+      reason: REASONS.code_not_required,
+      alreadyGranted: false,
+      offering: policy,
+      message: 'This offering is free — no access code is required.',
+    };
+  }
+
   if (!submittedCode) {
     await recordDurableFail({ admin: input.admin, key: rlKey });
     logger.warn({ event: 'versa_denied', reason: REASONS.unknown });
@@ -157,10 +184,6 @@ export async function verifyVersaCode(input) {
     return deny(REASONS.wrong_identity);
   }
 
-  const expected = input.expected || {
-    level: 'L1',
-    offeringId: expectedL1Offering(env),
-  };
   if (!programRouteMatches(row, expected)) {
     return deny(REASONS.wrong_program_route);
   }
@@ -169,7 +192,7 @@ export async function verifyVersaCode(input) {
   }
 
   const grantor = input.grantor || createPortableEntitlementGrantor(input.admin);
-  if (await grantor.hasExisting(identity.userId, row.offering_id)) {
+  if (await grantor.hasExisting(identity.userId, row.offering_id, row.program_route)) {
     logger.info({ event: 'versa_already_granted', inventoryId: row.id, bypass: true });
     return {
       ok: true,

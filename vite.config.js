@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { coachDeckGuardPlugin } from './scripts/vite-coach-deck-guard.mjs'
+import { versaLocalDemoPlugin } from './scripts/vite-versa-local-demo.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const lifeRoot = path.resolve(__dirname, 'SPIKE_LIFE')
@@ -64,7 +65,7 @@ function raSpikeStandaloneDevHtmlPlugin() {
 export default defineConfig({
   // Internship: `/`. RA-SPIKE Pages origin: `/ra-spike/` (portal proxy + dynamic chunks).
   base: appBase,
-  plugins: [react(), coachDeckGuardPlugin(), raSpikeStandaloneDevHtmlPlugin()],
+  plugins: [versaLocalDemoPlugin(), react(), coachDeckGuardPlugin(), raSpikeStandaloneDevHtmlPlugin()],
   resolve: {
     alias: [
       {

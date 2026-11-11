@@ -9,7 +9,7 @@ import {
   createMockVersaHandoffIdentityProvider,
   createSessionIdentityProvider,
 } from './adapters.js';
-import { ASSUMED_CSV_COLUMNS, GENERIC_DENY_MESSAGE, HEADER_ALIASES, REASONS } from './constants.js';
+import { ASSUMED_CSV_COLUMNS, HEADER_ALIASES, REASONS } from './constants.js';
 import { parseVersaCsv } from './csv.js';
 import { digestCode, requireHmacSecret } from './digest.js';
 import { importVersaCsv } from './importRows.js';
@@ -240,7 +240,7 @@ ${CODES.valid},lead-typed,${LEARNER},L1
       const admin = await setup();
       const res = await readJson(await redeem(admin, { code: CODES.wrongIdentity, programRoute: 'spike-interns' }));
       expect(res.status).toBe(403);
-      expect(res.body.message).toBe(GENERIC_DENY_MESSAGE);
+      expect(res.body.state).toBe('identity-mismatch');
       expect(admin.tables.versa_code_attempts.some((a) => a.reason === REASONS.wrong_identity)).toBe(true);
     });
 

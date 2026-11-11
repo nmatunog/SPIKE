@@ -13,7 +13,10 @@ function matchesFilters(row, filters) {
 
 function upsertEntitlementRow(tables, nextId, row) {
   const existing = tables.versa_entitlements.find(
-    (item) => String(item.user_id) === String(row.user_id) && String(item.offering_id) === String(row.offering_id),
+    (item) =>
+      String(item.user_id) === String(row.user_id) &&
+      String(item.offering_id) === String(row.offering_id) &&
+      String(item.program_route || '') === String(row.program_route || ''),
   );
   if (existing) {
     Object.assign(existing, row);
