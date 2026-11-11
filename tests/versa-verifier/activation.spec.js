@@ -42,28 +42,28 @@ test.describe('portable Versa activation harness', () => {
   test('expired', async ({ page }) => {
     await openHarness(page);
     await verifyCode(page, 'SYN-L1-EXPIRED-J0');
-    await expect(page.getByTestId('versa-enrollment-state')).toHaveAttribute('data-state', 'expired');
+    await expect(page.getByTestId('versa-enrollment-state')).toHaveAttribute('data-state', 'invalid');
     await shot(page, 'expired');
   });
 
   test('already redeemed', async ({ page }) => {
     await openHarness(page);
     await verifyCode(page, 'SYN-L1-REUSED-E5');
-    await expect(page.getByTestId('versa-enrollment-state')).toHaveAttribute('data-state', 'already-redeemed');
+    await expect(page.getByTestId('versa-enrollment-state')).toHaveAttribute('data-state', 'invalid');
     await shot(page, 'already-redeemed');
   });
 
   test('identity mismatch', async ({ page }) => {
     await openHarness(page);
     await verifyCode(page, 'SYN-L1-WRONG-ID-C3');
-    await expect(page.getByTestId('versa-enrollment-state')).toHaveAttribute('data-state', 'identity-mismatch');
+    await expect(page.getByTestId('versa-enrollment-state')).toHaveAttribute('data-state', 'invalid');
     await shot(page, 'identity-mismatch');
   });
 
   test('wrong course/level', async ({ page }) => {
     await openHarness(page);
     await verifyCode(page, 'SYN-L1-ROUTE-H8');
-    await expect(page.getByTestId('versa-enrollment-state')).toHaveAttribute('data-state', 'wrong-course-level');
+    await expect(page.getByTestId('versa-enrollment-state')).toHaveAttribute('data-state', 'invalid');
     await shot(page, 'wrong-course-level');
   });
 

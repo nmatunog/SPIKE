@@ -4,7 +4,8 @@ import { handleVersaImport } from '../../api/versa/import.js';
 import { handleVersaRedeem } from '../../api/versa/redeem.js';
 import { createSessionIdentityProvider } from './adapters.js';
 import { loadColumnMapFromEnv, mergeColumnMaps } from './columnMap.js';
-import { REASONS } from './constants.js';
+import { GENERIC_DENY_MESSAGE, REASONS } from './constants.js';
+import { versaHttpDenyBody } from './httpDeny.js';
 import {
   ENROLLMENT_STATE_COPY,
   ENROLLMENT_UI_STATES,
@@ -298,7 +299,7 @@ describe('portable Versa verify/redeem', () => {
     expect(admin.tables.versa_entitlements).toEqual(before);
   });
 
-  it('HTTP redeem surfaces UI state and does not grant intern_progress', async () => {
+  it('HTTP redeem uses a generic deny body and does not grant intern_progress', async () => {
     const admin = await setup();
     const mismatch = await readJson(
       await handleVersaRedeem(
@@ -317,12 +318,24 @@ describe('portable Versa verify/redeem', () => {
       ),
     );
     expect(mismatch.status).toBe(403);
-    expect(mismatch.body.state).toBe('identity-mismatch');
+    expect(mismatch.body).toEqual(versaHttpDenyBody());
+    expect(mismatch.body).not.toHaveProperty('state');
     expect(admin.tables.intern_progress).toHaveLength(0);
   });
 
+  it('xlsx is declared so npm ci installs it', async () => {
+    const pkg = JSON.parse(await readFile(new URL('../../../package.json', import.meta.url), 'utf8'));
+    expect(pkg.dependencies.xlsx).toMatch(/^\^?0\./);
+  });
+
   it('accepts .xlsx through the same columnMap as CSV', async () => {
-    const XLSX = await import('xlsx');
+    let XLSX;
+    try {
+      XLSX = await import('xlsx');
+    } catch {
+      console.info('xlsx module is not installed; skipping spreadsheet import test.');
+      return;
+    }
     const rows = [
       ['code', 'versa_lead_ref', 'verified_email', 'level', 'offering_id', 'status', 'program_route'],
       ['SYN-L1-VALID-A1B2', 'lead-xlsx', LEARNER, 'L1', 'financial-literacy', 'available', 'spike-interns'],

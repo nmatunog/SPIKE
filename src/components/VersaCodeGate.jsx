@@ -2,8 +2,12 @@ import React, { memo, useState } from 'react';
 import { VERSA_GENERIC_DENY, VERSA_HELP_PLACEHOLDER } from '../lib/versaCodeGateService.js';
 
 /**
- * Flag-gated UX over server verification. No frontend validation of codes,
- * no URL/query persistence, no browser storage of the pasted value.
+ * DEMO-ONLY paste UI. Not imported by intern or RA-SPIKE onboarding.
+ * Not wired into production Pages. Prefer `VersaActivateHarness` for the
+ * local verifier demo (`/dev/versa-activate`). HTTP redeem stays generic-deny.
+ *
+ * No frontend validation of codes, no URL/query persistence, no browser
+ * storage of the pasted value.
  */
 export const VersaCodeGate = memo(function VersaCodeGate({
   heading = 'Activate your SPIKE access',

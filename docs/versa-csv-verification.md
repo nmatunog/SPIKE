@@ -52,7 +52,9 @@ Durable `versa_rate_limits`, keyed by `user:<id>` or `ip:<addr>`. Increment is t
 
 ## Isolated UI
 
-Neutral paste-friendly **Activate your SPIKE access** screen (`src/components/VersaCodeGate.jsx`):
+`src/components/VersaCodeGate.jsx` is a **demo-only** component. It is not imported by intern or RA-SPIKE onboarding and is not a production Pages surface. Prefer `VersaActivateHarness` (`/dev/versa-activate`) for the local verifier.
+
+Neutral paste-friendly **Activate your SPIKE access** screen:
 
 - Heading: Activate your SPIKE access
 - Action: Verify & Continue

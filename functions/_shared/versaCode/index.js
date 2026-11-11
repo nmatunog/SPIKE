@@ -11,6 +11,7 @@ export {
   programSlugToVersaRoute,
 } from './enrollmentUi.js';
 export { isVersaCsvCodeGateEnabled } from './flag.js';
+export { VERSA_HTTP_DENY_STATUS, versaHttpDeny, versaHttpDenyBody } from './httpDeny.js';
 export { importVersaCsv } from './importRows.js';
 export { listEntitlementsForUser } from './inventory.js';
 export { createVersaLogger } from './log.js';

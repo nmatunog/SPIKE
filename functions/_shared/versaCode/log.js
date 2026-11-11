@@ -14,6 +14,9 @@ const REDACT_KEYS = new Set([
   'digest',
   'code_digest',
   'codeDigest',
+  'email',
+  'verified_email',
+  'userId',
 ]);
 
 /** @param {unknown} value */

@@ -9,7 +9,9 @@ import {
   createMockVersaHandoffIdentityProvider,
   createSessionIdentityProvider,
 } from './adapters.js';
-import { ASSUMED_CSV_COLUMNS, HEADER_ALIASES, REASONS } from './constants.js';
+import { ASSUMED_CSV_COLUMNS, GENERIC_DENY_MESSAGE, HEADER_ALIASES, REASONS } from './constants.js';
+import { versaHttpDenyBody } from './httpDeny.js';
+import { createVersaLogger } from './log.js';
 import { parseVersaCsv } from './csv.js';
 import { digestCode, requireHmacSecret } from './digest.js';
 import { importVersaCsv } from './importRows.js';
@@ -50,6 +52,7 @@ ${CODES.revoked},lead-rev,${LEARNER},,L1,financial-literacy,revoked,spike-intern
 ${CODES.concurrent},lead-once,${LEARNER},,L1,financial-literacy,available,spike-interns
 ${CODES.wrongRoute},lead-route,${LEARNER},,L1,financial-literacy,available,ra-spike
 ${CODES.verifiedUser},lead-uid,,${VERIFIED_USER_ID},L1,financial-literacy,available,spike-interns
+SYN-L1-EXPIRED-J0,lead-exp,${LEARNER},,L1,financial-literacy,expired,spike-interns
 `;
 
 const capturedLogs = [];
@@ -203,7 +206,7 @@ ${CODES.valid},lead-typed,${LEARNER},L1
       const admin = createMemoryAdmin({ authUser });
       const imported = await importVersaCsv({ env: FLAG_ENV, admin, csvText: SYNTHETIC_CSV });
       expect(imported.ok).toBe(true);
-      expect(imported.imported).toBe(8);
+      expect(imported.imported).toBe(9);
       return admin;
     }
 
@@ -240,7 +243,7 @@ ${CODES.valid},lead-typed,${LEARNER},L1
       const admin = await setup();
       const res = await readJson(await redeem(admin, { code: CODES.wrongIdentity, programRoute: 'spike-interns' }));
       expect(res.status).toBe(403);
-      expect(res.body.state).toBe('identity-mismatch');
+      expect(res.body).toEqual(versaHttpDenyBody());
       expect(admin.tables.versa_code_attempts.some((a) => a.reason === REASONS.wrong_identity)).toBe(true);
     });
 
@@ -385,6 +388,76 @@ ${CODES.valid},lead-typed,${LEARNER},L1
     });
     expect(paid.ok).toBe(true);
     expect(paid.row.level).toBe('L2');
+  });
+
+  it('HTTP redeem ignores body.paymentVerified; paid L2 stays fail-closed', async () => {
+    const admin = createMemoryAdmin({ authUser: verifiedAuthUser() });
+    await importVersaCsv({ env: FLAG_ENV, admin, csvText: SYNTHETIC_CSV });
+    const res = await readJson(
+      await handleVersaRedeem(
+        {
+          request: postJson('https://portal.test/api/versa/redeem', {
+            code: CODES.wrongLevel,
+            intendedLevel: 'L2',
+            intendedCourse: 'spike-interns',
+            offeringId: 'financial-entrepreneurship',
+            paymentVerified: true,
+          }),
+          env: FLAG_ENV,
+        },
+        redeemDeps(admin),
+      ),
+    );
+    expect(res.status).toBe(403);
+    expect(res.body).toEqual(versaHttpDenyBody());
+    expect(admin.tables.versa_entitlements).toHaveLength(0);
+    expect(admin.tables.versa_code_attempts.some((a) => a.reason === REASONS.gate_unsatisfied)).toBe(true);
+  });
+
+  it('HTTP deny bodies are identical across unknown, expired, already-redeemed, identity-mismatch and wrong-course codes', async () => {
+    const admin = createMemoryAdmin({ authUser: verifiedAuthUser() });
+    await importVersaCsv({ env: FLAG_ENV, admin, csvText: SYNTHETIC_CSV });
+    const cases = [
+      { code: CODES.unknown, programRoute: 'spike-interns' },
+      { code: 'SYN-L1-EXPIRED-J0', programRoute: 'spike-interns' },
+      { code: CODES.reused, programRoute: 'spike-interns' },
+      { code: CODES.wrongIdentity, programRoute: 'spike-interns' },
+      { code: CODES.wrongRoute, programRoute: 'spike-interns' },
+    ];
+    const responses = [];
+    for (const body of cases) {
+      responses.push(await readJson(await redeem(admin, body)));
+    }
+    const expectedBody = versaHttpDenyBody();
+    expect(expectedBody.message).toBe(GENERIC_DENY_MESSAGE);
+    for (const res of responses) {
+      expect(res.status).toBe(403);
+      expect(res.body).toEqual(expectedBody);
+      expect(res.body).not.toHaveProperty('state');
+    }
+    expect(new Set(responses.map((res) => JSON.stringify(res.body))).size).toBe(1);
+  });
+
+  it('redacts email, verified_email and userId in versa logs', () => {
+    const lines = [];
+    const logger = createVersaLogger({
+      info: (line) => lines.push(line),
+    });
+    logger.info({
+      email: LEARNER,
+      verified_email: LEARNER,
+      userId: LEARNER_ID,
+      reason: REASONS.unknown,
+    });
+    expect(lines).toHaveLength(1);
+    expect(lines[0]).not.toContain(LEARNER);
+    expect(lines[0]).not.toContain(LEARNER_ID);
+    expect(JSON.parse(lines[0])).toMatchObject({
+      email: '[redacted]',
+      verified_email: '[redacted]',
+      userId: '[redacted]',
+      reason: REASONS.unknown,
+    });
   });
 
   it('rate limit fails closed when versa_rate_limits is missing', async () => {

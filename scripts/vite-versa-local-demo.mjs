@@ -6,7 +6,7 @@ import {
   enrollmentUiMessage,
   enrollmentUiState,
 } from '../functions/_shared/versaCode/enrollmentUi.js'
-import { importVersaCsv } from '../functions/_shared/versaCode/index.js'
+import { importVersaCsv, versaHttpDeny } from '../functions/_shared/versaCode/index.js'
 import { redeem, verify } from '../functions/_shared/versaCode/service.js'
 import { createMemoryAdmin } from '../functions/_shared/versaCode/test/memoryAdmin.js'
 
@@ -161,9 +161,15 @@ export function versaLocalDemoPlugin({ csvPath = DEFAULT_CSV } = {}) {
                 admin,
                 offeringId: body?.offeringId,
                 programRoute: body?.programRoute,
-                paymentVerified: body?.paymentVerified === true,
+                // No pilot payments. Never take paymentVerified from the request body.
+                paymentVerified: false,
               },
             )
+            if (!result.ok) {
+              const deny = versaHttpDeny(result, { demo: true })
+              sendJson(res, deny.status, deny.body)
+              return
+            }
             const payload = toPayload(result)
             sendJson(res, payload.status, { ...payload.body, demo: true })
             return

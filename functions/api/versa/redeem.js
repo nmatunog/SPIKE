@@ -5,6 +5,7 @@ import {
   enrollmentUiState,
   isVersaCsvCodeGateEnabled,
   redeem as redeemVersa,
+  versaHttpDeny,
 } from '../../_shared/versaCode/index.js';
 import { corsPreflight, json } from '../../_shared/verifySuperuser.js';
 
@@ -74,20 +75,17 @@ export async function handleVersaRedeem(ctx, deps = {}) {
       request,
       offeringId: body?.offeringId,
       programRoute: body?.programRoute,
-      paymentVerified: body?.paymentVerified === true,
+      // No pilot payments. Never take paymentVerified from the request body.
+      paymentVerified: false,
     },
   );
 
-  const state = enrollmentUiState(result);
   if (!result.ok) {
-    return json(
-      {
-        message: enrollmentUiMessage(state),
-        state,
-      },
-      403,
-    );
+    const deny = versaHttpDeny(result);
+    return json(deny.body, deny.status);
   }
+
+  const state = enrollmentUiState(result);
 
   const confirmation =
     state === 'free-no-code'
