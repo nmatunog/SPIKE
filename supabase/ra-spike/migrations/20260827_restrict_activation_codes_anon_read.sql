@@ -2,7 +2,7 @@
 -- RA-SPIKE signup no longer uses these codes (open signup). Keep intern and RA-SPIKE
 -- databases separate.
 -- Repo-only. Do NOT apply until Nilo's SEC-1 decision.
--- Rollback: supabase/ra-spike/migrations/_rollback_20260827_restrict_activation_codes_anon_read.sql
+-- Rollback: supabase/ra-spike/rollbacks/20260827_restrict_activation_codes_anon_read.sql
 
 drop policy if exists "activation_codes_public_read" on public.activation_codes;
 

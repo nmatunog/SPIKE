@@ -1,6 +1,6 @@
 -- SEC-1 / F1 (RA-SPIKE copy): intern JWTs must not receive plaintext daily codes.
 -- Repo-only. Do NOT apply until Nilo's SEC-1 decision.
--- Rollback: supabase/ra-spike/migrations/_rollback_20260829_gate_ensure_daily_activation_code.sql
+-- Rollback: supabase/ra-spike/rollbacks/20260829_gate_ensure_daily_activation_code.sql
 
 create or replace function public.ensure_daily_activation_code()
 returns public.activation_codes

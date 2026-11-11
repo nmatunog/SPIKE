@@ -44,3 +44,7 @@
 20260824_revalida_draft_saves.sql
 20260825_revalida_guest_upsert_fix.sql
 20260826_revalida_prevent_double_rating.sql
+# SEC-1 / F1 intern activation_codes. Repo SQL only — do not apply hosted until Nilo decides.
+# Rollback SQL lives in supabase/ra-spike/rollbacks/ (not this folder; sync rm -f would delete it).
+20260827_restrict_activation_codes_anon_read.sql
+20260829_gate_ensure_daily_activation_code.sql

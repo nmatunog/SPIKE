@@ -1,4 +1,6 @@
 -- ROLLBACK NOTE — SEC-1 / F1 RA-SPIKE activation_codes anon-read restriction.
+-- Lives in rollbacks/ so scripts/sync-ra-spike-migrations.sh (`rm -f migrations/*.sql`)
+-- cannot delete it. Not on the RA migrations allowlist.
 -- Do NOT apply unless Nilo decides to undo a previously applied SEC-1 migration.
 
 drop policy if exists "activation_codes_staff_read" on public.activation_codes;

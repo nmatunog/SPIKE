@@ -11,6 +11,8 @@ F1 closes the client leak of live daily intern codes:
 
 This is a deliberate security trade-off for Nilo. It is independent of Versa CSV verification (`v1/l1-versa-csv-verification`).
 
+Prove RA copies survive `sync-ra-spike-migrations.sh` with `bash scripts/check-sec1-f1-ra-spike-sync.sh` (temp copy only; never hosted).
+
 ## Files
 
 | Path | Role |
@@ -21,12 +23,18 @@ This is a deliberate security trade-off for Nilo. It is independent of Versa CSV
 | `supabase/activation_codes.sql` | Baseline schema with staff-read policy |
 | `supabase/migrations/20260827_restrict_activation_codes_anon_read.sql` | Interns DB policy |
 | `supabase/migrations/20260829_gate_ensure_daily_activation_code.sql` | Interns DB staff-gated RPC |
-| `supabase/ra-spike/migrations/20260827_restrict_activation_codes_anon_read.sql` | RA-SPIKE DB policy |
-| `supabase/ra-spike/migrations/20260829_gate_ensure_daily_activation_code.sql` | RA-SPIKE DB staff-gated RPC |
+| `supabase/migrations/_rollback_20260827_restrict_activation_codes_anon_read.sql` | Interns rollback (underscore prefix; `db:migrate` skips) |
+| `supabase/migrations/_rollback_20260829_gate_ensure_daily_activation_code.sql` | Interns rollback; revokes `public` only (matches main) |
+| `supabase/ra-spike/migrations/20260827_restrict_activation_codes_anon_read.sql` | RA-SPIKE DB policy (allowlisted) |
+| `supabase/ra-spike/migrations/20260829_gate_ensure_daily_activation_code.sql` | RA-SPIKE DB staff-gated RPC (allowlisted) |
+| `supabase/ra-spike/rollbacks/20260827_restrict_activation_codes_anon_read.sql` | RA rollback; outside `migrations/` so sync `rm -f` cannot delete it |
+| `supabase/ra-spike/rollbacks/20260829_gate_ensure_daily_activation_code.sql` | RA rollback; not on the allowlist |
+
+`scripts/sync-ra-spike-migrations.sh` copies allowlisted intern files into `supabase/ra-spike/migrations/` after `rm -f migrations/*.sql`. F1 forwards are on `supabase/ra-spike/migrations-allowlist.txt`. Rollback SQL is **not** on the allowlist and lives in `supabase/ra-spike/rollbacks/`.
 
 ## Rollback SQL note
 
-Do not run these unless Nilo undoes an applied SEC-1 migration. Copies also live next to the forward migrations as `_rollback_*.sql` (underscore prefix so `db:migrate` skips them).
+Do not run these unless Nilo undoes an applied SEC-1 migration.
 
 ### Interns + RA-SPIKE: restore anon/authenticated public read
 
@@ -41,6 +49,8 @@ using (expires_at > now());
 ```
 
 ### Interns + RA-SPIKE: restore ungated `ensure_daily_activation_code()`
+
+Matches main (`20260614` / `20260710`): revoke from `public` only.
 
 ```sql
 create or replace function public.ensure_daily_activation_code()

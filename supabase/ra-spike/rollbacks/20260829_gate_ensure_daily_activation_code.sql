@@ -1,4 +1,6 @@
 -- ROLLBACK NOTE — SEC-1 / F1 RA-SPIKE ensure_daily_activation_code staff gate.
+-- Lives in rollbacks/ so scripts/sync-ra-spike-migrations.sh (`rm -f migrations/*.sql`)
+-- cannot delete it. Not on the RA migrations allowlist.
 -- Do NOT apply unless Nilo decides to undo a previously applied SEC-1 migration.
 -- Restores the ungated function from 20260710_admin_portal_catchup.sql.
 
