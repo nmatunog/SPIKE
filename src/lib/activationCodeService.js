@@ -62,18 +62,29 @@ export async function regenerateDailyActivationCode() {
   return data ?? null;
 }
 
-/** Ensure today's code exists, then return it. Staff dashboards only. */
+/** Ensure today's code exists, then return it. */
 export async function loadStaffActivationCode() {
   await ensureDailyActivationCode();
   return fetchTodayActivationCode();
 }
 
-/**
- * Intern activation codes are validated only by the Pages Function
- * (`functions/_shared/activationCode.js`). Client SELECT is an F1 leak.
- */
-export async function validateInternActivationCode() {
-  throw new Error(
-    'Intern activation codes can only be checked by the signup API. Client-side validation is disabled.',
-  );
+/** @param {string} inputCode */
+export async function validateInternActivationCode(inputCode) {
+  if (!supabase) throw new Error('Signup is only available in Supabase mode.');
+  const todayKey = getActivationDateKey();
+  const { data: codeRow, error } = await supabase
+    .from('activation_codes')
+    .select('code, expires_at')
+    .eq('date_key', todayKey)
+    .order('generated_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  if (!codeRow) throw new Error('No activation code is available for today.');
+  if (new Date(codeRow.expires_at).getTime() < Date.now()) {
+    throw new Error('Activation code has expired. Ask staff for today\'s code.');
+  }
+  if (String(codeRow.code).toUpperCase() !== String(inputCode).toUpperCase()) {
+    throw new Error('Invalid activation code.');
+  }
 }

@@ -182,6 +182,15 @@ export function createMemoryAdmin(seed = {}) {
       if (seed.missingRateLimits) {
         return { data: null, error: { code: '42P01', message: 'relation versa_rate_limits does not exist' } };
       }
+      if (seed.missingRateLimitRpc) {
+        return {
+          data: null,
+          error: {
+            code: 'PGRST202',
+            message: 'Could not find the function public.versa_rate_limit_record_fail',
+          },
+        };
+      }
       const key = args.p_rate_key;
       const windowMs = Number(args.p_window_ms) || 600000;
       const now = Date.now();

@@ -4,6 +4,8 @@ Disabled-by-default **independent** module (`functions/_shared/versaCode/*`). It
 
 Repo SQL only. Synthetic data only. Do not enable in production from this PR.
 
+F1 intern `activation_codes` hardening lives on `sec1/f1-activation-codes`, not this branch. This branch stays portal-neutral against `main`.
+
 ## Owner direction this branch follows
 
 - Nov 11 05:15: freeze irreversible portal commitments; portable CSV parser, validator, identity-contract, and synthetic tests; do not retrofit the intern `activation_codes` table by default.
@@ -17,7 +19,7 @@ Repo SQL only. Synthetic data only. Do not enable in production from this PR.
 | `VERSA_CODE_HMAC_SECRET` | required when flag on | HMAC-SHA-256 secret (**min 32 chars**) |
 | `VERSA_L1_OFFERING_ID` | `financial-literacy` | Default L1 offering id |
 
-Intern signup is **unchanged from main** (daily activation code on the server). The Versa flag never grants `profiles.role = INTERN`.
+Intern signup is **unchanged from main** (including the client daily-code fallback). The Versa flag never grants `profiles.role = INTERN`.
 
 ## Adapter contract
 
@@ -46,7 +48,7 @@ Configurable `columnMap` on `POST /api/versa/import`. Plain header `email` is **
 
 ## Rate limit
 
-Durable `versa_rate_limits`, keyed by `user:<id>` or `ip:<addr>`. Increment is atomic (`fail_count = fail_count + 1` / upsert RPC). **Fail closed** if the table is missing.
+Durable `versa_rate_limits`, keyed by `user:<id>` or `ip:<addr>`. Increment is the SQL RPC `versa_rate_limit_record_fail` (`fail_count = fail_count + 1` / windowed upsert). **Fail closed** if the table or the RPC is missing. There is no JS read/modify/write fallback.
 
 ## Isolated UI
 
@@ -63,12 +65,6 @@ Demo (not intern flow):
 - Static harness: `docs/versa-activate-harness.html`
 - Screenshot: `docs/versa-activate-harness.png` (synthetic demo code only)
 
-## F1 (kept; intern portal unchanged except fail-closed fallback)
-
-- No client SELECT of `activation_codes`.
-- `ensure_daily_activation_code()` is staff-gated.
-- **Deliberate trade-off for Nilo:** if Pages Functions are down, intern signup **fails closed** instead of validating the daily code in the browser. This is not Versa coupling; it is the F1 leak remaining closed.
-
 ## Synthetic matrix (`npm run test:versa-code`)
 
 Portable path (verified session unless noted):
@@ -83,7 +79,7 @@ Portable path (verified session unless noted):
 8. wrong `program_route`
 9. returning learner bypass
 
-Plus Versa handoff identity, L2 `paymentVerified`, HMAC 32+, missing rate-limit table fail-closed, PGlite single-use and atomic increment.
+Plus Versa handoff identity, L2 `paymentVerified`, HMAC 32+, missing rate-limit table/RPC fail-closed, PGlite single-use and atomic increment.
 
 ## Still needing Nilo
 
@@ -91,4 +87,4 @@ Plus Versa handoff identity, L2 `paymentVerified`, HMAC 32+, missing rate-limit 
 - Versa CSV headers / `columnMap`.
 - Co-branded landing page and final help copy (open external dependency).
 - Hosted SQL apply and Cloudflare flag + 32+ HMAC secret when enabling.
-- Whether intern signup should regain a client fallback when Functions are down (current: fail closed / F1).
+- SEC-1 decision on intern `activation_codes` (separate branch `sec1/f1-activation-codes`).

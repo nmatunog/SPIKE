@@ -33,12 +33,3 @@ export function isInternSignupApiUnavailable(err) {
   const msg = String(err.message || '');
   return err.status === 503 || msg.includes('MISSING_SERVICE_KEY') || msg.includes('not configured');
 }
-
-/**
- * F1 trade-off (deliberate, for Nilo): intern daily codes are not validated in
- * the browser. If Pages Functions are down, intern signup fails closed instead
- * of SELECTing `activation_codes` from the client.
- */
-export function clientDailyActivationFallbackAllowed() {
-  return false;
-}

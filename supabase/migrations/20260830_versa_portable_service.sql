@@ -1,5 +1,35 @@
 -- Portable Versa CSV service (repo SQL only — do not apply to hosted DBs from this PR).
--- Removes intern-portal grant from redeem RPC. Adds atomic rate-limit increment.
+-- Independent of intern signup / activation_codes. Never grants intern role.
+-- This is the only redeem RPC on this branch: 2-arg consume + versa_entitlements grant.
+
+create table if not exists public.versa_rate_limits (
+  rate_key text primary key,
+  fail_count integer not null default 0,
+  window_start timestamptz not null default now()
+);
+
+alter table public.versa_rate_limits enable row level security;
+
+drop policy if exists "versa_rate_limits_staff_read" on public.versa_rate_limits;
+create policy "versa_rate_limits_staff_read"
+on public.versa_rate_limits
+for select
+to authenticated
+using (public.current_role() in ('ADMIN', 'SUPERUSER'));
+
+drop policy if exists "versa_entitlements_select_self_or_staff" on public.versa_entitlements;
+drop policy if exists "versa_entitlements_select_self_or_admin" on public.versa_entitlements;
+create policy "versa_entitlements_select_self_or_admin"
+on public.versa_entitlements
+for select
+to authenticated
+using (
+  user_id = auth.uid()
+  or public.current_role() in ('ADMIN', 'SUPERUSER')
+);
+
+-- Drop any leftover intern-granting 3-arg signature from earlier drafts.
+drop function if exists public.redeem_versa_code_and_grant(bigint, uuid, boolean);
 
 create or replace function public.redeem_versa_code_and_grant(
   p_id bigint,
@@ -69,8 +99,6 @@ $$;
 
 revoke all on function public.redeem_versa_code_and_grant(bigint, uuid) from public, anon, authenticated;
 grant execute on function public.redeem_versa_code_and_grant(bigint, uuid) to service_role;
-
-drop function if exists public.redeem_versa_code_and_grant(bigint, uuid, boolean);
 
 create or replace function public.versa_rate_limit_record_fail(
   p_rate_key text,

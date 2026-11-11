@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { readFile } from 'node:fs/promises';
+import { access, readFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
 import { handleVersaImport } from '../../api/versa/import.js';
 import { handleVersaRedeem } from '../../api/versa/redeem.js';
 import {
@@ -13,7 +14,7 @@ import { parseVersaCsv } from './csv.js';
 import { digestCode, requireHmacSecret } from './digest.js';
 import { importVersaCsv } from './importRows.js';
 import { consumeInventoryRow } from './inventory.js';
-import { assertDurableRateLimit, resetVersaRateLimitStore } from './rateLimit.js';
+import { assertDurableRateLimit, recordDurableFail, resetVersaRateLimitStore } from './rateLimit.js';
 import { createMemoryAdmin } from './test/memoryAdmin.js';
 import { identityMatchesImportedRow, verifyVersaCode } from './verifyRedeem.js';
 
@@ -157,10 +158,26 @@ ${CODES.valid},lead-typed,${LEARNER},L1
     expect(src.toLowerCase()).not.toContain('versa');
   });
 
-  it('client daily-code fallback stays fail-closed (F1 trade-off)', async () => {
-    const src = await readFile(new URL('../../../src/lib/internSignupService.js', import.meta.url), 'utf8');
-    expect(src).toContain('export function clientDailyActivationFallbackAllowed()');
-    expect(src).toContain('return false;');
+  it('does not keep intern-portal F1 coupling or VersaAccessCard overlay', async () => {
+    const signup = await readFile(new URL('../../../src/lib/internSignupService.js', import.meta.url), 'utf8');
+    expect(signup).not.toContain('clientDailyActivationFallbackAllowed');
+    await expect(
+      access(fileURLToPath(new URL('../../../src/components/VersaAccessCard.jsx', import.meta.url))),
+    ).rejects.toMatchObject({ code: 'ENOENT' });
+  });
+
+  it('migrations never create an intern-granting redeem RPC', async () => {
+    const portable = await readFile(
+      new URL('../../../supabase/migrations/20260830_versa_portable_service.sql', import.meta.url),
+      'utf8',
+    );
+    expect(portable).not.toMatch(
+      /create or replace function public\.redeem_versa_code_and_grant\s*\(\s*p_id\s+bigint\s*,\s*p_user_id\s+uuid\s*,/i,
+    );
+    expect(portable).not.toContain('intern_progress');
+    await expect(
+      access(fileURLToPath(new URL('../../../supabase/migrations/20260829_versa_q1_hardening.sql', import.meta.url))),
+    ).rejects.toMatchObject({ code: 'ENOENT' });
   });
 
   it('identity match requires a verified session or Versa handoff, not a typed email', () => {
@@ -375,6 +392,14 @@ ${CODES.valid},lead-typed,${LEARNER},L1
     const limited = await assertDurableRateLimit({ admin, key: 'user:x' });
     expect(limited.ok).toBe(false);
     expect(limited.reason).toBe(REASONS.rate_limited);
+  });
+
+  it('rate limit fails closed when the increment RPC is missing (no JS fallback)', async () => {
+    const admin = createMemoryAdmin({ missingRateLimitRpc: true });
+    await expect(recordDurableFail({ admin, key: 'user:x' })).rejects.toThrow(/fail-closed/i);
+    const src = await readFile(new URL('./rateLimit.js', import.meta.url), 'utf8');
+    expect(src).not.toMatch(/fail_count:\s*Number\(row\.fail_count\)\s*\+\s*1/);
+    expect(src).not.toMatch(/from\('versa_rate_limits'\)\s*\.upsert/);
   });
 
   it('concurrency: only one redeem consumes an available row', async () => {
