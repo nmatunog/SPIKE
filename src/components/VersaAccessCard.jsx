@@ -3,7 +3,7 @@ import { VersaCodeGate } from './VersaCodeGate.jsx';
 import { fetchVersaAccess, fetchVersaGateStatus, redeemVersaAccessCode } from '../lib/versaCodeGateService.js';
 
 /** Post-login My Learning / Access. Hidden when the Versa gate flag is off. */
-export const VersaAccessCard = memo(function VersaAccessCard() {
+export const VersaAccessCard = memo(function VersaAccessCard({ blocking = true, signedIn = true }) {
   const [enabled, setEnabled] = useState(false);
   const [entitlements, setEntitlements] = useState([]);
   const [loadError, setLoadError] = useState('');
@@ -53,8 +53,8 @@ export const VersaAccessCard = memo(function VersaAccessCard() {
     return result;
   };
 
-  return (
-    <div className="mx-auto mt-4 w-full max-w-md px-4">
+  const inner = (
+    <div className="mx-auto w-full max-w-md">
       <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500">
         My Learning / Access
       </h2>
@@ -71,8 +71,18 @@ export const VersaAccessCard = memo(function VersaAccessCard() {
           ))}
         </ul>
       ) : (
-        <VersaCodeGate onVerify={handleVerify} signedIn requireSignIn={false} />
+        <VersaCodeGate onVerify={handleVerify} signedIn={signedIn} requireSignIn />
       )}
     </div>
   );
+
+  if (blocking && entitlements.length === 0) {
+    return (
+      <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/40 p-4">
+        {inner}
+      </div>
+    );
+  }
+
+  return <div className="mx-auto mt-4 w-full max-w-md px-4">{inner}</div>;
 });

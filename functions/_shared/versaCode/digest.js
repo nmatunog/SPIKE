@@ -1,6 +1,6 @@
 import { VERSA_HMAC_SECRET_ENV } from './constants.js';
 
-const MIN_SECRET_LENGTH = 16;
+const MIN_SECRET_LENGTH = 32;
 
 /** @param {unknown} value */
 export function normalizeSubmittedCode(value) {

@@ -1,5 +1,5 @@
 import React, { memo, useState } from 'react';
-import { VERSA_GENERIC_DENY } from '../lib/versaCodeGateService.js';
+import { VERSA_GENERIC_DENY, VERSA_HELP_PLACEHOLDER } from '../lib/versaCodeGateService.js';
 
 /**
  * Flag-gated UX over server verification. No frontend validation of codes,
@@ -10,6 +10,8 @@ export const VersaCodeGate = memo(function VersaCodeGate({
   onVerify,
   requireSignIn = false,
   signedIn = false,
+  helpText = VERSA_HELP_PLACEHOLDER,
+  continueLabel = 'Continue to SPIKE Learning',
 }) {
   const [code, setCode] = useState('');
   const [status, setStatus] = useState('idle');
@@ -40,20 +42,27 @@ export const VersaCodeGate = memo(function VersaCodeGate({
 
   return (
     <section className="w-full rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-      <h2 className="text-base font-semibold text-slate-900">{heading}</h2>
+      <p className="text-2xs font-semibold uppercase tracking-wide text-slate-400">SPIKE × Versa</p>
+      <h2 className="mt-1 text-base font-semibold text-slate-900">{heading}</h2>
       <p className="mt-1 text-xs text-slate-500">
-        Your code was provided by Versa when you registered.
+        Paste your access code. Do not put it in the address bar.
       </p>
 
+      {status === 'idle' && code.trim() ? (
+        <p className="mt-3 text-sm font-medium text-slate-600" aria-live="polite">
+          Code received
+        </p>
+      ) : null}
       {status === 'checking' ? (
         <p className="mt-3 text-sm font-medium text-slate-600" aria-live="polite">
           Checking access…
         </p>
       ) : null}
       {status === 'granted' ? (
-        <p className="mt-3 rounded-xl bg-emerald-50 p-2.5 text-sm text-emerald-800" role="status">
-          {message}
-        </p>
+        <div className="mt-3 rounded-xl bg-emerald-50 p-2.5 text-sm text-emerald-800" role="status">
+          <p>{message}</p>
+          <p className="mt-1 font-semibold">{continueLabel}</p>
+        </div>
       ) : null}
       {status === 'error' ? (
         <p className="mt-3 rounded-xl bg-red-50 p-2.5 text-sm text-red-700" role="alert">
@@ -72,14 +81,14 @@ export const VersaCodeGate = memo(function VersaCodeGate({
             autoComplete="off"
             inputMode="text"
             spellCheck={false}
-            disabled={busy}
+            disabled={busy || status === 'granted'}
             aria-describedby="versa-access-code-help"
           />
         </label>
         <p id="versa-access-code-help" className="text-xs text-slate-500">
-          Paste the code from Versa. Do not put it in the address bar.
+          Enter or paste your access code.
         </p>
-        <button type="submit" disabled={busy || !code.trim()} className="spike-btn-primary w-full">
+        <button type="submit" disabled={busy || !code.trim() || status === 'granted'} className="spike-btn-primary w-full">
           {busy ? 'Checking access…' : 'Verify & Continue'}
         </button>
       </form>
@@ -92,10 +101,7 @@ export const VersaCodeGate = memo(function VersaCodeGate({
         Where do I find my code?
       </button>
       {helpOpen ? (
-        <p className="mt-2 text-xs leading-relaxed text-slate-600">
-          Versa gives you a one-time code when you register. Ask your Versa coordinator or assigned
-          leader if you do not have one. SPIKE cannot look up someone else&apos;s code.
-        </p>
+        <p className="mt-2 text-xs leading-relaxed text-slate-600">{helpText}</p>
       ) : null}
     </section>
   );

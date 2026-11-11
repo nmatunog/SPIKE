@@ -7,8 +7,8 @@ import {
 import { corsPreflight, json } from '../../_shared/verifySuperuser.js';
 
 /**
- * Authenticated Versa code + identity redemption (preferred L1 hook).
- * Client cannot assert payment; L2 paymentVerified is never taken from the body.
+ * Authenticated Versa code + verified-identity redemption.
+ * Client cannot assert payment or email confirmation.
  */
 export async function handleVersaRedeem(ctx, deps = {}) {
   const { request, env } = ctx;
@@ -53,6 +53,7 @@ export async function handleVersaRedeem(ctx, deps = {}) {
 
   const submittedCode = String(body?.code ?? body?.accessCode ?? '').trim();
   const expectedLevel = String(body?.level ?? 'L1').toUpperCase() === 'L2' ? 'L2' : 'L1';
+  const user = userData.user;
 
   const result = await verify({
     env,
@@ -60,34 +61,22 @@ export async function handleVersaRedeem(ctx, deps = {}) {
     request,
     submittedCode,
     identity: {
-      userId: userData.user.id,
-      email: userData.user.email,
+      userId: user.id,
+      email: user.email,
+      emailConfirmed: Boolean(user.email_confirmed_at),
+      versaHandoffVerified: false,
     },
-    expected: { level: expectedLevel },
-    // Never honor client-supplied payment claims.
+    expected: {
+      level: expectedLevel,
+      programRoute: expectedLevel === 'L1' ? 'spike-interns' : 'ra-spike',
+    },
     paymentVerified: false,
     consume: true,
+    grantIntern: expectedLevel === 'L1',
   });
 
   if (!result.ok) {
     return json({ message: result.message || GENERIC_DENY_MESSAGE }, 403);
-  }
-
-  if (result.row?.program_route === 'spike-interns' && result.row?.level === 'L1') {
-    const { data: existing } = await admin
-      .from('intern_progress')
-      .select('user_id')
-      .eq('user_id', userData.user.id)
-      .maybeSingle();
-    if (!existing) {
-      await admin.from('intern_progress').insert({
-        user_id: userData.user.id,
-        segment: 1,
-        hours: 0,
-        licensed: false,
-        program_slug: 'spike-internship',
-      });
-    }
   }
 
   const confirmation =
@@ -100,7 +89,9 @@ export async function handleVersaRedeem(ctx, deps = {}) {
     alreadyGranted: Boolean(result.alreadyGranted),
     level: result.row?.level,
     offeringId: result.row?.offering_id,
+    programRoute: result.row?.program_route,
     confirmation,
+    continueLabel: 'Continue to SPIKE Learning',
   });
 }
 

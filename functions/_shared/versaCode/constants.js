@@ -5,7 +5,11 @@ export const VERSA_HMAC_SECRET_ENV = 'VERSA_CODE_HMAC_SECRET';
 export const VERSA_L1_OFFERING_ENV = 'VERSA_L1_OFFERING_ID';
 
 export const GENERIC_DENY_MESSAGE =
-  "We couldn't verify this code for your account. Check the code or contact your Versa coordinator.";
+  "We couldn't verify this code for your account. Check the code or use the enrollment help link.";
+
+/** Neutral placeholder — Versa delivery channel is an open external dependency. */
+export const VERSA_HELP_PLACEHOLDER =
+  'Access codes are issued through the SPIKE–Versa enrollment process. Delivery channel is pending the co-branded enrollment page.';
 
 export const LEVELS = Object.freeze(['L1', 'L2']);
 export const STATUSES = Object.freeze(['available', 'redeemed', 'revoked', 'expired']);
@@ -29,6 +33,8 @@ export const REASONS = Object.freeze({
   missing_secret: 'missing_secret',
   missing_identity_link: 'missing_identity_link',
   invalid_row: 'invalid_row',
+  wrong_program_route: 'wrong_program_route',
+  unverified_identity: 'unverified_identity',
 });
 
 /**
@@ -54,7 +60,7 @@ export const ASSUMED_CSV_COLUMNS = Object.freeze({
 export const HEADER_ALIASES = Object.freeze({
   code: ['code', 'access_code', 'accesscode', 'versa_code', 'versacode'],
   versaLeadRef: ['versa_lead_ref', 'lead_ref', 'versaleadref', 'leadref'],
-  verifiedEmail: ['verified_email', 'verifiedemail', 'learner_email', 'email'],
+  verifiedEmail: ['verified_email', 'verifiedemail', 'learner_email'],
   verifiedUserId: ['verified_user_id', 'verifieduserid', 'spike_user_id'],
   level: ['level', 'offering_level'],
   offeringId: ['offering_id', 'offering', 'offeringid'],

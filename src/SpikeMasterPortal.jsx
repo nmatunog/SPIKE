@@ -114,8 +114,11 @@ import { DailyActivationCodeCard } from './components/dashboard/DailyActivationC
 import { VersaAccessCard } from './components/VersaAccessCard.jsx';
 import { BrandLexiconDashboardCard } from './components/resources/BrandLexiconDashboardCard.jsx';
 import { FacilitatorsContentReferenceDashboardCard } from './components/resources/FacilitatorsContentReferenceDashboardCard.jsx';
-import { validateInternActivationCode } from './lib/activationCodeService.js';
-import { registerInternViaApi, isInternSignupApiUnavailable } from './lib/internSignupService.js';
+import {
+  registerInternViaApi,
+  isInternSignupApiUnavailable,
+  clientDailyActivationFallbackAllowed,
+} from './lib/internSignupService.js';
 import { registerStaffViaApi, isStaffSignupApiUnavailable } from './lib/staffSignupService.js';
 import { needsStaffBootstrap } from './lib/staffRegistrationCodeService.js';
 import {
@@ -773,8 +776,13 @@ const SpikeMasterPortal = () => {
       }
 
       try {
-        await registerInternViaApi({ name, email, password, university, squad, code });
-        showToast('Account created. Sign in with your email and password — no confirmation email needed.', 'success');
+        const created = await registerInternViaApi({ name, email, password, university, squad, code });
+        showToast(
+          created?.versaRedeemRequired
+            ? 'Account created. Confirm your email, sign in, then activate access.'
+            : 'Account created. Sign in with your email and password — no confirmation email needed.',
+          'success',
+        );
         return;
       } catch (apiErr) {
         if (!isInternSignupApiUnavailable(apiErr)) {
@@ -782,38 +790,9 @@ const SpikeMasterPortal = () => {
         }
       }
 
-      await validateInternActivationCode(code);
-
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { data: { name, must_change_password: false } },
-      });
-      if (error) throw new Error(formatAuthEmailError(error));
-
-      if (data.user?.id) {
-        await supabase
-          .from('profiles')
-          .update({ name, role: 'INTERN' })
-          .eq('id', data.user.id);
-        if (data.session) {
-          const { error: progErr } = await supabase.rpc('ensure_intern_progress', {
-            p_user_id: data.user.id,
-            p_university: university || null,
-            p_squad: squad || null,
-          });
-          if (progErr) {
-            console.warn('ensure_intern_progress:', progErr.message);
-          }
-        }
+      if (!clientDailyActivationFallbackAllowed()) {
+        throw new Error('Intern signup API is not available. Client-side activation-code fallback is disabled.');
       }
-
-      showToast(
-        data.session
-          ? 'Account created. You are signed in.'
-          : 'Account created. Confirm your email if required, then sign in.',
-        'success',
-      );
     },
     [usingSupabaseAuth, showToast],
   );

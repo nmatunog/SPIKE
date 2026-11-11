@@ -2,7 +2,10 @@ import { apiFetch } from '../apiClient.js';
 import { supabase } from '../supabaseClient.js';
 
 export const VERSA_GENERIC_DENY =
-  "We couldn't verify this code for your account. Check the code or contact your Versa coordinator.";
+  "We couldn't verify this code for your account. Check the code or use the enrollment help link.";
+
+export const VERSA_HELP_PLACEHOLDER =
+  'Access codes are issued through the SPIKE–Versa enrollment process. Delivery channel is pending the co-branded enrollment page.';
 
 export async function fetchVersaGateStatus() {
   try {

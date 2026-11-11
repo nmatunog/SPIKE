@@ -8,7 +8,7 @@ import { RaSpikeSignupPanel } from '../components/ra-spike/RaSpikeSignupPanel.js
 import { StaffSignupPanel } from '../components/StaffSignupPanel.jsx';
 import { VersaCodeGate } from '../components/VersaCodeGate.jsx';
 import { listMockAuthAccountHints } from '../lib/mockAuthUsers.js';
-import { fetchVersaGateStatus, redeemVersaAccessCode } from '../lib/versaCodeGateService.js';
+import { fetchVersaGateStatus } from '../lib/versaCodeGateService.js';
 
 /**
  * @param {{
@@ -165,7 +165,9 @@ export function WelcomePage({
                   <VersaCodeGate
                     requireSignIn
                     signedIn={false}
-                    onVerify={redeemVersaAccessCode}
+                    onVerify={async () => {
+                      throw new Error('Sign in or create your account first, then verify your access code.');
+                    }}
                   />
                 ) : null}
                 {usingSupabaseAuth && staffBootstrapMode && onStaffSignup ? (

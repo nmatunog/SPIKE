@@ -17,22 +17,52 @@ export async function findInventoryByDigest(admin, digest) {
 }
 
 /**
- * Atomic single-use: only succeeds when the row is still available.
+ * Atomic consume + entitlement grant. Rolls back consume if grant fails (RPC).
+ * Retry: if this user already redeemed the row, ensure entitlement exists.
  * @param {import('@supabase/supabase-js').SupabaseClient} admin
  */
-export async function consumeInventoryRow(admin, { id, userId }) {
-  const { data, error } = await admin.rpc('redeem_versa_code_row', {
+export async function consumeAndGrant(admin, { id, userId, grantIntern = false }) {
+  const { data, error } = await admin.rpc('redeem_versa_code_and_grant', {
     p_id: id,
     p_user_id: userId,
+    p_grant_intern: Boolean(grantIntern),
   });
   if (!error) {
-    return data ?? null;
+    return data ?? { ok: false, reason: 'reused' };
   }
 
   const missingRpc =
     error.code === 'PGRST202' ||
     /could not find the function|schema cache|does not exist/i.test(error.message || '');
   if (!missingRpc) throw new Error(error.message);
+
+  return consumeAndGrantFallback(admin, { id, userId, grantIntern });
+}
+
+/** In-memory / pre-RPC fallback — still serialized by the admin mock. */
+async function consumeAndGrantFallback(admin, { id, userId, grantIntern }) {
+  const { data: existing } = await admin
+    .from('versa_code_inventory')
+    .select(
+      'id, versa_lead_ref, verified_email, verified_user_id, level, offering_id, status, program_route, redeemed_by, redeemed_at',
+    )
+    .eq('id', id)
+    .maybeSingle();
+
+  if (existing?.status === 'redeemed' && String(existing.redeemed_by) === String(userId)) {
+    const entitlement = await upsertEntitlement(admin, {
+      userId,
+      inventoryId: existing.id,
+      versaLeadRef: existing.versa_lead_ref,
+      level: existing.level,
+      offeringId: existing.offering_id,
+      programRoute: existing.program_route,
+    });
+    if (grantIntern && existing.program_route === 'spike-interns' && existing.level === 'L1') {
+      await ensureInternProgressRow(admin, userId);
+    }
+    return { ok: true, already_granted: true, row: existing, entitlement };
+  }
 
   const { data: updated, error: updErr } = await admin
     .from('versa_code_inventory')
@@ -48,7 +78,56 @@ export async function consumeInventoryRow(admin, { id, userId }) {
     )
     .maybeSingle();
   if (updErr) throw new Error(updErr.message);
-  return updated ?? null;
+  if (!updated) return { ok: false, reason: 'reused' };
+
+  try {
+    const entitlement = await upsertEntitlement(admin, {
+      userId,
+      inventoryId: updated.id,
+      versaLeadRef: updated.versa_lead_ref,
+      level: updated.level,
+      offeringId: updated.offering_id,
+      programRoute: updated.program_route,
+    });
+    if (grantIntern && updated.program_route === 'spike-interns' && updated.level === 'L1') {
+      await ensureInternProgressRow(admin, userId);
+    }
+    return { ok: true, already_granted: false, row: updated, entitlement };
+  } catch (grantErr) {
+    await admin
+      .from('versa_code_inventory')
+      .update({
+        status: 'available',
+        redeemed_at: null,
+        redeemed_by: null,
+      })
+      .eq('id', id)
+      .eq('redeemed_by', userId);
+    throw grantErr;
+  }
+}
+
+async function ensureInternProgressRow(admin, userId) {
+  const { data: existing } = await admin
+    .from('intern_progress')
+    .select('user_id')
+    .eq('user_id', userId)
+    .maybeSingle();
+  if (existing) return;
+  const { error } = await admin.from('intern_progress').insert({
+    user_id: userId,
+    segment: 1,
+    hours: 0,
+    licensed: false,
+    program_slug: 'spike-internship',
+  });
+  if (error) throw new Error(error.message);
+}
+
+/** @deprecated use consumeAndGrant */
+export async function consumeInventoryRow(admin, { id, userId }) {
+  const result = await consumeAndGrant(admin, { id, userId, grantIntern: false });
+  return result?.ok ? result.row : null;
 }
 
 /** @param {import('@supabase/supabase-js').SupabaseClient} admin */

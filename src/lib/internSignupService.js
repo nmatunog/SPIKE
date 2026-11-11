@@ -20,7 +20,7 @@ export async function registerInternViaApi(payload) {
       name: payload.name.trim(),
       email: payload.email.trim().toLowerCase(),
       password: payload.password,
-      code: payload.code.trim(),
+      code: payload.code?.trim() || undefined,
       university: payload.university?.trim() || undefined,
       squad: payload.squad?.trim() || undefined,
     },
@@ -32,4 +32,9 @@ export function isInternSignupApiUnavailable(err) {
   if (!(err instanceof ApiError)) return false;
   const msg = String(err.message || '');
   return err.status === 503 || msg.includes('MISSING_SERVICE_KEY') || msg.includes('not configured');
+}
+
+/** F1 + Versa: never validate daily intern codes in the browser. */
+export function clientDailyActivationFallbackAllowed() {
+  return false;
 }

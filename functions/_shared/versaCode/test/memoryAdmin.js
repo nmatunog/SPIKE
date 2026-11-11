@@ -11,11 +11,45 @@ function matchesFilters(row, filters) {
   return filters.every(({ col, val }) => String(row[col]) === String(val));
 }
 
+function upsertEntitlementRow(tables, nextId, row) {
+  const existing = tables.versa_entitlements.find(
+    (item) => String(item.user_id) === String(row.user_id) && String(item.offering_id) === String(row.offering_id),
+  );
+  if (existing) {
+    Object.assign(existing, row);
+    return clone(existing);
+  }
+  const inserted = { ...row };
+  if (inserted.id == null) {
+    inserted.id = nextId.versa_entitlements ?? tables.versa_entitlements.length + 1;
+    nextId.versa_entitlements = inserted.id + 1;
+  }
+  tables.versa_entitlements.push(inserted);
+  return clone(inserted);
+}
+
+function ensureInternProgress(tables, nextId, userId) {
+  const existing = tables.intern_progress.find((item) => String(item.user_id) === String(userId));
+  if (existing) return clone(existing);
+  const row = {
+    user_id: userId,
+    segment: 1,
+    hours: 0,
+    licensed: false,
+    program_slug: 'spike-internship',
+  };
+  row.id = nextId.intern_progress ?? tables.intern_progress.length + 1;
+  nextId.intern_progress = row.id + 1;
+  tables.intern_progress.push(row);
+  return clone(row);
+}
+
 export function createMemoryAdmin(seed = {}) {
   const tables = {
     versa_code_inventory: [...(seed.versa_code_inventory || [])],
     versa_entitlements: [...(seed.versa_entitlements || [])],
     versa_code_attempts: [...(seed.versa_code_attempts || [])],
+    versa_rate_limits: [...(seed.versa_rate_limits || [])],
     intern_progress: [...(seed.intern_progress || [])],
     profiles: [...(seed.profiles || [])],
     activation_codes: [...(seed.activation_codes || [])],
@@ -147,6 +181,50 @@ export function createMemoryAdmin(seed = {}) {
   }
 
   async function rpc(name, args) {
+    if (name === 'redeem_versa_code_and_grant') {
+      return serialize(async () => {
+        const row = tables.versa_code_inventory.find((item) => item.id === args.p_id);
+        if (!row) return { data: { ok: false, reason: 'unknown' }, error: null };
+
+        const grantIntern = Boolean(args.p_grant_intern);
+        const grantInternOk =
+          grantIntern && row.program_route === 'spike-interns' && String(row.level).toUpperCase() === 'L1';
+
+        if (row.status === 'redeemed' && String(row.redeemed_by) === String(args.p_user_id)) {
+          const entitlement = upsertEntitlementRow(tables, nextId, {
+            user_id: args.p_user_id,
+            inventory_id: row.id,
+            versa_lead_ref: row.versa_lead_ref,
+            level: row.level,
+            offering_id: row.offering_id,
+            program_route: row.program_route,
+            granted_at: new Date().toISOString(),
+          });
+          if (grantInternOk) ensureInternProgress(tables, nextId, args.p_user_id);
+          return { data: { ok: true, already_granted: true, row: clone(row), entitlement }, error: null };
+        }
+
+        if (row.status !== 'available') {
+          return { data: { ok: false, reason: 'reused' }, error: null };
+        }
+
+        row.status = 'redeemed';
+        row.redeemed_at = new Date().toISOString();
+        row.redeemed_by = args.p_user_id;
+        const entitlement = upsertEntitlementRow(tables, nextId, {
+          user_id: args.p_user_id,
+          inventory_id: row.id,
+          versa_lead_ref: row.versa_lead_ref,
+          level: row.level,
+          offering_id: row.offering_id,
+          program_route: row.program_route,
+          granted_at: new Date().toISOString(),
+        });
+        if (grantInternOk) ensureInternProgress(tables, nextId, args.p_user_id);
+        return { data: { ok: true, already_granted: false, row: clone(row), entitlement }, error: null };
+      });
+    }
+
     if (name !== 'redeem_versa_code_row') {
       return { data: null, error: { message: `unknown rpc ${name}`, code: 'PGRST202' } };
     }
@@ -169,8 +247,12 @@ export function createMemoryAdmin(seed = {}) {
     auth: {
       getUser: async () => ({ data: { user: seed.authUser || null }, error: null }),
       admin: {
-        createUser: async ({ email }) => {
-          const user = { id: seed.nextUserId || 'user-created-1', email };
+        createUser: async ({ email, email_confirm }) => {
+          const user = {
+            id: seed.nextUserId || 'user-created-1',
+            email,
+            email_confirmed_at: email_confirm ? new Date().toISOString() : null,
+          };
           return { data: { user }, error: null };
         },
       },
