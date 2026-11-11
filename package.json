@@ -21,6 +21,7 @@
     "postbuild": "bash scripts/postbuild-ship.sh",
     "ship": "npm run lint && npm run build:internship && bash scripts/ship-after-build.sh",
     "lint": "eslint .",
+    "test:versa-code": "vitest run --config vitest.versa.config.js",
     "preview": "vite preview",
     "deploy:cf": "bash ./scripts/deploy-cloudflare.sh",
     "deploy:prod": "bash ./scripts/deploy-production.sh",
@@ -97,6 +98,7 @@
     "globals": "^17.5.0",
     "postcss": "^8.5.10",
     "tailwindcss": "^3.4.17",
-    "vite": "^8.0.9"
+    "vite": "^8.0.9",
+    "vitest": "^3.2.7"
   }
 }

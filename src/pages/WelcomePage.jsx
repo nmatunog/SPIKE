@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Loader2, Shield } from 'lucide-react';
 import { SpikeLogo } from '../components/brand/SpikeLogo.jsx';
 import { GuestBootstrapForm } from '../components/GuestBootstrapForm.jsx';
@@ -5,7 +6,9 @@ import { GuestLoginForm } from '../components/GuestLoginForm.jsx';
 import { InternSignupPanel } from '../components/InternSignupPanel.jsx';
 import { RaSpikeSignupPanel } from '../components/ra-spike/RaSpikeSignupPanel.jsx';
 import { StaffSignupPanel } from '../components/StaffSignupPanel.jsx';
+import { VersaCodeGate } from '../components/VersaCodeGate.jsx';
 import { listMockAuthAccountHints } from '../lib/mockAuthUsers.js';
+import { fetchVersaGateStatus, redeemVersaAccessCode } from '../lib/versaCodeGateService.js';
 
 /**
  * @param {{
@@ -47,6 +50,19 @@ export function WelcomePage({
   onSupabaseBootstrap,
   raSpikeApp = false,
 }) {
+  const [versaGateEnabled, setVersaGateEnabled] = useState(false);
+
+  useEffect(() => {
+    if (raSpikeApp || !usingSupabaseAuth) return undefined;
+    let cancelled = false;
+    fetchVersaGateStatus().then((status) => {
+      if (!cancelled) setVersaGateEnabled(Boolean(status?.enabled));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [raSpikeApp, usingSupabaseAuth]);
+
   return (
       <div className="relative overflow-hidden">
       <div
@@ -143,7 +159,14 @@ export function WelcomePage({
                   <RaSpikeSignupPanel onSignup={onRaSpikeSignup} />
                 ) : null}
                 {usingSupabaseAuth && !raSpikeApp ? (
-                  <InternSignupPanel onSignup={onInternSignup} />
+                  <InternSignupPanel onSignup={onInternSignup} versaGateEnabled={versaGateEnabled} />
+                ) : null}
+                {usingSupabaseAuth && !raSpikeApp && versaGateEnabled ? (
+                  <VersaCodeGate
+                    requireSignIn
+                    signedIn={false}
+                    onVerify={redeemVersaAccessCode}
+                  />
                 ) : null}
                 {usingSupabaseAuth && staffBootstrapMode && onStaffSignup ? (
                   <StaffSignupPanel onSignup={onStaffSignup} />
@@ -177,7 +200,9 @@ export function WelcomePage({
             {raSpikeApp && onRaSpikeSignup ? (
               <RaSpikeSignupPanel onSignup={onRaSpikeSignup} />
             ) : null}
-            {!raSpikeApp ? <InternSignupPanel onSignup={onInternSignup} /> : null}
+            {!raSpikeApp ? (
+              <InternSignupPanel onSignup={onInternSignup} versaGateEnabled={versaGateEnabled} />
+            ) : null}
           </div>
         ) : null}
 

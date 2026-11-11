@@ -1,0 +1,109 @@
+import { createServiceClient, createUserClient } from '../../_shared/supabaseAdmin.js';
+import {
+  GENERIC_DENY_MESSAGE,
+  isVersaCsvCodeGateEnabled,
+  verifyVersaCode,
+} from '../../_shared/versaCode/index.js';
+import { corsPreflight, json } from '../../_shared/verifySuperuser.js';
+
+/**
+ * Authenticated Versa code + identity redemption (preferred L1 hook).
+ * Client cannot assert payment; L2 paymentVerified is never taken from the body.
+ */
+export async function handleVersaRedeem(ctx, deps = {}) {
+  const { request, env } = ctx;
+  if (request.method === 'OPTIONS') return corsPreflight();
+  if (request.method !== 'POST') return json({ message: 'Method not allowed.' }, 405);
+
+  if (!isVersaCsvCodeGateEnabled(env)) {
+    return json({ message: 'Versa code gate is not enabled.', enabled: false }, 404);
+  }
+
+  const createUser = deps.createUserClient || createUserClient;
+  const createService = deps.createServiceClient || createServiceClient;
+  const verify = deps.verifyVersaCode || verifyVersaCode;
+
+  const userClient = createUser(env, request.headers.get('Authorization'));
+  if (!userClient) return json({ message: 'Sign in to verify your access code.' }, 401);
+
+  const { data: userData, error: userErr } = await userClient.auth.getUser();
+  if (userErr || !userData?.user?.id) {
+    return json({ message: 'Sign in to verify your access code.' }, 401);
+  }
+
+  let admin;
+  try {
+    admin = createService(env);
+  } catch (err) {
+    return json(
+      {
+        message: err instanceof Error ? err.message : 'Service role not configured.',
+        code: 'MISSING_SERVICE_KEY',
+      },
+      503,
+    );
+  }
+
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return json({ message: 'Invalid JSON body.' }, 400);
+  }
+
+  const submittedCode = String(body?.code ?? body?.accessCode ?? '').trim();
+  const expectedLevel = String(body?.level ?? 'L1').toUpperCase() === 'L2' ? 'L2' : 'L1';
+
+  const result = await verify({
+    env,
+    admin,
+    request,
+    submittedCode,
+    identity: {
+      userId: userData.user.id,
+      email: userData.user.email,
+    },
+    expected: { level: expectedLevel },
+    // Never honor client-supplied payment claims.
+    paymentVerified: false,
+    consume: true,
+  });
+
+  if (!result.ok) {
+    return json({ message: result.message || GENERIC_DENY_MESSAGE }, 403);
+  }
+
+  if (result.row?.program_route === 'spike-interns' && result.row?.level === 'L1') {
+    const { data: existing } = await admin
+      .from('intern_progress')
+      .select('user_id')
+      .eq('user_id', userData.user.id)
+      .maybeSingle();
+    if (!existing) {
+      await admin.from('intern_progress').insert({
+        user_id: userData.user.id,
+        segment: 1,
+        hours: 0,
+        licensed: false,
+        program_slug: 'spike-internship',
+      });
+    }
+  }
+
+  const confirmation =
+    result.row?.level === 'L1'
+      ? 'Access verified — Financial Literacy (L1)'
+      : `Access verified — ${result.row?.offering_id || 'approved L2 offering'}`;
+
+  return json({
+    ok: true,
+    alreadyGranted: Boolean(result.alreadyGranted),
+    level: result.row?.level,
+    offeringId: result.row?.offering_id,
+    confirmation,
+  });
+}
+
+export async function onRequest(ctx) {
+  return handleVersaRedeem(ctx);
+}

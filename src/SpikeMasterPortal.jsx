@@ -111,6 +111,7 @@ import { SuperuserAddCoachPanel } from './components/admin/SuperuserAddCoachPane
 import { isMockUser, shouldUseSupabaseForUser } from './lib/mockAuth.js';
 import { ForcePasswordChangeGate } from './components/ForcePasswordChangeGate.jsx';
 import { DailyActivationCodeCard } from './components/dashboard/DailyActivationCodeCard.jsx';
+import { VersaAccessCard } from './components/VersaAccessCard.jsx';
 import { BrandLexiconDashboardCard } from './components/resources/BrandLexiconDashboardCard.jsx';
 import { FacilitatorsContentReferenceDashboardCard } from './components/resources/FacilitatorsContentReferenceDashboardCard.jsx';
 import { validateInternActivationCode } from './lib/activationCodeService.js';
@@ -2284,10 +2285,13 @@ const SpikeMasterPortal = () => {
         && (effectiveUserRole === 'intern' || (isSuperuserSession && viewAsRole === 'intern'))
         && !authLoading
         && !isRaSpikeProgram(internProgramSlug) ? (
-          <ProgramWeekRibbon
-            internProgress={(internModuleUser ?? user)?.internProgress}
-            participantId={(internModuleUser ?? user)?.id ?? ''}
-          />
+          <>
+            <ProgramWeekRibbon
+              internProgress={(internModuleUser ?? user)?.internProgress}
+              participantId={(internModuleUser ?? user)?.id ?? ''}
+            />
+            <VersaAccessCard />
+          </>
         ) : null}
 
       <main className={immersiveLife ? 'spike-life-immersive-main' : undefined}>

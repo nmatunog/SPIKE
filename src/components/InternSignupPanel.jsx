@@ -1,7 +1,7 @@
 import React, { memo, useState } from 'react';
 import { PasswordInput } from './PasswordInput.jsx';
 
-export const InternSignupPanel = memo(function InternSignupPanel({ onSignup }) {
+export const InternSignupPanel = memo(function InternSignupPanel({ onSignup, versaGateEnabled = false }) {
   const [show, setShow] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -92,11 +92,15 @@ export const InternSignupPanel = memo(function InternSignupPanel({ onSignup }) {
             <input id="intern-signup-squad" value={squad} onChange={(e) => setSquad(e.target.value)} className={fieldClass} />
           </label>
           <label className="block text-sm">
-            <span className="mb-1 block font-medium text-slate-700">Daily activation code</span>
-            <input required id="intern-signup-code" value={code} onChange={(e) => setCode(e.target.value)} className={`${fieldClass} uppercase`} autoComplete="one-time-code" />
+            <span className="mb-1 block font-medium text-slate-700">
+              {versaGateEnabled ? 'Access code' : 'Daily activation code'}
+            </span>
+            <input required id="intern-signup-code" value={code} onChange={(e) => setCode(e.target.value)} className={`${fieldClass} ${versaGateEnabled ? '' : 'uppercase'}`} autoComplete="one-time-code" />
           </label>
           <p className="text-xs text-slate-500">
-            No confirmation email — sign in right away after creating your account.
+            {versaGateEnabled
+              ? 'Your code was provided by Versa when you registered. Sign in after creating your account — no confirmation email.'
+              : 'No confirmation email — sign in right away after creating your account.'}
           </p>
           <button type="submit" disabled={submitting} className="spike-btn-primary w-full">
             {submitting ? 'Creating account…' : 'Sign up as intern'}

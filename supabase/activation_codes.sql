@@ -18,9 +18,13 @@ for all
 using (public.current_role() = 'ADMIN')
 with check (public.current_role() = 'ADMIN');
 
+-- F1: do not grant anon/authenticated public read of live activation codes.
+-- Intern signup validates via the service-role Pages Function.
+-- Staff dashboards use this authenticated staff-read policy.
 drop policy if exists "activation_codes_public_read" on public.activation_codes;
-create policy "activation_codes_public_read"
+drop policy if exists "activation_codes_staff_read" on public.activation_codes;
+create policy "activation_codes_staff_read"
 on public.activation_codes
 for select
-to anon, authenticated
-using (expires_at > now());
+to authenticated
+using (public.current_role() in ('FACULTY', 'MENTOR', 'ADMIN', 'SUPERUSER'));
