@@ -1,11 +1,13 @@
--- ROLLBACK NOTE — SEC-1 / F1 RA-SPIKE ensure_daily_activation_code staff gate.
--- Flavor: safe-partial (ungated function; revoke from public only).
--- Umbrella: rollbacks/sec1_f1_safe_partial.sql
--- Exact live restore: rollbacks/sec1_f1_exact_restore.sql
--- Lives in rollbacks/ so scripts/sync-ra-spike-migrations.sh (`rm -f migrations/*.sql`)
--- cannot delete it. Not on the RA migrations allowlist.
+-- ROLLBACK NOTE — SEC-1 / F1 ensure_daily_activation_code staff gate.
+-- Flavor: safe-partial (ungated function; revoke from public only — matches main).
+-- Does NOT re-grant anon EXECUTE (live had that; see exact-restore).
+-- Drops mint_daily_activation_code() and reschedules pg_cron onto ensure().
+-- Restores live regenerate() body (20260718 ADMIN gate, including fail-open NOT IN).
+-- Umbrella: sec1_f1_safe_partial.sql (Interns supabase/rollbacks/, RA supabase/ra-spike/rollbacks/).
+-- Exact live restore: sec1_f1_exact_restore.sql
 -- Do NOT apply unless Nilo decides to undo a previously applied SEC-1 migration.
--- Restores the ungated function from 20260710_admin_portal_catchup.sql.
+
+drop function if exists public.mint_daily_activation_code();
 
 create or replace function public.ensure_daily_activation_code()
 returns public.activation_codes
@@ -33,3 +35,56 @@ $$;
 
 revoke all on function public.ensure_daily_activation_code() from public;
 grant execute on function public.ensure_daily_activation_code() to authenticated, service_role;
+
+create or replace function public.regenerate_daily_activation_code()
+returns public.activation_codes
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  today date := public.manila_today();
+  row public.activation_codes;
+begin
+  if public.current_role() not in ('ADMIN', 'SUPERUSER') then
+    raise exception 'Only administrators can regenerate activation codes';
+  end if;
+  if not public.portal_can_write() then
+    raise exception 'View-only administrator — cannot regenerate activation codes';
+  end if;
+
+  insert into public.activation_codes (date_key, code, expires_at, generated_by)
+  values (
+    today,
+    public.random_activation_code(),
+    public.manila_end_of_day(today),
+    auth.uid()
+  )
+  on conflict (date_key) do update
+    set code = excluded.code,
+        expires_at = excluded.expires_at,
+        generated_by = excluded.generated_by,
+        generated_at = now();
+
+  select * into row from public.activation_codes where date_key = today;
+  return row;
+end;
+$$;
+
+do $cron$
+begin
+  if to_regprocedure('cron.schedule(text,text,text)') is null then
+    return;
+  end if;
+  begin
+    perform cron.unschedule('spike-daily-activation-code');
+  exception when others then
+    null;
+  end;
+  perform cron.schedule(
+    'spike-daily-activation-code',
+    '0 16 * * *',
+    $cmd$select public.ensure_daily_activation_code();$cmd$
+  );
+end;
+$cron$;

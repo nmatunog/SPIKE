@@ -50,6 +50,45 @@ grep -q 'auth.uid() is null' "$intern29" \
   || fail "intern 20260829 must raise when auth.uid() is null"
 grep -q "revoke execute on function public.regenerate_daily_activation_code() from anon" "$intern29" \
   || fail "intern 20260829 must REVOKE EXECUTE regenerate_daily_activation_code() from anon"
+grep -q 'create or replace function public.mint_daily_activation_code()' "$intern29" \
+  || fail "intern 20260829 must define mint_daily_activation_code()"
+grep -q 'revoke all on function public.mint_daily_activation_code() from public, anon, authenticated' "$intern29" \
+  || fail "intern 20260829 must not grant mint to public/anon/authenticated"
+grep -q 'select public.mint_daily_activation_code()' "$intern29" \
+  || fail "intern 20260829 must reschedule pg_cron onto mint_daily_activation_code"
+grep -q "current_role() is distinct from 'ADMIN'" "$intern29" \
+  || fail "intern 20260829 regenerate() must fail closed on a null role"
+
+# Intern and RA rollback SQL must stay byte-identical (comments included).
+cmp -s \
+  "$ROOT/supabase/migrations/_rollback_20260827_restrict_activation_codes_anon_read.sql" \
+  "$ROOT/supabase/ra-spike/rollbacks/$F1_27" \
+  || fail "intern _rollback_20260827 and RA rollbacks/$F1_27 must be byte-identical"
+cmp -s \
+  "$ROOT/supabase/migrations/_rollback_20260829_gate_ensure_daily_activation_code.sql" \
+  "$ROOT/supabase/ra-spike/rollbacks/$F1_29" \
+  || fail "intern _rollback_20260829 and RA rollbacks/$F1_29 must be byte-identical"
+cmp -s \
+  "$ROOT/supabase/rollbacks/sec1_f1_safe_partial.sql" \
+  "$ROOT/supabase/ra-spike/rollbacks/sec1_f1_safe_partial.sql" \
+  || fail "intern/RA sec1_f1_safe_partial.sql must be byte-identical"
+cmp -s \
+  "$ROOT/supabase/rollbacks/sec1_f1_exact_restore.sql" \
+  "$ROOT/supabase/ra-spike/rollbacks/sec1_f1_exact_restore.sql" \
+  || fail "intern/RA sec1_f1_exact_restore.sql must be byte-identical"
+
+grep -q 'drop function if exists public.mint_daily_activation_code' \
+  "$ROOT/supabase/rollbacks/sec1_f1_safe_partial.sql" \
+  || fail "safe-partial must drop mint_daily_activation_code"
+grep -q 'drop function if exists public.mint_daily_activation_code' \
+  "$ROOT/supabase/rollbacks/sec1_f1_exact_restore.sql" \
+  || fail "exact-restore must drop mint_daily_activation_code"
+grep -q 'select public.ensure_daily_activation_code()' \
+  "$ROOT/supabase/rollbacks/sec1_f1_safe_partial.sql" \
+  || fail "safe-partial must reschedule pg_cron onto ensure()"
+grep -q 'select public.ensure_daily_activation_code()' \
+  "$ROOT/supabase/rollbacks/sec1_f1_exact_restore.sql" \
+  || fail "exact-restore must reschedule pg_cron onto ensure()"
 
 # exact-restore (not safe-partial) is the file that re-grants live anon EXECUTE / ALL.
 grep -q 'grant execute on function public.ensure_daily_activation_code() to anon' \
