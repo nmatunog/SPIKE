@@ -29,3 +29,6 @@ on public.activation_codes
 for select
 to authenticated
 using (public.current_role() in ('FACULTY', 'MENTOR', 'ADMIN', 'SUPERUSER'));
+
+revoke all on table public.activation_codes from anon;
+revoke truncate, references, trigger on table public.activation_codes from authenticated;

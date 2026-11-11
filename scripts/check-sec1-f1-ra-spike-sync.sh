@@ -26,6 +26,12 @@ fi
 [[ -f "$ROOT/supabase/ra-spike/migrations/$F1_29" ]] || fail "RA dest missing $F1_29"
 [[ -f "$ROOT/supabase/ra-spike/rollbacks/$F1_27" ]] || fail "RA rollback missing rollbacks/$F1_27"
 [[ -f "$ROOT/supabase/ra-spike/rollbacks/$F1_29" ]] || fail "RA rollback missing rollbacks/$F1_29"
+[[ -f "$ROOT/supabase/ra-spike/rollbacks/sec1_f1_safe_partial.sql" ]] || fail "RA rollback missing sec1_f1_safe_partial.sql"
+[[ -f "$ROOT/supabase/ra-spike/rollbacks/sec1_f1_exact_restore.sql" ]] || fail "RA rollback missing sec1_f1_exact_restore.sql"
+[[ -f "$ROOT/supabase/rollbacks/sec1_f1_safe_partial.sql" ]] || fail "intern rollbacks/ missing sec1_f1_safe_partial.sql"
+[[ -f "$ROOT/supabase/rollbacks/sec1_f1_exact_restore.sql" ]] || fail "intern rollbacks/ missing sec1_f1_exact_restore.sql"
+[[ ! -f "$ROOT/supabase/ra-spike/migrations/sec1_f1_safe_partial.sql" ]] || fail "umbrella rollback must not live under RA migrations/"
+[[ ! -f "$ROOT/supabase/ra-spike/migrations/sec1_f1_exact_restore.sql" ]] || fail "umbrella rollback must not live under RA migrations/"
 [[ ! -f "$ROOT/supabase/ra-spike/migrations/_rollback_$F1_27" ]] || fail "rollback still under migrations/ (sync would delete it)"
 [[ ! -f "$ROOT/supabase/ra-spike/migrations/_rollback_$F1_29" ]] || fail "rollback still under migrations/ (sync would delete it)"
 
@@ -33,6 +39,29 @@ revoke_line="$(grep 'ensure_daily_activation_code' "$INTERN_ROLLBACK29" | grep r
 [[ -n "$revoke_line" ]] || fail "intern _rollback_20260829 missing revoke line"
 [[ "$revoke_line" == *'from public;'* ]] || fail "intern _rollback_20260829 must revoke from public only (match main)"
 [[ "$revoke_line" != *anon* ]] || fail "intern _rollback_20260829 must not revoke from anon"
+
+intern27="$ROOT/supabase/migrations/$F1_27"
+intern29="$ROOT/supabase/migrations/$F1_29"
+grep -q 'revoke all on table public.activation_codes from anon' "$intern27" \
+  || fail "intern 20260827 must REVOKE ALL on activation_codes from anon"
+grep -q 'revoke truncate, references, trigger on table public.activation_codes from authenticated' "$intern27" \
+  || fail "intern 20260827 must revoke TRUNCATE/REFERENCES/TRIGGER from authenticated"
+grep -q 'auth.uid() is null' "$intern29" \
+  || fail "intern 20260829 must raise when auth.uid() is null"
+grep -q "revoke execute on function public.regenerate_daily_activation_code() from anon" "$intern29" \
+  || fail "intern 20260829 must REVOKE EXECUTE regenerate_daily_activation_code() from anon"
+
+# exact-restore (not safe-partial) is the file that re-grants live anon EXECUTE / ALL.
+grep -q 'grant execute on function public.ensure_daily_activation_code() to anon' \
+  "$ROOT/supabase/rollbacks/sec1_f1_exact_restore.sql" \
+  || fail "intern exact-restore must grant anon EXECUTE on ensure_daily_activation_code"
+grep -q 'grant all on table public.activation_codes to anon' \
+  "$ROOT/supabase/rollbacks/sec1_f1_exact_restore.sql" \
+  || fail "intern exact-restore must GRANT ALL on activation_codes to anon"
+if grep -q 'grant execute on function public.ensure_daily_activation_code() to anon' \
+  "$ROOT/supabase/migrations/_rollback_20260829_gate_ensure_daily_activation_code.sql"; then
+  fail "safe-partial _rollback_20260829 must not grant anon EXECUTE"
+fi
 
 TMP="$(mktemp -d "${TMPDIR:-/tmp}/sec1-f1-sync.XXXXXX")"
 cleanup() { rm -rf "$TMP"; }

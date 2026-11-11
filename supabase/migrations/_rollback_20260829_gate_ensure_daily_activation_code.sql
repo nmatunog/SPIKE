@@ -1,4 +1,8 @@
 -- ROLLBACK NOTE — SEC-1 / F1 intern ensure_daily_activation_code staff gate.
+-- Flavor: safe-partial (ungated function; revoke from public only — matches main).
+-- Does NOT re-grant anon EXECUTE (live had that; see exact-restore).
+-- Umbrella: supabase/rollbacks/sec1_f1_safe_partial.sql
+-- Exact live restore: supabase/rollbacks/sec1_f1_exact_restore.sql
 -- Do NOT apply unless Nilo decides to undo a previously applied SEC-1 migration.
 -- Restores the ungated function from 20260614_daily_activation_code_auto.sql /
 -- 20260710_admin_portal_catchup.sql, including revoke from public only.

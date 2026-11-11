@@ -1,4 +1,7 @@
 -- ROLLBACK NOTE — SEC-1 / F1 RA-SPIKE ensure_daily_activation_code staff gate.
+-- Flavor: safe-partial (ungated function; revoke from public only).
+-- Umbrella: rollbacks/sec1_f1_safe_partial.sql
+-- Exact live restore: rollbacks/sec1_f1_exact_restore.sql
 -- Lives in rollbacks/ so scripts/sync-ra-spike-migrations.sh (`rm -f migrations/*.sql`)
 -- cannot delete it. Not on the RA migrations allowlist.
 -- Do NOT apply unless Nilo decides to undo a previously applied SEC-1 migration.

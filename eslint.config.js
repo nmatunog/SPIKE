@@ -35,7 +35,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['vite.config.js'],
+    files: ['vite.config.js', 'vitest.sec1.config.js', '**/*.test.js'],
     languageOptions: {
       globals: globals.node,
     },
