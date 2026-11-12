@@ -30,6 +30,11 @@ grep -q 'APPLY_DB_MIGRATIONS' "$RUNNER" || fail "run-supabase-migrations.sh must
 grep -q 'APPLY_DB_MIGRATIONS' "$RA_RUNNER" || fail "run-ra-spike-migrations.sh must gate on APPLY_DB_MIGRATIONS"
 grep -q 'EXPECTED_PROJECT_REF' "$APPLY" || fail "apply-pending-migrations.sh must assert EXPECTED_PROJECT_REF"
 grep -q 'PENDING_MIGRATIONS_TEST_HARNESS' "$APPLY" || fail "apply-pending-migrations.sh must allow PENDING_MIGRATIONS_TEST_HARNESS for stubbed tests"
+grep -q 'PENDING_MIGRATIONS_TEST_STUB' "$APPLY" || fail "harness must require PENDING_MIGRATIONS_TEST_STUB on the supabase binary"
+grep -q 'CANONICAL_REF_FILE' "$APPLY" || fail "apply-pending-migrations.sh must read the canonical project-ref file"
+if grep -q 'LINKED_REF_FILE=' "$APPLY"; then
+  fail "LINKED_REF_FILE must not override the linked-ref assert"
+fi
 if grep -q 'SKIP_SUPABASE_LINK' "$RUNNER" "$RA_RUNNER"; then
   fail "SKIP_SUPABASE_LINK must not remain in production wrappers (test harness only)"
 fi
@@ -46,8 +51,34 @@ ra_sync="$(awk '/sync-ra-spike-migrations/{print NR; exit}' "$RA_RUNNER")"
   || fail "run-ra-spike-migrations.sh must gate APPLY_DB_MIGRATIONS before sync/link"
 
 TMP="$(mktemp -d "${TMPDIR:-/tmp}/pending-mig.XXXXXX")"
-cleanup() { rm -rf "$TMP"; }
+REF_DIR="$ROOT/supabase/.temp"
+REF_FILE="$REF_DIR/project-ref"
+REF_BACKUP=""
+REF_DIR_CREATED=0
+if [[ ! -d "$REF_DIR" ]]; then
+  mkdir -p "$REF_DIR"
+  REF_DIR_CREATED=1
+fi
+if [[ -f "$REF_FILE" ]]; then
+  REF_BACKUP="$TMP/project-ref.bak"
+  cp "$REF_FILE" "$REF_BACKUP"
+fi
+cleanup() {
+  if [[ -n "$REF_BACKUP" && -f "$REF_BACKUP" ]]; then
+    mv "$REF_BACKUP" "$REF_FILE"
+  else
+    rm -f "$REF_FILE"
+    if [[ "$REF_DIR_CREATED" == "1" ]]; then
+      rmdir "$REF_DIR" 2>/dev/null || true
+    fi
+  fi
+  rm -rf "$TMP"
+}
 trap cleanup EXIT
+write_ref() {
+  mkdir -p "$REF_DIR"
+  printf '%s\n' "$1" > "$REF_FILE"
+}
 
 mkdir -p "$TMP/bin" "$TMP/migrations"
 STAMP="$TMP/supabase-invoked"
@@ -57,6 +88,7 @@ APPLY_LOG="$TMP/apply.log"
 write_stub() {
   cat > "$TMP/bin/supabase" <<EOF
 #!/usr/bin/env bash
+# PENDING_MIGRATIONS_TEST_STUB
 echo "\$*" >> "$STAMP"
 if [[ "\$*" == *schema_migrations* && "\$*" != *insert* ]]; then
   cat "$APPLIED_JSON"
@@ -223,14 +255,13 @@ if [[ -s "$STAMP" ]]; then
 fi
 
 # --- linked project-ref assert (production path; not the test harness) ---
-echo 'wrong-ref' > "$TMP/project-ref"
+write_ref 'wrong-ref'
 echo '[]' > "$APPLIED_JSON"
 seed_sql "$TMP/migrations" 20260827_restrict_activation_codes_anon_read
 set +e
 link_out="$(
   PATH="$TMP/bin:$PATH" \
     EXPECTED_PROJECT_REF=lzbfjbtjropoaynbcxew \
-    LINKED_REF_FILE="$TMP/project-ref" \
     SKIP_APPLY=1 \
     bash "$APPLY" "$TMP/migrations" "test-link" 2>&1
 )"
@@ -243,7 +274,6 @@ echo "$link_out" | grep -q "linked project-ref" \
 set +e
 missing_out="$(
   PATH="$TMP/bin:$PATH" \
-    LINKED_REF_FILE="$TMP/project-ref" \
     SKIP_APPLY=1 \
     bash "$APPLY" "$TMP/migrations" "test-link" 2>&1
 )"
@@ -253,15 +283,61 @@ set -e
 echo "$missing_out" | grep -q 'EXPECTED_PROJECT_REF is required' \
   || fail "missing EXPECTED_PROJECT_REF must say so: $missing_out"
 
-printf '%s\n' 'lzbfjbtjropoaynbcxew' > "$TMP/project-ref"
+write_ref 'lzbfjbtjropoaynbcxew'
 match_out="$(
   PATH="$TMP/bin:$PATH" \
     EXPECTED_PROJECT_REF=lzbfjbtjropoaynbcxew \
-    LINKED_REF_FILE="$TMP/project-ref" \
     SKIP_APPLY=1 \
     bash "$APPLY" "$TMP/migrations" "test-link" 2>&1
 )" || fail "matching linked project-ref must proceed: $match_out"
 echo "$match_out" | grep -q 'would apply 20260827_restrict_activation_codes_anon_read.sql' \
   || fail "matching linked project-ref should dry-apply: $match_out"
 
-echo "check-pending-migrations: OK (SEC-1-first, Versa-first, live max 20260829 and lower, 14-digit earlier prefix, db:migrate gated, linked-ref assert)"
+# LINKED_REF_FILE must not override the canonical project-ref outside the harness.
+write_ref 'wrong-ref'
+printf '%s\n' 'lzbfjbtjropoaynbcxew' > "$TMP/spoof-ref"
+set +e
+spoof_out="$(
+  PATH="$TMP/bin:$PATH" \
+    EXPECTED_PROJECT_REF=lzbfjbtjropoaynbcxew \
+    LINKED_REF_FILE="$TMP/spoof-ref" \
+    SKIP_APPLY=1 \
+    bash "$APPLY" "$TMP/migrations" "test-link" 2>&1
+)"
+spoof_rc=$?
+set -e
+[[ "$spoof_rc" -ne 0 ]] || fail "LINKED_REF_FILE must not override the canonical project-ref"
+echo "$spoof_out" | grep -q "linked project-ref" \
+  || fail "spoofed LINKED_REF_FILE must still fail the canonical assert: $spoof_out"
+
+# Harness without the stub marker must refuse before any --linked query.
+mkdir -p "$TMP/realish"
+cat > "$TMP/realish/supabase" <<EOF
+#!/usr/bin/env bash
+echo "\$*" >> "$STAMP"
+if [[ "\$1" == "db" && "\$2" == "query" && "\$4" == "-f" ]]; then
+  echo "APPLY \$(basename "\$5")" >> "$APPLY_LOG"
+fi
+exit 0
+EOF
+chmod +x "$TMP/realish/supabase"
+: > "$STAMP"
+: > "$APPLY_LOG"
+set +e
+nostub_out="$(
+  PATH="$TMP/realish:$PATH" PENDING_MIGRATIONS_TEST_HARNESS=1 \
+    bash "$APPLY" "$TMP/migrations" "test-harness" 2>&1
+)"
+nostub_rc=$?
+set -e
+[[ "$nostub_rc" -ne 0 ]] || fail "harness without test stub must refuse"
+echo "$nostub_out" | grep -q 'PENDING_MIGRATIONS_TEST_STUB' \
+  || fail "harness without stub must name the stub marker: $nostub_out"
+if [[ -s "$STAMP" ]]; then
+  fail "harness without stub must not invoke supabase: $(cat "$STAMP")"
+fi
+if grep -q '^APPLY ' "$APPLY_LOG"; then
+  fail "harness without stub must not apply SQL"
+fi
+
+echo "check-pending-migrations: OK (SEC-1-first, Versa-first, live max 20260829 and lower, 14-digit earlier prefix, db:migrate gated, linked-ref assert, harness stub-only)"

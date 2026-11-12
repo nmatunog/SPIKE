@@ -15,29 +15,41 @@
 #   ALLOW_OUT_OF_ORDER=1
 #   SKIP_APPLY=1          plan / fail-check only (no -f apply)
 #   EXPECTED_PROJECT_REF  required unless PENDING_MIGRATIONS_TEST_HARNESS=1
-#   PENDING_MIGRATIONS_TEST_HARNESS=1  stubbed-CLI tests only (skip link assert)
-#   LINKED_REF_FILE       override path to supabase/.temp/project-ref (tests)
+#   PENDING_MIGRATIONS_TEST_HARNESS=1  stubbed-CLI tests only (skip link assert).
+#     Requires the supabase on PATH to contain PENDING_MIGRATIONS_TEST_STUB.
+#     SKIP_APPLY=1 is not a substitute: it still runs `db query --linked`.
 
 set -euo pipefail
 
 MIGRATIONS_DIR="${1:-}"
 LOG_PREFIX="${2:-apply-pending-migrations}"
 SCRIPT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-LINKED_REF_FILE="${LINKED_REF_FILE:-$SCRIPT_ROOT/supabase/.temp/project-ref}"
+CANONICAL_REF_FILE="$SCRIPT_ROOT/supabase/.temp/project-ref"
 
 if [[ -z "$MIGRATIONS_DIR" || ! -d "$MIGRATIONS_DIR" ]]; then
   echo "${LOG_PREFIX}: missing migrations dir: ${MIGRATIONS_DIR:-<empty>}" >&2
   exit 1
 fi
 
+is_test_stub_supabase() {
+  local bin
+  bin="$(command -v supabase 2>/dev/null || true)"
+  [[ -n "$bin" && -f "$bin" ]] || return 1
+  grep -q 'PENDING_MIGRATIONS_TEST_STUB' "$bin"
+}
+
 if [[ "${PENDING_MIGRATIONS_TEST_HARNESS:-}" == "1" ]]; then
-  : # stubbed CLI tests never talk to a linked project
+  if ! is_test_stub_supabase; then
+    echo "${LOG_PREFIX}: PENDING_MIGRATIONS_TEST_HARNESS=1 requires the test stub supabase on PATH (marker PENDING_MIGRATIONS_TEST_STUB)" >&2
+    echo "${LOG_PREFIX}: refusing so a real supabase db query --linked cannot run" >&2
+    exit 1
+  fi
 else
   if [[ -z "${EXPECTED_PROJECT_REF:-}" ]]; then
     echo "${LOG_PREFIX}: EXPECTED_PROJECT_REF is required (linked project must match)" >&2
     exit 1
   fi
-  LINKED="$(cat "$LINKED_REF_FILE" 2>/dev/null || echo '')"
+  LINKED="$(cat "$CANONICAL_REF_FILE" 2>/dev/null || echo '')"
   if [[ "$LINKED" != "$EXPECTED_PROJECT_REF" ]]; then
     echo "${LOG_PREFIX}: linked project-ref '${LINKED:-<none>}' != expected '${EXPECTED_PROJECT_REF}'" >&2
     echo "${LOG_PREFIX}: refusing to apply; relink the CLI to the intended project" >&2
