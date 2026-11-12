@@ -43,8 +43,7 @@ fi
 
 cd "$ROOT"
 
-if [[ "${SKIP_SUPABASE_LINK:-}" != "1" ]]; then
-  ensure_supabase_linked "$SPIKE_INTERNSHIP_PROJECT_REF" "SPIKE Internship"
-fi
+ensure_supabase_linked "$SPIKE_INTERNSHIP_PROJECT_REF" "SPIKE Internship"
 
-bash "$ROOT/scripts/apply-pending-migrations.sh" "$MIGRATIONS_DIR" "run-supabase-migrations"
+EXPECTED_PROJECT_REF="$SPIKE_INTERNSHIP_PROJECT_REF" \
+  bash "$ROOT/scripts/apply-pending-migrations.sh" "$MIGRATIONS_DIR" "run-supabase-migrations"
