@@ -231,6 +231,10 @@ export async function verifyVersaCode(input) {
   const unavailable = rowUnavailableReason(row, now);
   if (unavailable === REASONS.reused) {
     if (identity.userId && String(row.redeemed_by) === String(identity.userId)) {
+      // Own used PRO code: idempotent only while the L2 term is active or in grace.
+      if (termLimited && !existingFlags.every(Boolean)) {
+        return deny(REASONS.expired);
+      }
       logger.info({ event: 'versa_already_granted', inventoryId: row.id });
       return {
         ok: true,

@@ -87,6 +87,14 @@ async function consumeAndGrantFallback(admin, { id, userId, grantor, paymentVeri
         now,
         extend: false,
       });
+    } else {
+      await grantOfferingsFromRow(admin, {
+        userId,
+        row: existing,
+        env,
+        now,
+        extend: false,
+      });
     }
     const entitlement = await findEntitlement(admin, userId, existing.offering_id);
     return { ok: true, already_granted: true, row: existing, entitlement };
@@ -218,6 +226,7 @@ export async function grantOfferingsFromRow(admin, {
       now,
       extend,
       termLimited: offering.termLimited === true,
+      redeemedAt: row.redeemed_at,
     });
   }
   return last;
@@ -228,10 +237,14 @@ export async function upsertEntitlement(admin, row) {
   const existing = await findEntitlement(admin, row.userId, row.offeringId);
   let expiresAt = null;
   if (row.termLimited) {
+    const periodDays = versaProPeriodDays(row.env);
+    const nowMs = row.now ?? Date.now();
     if (row.extend === false) {
-      expiresAt = existing?.expires_at ?? null;
+      const redeemedMs = row.redeemedAt ? new Date(row.redeemedAt).getTime() : nowMs;
+      const derived = stackedExpiryIso(null, Number.isFinite(redeemedMs) ? redeemedMs : nowMs, periodDays);
+      expiresAt = existing?.expires_at || derived;
     } else {
-      expiresAt = stackedExpiryIso(existing?.expires_at, row.now ?? Date.now(), versaProPeriodDays(row.env));
+      expiresAt = stackedExpiryIso(existing?.expires_at, nowMs, periodDays);
     }
   }
 

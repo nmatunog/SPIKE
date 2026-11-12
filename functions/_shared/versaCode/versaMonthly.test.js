@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { handleVersaRedeem } from '../../api/versa/redeem.js';
 import { createSessionIdentityProvider } from './adapters.js';
-import { REASONS } from './constants.js';
+import { GENERIC_DENY_MESSAGE, REASONS } from './constants.js';
 import {
   MS_PER_DAY,
   entitlementAccessState,
@@ -9,6 +9,7 @@ import {
   lapseExpiredVersaEntitlements,
   stackedExpiryIso,
 } from './entitlement.js';
+import { consumeAndGrant } from './inventory.js';
 import { importVersaCsv } from './importRows.js';
 import { resetVersaRateLimitStore } from './rateLimit.js';
 import { redeem } from './service.js';
@@ -161,7 +162,7 @@ describe('Versa PRO monthly term (option B, new code each month)', () => {
     expect(new Date(l2Row(admin).expires_at).getTime() - afterGrace).toBe(30 * MS_PER_DAY);
   });
 
-  it('a reused code is denied and does not stack', async () => {
+  it('own-code re-redeem within the term stays idempotent', async () => {
     const admin = await setup();
     await redeem(SYNTHETIC_CODES.pro, identity(), 'spike-interns', 'L2', {
       env: FLAG_ENV,
@@ -177,6 +178,7 @@ describe('Versa PRO monthly term (option B, new code each month)', () => {
     });
     expect(retry.ok).toBe(true);
     expect(retry.alreadyGranted).toBe(true);
+    expect(retry.reason).toBe(REASONS.already_granted);
     expect(new Date(l2Row(admin).expires_at).getTime() - T0).toBe(30 * MS_PER_DAY);
 
     const other = await redeem(SYNTHETIC_CODES.pro, identity(OTHER_ID, OTHER), 'spike-interns', 'L2', {
@@ -188,6 +190,109 @@ describe('Versa PRO monthly term (option B, new code each month)', () => {
     expect(other.ok).toBe(false);
     expect(other.reason).toBe(REASONS.wrong_identity);
     expect(l2Row(admin, OTHER_ID)).toBeUndefined();
+  });
+
+  it('own-code re-redeem after grace returns 403 until a new PRO code is consumed', async () => {
+    const admin = await setup();
+    await redeem(SYNTHETIC_CODES.pro, identity(), 'spike-interns', 'L2', {
+      env: FLAG_ENV,
+      admin,
+      offeringId: L2,
+      now: T0,
+    });
+    const afterGrace = T0 + 38 * MS_PER_DAY;
+    const retry = await redeem(SYNTHETIC_CODES.pro, identity(), 'spike-interns', 'L2', {
+      env: FLAG_ENV,
+      admin,
+      offeringId: L2,
+      now: afterGrace,
+    });
+    expect(retry.ok).toBe(false);
+    expect(retry.reason).toBe(REASONS.expired);
+    expect(retry.message).toBe(GENERIC_DENY_MESSAGE);
+    expect(new Date(l2Row(admin).expires_at).getTime() - T0).toBe(30 * MS_PER_DAY);
+
+    const http = await readJson(
+      await handleVersaRedeem(
+        {
+          request: postJson('https://portal.test/api/versa/redeem', {
+            code: SYNTHETIC_CODES.pro,
+            intendedCourse: 'spike-interns',
+          }),
+          env: FLAG_ENV,
+        },
+        {
+          createServiceClient: () => admin,
+          createUserClient: () => admin,
+          redeem: (code, authenticatedIdentity, intendedCourse, intendedLevel, options) =>
+            redeem(code, authenticatedIdentity, intendedCourse, intendedLevel, {
+              ...options,
+              now: afterGrace,
+            }),
+        },
+      ),
+    );
+    expect(http.status).toBe(403);
+    expect(http.body.message).toBe(GENERIC_DENY_MESSAGE);
+    expect(http.body.ok).toBeUndefined();
+    expect(new Date(l2Row(admin).expires_at).getTime() - T0).toBe(30 * MS_PER_DAY);
+  });
+
+  it('deleting the entitlement and retrying never yields a null expiry for PRO', async () => {
+    const admin = await setup();
+    await redeem(SYNTHETIC_CODES.pro, identity(), 'spike-interns', 'L2', {
+      env: FLAG_ENV,
+      admin,
+      offeringId: L2,
+      now: T0,
+    });
+    const inventory = admin.tables.versa_code_inventory.find((row) => row.offering_id === L2 && row.status === 'redeemed');
+    admin.tables.versa_entitlements = admin.tables.versa_entitlements.filter(
+      (row) => String(row.user_id) !== LEARNER_ID,
+    );
+    expect(l2Row(admin)).toBeUndefined();
+
+    const denied = await redeem(SYNTHETIC_CODES.pro, identity(), 'spike-interns', 'L2', {
+      env: FLAG_ENV,
+      admin,
+      offeringId: L2,
+      now: T0 + MS_PER_DAY,
+    });
+    expect(denied.ok).toBe(false);
+    expect(denied.reason).toBe(REASONS.expired);
+    expect(l2Row(admin)).toBeUndefined();
+
+    const restored = await consumeAndGrant(admin, {
+      id: inventory.id,
+      userId: LEARNER_ID,
+      env: FLAG_ENV,
+      now: T0 + MS_PER_DAY,
+    });
+    expect(restored.ok).toBe(true);
+    expect(restored.already_granted).toBe(true);
+    expect(l2Row(admin).expires_at).toBeTruthy();
+    expect(l2Row(admin).expires_at).toBe(stackedExpiryIso(null, T0, 30));
+  });
+
+  it('concurrent stacking of two new PRO codes adds 30+30', async () => {
+    const admin = await setup();
+    const [first, second] = await Promise.all([
+      redeem(SYNTHETIC_CODES.pro, identity(), 'spike-interns', 'L2', {
+        env: FLAG_ENV,
+        admin,
+        offeringId: L2,
+        now: T0,
+      }),
+      redeem(SYNTHETIC_CODES.pro2, identity(), 'spike-interns', 'L2', {
+        env: FLAG_ENV,
+        admin,
+        offeringId: L2,
+        now: T0,
+      }),
+    ]);
+    expect(first.ok).toBe(true);
+    expect(second.ok).toBe(true);
+    expect(new Date(l2Row(admin).expires_at).getTime() - T0).toBe(60 * MS_PER_DAY);
   });
 
   it("another user's code does not extend mine", async () => {

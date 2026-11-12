@@ -189,7 +189,13 @@ describe('Versa CSV portable service', () => {
       'utf8',
     );
     expect(monthly).toMatch(/p_period_days integer default 30/);
-    expect(monthly).toContain('greatest(at, coalesce(next_expiry, at))');
+    expect(monthly).toMatch(
+      /greatest\(at, coalesce\(versa_entitlements\.expires_at, at\)\)/,
+    );
+    expect(monthly).not.toMatch(/expires_at\s*=\s*excluded\.expires_at/);
+    expect(monthly).toMatch(
+      /next_expiry := coalesce\(inv\.redeemed_at, at\) \+ make_interval\(days => period_days\)/,
+    );
     expect(monthly).not.toContain('intern_progress');
     await expect(
       access(fileURLToPath(new URL('../../../supabase/migrations/20260829_versa_q1_hardening.sql', import.meta.url))),

@@ -207,8 +207,13 @@ export function createMockL2Grantor({ paymentVerified = false } = {}) {
           (item) =>
             String(item.userId) === String(userId) && String(item.offeringId) === String(offering.offeringId),
         );
-        const expiresAt = extend !== false
-          ? stackedExpiryIso(current?.expires_at, now ?? Date.now(), versaProPeriodDays(env))
+        const periodDays = versaProPeriodDays(env);
+        const nowMs = now ?? Date.now();
+        const redeemedMs = row.redeemed_at ? new Date(row.redeemed_at).getTime() : nowMs;
+        const expiresAt = offering.termLimited
+          ? extend !== false
+            ? stackedExpiryIso(current?.expires_at, nowMs, periodDays)
+            : current?.expires_at || stackedExpiryIso(null, Number.isFinite(redeemedMs) ? redeemedMs : nowMs, periodDays)
           : current?.expires_at ?? null;
         const record = {
           userId,

@@ -35,10 +35,17 @@ begin
   end if;
 
   if inv.status = 'redeemed' and inv.redeemed_by = p_user_id then
+    -- Recreate missing rows from this code's own term. Never mint a null PRO expiry.
+    if coalesce(inv.plan_slug, '') = 'pro' then
+      next_expiry := coalesce(inv.redeemed_at, at) + make_interval(days => period_days);
+    else
+      next_expiry := null;
+    end if;
+
     insert into public.versa_entitlements (
       user_id, inventory_id, versa_lead_ref, level, offering_id, program_route, expires_at
     ) values (
-      p_user_id, inv.id, inv.versa_lead_ref, inv.level, inv.offering_id, inv.program_route, null
+      p_user_id, inv.id, inv.versa_lead_ref, inv.level, inv.offering_id, inv.program_route, next_expiry
     )
     on conflict (user_id, offering_id) do update
       set inventory_id = excluded.inventory_id
@@ -65,24 +72,30 @@ begin
     return jsonb_build_object('ok', false, 'reason', 'reused');
   end if;
 
-  if coalesce(inv.plan_slug, '') = 'pro' then
-    select expires_at into next_expiry
-      from public.versa_entitlements
-     where user_id = p_user_id and offering_id = inv.offering_id;
-    next_expiry := greatest(at, coalesce(next_expiry, at)) + make_interval(days => period_days);
-  else
-    next_expiry := null;
-  end if;
-
   insert into public.versa_entitlements (
     user_id, inventory_id, versa_lead_ref, level, offering_id, program_route, expires_at
   ) values (
-    p_user_id, inv.id, inv.versa_lead_ref, inv.level, inv.offering_id, inv.program_route, next_expiry
+    p_user_id,
+    inv.id,
+    inv.versa_lead_ref,
+    inv.level,
+    inv.offering_id,
+    inv.program_route,
+    case
+      when coalesce(inv.plan_slug, '') = 'pro'
+        then at + make_interval(days => period_days)
+      else null
+    end
   )
   on conflict (user_id, offering_id) do update
     set inventory_id = excluded.inventory_id,
         versa_lead_ref = excluded.versa_lead_ref,
-        expires_at = excluded.expires_at
+        expires_at = case
+          when coalesce(inv.plan_slug, '') = 'pro' then
+            greatest(at, coalesce(versa_entitlements.expires_at, at))
+              + make_interval(days => period_days)
+          else versa_entitlements.expires_at
+        end
   returning * into ent;
 
   return jsonb_build_object(

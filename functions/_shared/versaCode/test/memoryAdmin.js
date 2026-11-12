@@ -234,6 +234,20 @@ export function createMemoryAdmin(seed = {}) {
         if (!row) return { data: { ok: false, reason: 'unknown' }, error: null };
 
         if (row.status === 'redeemed' && String(row.redeemed_by) === String(args.p_user_id)) {
+          const existingEnt = tables.versa_entitlements.find(
+            (item) =>
+              String(item.user_id) === String(args.p_user_id) &&
+              String(item.offering_id) === String(row.offering_id),
+          );
+          const termLimited = String(row.plan_slug || '').toLowerCase() === 'pro';
+          const nowIso = args.p_now || new Date().toISOString();
+          const periodDays = Number.parseInt(String(args.p_period_days ?? 30), 10);
+          const redeemedMs = new Date(row.redeemed_at || nowIso).getTime();
+          const derived = stackedExpiryIso(
+            null,
+            Number.isFinite(redeemedMs) ? redeemedMs : Date.parse(nowIso),
+            Number.isFinite(periodDays) ? periodDays : 30,
+          );
           const entitlement = upsertEntitlementRow(tables, nextId, {
             user_id: args.p_user_id,
             inventory_id: row.id,
@@ -241,6 +255,9 @@ export function createMemoryAdmin(seed = {}) {
             level: row.level,
             offering_id: row.offering_id,
             program_route: row.program_route,
+            expires_at: termLimited
+              ? existingEnt?.expires_at || derived
+              : existingEnt?.expires_at ?? null,
           });
           return { data: { ok: true, already_granted: true, row: clone(row), entitlement }, error: null };
         }
