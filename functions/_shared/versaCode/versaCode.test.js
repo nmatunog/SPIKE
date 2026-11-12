@@ -161,9 +161,26 @@ describe('Versa CSV portable service', () => {
     expect(src.toLowerCase()).not.toContain('versa');
   });
 
-  it('does not keep intern-portal F1 coupling or VersaAccessCard overlay', async () => {
+  it('Versa adds no intern-portal coupling or VersaAccessCard overlay', async () => {
+    // clientDailyActivationFallbackAllowed is SEC-1 (#15 on main), not Versa.
+    // This check is that Versa did not import into intern signup or mount an overlay.
     const signup = await readFile(new URL('../../../src/lib/internSignupService.js', import.meta.url), 'utf8');
-    expect(signup).not.toContain('clientDailyActivationFallbackAllowed');
+    expect(signup.toLowerCase()).not.toContain('versa');
+    expect(signup).not.toMatch(/from\s+['"][^'"]*versa/i);
+    expect(signup).not.toMatch(/VersaAccessCard/);
+
+    const internPortalFiles = [
+      '../../../src/SpikeMasterPortal.jsx',
+      '../../../src/components/InternSignupPanel.jsx',
+      '../../../src/pages/WelcomePage.jsx',
+    ];
+    for (const rel of internPortalFiles) {
+      const src = await readFile(new URL(rel, import.meta.url), 'utf8');
+      expect(src, rel).not.toMatch(/VersaAccessCard/);
+      expect(src, rel).not.toMatch(/<VersaAccessCard\b/);
+      expect(src, rel).not.toMatch(/from\s+['"][^'"]*VersaAccessCard['"]/);
+    }
+
     await expect(
       access(fileURLToPath(new URL('../../../src/components/VersaAccessCard.jsx', import.meta.url))),
     ).rejects.toMatchObject({ code: 'ENOENT' });
