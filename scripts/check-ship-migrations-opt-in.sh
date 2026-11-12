@@ -75,3 +75,5 @@ if [[ -f "$STAMP" ]]; then
 fi
 
 echo "check-ship-migrations-opt-in: OK (opt-in after main-branch check; dry-run did not invoke supabase)"
+
+bash "$ROOT/scripts/check-pending-migrations.sh"
