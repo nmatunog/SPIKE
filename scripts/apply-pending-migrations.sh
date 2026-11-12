@@ -14,15 +14,35 @@
 # Env:
 #   ALLOW_OUT_OF_ORDER=1
 #   SKIP_APPLY=1          plan / fail-check only (no -f apply)
+#   EXPECTED_PROJECT_REF  required unless PENDING_MIGRATIONS_TEST_HARNESS=1
+#   PENDING_MIGRATIONS_TEST_HARNESS=1  stubbed-CLI tests only (skip link assert)
+#   LINKED_REF_FILE       override path to supabase/.temp/project-ref (tests)
 
 set -euo pipefail
 
 MIGRATIONS_DIR="${1:-}"
 LOG_PREFIX="${2:-apply-pending-migrations}"
+SCRIPT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+LINKED_REF_FILE="${LINKED_REF_FILE:-$SCRIPT_ROOT/supabase/.temp/project-ref}"
 
 if [[ -z "$MIGRATIONS_DIR" || ! -d "$MIGRATIONS_DIR" ]]; then
   echo "${LOG_PREFIX}: missing migrations dir: ${MIGRATIONS_DIR:-<empty>}" >&2
   exit 1
+fi
+
+if [[ "${PENDING_MIGRATIONS_TEST_HARNESS:-}" == "1" ]]; then
+  : # stubbed CLI tests never talk to a linked project
+else
+  if [[ -z "${EXPECTED_PROJECT_REF:-}" ]]; then
+    echo "${LOG_PREFIX}: EXPECTED_PROJECT_REF is required (linked project must match)" >&2
+    exit 1
+  fi
+  LINKED="$(cat "$LINKED_REF_FILE" 2>/dev/null || echo '')"
+  if [[ "$LINKED" != "$EXPECTED_PROJECT_REF" ]]; then
+    echo "${LOG_PREFIX}: linked project-ref '${LINKED:-<none>}' != expected '${EXPECTED_PROJECT_REF}'" >&2
+    echo "${LOG_PREFIX}: refusing to apply; relink the CLI to the intended project" >&2
+    exit 1
+  fi
 fi
 
 # Right-pad to 14 digits. 20260829 → 20260829000000.

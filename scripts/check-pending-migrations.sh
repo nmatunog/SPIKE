@@ -28,6 +28,13 @@ grep -q 'ALLOW_OUT_OF_ORDER' "$APPLY" || fail "apply-pending-migrations.sh must 
 grep -q 'OUT-OF-ORDER' "$APPLY" || fail "apply-pending-migrations.sh must fail loudly on out-of-order pending files"
 grep -q 'APPLY_DB_MIGRATIONS' "$RUNNER" || fail "run-supabase-migrations.sh must gate on APPLY_DB_MIGRATIONS"
 grep -q 'APPLY_DB_MIGRATIONS' "$RA_RUNNER" || fail "run-ra-spike-migrations.sh must gate on APPLY_DB_MIGRATIONS"
+grep -q 'EXPECTED_PROJECT_REF' "$APPLY" || fail "apply-pending-migrations.sh must assert EXPECTED_PROJECT_REF"
+grep -q 'PENDING_MIGRATIONS_TEST_HARNESS' "$APPLY" || fail "apply-pending-migrations.sh must allow PENDING_MIGRATIONS_TEST_HARNESS for stubbed tests"
+if grep -q 'SKIP_SUPABASE_LINK' "$RUNNER" "$RA_RUNNER"; then
+  fail "SKIP_SUPABASE_LINK must not remain in production wrappers (test harness only)"
+fi
+grep -q 'EXPECTED_PROJECT_REF=' "$RUNNER" || fail "run-supabase-migrations.sh must pass EXPECTED_PROJECT_REF"
+grep -q 'EXPECTED_PROJECT_REF=' "$RA_RUNNER" || fail "run-ra-spike-migrations.sh must pass EXPECTED_PROJECT_REF"
 # Wrappers must check the flag before invoking supabase.
 intern_gate="$(awk '/APPLY_DB_MIGRATIONS/{print NR; exit}' "$RUNNER")"
 intern_cli="$(awk '/command -v supabase/{print NR; exit}' "$RUNNER")"
@@ -85,7 +92,7 @@ seed_sql() {
 run_apply() {
   : > "$STAMP"
   : > "$APPLY_LOG"
-  PATH="$TMP/bin:$PATH" bash "$APPLY" "$TMP/migrations" "test-pending" "$@"
+  PATH="$TMP/bin:$PATH" PENDING_MIGRATIONS_TEST_HARNESS=1 bash "$APPLY" "$TMP/migrations" "test-pending" "$@"
 }
 
 echo '[]' > "$APPLIED_JSON"
@@ -109,7 +116,7 @@ printf '%s\n' "$order" | awk 'NR==1 && $0 !~ /20260827/ {exit 1}; NR==2 && $0 !~
 
 # Real apply (stub -f) records the same order.
 : > "$APPLY_LOG"
-PATH="$TMP/bin:$PATH" bash "$APPLY" "$TMP/migrations" "test-pending" >/dev/null
+PATH="$TMP/bin:$PATH" PENDING_MIGRATIONS_TEST_HARNESS=1 bash "$APPLY" "$TMP/migrations" "test-pending" >/dev/null
 got="$(awk '{print $2}' "$APPLY_LOG")"
 expect=$'20260827_restrict_activation_codes_anon_read.sql\n20260829_gate_ensure_daily_activation_code.sql\n20261112080001_versa_csv_code_inventory.sql'
 [[ "$got" == "$expect" ]] || fail "SEC-1-first apply order: $got"
@@ -133,7 +140,7 @@ if grep -q '^APPLY ' "$APPLY_LOG"; then
 fi
 
 : > "$APPLY_LOG"
-PATH="$TMP/bin:$PATH" ALLOW_OUT_OF_ORDER=1 bash "$APPLY" "$TMP/migrations" "test-pending" >/dev/null \
+PATH="$TMP/bin:$PATH" PENDING_MIGRATIONS_TEST_HARNESS=1 ALLOW_OUT_OF_ORDER=1 bash "$APPLY" "$TMP/migrations" "test-pending" >/dev/null \
   || fail "Versa-first ALLOW_OUT_OF_ORDER=1 must apply pending SEC-1 files"
 got="$(awk '{print $2}' "$APPLY_LOG")"
 expect=$'20260827_restrict_activation_codes_anon_read.sql\n20260829_gate_ensure_daily_activation_code.sql'
@@ -161,7 +168,7 @@ fi
 
 # With the flag, apply 20260827 then the higher 14-digit file (20260829 already applied).
 : > "$APPLY_LOG"
-PATH="$TMP/bin:$PATH" ALLOW_OUT_OF_ORDER=1 bash "$APPLY" "$TMP/migrations" "test-pending" >/dev/null \
+PATH="$TMP/bin:$PATH" PENDING_MIGRATIONS_TEST_HARNESS=1 ALLOW_OUT_OF_ORDER=1 bash "$APPLY" "$TMP/migrations" "test-pending" >/dev/null \
   || fail "live max 20260829 ALLOW_OUT_OF_ORDER=1 failed"
 got="$(awk '{print $2}' "$APPLY_LOG")"
 expect=$'20260827_restrict_activation_codes_anon_read.sql\n20261112080001_versa_csv_code_inventory.sql'
@@ -187,7 +194,7 @@ if grep -q '^APPLY ' "$APPLY_LOG"; then
 fi
 
 : > "$APPLY_LOG"
-PATH="$TMP/bin:$PATH" ALLOW_OUT_OF_ORDER=1 bash "$APPLY" "$TMP/migrations" "test-pending" >/dev/null \
+PATH="$TMP/bin:$PATH" PENDING_MIGRATIONS_TEST_HARNESS=1 ALLOW_OUT_OF_ORDER=1 bash "$APPLY" "$TMP/migrations" "test-pending" >/dev/null \
   || fail "earlier-calendar ALLOW_OUT_OF_ORDER=1 failed"
 got="$(awk '{print $2}' "$APPLY_LOG")"
 [[ "$got" == "20251112080001_earlier_calendar_prefix.sql" ]] \
@@ -215,4 +222,46 @@ if [[ -s "$STAMP" ]]; then
   fail "empty APPLY_DB_MIGRATIONS must not invoke supabase"
 fi
 
-echo "check-pending-migrations: OK (SEC-1-first, Versa-first, live max 20260829 and lower, 14-digit earlier prefix, db:migrate gated)"
+# --- linked project-ref assert (production path; not the test harness) ---
+echo 'wrong-ref' > "$TMP/project-ref"
+echo '[]' > "$APPLIED_JSON"
+seed_sql "$TMP/migrations" 20260827_restrict_activation_codes_anon_read
+set +e
+link_out="$(
+  PATH="$TMP/bin:$PATH" \
+    EXPECTED_PROJECT_REF=lzbfjbtjropoaynbcxew \
+    LINKED_REF_FILE="$TMP/project-ref" \
+    SKIP_APPLY=1 \
+    bash "$APPLY" "$TMP/migrations" "test-link" 2>&1
+)"
+link_rc=$?
+set -e
+[[ "$link_rc" -ne 0 ]] || fail "mismatched linked project-ref must fail"
+echo "$link_out" | grep -q "linked project-ref" \
+  || fail "mismatch must name linked project-ref: $link_out"
+
+set +e
+missing_out="$(
+  PATH="$TMP/bin:$PATH" \
+    LINKED_REF_FILE="$TMP/project-ref" \
+    SKIP_APPLY=1 \
+    bash "$APPLY" "$TMP/migrations" "test-link" 2>&1
+)"
+missing_rc=$?
+set -e
+[[ "$missing_rc" -ne 0 ]] || fail "missing EXPECTED_PROJECT_REF must fail"
+echo "$missing_out" | grep -q 'EXPECTED_PROJECT_REF is required' \
+  || fail "missing EXPECTED_PROJECT_REF must say so: $missing_out"
+
+printf '%s\n' 'lzbfjbtjropoaynbcxew' > "$TMP/project-ref"
+match_out="$(
+  PATH="$TMP/bin:$PATH" \
+    EXPECTED_PROJECT_REF=lzbfjbtjropoaynbcxew \
+    LINKED_REF_FILE="$TMP/project-ref" \
+    SKIP_APPLY=1 \
+    bash "$APPLY" "$TMP/migrations" "test-link" 2>&1
+)" || fail "matching linked project-ref must proceed: $match_out"
+echo "$match_out" | grep -q 'would apply 20260827_restrict_activation_codes_anon_read.sql' \
+  || fail "matching linked project-ref should dry-apply: $match_out"
+
+echo "check-pending-migrations: OK (SEC-1-first, Versa-first, live max 20260829 and lower, 14-digit earlier prefix, db:migrate gated, linked-ref assert)"

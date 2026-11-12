@@ -46,6 +46,20 @@ if (!/APPLY_DB_MIGRATIONS/.test(applyBlock)) {
 if (!/== "1"/.test(applyBlock)) {
   fail('migrations must run only when APPLY_DB_MIGRATIONS=1');
 }
+if (/continuing ship/.test(src)) {
+  fail('must not continue ship after an opt-in migrate failure');
+}
+if (!/aborting ship/.test(applyBlock)) {
+  fail('opt-in migrate failure must abort ship');
+}
+const internFail = src.match(/run-supabase-migrations\.sh[\s\S]{0,280}/);
+if (!internFail || !/exit 1/.test(internFail[0])) {
+  fail('internship migrate failure must exit 1');
+}
+const raFail = src.match(/run-ra-spike-migrations\.sh[\s\S]{0,280}/);
+if (!raFail || !/exit 1/.test(raFail[0])) {
+  fail('RA-SPIKE migrate failure must exit 1');
+}
 console.log('check-ship-migrations-opt-in: source shape OK');
 EOF
 

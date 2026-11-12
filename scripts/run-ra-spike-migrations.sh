@@ -37,13 +37,9 @@ if ! supabase projects list >/dev/null 2>&1; then
   exit 0
 fi
 
-if [[ "${SKIP_SUPABASE_LINK:-}" != "1" ]]; then
-  LINKED="$(cat "$ROOT/supabase/.temp/project-ref" 2>/dev/null || echo '')"
-  if [[ "$LINKED" != "$RA_SPIKE_PROJECT_REF" ]]; then
-    ensure_supabase_linked "$RA_SPIKE_PROJECT_REF" "RA-SPIKE"
-  fi
-fi
+ensure_supabase_linked "$RA_SPIKE_PROJECT_REF" "RA-SPIKE"
 
 cd "$ROOT"
 
-bash "$ROOT/scripts/apply-pending-migrations.sh" "$MIGRATIONS_DIR" "run-ra-spike-migrations"
+EXPECTED_PROJECT_REF="$RA_SPIKE_PROJECT_REF" \
+  bash "$ROOT/scripts/apply-pending-migrations.sh" "$MIGRATIONS_DIR" "run-ra-spike-migrations"
