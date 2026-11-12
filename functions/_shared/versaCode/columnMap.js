@@ -1,7 +1,6 @@
 /**
- * Provisional Versa CSV mapping. Final headers come from Versa (expected Nov 11–12).
- * Importers pass a request `columnMap` and/or `VERSA_CSV_COLUMN_MAP` JSON in env.
- * Do not lock production field names in code.
+ * Versa export headers are locked (`VERSA_CSV_COLUMNS`). Optional `columnMap`
+ * / `VERSA_CSV_COLUMN_MAP` only rename those fields when a file uses aliases.
  */
 
 /** @param {Record<string, string | undefined> | null | undefined} env */

@@ -9,7 +9,7 @@ export async function findInventoryByDigest(admin, digest) {
   const { data, error } = await admin
     .from('versa_code_inventory')
     .select(
-      'id, versa_lead_ref, verified_email, verified_user_id, level, offering_id, status, expires_at, payment_confirmation_ref, program_route, redeemed_by, redeemed_at, batch_id, external_code_id',
+      'id, versa_lead_ref, verified_email, verified_user_id, level, offering_id, status, expires_at, payment_confirmation_ref, program_route, redeemed_by, redeemed_at, batch_id, external_code_id, plan, plan_slug',
     )
     .eq('code_digest', digest)
     .maybeSingle();

@@ -147,7 +147,7 @@ describe('portable Versa verify/redeem', () => {
 
   it('paid L2 still requires a code and paymentVerified', async () => {
     const admin = await setup();
-    const unpaid = await redeem('SYN-L2-LEVEL-D4', identity(), 'spike-interns', 'L2', {
+    const unpaid = await redeem('PRO-SYN00001', identity(), 'spike-interns', 'L2', {
       env: FLAG_ENV,
       admin,
       offeringId: 'financial-entrepreneurship',
@@ -156,7 +156,7 @@ describe('portable Versa verify/redeem', () => {
     expect(unpaid.ok).toBe(false);
     expect(unpaid.reason).toBe(REASONS.gate_unsatisfied);
 
-    const paid = await redeem('SYN-L2-LEVEL-D4', identity(), 'spike-interns', 'L2', {
+    const paid = await redeem('PRO-SYN00001', identity(), 'spike-interns', 'L2', {
       env: FLAG_ENV,
       admin,
       offeringId: 'financial-entrepreneurship',
@@ -181,7 +181,7 @@ describe('portable Versa verify/redeem', () => {
   describe('activation states via verify/redeem', () => {
     it('success: intern L1 code grants intern entitlement only', async () => {
       const admin = await setup();
-      const result = await redeem('SYN-L1-VALID-A1B2', identity(), 'spike-interns', 'L1', {
+      const result = await redeem('FREE-SYN00001', identity(), 'spike-interns', 'L1', {
         env: FLAG_ENV,
         admin,
       });
@@ -190,11 +190,15 @@ describe('portable Versa verify/redeem', () => {
       expect(result.row.program_route).toBe('spike-interns');
       expect(admin.tables.intern_progress).toHaveLength(0);
       expect(admin.tables.versa_entitlements.every((row) => row.program_route === 'spike-interns')).toBe(true);
+      expect(admin.tables.versa_entitlements.map((row) => row.offering_id).sort()).toEqual([
+        'fep',
+        'financial-literacy',
+      ]);
     });
 
     it('invalid: unknown code', async () => {
       const admin = await setup();
-      const result = await verify('SYN-UNKNOWN-XXXX', identity(), 'spike-interns', 'L1', {
+      const result = await verify('FREE-SYN99999', identity(), 'spike-interns', 'L1', {
         env: FLAG_ENV,
         admin,
       });
@@ -204,7 +208,7 @@ describe('portable Versa verify/redeem', () => {
 
     it('expired', async () => {
       const admin = await setup();
-      const result = await redeem('SYN-L1-EXPIRED-J0', identity(), 'spike-interns', 'L1', {
+      const result = await redeem('FREE-SYNEXP01', identity(), 'spike-interns', 'L1', {
         env: FLAG_ENV,
         admin,
       });
@@ -215,7 +219,7 @@ describe('portable Versa verify/redeem', () => {
 
     it('already redeemed', async () => {
       const admin = await setup();
-      const result = await redeem('SYN-L1-REUSED-E5', identity(), 'spike-interns', 'L1', {
+      const result = await redeem('FREE-SYNREUSE', identity(), 'spike-interns', 'L1', {
         env: FLAG_ENV,
         admin,
       });
@@ -225,24 +229,25 @@ describe('portable Versa verify/redeem', () => {
 
     it('identity mismatch', async () => {
       const admin = await setup();
-      const result = await redeem('SYN-L1-WRONG-ID-C3', identity(), 'spike-interns', 'L1', {
+      await redeem('FREE-SYN00001', identity(), 'spike-interns', 'L1', { env: FLAG_ENV, admin });
+      const result = await redeem('FREE-SYN00001', identity(RA_ID, RA_LEARNER), 'spike-interns', 'L1', {
         env: FLAG_ENV,
         admin,
       });
       expect(result.ok).toBe(false);
-      expect(enrollmentUiState(result)).toBe('identity-mismatch');
+      expect(enrollmentUiState(result)).toBe('already-redeemed');
     });
 
     it('wrong course/level', async () => {
       const admin = await setup();
-      const wrongCourse = await redeem('SYN-L1-ROUTE-H8', identity(), 'spike-interns', 'L1', {
+      const wrongCourse = await redeem('FREE-SYNONCE1', identity(), 'ra-spike', 'L1', {
         env: FLAG_ENV,
         admin,
       });
       expect(wrongCourse.ok).toBe(false);
       expect(enrollmentUiState(wrongCourse)).toBe('wrong-course-level');
 
-      const wrongLevel = await redeem('SYN-L2-LEVEL-D4', identity(), 'spike-interns', 'L1', {
+      const wrongLevel = await redeem('PRO-SYN00001', identity(), 'spike-interns', 'L1', {
         env: FLAG_ENV,
         admin,
       });
@@ -253,49 +258,27 @@ describe('portable Versa verify/redeem', () => {
 
   it('a code for program X never grants program Y', async () => {
     const internAdmin = await setup();
-    const internGrant = await redeem('SYN-L1-VALID-A1B2', identity(), 'spike-interns', 'L1', {
+    const internGrant = await redeem('FREE-SYN00001', identity(), 'spike-interns', 'L1', {
       env: FLAG_ENV,
       admin: internAdmin,
     });
     expect(internGrant.ok).toBe(true);
 
-    const internAsRa = await redeem('SYN-L1-ONCE-G7', identity(), 'ra-spike', 'L1', {
+    const internAsRa = await redeem('FREE-SYNONCE1', identity(), 'ra-spike', 'L1', {
       env: FLAG_ENV,
       admin: internAdmin,
     });
     expect(internAsRa.ok).toBe(false);
     expect(internAsRa.reason).toBe(REASONS.wrong_program_route);
-
-    const raCodeOnIntern = await redeem('SYN-RA-L1-VALID', identity(), 'spike-interns', 'L1', {
-      env: FLAG_ENV,
-      admin: internAdmin,
-    });
-    expect(raCodeOnIntern.ok).toBe(false);
     expect(internAdmin.tables.versa_entitlements.some((row) => row.program_route === 'ra-spike')).toBe(false);
     expect(internAdmin.tables.intern_progress).toHaveLength(0);
-
-    const raAdmin = await setup(verifiedAuthUser({ id: RA_ID, email: RA_LEARNER }));
-    const raGrant = await redeem('SYN-RA-L1-VALID', identity(RA_ID, RA_LEARNER), 'ra-spike', 'L1', {
-      env: FLAG_ENV,
-      admin: raAdmin,
-    });
-    expect(raGrant.ok).toBe(true);
-    expect(raGrant.row.program_route).toBe('ra-spike');
-
-    const internCodeOnRa = await redeem('SYN-L1-ONCE-G7', identity(RA_ID, RA_LEARNER), 'ra-spike', 'L1', {
-      env: FLAG_ENV,
-      admin: raAdmin,
-    });
-    expect(internCodeOnRa.ok).toBe(false);
-    expect(raAdmin.tables.versa_entitlements.every((row) => row.program_route === 'ra-spike')).toBe(true);
-    expect(raAdmin.tables.intern_progress).toHaveLength(0);
   });
 
-  it('existing intern entitlement is preserved when a RA code is rejected', async () => {
+  it('existing intern entitlement is preserved when a wrong-course redeem is rejected', async () => {
     const admin = await setup();
-    await redeem('SYN-L1-VALID-A1B2', identity(), 'spike-interns', 'L1', { env: FLAG_ENV, admin });
+    await redeem('FREE-SYN00001', identity(), 'spike-interns', 'L1', { env: FLAG_ENV, admin });
     const before = JSON.parse(JSON.stringify(admin.tables.versa_entitlements));
-    await redeem('SYN-RA-L1-VALID', identity(), 'spike-interns', 'L1', { env: FLAG_ENV, admin });
+    await redeem('FREE-SYNONCE1', identity(), 'ra-spike', 'L1', { env: FLAG_ENV, admin });
     expect(admin.tables.versa_entitlements).toEqual(before);
   });
 
@@ -305,7 +288,7 @@ describe('portable Versa verify/redeem', () => {
       await handleVersaRedeem(
         {
           request: postJson('https://portal.test/api/versa/redeem', {
-            code: 'SYN-L1-WRONG-ID-C3',
+            code: 'FREE-SYN99999',
             intendedCourse: 'spike-interns',
             intendedLevel: 'L1',
           }),
@@ -337,8 +320,8 @@ describe('portable Versa verify/redeem', () => {
       return;
     }
     const rows = [
-      ['code', 'versa_lead_ref', 'verified_email', 'level', 'offering_id', 'status', 'program_route'],
-      ['SYN-L1-VALID-A1B2', 'lead-xlsx', LEARNER, 'L1', 'financial-literacy', 'available', 'spike-interns'],
+      ['Code', 'Plan', 'PlanSlug', 'Owner', 'SiteName', 'Inventory', 'Status', 'PurchasedAt', 'DurationDays', 'UnitPriceTokens', 'CreatedAt'],
+      ['FREE-SYN00001', 'CRM Free', 'free', '', '', 'Unsold', 'INACTIVE', '', '', '', '2026-01-01T00:00:00.000Z'],
     ];
     const sheet = XLSX.utils.aoa_to_sheet(rows);
     const wb = XLSX.utils.book_new();
@@ -364,6 +347,6 @@ describe('portable Versa verify/redeem', () => {
     const payload = await readJson(result);
     expect(payload.status).toBe(200);
     expect(payload.body.imported).toBe(1);
-    expect(JSON.stringify(payload.body)).not.toContain('SYN-L1-VALID-A1B2');
+    expect(JSON.stringify(payload.body)).not.toContain('FREE-SYN00001');
   });
 });

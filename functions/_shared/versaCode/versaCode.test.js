@@ -9,7 +9,7 @@ import {
   createMockVersaHandoffIdentityProvider,
   createSessionIdentityProvider,
 } from './adapters.js';
-import { ASSUMED_CSV_COLUMNS, GENERIC_DENY_MESSAGE, HEADER_ALIASES, REASONS } from './constants.js';
+import { GENERIC_DENY_MESSAGE, HEADER_ALIASES, REASONS, VERSA_CSV_COLUMNS, VERSA_EXPORT_HEADER } from './constants.js';
 import { versaHttpDenyBody } from './httpDeny.js';
 import { createVersaLogger } from './log.js';
 import { parseVersaCsv } from './csv.js';
@@ -18,6 +18,7 @@ import { importVersaCsv } from './importRows.js';
 import { consumeInventoryRow } from './inventory.js';
 import { assertDurableRateLimit, recordDurableFail, resetVersaRateLimitStore } from './rateLimit.js';
 import { createMemoryAdmin } from './test/memoryAdmin.js';
+import { SYNTHETIC_CODES, versaExportCsv } from './test/versaExportCsv.js';
 import { identityMatchesImportedRow, verifyVersaCode } from './verifyRedeem.js';
 
 const HMAC = 'spike-versa-synthetic-hmac-secret';
@@ -27,33 +28,27 @@ const FLAG_ENV = {
 };
 
 const CODES = {
-  valid: 'SYN-L1-VALID-A1B2',
-  wrongIdentity: 'SYN-L1-WRONG-ID-C3',
-  wrongLevel: 'SYN-L2-LEVEL-D4',
-  unknown: 'SYN-UNKNOWN-XXXX',
-  reused: 'SYN-L1-REUSED-E5',
-  revoked: 'SYN-L1-REVOKED-F6',
-  concurrent: 'SYN-L1-ONCE-G7',
-  wrongRoute: 'SYN-L1-ROUTE-H8',
-  verifiedUser: 'SYN-L1-UID-I9',
+  valid: SYNTHETIC_CODES.free,
+  wrongLevel: SYNTHETIC_CODES.pro,
+  unknown: SYNTHETIC_CODES.unknown,
+  reused: SYNTHETIC_CODES.reused,
+  revoked: SYNTHETIC_CODES.revoked,
+  concurrent: SYNTHETIC_CODES.once,
+  expired: SYNTHETIC_CODES.expired,
 };
 
 const LEARNER = 'learner.valid@example.test';
-const OTHER = 'other.person@example.test';
 const LEARNER_ID = 'user-l1-1';
-const VERIFIED_USER_ID = '00000000-0000-4000-8000-000000000099';
 
-const SYNTHETIC_CSV = `code,versa_lead_ref,verified_email,verified_user_id,level,offering_id,status,program_route
-${CODES.valid},lead-valid,${LEARNER},,L1,financial-literacy,available,spike-interns
-${CODES.wrongIdentity},lead-other,${OTHER},,L1,financial-literacy,available,spike-interns
-${CODES.wrongLevel},lead-l2,${LEARNER},,L2,financial-entrepreneurship,available,spike-interns
-${CODES.reused},lead-used,${LEARNER},,L1,financial-literacy,redeemed,spike-interns
-${CODES.revoked},lead-rev,${LEARNER},,L1,financial-literacy,revoked,spike-interns
-${CODES.concurrent},lead-once,${LEARNER},,L1,financial-literacy,available,spike-interns
-${CODES.wrongRoute},lead-route,${LEARNER},,L1,financial-literacy,available,ra-spike
-${CODES.verifiedUser},lead-uid,,${VERIFIED_USER_ID},L1,financial-literacy,available,spike-interns
-SYN-L1-EXPIRED-J0,lead-exp,${LEARNER},,L1,financial-literacy,expired,spike-interns
-`;
+const SYNTHETIC_CSV = versaExportCsv([
+  { code: CODES.valid, plan: 'CRM Free', planSlug: 'free' },
+  { code: CODES.concurrent, plan: 'CRM Free', planSlug: 'free' },
+  { code: CODES.reused, plan: 'CRM Free', planSlug: 'free', status: 'REDEEMED' },
+  { code: CODES.revoked, plan: 'CRM Free', planSlug: 'free', status: 'REVOKED' },
+  { code: CODES.expired, plan: 'CRM Free', planSlug: 'free', status: 'EXPIRED', createdAt: '2020-01-01T00:00:00.000Z' },
+  { code: CODES.wrongLevel, plan: 'CRM Pro', planSlug: 'pro' },
+  { code: SYNTHETIC_CODES.free2, plan: 'CRM Free', planSlug: 'free' },
+]);
 
 const capturedLogs = [];
 
@@ -111,10 +106,10 @@ function redeemDeps(admin) {
   };
 }
 
-async function redeem(admin, { code, level, programRoute } = {}) {
+async function redeem(admin, body = {}) {
   return handleVersaRedeem(
     {
-      request: postJson('https://portal.test/api/versa/redeem', { code, level, programRoute }),
+      request: postJson('https://portal.test/api/versa/redeem', body),
       env: FLAG_ENV,
     },
     redeemDeps(admin),
@@ -133,22 +128,27 @@ describe('Versa CSV portable service', () => {
     restoreLogs?.();
   });
 
-  it('documents assumed CSV columns and does not alias plain email', () => {
-    expect(ASSUMED_CSV_COLUMNS).toMatchObject({
-      code: 'code',
-      versaLeadRef: 'versa_lead_ref',
-      verifiedEmail: 'verified_email',
+  it('locks the Versa export columns and does not treat Owner as identity', () => {
+    expect(VERSA_CSV_COLUMNS).toMatchObject({
+      code: 'Code',
+      plan: 'Plan',
+      planSlug: 'PlanSlug',
     });
-    expect(HEADER_ALIASES.verifiedEmail).not.toContain('email');
-  });
-
-  it('does not treat a plain email CSV column as verifiedEmail', () => {
-    const parsed = parseVersaCsv(`code,versa_lead_ref,email,level
-${CODES.valid},lead-typed,${LEARNER},L1
-`);
+    expect(VERSA_EXPORT_HEADER.startsWith('Code,Plan,PlanSlug')).toBe(true);
+    expect(HEADER_ALIASES.code).toEqual(['code']);
+    const parsed = parseVersaCsv(
+      versaExportCsv([
+        {
+          code: CODES.valid,
+          plan: 'CRM Free',
+          planSlug: 'free',
+          owner: LEARNER,
+        },
+      ]),
+    );
     expect(parsed.ok).toBe(true);
-    expect(parsed.records).toHaveLength(0);
-    expect(parsed.rejected.some((row) => row.reason === 'missing_verified_identity_link')).toBe(true);
+    expect(parsed.records[0].verifiedEmail).toBeNull();
+    expect(parsed.records[0].owner).toBe(LEARNER);
   });
 
   it('requires a 32+ character HMAC secret', () => {
@@ -183,8 +183,8 @@ ${CODES.valid},lead-typed,${LEARNER},L1
     ).rejects.toMatchObject({ code: 'ENOENT' });
   });
 
-  it('identity match requires a verified session or Versa handoff, not a typed email', () => {
-    const row = { verified_email: LEARNER, verified_user_id: null, versa_lead_ref: 'lead-valid' };
+  it('identity binds at redemption for unbound Versa rows; typed email is not proof', () => {
+    const row = { plan_slug: 'free', verified_email: null, verified_user_id: null };
     expect(identityMatchesImportedRow(row, { email: LEARNER })).toBe(false);
     expect(identityMatchesImportedRow(row, { userId: LEARNER_ID, email: LEARNER, emailConfirmed: false })).toBe(
       false,
@@ -196,7 +196,7 @@ ${CODES.valid},lead-typed,${LEARNER},L1
       identityMatchesImportedRow(row, {
         userId: LEARNER_ID,
         versaHandoffVerified: true,
-        versaLeadRef: 'lead-valid',
+        versaLeadRef: 'plan:free',
       }),
     ).toBe(true);
   });
@@ -206,7 +206,7 @@ ${CODES.valid},lead-typed,${LEARNER},L1
       const admin = createMemoryAdmin({ authUser });
       const imported = await importVersaCsv({ env: FLAG_ENV, admin, csvText: SYNTHETIC_CSV });
       expect(imported.ok).toBe(true);
-      expect(imported.imported).toBe(9);
+      expect(imported.imported).toBe(7);
       return admin;
     }
 
@@ -228,23 +228,25 @@ ${CODES.valid},lead-typed,${LEARNER},L1
       });
       expect(result.ok).toBe(true);
       expect(result.reason).toBe(REASONS.valid);
+      expect(grantor.grants).toHaveLength(2);
+      expect(grantor.grants.map((row) => row.offeringId).sort()).toEqual(['fep', 'financial-literacy']);
       expect(grantor.grants[0]).toMatchObject({
         userId: LEARNER_ID,
         level: 'L1',
         role: null,
       });
       expect(admin.tables.intern_progress).toHaveLength(0);
-      expect(admin.tables.versa_code_inventory.find((r) => r.versa_lead_ref === 'lead-valid').status).toBe(
-        'redeemed',
-      );
+      const digest = await digestCode(HMAC, CODES.valid);
+      expect(admin.tables.versa_code_inventory.find((r) => r.code_digest === digest).status).toBe('redeemed');
     });
 
-    it('wrong identity', async () => {
-      const admin = await setup();
-      const res = await readJson(await redeem(admin, { code: CODES.wrongIdentity, programRoute: 'spike-interns' }));
+    it('unverified session cannot claim an unbound code', async () => {
+      const admin = await setup({ id: LEARNER_ID, email: LEARNER, email_confirmed_at: null });
+      const res = await readJson(await redeem(admin, { code: CODES.valid, programRoute: 'spike-interns' }));
       expect(res.status).toBe(403);
       expect(res.body).toEqual(versaHttpDenyBody());
-      expect(admin.tables.versa_code_attempts.some((a) => a.reason === REASONS.wrong_identity)).toBe(true);
+      const digest = await digestCode(HMAC, CODES.valid);
+      expect(admin.tables.versa_code_inventory.find((r) => r.code_digest === digest).status).toBe('available');
     });
 
     it('wrong level/offering', async () => {
@@ -279,9 +281,8 @@ ${CODES.valid},lead-typed,${LEARNER},L1
       const admin = await setup({ id: LEARNER_ID, email: LEARNER, email_confirmed_at: null });
       const res = await readJson(await redeem(admin, { code: CODES.valid, programRoute: 'spike-interns' }));
       expect(res.status).toBe(403);
-      expect(admin.tables.versa_code_inventory.find((r) => r.versa_lead_ref === 'lead-valid').status).toBe(
-        'available',
-      );
+      const digest = await digestCode(HMAC, CODES.valid);
+      expect(admin.tables.versa_code_inventory.find((r) => r.code_digest === digest).status).toBe('available');
 
       const typed = await verifyVersaCode({
         env: FLAG_ENV,
@@ -297,7 +298,19 @@ ${CODES.valid},lead-typed,${LEARNER},L1
 
     it('wrong program_route', async () => {
       const admin = await setup();
-      const res = await readJson(await redeem(admin, { code: CODES.wrongRoute, programRoute: 'spike-interns' }));
+      const res = await readJson(
+        await handleVersaRedeem(
+          {
+            request: postJson('https://portal.test/api/versa/redeem', {
+              code: CODES.valid,
+              intendedCourse: 'ra-spike',
+              intendedLevel: 'L1',
+            }),
+            env: FLAG_ENV,
+          },
+          redeemDeps(admin),
+        ),
+      );
       expect(res.status).toBe(403);
       expect(admin.tables.versa_code_attempts.some((a) => a.reason === REASONS.wrong_program_route)).toBe(true);
       expect(admin.tables.intern_progress).toHaveLength(0);
@@ -308,7 +321,13 @@ ${CODES.valid},lead-typed,${LEARNER},L1
       const grantor = createMockL1Grantor();
       await grantor.grant({
         userId: LEARNER_ID,
-        row: { offering_id: 'financial-literacy', level: 'L1', program_route: 'spike-interns', versa_lead_ref: 'lead-valid' },
+        row: {
+          offering_id: 'financial-literacy',
+          level: 'L1',
+          program_route: 'spike-interns',
+          versa_lead_ref: 'plan:free',
+          plan_slug: 'free',
+        },
       });
       const result = await verifyVersaCode({
         env: FLAG_ENV,
@@ -325,9 +344,8 @@ ${CODES.valid},lead-typed,${LEARNER},L1
       });
       expect(result.ok).toBe(true);
       expect(result.alreadyGranted).toBe(true);
-      expect(admin.tables.versa_code_inventory.find((r) => r.versa_lead_ref === 'lead-valid').status).toBe(
-        'available',
-      );
+      const digest = await digestCode(HMAC, CODES.valid);
+      expect(admin.tables.versa_code_inventory.find((r) => r.code_digest === digest).status).toBe('available');
     });
   });
 
@@ -339,7 +357,7 @@ ${CODES.valid},lead-typed,${LEARNER},L1
       admin,
       submittedCode: CODES.valid,
       identityProvider: createMockVersaHandoffIdentityProvider({
-        versaLeadRef: 'lead-valid',
+        versaLeadRef: 'plan:free',
         verified: true,
         userId: 'user-handoff',
         verifiedEmail: LEARNER,
@@ -419,15 +437,21 @@ ${CODES.valid},lead-typed,${LEARNER},L1
     await importVersaCsv({ env: FLAG_ENV, admin, csvText: SYNTHETIC_CSV });
     const cases = [
       { code: CODES.unknown, programRoute: 'spike-interns' },
-      { code: 'SYN-L1-EXPIRED-J0', programRoute: 'spike-interns' },
+      { code: CODES.expired, programRoute: 'spike-interns' },
       { code: CODES.reused, programRoute: 'spike-interns' },
-      { code: CODES.wrongIdentity, programRoute: 'spike-interns' },
-      { code: CODES.wrongRoute, programRoute: 'spike-interns' },
+      { code: CODES.valid, intendedCourse: 'ra-spike', intendedLevel: 'L1' },
     ];
+    const unverifiedAdmin = createMemoryAdmin({
+      authUser: { id: LEARNER_ID, email: LEARNER, email_confirmed_at: null },
+    });
+    await importVersaCsv({ env: FLAG_ENV, admin: unverifiedAdmin, csvText: SYNTHETIC_CSV });
     const responses = [];
     for (const body of cases) {
       responses.push(await readJson(await redeem(admin, body)));
     }
+    responses.push(
+      await readJson(await redeem(unverifiedAdmin, { code: SYNTHETIC_CODES.free2, programRoute: 'spike-interns' })),
+    );
     const expectedBody = versaHttpDenyBody();
     expect(expectedBody.message).toBe(GENERIC_DENY_MESSAGE);
     for (const res of responses) {
@@ -479,7 +503,8 @@ ${CODES.valid},lead-typed,${LEARNER},L1
     const admin = createMemoryAdmin();
     await importVersaCsv({ env: FLAG_ENV, admin, csvText: SYNTHETIC_CSV });
     const identity = { userId: LEARNER_ID, email: LEARNER, emailConfirmed: true };
-    const row = admin.tables.versa_code_inventory.find((r) => r.versa_lead_ref === 'lead-once');
+    const onceDigest = await digestCode(HMAC, CODES.concurrent);
+    const row = admin.tables.versa_code_inventory.find((r) => r.code_digest === onceDigest);
     const [consumedA, consumedB] = await Promise.all([
       consumeInventoryRow(admin, { id: row.id, userId: 'user-race-a' }),
       consumeInventoryRow(admin, { id: row.id, userId: 'user-race-b' }),
@@ -525,20 +550,17 @@ ${CODES.valid},lead-typed,${LEARNER},L1
 
   it('staff import accepts a custom columnMap and never returns raw codes', async () => {
     const admin = createMemoryAdmin();
-    const csv = `Access Token,Lead,Verified Contact,Tier,Offer,State
-${CODES.valid},lead-map,${LEARNER},L1,financial-literacy,available
+    const csv = `Token,Name,Slug
+${CODES.valid},CRM Free,free
 `;
     const result = await handleVersaImport(
       {
         request: postJson('https://portal.test/api/versa/import', {
           csv,
           columnMap: {
-            code: 'Access Token',
-            versaLeadRef: 'Lead',
-            verifiedEmail: 'Verified Contact',
-            level: 'Tier',
-            offeringId: 'Offer',
-            status: 'State',
+            code: 'Token',
+            plan: 'Name',
+            planSlug: 'Slug',
           },
         }),
         env: FLAG_ENV,

@@ -161,7 +161,7 @@ export function versaLocalDemoPlugin({ csvPath = DEFAULT_CSV } = {}) {
                 admin,
                 offeringId: body?.offeringId,
                 programRoute: body?.programRoute,
-                // No pilot payments. Never take paymentVerified from the request body.
+                // Paid stays fail-closed. Never take paymentVerified from the body.
                 paymentVerified: false,
               },
             )

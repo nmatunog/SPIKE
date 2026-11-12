@@ -75,7 +75,8 @@ export async function handleVersaRedeem(ctx, deps = {}) {
       request,
       offeringId: body?.offeringId,
       programRoute: body?.programRoute,
-      // No pilot payments. Never take paymentVerified from the request body.
+      // Paid stays fail-closed. Never take paymentVerified or the Nilo switch
+      // (VERSA_PRO_CODE_IMPLIES_PAID) from the request body.
       paymentVerified: false,
     },
   );

@@ -1,5 +1,6 @@
 import { normalizeEmail } from './digest.js';
 import { listEntitlementsForUser, upsertEntitlement } from './inventory.js';
+import { offeringsFromInventoryRow } from './planSlug.js';
 
 /**
  * IdentityProvider
@@ -105,14 +106,19 @@ export function createPortableEntitlementGrantor(admin) {
       );
     },
     async grant({ userId, row }) {
-      return upsertEntitlement(admin, {
-        userId,
-        inventoryId: row.id,
-        versaLeadRef: row.versa_lead_ref,
-        level: row.level,
-        offeringId: row.offering_id,
-        programRoute: row.program_route,
-      });
+      const offerings = offeringsFromInventoryRow(row);
+      let last = null;
+      for (const offering of offerings) {
+        last = await upsertEntitlement(admin, {
+          userId,
+          inventoryId: row.id,
+          versaLeadRef: row.versa_lead_ref,
+          level: offering.level || row.level,
+          offeringId: offering.offeringId,
+          programRoute: offering.programRoute || row.program_route,
+        });
+      }
+      return last;
     },
   };
 }
@@ -136,16 +142,21 @@ export function createMockL1Grantor() {
       if (String(row.level).toUpperCase() !== 'L1') {
         throw new Error('L1 grantor cannot grant a non-L1 row.');
       }
-      const record = {
-        userId,
-        offeringId: row.offering_id,
-        level: 'L1',
-        programRoute: row.program_route,
-        versaLeadRef: row.versa_lead_ref,
-        role: null,
-      };
-      grants.push(record);
-      return record;
+      const offerings = offeringsFromInventoryRow(row);
+      let last = null;
+      for (const offering of offerings) {
+        const record = {
+          userId,
+          offeringId: offering.offeringId,
+          level: 'L1',
+          programRoute: offering.programRoute || row.program_route,
+          versaLeadRef: row.versa_lead_ref,
+          role: null,
+        };
+        grants.push(record);
+        last = record;
+      }
+      return last;
     },
   };
 }
@@ -176,16 +187,21 @@ export function createMockL2Grantor({ paymentVerified = false } = {}) {
       if (paid !== true && this.paymentVerified !== true) {
         throw new Error('L2 grant requires paymentVerified from the authorized provider.');
       }
-      const record = {
-        userId,
-        offeringId: row.offering_id,
-        level: 'L2',
-        programRoute: row.program_route,
-        versaLeadRef: row.versa_lead_ref,
-        role: null,
-      };
-      grants.push(record);
-      return record;
+      const offerings = offeringsFromInventoryRow(row);
+      let last = null;
+      for (const offering of offerings) {
+        const record = {
+          userId,
+          offeringId: offering.offeringId,
+          level: 'L2',
+          programRoute: offering.programRoute || row.program_route,
+          versaLeadRef: row.versa_lead_ref,
+          role: null,
+        };
+        grants.push(record);
+        last = record;
+      }
+      return last;
     },
   };
 }

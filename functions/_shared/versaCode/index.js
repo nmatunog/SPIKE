@@ -1,6 +1,14 @@
-export { ASSUMED_CSV_COLUMNS, GENERIC_DENY_MESSAGE, REASONS, VERSA_FLAG_ENV } from './constants.js';
+export {
+  ASSUMED_CSV_COLUMNS,
+  GENERIC_DENY_MESSAGE,
+  REASONS,
+  VERSA_CSV_COLUMNS,
+  VERSA_EXPORT_HEADER,
+  VERSA_FLAG_ENV,
+  VERSA_PRO_CODE_IMPLIES_PAID_ENV,
+} from './constants.js';
 export { loadColumnMapFromEnv, mergeColumnMaps } from './columnMap.js';
-export { parseVersaCsv, resolveColumnIndexes } from './csv.js';
+export { mapVersaExportStatus, parseVersaCsv, resolveColumnIndexes } from './csv.js';
 export { digestCode, normalizeEmail, normalizeSubmittedCode, requireHmacSecret } from './digest.js';
 export {
   ENROLLMENT_STATE_COPY,
@@ -11,6 +19,13 @@ export {
   programSlugToVersaRoute,
 } from './enrollmentUi.js';
 export { isVersaCsvCodeGateEnabled } from './flag.js';
+export {
+  PLAN_SLUG_MAP,
+  isVersaProCodeImpliesPaid,
+  matchIntendedToPlanSlug,
+  offeringsFromInventoryRow,
+  resolvePlanSlug,
+} from './planSlug.js';
 export { VERSA_HTTP_DENY_STATUS, versaHttpDeny, versaHttpDenyBody } from './httpDeny.js';
 export { importVersaCsv } from './importRows.js';
 export { listEntitlementsForUser } from './inventory.js';

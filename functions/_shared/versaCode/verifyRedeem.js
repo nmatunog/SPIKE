@@ -11,18 +11,26 @@ import { consumeAndGrant, findInventoryByDigest, recordAttempt } from './invento
 import { createVersaLogger } from './log.js';
 import { resolveOfferingPolicy } from './offerings.js';
 import { evaluateExistingOfferingGate } from './offeringGate.js';
+import {
+  isVersaProCodeImpliesPaid,
+  matchIntendedToPlanSlug,
+  offeringsFromInventoryRow,
+  resolvePlanSlug,
+} from './planSlug.js';
 import { assertDurableRateLimit, rateLimitKey, recordDurableFail } from './rateLimit.js';
 
 function expectedL1Offering(env) {
   return String(env?.[VERSA_L1_OFFERING_ENV] ?? '').trim() || DEFAULT_L1_OFFERING_ID;
 }
 
+function sessionIsVerified(identity) {
+  return identity?.emailConfirmed === true || identity?.versaHandoffVerified === true;
+}
+
 /**
- * Authenticated session identity vs imported verified link.
- * A typed/unverified email is never proof. Accept:
- * - CSV verified_user_id === session user id
- * - auth-provider-confirmed email matching CSV verified_email
- * - Versa-verified handoff (versa_lead_ref and/or proven email)
+ * Versa export has no email/owner. Identity binds at redemption: the first
+ * authenticated, verified account claims an unbound code. A typed/unverified
+ * email is never proof.
  *
  * @param {object} row
  * @param {import('./adapters.js').VerifiedIdentity} identity
@@ -30,21 +38,21 @@ function expectedL1Offering(env) {
 export function identityMatchesImportedRow(row, identity) {
   const sessionUserId = identity?.userId ? String(identity.userId) : '';
   if (!sessionUserId) return false;
+  if (!sessionIsVerified(identity)) return false;
 
   const verifiedEmail = normalizeEmail(row?.verified_email);
   const verifiedUserId = row?.verified_user_id ? String(row.verified_user_id) : '';
   const sessionEmail = normalizeEmail(identity?.email);
   const rowLead = String(row?.versa_lead_ref ?? '').trim();
   const handoffLead = String(identity?.versaLeadRef ?? '').trim();
+  const unbound = !verifiedEmail && !verifiedUserId;
 
-  if (!verifiedEmail && !verifiedUserId && !rowLead) return false;
-  if (verifiedUserId && verifiedUserId === sessionUserId) return true;
-
-  const sessionEmailIsProven =
-    identity?.emailConfirmed === true || identity?.versaHandoffVerified === true;
-  if (sessionEmailIsProven && verifiedEmail && sessionEmail && verifiedEmail === sessionEmail) {
+  if (unbound) {
     return true;
   }
+
+  if (verifiedUserId && verifiedUserId === sessionUserId) return true;
+  if (verifiedEmail && sessionEmail && verifiedEmail === sessionEmail) return true;
   if (identity?.versaHandoffVerified === true && handoffLead && rowLead && handoffLead === rowLead) {
     return true;
   }
@@ -111,7 +119,7 @@ export async function verifyVersaCode(input) {
     return { ok: false, reason: REASONS.rate_limited, message: GENERIC_DENY_MESSAGE };
   }
 
-  if (!identity?.userId) {
+  if (!identity?.userId || !sessionIsVerified(identity)) {
     await recordDurableFail({ admin: input.admin, key: rlKey });
     logger.warn({ event: 'versa_denied', reason: REASONS.unverified_identity });
     return { ok: false, reason: REASONS.unverified_identity, message: GENERIC_DENY_MESSAGE };
@@ -184,15 +192,25 @@ export async function verifyVersaCode(input) {
     return deny(REASONS.wrong_identity);
   }
 
-  if (!programRouteMatches(row, expected)) {
-    return deny(REASONS.wrong_program_route);
-  }
-  if (!offeringMatches(row, expected)) {
-    return deny(REASONS.wrong_offering);
+  const mapping = resolvePlanSlug(row.plan_slug);
+  if (mapping) {
+    const intended = matchIntendedToPlanSlug(mapping, expected);
+    if (!intended.ok) return deny(intended.reason);
+  } else {
+    if (!programRouteMatches(row, expected)) {
+      return deny(REASONS.wrong_program_route);
+    }
+    if (!offeringMatches(row, expected)) {
+      return deny(REASONS.wrong_offering);
+    }
   }
 
   const grantor = input.grantor || createPortableEntitlementGrantor(input.admin);
-  if (await grantor.hasExisting(identity.userId, row.offering_id, row.program_route)) {
+  const bundle = offeringsFromInventoryRow(row);
+  const existingFlags = await Promise.all(
+    bundle.map((offering) => grantor.hasExisting(identity.userId, offering.offeringId, offering.programRoute)),
+  );
+  if (bundle.length && existingFlags.every(Boolean)) {
     logger.info({ event: 'versa_already_granted', inventoryId: row.id, bypass: true });
     return {
       ok: true,
@@ -219,10 +237,11 @@ export async function verifyVersaCode(input) {
   }
   if (unavailable) return deny(unavailable);
 
+  const paymentVerified = input.paymentVerified === true || isVersaProCodeImpliesPaid(env);
   const gate = evaluateExistingOfferingGate({
     level: row.level,
     offeringId: row.offering_id,
-    paymentVerified: input.paymentVerified === true,
+    paymentVerified,
     prerequisiteOk: input.prerequisiteOk,
   });
   if (!gate.ok) return deny(gate.reason);
@@ -235,7 +254,7 @@ export async function verifyVersaCode(input) {
     id: row.id,
     userId: identity.userId,
     grantor,
-    paymentVerified: input.paymentVerified === true,
+    paymentVerified,
   });
   if (!granted?.ok) {
     return deny(granted?.reason || REASONS.reused);

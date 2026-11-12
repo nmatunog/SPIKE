@@ -10,16 +10,59 @@ F1 intern `activation_codes` hardening lives on `sec1/f1-activation-codes`, not 
 
 - Nov 11 05:15: freeze irreversible portal commitments; portable CSV parser, validator, identity-contract, and synthetic tests; do not retrofit the intern `activation_codes` table by default.
 - Nov 11 05:23 (NEXO #32): CSV/identity code-verification stays an independent portable service; portal integration comes after the target structure is chosen.
+- Nov 12: Versa sent the real export header. **Lock the parser to it.** Nilo: "capture the code and the plan for our use."
 
-## Feature flag
+## Locked Versa export schema
+
+Exact header (strip a UTF-8 BOM on the first file):
+
+`Code,Plan,PlanSlug,Owner,SiteName,Inventory,Status,PurchasedAt,DurationDays,UnitPriceTokens,CreatedAt`
+
+Versa sends two files (either alone or concatenated; a repeated header row is skipped):
+
+| Set | `Code` | `Plan` | `PlanSlug` |
+|---|---|---|---|
+| Free | `FREE-XXXXXXXX` (8 uppercase hex in production) | `CRM Free` | `free` |
+| Paid | `PRO-XXXXXXXX` | `CRM Pro` | `pro` |
+
+In the export, Owner, SiteName, PurchasedAt, DurationDays and UnitPriceTokens are empty. Inventory is `Unsold`, Status is `INACTIVE`, CreatedAt is an ISO timestamp. Empty optional columns are accepted.
+
+Import stores:
+
+- **Code** as HMAC-SHA-256 digest only (never plaintext, never in logs)
+- **Plan** and **PlanSlug**
+- other columns as optional raw metadata
+
+Unknown `PlanSlug` values are rejected at import.
+
+Synthetic fixtures only (`FREE-SYN00001`, `PRO-SYN00001`, …). Do not commit live Versa codes.
+
+## PlanSlug map
+
+One config table (`PLAN_SLUG_MAP`):
+
+| Slug | Grants | Does not grant |
+|---|---|---|
+| `free` | Gate 1 Literacy (`financial-literacy`) **and** Gate 2 FEP Preview (`fep`) on `spike-interns` | RA-SPIKE, paid L2 |
+| `pro` | Gate 3 / paid L2 (`financial-entrepreneurship`) on `spike-interns` | intern free pathway |
+| anything else | rejected | — |
+
+A code never auto-grants both intern and RA-SPIKE. Course/level checks use this map.
+
+## Identity
+
+The export has no email or owner identity. Binding happens at redemption: the first authenticated, **verified** account to redeem claims the code once (atomic, single-use). A typed/unverified email is never proof.
+
+## Feature flags
 
 | Env | Default | Meaning |
 |---|---|---|
 | `VERSA_CSV_CODE_GATE` | unset (off) | Enables the portable HTTP adapters under `/api/versa/*` |
 | `VERSA_CODE_HMAC_SECRET` | required when flag on | HMAC-SHA-256 secret (**min 32 chars**) |
 | `VERSA_L1_OFFERING_ID` | `financial-literacy` | Default L1 offering id |
+| `VERSA_PRO_CODE_IMPLIES_PAID` | unset (**false**) | **Nilo's decision.** When off, a `pro` code is not payment proof and paid L2 stays fail-closed. When on, the server may treat a valid `pro` redeem as payment-confirmed. The HTTP body can never set this. |
 
-Intern signup is **unchanged from main** (including the client daily-code fallback). The Versa flag never grants `profiles.role = INTERN`.
+Intern signup is **unchanged from main**. The Versa flag never grants `profiles.role = INTERN`.
 
 ## Adapter contract
 
@@ -28,65 +71,38 @@ Intern signup is **unchanged from main** (including the client daily-code fallba
 A verified identity must come from:
 
 1. The **chosen auth provider** (session `userId`; email only when that provider confirmed it, e.g. `email_confirmed_at`), or
-2. A **Versa-verified handoff** payload (`versa_lead_ref` + `verified: true`).
-
-A typed/unverified email is never proof. This module does **not** flip `emailConfirm: true` on portal signup.
+2. A **Versa-verified handoff** payload (`verified: true`).
 
 Mocks: `createSessionIdentityProvider`, `createMockVersaHandoffIdentityProvider`.
 
 ### EntitlementGrantor
 
-Grant runs **inside** the redeem transaction only after the identity match. Returning learners with an existing portable entitlement (`versa_entitlements`) **bypass** redemption.
+Grant runs **inside** the redeem transaction. A `free` slug grants Literacy + FEP Preview. Returning learners who already hold every offering in the slug bundle bypass consuming another code.
 
-Mocks: `createMockL1Grantor` (never sets intern role) and `createMockL2Grantor` (requires `paymentVerified` from the authorized provider — **never** from the CSV).
+Mocks: `createMockL1Grantor` (never sets intern role) and `createMockL2Grantor` (requires `paymentVerified` from the authorized provider or `VERSA_PRO_CODE_IMPLIES_PAID` — **never** from the CSV or the HTTP body).
 
-Host portals plug real grantors in later. Until then, the portable store is `versa_entitlements` only.
+## HTTP denies
 
-## CSV import
-
-Configurable `columnMap` on `POST /api/versa/import`. Plain header `email` is **not** an alias for `verified_email`.
+Every deny reason maps to one 403 + `GENERIC_DENY_MESSAGE`. Detailed reasons stay in redacted server logs.
 
 ## Rate limit
 
-Durable `versa_rate_limits`, keyed by `user:<id>` or `ip:<addr>`. Increment is the SQL RPC `versa_rate_limit_record_fail` (`fail_count = fail_count + 1` / windowed upsert). **Fail closed** if the table or the RPC is missing. There is no JS read/modify/write fallback.
+Durable `versa_rate_limits`, keyed by `user:<id>` or `ip:<addr>`. Increment is the SQL RPC `versa_rate_limit_record_fail`. **Fail closed** if the table or the RPC is missing.
 
 ## Isolated UI
 
-`src/components/VersaCodeGate.jsx` is a **demo-only** component. It is not imported by intern or RA-SPIKE onboarding and is not a production Pages surface. Prefer `VersaActivateHarness` (`/dev/versa-activate`) for the local verifier.
-
-Neutral paste-friendly **Activate your SPIKE access** screen:
-
-- Heading: Activate your SPIKE access
-- Action: Verify & Continue
-- Continue: Continue to SPIKE Learning
-- Help placeholder (no delivery-channel promises): `Access codes are issued through the SPIKE–Versa enrollment process. Delivery channel is pending the co-branded enrollment page.`
-
-Demo (not intern flow):
-
-- Dev-only route: `/dev/versa-activate`
-- Static harness: `docs/versa-activate-harness.html`
-- Screenshot: `docs/versa-activate-harness.png` (synthetic demo code only)
+`src/components/VersaCodeGate.jsx` is a **demo-only** component. Prefer `VersaActivateHarness` (`/dev/versa-activate`) for the local verifier.
 
 ## Synthetic matrix (`npm run test:versa-code`)
 
-Portable path (verified session unless noted):
+Locked export fixtures (BOM free file + non-BOM pro file), slug mapping, unknown slug rejection, duplicate codes, mixed files, first-claimer redemption, and `pro` fail-closed unless `VERSA_PRO_CODE_IMPLIES_PAID` is on.
 
-1. valid verified session
-2. wrong identity
-3. wrong level/offering
-4. unknown
-5. reused
-6. revoked
-7. typed email only
-8. wrong `program_route`
-9. returning learner bypass
-
-Plus Versa handoff identity, L2 `paymentVerified`, HMAC 32+, missing rate-limit table/RPC fail-closed, PGlite single-use and atomic increment.
+Plus HMAC 32+, missing rate-limit table/RPC fail-closed, PGlite single-use and atomic increment.
 
 ## Still needing Nilo
 
 - Target architecture (NEXO #32) before any live portal integration.
-- Versa CSV headers / `columnMap`.
+- Whether `VERSA_PRO_CODE_IMPLIES_PAID` should ever be turned on (default stays off).
 - Co-branded landing page and final help copy (open external dependency).
 - Hosted SQL apply and Cloudflare flag + 32+ HMAC secret when enabling.
 - SEC-1 decision on intern `activation_codes` (separate branch `sec1/f1-activation-codes`).

@@ -46,9 +46,9 @@ export function VersaActivateHarness() {
 
   const hint = useMemo(
     () => ({
-      intern: 'SYN-L1-VALID-A1B2 · SYN-UNKNOWN-XXXX · SYN-L1-EXPIRED-J0 · SYN-L1-REUSED-E5 · SYN-L1-WRONG-ID-C3 · SYN-L1-ROUTE-H8 / SYN-L2-LEVEL-D4',
-      other: 'SYN-L1-WRONG-ID-C3 (this user) · SYN-L1-VALID-A1B2 (identity mismatch)',
-      ra: 'SYN-RA-L1-VALID · SYN-L1-VALID-A1B2 (wrong course)',
+      intern: 'FREE-SYN00001 · FREE-SYN99999 · FREE-SYNEXP01 · FREE-SYNREUSE · PRO-SYN00001',
+      other: 'FREE-SYN00001 (already claimed by intern after first redeem)',
+      ra: 'FREE-SYN00001 (wrong course — intern pathway only)',
     })[userId],
     [userId],
   );

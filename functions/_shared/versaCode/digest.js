@@ -4,7 +4,9 @@ const MIN_SECRET_LENGTH = 32;
 
 /** @param {unknown} value */
 export function normalizeSubmittedCode(value) {
-  return String(value ?? '').trim();
+  const raw = String(value ?? '').trim();
+  if (/^(FREE|PRO)-/i.test(raw)) return raw.toUpperCase();
+  return raw;
 }
 
 /** @param {unknown} value */

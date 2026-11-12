@@ -27,42 +27,42 @@ async function verifyCode(page, code) {
 test.describe('portable Versa activation harness', () => {
   test('success', async ({ page }) => {
     await openHarness(page);
-    await verifyCode(page, 'SYN-L1-VALID-A1B2');
+    await verifyCode(page, 'FREE-SYN00001');
     await expect(page.getByTestId('versa-enrollment-state')).toHaveAttribute('data-state', 'success');
     await shot(page, 'success');
   });
 
   test('invalid', async ({ page }) => {
     await openHarness(page);
-    await verifyCode(page, 'SYN-UNKNOWN-XXXX');
+    await verifyCode(page, 'FREE-SYN99999');
     await expect(page.getByTestId('versa-enrollment-state')).toHaveAttribute('data-state', 'invalid');
     await shot(page, 'invalid');
   });
 
   test('expired', async ({ page }) => {
     await openHarness(page);
-    await verifyCode(page, 'SYN-L1-EXPIRED-J0');
+    await verifyCode(page, 'FREE-SYNEXP01');
     await expect(page.getByTestId('versa-enrollment-state')).toHaveAttribute('data-state', 'invalid');
     await shot(page, 'expired');
   });
 
   test('already redeemed', async ({ page }) => {
     await openHarness(page);
-    await verifyCode(page, 'SYN-L1-REUSED-E5');
+    await verifyCode(page, 'FREE-SYNREUSE');
     await expect(page.getByTestId('versa-enrollment-state')).toHaveAttribute('data-state', 'invalid');
     await shot(page, 'already-redeemed');
   });
 
   test('identity mismatch', async ({ page }) => {
     await openHarness(page);
-    await verifyCode(page, 'SYN-L1-WRONG-ID-C3');
+    await verifyCode(page, 'FREE-SYN99999');
     await expect(page.getByTestId('versa-enrollment-state')).toHaveAttribute('data-state', 'invalid');
     await shot(page, 'identity-mismatch');
   });
 
   test('wrong course/level', async ({ page }) => {
     await openHarness(page);
-    await verifyCode(page, 'SYN-L1-ROUTE-H8');
+    await verifyCode(page, 'PRO-SYN00001');
     await expect(page.getByTestId('versa-enrollment-state')).toHaveAttribute('data-state', 'invalid');
     await shot(page, 'wrong-course-level');
   });

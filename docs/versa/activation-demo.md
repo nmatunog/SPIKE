@@ -26,8 +26,8 @@ Writes:
 | `docs/versa/artifacts/invalid.png` | Unknown code |
 | `docs/versa/artifacts/expired.png` | Expired code |
 | `docs/versa/artifacts/already-redeemed.png` | Already used |
-| `docs/versa/artifacts/identity-mismatch.png` | Code linked to another learner |
-| `docs/versa/artifacts/wrong-course-level.png` | Same learner, RA-route or L2 code on intern L1 (`SYN-L1-ROUTE-H8`) |
+| `docs/versa/artifacts/identity-mismatch.png` | Generic deny (second learner after first claim) |
+| `docs/versa/artifacts/wrong-course-level.png` | `pro` code on intern L1 (`PRO-SYN00001`) |
 | `docs/versa/artifacts/free-no-code.png` | Free Financial Literacy / FEP — no code |
 
 ## Interface

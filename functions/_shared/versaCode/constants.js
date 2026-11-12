@@ -3,6 +3,8 @@
 export const VERSA_FLAG_ENV = 'VERSA_CSV_CODE_GATE';
 export const VERSA_HMAC_SECRET_ENV = 'VERSA_CODE_HMAC_SECRET';
 export const VERSA_L1_OFFERING_ENV = 'VERSA_L1_OFFERING_ID';
+/** Nilo: a Versa `pro` code is not payment proof unless this is explicitly on. Default off. */
+export const VERSA_PRO_CODE_IMPLIES_PAID_ENV = 'VERSA_PRO_CODE_IMPLIES_PAID';
 
 export const GENERIC_DENY_MESSAGE =
   "We couldn't verify this code for your account. Check the code or use the enrollment help link.";
@@ -38,40 +40,39 @@ export const REASONS = Object.freeze({
   code_not_required: 'code_not_required',
 });
 
-/**
- * Assumed Versa CSV headers. Column names are NOT agreed with Versa yet —
- * importers must pass a columnMap when the file differs.
- */
-export const ASSUMED_CSV_COLUMNS = Object.freeze({
-  code: 'code',
-  versaLeadRef: 'versa_lead_ref',
-  verifiedEmail: 'verified_email',
-  verifiedUserId: 'verified_user_id',
-  level: 'level',
-  offeringId: 'offering_id',
-  status: 'status',
-  batchId: 'batch_id',
-  externalCodeId: 'external_code_id',
-  issuedAt: 'issued_at',
-  expiresAt: 'expires_at',
-  paymentConfirmationRef: 'payment_confirmation_ref',
-  programRoute: 'program_route',
+/** Locked Versa export header (UTF-8 BOM on the first file is stripped). */
+export const VERSA_EXPORT_HEADER =
+  'Code,Plan,PlanSlug,Owner,SiteName,Inventory,Status,PurchasedAt,DurationDays,UnitPriceTokens,CreatedAt';
+
+export const VERSA_CSV_COLUMNS = Object.freeze({
+  code: 'Code',
+  plan: 'Plan',
+  planSlug: 'PlanSlug',
+  owner: 'Owner',
+  siteName: 'SiteName',
+  inventory: 'Inventory',
+  status: 'Status',
+  purchasedAt: 'PurchasedAt',
+  durationDays: 'DurationDays',
+  unitPriceTokens: 'UnitPriceTokens',
+  createdAt: 'CreatedAt',
 });
 
+/** @deprecated use VERSA_CSV_COLUMNS — kept so older overlays still resolve. */
+export const ASSUMED_CSV_COLUMNS = VERSA_CSV_COLUMNS;
+
 export const HEADER_ALIASES = Object.freeze({
-  code: ['code', 'access_code', 'accesscode', 'versa_code', 'versacode'],
-  versaLeadRef: ['versa_lead_ref', 'lead_ref', 'versaleadref', 'leadref'],
-  verifiedEmail: ['verified_email', 'verifiedemail', 'learner_email'],
-  verifiedUserId: ['verified_user_id', 'verifieduserid', 'spike_user_id'],
-  level: ['level', 'offering_level'],
-  offeringId: ['offering_id', 'offering', 'offeringid'],
-  status: ['status', 'usage_status', 'state'],
-  batchId: ['batch_id', 'batchid'],
-  externalCodeId: ['external_code_id', 'externalcodeid', 'code_id'],
-  issuedAt: ['issued_at', 'issuedat'],
-  expiresAt: ['expires_at', 'expiresat'],
-  paymentConfirmationRef: ['payment_confirmation_ref', 'payment_ref'],
-  programRoute: ['program_route', 'program', 'pathway'],
+  code: ['code'],
+  plan: ['plan'],
+  planSlug: ['planslug', 'plan_slug'],
+  owner: ['owner'],
+  siteName: ['sitename', 'site_name'],
+  inventory: ['inventory'],
+  status: ['status'],
+  purchasedAt: ['purchasedat', 'purchased_at'],
+  durationDays: ['durationdays', 'duration_days'],
+  unitPriceTokens: ['unitpricetokens', 'unit_price_tokens'],
+  createdAt: ['createdat', 'created_at'],
 });
 
 export const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;

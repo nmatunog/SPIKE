@@ -1,5 +1,6 @@
-import { ASSUMED_CSV_COLUMNS, HEADER_ALIASES, LEVELS, PROGRAM_ROUTES, STATUSES } from './constants.js';
-import { normalizeEmail, normalizeSubmittedCode } from './digest.js';
+import { HEADER_ALIASES, STATUSES, VERSA_CSV_COLUMNS, VERSA_EXPORT_HEADER } from './constants.js';
+import { normalizeSubmittedCode } from './digest.js';
+import { normalizePlanSlug, resolvePlanSlug } from './planSlug.js';
 
 /** @param {string} header */
 function normalizeHeader(header) {
@@ -9,16 +10,21 @@ function normalizeHeader(header) {
     .replace(/[\s-]+/g, '_');
 }
 
+function isVersaHeaderRow(cells) {
+  const normalized = (cells || []).map((cell) => normalizeHeader(cell));
+  return normalized[0] === 'code' && normalized[1] === 'plan' && normalized[2] === 'planslug';
+}
+
 /**
  * @param {string[]} headers
- * @param {Partial<Record<keyof typeof ASSUMED_CSV_COLUMNS, string>>} [columnMap]
+ * @param {Partial<Record<keyof typeof VERSA_CSV_COLUMNS, string>>} [columnMap]
  */
 export function resolveColumnIndexes(headers, columnMap = {}) {
   const normalized = headers.map(normalizeHeader);
   /** @type {Record<string, number>} */
   const indexes = {};
 
-  for (const field of Object.keys(ASSUMED_CSV_COLUMNS)) {
+  for (const field of Object.keys(VERSA_CSV_COLUMNS)) {
     const mapped = columnMap[field];
     if (mapped) {
       const want = normalizeHeader(mapped);
@@ -26,15 +32,15 @@ export function resolveColumnIndexes(headers, columnMap = {}) {
       if (idx >= 0) indexes[field] = idx;
       continue;
     }
-    const aliases = HEADER_ALIASES[field] || [ASSUMED_CSV_COLUMNS[field]];
-    const idx = normalized.findIndex((h) => aliases.includes(h));
+    const aliases = HEADER_ALIASES[field] || [normalizeHeader(VERSA_CSV_COLUMNS[field])];
+    const idx = normalized.findIndex((h) => aliases.includes(h) || h === normalizeHeader(VERSA_CSV_COLUMNS[field]));
     if (idx >= 0) indexes[field] = idx;
   }
 
   return indexes;
 }
 
-/** Minimal RFC4180-ish parser for synthetic/admin CSV (quoted commas/newlines). */
+/** Minimal RFC4180-ish parser for Versa CSV (quoted commas/newlines). Strips a UTF-8 BOM. */
 export function parseCsv(text) {
   const source = String(text ?? '').replace(/^\uFEFF/, '');
   const rows = [];
@@ -81,83 +87,109 @@ export function parseCsv(text) {
 }
 
 /**
+ * Map Versa Inventory/Status onto portable inventory status.
+ * Export default is Inventory=Unsold, Status=INACTIVE → available.
+ */
+export function mapVersaExportStatus(inventory, status) {
+  const st = String(status ?? '').trim().toLowerCase();
+  const inv = String(inventory ?? '').trim().toLowerCase();
+  if (st === 'redeemed' || st === 'sold' || st === 'used') return 'redeemed';
+  if (st === 'revoked' || st === 'invalid') return 'revoked';
+  if (st === 'expired') return 'expired';
+  if (STATUSES.includes(st)) return st;
+  if (!st || st === 'inactive' || inv === 'unsold' || inv === '') return 'available';
+  return 'available';
+}
+
+/**
+ * Locked Versa export parser. Captures Code (hashed later), Plan, PlanSlug.
+ * Other columns are optional raw metadata. Empty Owner/SiteName/PurchasedAt/
+ * DurationDays/UnitPriceTokens are accepted. Concatenated free+pro files
+ * (repeated header rows) are accepted.
+ *
  * @param {string} csvText
- * @param {Partial<Record<keyof typeof ASSUMED_CSV_COLUMNS, string>>} [columnMap]
+ * @param {Partial<Record<keyof typeof VERSA_CSV_COLUMNS, string>>} [columnMap]
  */
 export function parseVersaCsv(csvText, columnMap = {}) {
   const rows = parseCsv(csvText);
-  if (rows.length < 2) {
+  if (!rows.length) {
     return { ok: false, error: 'CSV must include a header row and at least one data row.', records: [] };
   }
-  const headers = rows[0].map((h) => String(h).trim());
+
+  let headerIndex = rows.findIndex((row) => isVersaHeaderRow(row));
+  if (headerIndex < 0) headerIndex = 0;
+  const headers = rows[headerIndex].map((h) => String(h).trim());
   const indexes = resolveColumnIndexes(headers, columnMap);
-  if (indexes.code == null) {
-    return { ok: false, error: 'CSV is missing a code column. Pass columnMap.code if the header differs.', records: [] };
-  }
-  if (indexes.versaLeadRef == null) {
+  if (indexes.code == null || indexes.plan == null || indexes.planSlug == null) {
     return {
       ok: false,
-      error: 'CSV is missing versa_lead_ref. Pass columnMap.versaLeadRef if the header differs.',
+      error: `CSV must use the Versa export header: ${VERSA_EXPORT_HEADER}`,
       records: [],
     };
-  }
-  if (indexes.level == null) {
-    return { ok: false, error: 'CSV is missing level. Pass columnMap.level if the header differs.', records: [] };
   }
 
   const records = [];
   const rejected = [];
-  for (let i = 1; i < rows.length; i += 1) {
+  for (let i = 0; i < rows.length; i += 1) {
+    if (i === headerIndex || isVersaHeaderRow(rows[i])) continue;
     const cells = rows[i];
     const line = i + 1;
     const cell = (field) => (indexes[field] == null ? '' : String(cells[indexes[field]] ?? '').trim());
     const code = normalizeSubmittedCode(cell('code'));
-    const versaLeadRef = cell('versaLeadRef');
-    const verifiedEmail = normalizeEmail(cell('verifiedEmail'));
-    const verifiedUserId = cell('verifiedUserId') || null;
-    const level = cell('level').toUpperCase();
-    const offeringId = cell('offeringId') || (level === 'L2' ? 'financial-entrepreneurship' : 'financial-literacy');
-    const statusRaw = (cell('status') || 'available').toLowerCase();
-    const status = statusRaw === 'invalid' ? 'revoked' : statusRaw;
-    const programRoute = (cell('programRoute') || (level === 'L2' ? 'ra-spike' : 'spike-interns')).toLowerCase();
+    const plan = cell('plan');
+    const planSlug = normalizePlanSlug(cell('planSlug'));
+    const owner = cell('owner') || null;
+    const siteName = cell('siteName') || null;
+    const inventory = cell('inventory');
+    const versaStatus = cell('status');
+    const purchasedAt = cell('purchasedAt') || null;
+    const durationDays = cell('durationDays') || null;
+    const unitPriceTokens = cell('unitPriceTokens') || null;
+    const createdAt = cell('createdAt') || null;
 
-    if (!code || !versaLeadRef) {
+    if (!code || !plan || !planSlug) {
       rejected.push({ line, reason: 'missing_required_fields' });
       continue;
     }
-    if (!LEVELS.includes(level)) {
-      rejected.push({ line, reason: 'invalid_level' });
+
+    const mapping = resolvePlanSlug(planSlug);
+    if (!mapping) {
+      rejected.push({ line, reason: 'unknown_plan_slug', planSlug });
       continue;
     }
-    if (!STATUSES.includes(status)) {
-      rejected.push({ line, reason: 'invalid_status' });
-      continue;
-    }
-    if (!PROGRAM_ROUTES.includes(programRoute)) {
-      rejected.push({ line, reason: 'invalid_program_route' });
-      continue;
-    }
-    if (!verifiedEmail && !verifiedUserId) {
-      rejected.push({ line, reason: 'missing_verified_identity_link' });
-      continue;
-    }
+
+    const status = mapVersaExportStatus(inventory, versaStatus);
 
     records.push({
       line,
       code,
-      versaLeadRef,
-      verifiedEmail: verifiedEmail || null,
-      verifiedUserId,
-      level,
-      offeringId,
+      plan,
+      planSlug: mapping.slug,
+      versaLeadRef: `plan:${mapping.slug}`,
+      verifiedEmail: null,
+      verifiedUserId: null,
+      level: mapping.level,
+      offeringId: mapping.offerings[0].id,
+      programRoute: mapping.programRoute,
       status,
-      batchId: cell('batchId') || null,
-      externalCodeId: cell('externalCodeId') || null,
-      issuedAt: cell('issuedAt') || null,
-      expiresAt: cell('expiresAt') || null,
-      paymentConfirmationRef: cell('paymentConfirmationRef') || null,
-      programRoute,
+      owner,
+      siteName,
+      inventory: inventory || null,
+      versaStatus: versaStatus || null,
+      purchasedAt,
+      durationDays,
+      unitPriceTokens,
+      createdAt,
+      issuedAt: createdAt,
+      expiresAt: status === 'expired' ? createdAt : null,
+      batchId: null,
+      externalCodeId: null,
+      paymentConfirmationRef: null,
     });
+  }
+
+  if (!records.length && !rejected.length) {
+    return { ok: false, error: 'CSV must include a header row and at least one data row.', records: [], rejected };
   }
 
   return { ok: true, records, rejected, headers };

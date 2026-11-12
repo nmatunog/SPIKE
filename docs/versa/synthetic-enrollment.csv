@@ -1,12 +1,10 @@
-code,versa_lead_ref,verified_email,verified_user_id,level,offering_id,status,program_route,expires_at
-SYN-L1-VALID-A1B2,lead-valid,learner.valid@example.test,,L1,financial-literacy,available,spike-interns,
-SYN-L1-WRONG-ID-C3,lead-other,other.person@example.test,,L1,financial-literacy,available,spike-interns,
-SYN-L2-LEVEL-D4,lead-l2,learner.valid@example.test,,L2,financial-entrepreneurship,available,spike-interns,
-SYN-L1-REUSED-E5,lead-used,learner.valid@example.test,,L1,financial-literacy,redeemed,spike-interns,
-SYN-L1-REVOKED-F6,lead-rev,learner.valid@example.test,,L1,financial-literacy,revoked,spike-interns,
-SYN-L1-ONCE-G7,lead-once,learner.valid@example.test,,L1,financial-literacy,available,spike-interns,
-SYN-L1-ROUTE-H8,lead-route,learner.valid@example.test,,L1,financial-literacy,available,ra-spike,
-SYN-L1-UID-I9,lead-uid,,00000000-0000-4000-8000-000000000099,L1,financial-literacy,available,spike-interns,
-SYN-RA-L1-VALID,lead-ra,ra.learner@example.test,,L1,financial-literacy,available,ra-spike,
-SYN-RA-L1-OTHER,lead-ra-other,other.person@example.test,,L1,financial-literacy,available,ra-spike,
-SYN-L1-EXPIRED-J0,lead-exp,learner.valid@example.test,,L1,financial-literacy,expired,spike-interns,2020-01-01T00:00:00.000Z
+﻿Code,Plan,PlanSlug,Owner,SiteName,Inventory,Status,PurchasedAt,DurationDays,UnitPriceTokens,CreatedAt
+FREE-SYN00001,CRM Free,free,,,Unsold,INACTIVE,,,,2026-01-01T00:00:00.000Z
+FREE-SYN00002,CRM Free,free,,,Unsold,INACTIVE,,,,2026-01-01T00:00:00.000Z
+FREE-SYNONCE1,CRM Free,free,,,Unsold,INACTIVE,,,,2026-01-01T00:00:00.000Z
+FREE-SYNREUSE,CRM Free,free,,,Unsold,REDEEMED,,,,2026-01-01T00:00:00.000Z
+FREE-SYNREVOK,CRM Free,free,,,Unsold,REVOKED,,,,2026-01-01T00:00:00.000Z
+FREE-SYNEXP01,CRM Free,free,,,Unsold,EXPIRED,,,,2020-01-01T00:00:00.000Z
+Code,Plan,PlanSlug,Owner,SiteName,Inventory,Status,PurchasedAt,DurationDays,UnitPriceTokens,CreatedAt
+PRO-SYN00001,CRM Pro,pro,,,Unsold,INACTIVE,,,,2026-01-01T00:00:00.000Z
+PRO-SYN00002,CRM Pro,pro,,,Unsold,INACTIVE,,,,2026-01-01T00:00:00.000Z
