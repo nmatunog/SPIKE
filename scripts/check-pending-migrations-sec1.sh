@@ -70,7 +70,7 @@ seed_sql "$TMP/migrations" \
   20261112070001_intern_signup_rate_limit_atomic \
   "${VERSA[@]}"
 : > "$APPLY_LOG"
-PATH="$TMP/bin:$PATH" bash "$APPLY" "$TMP/migrations" "test-pending-sec1" >/dev/null \
+PATH="$TMP/bin:$PATH" PENDING_MIGRATIONS_TEST_HARNESS=1 bash "$APPLY" "$TMP/migrations" "test-pending-sec1" >/dev/null \
   || fail "full SEC-1 applied + Versa pending must apply (not out-of-order)"
 got="$(awk '{print $2}' "$APPLY_LOG")"
 expect="$(printf '%s.sql\n' "${VERSA[@]}")"
@@ -91,7 +91,7 @@ seed_sql "$TMP/migrations" \
   "${VERSA[@]}"
 : > "$APPLY_LOG"
 set +e
-ooo_out="$(PATH="$TMP/bin:$PATH" bash "$APPLY" "$TMP/migrations" "test-pending-sec1" 2>&1)"
+ooo_out="$(PATH="$TMP/bin:$PATH" PENDING_MIGRATIONS_TEST_HARNESS=1 bash "$APPLY" "$TMP/migrations" "test-pending-sec1" 2>&1)"
 ooo_rc=$?
 set -e
 [[ "$ooo_rc" -ne 0 ]] || fail "old 20261114090001 numbering must fail when Versa is pending below it"

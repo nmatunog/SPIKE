@@ -1,10 +1,22 @@
 /** Durable intern-signup attempt limit, modeled on versa_rate_limits. */
 
+import { getActivationDateKey } from './activationCode.js';
+
 export const INTERN_SIGNUP_RATE_WINDOW_MS = 10 * 60 * 1000;
 /** Classroom-safe shared-IP cap (one NAT / wifi). Config via INTERN_SIGNUP_RATE_MAX. */
 export const INTERN_SIGNUP_RATE_MAX_DEFAULT = 20;
 export const INTERN_SIGNUP_RATE_MAX_ENV = 'INTERN_SIGNUP_RATE_MAX';
 export const INTERN_SIGNUP_RATE_LIMITED_MESSAGE = 'Too many attempts. Try again later.';
+
+/**
+ * Global failed-attempt ceiling per Manila code-day (`global:YYYY-MM-DD`).
+ * Independent of per-IP 20/10min. Config via INTERN_SIGNUP_GLOBAL_MAX.
+ */
+export const INTERN_SIGNUP_GLOBAL_MAX_DEFAULT = 200;
+export const INTERN_SIGNUP_GLOBAL_MAX_ENV = 'INTERN_SIGNUP_GLOBAL_MAX';
+/** Long enough that a same-day `global:<date>` row is not reset by the 10-minute IP window. */
+export const INTERN_SIGNUP_GLOBAL_WINDOW_MS = 48 * 60 * 60 * 1000;
+export const INTERN_SIGNUP_GLOBAL_CEILING_ALERT = 'INTERN SIGNUP GLOBAL CEILING';
 
 const FAILED_CODE_RE =
   /invalid activation code|activation code has expired|no activation code is available/i;
@@ -14,6 +26,17 @@ export function internSignupRateMax(env = {}) {
   const n = Number(raw);
   if (Number.isFinite(n) && n > 0) return Math.floor(n);
   return INTERN_SIGNUP_RATE_MAX_DEFAULT;
+}
+
+export function internSignupGlobalMax(env = {}) {
+  const raw = env?.[INTERN_SIGNUP_GLOBAL_MAX_ENV];
+  const n = Number(raw);
+  if (Number.isFinite(n) && n > 0) return Math.floor(n);
+  return INTERN_SIGNUP_GLOBAL_MAX_DEFAULT;
+}
+
+export function internSignupGlobalRateKey(dateKey = getActivationDateKey()) {
+  return `global:${dateKey}`;
 }
 
 export function isFailedActivationCode(message) {
@@ -41,6 +64,42 @@ function warnFailOpen(detail) {
   );
 }
 
+function expandIpv6Hextets(ip) {
+  let bare = String(ip || '').trim();
+  if (bare.startsWith('[') && bare.endsWith(']')) bare = bare.slice(1, -1);
+  const zone = bare.indexOf('%');
+  if (zone >= 0) bare = bare.slice(0, zone);
+  if (!bare.includes(':')) return null;
+  const halves = bare.split('::');
+  if (halves.length > 2) return null;
+  const parse = (side) => (side ? side.split(':').filter((p) => p !== '') : []);
+  if (halves.length === 2) {
+    const head = parse(halves[0]);
+    const tail = parse(halves[1]);
+    const missing = 8 - head.length - tail.length;
+    if (missing < 0) return null;
+    return [...head, ...Array.from({ length: missing }, () => '0'), ...tail];
+  }
+  const parts = parse(bare);
+  return parts.length === 8 ? parts : null;
+}
+
+/** IPv4 unchanged; IPv6 aggregated to the /64 prefix (`a:b:c:d::/64`). */
+export function normalizeClientIp(raw) {
+  const ip = String(raw || '').trim() || 'unknown';
+  if (ip === 'unknown') return ip;
+  const mapped = ip.match(/^::ffff:(\d{1,3}(?:\.\d{1,3}){3})$/i);
+  if (mapped) return mapped[1];
+  if (/^\d{1,3}(?:\.\d{1,3}){3}$/.test(ip)) return ip;
+  const hextets = expandIpv6Hextets(ip);
+  if (!hextets || hextets.length !== 8) return ip;
+  const prefix = hextets.slice(0, 4).map((h) => {
+    const lower = String(h).toLowerCase().replace(/^0+(?=\w)/, '');
+    return lower || '0';
+  });
+  return `${prefix.join(':')}::/64`;
+}
+
 /**
  * @param {Request | null | undefined} request
  */
@@ -49,10 +108,11 @@ export function internSignupRateKey(request) {
     request?.headers?.get('CF-Connecting-IP') ||
     request?.headers?.get('X-Forwarded-For')?.split(',')[0]?.trim() ||
     'unknown';
-  return `ip:${ip}`;
+  return `ip:${normalizeClientIp(ip)}`;
 }
 
-function parseBeginResult(data) {
+/** RPC begin_attempt must return the boolean `allowed: true`. Missing/false denies. */
+export function parseBeginResult(data) {
   let row = data;
   if (typeof row === 'string') {
     try {
@@ -63,7 +123,7 @@ function parseBeginResult(data) {
   }
   if (Array.isArray(row)) row = row[0];
   return {
-    allowed: row?.allowed !== false,
+    allowed: row?.allowed === true,
     fail_count: Number(row?.fail_count) || 0,
   };
 }
@@ -123,6 +183,7 @@ export async function refundInternSignupAttempt(input) {
 
 /**
  * @deprecated use beginInternSignupAttempt — kept for PGlite grant checks.
+ * Drop intern_signup_rate_limit_record_fail in a later pass (not this one).
  */
 export async function recordInternSignupFail(input) {
   const windowMs = input.windowMs ?? INTERN_SIGNUP_RATE_WINDOW_MS;

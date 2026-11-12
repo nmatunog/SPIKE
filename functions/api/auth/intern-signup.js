@@ -1,9 +1,13 @@
 import { validateInternActivationCode } from '../../_shared/activationCode.js';
 import { createConfirmedPortalUser } from '../../_shared/confirmedSignup.js';
 import {
+  INTERN_SIGNUP_GLOBAL_CEILING_ALERT,
+  INTERN_SIGNUP_GLOBAL_WINDOW_MS,
   INTERN_SIGNUP_RATE_LIMITED_MESSAGE,
   INTERN_SIGNUP_UNAVAILABLE_MESSAGE,
   beginInternSignupAttempt,
+  internSignupGlobalMax,
+  internSignupGlobalRateKey,
   internSignupRateKey,
   internSignupRateMax,
   isFailedActivationCode,
@@ -55,8 +59,9 @@ export async function handleInternSignup(ctx, deps = {}) {
   if (!code) return json({ message: 'Daily activation code is required.' }, 400);
 
   const rateKey = internSignupRateKey(request);
+  const globalKey = internSignupGlobalRateKey();
   const maxFailures = internSignupRateMax(env);
-  let reserved = false;
+  const reservedKeys = [];
 
   const gate = await beginInternSignupAttempt({ admin, key: rateKey, maxFailures });
   if (gate.unavailable) {
@@ -65,17 +70,46 @@ export async function handleInternSignup(ctx, deps = {}) {
   if (!gate.ok) {
     return json({ message: INTERN_SIGNUP_RATE_LIMITED_MESSAGE }, 429);
   }
-  reserved = gate.failOpen !== true;
+  if (gate.failOpen !== true) reservedKeys.push(rateKey);
 
-  try {
-    await validateInternActivationCode(admin, code);
-
-    if (reserved) {
+  if (gate.failOpen !== true) {
+    const globalGate = await beginInternSignupAttempt({
+      admin,
+      key: globalKey,
+      windowMs: INTERN_SIGNUP_GLOBAL_WINDOW_MS,
+      maxFailures: internSignupGlobalMax(env),
+    });
+    if (globalGate.unavailable) {
       const refunded = await refundInternSignupAttempt({ admin, key: rateKey });
       if (refunded.unavailable) {
         return json({ message: INTERN_SIGNUP_UNAVAILABLE_MESSAGE }, 503);
       }
-      reserved = false;
+      return json({ message: INTERN_SIGNUP_UNAVAILABLE_MESSAGE }, 503);
+    }
+    if (globalGate.failOpen !== true && !globalGate.ok) {
+      const refunded = await refundInternSignupAttempt({ admin, key: rateKey });
+      if (refunded.unavailable) {
+        return json({ message: INTERN_SIGNUP_UNAVAILABLE_MESSAGE }, 503);
+      }
+      console.error(
+        `${INTERN_SIGNUP_GLOBAL_CEILING_ALERT}: code-day ${globalKey} locked at ${globalGate.fail_count}; refusing further attempts`,
+      );
+      return json({ message: INTERN_SIGNUP_RATE_LIMITED_MESSAGE }, 429);
+    }
+    if (globalGate.failOpen !== true) reservedKeys.push(globalKey);
+  }
+
+  try {
+    await validateInternActivationCode(admin, code);
+
+    if (reservedKeys.length) {
+      for (const key of reservedKeys) {
+        const refunded = await refundInternSignupAttempt({ admin, key });
+        if (refunded.unavailable) {
+          return json({ message: INTERN_SIGNUP_UNAVAILABLE_MESSAGE }, 503);
+        }
+      }
+      reservedKeys.length = 0;
     }
 
     const userId = await createConfirmedPortalUser(admin, {
@@ -113,10 +147,12 @@ export async function handleInternSignup(ctx, deps = {}) {
     return json({ ok: true, userId });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Signup failed.';
-    if (reserved && !isFailedActivationCode(message)) {
-      const refunded = await refundInternSignupAttempt({ admin, key: rateKey });
-      if (refunded?.unavailable) {
-        return json({ message: INTERN_SIGNUP_UNAVAILABLE_MESSAGE }, 503);
+    if (reservedKeys.length && !isFailedActivationCode(message)) {
+      for (const key of reservedKeys) {
+        const refunded = await refundInternSignupAttempt({ admin, key });
+        if (refunded?.unavailable) {
+          return json({ message: INTERN_SIGNUP_UNAVAILABLE_MESSAGE }, 503);
+        }
       }
     }
     return json({ message }, 400);

@@ -643,6 +643,20 @@ describe('SEC-1 / F1 activation_codes hardening (PGlite)', () => {
         `select public.intern_signup_rate_limit_refund_success('ip:refund') as n`,
       );
       expect(Number(refunded.rows[0].n)).toBe(0);
+
+      const g1 = await db.query(
+        `select public.intern_signup_rate_limit_begin_attempt('global:2026-11-12', 172800000, 2) as j`,
+      );
+      const g2 = await db.query(
+        `select public.intern_signup_rate_limit_begin_attempt('global:2026-11-12', 172800000, 2) as j`,
+      );
+      const g3 = await db.query(
+        `select public.intern_signup_rate_limit_begin_attempt('global:2026-11-12', 172800000, 2) as j`,
+      );
+      expect(parse(g1.rows[0]).allowed).toBe(true);
+      expect(parse(g2.rows[0]).allowed).toBe(true);
+      expect(parse(g3.rows[0]).allowed).toBe(false);
+      expect(Number(parse(g3.rows[0]).fail_count)).toBe(2);
     } finally {
       await db.exec('RESET ROLE');
     }

@@ -6,6 +6,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 F1_27="20260827_restrict_activation_codes_anon_read.sql"
 F1_29="20260829_gate_ensure_daily_activation_code.sql"
+F1_ATOMIC="20261112070001_intern_signup_rate_limit_atomic.sql"
 ALLOWLIST="$ROOT/supabase/ra-spike/migrations-allowlist.txt"
 INTERN_ROLLBACK29="$ROOT/supabase/rollbacks/20260829_gate_ensure_daily_activation_code.sql"
 
@@ -16,14 +17,17 @@ fail() {
 
 grep -qxF "$F1_27" "$ALLOWLIST" || fail "$F1_27 is missing from migrations-allowlist.txt"
 grep -qxF "$F1_29" "$ALLOWLIST" || fail "$F1_29 is missing from migrations-allowlist.txt"
+grep -qxF "$F1_ATOMIC" "$ALLOWLIST" || fail "$F1_ATOMIC is missing from migrations-allowlist.txt"
 if awk 'NF && $1 !~ /^#/ && /rollback/' "$ALLOWLIST" | grep -q .; then
   fail "allowlist must not include rollback files"
 fi
 
 [[ -f "$ROOT/supabase/migrations/$F1_27" ]] || fail "intern source missing $F1_27"
 [[ -f "$ROOT/supabase/migrations/$F1_29" ]] || fail "intern source missing $F1_29"
+[[ -f "$ROOT/supabase/migrations/$F1_ATOMIC" ]] || fail "intern source missing $F1_ATOMIC"
 [[ -f "$ROOT/supabase/ra-spike/migrations/$F1_27" ]] || fail "RA dest missing $F1_27"
 [[ -f "$ROOT/supabase/ra-spike/migrations/$F1_29" ]] || fail "RA dest missing $F1_29"
+[[ -f "$ROOT/supabase/ra-spike/migrations/$F1_ATOMIC" ]] || fail "RA dest missing $F1_ATOMIC"
 [[ -f "$ROOT/supabase/ra-spike/rollbacks/$F1_27" ]] || fail "RA rollback missing rollbacks/$F1_27"
 [[ -f "$ROOT/supabase/ra-spike/rollbacks/$F1_29" ]] || fail "RA rollback missing rollbacks/$F1_29"
 [[ -f "$ROOT/supabase/ra-spike/rollbacks/sec1_f1_safe_partial.sql" ]] || fail "RA rollback missing sec1_f1_safe_partial.sql"
@@ -132,6 +136,7 @@ bash "$TMP/scripts/sync-ra-spike-migrations.sh"
 
 [[ -f "$TMP/supabase/ra-spike/migrations/$F1_27" ]] || fail "temp sync deleted $F1_27"
 [[ -f "$TMP/supabase/ra-spike/migrations/$F1_29" ]] || fail "temp sync deleted $F1_29"
+[[ -f "$TMP/supabase/ra-spike/migrations/$F1_ATOMIC" ]] || fail "temp sync deleted $F1_ATOMIC"
 [[ ! -f "$TMP/supabase/ra-spike/migrations/_should_be_deleted.sql" ]] || fail "temp sync left dest canary"
 [[ -f "$TMP/supabase/ra-spike/rollbacks/_should_be_kept.sql" ]] || fail "temp sync deleted rollbacks/ canary"
 [[ -f "$TMP/supabase/ra-spike/rollbacks/$F1_27" ]] || fail "temp sync deleted rollbacks/$F1_27"
@@ -147,5 +152,7 @@ cmp -s "$TMP/supabase/migrations/$F1_27" "$TMP/supabase/ra-spike/migrations/$F1_
   || fail "temp sync did not copy intern $F1_27 into RA dest"
 cmp -s "$TMP/supabase/migrations/$F1_29" "$TMP/supabase/ra-spike/migrations/$F1_29" \
   || fail "temp sync did not copy intern $F1_29 into RA dest"
+cmp -s "$TMP/supabase/migrations/$F1_ATOMIC" "$TMP/supabase/ra-spike/migrations/$F1_ATOMIC" \
+  || fail "temp sync did not copy intern $F1_ATOMIC into RA dest"
 
-echo "check-sec1-f1-ra-spike-sync: OK (allowlist + temp sync kept F1 migrations; rollbacks/ untouched)"
+echo "check-sec1-f1-ra-spike-sync: OK (allowlist + temp sync kept F1 migrations including 20261112070001; rollbacks/ untouched)"
