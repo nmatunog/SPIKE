@@ -178,6 +178,12 @@ describe('Versa CSV portable service', () => {
       /create or replace function public\.redeem_versa_code_and_grant\s*\(\s*p_id\s+bigint\s*,\s*p_user_id\s+uuid\s*,/i,
     );
     expect(portable).not.toContain('intern_progress');
+    const bind = await readFile(
+      new URL('../../../supabase/migrations/20260832_versa_bind_verified_user.sql', import.meta.url),
+      'utf8',
+    );
+    expect(bind).toMatch(/verified_user_id = coalesce\(verified_user_id, p_user_id\)/);
+    expect(bind).not.toContain('intern_progress');
     await expect(
       access(fileURLToPath(new URL('../../../supabase/migrations/20260829_versa_q1_hardening.sql', import.meta.url))),
     ).rejects.toMatchObject({ code: 'ENOENT' });
@@ -249,9 +255,28 @@ describe('Versa CSV portable service', () => {
       expect(admin.tables.versa_code_inventory.find((r) => r.code_digest === digest).status).toBe('available');
     });
 
-    it('wrong level/offering', async () => {
+    it('HTTP redeem infers L2 from a PRO slug without the client passing L2', async () => {
       const admin = await setup();
       const res = await readJson(await redeem(admin, { code: CODES.wrongLevel, programRoute: 'spike-interns' }));
+      expect(res.status).toBe(200);
+      expect(res.body.ok).toBe(true);
+      expect(res.body.level).toBe('L2');
+      expect(admin.tables.versa_entitlements.map((row) => row.offering_id)).toEqual([
+        'financial-entrepreneurship',
+      ]);
+    });
+
+    it('HTTP client cannot raise a free code to L2', async () => {
+      const admin = await setup();
+      const res = await readJson(
+        await redeem(admin, {
+          code: CODES.valid,
+          programRoute: 'spike-interns',
+          intendedLevel: 'L2',
+          offeringId: 'financial-entrepreneurship',
+          paymentVerified: true,
+        }),
+      );
       expect(res.status).toBe(403);
       expect(admin.tables.versa_code_attempts.some((a) => a.reason === REASONS.wrong_offering)).toBe(true);
     });

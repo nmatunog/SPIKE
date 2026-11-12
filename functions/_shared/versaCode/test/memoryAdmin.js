@@ -214,6 +214,15 @@ export function createMemoryAdmin(seed = {}) {
     }
 
     if (name === 'redeem_versa_code_and_grant') {
+      if (seed.missingRedeemRpc) {
+        return {
+          data: null,
+          error: {
+            code: 'PGRST202',
+            message: 'Could not find the function public.redeem_versa_code_and_grant',
+          },
+        };
+      }
       return serialize(async () => {
         const row = tables.versa_code_inventory.find((item) => item.id === args.p_id);
         if (!row) return { data: { ok: false, reason: 'unknown' }, error: null };
@@ -238,6 +247,7 @@ export function createMemoryAdmin(seed = {}) {
         row.status = 'redeemed';
         row.redeemed_at = new Date().toISOString();
         row.redeemed_by = args.p_user_id;
+        row.verified_user_id = row.verified_user_id || args.p_user_id;
         const entitlement = upsertEntitlementRow(tables, nextId, {
           user_id: args.p_user_id,
           inventory_id: row.id,

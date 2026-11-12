@@ -76,6 +76,28 @@ export function importedProRowImpliesPaid(row, env) {
 }
 
 /**
+ * HTTP redeem infers level from the imported plan slug so a pasted PRO code
+ * works without the client sending L2. The client still cannot raise a free
+ * code to L2 or pick an offering the slug does not cover.
+ *
+ * @param {PlanSlugMapping | null} mapping
+ * @param {{ level?: string, offeringId?: string | null, programRoute?: string }} [expected]
+ * @param {{ inferFromPlanSlug?: boolean, clientSpecifiedOffering?: boolean }} [options]
+ */
+export function resolveExpectedFromPlanSlug(mapping, expected = {}, options = {}) {
+  if (!mapping || options.inferFromPlanSlug !== true) return expected;
+  const clientLevel = String(expected.level || '').toUpperCase();
+  if (clientLevel === 'L2' && mapping.level !== 'L2') {
+    return expected;
+  }
+  return {
+    programRoute: expected.programRoute,
+    level: mapping.level,
+    offeringId: options.clientSpecifiedOffering ? expected.offeringId : undefined,
+  };
+}
+
+/**
  * Course/level checks run through the slug map, not CSV program_route.
  * @param {PlanSlugMapping | null} mapping
  * @param {{ level?: string, offeringId?: string | null, programRoute?: string }} [expected]

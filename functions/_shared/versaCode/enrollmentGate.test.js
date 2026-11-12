@@ -233,7 +233,7 @@ describe('portable Versa verify/redeem', () => {
         admin,
       });
       expect(result.ok).toBe(false);
-      expect(enrollmentUiState(result)).toBe('already-redeemed');
+      expect(enrollmentUiState(result)).toBe('identity-mismatch');
     });
 
     it('wrong course/level', async () => {

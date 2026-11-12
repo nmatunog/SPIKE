@@ -74,7 +74,8 @@ begin
   update versa_code_inventory
      set status = 'redeemed',
          redeemed_at = now(),
-         redeemed_by = p_user_id
+         redeemed_by = p_user_id,
+         verified_user_id = coalesce(verified_user_id, p_user_id)
    where id = p_id
      and status = 'available'
   returning * into inv;
@@ -151,10 +152,14 @@ describe('Versa redeem_versa_code_and_grant (PGlite)', () => {
     expect(wins).toHaveLength(1);
     expect(reused).toHaveLength(1);
 
-    const inventory = await db.query('select status, redeemed_by from versa_code_inventory where id = $1', [id]);
+    const inventory = await db.query(
+      'select status, redeemed_by, verified_user_id from versa_code_inventory where id = $1',
+      [id],
+    );
     expect(inventory.rows[0].status).toBe('redeemed');
     const redeemedBy = inventory.rows[0].redeemed_by;
     expect([USER_A, USER_B]).toContain(redeemedBy);
+    expect(inventory.rows[0].verified_user_id).toBe(redeemedBy);
 
     const entitlements = await db.query('select user_id from versa_entitlements');
     expect(entitlements.rows).toHaveLength(1);

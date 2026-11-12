@@ -4,6 +4,10 @@
  * Portable grant = versa_entitlements. No intern role / intern_progress.
  */
 
+/** Fallback consume must return plan_slug so a free row grants Literacy + FEP. */
+const CONSUME_ROW_COLUMNS =
+  'id, versa_lead_ref, verified_email, verified_user_id, level, offering_id, status, program_route, redeemed_by, redeemed_at, plan, plan_slug';
+
 /** @param {import('@supabase/supabase-js').SupabaseClient} admin */
 export async function findInventoryByDigest(admin, digest) {
   const { data, error } = await admin
@@ -46,9 +50,7 @@ export async function consumeAndGrant(admin, { id, userId, grantor = null, payme
 async function consumeAndGrantFallback(admin, { id, userId, grantor, paymentVerified }) {
   const { data: existing } = await admin
     .from('versa_code_inventory')
-    .select(
-      'id, versa_lead_ref, verified_email, verified_user_id, level, offering_id, status, program_route, redeemed_by, redeemed_at',
-    )
+    .select(CONSUME_ROW_COLUMNS)
     .eq('id', id)
     .maybeSingle();
 
@@ -71,12 +73,11 @@ async function consumeAndGrantFallback(admin, { id, userId, grantor, paymentVeri
       status: 'redeemed',
       redeemed_at: new Date().toISOString(),
       redeemed_by: userId,
+      verified_user_id: existing?.verified_user_id || userId,
     })
     .eq('id', id)
     .eq('status', 'available')
-    .select(
-      'id, versa_lead_ref, verified_email, verified_user_id, level, offering_id, status, program_route, redeemed_by, redeemed_at',
-    )
+    .select(CONSUME_ROW_COLUMNS)
     .maybeSingle();
   if (updErr) throw new Error(updErr.message);
   if (!updated) return { ok: false, reason: 'reused' };
@@ -99,6 +100,7 @@ async function consumeAndGrantFallback(admin, { id, userId, grantor, paymentVeri
         status: 'available',
         redeemed_at: null,
         redeemed_by: null,
+        verified_user_id: existing?.verified_user_id ?? null,
       })
       .eq('id', id)
       .eq('redeemed_by', userId);

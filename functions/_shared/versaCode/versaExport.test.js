@@ -7,7 +7,12 @@ import { parseVersaCsv } from './csv.js';
 import { digestCode } from './digest.js';
 import { importVersaCsv } from './importRows.js';
 import { versaHttpDenyBody } from './httpDeny.js';
-import { PLAN_SLUG_MAP, isVersaProCodeImpliesPaid, resolvePlanSlug } from './planSlug.js';
+import {
+  PLAN_SLUG_MAP,
+  isVersaProCodeImpliesPaid,
+  resolveExpectedFromPlanSlug,
+  resolvePlanSlug,
+} from './planSlug.js';
 import { resetVersaRateLimitStore } from './rateLimit.js';
 import { redeem, verify } from './service.js';
 import { createMemoryAdmin } from './test/memoryAdmin.js';
@@ -64,6 +69,17 @@ describe('locked Versa export schema', () => {
     expect(isVersaProCodeImpliesPaid({})).toBe(true);
     expect(isVersaProCodeImpliesPaid({ VERSA_PRO_CODE_IMPLIES_PAID: '0' })).toBe(false);
     expect(isVersaProCodeImpliesPaid({ VERSA_PRO_CODE_IMPLIES_PAID: 'false' })).toBe(false);
+    expect(
+      resolveExpectedFromPlanSlug(resolvePlanSlug('pro'), { level: 'L1', programRoute: 'spike-interns' }, {
+        inferFromPlanSlug: true,
+      }).level,
+    ).toBe('L2');
+    expect(
+      resolveExpectedFromPlanSlug(resolvePlanSlug('free'), { level: 'L2', offeringId: 'financial-entrepreneurship' }, {
+        inferFromPlanSlug: true,
+        clientSpecifiedOffering: true,
+      }).level,
+    ).toBe('L2');
   });
 
   it('parses the BOM free file and the non-BOM pro file', async () => {
@@ -183,14 +199,44 @@ describe('locked Versa export schema', () => {
     expect(offerings).toEqual(['fep', 'financial-literacy']);
     expect(admin.tables.versa_entitlements.every((row) => row.program_route === 'spike-interns')).toBe(true);
     expect(admin.tables.intern_progress).toHaveLength(0);
+    const digest = await digestCode(HMAC, SYNTHETIC_CODES.free);
+    const claimed = admin.tables.versa_code_inventory.find((item) => item.code_digest === digest);
+    expect(claimed.verified_user_id).toBe(LEARNER_ID);
+    expect(claimed.redeemed_by).toBe(LEARNER_ID);
 
     const second = await redeem(SYNTHETIC_CODES.free, identity(OTHER_ID, OTHER), 'spike-interns', 'L1', {
       env: FLAG_ENV,
       admin,
     });
     expect(second.ok).toBe(false);
-    expect(second.reason).toBe(REASONS.reused);
+    expect(second.reason).toBe(REASONS.wrong_identity);
     expect(admin.tables.versa_entitlements.every((row) => row.user_id === LEARNER_ID)).toBe(true);
+  });
+
+  it('fallback consume without the RPC still grants Literacy and FEP from plan_slug', async () => {
+    const admin = createMemoryAdmin({
+      missingRedeemRpc: true,
+      authUser: { id: LEARNER_ID, email: LEARNER, email_confirmed_at: '2026-01-01T00:00:00.000Z' },
+    });
+    await importVersaCsv({
+      env: FLAG_ENV,
+      admin,
+      csvText: (await loadFixture('versa-free.csv')).toString('utf8'),
+    });
+    const first = await redeem(SYNTHETIC_CODES.free, identity(), 'spike-interns', 'L1', {
+      env: FLAG_ENV,
+      admin,
+    });
+    expect(first.ok).toBe(true);
+    expect(admin.tables.versa_entitlements.map((row) => row.offering_id).sort()).toEqual([
+      'fep',
+      'financial-literacy',
+    ]);
+    const digest = await digestCode(HMAC, SYNTHETIC_CODES.free);
+    const claimed = admin.tables.versa_code_inventory.find((item) => item.code_digest === digest);
+    expect(claimed.plan_slug).toBe('free');
+    expect(claimed.verified_user_id).toBe(LEARNER_ID);
+    expect(claimed.status).toBe('redeemed');
   });
 
   it('never auto-grants RA-SPIKE from a free intern pathway code', async () => {
@@ -247,7 +293,11 @@ describe('locked Versa export schema', () => {
       offeringId: 'financial-entrepreneurship',
     });
     expect(other.ok).toBe(false);
-    expect(other.reason).toBe(REASONS.reused);
+    expect(other.reason).toBe(REASONS.wrong_identity);
+    const digest = await digestCode(HMAC, SYNTHETIC_CODES.pro);
+    expect(admin.tables.versa_code_inventory.find((item) => item.code_digest === digest).verified_user_id).toBe(
+      LEARNER_ID,
+    );
   });
 
   it('an unknown PRO-shaped code is denied', async () => {
@@ -266,6 +316,75 @@ describe('locked Versa export schema', () => {
     });
     expect(unknown.ok).toBe(false);
     expect(unknown.reason).toBe(REASONS.unknown);
+    expect(admin.tables.versa_entitlements).toHaveLength(0);
+  });
+
+  it('HTTP redeem infers L2 from the imported PRO slug without the client passing L2', async () => {
+    const admin = createMemoryAdmin({
+      authUser: { id: LEARNER_ID, email: LEARNER, email_confirmed_at: '2026-01-01T00:00:00.000Z' },
+    });
+    await importVersaCsv({
+      env: FLAG_ENV,
+      admin,
+      csvText: (await loadFixture('versa-pro.csv')).toString('utf8'),
+    });
+    const pasted = await readJson(
+      await handleVersaRedeem(
+        {
+          request: postJson('https://portal.test/api/versa/redeem', {
+            code: SYNTHETIC_CODES.pro,
+            intendedCourse: 'spike-interns',
+            paymentVerified: true,
+          }),
+          env: FLAG_ENV,
+        },
+        {
+          createServiceClient: () => admin,
+          createUserClient: () => admin,
+        },
+      ),
+    );
+    expect(pasted.status).toBe(200);
+    expect(pasted.body.ok).toBe(true);
+    expect(pasted.body.level).toBe('L2');
+    expect(admin.tables.versa_entitlements.map((row) => row.offering_id)).toEqual([
+      'financial-entrepreneurship',
+    ]);
+  });
+
+  it('HTTP client cannot raise a free code to L2 or set payment', async () => {
+    const admin = createMemoryAdmin({
+      authUser: { id: LEARNER_ID, email: LEARNER, email_confirmed_at: '2026-01-01T00:00:00.000Z' },
+    });
+    await importVersaCsv({
+      env: FLAG_ENV,
+      admin,
+      csvText: (await loadFixture('versa-free.csv')).toString('utf8'),
+    });
+    const raised = await readJson(
+      await handleVersaRedeem(
+        {
+          request: postJson('https://portal.test/api/versa/redeem', {
+            code: SYNTHETIC_CODES.free,
+            intendedCourse: 'spike-interns',
+            intendedLevel: 'L2',
+            offeringId: 'financial-entrepreneurship',
+            paymentVerified: true,
+          }),
+          env: FLAG_ENV,
+        },
+        {
+          createServiceClient: () => admin,
+          createUserClient: () => admin,
+        },
+      ),
+    );
+    expect(raised.status).toBe(403);
+    expect(raised.body).toEqual(versaHttpDenyBody());
+    const digest = await digestCode(HMAC, SYNTHETIC_CODES.free);
+    const row = admin.tables.versa_code_inventory.find((item) => item.code_digest === digest);
+    expect(row.status).toBe('available');
+    expect(row.verified_user_id).toBeFalsy();
     expect(admin.tables.versa_entitlements).toHaveLength(0);
   });
 

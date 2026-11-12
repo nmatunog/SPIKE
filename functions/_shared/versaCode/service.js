@@ -42,6 +42,8 @@ export async function verify(code, authenticatedIdentity, intendedCourse, intend
     logger: options.logger,
     expected,
     consume: false,
+    inferFromPlanSlug: options.inferFromPlanSlug === true,
+    clientSpecifiedOffering: options.clientSpecifiedOffering === true,
     ...asIdentityInput(authenticatedIdentity),
   });
 }
@@ -64,6 +66,8 @@ export async function redeem(code, authenticatedIdentity, intendedCourse, intend
     logger: options.logger,
     expected,
     consume: true,
+    inferFromPlanSlug: options.inferFromPlanSlug === true,
+    clientSpecifiedOffering: options.clientSpecifiedOffering === true,
     ...asIdentityInput(authenticatedIdentity),
   });
 }

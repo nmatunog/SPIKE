@@ -37,7 +37,7 @@ Auth → SpikeMasterPortal intern branch
 
 **Where intern enrollment is granted today:** daily staff `activation_codes` in `intern-signup.js`. That is intern-cohort access, not Versa L1/L2. `intern-signup.js` must stay Versa-free.
 
-**Where a future host would call the portable verifier:** after an authenticated intern session, **before** formation/learning. Pass `intendedCourse: "spike-interns"` and `intendedLevel: "L1"` or `"L2"`. Do not grant RA-SPIKE from an intern code.
+**Where a future host would call the portable verifier:** after an authenticated intern session, **before** formation/learning. Pass `intendedCourse: "spike-interns"`. HTTP redeem infers L1/L2 from the imported plan slug if `intendedLevel` is omitted. Do not grant RA-SPIKE from an intern code.
 
 ## RA-SPIKE — where L1/L2 *would* attach (not implemented in the portal)
 

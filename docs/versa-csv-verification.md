@@ -52,7 +52,9 @@ A code never auto-grants both intern and RA-SPIKE. Course/level checks use this 
 
 ## Identity
 
-The export has no email or owner identity. Binding happens at redemption: the first authenticated, **verified** account to redeem claims the code once (atomic, single-use). A typed/unverified email is never proof.
+The export has no email or owner identity. Binding happens at redemption: the first authenticated, **verified** account to redeem claims the code once (atomic, single-use). Consume writes `verified_user_id` in the same update that marks the row redeemed. A typed/unverified email is never proof.
+
+HTTP redeem infers the intended level from the imported plan slug, so pasting a PRO code grants paid L2 without the client sending `intendedLevel: L2`. The client cannot raise a free code to L2 or set payment.
 
 ## Feature flags
 
@@ -96,7 +98,7 @@ Durable `versa_rate_limits`, keyed by `user:<id>` or `ip:<addr>`. Increment is t
 
 ## Synthetic matrix (`npm run test:versa-code`)
 
-Locked export fixtures (BOM free file + non-BOM pro file), slug mapping, unknown slug rejection, duplicate codes, mixed files, first-claimer redemption, imported `pro` grants paid L2 once, unknown PRO-shaped codes denied, and HTTP `paymentVerified` ignored.
+Locked export fixtures (BOM free file + non-BOM pro file), slug mapping, unknown slug rejection, duplicate codes, mixed files, first-claimer redemption, RPC-less fallback still grants Literacy + FEP from `plan_slug`, imported `pro` grants paid L2 once (including when the client omits L2), unknown PRO-shaped codes denied, HTTP `paymentVerified` ignored, and `verified_user_id` bound atomically at consume.
 
 Plus HMAC 32+, missing rate-limit table/RPC fail-closed, PGlite single-use and atomic increment.
 

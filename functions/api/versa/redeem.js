@@ -58,6 +58,7 @@ export async function handleVersaRedeem(ctx, deps = {}) {
   const submittedCode = String(body?.code ?? body?.accessCode ?? '').trim();
   const intendedLevel = String(body?.intendedLevel ?? body?.level ?? 'L1').toUpperCase() === 'L2' ? 'L2' : 'L1';
   const intendedCourse = String(body?.intendedCourse ?? body?.programRoute ?? '').trim();
+  const clientSpecifiedOffering = Boolean(String(body?.offeringId ?? '').trim());
   const user = userData.user;
 
   const result = await redeemFn(
@@ -75,8 +76,11 @@ export async function handleVersaRedeem(ctx, deps = {}) {
       request,
       offeringId: body?.offeringId,
       programRoute: body?.programRoute,
-      // Nilo Nov 12: imported `pro` is paid. Never take paymentVerified or
-      // VERSA_PRO_CODE_IMPLIES_PAID from the request body.
+      // Infer L2 from the imported `pro` slug so a pasted PRO code works
+      // without the client sending L2. Never take payment or a raised level
+      // from the request body.
+      inferFromPlanSlug: true,
+      clientSpecifiedOffering,
       paymentVerified: false,
     },
   );

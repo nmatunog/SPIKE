@@ -15,6 +15,7 @@ import {
   importedProRowImpliesPaid,
   matchIntendedToPlanSlug,
   offeringsFromInventoryRow,
+  resolveExpectedFromPlanSlug,
   resolvePlanSlug,
 } from './planSlug.js';
 import { assertDurableRateLimit, rateLimitKey, recordDurableFail } from './rateLimit.js';
@@ -95,6 +96,8 @@ function rowUnavailableReason(row, now = Date.now()) {
  *   paymentVerified?: boolean,
  *   prerequisiteOk?: boolean,
  *   consume?: boolean,
+ *   inferFromPlanSlug?: boolean,
+ *   clientSpecifiedOffering?: boolean,
  *   logger?: ReturnType<typeof createVersaLogger>,
  * }} input
  */
@@ -194,7 +197,8 @@ export async function verifyVersaCode(input) {
 
   const mapping = resolvePlanSlug(row.plan_slug);
   if (mapping) {
-    const intended = matchIntendedToPlanSlug(mapping, expected);
+    const matchExpected = resolveExpectedFromPlanSlug(mapping, expected, input);
+    const intended = matchIntendedToPlanSlug(mapping, matchExpected);
     if (!intended.ok) return deny(intended.reason);
   } else {
     if (!programRouteMatches(row, expected)) {

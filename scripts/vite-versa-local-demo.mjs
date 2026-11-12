@@ -161,6 +161,8 @@ export function versaLocalDemoPlugin({ csvPath = DEFAULT_CSV } = {}) {
                 admin,
                 offeringId: body?.offeringId,
                 programRoute: body?.programRoute,
+                inferFromPlanSlug: true,
+                clientSpecifiedOffering: Boolean(String(body?.offeringId ?? '').trim()),
                 // Imported `pro` is paid (Nilo Nov 12). Never take paymentVerified from the body.
                 paymentVerified: false,
               },

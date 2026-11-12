@@ -25,6 +25,7 @@ export {
   isVersaProCodeImpliesPaid,
   matchIntendedToPlanSlug,
   offeringsFromInventoryRow,
+  resolveExpectedFromPlanSlug,
   resolvePlanSlug,
 } from './planSlug.js';
 export { VERSA_HTTP_DENY_STATUS, versaHttpDeny, versaHttpDenyBody } from './httpDeny.js';
