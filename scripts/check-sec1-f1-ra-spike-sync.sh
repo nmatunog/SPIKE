@@ -7,7 +7,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 F1_27="20260827_restrict_activation_codes_anon_read.sql"
 F1_29="20260829_gate_ensure_daily_activation_code.sql"
 ALLOWLIST="$ROOT/supabase/ra-spike/migrations-allowlist.txt"
-INTERN_ROLLBACK29="$ROOT/supabase/migrations/_rollback_20260829_gate_ensure_daily_activation_code.sql"
+INTERN_ROLLBACK29="$ROOT/supabase/rollbacks/20260829_gate_ensure_daily_activation_code.sql"
 
 fail() {
   echo "check-sec1-f1-ra-spike-sync: FAIL $*" >&2
@@ -34,6 +34,10 @@ fi
 [[ ! -f "$ROOT/supabase/ra-spike/migrations/sec1_f1_exact_restore.sql" ]] || fail "umbrella rollback must not live under RA migrations/"
 [[ ! -f "$ROOT/supabase/ra-spike/migrations/_rollback_$F1_27" ]] || fail "rollback still under migrations/ (sync would delete it)"
 [[ ! -f "$ROOT/supabase/ra-spike/migrations/_rollback_$F1_29" ]] || fail "rollback still under migrations/ (sync would delete it)"
+[[ ! -f "$ROOT/supabase/migrations/_rollback_$F1_27" ]] || fail "intern rollback still under supabase/migrations/"
+[[ ! -f "$ROOT/supabase/migrations/_rollback_$F1_29" ]] || fail "intern rollback still under supabase/migrations/"
+[[ -f "$ROOT/supabase/rollbacks/$F1_27" ]] || fail "intern rollbacks/ missing $F1_27"
+[[ -f "$ROOT/supabase/rollbacks/$F1_29" ]] || fail "intern rollbacks/ missing $F1_29"
 
 revoke_line="$(grep 'ensure_daily_activation_code' "$INTERN_ROLLBACK29" | grep revoke || true)"
 [[ -n "$revoke_line" ]] || fail "intern _rollback_20260829 missing revoke line"
@@ -61,13 +65,13 @@ grep -q "current_role() is distinct from 'ADMIN'" "$intern29" \
 
 # Intern and RA rollback SQL must stay byte-identical (comments included).
 cmp -s \
-  "$ROOT/supabase/migrations/_rollback_20260827_restrict_activation_codes_anon_read.sql" \
+  "$ROOT/supabase/rollbacks/$F1_27" \
   "$ROOT/supabase/ra-spike/rollbacks/$F1_27" \
-  || fail "intern _rollback_20260827 and RA rollbacks/$F1_27 must be byte-identical"
+  || fail "intern rollbacks/$F1_27 and RA rollbacks/$F1_27 must be byte-identical"
 cmp -s \
-  "$ROOT/supabase/migrations/_rollback_20260829_gate_ensure_daily_activation_code.sql" \
+  "$ROOT/supabase/rollbacks/$F1_29" \
   "$ROOT/supabase/ra-spike/rollbacks/$F1_29" \
-  || fail "intern _rollback_20260829 and RA rollbacks/$F1_29 must be byte-identical"
+  || fail "intern rollbacks/$F1_29 and RA rollbacks/$F1_29 must be byte-identical"
 cmp -s \
   "$ROOT/supabase/rollbacks/sec1_f1_safe_partial.sql" \
   "$ROOT/supabase/ra-spike/rollbacks/sec1_f1_safe_partial.sql" \
@@ -98,8 +102,8 @@ grep -q 'grant all on table public.activation_codes to anon' \
   "$ROOT/supabase/rollbacks/sec1_f1_exact_restore.sql" \
   || fail "intern exact-restore must GRANT ALL on activation_codes to anon"
 if grep -q 'grant execute on function public.ensure_daily_activation_code() to anon' \
-  "$ROOT/supabase/migrations/_rollback_20260829_gate_ensure_daily_activation_code.sql"; then
-  fail "safe-partial _rollback_20260829 must not grant anon EXECUTE"
+  "$ROOT/supabase/rollbacks/$F1_29"; then
+  fail "safe-partial rollbacks/$F1_29 must not grant anon EXECUTE"
 fi
 
 TMP="$(mktemp -d "${TMPDIR:-/tmp}/sec1-f1-sync.XXXXXX")"

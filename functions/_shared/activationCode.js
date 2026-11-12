@@ -12,6 +12,23 @@ export function getActivationDateKey(date = new Date()) {
 }
 
 /**
+ * Constant-time compare of intern activation codes (case-insensitive).
+ * Length is mixed into the accumulator so padding cannot collapse mismatches.
+ * @param {unknown} left
+ * @param {unknown} right
+ */
+export function codesEqual(left, right) {
+  const a = String(left ?? '').trim().toUpperCase();
+  const b = String(right ?? '').trim().toUpperCase();
+  const max = Math.max(a.length, b.length);
+  let diff = a.length ^ b.length;
+  for (let i = 0; i < max; i += 1) {
+    diff |= (a.charCodeAt(i) || 0) ^ (b.charCodeAt(i) || 0);
+  }
+  return diff === 0;
+}
+
+/**
  * @param {import('@supabase/supabase-js').SupabaseClient} admin
  * @param {string} inputCode
  */
@@ -29,7 +46,7 @@ export async function validateInternActivationCode(admin, inputCode) {
   if (new Date(codeRow.expires_at).getTime() < Date.now()) {
     throw new Error('Activation code has expired. Ask staff for today\'s code.');
   }
-  if (String(codeRow.code).toUpperCase() !== String(inputCode).trim().toUpperCase()) {
+  if (!codesEqual(codeRow.code, inputCode)) {
     throw new Error('Invalid activation code.');
   }
 }

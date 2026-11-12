@@ -2,7 +2,7 @@
 
 Waits for **Nilo's SEC-1 decision**. Repo SQL only. **Do not apply** to SPIKE Interns (`lzbfjbtjropoaynbcxew`) or RA-SPIKE (`yruwfdjqigxxwbqsqhho`) from this branch.
 
-Frozen parent: `sec1/f1-hardening` @ `358b1f1`. This tree is `sec1/f1-hardening-2`.
+Frozen parent: `sec1/f1-hardening-2` @ `ec21f13`. This tree is `sec1/f1-hardening-3`.
 
 Live (read-only check, 11 Nov 2026), both projects:
 
@@ -25,7 +25,17 @@ F1 closes the client leak of live daily intern codes and keeps midnight minting 
 
 Prove RA copies survive `sync-ra-spike-migrations.sh` with `bash scripts/check-sec1-f1-ra-spike-sync.sh` (temp copy only; never hosted). Intern and RA rollback SQL must be byte-identical.
 
-Local tests: `SKIP_AUTO_SHIP=1 AUTO_SHIP=0 npm run test:sec1-f1` (PGlite).
+Local tests: `SKIP_AUTO_SHIP=1 AUTO_SHIP=0 npm run test:sec1-f1` (PGlite), `bash scripts/check-sec1-f1-ra-spike-sync.sh`, `bash scripts/check-ship-migrations-opt-in.sh`.
+
+## Migration ordering (SEC-1 first)
+
+Keep SEC-1 at `20260827` and `20260829`. Versa migrations must be numbered **above** `20260829` with real timestamps (`20261112xxxxxx`). Apply SEC-1 to Interns and RA-SPIKE **before** any Versa file.
+
+The custom runner only applies files whose version is greater than live `max(version)`. If Versa is applied first, these SEC-1 versions are skipped forever while the runner reports success. Do not interleave the two series.
+
+`npm run build` / `scripts/ship-after-build.sh` never apply SQL unless `APPLY_DB_MIGRATIONS=1` **and** the branch is `main`. Prove with `bash scripts/check-ship-migrations-opt-in.sh`.
+
+After a hosted apply, run the read-only probe (`bash scripts/probe-sec1-f1-grants.sh`; `PROBE_LINKED=1` only against an already-linked project). It checks anon SELECT / EXECUTE and `activation_codes_public_read`, not `schema_migrations`.
 
 ## Files
 
@@ -37,10 +47,12 @@ Local tests: `SKIP_AUTO_SHIP=1 AUTO_SHIP=0 npm run test:sec1-f1` (PGlite).
 | `supabase/activation_codes.sql` | Baseline schema with staff-read policy + table revokes |
 | `supabase/migrations/20260827_restrict_activation_codes_anon_read.sql` | Interns: drop public-read, staff-read, revoke anon ALL / authenticated TRUNCATE |
 | `supabase/migrations/20260829_gate_ensure_daily_activation_code.sql` | Interns: staff RPC, internal mint, fail-closed regenerate, cron reschedule |
-| `supabase/migrations/_rollback_20260827_*.sql` | Interns safe-partial piece (policy); byte-identical to RA copy |
-| `supabase/migrations/_rollback_20260829_*.sql` | Interns safe-partial piece (ungated fn, drop mint, cron → ensure) |
+| `supabase/rollbacks/20260827_*.sql` | Interns safe-partial piece (policy); byte-identical to RA copy |
+| `supabase/rollbacks/20260829_*.sql` | Interns safe-partial piece (ungated fn, drop mint, cron → ensure) |
 | `supabase/rollbacks/sec1_f1_safe_partial.sql` | Interns umbrella **safe-partial** (byte-identical to RA) |
 | `supabase/rollbacks/sec1_f1_exact_restore.sql` | Interns **exact-restore** (byte-identical to RA) |
+| `scripts/probe-sec1-f1-grants.sh` | Read-only post-apply grant/policy probe |
+| `scripts/check-ship-migrations-opt-in.sh` | Proves ship-after-build never migrates off main / without the flag |
 | `supabase/ra-spike/migrations/20260827_*.sql` | RA copy (allowlisted; sync from intern) |
 | `supabase/ra-spike/migrations/20260829_*.sql` | RA copy (allowlisted; sync from intern) |
 | `supabase/ra-spike/rollbacks/` | RA rollback copies (not on the allowlist) |

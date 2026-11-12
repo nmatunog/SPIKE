@@ -9,7 +9,7 @@
 --   This migration is NOT applied live. Repo-only until Nilo's SEC-1 decision.
 --
 -- Rollback:
---   safe-partial: supabase/migrations/_rollback_20260827_restrict_activation_codes_anon_read.sql
+--   safe-partial: supabase/rollbacks/20260827_restrict_activation_codes_anon_read.sql
 --                 (also supabase/rollbacks/sec1_f1_safe_partial.sql)
 --   exact-restore: supabase/rollbacks/sec1_f1_exact_restore.sql
 

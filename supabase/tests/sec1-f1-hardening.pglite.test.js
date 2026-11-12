@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { afterEach, describe, expect, it } from 'vitest';
 import { PGlite } from '@electric-sql/pglite';
 import {
+  codesEqual,
   getActivationDateKey,
   validateInternActivationCode,
 } from '../../functions/_shared/activationCode.js';
@@ -553,6 +554,40 @@ describe('SEC-1 / F1 activation_codes hardening (PGlite)', () => {
     await db.exec('SET ROLE anon');
     try {
       await expectDenied(() => db.exec('truncate public.activation_codes'));
+    } finally {
+      await db.exec('RESET ROLE');
+    }
+  });
+
+  it('codesEqual is constant-time and case-insensitive', () => {
+    expect(codesEqual('SPIKE1', 'spike1')).toBe(true);
+    expect(codesEqual('SPIKE1', ' SPIKE1 ')).toBe(true);
+    expect(codesEqual('SPIKE1', 'NOPE99')).toBe(false);
+    expect(codesEqual('SPIKE1', 'SPIKE')).toBe(false);
+    expect(codesEqual('SPIKE1', 'SPIKE1X')).toBe(false);
+    expect(codesEqual('', '')).toBe(true);
+  });
+
+  it('intern signup rate-limit RPC is service-role only', async () => {
+    await boot();
+    const table = await db.query(
+      `select to_regclass('public.intern_signup_rate_limits') is not null as present`,
+    );
+    expect(table.rows[0].present).toBe(true);
+    await db.exec('SET ROLE anon');
+    try {
+      await expect(
+        db.exec(`select public.intern_signup_rate_limit_record_fail('ip:test', 600000)`),
+      ).rejects.toThrow(/permission denied|must be owner|not allowed|insufficient/i);
+    } finally {
+      await db.exec('RESET ROLE');
+    }
+    await db.exec('SET ROLE service_role');
+    try {
+      const n = await db.query(
+        `select public.intern_signup_rate_limit_record_fail('ip:test', 600000) as n`,
+      );
+      expect(Number(n.rows[0].n)).toBe(1);
     } finally {
       await db.exec('RESET ROLE');
     }

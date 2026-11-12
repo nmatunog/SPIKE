@@ -1,17 +1,27 @@
 import { validateInternActivationCode } from '../../_shared/activationCode.js';
 import { createConfirmedPortalUser } from '../../_shared/confirmedSignup.js';
+import {
+  INTERN_SIGNUP_RATE_LIMITED_MESSAGE,
+  assertInternSignupRateLimit,
+  internSignupRateKey,
+  recordInternSignupFail,
+} from '../../_shared/internSignupRateLimit.js';
 import { createServiceClient } from '../../_shared/supabaseAdmin.js';
 import { corsPreflight, json } from '../../_shared/verifySuperuser.js';
 
-/** @param {{ request: Request, env: Record<string, string> }} ctx */
-export async function onRequest(ctx) {
+/**
+ * @param {{ request: Request, env: Record<string, string> }} ctx
+ * @param {{ createServiceClient?: typeof createServiceClient }} [deps]
+ */
+export async function handleInternSignup(ctx, deps = {}) {
   const { request, env } = ctx;
   if (request.method === 'OPTIONS') return corsPreflight();
   if (request.method !== 'POST') return json({ message: 'Method not allowed.' }, 405);
 
+  const createService = deps.createServiceClient || createServiceClient;
   let admin;
   try {
-    admin = createServiceClient(env);
+    admin = createService(env);
   } catch (err) {
     return json(
       {
@@ -40,6 +50,16 @@ export async function onRequest(ctx) {
   if (!email || !email.includes('@')) return json({ message: 'A valid email is required.' }, 400);
   if (password.length < 8) return json({ message: 'Password must be at least 8 characters.' }, 400);
   if (!code) return json({ message: 'Daily activation code is required.' }, 400);
+
+  const rateKey = internSignupRateKey(request);
+  try {
+    const limited = await assertInternSignupRateLimit({ admin, key: rateKey });
+    if (!limited.ok) {
+      return json({ message: INTERN_SIGNUP_RATE_LIMITED_MESSAGE }, 429);
+    }
+  } catch (err) {
+    return json({ message: err instanceof Error ? err.message : INTERN_SIGNUP_RATE_LIMITED_MESSAGE }, 429);
+  }
 
   try {
     await validateInternActivationCode(admin, code);
@@ -78,6 +98,16 @@ export async function onRequest(ctx) {
 
     return json({ ok: true, userId });
   } catch (err) {
+    try {
+      await recordInternSignupFail({ admin, key: rateKey });
+    } catch {
+      return json({ message: INTERN_SIGNUP_RATE_LIMITED_MESSAGE }, 429);
+    }
     return json({ message: err instanceof Error ? err.message : 'Signup failed.' }, 400);
   }
+}
+
+/** @param {{ request: Request, env: Record<string, string> }} ctx */
+export async function onRequest(ctx) {
+  return handleInternSignup(ctx);
 }
