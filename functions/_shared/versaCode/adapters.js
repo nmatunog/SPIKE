@@ -162,8 +162,8 @@ export function createMockL1Grantor() {
 }
 
 /**
- * In-memory future-L2 grantor. Payment proof must come from the authorized
- * provider (`paymentVerified`), never from the CSV row.
+ * In-memory L2 grantor. Payment proof is an imported `pro` row (Nilo Nov 12)
+ * or `paymentVerified` from the authorized provider — never the HTTP body.
  */
 export function createMockL2Grantor({ paymentVerified = false } = {}) {
   /** @type {object[]} */
@@ -185,7 +185,7 @@ export function createMockL2Grantor({ paymentVerified = false } = {}) {
         throw new Error('L2 grantor cannot grant a non-L2 row.');
       }
       if (paid !== true && this.paymentVerified !== true) {
-        throw new Error('L2 grant requires paymentVerified from the authorized provider.');
+        throw new Error('L2 grant requires an imported pro row or authorized paymentVerified.');
       }
       const offerings = offeringsFromInventoryRow(row);
       let last = null;

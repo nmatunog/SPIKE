@@ -12,7 +12,7 @@ import { createVersaLogger } from './log.js';
 import { resolveOfferingPolicy } from './offerings.js';
 import { evaluateExistingOfferingGate } from './offeringGate.js';
 import {
-  isVersaProCodeImpliesPaid,
+  importedProRowImpliesPaid,
   matchIntendedToPlanSlug,
   offeringsFromInventoryRow,
   resolvePlanSlug,
@@ -237,7 +237,8 @@ export async function verifyVersaCode(input) {
   }
   if (unavailable) return deny(unavailable);
 
-  const paymentVerified = input.paymentVerified === true || isVersaProCodeImpliesPaid(env);
+  // Imported `pro` row is the payment signal (Nilo, Nov 12). HTTP body is ignored.
+  const paymentVerified = importedProRowImpliesPaid(row, env) || input.paymentVerified === true;
   const gate = evaluateExistingOfferingGate({
     level: row.level,
     offeringId: row.offering_id,

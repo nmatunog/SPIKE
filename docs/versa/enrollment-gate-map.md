@@ -4,13 +4,13 @@
 
 Owner (Nilo, 11 Nov 2026): V1 builds a **portable** Versa verification module, not coupled to the current portals. RA-SPIKE **Gate 1 / Gate 2 are internal program progression**, not external free L1 / paid L2 enrollment. A Versa code entitles only the course and level it was issued for. Never auto-grant both programs.
 
-CSV/Excel column names and learner-identity format are **provisional** (Versa expected 11–12 Nov). Mapping is a config layer (`columnMap` + optional `VERSA_CSV_COLUMN_MAP` JSON). Do not lock production field names.
+CSV/Excel headers are **locked** to the Versa export of Nov 12. `columnMap` is only an optional rename overlay.
 
 ## Programs vs Versa course/level
 
 | Surface | Today’s `intern_progress.program_slug` | Portable `intendedCourse` (`program_route`) | Free L1 (no code) | Paid L2 (code + payment proof) |
 |---|---|---|---|---|
-| SPIKE for Interns | `spike-internship` | `spike-interns` | Financial Literacy (`financial-literacy`); free FEP (`fep`) | `financial-entrepreneurship` — `paymentVerified` from the authorized provider, never the CSV |
+| SPIKE for Interns | `spike-internship` | `spike-interns` | Financial Literacy (`financial-literacy`); free FEP (`fep`) | `financial-entrepreneurship` — imported Versa `pro` row (Nilo Nov 12); HTTP `paymentVerified` ignored |
 | RA-SPIKE | `ra-spike` | `ra-spike` | Same offering ids, **separate entitlement** keyed by course | Same L2 rule, **separate entitlement** |
 
 Interns and RA-SPIKE use **different databases**. Do not mix `user_id` or entitlements across projects.
@@ -86,7 +86,7 @@ Injected **entitlement adapter** (`EntitlementGrantor`) decides existing access 
 Rules (offering catalog, not hardcoded host flows):
 
 - Free L1 **Financial Literacy** and free **FEP** → no code required.
-- Approved paid L2 → code + `paymentVerified` from the authorized provider (CSV is not payment proof).
+- Approved paid L2 → imported Versa `pro` code (Nilo Nov 12). HTTP `paymentVerified` is ignored.
 - Future offering-specific codes register on the catalog (`requiresCode: true`) and flow through the same verify/redeem path.
 - Course/level mismatch → deny. Program X never grants program Y.
 

@@ -3,7 +3,7 @@
 export const VERSA_FLAG_ENV = 'VERSA_CSV_CODE_GATE';
 export const VERSA_HMAC_SECRET_ENV = 'VERSA_CODE_HMAC_SECRET';
 export const VERSA_L1_OFFERING_ENV = 'VERSA_L1_OFFERING_ID';
-/** Nilo: a Versa `pro` code is not payment proof unless this is explicitly on. Default off. */
+/** Nilo (Nov 12, 2026): Versa collects payment, so an imported `pro` row is paid. Default on. */
 export const VERSA_PRO_CODE_IMPLIES_PAID_ENV = 'VERSA_PRO_CODE_IMPLIES_PAID';
 
 export const GENERIC_DENY_MESSAGE =

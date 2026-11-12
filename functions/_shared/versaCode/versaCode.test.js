@@ -370,11 +370,12 @@ describe('Versa CSV portable service', () => {
     expect(result.reason).toBe(REASONS.valid);
   });
 
-  it('L2 mock grantor requires paymentVerified from the authorized provider, never the CSV', async () => {
+  it('L2 mock grantor requires paymentVerified when the Nilo switch is off', async () => {
     const admin = createMemoryAdmin();
     await importVersaCsv({ env: FLAG_ENV, admin, csvText: SYNTHETIC_CSV });
+    const off = { ...FLAG_ENV, VERSA_PRO_CODE_IMPLIES_PAID: '0' };
     const unpaid = await verifyVersaCode({
-      env: FLAG_ENV,
+      env: off,
       admin,
       submittedCode: CODES.wrongLevel,
       identityProvider: createSessionIdentityProvider({
@@ -391,7 +392,7 @@ describe('Versa CSV portable service', () => {
     expect(unpaid.reason).toBe(REASONS.gate_unsatisfied);
 
     const paid = await verifyVersaCode({
-      env: FLAG_ENV,
+      env: off,
       admin,
       submittedCode: CODES.wrongLevel,
       identityProvider: createSessionIdentityProvider({
@@ -408,7 +409,7 @@ describe('Versa CSV portable service', () => {
     expect(paid.row.level).toBe('L2');
   });
 
-  it('HTTP redeem ignores body.paymentVerified; paid L2 stays fail-closed', async () => {
+  it('HTTP redeem ignores body.paymentVerified; imported PRO still grants L2', async () => {
     const admin = createMemoryAdmin({ authUser: verifiedAuthUser() });
     await importVersaCsv({ env: FLAG_ENV, admin, csvText: SYNTHETIC_CSV });
     const res = await readJson(
@@ -419,17 +420,18 @@ describe('Versa CSV portable service', () => {
             intendedLevel: 'L2',
             intendedCourse: 'spike-interns',
             offeringId: 'financial-entrepreneurship',
-            paymentVerified: true,
+            paymentVerified: false,
           }),
           env: FLAG_ENV,
         },
         redeemDeps(admin),
       ),
     );
-    expect(res.status).toBe(403);
-    expect(res.body).toEqual(versaHttpDenyBody());
-    expect(admin.tables.versa_entitlements).toHaveLength(0);
-    expect(admin.tables.versa_code_attempts.some((a) => a.reason === REASONS.gate_unsatisfied)).toBe(true);
+    expect(res.status).toBe(200);
+    expect(res.body.ok).toBe(true);
+    expect(admin.tables.versa_entitlements.map((row) => row.offering_id)).toEqual([
+      'financial-entrepreneurship',
+    ]);
   });
 
   it('HTTP deny bodies are identical across unknown, expired, already-redeemed, identity-mismatch and wrong-course codes', async () => {

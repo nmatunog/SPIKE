@@ -21,6 +21,7 @@ export {
 export { isVersaCsvCodeGateEnabled } from './flag.js';
 export {
   PLAN_SLUG_MAP,
+  importedProRowImpliesPaid,
   isVersaProCodeImpliesPaid,
   matchIntendedToPlanSlug,
   offeringsFromInventoryRow,

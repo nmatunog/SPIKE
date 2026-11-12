@@ -145,22 +145,20 @@ describe('portable Versa verify/redeem', () => {
     expect(admin.tables.versa_entitlements).toHaveLength(0);
   });
 
-  it('paid L2 still requires a code and paymentVerified', async () => {
+  it('paid L2 still requires a code; an imported PRO code is the payment signal', async () => {
     const admin = await setup();
-    const unpaid = await redeem('PRO-SYN00001', identity(), 'spike-interns', 'L2', {
+    const missing = await redeem('', identity(), 'spike-interns', 'L2', {
       env: FLAG_ENV,
       admin,
       offeringId: 'financial-entrepreneurship',
-      paymentVerified: false,
     });
-    expect(unpaid.ok).toBe(false);
-    expect(unpaid.reason).toBe(REASONS.gate_unsatisfied);
+    expect(missing.ok).toBe(false);
 
     const paid = await redeem('PRO-SYN00001', identity(), 'spike-interns', 'L2', {
       env: FLAG_ENV,
       admin,
       offeringId: 'financial-entrepreneurship',
-      paymentVerified: true,
+      paymentVerified: false,
     });
     expect(paid.ok).toBe(true);
     expect(paid.row.level).toBe('L2');

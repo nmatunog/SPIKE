@@ -161,7 +161,7 @@ export function versaLocalDemoPlugin({ csvPath = DEFAULT_CSV } = {}) {
                 admin,
                 offeringId: body?.offeringId,
                 programRoute: body?.programRoute,
-                // Paid stays fail-closed. Never take paymentVerified from the body.
+                // Imported `pro` is paid (Nilo Nov 12). Never take paymentVerified from the body.
                 paymentVerified: false,
               },
             )

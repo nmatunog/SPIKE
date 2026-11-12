@@ -61,8 +61,9 @@ describe('locked Versa export schema', () => {
     expect(resolvePlanSlug('vip')).toBeNull();
     expect(PLAN_SLUG_MAP.free.programRoute).toBe('spike-interns');
     expect(PLAN_SLUG_MAP.pro.programRoute).toBe('spike-interns');
-    expect(isVersaProCodeImpliesPaid({})).toBe(false);
-    expect(isVersaProCodeImpliesPaid({ VERSA_PRO_CODE_IMPLIES_PAID: '1' })).toBe(true);
+    expect(isVersaProCodeImpliesPaid({})).toBe(true);
+    expect(isVersaProCodeImpliesPaid({ VERSA_PRO_CODE_IMPLIES_PAID: '0' })).toBe(false);
+    expect(isVersaProCodeImpliesPaid({ VERSA_PRO_CODE_IMPLIES_PAID: 'false' })).toBe(false);
   });
 
   it('parses the BOM free file and the non-BOM pro file', async () => {
@@ -208,7 +209,7 @@ describe('locked Versa export schema', () => {
     expect(admin.tables.versa_entitlements).toHaveLength(0);
   });
 
-  it('pro does not grant paid access with VERSA_PRO_CODE_IMPLIES_PAID off', async () => {
+  it('an imported PRO code grants paid L2 once; a second redeem is denied', async () => {
     const admin = createMemoryAdmin({
       authUser: { id: LEARNER_ID, email: LEARNER, email_confirmed_at: '2026-01-01T00:00:00.000Z' },
     });
@@ -217,16 +218,99 @@ describe('locked Versa export schema', () => {
       admin,
       csvText: (await loadFixture('versa-pro.csv')).toString('utf8'),
     });
-    const unpaid = await redeem(SYNTHETIC_CODES.pro, identity(), 'spike-interns', 'L2', {
+    const first = await redeem(SYNTHETIC_CODES.pro, identity(), 'spike-interns', 'L2', {
+      env: FLAG_ENV,
+      admin,
+      offeringId: 'financial-entrepreneurship',
+      paymentVerified: false,
+    });
+    expect(first.ok).toBe(true);
+    expect(first.row.level).toBe('L2');
+    expect(admin.tables.versa_entitlements.map((row) => row.offering_id)).toEqual([
+      'financial-entrepreneurship',
+    ]);
+    expect(admin.tables.versa_entitlements[0].program_route).toBe('spike-interns');
+    expect(admin.tables.versa_entitlements.some((row) => row.offering_id === 'financial-literacy')).toBe(false);
+    expect(admin.tables.versa_entitlements.some((row) => row.offering_id === 'fep')).toBe(false);
+
+    const second = await redeem(SYNTHETIC_CODES.pro, identity(), 'spike-interns', 'L2', {
       env: FLAG_ENV,
       admin,
       offeringId: 'financial-entrepreneurship',
     });
-    expect(unpaid.ok).toBe(false);
-    expect(unpaid.reason).toBe(REASONS.gate_unsatisfied);
-    expect(admin.tables.versa_entitlements).toHaveLength(0);
+    expect(second.ok).toBe(true);
+    expect(second.alreadyGranted).toBe(true);
 
-    const http = await readJson(
+    const other = await redeem(SYNTHETIC_CODES.pro, identity(OTHER_ID, OTHER), 'spike-interns', 'L2', {
+      env: FLAG_ENV,
+      admin,
+      offeringId: 'financial-entrepreneurship',
+    });
+    expect(other.ok).toBe(false);
+    expect(other.reason).toBe(REASONS.reused);
+  });
+
+  it('an unknown PRO-shaped code is denied', async () => {
+    const admin = createMemoryAdmin({
+      authUser: { id: LEARNER_ID, email: LEARNER, email_confirmed_at: '2026-01-01T00:00:00.000Z' },
+    });
+    await importVersaCsv({
+      env: FLAG_ENV,
+      admin,
+      csvText: (await loadFixture('versa-pro.csv')).toString('utf8'),
+    });
+    const unknown = await redeem('PRO-SYN99999', identity(), 'spike-interns', 'L2', {
+      env: FLAG_ENV,
+      admin,
+      offeringId: 'financial-entrepreneurship',
+    });
+    expect(unknown.ok).toBe(false);
+    expect(unknown.reason).toBe(REASONS.unknown);
+    expect(admin.tables.versa_entitlements).toHaveLength(0);
+  });
+
+  it('HTTP body paymentVerified has no effect; imported PRO still grants L2', async () => {
+    const admin = createMemoryAdmin({
+      authUser: { id: LEARNER_ID, email: LEARNER, email_confirmed_at: '2026-01-01T00:00:00.000Z' },
+    });
+    await importVersaCsv({
+      env: FLAG_ENV,
+      admin,
+      csvText: (await loadFixture('versa-pro.csv')).toString('utf8'),
+    });
+    const withBodyTrue = await readJson(
+      await handleVersaRedeem(
+        {
+          request: postJson('https://portal.test/api/versa/redeem', {
+            code: SYNTHETIC_CODES.pro,
+            intendedLevel: 'L2',
+            intendedCourse: 'spike-interns',
+            offeringId: 'financial-entrepreneurship',
+            paymentVerified: true,
+          }),
+          env: FLAG_ENV,
+        },
+        {
+          createServiceClient: () => admin,
+          createUserClient: () => admin,
+        },
+      ),
+    );
+    expect(withBodyTrue.status).toBe(200);
+    expect(withBodyTrue.body.ok).toBe(true);
+    expect(admin.tables.versa_entitlements.map((row) => row.offering_id)).toEqual([
+      'financial-entrepreneurship',
+    ]);
+
+    const killSwitchAdmin = createMemoryAdmin({
+      authUser: { id: LEARNER_ID, email: LEARNER, email_confirmed_at: '2026-01-01T00:00:00.000Z' },
+    });
+    await importVersaCsv({
+      env: FLAG_ENV,
+      admin: killSwitchAdmin,
+      csvText: (await loadFixture('versa-pro.csv')).toString('utf8'),
+    });
+    const bodyCannotOverrideOff = await readJson(
       await handleVersaRedeem(
         {
           request: postJson('https://portal.test/api/versa/redeem', {
@@ -237,40 +321,43 @@ describe('locked Versa export schema', () => {
             paymentVerified: true,
             VERSA_PRO_CODE_IMPLIES_PAID: '1',
           }),
-          env: FLAG_ENV,
+          env: { ...FLAG_ENV, VERSA_PRO_CODE_IMPLIES_PAID: '0' },
         },
         {
-          createServiceClient: () => admin,
-          createUserClient: () => admin,
+          createServiceClient: () => killSwitchAdmin,
+          createUserClient: () => killSwitchAdmin,
         },
       ),
     );
-    expect(http.status).toBe(403);
-    expect(http.body).toEqual(versaHttpDenyBody());
-    expect(http.body.message).toBe(GENERIC_DENY_MESSAGE);
+    expect(bodyCannotOverrideOff.status).toBe(403);
+    expect(bodyCannotOverrideOff.body).toEqual(versaHttpDenyBody());
+    expect(bodyCannotOverrideOff.body.message).toBe(GENERIC_DENY_MESSAGE);
+    expect(killSwitchAdmin.tables.versa_entitlements).toHaveLength(0);
   });
 
-  it('pro grants paid L2 only when the Nilo switch is on, never from the HTTP body', async () => {
-    const admin = createMemoryAdmin({
-      authUser: { id: LEARNER_ID, email: LEARNER, email_confirmed_at: '2026-01-01T00:00:00.000Z' },
-    });
+  it('PRO does not grant free-only offerings or RA-SPIKE', async () => {
+    const admin = createMemoryAdmin();
     await importVersaCsv({
       env: FLAG_ENV,
       admin,
       csvText: (await loadFixture('versa-pro.csv')).toString('utf8'),
     });
-    const paid = await redeem(SYNTHETIC_CODES.pro, identity(), 'spike-interns', 'L2', {
-      env: { ...FLAG_ENV, VERSA_PRO_CODE_IMPLIES_PAID: '1' },
+    const asLiteracy = await redeem(SYNTHETIC_CODES.pro, identity(), 'spike-interns', 'L1', {
+      env: FLAG_ENV,
+      admin,
+      offeringId: 'financial-literacy',
+    });
+    expect(asLiteracy.ok).toBe(false);
+    expect(asLiteracy.reason).toBe(REASONS.wrong_offering);
+
+    const asRa = await redeem(SYNTHETIC_CODES.pro2, identity(), 'ra-spike', 'L2', {
+      env: FLAG_ENV,
       admin,
       offeringId: 'financial-entrepreneurship',
-      paymentVerified: false,
     });
-    expect(paid.ok).toBe(true);
-    expect(paid.row.level).toBe('L2');
-    expect(admin.tables.versa_entitlements.map((row) => row.offering_id)).toEqual([
-      'financial-entrepreneurship',
-    ]);
-    expect(admin.tables.versa_entitlements[0].program_route).toBe('spike-interns');
+    expect(asRa.ok).toBe(false);
+    expect(asRa.reason).toBe(REASONS.wrong_program_route);
+    expect(admin.tables.versa_entitlements).toHaveLength(0);
   });
 
   it('unverified sessions cannot claim a code', async () => {

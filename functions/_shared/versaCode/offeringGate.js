@@ -4,7 +4,8 @@ import { resolveOfferingPolicy } from './offerings.js';
 /**
  * Catalog-driven access gate — the CSV match is never payment proof.
  * Free L1 / FEP: no payment check (and no code — handled in verify()).
- * Paid L2: paymentVerified from the authorized provider.
+ * Paid L2: paymentVerified from an imported `pro` row (Nilo, Nov 12)
+ * or an authorized provider. Never from the HTTP body.
  * Future coded offerings: requireCode is enforced by verify(); payment
  * follows paymentRequired on the catalog entry.
  *

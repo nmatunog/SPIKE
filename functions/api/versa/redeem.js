@@ -75,8 +75,8 @@ export async function handleVersaRedeem(ctx, deps = {}) {
       request,
       offeringId: body?.offeringId,
       programRoute: body?.programRoute,
-      // Paid stays fail-closed. Never take paymentVerified or the Nilo switch
-      // (VERSA_PRO_CODE_IMPLIES_PAID) from the request body.
+      // Nilo Nov 12: imported `pro` is paid. Never take paymentVerified or
+      // VERSA_PRO_CODE_IMPLIES_PAID from the request body.
       paymentVerified: false,
     },
   );

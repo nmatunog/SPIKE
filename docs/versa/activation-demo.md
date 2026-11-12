@@ -42,7 +42,7 @@ await redeem(code, authenticatedIdentity, intendedCourse, intendedLevel, { env, 
 - `intendedCourse`: `spike-interns` | `ra-spike` | offering id (`financial-literacy`, `fep`)
 - `intendedLevel`: `L1` | `L2`
 - Free L1 Financial Literacy and free FEP: pass an empty code
-- Paid L2: code + `paymentVerified: true` from the authorized provider
+- Paid L2: imported Versa `pro` code (Nilo Nov 12). HTTP `paymentVerified` is ignored.
 - Injected `grantor` (`EntitlementGrantor`) owns existing-access / grant. The module never writes `intern_progress`.
 
-CSV/xlsx import uses `columnMap` / `VERSA_CSV_COLUMN_MAP` (Versa schema still pending).
+CSV/xlsx import uses the locked Versa export header. Optional `columnMap` / `VERSA_CSV_COLUMN_MAP` only rename those fields.

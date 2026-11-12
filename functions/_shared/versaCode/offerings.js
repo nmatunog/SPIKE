@@ -3,7 +3,8 @@ import { DEFAULT_L1_OFFERING_ID, DEFAULT_L2_OFFERING_ID, PROGRAM_ROUTES } from '
 /**
  * Offering catalog — the portable policy layer.
  * Free L1 Financial Literacy and free FEP need no code.
- * Paid L2 requires a code plus paymentVerified from the authorized provider.
+ * Paid L2 requires a Versa `pro` code. An imported `pro` row is payment
+ * proof (Nilo, Nov 12) unless VERSA_PRO_CODE_IMPLIES_PAID is explicitly off.
  * Future offering-specific codes register here (`requiresCode: true`) without
  * changing verify/redeem control flow.
  *

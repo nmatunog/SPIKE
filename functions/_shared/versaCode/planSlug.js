@@ -56,13 +56,23 @@ export function resolvePlanSlug(slug) {
 }
 
 /**
- * Nilo's decision: a `pro` code is not payment proof unless this switch is on.
- * Default false. HTTP bodies must never set it.
+ * Nilo (Nov 12, 2026): Versa collects payment, so a server-side import of a
+ * `pro` row is the payment-confirmed signal. Default true. Explicit
+ * `0` / `false` / `off` / `no` turns it off. HTTP bodies must never set it.
  * @param {Record<string, string | undefined> | null | undefined} env
  */
 export function isVersaProCodeImpliesPaid(env) {
-  const raw = String(env?.[VERSA_PRO_CODE_IMPLIES_PAID_ENV] ?? '').trim().toLowerCase();
+  const raw = String(env?.[VERSA_PRO_CODE_IMPLIES_PAID_ENV] ?? 'true').trim().toLowerCase();
   return raw === '1' || raw === 'true' || raw === 'on' || raw === 'yes';
+}
+
+/**
+ * Payment proof for L2 is the imported `pro` inventory row, not the HTTP body.
+ * @param {{ plan_slug?: string } | null | undefined} row
+ * @param {Record<string, string | undefined> | null | undefined} env
+ */
+export function importedProRowImpliesPaid(row, env) {
+  return normalizePlanSlug(row?.plan_slug) === 'pro' && isVersaProCodeImpliesPaid(env);
 }
 
 /**
