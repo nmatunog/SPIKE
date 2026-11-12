@@ -4,7 +4,10 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { handleInternSignup } from '../../functions/api/auth/intern-signup.js';
-import { INTERN_SIGNUP_RATE_LIMITED_MESSAGE } from '../../functions/_shared/internSignupRateLimit.js';
+import {
+  INTERN_SIGNUP_RATE_LIMITED_MESSAGE,
+  INTERN_SIGNUP_RATE_MAX_DEFAULT,
+} from '../../functions/_shared/internSignupRateLimit.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -63,65 +66,148 @@ describe('SEC-1 tooling', () => {
   });
 });
 
-describe('intern signup per-IP rate limit', () => {
-  it('fails closed when intern_signup_rate_limits is missing', async () => {
-    const admin = {
-      from() {
-        return {
-          select() {
-            return this;
-          },
-          eq() {
-            return this;
-          },
-          maybeSingle: async () => ({
-            data: null,
-            error: { code: '42P01', message: 'relation intern_signup_rate_limits does not exist' },
-          }),
-        };
+function signupAdmin({
+  missingLimiter = false,
+  todayCode = 'SPIKE1',
+  store = { count: 0 },
+  max = INTERN_SIGNUP_RATE_MAX_DEFAULT,
+} = {}) {
+  const chain = (table) => {
+    const api = {
+      select() {
+        return api;
       },
-      rpc: async () => ({
-        data: null,
-        error: { code: 'PGRST202', message: 'Could not find the function' },
-      }),
-    };
-    const res = await handleInternSignup(
-      { request: postSignup(), env: {} },
-      { createServiceClient: () => admin },
-    );
-    expect(res.status).toBe(429);
-    const body = await res.json();
-    expect(body.message).toBe(INTERN_SIGNUP_RATE_LIMITED_MESSAGE);
-  });
-
-  it('returns 429 after the durable max failures', async () => {
-    const admin = {
-      from() {
-        return {
-          select() {
-            return this;
-          },
-          eq() {
-            return this;
-          },
-          maybeSingle: async () => ({
+      eq() {
+        return api;
+      },
+      order() {
+        return api;
+      },
+      limit() {
+        return api;
+      },
+      maybeSingle: async () => {
+        if (table === 'activation_codes') {
+          return {
             data: {
-              rate_key: 'ip:203.0.113.9',
-              fail_count: 8,
-              window_start: new Date().toISOString(),
+              code: todayCode,
+              expires_at: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
             },
             error: null,
-          }),
-        };
+          };
+        }
+        return { data: null, error: null };
       },
-      rpc: async () => ({ data: 9, error: null }),
+      upsert: async () => ({ error: null }),
     };
-    const res = await handleInternSignup(
-      { request: postSignup(), env: {} },
+    return api;
+  };
+
+  return {
+    store,
+    from(table) {
+      return chain(table);
+    },
+    rpc: async (name) => {
+      if (missingLimiter) {
+        return {
+          data: null,
+          error: { code: 'PGRST202', message: 'Could not find the function' },
+        };
+      }
+      if (name === 'intern_signup_rate_limit_begin_attempt') {
+        if (store.count >= max) {
+          return { data: { allowed: false, fail_count: store.count }, error: null };
+        }
+        store.count += 1;
+        return { data: { allowed: true, fail_count: store.count }, error: null };
+      }
+      if (name === 'intern_signup_rate_limit_refund_success') {
+        store.count = Math.max(store.count - 1, 0);
+        return { data: store.count, error: null };
+      }
+      return { data: null, error: { message: `unexpected rpc ${name}` } };
+    },
+    auth: {
+      admin: {
+        listUsers: async () => ({ data: { users: [] }, error: null }),
+        createUser: async () => ({ data: { user: { id: 'user-intern-1' } }, error: null }),
+      },
+    },
+  };
+}
+
+describe('intern signup per-IP rate limit', () => {
+  it('fails open when intern_signup_rate_limits / RPC is missing (does not 429)', async () => {
+    const warnings = [];
+    const original = console.error;
+    console.error = (...args) => {
+      warnings.push(args.map(String).join(' '));
+    };
+    try {
+      const missing = signupAdmin({ missingLimiter: true });
+      const legit = await handleInternSignup(
+        { request: postSignup('SPIKE1'), env: {} },
+        { createServiceClient: () => missing },
+      );
+      expect(legit.status).toBe(200);
+      expect((await legit.json()).ok).toBe(true);
+      expect(warnings.join('\n')).toMatch(/FAIL OPEN|UNAVAILABLE/i);
+
+      const invalid = await handleInternSignup(
+        { request: postSignup('NOPE99'), env: {} },
+        { createServiceClient: () => signupAdmin({ missingLimiter: true }) },
+      );
+      expect(invalid.status).toBe(400);
+      expect((await invalid.json()).message).toMatch(/Invalid activation code/i);
+    } finally {
+      console.error = original;
+    }
+  });
+
+  it('counts only failed code attempts and uses the classroom cap of 20', async () => {
+    expect(INTERN_SIGNUP_RATE_MAX_DEFAULT).toBe(20);
+    const store = { count: 0 };
+    const admin = signupAdmin({ store, todayCode: 'SPIKE1' });
+
+    const ok = await handleInternSignup(
+      { request: postSignup('SPIKE1'), env: {} },
       { createServiceClient: () => admin },
     );
-    expect(res.status).toBe(429);
-    const body = await res.json();
-    expect(body.message).toBe(INTERN_SIGNUP_RATE_LIMITED_MESSAGE);
+    expect(ok.status).toBe(200);
+    expect(store.count).toBe(0);
+
+    for (let i = 0; i < INTERN_SIGNUP_RATE_MAX_DEFAULT; i += 1) {
+      const res = await handleInternSignup(
+        { request: postSignup('NOPE99'), env: {} },
+        { createServiceClient: () => admin },
+      );
+      expect(res.status).toBe(400);
+    }
+    expect(store.count).toBe(20);
+
+    const locked = await handleInternSignup(
+      { request: postSignup('SPIKE1'), env: {} },
+      { createServiceClient: () => admin },
+    );
+    expect(locked.status).toBe(429);
+    expect((await locked.json()).message).toBe(INTERN_SIGNUP_RATE_LIMITED_MESSAGE);
+  });
+
+  it('burst race: a single RPC check-and-increment admits only the cap', async () => {
+    const store = { count: 0 };
+    const admin = signupAdmin({ store, todayCode: 'SPIKE1' });
+    const results = await Promise.all(
+      Array.from({ length: 25 }, () =>
+        handleInternSignup(
+          { request: postSignup('NOPE99'), env: {} },
+          { createServiceClient: () => admin },
+        ),
+      ),
+    );
+    const statuses = await Promise.all(results.map(async (res) => res.status));
+    expect(statuses.filter((s) => s === 400)).toHaveLength(20);
+    expect(statuses.filter((s) => s === 429)).toHaveLength(5);
+    expect(store.count).toBe(20);
   });
 });

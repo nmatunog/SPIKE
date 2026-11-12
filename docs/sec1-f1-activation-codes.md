@@ -2,7 +2,7 @@
 
 Waits for **Nilo's SEC-1 decision**. Repo SQL only. **Do not apply** to SPIKE Interns (`lzbfjbtjropoaynbcxew`) or RA-SPIKE (`yruwfdjqigxxwbqsqhho`) from this branch.
 
-Frozen parent: `sec1/f1-hardening-2` @ `ec21f13`. This tree is `sec1/f1-hardening-3`.
+Frozen parent: `sec1/f1-hardening-3` @ `023f9eb`. This tree is `sec1/f1-hardening-4`.
 
 Live (read-only check, 11 Nov 2026), both projects:
 
@@ -27,11 +27,17 @@ Prove RA copies survive `sync-ra-spike-migrations.sh` with `bash scripts/check-s
 
 Local tests: `SKIP_AUTO_SHIP=1 AUTO_SHIP=0 npm run test:sec1-f1` (PGlite), `bash scripts/check-sec1-f1-ra-spike-sync.sh`, `bash scripts/check-ship-migrations-opt-in.sh`.
 
+## Intern signup rate limit
+
+Durable per-IP limiter (`intern_signup_rate_limits`), classroom-safe default **20 failed code attempts / 10 minutes** (`INTERN_SIGNUP_RATE_MAX`). Only invalid/expired/missing daily codes consume a slot. A valid code refunds the reservation.
+
+`intern_signup_rate_limit_begin_attempt` checks and increments in one row lock **before** code validation (closes the burst race). Missing table/RPC **fails open**: log `INTERN SIGNUP RATE LIMIT UNAVAILABLE` and continue normal code validation — never 429 a legitimate signup because the limiter is absent.
+
 ## Migration ordering (SEC-1 first)
 
-Keep SEC-1 at `20260827` and `20260829`. Versa migrations must be numbered **above** `20260829` with real timestamps (`20261112xxxxxx`). Apply SEC-1 to Interns and RA-SPIKE **before** any Versa file.
+Keep the original SEC-1 pair at `20260827` and `20260829`. Versa migrations are numbered **above** `20260829` (`20261112xxxxxx`). The atomic limiter follow-up is `20261114090001` (above Versa). Apply SEC-1 to Interns and RA-SPIKE **before** any Versa file.
 
-The custom runner only applies files whose version is greater than live `max(version)`. If Versa is applied first, these SEC-1 versions are skipped forever while the runner reports success. Do not interleave the two series.
+The runner applies local files whose version is **not** in remote `schema_migrations`. Mixed 8–14 digit stamps are compared by right-padding to 14 digits. Pending files below the live max fail loudly (named in stderr) unless `ALLOW_OUT_OF_ORDER=1`. `npm run db:migrate` is a no-op without `APPLY_DB_MIGRATIONS=1`.
 
 `npm run build` / `scripts/ship-after-build.sh` never apply SQL unless `APPLY_DB_MIGRATIONS=1` **and** the branch is `main`. Prove with `bash scripts/check-ship-migrations-opt-in.sh`.
 
@@ -47,6 +53,7 @@ After a hosted apply, run the read-only probe (`bash scripts/probe-sec1-f1-grant
 | `supabase/activation_codes.sql` | Baseline schema with staff-read policy + table revokes |
 | `supabase/migrations/20260827_restrict_activation_codes_anon_read.sql` | Interns: drop public-read, staff-read, revoke anon ALL / authenticated TRUNCATE |
 | `supabase/migrations/20260829_gate_ensure_daily_activation_code.sql` | Interns: staff RPC, internal mint, fail-closed regenerate, cron reschedule |
+| `supabase/migrations/20261114090001_intern_signup_rate_limit_atomic.sql` | Interns: atomic begin/refund limiter RPCs (above Versa) |
 | `supabase/rollbacks/20260827_*.sql` | Interns safe-partial piece (policy); byte-identical to RA copy |
 | `supabase/rollbacks/20260829_*.sql` | Interns safe-partial piece (ungated fn, drop mint, cron → ensure) |
 | `supabase/rollbacks/sec1_f1_safe_partial.sql` | Interns umbrella **safe-partial** (byte-identical to RA) |

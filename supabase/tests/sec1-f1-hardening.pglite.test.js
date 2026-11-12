@@ -23,6 +23,10 @@ const MIGRATION_29 = readFileSync(
   join(ROOT, 'supabase/migrations/20260829_gate_ensure_daily_activation_code.sql'),
   'utf8',
 );
+const MIGRATION_ATOMIC = readFileSync(
+  join(ROOT, 'supabase/migrations/20261114090001_intern_signup_rate_limit_atomic.sql'),
+  'utf8',
+);
 const SAFE_PARTIAL = readFileSync(
   join(ROOT, 'supabase/rollbacks/sec1_f1_safe_partial.sql'),
   'utf8',
@@ -334,6 +338,7 @@ describe('SEC-1 / F1 activation_codes hardening (PGlite)', () => {
     if (applyMigrations) {
       await db.exec(MIGRATION_27);
       await db.exec(MIGRATION_29);
+      await db.exec(MIGRATION_ATOMIC);
     }
 
     if (seedCode) {
@@ -474,6 +479,7 @@ describe('SEC-1 / F1 activation_codes hardening (PGlite)', () => {
     await boot();
     await db.exec(MIGRATION_27);
     await db.exec(MIGRATION_29);
+    await db.exec(MIGRATION_ATOMIC);
     await asAuthenticated(STAFF_ID);
     try {
       const rpc = await db.query('select code from public.ensure_daily_activation_code()');
@@ -588,6 +594,55 @@ describe('SEC-1 / F1 activation_codes hardening (PGlite)', () => {
         `select public.intern_signup_rate_limit_record_fail('ip:test', 600000) as n`,
       );
       expect(Number(n.rows[0].n)).toBe(1);
+    } finally {
+      await db.exec('RESET ROLE');
+    }
+  });
+
+  it('begin_attempt is atomic and locks out after the configured cap', async () => {
+    await boot();
+    await db.exec('SET ROLE anon');
+    try {
+      await expect(
+        db.exec(
+          `select public.intern_signup_rate_limit_begin_attempt('ip:burst', 600000, 20)`,
+        ),
+      ).rejects.toThrow(/permission denied|must be owner|not allowed|insufficient/i);
+    } finally {
+      await db.exec('RESET ROLE');
+    }
+
+    await db.exec('SET ROLE service_role');
+    try {
+      const first = await db.query(
+        `select public.intern_signup_rate_limit_begin_attempt('ip:burst', 600000, 2) as j`,
+      );
+      const second = await db.query(
+        `select public.intern_signup_rate_limit_begin_attempt('ip:burst', 600000, 2) as j`,
+      );
+      const third = await db.query(
+        `select public.intern_signup_rate_limit_begin_attempt('ip:burst', 600000, 2) as j`,
+      );
+      const parse = (row) => (typeof row.j === 'string' ? JSON.parse(row.j) : row.j);
+      expect(parse(first.rows[0]).allowed).toBe(true);
+      expect(parse(second.rows[0]).allowed).toBe(true);
+      expect(parse(third.rows[0]).allowed).toBe(false);
+      expect(Number(parse(third.rows[0]).fail_count)).toBe(2);
+
+      const [a, b] = await Promise.all([
+        db.query(`select public.intern_signup_rate_limit_begin_attempt('ip:race', 600000, 1) as j`),
+        db.query(`select public.intern_signup_rate_limit_begin_attempt('ip:race', 600000, 1) as j`),
+      ]);
+      const allowed = [parse(a.rows[0]).allowed, parse(b.rows[0]).allowed];
+      expect(allowed.filter(Boolean)).toHaveLength(1);
+
+      await db.query(
+        `select public.intern_signup_rate_limit_begin_attempt('ip:refund', 600000, 20) as j`,
+      );
+      const refunded = await db.query(
+        `select public.intern_signup_rate_limit_refund_success('ip:refund') as n`,
+      );
+      expect(Number(refunded.rows[0].n)).toBe(0);
     } finally {
       await db.exec('RESET ROLE');
     }

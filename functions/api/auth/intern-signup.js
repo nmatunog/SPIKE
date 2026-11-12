@@ -2,9 +2,11 @@ import { validateInternActivationCode } from '../../_shared/activationCode.js';
 import { createConfirmedPortalUser } from '../../_shared/confirmedSignup.js';
 import {
   INTERN_SIGNUP_RATE_LIMITED_MESSAGE,
-  assertInternSignupRateLimit,
+  beginInternSignupAttempt,
   internSignupRateKey,
-  recordInternSignupFail,
+  internSignupRateMax,
+  isFailedActivationCode,
+  refundInternSignupAttempt,
 } from '../../_shared/internSignupRateLimit.js';
 import { createServiceClient } from '../../_shared/supabaseAdmin.js';
 import { corsPreflight, json } from '../../_shared/verifySuperuser.js';
@@ -52,17 +54,22 @@ export async function handleInternSignup(ctx, deps = {}) {
   if (!code) return json({ message: 'Daily activation code is required.' }, 400);
 
   const rateKey = internSignupRateKey(request);
-  try {
-    const limited = await assertInternSignupRateLimit({ admin, key: rateKey });
-    if (!limited.ok) {
-      return json({ message: INTERN_SIGNUP_RATE_LIMITED_MESSAGE }, 429);
-    }
-  } catch (err) {
-    return json({ message: err instanceof Error ? err.message : INTERN_SIGNUP_RATE_LIMITED_MESSAGE }, 429);
+  const maxFailures = internSignupRateMax(env);
+  let reserved = false;
+
+  const gate = await beginInternSignupAttempt({ admin, key: rateKey, maxFailures });
+  if (!gate.ok) {
+    return json({ message: INTERN_SIGNUP_RATE_LIMITED_MESSAGE }, 429);
   }
+  reserved = gate.failOpen !== true;
 
   try {
     await validateInternActivationCode(admin, code);
+
+    if (reserved) {
+      await refundInternSignupAttempt({ admin, key: rateKey });
+      reserved = false;
+    }
 
     const userId = await createConfirmedPortalUser(admin, {
       email,
@@ -98,12 +105,11 @@ export async function handleInternSignup(ctx, deps = {}) {
 
     return json({ ok: true, userId });
   } catch (err) {
-    try {
-      await recordInternSignupFail({ admin, key: rateKey });
-    } catch {
-      return json({ message: INTERN_SIGNUP_RATE_LIMITED_MESSAGE }, 429);
+    const message = err instanceof Error ? err.message : 'Signup failed.';
+    if (reserved && !isFailedActivationCode(message)) {
+      await refundInternSignupAttempt({ admin, key: rateKey });
     }
-    return json({ message: err instanceof Error ? err.message : 'Signup failed.' }, 400);
+    return json({ message }, 400);
   }
 }
 

@@ -1,8 +1,24 @@
 /** Durable intern-signup attempt limit, modeled on versa_rate_limits. */
 
 export const INTERN_SIGNUP_RATE_WINDOW_MS = 10 * 60 * 1000;
-export const INTERN_SIGNUP_RATE_MAX = 8;
+/** Classroom-safe shared-IP cap (one NAT / wifi). Config via INTERN_SIGNUP_RATE_MAX. */
+export const INTERN_SIGNUP_RATE_MAX_DEFAULT = 20;
+export const INTERN_SIGNUP_RATE_MAX_ENV = 'INTERN_SIGNUP_RATE_MAX';
 export const INTERN_SIGNUP_RATE_LIMITED_MESSAGE = 'Too many attempts. Try again later.';
+
+const FAILED_CODE_RE =
+  /invalid activation code|activation code has expired|no activation code is available/i;
+
+export function internSignupRateMax(env = {}) {
+  const raw = env?.[INTERN_SIGNUP_RATE_MAX_ENV];
+  const n = Number(raw);
+  if (Number.isFinite(n) && n > 0) return Math.floor(n);
+  return INTERN_SIGNUP_RATE_MAX_DEFAULT;
+}
+
+export function isFailedActivationCode(message) {
+  return FAILED_CODE_RE.test(String(message || ''));
+}
 
 function isMissingRelationOrRpc(error) {
   if (!error) return false;
@@ -10,6 +26,12 @@ function isMissingRelationOrRpc(error) {
     error.code === '42P01' ||
     error.code === 'PGRST202' ||
     /schema cache|does not exist|could not find the function|42P01/i.test(error.message || '')
+  );
+}
+
+function warnFailOpen(detail) {
+  console.error(
+    `INTERN SIGNUP RATE LIMIT UNAVAILABLE: ${detail}; allowing signup (fail open).`,
   );
 }
 
@@ -24,47 +46,78 @@ export function internSignupRateKey(request) {
   return `ip:${ip}`;
 }
 
+function parseBeginResult(data) {
+  let row = data;
+  if (typeof row === 'string') {
+    try {
+      row = JSON.parse(row);
+    } catch {
+      row = null;
+    }
+  }
+  if (Array.isArray(row)) row = row[0];
+  return {
+    allowed: row?.allowed !== false,
+    fail_count: Number(row?.fail_count) || 0,
+  };
+}
+
 /**
- * Fail closed when intern_signup_rate_limits is missing.
+ * Atomically check-and-increment before validating the code.
+ * Missing table/RPC fails OPEN (log a loud warning; do not 429).
  * @param {{
  *   admin: import('@supabase/supabase-js').SupabaseClient,
  *   key: string,
- *   now?: number,
  *   windowMs?: number,
  *   maxFailures?: number,
  * }} input
  */
-export async function assertInternSignupRateLimit(input) {
-  const now = input.now ?? Date.now();
+export async function beginInternSignupAttempt(input) {
   const windowMs = input.windowMs ?? INTERN_SIGNUP_RATE_WINDOW_MS;
-  const maxFailures = input.maxFailures ?? INTERN_SIGNUP_RATE_MAX;
-  const { data: row, error } = await input.admin
-    .from('intern_signup_rate_limits')
-    .select('rate_key, fail_count, window_start')
-    .eq('rate_key', input.key)
-    .maybeSingle();
-  if (error) {
-    if (isMissingRelationOrRpc(error)) {
-      return { ok: false, missingTable: true };
+  const maxFailures = input.maxFailures ?? INTERN_SIGNUP_RATE_MAX_DEFAULT;
+  const rpc = await input.admin.rpc('intern_signup_rate_limit_begin_attempt', {
+    p_rate_key: input.key,
+    p_window_ms: windowMs,
+    p_max: maxFailures,
+  });
+  if (rpc.error) {
+    if (isMissingRelationOrRpc(rpc.error)) {
+      warnFailOpen(
+        'intern_signup_rate_limits / intern_signup_rate_limit_begin_attempt missing',
+      );
+    } else {
+      warnFailOpen(rpc.error.message || 'begin_attempt failed');
     }
-    throw new Error(error.message);
+    return { ok: true, failOpen: true };
   }
-  if (!row) return { ok: true };
-  const start = new Date(row.window_start).getTime();
-  if (!Number.isFinite(start) || now - start > windowMs) return { ok: true };
-  if (Number(row.fail_count) >= maxFailures) {
-    return { ok: false };
+  const parsed = parseBeginResult(rpc.data);
+  if (!parsed.allowed) {
+    return { ok: false, fail_count: parsed.fail_count };
   }
-  return { ok: true };
+  return { ok: true, fail_count: parsed.fail_count };
 }
 
 /**
- * Atomic increment via RPC only. Missing RPC/table fails closed.
- * @param {{
- *   admin: import('@supabase/supabase-js').SupabaseClient,
- *   key: string,
- *   windowMs?: number,
- * }} input
+ * Drop a reserved slot after a successful code (successes are not counted).
+ * Missing RPC fails OPEN.
+ */
+export async function refundInternSignupAttempt(input) {
+  const rpc = await input.admin.rpc('intern_signup_rate_limit_refund_success', {
+    p_rate_key: input.key,
+  });
+  if (rpc.error) {
+    if (isMissingRelationOrRpc(rpc.error)) {
+      warnFailOpen('intern_signup_rate_limit_refund_success missing');
+      return { skipped: true };
+    }
+    warnFailOpen(rpc.error.message || 'refund_success failed');
+    return { skipped: true };
+  }
+  return { fail_count: Number(rpc.data) || 0 };
+}
+
+/**
+ * @deprecated use beginInternSignupAttempt — kept for PGlite grant checks.
  */
 export async function recordInternSignupFail(input) {
   const windowMs = input.windowMs ?? INTERN_SIGNUP_RATE_WINDOW_MS;
@@ -74,7 +127,8 @@ export async function recordInternSignupFail(input) {
   });
   if (!rpc.error) return;
   if (isMissingRelationOrRpc(rpc.error)) {
-    throw new Error('intern_signup_rate_limit_record_fail is missing; rate limit fail-closed.');
+    warnFailOpen('intern_signup_rate_limit_record_fail missing');
+    return;
   }
   throw new Error(rpc.error.message);
 }
