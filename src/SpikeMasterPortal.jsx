@@ -113,8 +113,11 @@ import { ForcePasswordChangeGate } from './components/ForcePasswordChangeGate.js
 import { DailyActivationCodeCard } from './components/dashboard/DailyActivationCodeCard.jsx';
 import { BrandLexiconDashboardCard } from './components/resources/BrandLexiconDashboardCard.jsx';
 import { FacilitatorsContentReferenceDashboardCard } from './components/resources/FacilitatorsContentReferenceDashboardCard.jsx';
-import { validateInternActivationCode } from './lib/activationCodeService.js';
-import { registerInternViaApi, isInternSignupApiUnavailable } from './lib/internSignupService.js';
+import {
+  registerInternViaApi,
+  isInternSignupApiUnavailable,
+  clientDailyActivationFallbackAllowed,
+} from './lib/internSignupService.js';
 import { registerStaffViaApi, isStaffSignupApiUnavailable } from './lib/staffSignupService.js';
 import { needsStaffBootstrap } from './lib/staffRegistrationCodeService.js';
 import {
@@ -781,38 +784,11 @@ const SpikeMasterPortal = () => {
         }
       }
 
-      await validateInternActivationCode(code);
-
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { data: { name, must_change_password: false } },
-      });
-      if (error) throw new Error(formatAuthEmailError(error));
-
-      if (data.user?.id) {
-        await supabase
-          .from('profiles')
-          .update({ name, role: 'INTERN' })
-          .eq('id', data.user.id);
-        if (data.session) {
-          const { error: progErr } = await supabase.rpc('ensure_intern_progress', {
-            p_user_id: data.user.id,
-            p_university: university || null,
-            p_squad: squad || null,
-          });
-          if (progErr) {
-            console.warn('ensure_intern_progress:', progErr.message);
-          }
-        }
+      if (!clientDailyActivationFallbackAllowed()) {
+        throw new Error(
+          'Intern signup API is not available. Client-side activation-code fallback is disabled (F1).',
+        );
       }
-
-      showToast(
-        data.session
-          ? 'Account created. You are signed in.'
-          : 'Account created. Confirm your email if required, then sign in.',
-        'success',
-      );
     },
     [usingSupabaseAuth, showToast],
   );

@@ -4,6 +4,10 @@
 # Usage:
 #   SHIP_COMMIT_MSG="feat: my change" ./scripts/ship-after-build.sh
 #   ./scripts/ship-after-build.sh
+#
+# Database migrations are opt-in and main-only:
+#   APPLY_DB_MIGRATIONS=1 ./scripts/ship-after-build.sh
+# A plain `npm run build` on any branch must never touch a linked Supabase project.
 
 set -euo pipefail
 
@@ -21,16 +25,6 @@ echo "════════════════════════�
 
 cd "$ROOT"
 
-if [[ -f "$ROOT/scripts/run-supabase-migrations.sh" ]]; then
-  echo "→ Checking SPIKE Internship Supabase migrations..."
-  bash "$ROOT/scripts/run-supabase-migrations.sh" || echo "→ internship db:migrate failed (see log); continuing ship"
-fi
-
-if [[ -f "$ROOT/scripts/run-ra-spike-migrations.sh" ]]; then
-  echo "→ Checking RA-SPIKE Supabase migrations..."
-  bash "$ROOT/scripts/run-ra-spike-migrations.sh" || echo "→ RA-SPIKE db:migrate failed (see log); continuing ship"
-fi
-
 if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   echo "→ Not a git repository; skipping ship"
   exit 0
@@ -40,6 +34,26 @@ BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 if [[ "$BRANCH" != "main" ]]; then
   echo "→ Branch is '$BRANCH' (not main); skipping auto-ship"
   exit 0
+fi
+
+if [[ "${APPLY_DB_MIGRATIONS:-}" == "1" ]]; then
+  if [[ -f "$ROOT/scripts/run-supabase-migrations.sh" ]]; then
+    echo "→ APPLY_DB_MIGRATIONS=1: Checking SPIKE Internship Supabase migrations..."
+    bash "$ROOT/scripts/run-supabase-migrations.sh" || {
+      echo "→ internship db:migrate failed; aborting ship" >&2
+      exit 1
+    }
+  fi
+
+  if [[ -f "$ROOT/scripts/run-ra-spike-migrations.sh" ]]; then
+    echo "→ APPLY_DB_MIGRATIONS=1: Checking RA-SPIKE Supabase migrations..."
+    bash "$ROOT/scripts/run-ra-spike-migrations.sh" || {
+      echo "→ RA-SPIKE db:migrate failed; aborting ship" >&2
+      exit 1
+    }
+  fi
+else
+  echo "→ Skipping DB migrations (set APPLY_DB_MIGRATIONS=1 on main to apply)"
 fi
 
 echo "→ Staging changes (excluding secrets and logs)..."
