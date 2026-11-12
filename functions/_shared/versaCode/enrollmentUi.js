@@ -1,4 +1,5 @@
 import { GENERIC_DENY_MESSAGE, REASONS } from './constants.js';
+import { entitlementAllowsAccess, versaProGraceDays } from './entitlement.js';
 
 /** Standalone activation-harness states. */
 export const ENROLLMENT_UI_STATES = Object.freeze([
@@ -49,11 +50,15 @@ export function enrollmentUiMessage(state) {
  * Entitlement for course X never unlocks course Y.
  * Match `program_route` only — offering ids are shared across programs.
  */
-export function hasProgramEntitlement(entitlements, programRoute) {
+export function hasProgramEntitlement(entitlements, programRoute, opts = {}) {
   const want = String(programRoute || '');
   if (!want) return false;
+  const now = opts.now ?? Date.now();
+  const graceDays = opts.graceDays ?? versaProGraceDays(opts.env);
   return (Array.isArray(entitlements) ? entitlements : []).some(
-    (row) => String(row?.program_route || '') === want,
+    (row) =>
+      String(row?.program_route || '') === want &&
+      entitlementAllowsAccess(row, { now, graceDays }),
   );
 }
 

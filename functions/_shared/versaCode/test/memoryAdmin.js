@@ -3,6 +3,8 @@
  * Serializes inventory consume so concurrent redeem can prove single-use.
  */
 
+import { stackedExpiryIso } from '../entitlement.js';
+
 function clone(value) {
   return value == null ? value : JSON.parse(JSON.stringify(value));
 }
@@ -19,7 +21,9 @@ function upsertEntitlementRow(tables, nextId, row) {
       String(item.program_route || '') === String(row.program_route || ''),
   );
   if (existing) {
-    Object.assign(existing, row);
+    for (const [key, value] of Object.entries(row)) {
+      if (value !== undefined) existing[key] = value;
+    }
     return clone(existing);
   }
   const inserted = { ...row };
@@ -141,7 +145,9 @@ export function createMemoryAdmin(seed = {}) {
               const keys = String(state.onConflict).split(',').map((k) => k.trim());
               const existing = tables[table].find((item) => keys.every((k) => String(item[k]) === String(row[k])));
               if (existing) {
-                Object.assign(existing, row);
+                for (const [key, value] of Object.entries(row)) {
+                  if (value !== undefined) existing[key] = value;
+                }
                 inserted.push(clone(existing));
                 continue;
               }
@@ -235,7 +241,6 @@ export function createMemoryAdmin(seed = {}) {
             level: row.level,
             offering_id: row.offering_id,
             program_route: row.program_route,
-            granted_at: new Date().toISOString(),
           });
           return { data: { ok: true, already_granted: true, row: clone(row), entitlement }, error: null };
         }
@@ -244,10 +249,19 @@ export function createMemoryAdmin(seed = {}) {
           return { data: { ok: false, reason: 'reused' }, error: null };
         }
 
+        const nowIso = args.p_now || new Date().toISOString();
+        const nowMs = new Date(nowIso).getTime();
+        const periodDays = Number.parseInt(String(args.p_period_days ?? 30), 10);
         row.status = 'redeemed';
-        row.redeemed_at = new Date().toISOString();
+        row.redeemed_at = nowIso;
         row.redeemed_by = args.p_user_id;
         row.verified_user_id = row.verified_user_id || args.p_user_id;
+        const existingEnt = tables.versa_entitlements.find(
+          (item) =>
+            String(item.user_id) === String(args.p_user_id) &&
+            String(item.offering_id) === String(row.offering_id),
+        );
+        const termLimited = String(row.plan_slug || '').toLowerCase() === 'pro';
         const entitlement = upsertEntitlementRow(tables, nextId, {
           user_id: args.p_user_id,
           inventory_id: row.id,
@@ -255,7 +269,10 @@ export function createMemoryAdmin(seed = {}) {
           level: row.level,
           offering_id: row.offering_id,
           program_route: row.program_route,
-          granted_at: new Date().toISOString(),
+          granted_at: nowIso,
+          expires_at: termLimited
+            ? stackedExpiryIso(existingEnt?.expires_at, nowMs, Number.isFinite(periodDays) ? periodDays : 30)
+            : existingEnt?.expires_at ?? null,
         });
         return { data: { ok: true, already_granted: false, row: clone(row), entitlement }, error: null };
       });

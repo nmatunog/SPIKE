@@ -1,5 +1,11 @@
 import { normalizeEmail } from './digest.js';
-import { listEntitlementsForUser, upsertEntitlement } from './inventory.js';
+import {
+  entitlementAllowsAccess,
+  stackedExpiryIso,
+  versaProGraceDays,
+  versaProPeriodDays,
+} from './entitlement.js';
+import { grantOfferingsFromRow, listEntitlementsForUser } from './inventory.js';
 import { offeringsFromInventoryRow } from './planSlug.js';
 
 /**
@@ -90,35 +96,41 @@ export function createMockVersaHandoffIdentityProvider(payload = {}) {
  *
  * @typedef {{
  *   hasExisting: (userId: string, offeringId: string, programRoute?: string) => Promise<boolean>,
- *   grant: (input: { userId: string, row: object, paymentVerified?: boolean }) => Promise<object>,
+ *   grant: (input: {
+ *     userId: string,
+ *     row: object,
+ *     paymentVerified?: boolean,
+ *     env?: Record<string, string | undefined>,
+ *     now?: number,
+ *     extend?: boolean,
+ *     skipOfferingId?: string | null,
+ *   }) => Promise<object>,
  * }} EntitlementGrantor
  */
 
 /** Portable store: versa_entitlements only. */
-export function createPortableEntitlementGrantor(admin) {
+export function createPortableEntitlementGrantor(admin, clock = {}) {
   return {
     async hasExisting(userId, offeringId, programRoute) {
       const rows = await listEntitlementsForUser(admin, userId);
+      const graceDays = versaProGraceDays(clock.env);
+      const now = clock.now ?? Date.now();
       return rows.some(
         (row) =>
           String(row.offering_id) === String(offeringId) &&
-          (!programRoute || String(row.program_route) === String(programRoute)),
+          (!programRoute || String(row.program_route) === String(programRoute)) &&
+          entitlementAllowsAccess(row, { now, graceDays }),
       );
     },
-    async grant({ userId, row }) {
-      const offerings = offeringsFromInventoryRow(row);
-      let last = null;
-      for (const offering of offerings) {
-        last = await upsertEntitlement(admin, {
-          userId,
-          inventoryId: row.id,
-          versaLeadRef: row.versa_lead_ref,
-          level: offering.level || row.level,
-          offeringId: offering.offeringId,
-          programRoute: offering.programRoute || row.program_route,
-        });
-      }
-      return last;
+    async grant({ userId, row, env, now, extend = true, skipOfferingId = null }) {
+      return grantOfferingsFromRow(admin, {
+        userId,
+        row,
+        env: env || clock.env,
+        now: now ?? clock.now ?? Date.now(),
+        extend,
+        skipOfferingId,
+      });
     },
   };
 }
@@ -177,10 +189,11 @@ export function createMockL2Grantor({ paymentVerified = false } = {}) {
         (row) =>
           String(row.userId) === String(userId) &&
           String(row.offeringId) === String(offeringId) &&
-          (!programRoute || String(row.programRoute) === String(programRoute)),
+          (!programRoute || String(row.programRoute) === String(programRoute)) &&
+          entitlementAllowsAccess(row, { now: Date.now(), graceDays: versaProGraceDays() }),
       );
     },
-    async grant({ userId, row, paymentVerified: paid }) {
+    async grant({ userId, row, paymentVerified: paid, env, now, extend = true }) {
       if (String(row.level).toUpperCase() !== 'L2') {
         throw new Error('L2 grantor cannot grant a non-L2 row.');
       }
@@ -190,16 +203,25 @@ export function createMockL2Grantor({ paymentVerified = false } = {}) {
       const offerings = offeringsFromInventoryRow(row);
       let last = null;
       for (const offering of offerings) {
+        const current = grants.find(
+          (item) =>
+            String(item.userId) === String(userId) && String(item.offeringId) === String(offering.offeringId),
+        );
+        const expiresAt = extend !== false
+          ? stackedExpiryIso(current?.expires_at, now ?? Date.now(), versaProPeriodDays(env))
+          : current?.expires_at ?? null;
         const record = {
           userId,
           offeringId: offering.offeringId,
           level: 'L2',
           programRoute: offering.programRoute || row.program_route,
           versaLeadRef: row.versa_lead_ref,
+          expires_at: expiresAt,
           role: null,
         };
-        grants.push(record);
-        last = record;
+        if (current) Object.assign(current, record);
+        else grants.push(record);
+        last = current || record;
       }
       return last;
     },

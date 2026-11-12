@@ -104,7 +104,9 @@ export function mapVersaExportStatus(inventory, status) {
 /**
  * Locked Versa export parser. Captures Code (hashed later), Plan, PlanSlug.
  * Other columns are optional raw metadata. Empty Owner/SiteName/PurchasedAt/
- * DurationDays/UnitPriceTokens are accepted. Concatenated free+pro files
+ * DurationDays/UnitPriceTokens are accepted. DurationDays/PurchasedAt/Status
+ * are **not** L2 entitlement length (server `VERSA_PRO_PERIOD_DAYS` is).
+ * Concatenated free+pro files
  * (repeated header rows) are accepted.
  *
  * @param {string} csvText

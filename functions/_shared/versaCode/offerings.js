@@ -1,4 +1,5 @@
 import { DEFAULT_L1_OFFERING_ID, DEFAULT_L2_OFFERING_ID, PROGRAM_ROUTES } from './constants.js';
+import { normalizeLevel } from './entitlement.js';
 
 /**
  * Offering catalog — the portable policy layer.
@@ -11,7 +12,7 @@ import { DEFAULT_L1_OFFERING_ID, DEFAULT_L2_OFFERING_ID, PROGRAM_ROUTES } from '
  * @typedef {{
  *   id: string,
  *   label: string,
- *   level: 'L1' | 'L2',
+ *   level: string,
  *   access: 'free' | 'paid' | 'coded',
  *   requiresCode: boolean,
  *   paymentRequired: boolean,
@@ -56,7 +57,7 @@ export function registerOffering(policy) {
   catalog[String(policy.id)] = {
     id: String(policy.id),
     label: policy.label || String(policy.id),
-    level: String(policy.level || 'L1').toUpperCase() === 'L2' ? 'L2' : 'L1',
+    level: normalizeLevel(policy.level),
     access: policy.access || (policy.paymentRequired ? 'paid' : 'coded'),
     requiresCode: policy.requiresCode !== false,
     paymentRequired: policy.paymentRequired === true,
@@ -77,7 +78,7 @@ export function getOfferingPolicy(offeringId) {
 export function resolveOfferingPolicy(offeringId, level) {
   const known = getOfferingPolicy(offeringId);
   if (known) return known;
-  const lvl = String(level || '').toUpperCase() === 'L2' ? 'L2' : 'L1';
+  const lvl = normalizeLevel(level);
   if (lvl === 'L2') {
     return {
       id: offeringId || DEFAULT_L2_OFFERING_ID,
@@ -93,10 +94,10 @@ export function resolveOfferingPolicy(offeringId, level) {
     return {
       id: offeringId,
       label: offeringId,
-      level: 'L1',
+      level: lvl,
       access: 'coded',
       requiresCode: true,
-      paymentRequired: false,
+      paymentRequired: lvl !== 'L1',
       courses: [...PROGRAM_ROUTES],
     };
   }
@@ -110,7 +111,7 @@ export function resolveOfferingPolicy(offeringId, level) {
  */
 export function resolveIntended(intendedCourse, intendedLevel, extra = {}) {
   const course = String(intendedCourse || extra.programRoute || '').trim().toLowerCase();
-  const level = String(intendedLevel || extra.level || 'L1').toUpperCase() === 'L2' ? 'L2' : 'L1';
+  const level = normalizeLevel(intendedLevel || extra.level);
   const offeringHint = String(extra.offeringId || '').trim().toLowerCase();
 
   if (course === 'spike-interns' || course === 'ra-spike') {
@@ -123,7 +124,7 @@ export function resolveIntended(intendedCourse, intendedLevel, extra = {}) {
     const programRoute = extra.programRoute || undefined;
     return {
       programRoute,
-      level: String(intendedLevel || asOffering.level).toUpperCase() === 'L2' ? 'L2' : asOffering.level,
+      level: intendedLevel ? normalizeLevel(intendedLevel) : asOffering.level,
       offeringId: asOffering.id,
     };
   }

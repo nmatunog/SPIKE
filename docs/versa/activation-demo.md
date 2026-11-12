@@ -42,7 +42,7 @@ await redeem(code, authenticatedIdentity, intendedCourse, intendedLevel, { env, 
 - `intendedCourse`: `spike-interns` | `ra-spike` | offering id (`financial-literacy`, `fep`)
 - `intendedLevel`: `L1` | `L2`
 - Free L1 Financial Literacy and free FEP: pass an empty code
-- Paid L2: imported Versa `pro` code (Nilo Nov 12). HTTP infers L2 from the plan slug if the client omits it. `paymentVerified` is ignored.
+- Paid L2: imported Versa `pro` code, **30 days per new code** (option B, Nov 12 1:57 PM) plus 7-day grace. HTTP infers L2 from the plan slug. `paymentVerified` and duration in the body are ignored.
 - Injected `grantor` (`EntitlementGrantor`) owns existing-access / grant. The module never writes `intern_progress`.
 
 CSV/xlsx import uses the locked Versa export header. Optional `columnMap` / `VERSA_CSV_COLUMN_MAP` only rename those fields.

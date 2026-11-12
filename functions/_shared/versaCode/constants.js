@@ -5,6 +5,10 @@ export const VERSA_HMAC_SECRET_ENV = 'VERSA_CODE_HMAC_SECRET';
 export const VERSA_L1_OFFERING_ENV = 'VERSA_L1_OFFERING_ID';
 /** Nilo (Nov 12, 2026): Versa collects payment, so an imported `pro` row is paid. Default on. */
 export const VERSA_PRO_CODE_IMPLIES_PAID_ENV = 'VERSA_PRO_CODE_IMPLIES_PAID';
+/** Option B (Nilo / Versa, Nov 12 1:57 PM): days added per new PRO code. Default 30. Never from CSV/body. */
+export const VERSA_PRO_PERIOD_DAYS_ENV = 'VERSA_PRO_PERIOD_DAYS';
+/** D-series grace after L2 expiry. Default 7. Lazy access check; no cron. */
+export const VERSA_PRO_GRACE_DAYS_ENV = 'VERSA_PRO_GRACE_DAYS';
 
 export const GENERIC_DENY_MESSAGE =
   "We couldn't verify this code for your account. Check the code or use the enrollment help link.";
@@ -13,7 +17,8 @@ export const GENERIC_DENY_MESSAGE =
 export const VERSA_HELP_PLACEHOLDER =
   'Access codes are issued through the SPIKE–Versa enrollment process. Delivery channel is pending the co-branded enrollment page.';
 
-export const LEVELS = Object.freeze(['L1', 'L2']);
+/** Known catalog. L3+ each need their own PlanSlug later — PRO is L2 only. */
+export const LEVELS = Object.freeze(['L1', 'L2', 'L3']);
 export const STATUSES = Object.freeze(['available', 'redeemed', 'revoked', 'expired']);
 export const PROGRAM_ROUTES = Object.freeze(['spike-interns', 'ra-spike']);
 

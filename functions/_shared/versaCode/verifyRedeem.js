@@ -98,6 +98,7 @@ function rowUnavailableReason(row, now = Date.now()) {
  *   consume?: boolean,
  *   inferFromPlanSlug?: boolean,
  *   clientSpecifiedOffering?: boolean,
+ *   now?: number,
  *   logger?: ReturnType<typeof createVersaLogger>,
  * }} input
  */
@@ -105,6 +106,7 @@ export async function verifyVersaCode(input) {
   const logger = input.logger || createVersaLogger();
   const env = input.env || {};
   const consume = input.consume !== false;
+  const now = input.now ?? Date.now();
   const submittedCode = normalizeSubmittedCode(input.submittedCode);
 
   if (!isVersaCsvCodeGateEnabled(env)) {
@@ -209,12 +211,13 @@ export async function verifyVersaCode(input) {
     }
   }
 
-  const grantor = input.grantor || createPortableEntitlementGrantor(input.admin);
+  const grantor = input.grantor || createPortableEntitlementGrantor(input.admin, { env, now });
   const bundle = offeringsFromInventoryRow(row);
+  const termLimited = bundle.some((offering) => offering.termLimited);
   const existingFlags = await Promise.all(
     bundle.map((offering) => grantor.hasExisting(identity.userId, offering.offeringId, offering.programRoute)),
   );
-  if (bundle.length && existingFlags.every(Boolean)) {
+  if (!termLimited && bundle.length && existingFlags.every(Boolean)) {
     logger.info({ event: 'versa_already_granted', inventoryId: row.id, bypass: true });
     return {
       ok: true,
@@ -225,7 +228,7 @@ export async function verifyVersaCode(input) {
     };
   }
 
-  const unavailable = rowUnavailableReason(row);
+  const unavailable = rowUnavailableReason(row, now);
   if (unavailable === REASONS.reused) {
     if (identity.userId && String(row.redeemed_by) === String(identity.userId)) {
       logger.info({ event: 'versa_already_granted', inventoryId: row.id });
@@ -260,6 +263,8 @@ export async function verifyVersaCode(input) {
     userId: identity.userId,
     grantor,
     paymentVerified,
+    env,
+    now,
   });
   if (!granted?.ok) {
     return deny(granted?.reason || REASONS.reused);

@@ -4,18 +4,22 @@ import {
   REASONS,
   VERSA_PRO_CODE_IMPLIES_PAID_ENV,
 } from './constants.js';
+import { levelRank, normalizeLevel } from './entitlement.js';
 
 /**
  * Locked Versa PlanSlug → SPIKE pathway. Unknown slugs are rejected at import.
  * `free` is Gate 1 Literacy + Gate 2 FEP Preview on the intern pathway only.
- * `pro` is Gate 3 / paid L2. Never auto-grant both intern and RA-SPIKE.
+ * `pro` is Gate 3 / paid L2 with a monthly term (new code each month). L3+
+ * needs its own slug later — do not treat "paid" as every level above L1.
+ * Never auto-grant both intern and RA-SPIKE.
  *
  * @typedef {{
  *   slug: string,
  *   plan: string,
  *   programRoute: 'spike-interns',
- *   level: 'L1' | 'L2',
+ *   level: string,
  *   paymentRequired: boolean,
+ *   term: 'period' | null,
  *   offerings: { id: string, label: string }[],
  * }} PlanSlugMapping
  */
@@ -28,6 +32,7 @@ export const PLAN_SLUG_MAP = Object.freeze({
     programRoute: 'spike-interns',
     level: 'L1',
     paymentRequired: false,
+    term: null,
     offerings: Object.freeze([
       Object.freeze({ id: DEFAULT_L1_OFFERING_ID, label: 'Gate 1 Literacy' }),
       Object.freeze({ id: 'fep', label: 'Gate 2 FEP Preview' }),
@@ -39,6 +44,7 @@ export const PLAN_SLUG_MAP = Object.freeze({
     programRoute: 'spike-interns',
     level: 'L2',
     paymentRequired: true,
+    term: 'period',
     offerings: Object.freeze([
       Object.freeze({ id: DEFAULT_L2_OFFERING_ID, label: 'Gate 3 / L2' }),
     ]),
@@ -86,8 +92,8 @@ export function importedProRowImpliesPaid(row, env) {
  */
 export function resolveExpectedFromPlanSlug(mapping, expected = {}, options = {}) {
   if (!mapping || options.inferFromPlanSlug !== true) return expected;
-  const clientLevel = String(expected.level || '').toUpperCase();
-  if (clientLevel === 'L2' && mapping.level !== 'L2') {
+  const clientLevel = normalizeLevel(expected.level);
+  if (levelRank(clientLevel) > levelRank(mapping.level)) {
     return expected;
   }
   return {
@@ -108,8 +114,8 @@ export function matchIntendedToPlanSlug(mapping, expected = {}) {
   if (programRoute && programRoute !== mapping.programRoute) {
     return { ok: false, reason: REASONS.wrong_program_route };
   }
-  const level = expected.level ? String(expected.level).toUpperCase() : '';
-  if (level && level !== mapping.level) {
+  const level = expected.level ? normalizeLevel(expected.level) : '';
+  if (level && level !== normalizeLevel(mapping.level)) {
     return { ok: false, reason: REASONS.wrong_offering };
   }
   const offeringId = expected.offeringId ? String(expected.offeringId) : '';
@@ -129,6 +135,7 @@ export function offeringsFromInventoryRow(row) {
       level: mapping.level,
       programRoute: mapping.programRoute,
       paymentRequired: mapping.paymentRequired,
+      termLimited: mapping.term === 'period',
     }));
   }
   if (!row?.offering_id) return [];
@@ -138,5 +145,6 @@ export function offeringsFromInventoryRow(row) {
     level: row.level,
     programRoute: row.program_route,
     paymentRequired: false,
+    termLimited: false,
   }];
 }

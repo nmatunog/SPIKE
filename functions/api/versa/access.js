@@ -1,5 +1,10 @@
 import { createServiceClient, createUserClient } from '../../_shared/supabaseAdmin.js';
-import { isVersaCsvCodeGateEnabled, listEntitlementsForUser } from '../../_shared/versaCode/index.js';
+import {
+  entitlementAccessState,
+  isVersaCsvCodeGateEnabled,
+  listEntitlementsForUser,
+  versaProGraceDays,
+} from '../../_shared/versaCode/index.js';
 import { corsPreflight, json } from '../../_shared/verifySuperuser.js';
 
 /** My Learning / Access — already-granted offerings. No codes. */
@@ -38,9 +43,14 @@ export async function handleVersaAccess(ctx, deps = {}) {
   }
 
   const entitlements = await listEntitlements(admin, userData.user.id);
+  const now = Date.now();
+  const graceDays = versaProGraceDays(env);
   return json({
     enabled: true,
-    entitlements,
+    entitlements: entitlements.map((row) => ({
+      ...row,
+      access: entitlementAccessState(row, { now, graceDays }),
+    })),
   });
 }
 

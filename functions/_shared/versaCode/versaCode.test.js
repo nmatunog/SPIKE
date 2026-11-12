@@ -184,6 +184,13 @@ describe('Versa CSV portable service', () => {
     );
     expect(bind).toMatch(/verified_user_id = coalesce\(verified_user_id, p_user_id\)/);
     expect(bind).not.toContain('intern_progress');
+    const monthly = await readFile(
+      new URL('../../../supabase/migrations/20260833_versa_pro_monthly_term.sql', import.meta.url),
+      'utf8',
+    );
+    expect(monthly).toMatch(/p_period_days integer default 30/);
+    expect(monthly).toContain('greatest(at, coalesce(next_expiry, at))');
+    expect(monthly).not.toContain('intern_progress');
     await expect(
       access(fileURLToPath(new URL('../../../supabase/migrations/20260829_versa_q1_hardening.sql', import.meta.url))),
     ).rejects.toMatchObject({ code: 'ENOENT' });

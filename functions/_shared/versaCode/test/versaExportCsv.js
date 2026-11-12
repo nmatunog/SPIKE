@@ -46,5 +46,7 @@ export const SYNTHETIC_CODES = Object.freeze({
   unknown: 'FREE-SYN99999',
   pro: 'PRO-SYN00001',
   pro2: 'PRO-SYN00002',
+  pro3: 'PRO-SYN00003',
+  pro4: 'PRO-SYN00004',
   unknownSlug: 'VIP-SYN00001',
 });

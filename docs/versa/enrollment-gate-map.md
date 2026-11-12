@@ -10,7 +10,7 @@ CSV/Excel headers are **locked** to the Versa export of Nov 12. `columnMap` is o
 
 | Surface | Today’s `intern_progress.program_slug` | Portable `intendedCourse` (`program_route`) | Free L1 (no code) | Paid L2 (code + payment proof) |
 |---|---|---|---|---|
-| SPIKE for Interns | `spike-internship` | `spike-interns` | Financial Literacy (`financial-literacy`); free FEP (`fep`) | `financial-entrepreneurship` — imported Versa `pro` row (Nilo Nov 12); HTTP `paymentVerified` ignored |
+| SPIKE for Interns | `spike-internship` | `spike-interns` | Financial Literacy (`financial-literacy`); free FEP (`fep`) | `financial-entrepreneurship` — new PRO code each month, 30 days + 7-day grace (Nilo/Versa Nov 12 1:57 PM); HTTP cannot set duration |
 | RA-SPIKE | `ra-spike` | `ra-spike` | Same offering ids, **separate entitlement** keyed by course | Same L2 rule, **separate entitlement** |
 
 Interns and RA-SPIKE use **different databases**. Do not mix `user_id` or entitlements across projects.
@@ -86,7 +86,7 @@ Injected **entitlement adapter** (`EntitlementGrantor`) decides existing access 
 Rules (offering catalog, not hardcoded host flows):
 
 - Free L1 **Financial Literacy** and free **FEP** → no code required.
-- Approved paid L2 → imported Versa `pro` code (Nilo Nov 12). HTTP `paymentVerified` is ignored.
+- Approved paid L2 → new Versa `pro` code each month (30 days + 7-day grace). HTTP `paymentVerified` and duration are ignored.
 - Future offering-specific codes register on the catalog (`requiresCode: true`) and flow through the same verify/redeem path.
 - Course/level mismatch → deny. Program X never grants program Y.
 

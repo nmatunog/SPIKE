@@ -44,6 +44,7 @@ export async function verify(code, authenticatedIdentity, intendedCourse, intend
     consume: false,
     inferFromPlanSlug: options.inferFromPlanSlug === true,
     clientSpecifiedOffering: options.clientSpecifiedOffering === true,
+    now: options.now,
     ...asIdentityInput(authenticatedIdentity),
   });
 }
@@ -68,6 +69,7 @@ export async function redeem(code, authenticatedIdentity, intendedCourse, intend
     consume: true,
     inferFromPlanSlug: options.inferFromPlanSlug === true,
     clientSpecifiedOffering: options.clientSpecifiedOffering === true,
+    now: options.now,
     ...asIdentityInput(authenticatedIdentity),
   });
 }

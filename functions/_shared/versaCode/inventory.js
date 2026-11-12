@@ -4,6 +4,12 @@
  * Portable grant = versa_entitlements. No intern role / intern_progress.
  */
 
+import {
+  stackedExpiryIso,
+  versaProPeriodDays,
+} from './entitlement.js';
+import { offeringsFromInventoryRow } from './planSlug.js';
+
 /** Fallback consume must return plan_slug so a free row grants Literacy + FEP. */
 const CONSUME_ROW_COLUMNS =
   'id, versa_lead_ref, verified_email, verified_user_id, level, offering_id, status, program_route, redeemed_by, redeemed_at, plan, plan_slug';
@@ -26,15 +32,32 @@ export async function findInventoryByDigest(admin, digest) {
  * same JS fallback transaction (rollback consume if grant throws).
  * @param {import('@supabase/supabase-js').SupabaseClient} admin
  */
-export async function consumeAndGrant(admin, { id, userId, grantor = null, paymentVerified = false }) {
+export async function consumeAndGrant(admin, {
+  id,
+  userId,
+  grantor = null,
+  paymentVerified = false,
+  env = {},
+  now = Date.now(),
+}) {
   const { data, error } = await admin.rpc('redeem_versa_code_and_grant', {
     p_id: id,
     p_user_id: userId,
+    p_period_days: versaProPeriodDays(env),
+    p_now: new Date(now).toISOString(),
   });
   if (!error) {
     const result = data ?? { ok: false, reason: 'reused' };
     if (result.ok && grantor) {
-      await grantor.grant({ userId, row: result.row, paymentVerified });
+      await grantor.grant({
+        userId,
+        row: result.row,
+        paymentVerified,
+        env,
+        now,
+        extend: result.already_granted !== true,
+        skipOfferingId: result.row?.offering_id,
+      });
     }
     return result;
   }
@@ -44,10 +67,10 @@ export async function consumeAndGrant(admin, { id, userId, grantor = null, payme
     /could not find the function|schema cache|does not exist/i.test(error.message || '');
   if (!missingRpc) throw new Error(error.message);
 
-  return consumeAndGrantFallback(admin, { id, userId, grantor, paymentVerified });
+  return consumeAndGrantFallback(admin, { id, userId, grantor, paymentVerified, env, now });
 }
 
-async function consumeAndGrantFallback(admin, { id, userId, grantor, paymentVerified }) {
+async function consumeAndGrantFallback(admin, { id, userId, grantor, paymentVerified, env, now }) {
   const { data: existing } = await admin
     .from('versa_code_inventory')
     .select(CONSUME_ROW_COLUMNS)
@@ -55,15 +78,17 @@ async function consumeAndGrantFallback(admin, { id, userId, grantor, paymentVeri
     .maybeSingle();
 
   if (existing?.status === 'redeemed' && String(existing.redeemed_by) === String(userId)) {
-    const entitlement = await upsertEntitlement(admin, {
-      userId,
-      inventoryId: existing.id,
-      versaLeadRef: existing.versa_lead_ref,
-      level: existing.level,
-      offeringId: existing.offering_id,
-      programRoute: existing.program_route,
-    });
-    if (grantor) await grantor.grant({ userId, row: existing, paymentVerified });
+    if (grantor) {
+      await grantor.grant({
+        userId,
+        row: existing,
+        paymentVerified,
+        env,
+        now,
+        extend: false,
+      });
+    }
+    const entitlement = await findEntitlement(admin, userId, existing.offering_id);
     return { ok: true, already_granted: true, row: existing, entitlement };
   }
 
@@ -83,15 +108,24 @@ async function consumeAndGrantFallback(admin, { id, userId, grantor, paymentVeri
   if (!updated) return { ok: false, reason: 'reused' };
 
   try {
-    const entitlement = await upsertEntitlement(admin, {
+    let entitlement = null;
+    if (grantor) {
+      entitlement = await grantor.grant({
+        userId,
+        row: updated,
+        paymentVerified,
+        env,
+        now,
+        extend: true,
+      });
+    }
+    entitlement = entitlement || await grantOfferingsFromRow(admin, {
       userId,
-      inventoryId: updated.id,
-      versaLeadRef: updated.versa_lead_ref,
-      level: updated.level,
-      offeringId: updated.offering_id,
-      programRoute: updated.program_route,
+      row: updated,
+      env,
+      now,
+      extend: true,
     });
-    if (grantor) await grantor.grant({ userId, row: updated, paymentVerified });
     return { ok: true, already_granted: false, row: updated, entitlement };
   } catch (grantErr) {
     await admin
@@ -146,7 +180,61 @@ export async function recordAttempt(admin, row) {
 }
 
 /** @param {import('@supabase/supabase-js').SupabaseClient} admin */
+export async function findEntitlement(admin, userId, offeringId) {
+  const { data, error } = await admin
+    .from('versa_entitlements')
+    .select('id, user_id, offering_id, level, versa_lead_ref, program_route, granted_at, expires_at, inventory_id')
+    .eq('user_id', userId)
+    .eq('offering_id', offeringId)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  return data ?? null;
+}
+
+/**
+ * Write portable entitlements. Term-limited (PRO) rows stack
+ * max(now, current_expiry) + period when extend is true.
+ */
+export async function grantOfferingsFromRow(admin, {
+  userId,
+  row,
+  env = {},
+  now = Date.now(),
+  extend = true,
+  skipOfferingId = null,
+}) {
+  const offerings = offeringsFromInventoryRow(row);
+  let last = null;
+  for (const offering of offerings) {
+    if (skipOfferingId && offering.offeringId === skipOfferingId) continue;
+    last = await upsertEntitlement(admin, {
+      userId,
+      inventoryId: row.id,
+      versaLeadRef: row.versa_lead_ref,
+      level: offering.level || row.level,
+      offeringId: offering.offeringId,
+      programRoute: offering.programRoute || row.program_route,
+      env,
+      now,
+      extend,
+      termLimited: offering.termLimited === true,
+    });
+  }
+  return last;
+}
+
+/** @param {import('@supabase/supabase-js').SupabaseClient} admin */
 export async function upsertEntitlement(admin, row) {
+  const existing = await findEntitlement(admin, row.userId, row.offeringId);
+  let expiresAt = null;
+  if (row.termLimited) {
+    if (row.extend === false) {
+      expiresAt = existing?.expires_at ?? null;
+    } else {
+      expiresAt = stackedExpiryIso(existing?.expires_at, row.now ?? Date.now(), versaProPeriodDays(row.env));
+    }
+  }
+
   const { data, error } = await admin
     .from('versa_entitlements')
     .upsert(
@@ -157,11 +245,12 @@ export async function upsertEntitlement(admin, row) {
         level: row.level,
         offering_id: row.offeringId,
         program_route: row.programRoute,
-        granted_at: row.grantedAt ?? new Date().toISOString(),
+        granted_at: row.grantedAt ?? new Date(row.now ?? Date.now()).toISOString(),
+        expires_at: expiresAt,
       },
       { onConflict: 'user_id,offering_id' },
     )
-    .select('id, user_id, offering_id, level, versa_lead_ref, program_route, granted_at')
+    .select('id, user_id, offering_id, level, versa_lead_ref, program_route, granted_at, expires_at')
     .maybeSingle();
   if (error) throw new Error(error.message);
   return data;
@@ -171,7 +260,7 @@ export async function upsertEntitlement(admin, row) {
 export async function listEntitlementsForUser(admin, userId) {
   const { data, error } = await admin
     .from('versa_entitlements')
-    .select('offering_id, level, versa_lead_ref, program_route, granted_at')
+    .select('offering_id, level, versa_lead_ref, program_route, granted_at, expires_at')
     .eq('user_id', userId)
     .order('granted_at', { ascending: false });
   if (error) throw new Error(error.message);
