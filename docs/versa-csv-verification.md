@@ -4,7 +4,7 @@ Disabled-by-default **independent** module (`functions/_shared/versaCode/*`). It
 
 Repo SQL only. Synthetic data only. Do not enable in production from this PR.
 
-F1 intern `activation_codes` hardening lives on `sec1/f1-hardening-3` (`20260827`, `20260829`). **Apply SEC-1 first.** Versa files on this branch are `20261112080001`–`20261112080005` so they sort above `20260829`. The runner only applies versions greater than live `max(version)`.
+F1 intern `activation_codes` hardening lives on `sec1/f1-hardening-4` (`20260827`, `20260829`). **Apply SEC-1 first.** Versa files on this branch are `20261112080001`–`20261112080005` so they sort above `20260829`. The runner applies local files whose version is **not** in remote `schema_migrations` (numeric, right-padded to 14 digits). Pending files below the live max fail loudly unless `ALLOW_OUT_OF_ORDER=1`.
 
 `npm run build` never applies SQL unless `APPLY_DB_MIGRATIONS=1` on `main`.
 
@@ -106,7 +106,12 @@ Mocks: `createMockL1Grantor` (never sets intern role) and `createMockL2Grantor` 
 
 ## HTTP denies
 
-Every deny reason maps to one 403 + `GENERIC_DENY_MESSAGE`, except a missing atomic redeem RPC in production, which is generic 503. Detailed reasons stay in redacted server logs. The JS consume fallback is test-only (`VERSA_ALLOW_JS_CONSUME_FALLBACK`).
+Leave the 503-vs-403 split as implemented. Do not collapse them.
+
+- **403** + `GENERIC_DENY_MESSAGE` — every verifier deny (unknown, reused, wrong identity, gate, rate-limit, …). One body so the HTTP status is not an existence oracle.
+- **503** + the same generic body — the atomic `redeem_versa_code_and_grant` RPC is missing in production. This is an outage of the consume path, not a verdict on the code.
+
+Detailed reasons stay in redacted server logs. The JS consume fallback is test-only (`VERSA_ALLOW_JS_CONSUME_FALLBACK`) and must not run in production to turn a 503 into a 200.
 
 ## Rate limit
 
