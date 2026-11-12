@@ -59,7 +59,7 @@ unset IFS
 
 for file in "${files[@]}"; do
   base="$(basename "$file")"
-  if [[ ! "$base" =~ ^[0-9]{8}_[a-zA-Z0-9_]+\.sql$ ]]; then
+  if [[ ! "$base" =~ ^[0-9]{8,14}_[a-zA-Z0-9_]+\.sql$ ]]; then
     continue
   fi
   version="${base%%_*}"

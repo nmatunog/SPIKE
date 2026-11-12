@@ -397,7 +397,7 @@ describe('Versa PRO monthly term (option B, new code each month)', () => {
     });
     await importVersaCsv({ env: FLAG_ENV, admin, csvText: PRO_CSV });
     await redeem(SYNTHETIC_CODES.pro, identity(), 'spike-interns', 'L2', {
-      env: { ...FLAG_ENV, VERSA_PRO_PERIOD_DAYS: '30' },
+      env: { ...FLAG_ENV, VERSA_PRO_PERIOD_DAYS: '30', VERSA_ALLOW_JS_CONSUME_FALLBACK: '1' },
       admin,
       offeringId: L2,
       now: T0,

@@ -9,6 +9,8 @@ export const VERSA_PRO_CODE_IMPLIES_PAID_ENV = 'VERSA_PRO_CODE_IMPLIES_PAID';
 export const VERSA_PRO_PERIOD_DAYS_ENV = 'VERSA_PRO_PERIOD_DAYS';
 /** D-series grace after L2 expiry. Default 7. Lazy access check; no cron. */
 export const VERSA_PRO_GRACE_DAYS_ENV = 'VERSA_PRO_GRACE_DAYS';
+/** Test-only: allow the JS consume fallback when the atomic RPC is missing. Production stays 503. */
+export const VERSA_ALLOW_JS_CONSUME_FALLBACK_ENV = 'VERSA_ALLOW_JS_CONSUME_FALLBACK';
 
 export const GENERIC_DENY_MESSAGE =
   "We couldn't verify this code for your account. Check the code or use the enrollment help link.";
@@ -43,6 +45,7 @@ export const REASONS = Object.freeze({
   wrong_program_route: 'wrong_program_route',
   unverified_identity: 'unverified_identity',
   code_not_required: 'code_not_required',
+  unavailable: 'unavailable',
 });
 
 /** Locked Versa export header (UTF-8 BOM on the first file is stripped). */

@@ -171,7 +171,7 @@ describe('Versa CSV portable service', () => {
 
   it('migrations never create an intern-granting redeem RPC', async () => {
     const portable = await readFile(
-      new URL('../../../supabase/migrations/20260830_versa_portable_service.sql', import.meta.url),
+      new URL('../../../supabase/migrations/20261112080002_versa_portable_service.sql', import.meta.url),
       'utf8',
     );
     expect(portable).not.toMatch(
@@ -179,13 +179,13 @@ describe('Versa CSV portable service', () => {
     );
     expect(portable).not.toContain('intern_progress');
     const bind = await readFile(
-      new URL('../../../supabase/migrations/20260832_versa_bind_verified_user.sql', import.meta.url),
+      new URL('../../../supabase/migrations/20261112080004_versa_bind_verified_user.sql', import.meta.url),
       'utf8',
     );
     expect(bind).toMatch(/verified_user_id = coalesce\(verified_user_id, p_user_id\)/);
     expect(bind).not.toContain('intern_progress');
     const monthly = await readFile(
-      new URL('../../../supabase/migrations/20260833_versa_pro_monthly_term.sql', import.meta.url),
+      new URL('../../../supabase/migrations/20261112080005_versa_pro_monthly_term.sql', import.meta.url),
       'utf8',
     );
     expect(monthly).toMatch(/p_period_days integer default 30/);
@@ -200,6 +200,20 @@ describe('Versa CSV portable service', () => {
     expect(monthly).not.toContain('intern_progress');
     await expect(
       access(fileURLToPath(new URL('../../../supabase/migrations/20260829_versa_q1_hardening.sql', import.meta.url))),
+    ).rejects.toMatchObject({ code: 'ENOENT' });
+    const names = [
+      '20261112080001_versa_csv_code_inventory.sql',
+      '20261112080002_versa_portable_service.sql',
+      '20261112080003_versa_csv_export_schema.sql',
+      '20261112080004_versa_bind_verified_user.sql',
+      '20261112080005_versa_pro_monthly_term.sql',
+    ];
+    for (const name of names) {
+      expect(name.slice(0, 8) > '20260829').toBe(true);
+      await access(fileURLToPath(new URL(`../../../supabase/migrations/${name}`, import.meta.url)));
+    }
+    await expect(
+      access(fileURLToPath(new URL('../../../supabase/migrations/20260828_versa_csv_code_inventory.sql', import.meta.url))),
     ).rejects.toMatchObject({ code: 'ENOENT' });
   });
 
@@ -409,28 +423,17 @@ describe('Versa CSV portable service', () => {
     expect(result.reason).toBe(REASONS.valid);
   });
 
-  it('L2 mock grantor requires paymentVerified when the Nilo switch is off', async () => {
+  it('L2 is denied when the Nilo switch is off; verifyVersaCode has no paymentVerified input', async () => {
     const admin = createMemoryAdmin();
     await importVersaCsv({ env: FLAG_ENV, admin, csvText: SYNTHETIC_CSV });
     const off = { ...FLAG_ENV, VERSA_PRO_CODE_IMPLIES_PAID: '0' };
+    const src = await readFile(new URL('./verifyRedeem.js', import.meta.url), 'utf8');
+    const serviceSrc = await readFile(new URL('./service.js', import.meta.url), 'utf8');
+    const redeemSrc = await readFile(new URL('../../api/versa/redeem.js', import.meta.url), 'utf8');
+    expect(src).not.toMatch(/input\.paymentVerified/);
+    expect(serviceSrc).not.toMatch(/paymentVerified/);
+    expect(redeemSrc).not.toMatch(/paymentVerified/);
     const unpaid = await verifyVersaCode({
-      env: off,
-      admin,
-      submittedCode: CODES.wrongLevel,
-      identityProvider: createSessionIdentityProvider({
-        userId: LEARNER_ID,
-        email: LEARNER,
-        emailConfirmed: true,
-      }),
-      grantor: createMockL2Grantor({ paymentVerified: false }),
-      expected: { level: 'L2' },
-      paymentVerified: false,
-      consume: true,
-    });
-    expect(unpaid.ok).toBe(false);
-    expect(unpaid.reason).toBe(REASONS.gate_unsatisfied);
-
-    const paid = await verifyVersaCode({
       env: off,
       admin,
       submittedCode: CODES.wrongLevel,
@@ -444,8 +447,8 @@ describe('Versa CSV portable service', () => {
       paymentVerified: true,
       consume: true,
     });
-    expect(paid.ok).toBe(true);
-    expect(paid.row.level).toBe('L2');
+    expect(unpaid.ok).toBe(false);
+    expect(unpaid.reason).toBe(REASONS.gate_unsatisfied);
   });
 
   it('HTTP redeem ignores body.paymentVerified; imported PRO still grants L2', async () => {
@@ -538,6 +541,58 @@ describe('Versa CSV portable service', () => {
     const src = await readFile(new URL('./rateLimit.js', import.meta.url), 'utf8');
     expect(src).not.toMatch(/fail_count:\s*Number\(row\.fail_count\)\s*\+\s*1/);
     expect(src).not.toMatch(/from\('versa_rate_limits'\)\s*\.upsert/);
+  });
+
+  it('consumeAndGrant fails closed with generic 503 when the atomic RPC is missing', async () => {
+    const admin = createMemoryAdmin({
+      missingRedeemRpc: true,
+      authUser: verifiedAuthUser(),
+    });
+    await importVersaCsv({ env: FLAG_ENV, admin, csvText: SYNTHETIC_CSV });
+    const result = await verifyVersaCode({
+      env: FLAG_ENV,
+      admin,
+      submittedCode: CODES.valid,
+      identityProvider: createSessionIdentityProvider({
+        userId: LEARNER_ID,
+        email: LEARNER,
+        emailConfirmed: true,
+      }),
+      expected: { level: 'L1', programRoute: 'spike-interns' },
+      consume: true,
+    });
+    expect(result.ok).toBe(false);
+    expect(result.reason).toBe(REASONS.unavailable);
+    expect(result.message).toBe(GENERIC_DENY_MESSAGE);
+    const digest = await digestCode(HMAC, CODES.valid);
+    expect(admin.tables.versa_code_inventory.find((r) => r.code_digest === digest).status).toBe('available');
+
+    const http = await readJson(await redeem(admin, { code: CODES.valid, programRoute: 'spike-interns' }));
+    expect(http.status).toBe(503);
+    expect(http.body.message).toBe(GENERIC_DENY_MESSAGE);
+  });
+
+  it('JS consume fallback runs only with VERSA_ALLOW_JS_CONSUME_FALLBACK', async () => {
+    const admin = createMemoryAdmin({
+      missingRedeemRpc: true,
+      authUser: verifiedAuthUser(),
+    });
+    await importVersaCsv({ env: FLAG_ENV, admin, csvText: SYNTHETIC_CSV });
+    const result = await verifyVersaCode({
+      env: { ...FLAG_ENV, VERSA_ALLOW_JS_CONSUME_FALLBACK: '1' },
+      admin,
+      submittedCode: CODES.valid,
+      identityProvider: createSessionIdentityProvider({
+        userId: LEARNER_ID,
+        email: LEARNER,
+        emailConfirmed: true,
+      }),
+      expected: { level: 'L1', programRoute: 'spike-interns' },
+      consume: true,
+    });
+    expect(result.ok).toBe(true);
+    const digest = await digestCode(HMAC, CODES.valid);
+    expect(admin.tables.versa_code_inventory.find((r) => r.code_digest === digest).status).toBe('redeemed');
   });
 
   it('concurrency: only one redeem consumes an available row', async () => {

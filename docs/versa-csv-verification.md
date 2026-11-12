@@ -4,7 +4,11 @@ Disabled-by-default **independent** module (`functions/_shared/versaCode/*`). It
 
 Repo SQL only. Synthetic data only. Do not enable in production from this PR.
 
-F1 intern `activation_codes` hardening lives on `sec1/f1-activation-codes`, not this branch. This branch stays portal-neutral against `main`.
+F1 intern `activation_codes` hardening lives on `sec1/f1-hardening-3` (`20260827`, `20260829`). **Apply SEC-1 first.** Versa files on this branch are `20261112080001`–`20261112080005` so they sort above `20260829`. The runner only applies versions greater than live `max(version)`.
+
+`npm run build` never applies SQL unless `APPLY_DB_MIGRATIONS=1` on `main`.
+
+F1 intern `activation_codes` hardening is a separate branch. This tree stays portal-neutral against `main`.
 
 ## Owner direction this branch follows
 
@@ -102,7 +106,7 @@ Mocks: `createMockL1Grantor` (never sets intern role) and `createMockL2Grantor` 
 
 ## HTTP denies
 
-Every deny reason maps to one 403 + `GENERIC_DENY_MESSAGE`. Detailed reasons stay in redacted server logs.
+Every deny reason maps to one 403 + `GENERIC_DENY_MESSAGE`, except a missing atomic redeem RPC in production, which is generic 503. Detailed reasons stay in redacted server logs. The JS consume fallback is test-only (`VERSA_ALLOW_JS_CONSUME_FALLBACK`).
 
 ## Rate limit
 
@@ -114,7 +118,7 @@ Durable `versa_rate_limits`, keyed by `user:<id>` or `ip:<addr>`. Increment is t
 
 ## Synthetic matrix (`npm run test:versa-code`)
 
-Locked export fixtures, slug mapping, first-claimer redemption, RPC-less fallback Literacy + FEP, imported `pro` grants paid L2 (30-day term, 7-day grace, stacked new codes), unknown PRO-shaped codes denied, HTTP `paymentVerified` / duration ignored, and `verified_user_id` bound atomically at consume.
+Locked export fixtures, slug mapping, first-claimer redemption, imported `pro` grants paid L2 (30-day term, 7-day grace, stacked new codes), unknown PRO-shaped codes denied, HTTP payment/duration ignored, missing RPC fails closed (503), JS fallback test-flag only, and `verified_user_id` bound atomically at consume.
 
 Plus HMAC 32+, missing rate-limit table/RPC fail-closed, PGlite single-use and atomic increment.
 

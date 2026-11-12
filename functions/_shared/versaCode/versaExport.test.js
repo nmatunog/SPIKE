@@ -224,7 +224,7 @@ describe('locked Versa export schema', () => {
       csvText: (await loadFixture('versa-free.csv')).toString('utf8'),
     });
     const first = await redeem(SYNTHETIC_CODES.free, identity(), 'spike-interns', 'L1', {
-      env: FLAG_ENV,
+      env: { ...FLAG_ENV, VERSA_ALLOW_JS_CONSUME_FALLBACK: '1' },
       admin,
     });
     expect(first.ok).toBe(true);

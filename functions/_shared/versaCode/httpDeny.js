@@ -1,8 +1,9 @@
-import { GENERIC_DENY_MESSAGE } from './constants.js';
+import { GENERIC_DENY_MESSAGE, REASONS } from './constants.js';
 import { createVersaLogger } from './log.js';
 
 /** Single HTTP deny for every verifier reason — no existence oracle. */
 export const VERSA_HTTP_DENY_STATUS = 403;
+export const VERSA_HTTP_UNAVAILABLE_STATUS = 503;
 
 export function versaHttpDenyBody() {
   return { message: GENERIC_DENY_MESSAGE };
@@ -20,7 +21,7 @@ export function versaHttpDeny(result = {}, extras = {}) {
     reason: result.reason || 'denied',
   });
   return {
-    status: VERSA_HTTP_DENY_STATUS,
+    status: result.reason === REASONS.unavailable ? VERSA_HTTP_UNAVAILABLE_STATUS : VERSA_HTTP_DENY_STATUS,
     body: { ...versaHttpDenyBody(), ...extras },
   };
 }

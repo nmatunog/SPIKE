@@ -82,8 +82,7 @@ export async function handleVersaRedeem(ctx, deps = {}) {
       inferFromPlanSlug: true,
       clientSpecifiedOffering,
       // Option B: period/grace from server env. Never DurationDays, expiresAt,
-      // periodDays, or paymentVerified from the request body.
-      paymentVerified: false,
+      // periodDays, or a payment flag from the request body.
     },
   );
 

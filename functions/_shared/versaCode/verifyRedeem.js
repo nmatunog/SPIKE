@@ -93,7 +93,6 @@ function rowUnavailableReason(row, now = Date.now()) {
  *   identityProvider?: import('./adapters.js').IdentityProvider,
  *   grantor?: import('./adapters.js').EntitlementGrantor,
  *   expected?: { level?: string, offeringId?: string | null, programRoute?: string },
- *   paymentVerified?: boolean,
  *   prerequisiteOk?: boolean,
  *   consume?: boolean,
  *   inferFromPlanSlug?: boolean,
@@ -249,8 +248,8 @@ export async function verifyVersaCode(input) {
   }
   if (unavailable) return deny(unavailable);
 
-  // Imported `pro` row is the payment signal (Nilo, Nov 12). HTTP body is ignored.
-  const paymentVerified = importedProRowImpliesPaid(row, env) || input.paymentVerified === true;
+  // Imported `pro` row is the payment signal (Nilo, Nov 12). No host input.
+  const paymentVerified = importedProRowImpliesPaid(row, env);
   const gate = evaluateExistingOfferingGate({
     level: row.level,
     offeringId: row.offering_id,
@@ -267,7 +266,6 @@ export async function verifyVersaCode(input) {
     id: row.id,
     userId: identity.userId,
     grantor,
-    paymentVerified,
     env,
     now,
   });

@@ -5,10 +5,19 @@
  */
 
 import {
+  REASONS,
+  VERSA_ALLOW_JS_CONSUME_FALLBACK_ENV,
+} from './constants.js';
+import {
   stackedExpiryIso,
   versaProPeriodDays,
 } from './entitlement.js';
-import { offeringsFromInventoryRow } from './planSlug.js';
+import { importedProRowImpliesPaid, offeringsFromInventoryRow } from './planSlug.js';
+
+function jsConsumeFallbackAllowed(env) {
+  const raw = String(env?.[VERSA_ALLOW_JS_CONSUME_FALLBACK_ENV] ?? '').trim().toLowerCase();
+  return raw === '1' || raw === 'true' || raw === 'on' || raw === 'yes';
+}
 
 /** Fallback consume must return plan_slug so a free row grants Literacy + FEP. */
 const CONSUME_ROW_COLUMNS =
@@ -36,7 +45,6 @@ export async function consumeAndGrant(admin, {
   id,
   userId,
   grantor = null,
-  paymentVerified = false,
   env = {},
   now = Date.now(),
 }) {
@@ -52,7 +60,7 @@ export async function consumeAndGrant(admin, {
       await grantor.grant({
         userId,
         row: result.row,
-        paymentVerified,
+        paymentVerified: importedProRowImpliesPaid(result.row, env),
         env,
         now,
         extend: result.already_granted !== true,
@@ -67,10 +75,14 @@ export async function consumeAndGrant(admin, {
     /could not find the function|schema cache|does not exist/i.test(error.message || '');
   if (!missingRpc) throw new Error(error.message);
 
-  return consumeAndGrantFallback(admin, { id, userId, grantor, paymentVerified, env, now });
+  if (!jsConsumeFallbackAllowed(env)) {
+    return { ok: false, reason: REASONS.unavailable };
+  }
+
+  return consumeAndGrantFallback(admin, { id, userId, grantor, env, now });
 }
 
-async function consumeAndGrantFallback(admin, { id, userId, grantor, paymentVerified, env, now }) {
+async function consumeAndGrantFallback(admin, { id, userId, grantor, env, now }) {
   const { data: existing } = await admin
     .from('versa_code_inventory')
     .select(CONSUME_ROW_COLUMNS)
@@ -86,7 +98,7 @@ async function consumeAndGrantFallback(admin, { id, userId, grantor, paymentVeri
         await grantor.grant({
           userId,
           row: existing,
-          paymentVerified,
+          paymentVerified: importedProRowImpliesPaid(existing, env),
           env,
           now,
           extend: false,
@@ -126,7 +138,7 @@ async function consumeAndGrantFallback(admin, { id, userId, grantor, paymentVeri
       entitlement = await grantor.grant({
         userId,
         row: updated,
-        paymentVerified,
+        paymentVerified: importedProRowImpliesPaid(updated, env),
         env,
         now,
         extend: true,
