@@ -7,6 +7,7 @@ import { handleInternSignup } from '../../functions/api/auth/intern-signup.js';
 import {
   INTERN_SIGNUP_RATE_LIMITED_MESSAGE,
   INTERN_SIGNUP_RATE_MAX_DEFAULT,
+  INTERN_SIGNUP_UNAVAILABLE_MESSAGE,
 } from '../../functions/_shared/internSignupRateLimit.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '../..');
@@ -56,6 +57,15 @@ describe('SEC-1 tooling', () => {
     expect(printed).toMatch(/has_table_privilege/);
   });
 
+  it('pending-set: full SEC-1 then Versa applies; 20261114090001 then Versa fails loudly', () => {
+    const out = execFileSync('bash', [join(ROOT, 'scripts/check-pending-migrations-sec1.sh')], {
+      encoding: 'utf8',
+    });
+    expect(out).toMatch(/OK/);
+    expect(out).toMatch(/full SEC-1 then Versa applies/);
+    expect(out).toMatch(/20261114090001 then Versa fails loudly/);
+  });
+
   it('rollback SQL lives only under supabase/rollbacks/', () => {
     const src = execFileSync(
       'bash',
@@ -68,6 +78,7 @@ describe('SEC-1 tooling', () => {
 
 function signupAdmin({
   missingLimiter = false,
+  rpcError = null,
   todayCode = 'SPIKE1',
   store = { count: 0 },
   max = INTERN_SIGNUP_RATE_MAX_DEFAULT,
@@ -109,6 +120,9 @@ function signupAdmin({
       return chain(table);
     },
     rpc: async (name) => {
+      if (rpcError) {
+        return { data: null, error: rpcError };
+      }
       if (missingLimiter) {
         return {
           data: null,
@@ -163,6 +177,20 @@ describe('intern signup per-IP rate limit', () => {
     } finally {
       console.error = original;
     }
+  });
+
+  it('fails closed with generic 503 on non-missing limiter rpc.error', async () => {
+    const admin = signupAdmin({
+      rpcError: { code: '57014', message: 'canceling statement due to statement timeout' },
+    });
+    const res = await handleInternSignup(
+      { request: postSignup('SPIKE1'), env: {} },
+      { createServiceClient: () => admin },
+    );
+    expect(res.status).toBe(503);
+    const body = await res.json();
+    expect(body.message).toBe(INTERN_SIGNUP_UNAVAILABLE_MESSAGE);
+    expect(body.message).not.toMatch(/timeout/i);
   });
 
   it('counts only failed code attempts and uses the classroom cap of 20', async () => {

@@ -24,7 +24,7 @@ const MIGRATION_29 = readFileSync(
   'utf8',
 );
 const MIGRATION_ATOMIC = readFileSync(
-  join(ROOT, 'supabase/migrations/20261114090001_intern_signup_rate_limit_atomic.sql'),
+  join(ROOT, 'supabase/migrations/20261112070001_intern_signup_rate_limit_atomic.sql'),
   'utf8',
 );
 const SAFE_PARTIAL = readFileSync(

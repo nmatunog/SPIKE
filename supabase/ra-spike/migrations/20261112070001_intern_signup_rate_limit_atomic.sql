@@ -1,5 +1,6 @@
 -- SEC-1 / F1: atomic intern-signup rate limit (classroom shared-IP).
--- Numbered above Versa 20261112080005 so it never interleaves with SEC-1 20260827/29.
+-- Numbered 20261112070001 so it sorts after 20260829 and before Versa 20261112080001–05.
+-- SEC-1-first order: 20260827, 20260829, this file, then Versa.
 -- begin_attempt checks and increments in one row lock. refund_success drops a
 -- reserved slot after a valid code so only failed code attempts count.
 

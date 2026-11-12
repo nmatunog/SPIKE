@@ -48,4 +48,4 @@
 # Rollback SQL lives in supabase/ra-spike/rollbacks/ (not this folder; sync rm -f would delete it).
 20260827_restrict_activation_codes_anon_read.sql
 20260829_gate_ensure_daily_activation_code.sql
-20261114090001_intern_signup_rate_limit_atomic.sql
+20261112070001_intern_signup_rate_limit_atomic.sql

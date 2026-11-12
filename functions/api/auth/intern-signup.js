@@ -2,6 +2,7 @@ import { validateInternActivationCode } from '../../_shared/activationCode.js';
 import { createConfirmedPortalUser } from '../../_shared/confirmedSignup.js';
 import {
   INTERN_SIGNUP_RATE_LIMITED_MESSAGE,
+  INTERN_SIGNUP_UNAVAILABLE_MESSAGE,
   beginInternSignupAttempt,
   internSignupRateKey,
   internSignupRateMax,
@@ -58,6 +59,9 @@ export async function handleInternSignup(ctx, deps = {}) {
   let reserved = false;
 
   const gate = await beginInternSignupAttempt({ admin, key: rateKey, maxFailures });
+  if (gate.unavailable) {
+    return json({ message: INTERN_SIGNUP_UNAVAILABLE_MESSAGE }, 503);
+  }
   if (!gate.ok) {
     return json({ message: INTERN_SIGNUP_RATE_LIMITED_MESSAGE }, 429);
   }
@@ -67,7 +71,10 @@ export async function handleInternSignup(ctx, deps = {}) {
     await validateInternActivationCode(admin, code);
 
     if (reserved) {
-      await refundInternSignupAttempt({ admin, key: rateKey });
+      const refunded = await refundInternSignupAttempt({ admin, key: rateKey });
+      if (refunded.unavailable) {
+        return json({ message: INTERN_SIGNUP_UNAVAILABLE_MESSAGE }, 503);
+      }
       reserved = false;
     }
 
@@ -107,7 +114,10 @@ export async function handleInternSignup(ctx, deps = {}) {
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Signup failed.';
     if (reserved && !isFailedActivationCode(message)) {
-      await refundInternSignupAttempt({ admin, key: rateKey });
+      const refunded = await refundInternSignupAttempt({ admin, key: rateKey });
+      if (refunded?.unavailable) {
+        return json({ message: INTERN_SIGNUP_UNAVAILABLE_MESSAGE }, 503);
+      }
     }
     return json({ message }, 400);
   }

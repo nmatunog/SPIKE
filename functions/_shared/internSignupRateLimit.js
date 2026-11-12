@@ -20,12 +20,18 @@ export function isFailedActivationCode(message) {
   return FAILED_CODE_RE.test(String(message || ''));
 }
 
+export const INTERN_SIGNUP_UNAVAILABLE_MESSAGE =
+  'Signup is temporarily unavailable. Try again later.';
+
 function isMissingRelationOrRpc(error) {
   if (!error) return false;
+  const code = String(error.code || '');
+  const msg = String(error.message || '');
+  if (code === '42P01' || code === '42883' || code === 'PGRST202') return true;
   return (
-    error.code === '42P01' ||
-    error.code === 'PGRST202' ||
-    /schema cache|does not exist|could not find the function|42P01/i.test(error.message || '')
+    /relation ['"]?\S+['"]? does not exist/i.test(msg) ||
+    /could not find the function/i.test(msg) ||
+    /function .+ does not exist/i.test(msg)
   );
 }
 
@@ -64,7 +70,8 @@ function parseBeginResult(data) {
 
 /**
  * Atomically check-and-increment before validating the code.
- * Missing table/RPC fails OPEN (log a loud warning; do not 429).
+ * Missing table/function fails OPEN (log a loud warning; do not 429).
+ * Any other rpc.error fails CLOSED (generic 503).
  * @param {{
  *   admin: import('@supabase/supabase-js').SupabaseClient,
  *   key: string,
@@ -85,10 +92,9 @@ export async function beginInternSignupAttempt(input) {
       warnFailOpen(
         'intern_signup_rate_limits / intern_signup_rate_limit_begin_attempt missing',
       );
-    } else {
-      warnFailOpen(rpc.error.message || 'begin_attempt failed');
+      return { ok: true, failOpen: true };
     }
-    return { ok: true, failOpen: true };
+    return { ok: false, unavailable: true };
   }
   const parsed = parseBeginResult(rpc.data);
   if (!parsed.allowed) {
@@ -99,7 +105,7 @@ export async function beginInternSignupAttempt(input) {
 
 /**
  * Drop a reserved slot after a successful code (successes are not counted).
- * Missing RPC fails OPEN.
+ * Missing function fails OPEN. Any other rpc.error fails CLOSED.
  */
 export async function refundInternSignupAttempt(input) {
   const rpc = await input.admin.rpc('intern_signup_rate_limit_refund_success', {
@@ -110,8 +116,7 @@ export async function refundInternSignupAttempt(input) {
       warnFailOpen('intern_signup_rate_limit_refund_success missing');
       return { skipped: true };
     }
-    warnFailOpen(rpc.error.message || 'refund_success failed');
-    return { skipped: true };
+    return { unavailable: true };
   }
   return { fail_count: Number(rpc.data) || 0 };
 }
@@ -130,5 +135,5 @@ export async function recordInternSignupFail(input) {
     warnFailOpen('intern_signup_rate_limit_record_fail missing');
     return;
   }
-  throw new Error(rpc.error.message);
+  throw new Error(INTERN_SIGNUP_UNAVAILABLE_MESSAGE);
 }
