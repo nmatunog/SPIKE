@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# SEC-1-only pending-set cases. Does not modify the shared check-pending-migrations.sh
-# (byte-identical with v1/versa-pro-monthly-4 @ a54e7f3). Stubbed CLI only.
+# SEC-1-only pending-set cases. Does not modify the shared check-pending-migrations.sh.
+# Stubbed CLI only.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -24,6 +24,7 @@ APPLY_LOG="$TMP/apply.log"
 
 cat > "$TMP/bin/supabase" <<EOF
 #!/usr/bin/env bash
+# PENDING_MIGRATIONS_TEST_STUB
 echo "\$*" >> "$STAMP"
 if [[ "\$*" == *schema_migrations* && "\$*" != *insert* ]]; then
   cat "$APPLIED_JSON"

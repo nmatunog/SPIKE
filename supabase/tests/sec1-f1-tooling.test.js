@@ -83,6 +83,10 @@ describe('SEC-1 tooling', () => {
     expect(docs).toMatch(/SEC-1 \(#14[\s\S]*before Versa \(#13\)/);
     expect(docs).toMatch(/INTERN_SIGNUP_GLOBAL_MAX_DEFAULT/);
     expect(docs).toMatch(/\/64/);
+    expect(docs).toMatch(/wrapper sets `EXPECTED_PROJECT_REF`/);
+    expect(docs).toMatch(/10 distinct IPs/);
+    expect(docs).toMatch(/delete from public\.intern_signup_rate_limits/);
+    expect(docs).toMatch(/ip:unknown/);
   });
 
   it('rollback SQL lives only under supabase/rollbacks/', () => {
@@ -280,6 +284,9 @@ describe('intern signup per-IP rate limit', () => {
     });
     expect(internSignupRateKey(headers('192.0.2.9'))).toBe('ip:192.0.2.9');
     expect(internSignupRateKey(headers('::ffff:192.0.2.9'))).toBe('ip:192.0.2.9');
+    expect(internSignupRateKey(headers('[::ffff:192.0.2.9]'))).toBe('ip:192.0.2.9');
+    expect(internSignupRateKey(headers('::ffff:192.0.2.9%eth0'))).toBe('ip:192.0.2.9');
+    expect(internSignupRateKey(headers('[::ffff:192.0.2.9%eth0]'))).toBe('ip:192.0.2.9');
     expect(internSignupRateKey(headers('2001:db8:1:2:3:4:5:6'))).toBe(
       'ip:2001:db8:1:2::/64',
     );
@@ -287,6 +294,29 @@ describe('intern signup per-IP rate limit', () => {
       'ip:2001:db8:1:2::/64',
     );
     expect(internSignupRateKey(headers('2001:db8:1:3::1'))).toBe('ip:2001:db8:1:3::/64');
+  });
+
+  it('ignores X-Forwarded-For and shares ip:unknown when CF-Connecting-IP is missing', () => {
+    const xffOnly = {
+      headers: {
+        get: (name) => (name === 'X-Forwarded-For' ? '198.51.100.7, 203.0.113.1' : null),
+      },
+    };
+    expect(internSignupRateKey(xffOnly)).toBe('ip:unknown');
+    expect(internSignupRateKey({ headers: { get: () => null } })).toBe('ip:unknown');
+    expect(internSignupRateKey({ headers: { get: (name) => (name === 'CF-Connecting-IP' ? '   ' : null) } })).toBe(
+      'ip:unknown',
+    );
+    const both = {
+      headers: {
+        get: (name) => {
+          if (name === 'CF-Connecting-IP') return '192.0.2.9';
+          if (name === 'X-Forwarded-For') return '198.51.100.7';
+          return null;
+        },
+      },
+    };
+    expect(internSignupRateKey(both)).toBe('ip:192.0.2.9');
   });
 
   it('parseBeginResult requires allowed === true', () => {

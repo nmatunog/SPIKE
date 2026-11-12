@@ -86,8 +86,11 @@ function expandIpv6Hextets(ip) {
 
 /** IPv4 unchanged; IPv6 aggregated to the /64 prefix (`a:b:c:d::/64`). */
 export function normalizeClientIp(raw) {
-  const ip = String(raw || '').trim() || 'unknown';
+  let ip = String(raw || '').trim() || 'unknown';
   if (ip === 'unknown') return ip;
+  if (ip.startsWith('[') && ip.endsWith(']')) ip = ip.slice(1, -1);
+  const zone = ip.indexOf('%');
+  if (zone >= 0) ip = ip.slice(0, zone);
   const mapped = ip.match(/^::ffff:(\d{1,3}(?:\.\d{1,3}){3})$/i);
   if (mapped) return mapped[1];
   if (/^\d{1,3}(?:\.\d{1,3}){3}$/.test(ip)) return ip;
@@ -101,13 +104,13 @@ export function normalizeClientIp(raw) {
 }
 
 /**
+ * Cloudflare edge IP only. Missing/blank CF-Connecting-IP → `ip:unknown`
+ * (one shared bucket). X-Forwarded-For is ignored.
  * @param {Request | null | undefined} request
  */
 export function internSignupRateKey(request) {
-  const ip =
-    request?.headers?.get('CF-Connecting-IP') ||
-    request?.headers?.get('X-Forwarded-For')?.split(',')[0]?.trim() ||
-    'unknown';
+  const header = request?.headers?.get('CF-Connecting-IP');
+  const ip = typeof header === 'string' && header.trim() ? header.trim() : 'unknown';
   return `ip:${normalizeClientIp(ip)}`;
 }
 

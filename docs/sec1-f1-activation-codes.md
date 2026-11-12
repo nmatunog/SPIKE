@@ -2,7 +2,7 @@
 
 Waits for **Nilo's SEC-1 decision**. Repo SQL only. **Do not apply** to SPIKE Interns (`lzbfjbtjropoaynbcxew`) or RA-SPIKE (`yruwfdjqigxxwbqsqhho`) from this branch.
 
-Frozen parent: `sec1/f1-hardening-5` @ `997ff75`. This tree is `sec1/f1-hardening-6`. Do not rewrite those frozen SHAs.
+Frozen parent: `sec1/f1-hardening-6` @ `326ebf5`. This tree is `sec1/f1-hardening-7`. Do not rewrite those frozen SHAs.
 
 Live (read-only check, 11 Nov 2026), both projects:
 
@@ -31,8 +31,16 @@ Local tests: `SKIP_AUTO_SHIP=1 AUTO_SHIP=0 npm run test:sec1-f1` (PGlite), `bash
 
 Durable limiter (`intern_signup_rate_limits`). Two keys share the same atomic `intern_signup_rate_limit_begin_attempt` RPC:
 
-- Per-client: `ip:<normalized>`. **IPv4 is unchanged.** IPv6 (including compressed forms) is aggregated to the **/64 prefix** (`ip:2001:db8:1:2::/64`) so a single host cannot rotate addresses inside one /64 to bypass the classroom cap. IPv4-mapped `::ffff:x.x.x.x` is treated as IPv4.
+- Per-client: `ip:<normalized>` from **`CF-Connecting-IP` only**. `X-Forwarded-For` is ignored. Missing or blank CF-Connecting-IP keys **`ip:unknown`** so all unkeyed traffic shares one bucket. **IPv4 is unchanged.** IPv6 (including compressed forms) is aggregated to the **/64 prefix** (`ip:2001:db8:1:2::/64`) so a single host cannot rotate addresses inside one /64 to bypass the classroom cap. IPv4-mapped `::ffff:x.x.x.x`, including bracketed (`[::ffff:192.0.2.9]`) and zone-id (`::ffff:192.0.2.9%eth0`) forms, is treated as IPv4.
 - Global code-day ceiling: `global:<YYYY-MM-DD>` using Manila `getActivationDateKey()`. Default **200 failed attempts per code-day** (`INTERN_SIGNUP_GLOBAL_MAX_DEFAULT` / env `INTERN_SIGNUP_GLOBAL_MAX`). Window for this key is **48 hours** so the day row is not reset by the 10-minute IP window. Hitting the ceiling returns the same generic HTTP 429 and logs `INTERN SIGNUP GLOBAL CEILING` (alert line). The IP reservation taken for that request is refunded so the per-IP counter is not stuck.
+
+**Ceiling tradeoff:** about **10 distinct IPs × 20 failures** fills the 200/day global bucket and **locks all intern signups for the rest of the Manila code-day**, including legitimate classroom traffic. That is intentional against a distributed guess, and it is the cost of a shared daily cap. On a class day, staff may reset only today’s global row **with Nilo’s approval**:
+
+```sql
+-- Nilo approval required. Deletes today's Manila global ceiling row only.
+delete from public.intern_signup_rate_limits
+ where rate_key = 'global:' || to_char((timezone('Asia/Manila', now()))::date, 'YYYY-MM-DD');
+```
 
 Classroom-safe default remains **20 failed code attempts / 10 minutes** per IP (`INTERN_SIGNUP_RATE_MAX`). Only invalid/expired/missing daily codes consume a slot. A valid code refunds both reservations.
 
@@ -48,13 +56,13 @@ Keep the original SEC-1 pair at `20260827` and `20260829`. The atomic limiter fo
 
 The runner applies local files whose version is **not** in remote `schema_migrations`. Mixed 8–14 digit stamps are compared by right-padding to 14 digits. Pending files below the live max fail loudly (named in stderr) unless `ALLOW_OUT_OF_ORDER=1`. `npm run db:migrate` is a no-op without `APPLY_DB_MIGRATIONS=1`.
 
-`npm run build` / `scripts/ship-after-build.sh` never apply SQL unless `APPLY_DB_MIGRATIONS=1` **and** the branch is `main`. On that opt-in path a failed internship or RA-SPIKE apply **exits 1** (does not continue to commit/push). `apply-pending-migrations.sh` refuses unless `EXPECTED_PROJECT_REF` matches `supabase/.temp/project-ref`. `SKIP_SUPABASE_LINK` is not a production escape; stubbed tests use `PENDING_MIGRATIONS_TEST_HARNESS=1`. Prove with `bash scripts/check-ship-migrations-opt-in.sh`.
+`npm run build` / `scripts/ship-after-build.sh` never apply SQL unless `APPLY_DB_MIGRATIONS=1` **and** the branch is `main`. On that opt-in path a failed internship or RA-SPIKE apply **exits 1** (does not continue to commit/push). The wrappers (`run-supabase-migrations.sh` / `run-ra-spike-migrations.sh`) set `EXPECTED_PROJECT_REF`; the operator does not. `apply-pending-migrations.sh` then refuses unless that value matches `supabase/.temp/project-ref`. `SKIP_SUPABASE_LINK` is not a production escape; stubbed tests use `PENDING_MIGRATIONS_TEST_HARNESS=1` and a stub `supabase` marked `PENDING_MIGRATIONS_TEST_STUB`. Prove with `bash scripts/check-ship-migrations-opt-in.sh`.
 
 ## Live-apply runbook (hosted Interns + RA-SPIKE)
 
 Do this only after Nilo’s go-ahead. Never from a feature-branch `npm run ship`. Never blanket `ALLOW_OUT_OF_ORDER=1` on live.
 
-1. **Read-only plan first.** On an already-correctly-linked CLI (`EXPECTED_PROJECT_REF` matching the project you intend):
+1. **Read-only plan first.** Link the CLI to the intended project first (`supabase link --project-ref …` so `supabase/.temp/project-ref` is correct). The wrapper sets `EXPECTED_PROJECT_REF`; do not export it yourself. Then:
    `SKIP_APPLY=1 APPLY_DB_MIGRATIONS=1 npm run db:migrate` (Interns) and the RA-SPIKE equivalent. Confirm the pending file list. Do not apply yet.
 2. **Backfill `schema_migrations` only for files independently confirmed already applied** on that project (probe grants/functions, not a guess from live max). Do not insert versions for SQL that is not actually on the database.
 3. **Never** set `ALLOW_OUT_OF_ORDER=1` on live to “just get it done.” If pending files sit below the remote max, stop and reconcile (backfill the confirmed versions, or apply the named older files in numeric order after an explicit decision).
