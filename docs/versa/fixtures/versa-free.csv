@@ -1,0 +1,7 @@
+﻿Code,Plan,PlanSlug,Owner,SiteName,Inventory,Status,PurchasedAt,DurationDays,UnitPriceTokens,CreatedAt
+FREE-SYN00001,CRM Free,free,,,Unsold,INACTIVE,,,,2026-01-01T00:00:00.000Z
+FREE-SYN00002,CRM Free,free,,,Unsold,INACTIVE,,,,2026-01-01T00:00:00.000Z
+FREE-SYNONCE1,CRM Free,free,,,Unsold,INACTIVE,,,,2026-01-01T00:00:00.000Z
+FREE-SYNREUSE,CRM Free,free,,,Unsold,REDEEMED,,,,2026-01-01T00:00:00.000Z
+FREE-SYNREVOK,CRM Free,free,,,Unsold,REVOKED,,,,2026-01-01T00:00:00.000Z
+FREE-SYNEXP01,CRM Free,free,,,Unsold,EXPIRED,,,,2020-01-01T00:00:00.000Z

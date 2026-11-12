@@ -21,6 +21,9 @@
     "postbuild": "bash scripts/postbuild-ship.sh",
     "ship": "npm run lint && npm run build:internship && bash scripts/ship-after-build.sh",
     "lint": "eslint .",
+    "test:versa-code": "vitest run --config vitest.versa.config.js",
+    "demo:versa-verifier": "VERSA_DEMO_LOCAL=1 vite --port 4178 --strictPort --host 127.0.0.1",
+    "test:versa-verifier": "playwright test --config playwright.config.js",
     "preview": "vite preview",
     "deploy:cf": "bash ./scripts/deploy-cloudflare.sh",
     "deploy:prod": "bash ./scripts/deploy-production.sh",
@@ -87,11 +90,13 @@
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-router-dom": "^7.17.0",
+    "xlsx": "^0.18.5",
     "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.16",
     "@eslint/js": "^9.39.4",
+    "@playwright/test": "^1.65.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
