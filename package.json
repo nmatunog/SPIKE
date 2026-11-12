@@ -22,7 +22,6 @@
     "ship": "npm run lint && npm run build:internship && bash scripts/ship-after-build.sh",
     "lint": "eslint .",
     "test:versa-code": "vitest run --config vitest.versa.config.js",
-    "check:ship-migrations": "bash scripts/check-ship-migrations-opt-in.sh",
     "demo:versa-verifier": "VERSA_DEMO_LOCAL=1 vite --port 4178 --strictPort --host 127.0.0.1",
     "test:versa-verifier": "playwright test --config playwright.config.js",
     "preview": "vite preview",
