@@ -77,27 +77,32 @@ async function consumeAndGrantFallback(admin, { id, userId, grantor, paymentVeri
     .eq('id', id)
     .maybeSingle();
 
-  if (existing?.status === 'redeemed' && String(existing.redeemed_by) === String(userId)) {
-    if (grantor) {
-      await grantor.grant({
-        userId,
-        row: existing,
-        paymentVerified,
-        env,
-        now,
-        extend: false,
-      });
-    } else {
-      await grantOfferingsFromRow(admin, {
-        userId,
-        row: existing,
-        env,
-        now,
-        extend: false,
-      });
+  if (existing?.status === 'redeemed') {
+    if (String(existing.plan_slug || '').toLowerCase() === 'pro') {
+      return { ok: false, reason: 'reused' };
     }
-    const entitlement = await findEntitlement(admin, userId, existing.offering_id);
-    return { ok: true, already_granted: true, row: existing, entitlement };
+    if (String(existing.redeemed_by) === String(userId)) {
+      if (grantor) {
+        await grantor.grant({
+          userId,
+          row: existing,
+          paymentVerified,
+          env,
+          now,
+          extend: false,
+        });
+      } else {
+        await grantOfferingsFromRow(admin, {
+          userId,
+          row: existing,
+          env,
+          now,
+          extend: false,
+        });
+      }
+      const entitlement = await findEntitlement(admin, userId, existing.offering_id);
+      return { ok: true, already_granted: true, row: existing, entitlement };
+    }
   }
 
   const { data: updated, error: updErr } = await admin

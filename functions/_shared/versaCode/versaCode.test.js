@@ -194,8 +194,9 @@ describe('Versa CSV portable service', () => {
     );
     expect(monthly).not.toMatch(/expires_at\s*=\s*excluded\.expires_at/);
     expect(monthly).toMatch(
-      /next_expiry := coalesce\(inv\.redeemed_at, at\) \+ make_interval\(days => period_days\)/,
+      /inv\.status = 'redeemed' and coalesce\(inv\.plan_slug, ''\) = 'pro'/,
     );
+    expect(monthly).toMatch(/reason', 'reused'/);
     expect(monthly).not.toContain('intern_progress');
     await expect(
       access(fileURLToPath(new URL('../../../supabase/migrations/20260829_versa_q1_hardening.sql', import.meta.url))),

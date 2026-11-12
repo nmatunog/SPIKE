@@ -1,5 +1,6 @@
 -- Versa PRO monthly term (option B: a new code each month).
--- Nilo / Versa Nov 12 2026 1:57 PM. Repo SQL only — do not apply to hosted DBs.
+-- Nilo / Versa Nov 12 2026 1:57 PM. Tightened 2:09 PM: PRO is strictly single-use.
+-- Repo SQL only — do not apply to hosted DBs.
 -- Duration is server-side (p_period_days, default 30), never CSV DurationDays.
 -- Access after expiry+grace is lazy; this function does not lapse rows.
 
@@ -27,25 +28,22 @@ declare
   ent public.versa_entitlements;
   period_days integer := greatest(coalesce(p_period_days, 30), 0);
   at timestamptz := coalesce(p_now, now());
-  next_expiry timestamptz;
 begin
   select * into inv from public.versa_code_inventory where id = p_id;
   if not found then
     return jsonb_build_object('ok', false, 'reason', 'unknown');
   end if;
 
-  if inv.status = 'redeemed' and inv.redeemed_by = p_user_id then
-    -- Recreate missing rows from this code's own term. Never mint a null PRO expiry.
-    if coalesce(inv.plan_slug, '') = 'pro' then
-      next_expiry := coalesce(inv.redeemed_at, at) + make_interval(days => period_days);
-    else
-      next_expiry := null;
-    end if;
+  -- PRO: never recreate. A consumed code cannot grant again.
+  if inv.status = 'redeemed' and coalesce(inv.plan_slug, '') = 'pro' then
+    return jsonb_build_object('ok', false, 'reason', 'reused');
+  end if;
 
+  if inv.status = 'redeemed' and inv.redeemed_by = p_user_id then
     insert into public.versa_entitlements (
       user_id, inventory_id, versa_lead_ref, level, offering_id, program_route, expires_at
     ) values (
-      p_user_id, inv.id, inv.versa_lead_ref, inv.level, inv.offering_id, inv.program_route, next_expiry
+      p_user_id, inv.id, inv.versa_lead_ref, inv.level, inv.offering_id, inv.program_route, null
     )
     on conflict (user_id, offering_id) do update
       set inventory_id = excluded.inventory_id

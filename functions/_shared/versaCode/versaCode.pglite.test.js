@@ -53,24 +53,21 @@ declare
   ent versa_entitlements;
   period_days integer := greatest(coalesce(p_period_days, 30), 0);
   at timestamptz := coalesce(p_now, now());
-  next_expiry timestamptz;
 begin
   select * into inv from versa_code_inventory where id = p_id;
   if not found then
     return jsonb_build_object('ok', false, 'reason', 'unknown');
   end if;
 
-  if inv.status = 'redeemed' and inv.redeemed_by = p_user_id then
-    if coalesce(inv.plan_slug, '') = 'pro' then
-      next_expiry := coalesce(inv.redeemed_at, at) + make_interval(days => period_days);
-    else
-      next_expiry := null;
-    end if;
+  if inv.status = 'redeemed' and coalesce(inv.plan_slug, '') = 'pro' then
+    return jsonb_build_object('ok', false, 'reason', 'reused');
+  end if;
 
+  if inv.status = 'redeemed' and inv.redeemed_by = p_user_id then
     insert into versa_entitlements (
       user_id, inventory_id, versa_lead_ref, level, offering_id, program_route, expires_at
     ) values (
-      p_user_id, inv.id, inv.versa_lead_ref, inv.level, inv.offering_id, inv.program_route, next_expiry
+      p_user_id, inv.id, inv.versa_lead_ref, inv.level, inv.offering_id, inv.program_route, null
     )
     on conflict (user_id, offering_id) do update
       set inventory_id = excluded.inventory_id
@@ -216,7 +213,7 @@ describe('Versa redeem_versa_code_and_grant (PGlite)', () => {
     expect(other.rows[0].result).toMatchObject({ ok: false, reason: 'reused' });
   });
 
-  it('PRO recreate after deleting the entitlement never yields a null expiry', async () => {
+  it('PRO already-granted recreate never runs; a consumed code stays reused', async () => {
     db = new PGlite();
     await db.exec(SCHEMA_SQL);
     const inserted = await db.query(
@@ -240,13 +237,9 @@ describe('Versa redeem_versa_code_and_grant (PGlite)', () => {
       'select redeem_versa_code_and_grant($1, $2, 30, $3::timestamptz) as result',
       [id, USER_A, t0],
     );
-    expect(retry.rows[0].result.ok).toBe(true);
-    expect(retry.rows[0].result.already_granted).toBe(true);
-    expect(retry.rows[0].result.entitlement.expires_at).toBeTruthy();
+    expect(retry.rows[0].result).toMatchObject({ ok: false, reason: 'reused' });
     const rows = await db.query('select expires_at from versa_entitlements');
-    expect(rows.rows).toHaveLength(1);
-    expect(rows.rows[0].expires_at).not.toBeNull();
-    expect(new Date(rows.rows[0].expires_at).toISOString()).toBe('2026-03-03T00:00:00.000Z');
+    expect(rows.rows).toHaveLength(0);
   });
 
   it('concurrent PRO codes stack 30+30 from the live row', async () => {

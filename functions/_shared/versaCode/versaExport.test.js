@@ -284,8 +284,10 @@ describe('locked Versa export schema', () => {
       admin,
       offeringId: 'financial-entrepreneurship',
     });
-    expect(second.ok).toBe(true);
-    expect(second.alreadyGranted).toBe(true);
+    expect(second.ok).toBe(false);
+    expect(second.reason).toBe(REASONS.reused);
+    expect(second.message).toBe(GENERIC_DENY_MESSAGE);
+    expect(second.alreadyGranted).toBeFalsy();
 
     const other = await redeem(SYNTHETIC_CODES.pro, identity(OTHER_ID, OTHER), 'spike-interns', 'L2', {
       env: FLAG_ENV,
@@ -293,7 +295,7 @@ describe('locked Versa export schema', () => {
       offeringId: 'financial-entrepreneurship',
     });
     expect(other.ok).toBe(false);
-    expect(other.reason).toBe(REASONS.wrong_identity);
+    expect(other.message).toBe(GENERIC_DENY_MESSAGE);
     const digest = await digestCode(HMAC, SYNTHETIC_CODES.pro);
     expect(admin.tables.versa_code_inventory.find((item) => item.code_digest === digest).verified_user_id).toBe(
       LEARNER_ID,

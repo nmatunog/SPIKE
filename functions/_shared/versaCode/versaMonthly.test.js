@@ -162,7 +162,30 @@ describe('Versa PRO monthly term (option B, new code each month)', () => {
     expect(new Date(l2Row(admin).expires_at).getTime() - afterGrace).toBe(30 * MS_PER_DAY);
   });
 
-  it('own-code re-redeem within the term stays idempotent', async () => {
+  async function httpRedeem(admin, { code, now, userClient = admin }) {
+    return readJson(
+      await handleVersaRedeem(
+        {
+          request: postJson('https://portal.test/api/versa/redeem', {
+            code,
+            intendedCourse: 'spike-interns',
+          }),
+          env: FLAG_ENV,
+        },
+        {
+          createServiceClient: () => admin,
+          createUserClient: () => userClient,
+          redeem: (submitted, authenticatedIdentity, intendedCourse, intendedLevel, options) =>
+            redeem(submitted, authenticatedIdentity, intendedCourse, intendedLevel, {
+              ...options,
+              now,
+            }),
+        },
+      ),
+    );
+  }
+
+  it('consumed PRO is strictly single-use: same learner 403 in term, grace, and after grace', async () => {
     const admin = await setup();
     await redeem(SYNTHETIC_CODES.pro, identity(), 'spike-interns', 'L2', {
       env: FLAG_ENV,
@@ -170,17 +193,39 @@ describe('Versa PRO monthly term (option B, new code each month)', () => {
       offeringId: L2,
       now: T0,
     });
-    const retry = await redeem(SYNTHETIC_CODES.pro, identity(), 'spike-interns', 'L2', {
+    const windows = [
+      T0 + MS_PER_DAY,
+      T0 + 32 * MS_PER_DAY,
+      T0 + 38 * MS_PER_DAY,
+    ];
+    for (const now of windows) {
+      const retry = await redeem(SYNTHETIC_CODES.pro, identity(), 'spike-interns', 'L2', {
+        env: FLAG_ENV,
+        admin,
+        offeringId: L2,
+        now,
+      });
+      expect(retry.ok).toBe(false);
+      expect(retry.reason).toBe(REASONS.reused);
+      expect(retry.message).toBe(GENERIC_DENY_MESSAGE);
+      expect(retry.alreadyGranted).toBeFalsy();
+      expect(new Date(l2Row(admin).expires_at).getTime() - T0).toBe(30 * MS_PER_DAY);
+
+      const http = await httpRedeem(admin, { code: SYNTHETIC_CODES.pro, now });
+      expect(http.status).toBe(403);
+      expect(http.body.message).toBe(GENERIC_DENY_MESSAGE);
+      expect(http.body.ok).toBeUndefined();
+    }
+  });
+
+  it('another user redeeming a consumed PRO gets 403', async () => {
+    const admin = await setup();
+    await redeem(SYNTHETIC_CODES.pro, identity(), 'spike-interns', 'L2', {
       env: FLAG_ENV,
       admin,
       offeringId: L2,
-      now: T0 + MS_PER_DAY,
+      now: T0,
     });
-    expect(retry.ok).toBe(true);
-    expect(retry.alreadyGranted).toBe(true);
-    expect(retry.reason).toBe(REASONS.already_granted);
-    expect(new Date(l2Row(admin).expires_at).getTime() - T0).toBe(30 * MS_PER_DAY);
-
     const other = await redeem(SYNTHETIC_CODES.pro, identity(OTHER_ID, OTHER), 'spike-interns', 'L2', {
       env: FLAG_ENV,
       admin,
@@ -188,57 +233,23 @@ describe('Versa PRO monthly term (option B, new code each month)', () => {
       now: T0 + MS_PER_DAY,
     });
     expect(other.ok).toBe(false);
-    expect(other.reason).toBe(REASONS.wrong_identity);
+    expect(other.message).toBe(GENERIC_DENY_MESSAGE);
     expect(l2Row(admin, OTHER_ID)).toBeUndefined();
-  });
-
-  it('own-code re-redeem after grace returns 403 until a new PRO code is consumed', async () => {
-    const admin = await setup();
-    await redeem(SYNTHETIC_CODES.pro, identity(), 'spike-interns', 'L2', {
-      env: FLAG_ENV,
-      admin,
-      offeringId: L2,
-      now: T0,
-    });
-    const afterGrace = T0 + 38 * MS_PER_DAY;
-    const retry = await redeem(SYNTHETIC_CODES.pro, identity(), 'spike-interns', 'L2', {
-      env: FLAG_ENV,
-      admin,
-      offeringId: L2,
-      now: afterGrace,
-    });
-    expect(retry.ok).toBe(false);
-    expect(retry.reason).toBe(REASONS.expired);
-    expect(retry.message).toBe(GENERIC_DENY_MESSAGE);
     expect(new Date(l2Row(admin).expires_at).getTime() - T0).toBe(30 * MS_PER_DAY);
 
-    const http = await readJson(
-      await handleVersaRedeem(
-        {
-          request: postJson('https://portal.test/api/versa/redeem', {
-            code: SYNTHETIC_CODES.pro,
-            intendedCourse: 'spike-interns',
-          }),
-          env: FLAG_ENV,
-        },
-        {
-          createServiceClient: () => admin,
-          createUserClient: () => admin,
-          redeem: (code, authenticatedIdentity, intendedCourse, intendedLevel, options) =>
-            redeem(code, authenticatedIdentity, intendedCourse, intendedLevel, {
-              ...options,
-              now: afterGrace,
-            }),
-        },
-      ),
-    );
+    const otherAdmin = createMemoryAdmin({
+      authUser: { id: OTHER_ID, email: OTHER, email_confirmed_at: '2026-01-01T00:00:00.000Z' },
+    });
+    const http = await httpRedeem(admin, {
+      code: SYNTHETIC_CODES.pro,
+      now: T0 + MS_PER_DAY,
+      userClient: otherAdmin,
+    });
     expect(http.status).toBe(403);
     expect(http.body.message).toBe(GENERIC_DENY_MESSAGE);
-    expect(http.body.ok).toBeUndefined();
-    expect(new Date(l2Row(admin).expires_at).getTime() - T0).toBe(30 * MS_PER_DAY);
   });
 
-  it('deleting the entitlement and retrying never yields a null expiry for PRO', async () => {
+  it('deleting the entitlement and retrying a consumed PRO returns 403 with no grant', async () => {
     const admin = await setup();
     await redeem(SYNTHETIC_CODES.pro, identity(), 'spike-interns', 'L2', {
       env: FLAG_ENV,
@@ -246,7 +257,9 @@ describe('Versa PRO monthly term (option B, new code each month)', () => {
       offeringId: L2,
       now: T0,
     });
-    const inventory = admin.tables.versa_code_inventory.find((row) => row.offering_id === L2 && row.status === 'redeemed');
+    const inventory = admin.tables.versa_code_inventory.find(
+      (row) => row.offering_id === L2 && row.status === 'redeemed',
+    );
     admin.tables.versa_entitlements = admin.tables.versa_entitlements.filter(
       (row) => String(row.user_id) !== LEARNER_ID,
     );
@@ -259,19 +272,27 @@ describe('Versa PRO monthly term (option B, new code each month)', () => {
       now: T0 + MS_PER_DAY,
     });
     expect(denied.ok).toBe(false);
-    expect(denied.reason).toBe(REASONS.expired);
+    expect(denied.reason).toBe(REASONS.reused);
+    expect(denied.message).toBe(GENERIC_DENY_MESSAGE);
     expect(l2Row(admin)).toBeUndefined();
 
-    const restored = await consumeAndGrant(admin, {
+    const http = await httpRedeem(admin, {
+      code: SYNTHETIC_CODES.pro,
+      now: T0 + MS_PER_DAY,
+    });
+    expect(http.status).toBe(403);
+    expect(http.body.message).toBe(GENERIC_DENY_MESSAGE);
+    expect(l2Row(admin)).toBeUndefined();
+
+    const rpc = await consumeAndGrant(admin, {
       id: inventory.id,
       userId: LEARNER_ID,
       env: FLAG_ENV,
       now: T0 + MS_PER_DAY,
     });
-    expect(restored.ok).toBe(true);
-    expect(restored.already_granted).toBe(true);
-    expect(l2Row(admin).expires_at).toBeTruthy();
-    expect(l2Row(admin).expires_at).toBe(stackedExpiryIso(null, T0, 30));
+    expect(rpc.ok).toBe(false);
+    expect(rpc.reason).toBe('reused');
+    expect(l2Row(admin)).toBeUndefined();
   });
 
   it('concurrent stacking of two new PRO codes adds 30+30', async () => {
