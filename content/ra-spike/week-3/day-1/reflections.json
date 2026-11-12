@@ -1,0 +1,43 @@
+{
+  "weekNumber": 3,
+  "dayNumber": 1,
+  "reflections": [
+    {
+      "id": "strongest-block",
+      "prompt": "Which FEC block feels strongest in your business model? Why?",
+      "guidance": "Consider which aspect you have the most clarity and confidence about. This often connects to your experience or passion.",
+      "expectedLength": "2-3 sentences"
+    },
+    {
+      "id": "weakest-block",
+      "prompt": "Which FEC block still feels unclear or incomplete?",
+      "guidance": "Identifying gaps now helps you strengthen your model before Week 4 pitch. Be honest about what needs more work.",
+      "expectedLength": "2-3 sentences"
+    },
+    {
+      "id": "revenue-reality",
+      "prompt": "Is your revenue model realistic for your first year? What assumptions are you making?",
+      "guidance": "Think about pricing, customer acquisition rate, and time to close. It's okay to be optimistic, but acknowledge your assumptions.",
+      "expectedLength": "3-4 sentences"
+    },
+    {
+      "id": "resources-partners",
+      "prompt": "What key resource or partner will be hardest to acquire? How will you approach this?",
+      "guidance": "Every business needs resources beyond the founder. Identifying barriers early helps you plan realistically.",
+      "expectedLength": "2-3 sentences"
+    },
+    {
+      "id": "differentiation",
+      "prompt": "How does your Unified Venture Proposition make you different from other advisors?",
+      "guidance": "Your UVP should clearly communicate why a client would choose you. Avoid generic statements like 'quality service.'",
+      "expectedLength": "2-3 sentences"
+    },
+    {
+      "id": "pitch-readiness",
+      "prompt": "What will you refine before your Week 4 venture pitch?",
+      "guidance": "Use Stage Gate 1 as motivation to polish specific aspects of your canvas. What feedback do you need most?",
+      "expectedLength": "2-3 sentences"
+    }
+  ],
+  "submissionRequirement": "Answer at least 4 of the 6 reflection prompts before marking Week 3 complete."
+}

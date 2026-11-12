@@ -1,0 +1,27 @@
+{
+  "weekNumber": 3,
+  "dayNumber": 1,
+  "segment": "discover",
+  "date": "TBD",
+  "title": "FEC Canvas Completion",
+  "theme": "Capture Value · Enable Value · UVP",
+  "learningObjectives": [
+    "Complete FEC blocks 4-6 (Capture Value, Enable Value, Unified Venture Proposition)",
+    "Understand revenue models and cost structures for advisory practices",
+    "Identify key resources and partners needed to deliver value",
+    "Synthesize FEC into a cohesive business model"
+  ],
+  "materials": [
+    "FEC Canvas (blocks 1-3 from Week 2)",
+    "Canvas Wizard interface",
+    "Squad feedback forms"
+  ],
+  "facilitatorPrep": [
+    "Review each rookie's Week 2 FEC progress",
+    "Prepare examples of revenue models for advisory practices",
+    "Set up squad peer review stations",
+    "Queue canvas wizard demo for the session"
+  ],
+  "duration": 180,
+  "durationLabel": "3 hours"
+}

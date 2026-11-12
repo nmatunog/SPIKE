@@ -1,0 +1,64 @@
+{
+  "weekNumber": 3,
+  "dayNumber": 1,
+  "assessmentType": "formative",
+  "title": "Week 3 Canvas Completion Check",
+  "description": "Formative assessment to ensure rookies have completed FEC blocks 4-6 and are ready for Week 4 pitch preparation.",
+  "assessmentCriteria": [
+    {
+      "criterion": "FEC Block 4: Capture Value",
+      "indicators": [
+        "Revenue streams are clearly defined",
+        "Pricing model is specified (commission, fee, hybrid, etc.)",
+        "Cost structure includes both fixed and variable costs",
+        "Financial projections are present and realistic"
+      ],
+      "weight": "33%"
+    },
+    {
+      "criterion": "FEC Block 5: Enable Value",
+      "indicators": [
+        "Key resources are identified beyond just the founder",
+        "Key partners are named with mutual value exchange described",
+        "Resource acquisition plan is mentioned",
+        "Partner relationships are strategic, not just transactional"
+      ],
+      "weight": "33%"
+    },
+    {
+      "criterion": "FEC Block 6: Unified Venture Proposition",
+      "indicators": [
+        "UVP clearly articulates target customer and problem solved",
+        "Differentiation from competitors is explicit",
+        "UVP connects to blocks 1-5 coherently",
+        "Statement is concise and memorable"
+      ],
+      "weight": "34%"
+    }
+  ],
+  "rubric": [
+    {
+      "level": "Exemplary",
+      "description": "All three blocks are complete, realistic, and well-integrated with Week 2 foundation. Ready for Stage Gate 1.",
+      "feedback": "Your FEC is ready for pitch development. Focus on storytelling and presentation in Week 4."
+    },
+    {
+      "level": "Proficient",
+      "description": "Blocks are complete with minor gaps or unclear areas. Some refinement needed before pitch.",
+      "feedback": "Strong foundation. Strengthen [specific block] before Week 4 pitch preparation."
+    },
+    {
+      "level": "Developing",
+      "description": "One or more blocks are incomplete or unrealistic. Significant refinement needed.",
+      "feedback": "Schedule 1-on-1 with coach/mentor to address gaps in [specific blocks] before proceeding to Week 4."
+    },
+    {
+      "level": "Beginning",
+      "description": "Multiple blocks are missing or lack substance. Not ready for Week 4 without intervention.",
+      "feedback": "Your canvas needs significant work. Complete the canvas wizard and schedule coaching before advancing."
+    }
+  ],
+  "coachReview": "Coaches should review submitted canvases within 48 hours and provide feedback via the coach dashboard. Flag rookies at 'Developing' or 'Beginning' for intervention before Week 4.",
+  "passingThreshold": "Proficient",
+  "retryPolicy": "Rookies receiving 'Developing' or 'Beginning' should revise their canvas before Week 4. Provide async feedback and schedule check-in."
+}

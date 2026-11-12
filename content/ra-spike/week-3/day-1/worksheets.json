@@ -1,0 +1,102 @@
+{
+  "weekNumber": 3,
+  "dayNumber": 1,
+  "worksheets": [
+    {
+      "id": "revenue-model-worksheet",
+      "title": "Revenue Model Planner",
+      "type": "fillable",
+      "description": "Map out your revenue streams, pricing, and projected income.",
+      "sections": [
+        {
+          "heading": "Revenue Streams",
+          "prompts": [
+            "What services will you offer?",
+            "How will you charge (commission, fee-only, hybrid, retainer)?",
+            "What is your average revenue per client?",
+            "How many clients do you project in Year 1? Year 2? Year 3?"
+          ]
+        },
+        {
+          "heading": "Cost Structure",
+          "prompts": [
+            "Fixed costs (office, software, licenses)",
+            "Variable costs (per client or per transaction)",
+            "Personal draw / salary",
+            "Marketing and client acquisition costs"
+          ]
+        },
+        {
+          "heading": "Profit Projection",
+          "prompts": [
+            "Year 1 projected revenue:",
+            "Year 1 projected costs:",
+            "Year 1 net profit:",
+            "Break-even timeline:"
+          ]
+        }
+      ],
+      "usage": "Complete during or after class to feed into FEC Block 4 (Capture Value)"
+    },
+    {
+      "id": "resources-partners-map",
+      "title": "Resources & Partners Map",
+      "type": "brainstorm",
+      "description": "Identify what you need to deliver value consistently.",
+      "sections": [
+        {
+          "heading": "Key Resources",
+          "categories": [
+            "Human (team, contractors, yourself)",
+            "Physical (office, equipment)",
+            "Intellectual (licenses, methodologies, tools)",
+            "Financial (startup capital, credit line)"
+          ]
+        },
+        {
+          "heading": "Key Partners",
+          "prompts": [
+            "Who helps you deliver value? (wholesalers, product providers)",
+            "Who helps you reach customers? (referral partners, centers of influence)",
+            "What value do you provide to them?",
+            "What value do they provide to you?"
+          ]
+        }
+      ],
+      "usage": "Complete before filling FEC Block 5 (Enable Value)"
+    },
+    {
+      "id": "uvp-differentiation-canvas",
+      "title": "UVP Differentiation Canvas",
+      "type": "synthesis",
+      "description": "Articulate what makes your advisory practice unique.",
+      "sections": [
+        {
+          "heading": "Your Unique Position",
+          "prompts": [
+            "Target customer segment:",
+            "Primary problem you solve:",
+            "How you solve it differently:",
+            "Why clients should choose you:"
+          ]
+        },
+        {
+          "heading": "Competitive Positioning",
+          "prompts": [
+            "Who else serves this segment?",
+            "What do they do well?",
+            "What gaps do they leave?",
+            "How do you fill those gaps?"
+          ]
+        },
+        {
+          "heading": "UVP Statement",
+          "template": "I help [target customer] [solve problem] by [unique approach], unlike [competitors] who [alternative approach].",
+          "example": "I help young professionals build financial independence by integrating life planning with investment advice, unlike traditional advisors who focus only on portfolio management."
+        }
+      ],
+      "usage": "Complete before finalizing FEC Block 6 (Unified Venture Proposition)"
+    }
+  ],
+  "facilitatorNote": "These worksheets scaffold the canvas wizard experience. Rookies can complete them on paper, in a shared doc, or directly in the canvas wizard interface."
+}
